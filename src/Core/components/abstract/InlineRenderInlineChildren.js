@@ -1,7 +1,9 @@
 import InlineComponent from './InlineComponent';
 
 export default class InlineRenderInlineChildren extends InlineComponent {
-  static componentType = "_inlinerenderinlinechildren";
+  static componentType = "_inlineRenderInlineChildren";
+  static renderChildren = true;
+  static includeBlankStringChildren = true;
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -16,32 +18,5 @@ export default class InlineRenderInlineChildren extends InlineComponent {
 
     return childLogic;
   }
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        inlineChildren: {
-          dependencyType: "child",
-          childLogicName: "AtLeastZeroInline",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.inlineChildren.map(x => x.componentName)
-          }
-        };
-      }
-    }
-
-    return stateVariableDefinitions;
-
-  }
-
-  static includeBlankStringChildren = true;
-
 
 }

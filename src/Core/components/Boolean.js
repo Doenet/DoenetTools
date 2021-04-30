@@ -1,8 +1,9 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { evaluateLogic, splitSymbolsIfMath } from '../utils/booleanLogic';
+import { appliedFunctionSymbols } from '../utils/math';
 
-var textToAstUnsplit = new me.converters.textToAstObj({ splitSymbols: false });
+var textToAstUnsplit = new me.converters.textToAstObj({ splitSymbols: false, appliedFunctionSymbols });
 
 export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";
@@ -30,7 +31,7 @@ export default class BooleanComponent extends InlineComponent {
 
     let atLeastZeroMathLists = childLogic.newLeaf({
       name: "atLeastZeroMathLists",
-      componentType: 'mathlist',
+      componentType: 'mathList',
       comparison: 'atLeast',
       number: 0
     });
@@ -42,9 +43,9 @@ export default class BooleanComponent extends InlineComponent {
       number: 0
     });
 
-    let atLeastZeroTextlists = childLogic.newLeaf({
-      name: "atLeastZeroTextlists",
-      componentType: 'textlist',
+    let atLeastZeroTextLists = childLogic.newLeaf({
+      name: "atLeastZeroTextLists",
+      componentType: 'textList',
       comparison: 'atLeast',
       number: 0
     });
@@ -56,9 +57,9 @@ export default class BooleanComponent extends InlineComponent {
       number: 0,
     });
 
-    let atLeastZeroBooleanlists = childLogic.newLeaf({
-      name: "atLeastZeroBooleanlists",
-      componentType: 'booleanlist',
+    let atLeastZeroBooleanLists = childLogic.newLeaf({
+      name: "atLeastZeroBooleanLists",
+      componentType: 'booleanList',
       comparison: 'atLeast',
       number: 0
     });
@@ -71,9 +72,9 @@ export default class BooleanComponent extends InlineComponent {
         atLeastZeroMaths,
         atLeastZeroMathLists,
         atLeastZeroTexts,
-        atLeastZeroTextlists,
+        atLeastZeroTextLists,
         atLeastZeroBooleans,
-        atLeastZeroBooleanlists,
+        atLeastZeroBooleanLists,
       ],
       setAsBase: true
     })
@@ -107,9 +108,9 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.mathChildrenByCode = {
       additionalStateVariablesDefined: [
-        "mathlistChildrenByCode",
-        "textChildrenByCode", "textlistChildrenByCode",
-        "booleanChildrenByCode", "booleanlistChildrenByCode",
+        "mathListChildrenByCode",
+        "textChildrenByCode", "textListChildrenByCode",
+        "booleanChildrenByCode", "booleanListChildrenByCode",
       ],
       returnDependencies: () => ({
         stringMathTextBooleanChildren: {
@@ -126,18 +127,18 @@ export default class BooleanComponent extends InlineComponent {
       definition({ dependencyValues, componentInfoObjects }) {
 
         let mathChildrenByCode = {};
-        let mathlistChildrenByCode = {};
+        let mathListChildrenByCode = {};
         let textChildrenByCode = {};
-        let textlistChildrenByCode = {};
+        let textListChildrenByCode = {};
         let booleanChildrenByCode = {};
-        let booleanlistChildrenByCode = {};
+        let booleanListChildrenByCode = {};
         let subnum = 0;
 
         let codePre = dependencyValues.codePre;
 
         for (let child of dependencyValues.stringMathTextBooleanChildren) {
           if (child.componentType !== "string") {
-            // a math, mathlist, text, textlist, boolean, or booleanlist
+            // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
 
             if (componentInfoObjects.isInheritedComponentType({
@@ -147,9 +148,9 @@ export default class BooleanComponent extends InlineComponent {
               mathChildrenByCode[code] = child;
             } else if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
-              baseComponentType: "mathlist"
+              baseComponentType: "mathList"
             })) {
-              mathlistChildrenByCode[code] = child;
+              mathListChildrenByCode[code] = child;
             } else if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
               baseComponentType: "text"
@@ -157,16 +158,16 @@ export default class BooleanComponent extends InlineComponent {
               textChildrenByCode[code] = child;
             } else if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
-              baseComponentType: "textlist"
+              baseComponentType: "textList"
             })) {
-              textlistChildrenByCode[code] = child;
+              textListChildrenByCode[code] = child;
             } else if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
               baseComponentType: "boolean"
             })) {
               booleanChildrenByCode[code] = child;
             } else {
-              booleanlistChildrenByCode[code] = child;
+              booleanListChildrenByCode[code] = child;
             }
             subnum += 1;
 
@@ -175,9 +176,9 @@ export default class BooleanComponent extends InlineComponent {
 
         return {
           newValues: {
-            mathChildrenByCode, mathlistChildrenByCode,
-            textChildrenByCode, textlistChildrenByCode,
-            booleanChildrenByCode, booleanlistChildrenByCode,
+            mathChildrenByCode, mathListChildrenByCode,
+            textChildrenByCode, textListChildrenByCode,
+            booleanChildrenByCode, booleanListChildrenByCode,
           }
         }
       }
@@ -211,25 +212,25 @@ export default class BooleanComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "booleanChildrenByCode",
         },
-        booleanlistChildrenByCode: {
+        booleanListChildrenByCode: {
           dependencyType: "stateVariable",
-          variableName: "booleanlistChildrenByCode",
+          variableName: "booleanListChildrenByCode",
         },
         textChildrenByCode: {
           dependencyType: "stateVariable",
           variableName: "textChildrenByCode",
         },
-        textlistChildrenByCode: {
+        textListChildrenByCode: {
           dependencyType: "stateVariable",
-          variableName: "textlistChildrenByCode",
+          variableName: "textListChildrenByCode",
         },
         mathChildrenByCode: {
           dependencyType: "stateVariable",
           variableName: "mathChildrenByCode",
         },
-        mathlistChildrenByCode: {
+        mathListChildrenByCode: {
           dependencyType: "stateVariable",
-          variableName: "mathlistChildrenByCode",
+          variableName: "mathListChildrenByCode",
         },
       }),
       definition({ dependencyValues }) {
@@ -377,7 +378,7 @@ function buildParsedExpression({ dependencyValues, componentInfoObjects }) {
       inputString += " " + dependencyValues.stringChildren[stringChildInd].stateValues.value + " ";
       stringChildInd++;
     }
-    else { // a math, mathlist, text, textlist, boolean, or booleanlist
+    else { // a math, mathList, text, textList, boolean, or booleanList
       let code = codePre + subnum;
 
       // make sure code is surrounded by spaces
@@ -392,7 +393,7 @@ function buildParsedExpression({ dependencyValues, componentInfoObjects }) {
         }) ||
         componentInfoObjects.isInheritedComponentType({
           inheritedComponentType: child.componentType,
-          baseComponentType: "mathlist"
+          baseComponentType: "mathList"
         })
       )) {
         nonMathCodes.push(code);

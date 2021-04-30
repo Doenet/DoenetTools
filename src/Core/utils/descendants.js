@@ -1,28 +1,37 @@
-export function gatherDescendants({ ancestor, descendantClasses,
+export function gatherDescendants({ ancestor, descendantTypes,
   recurseToMatchedChildren = true,
-  useReplacementsForComposites = false, compositeClass,
+  useReplacementsForComposites = false,
   includeNonActiveChildren = false,
-  includePropertyChildren = false,
+  // includePropertyChildren = false,
   skipOverAdapters = false,
   ignoreReplacementsOfMatchedComposites = false,
   definingChildrenFirst = false,
   namesToIgnore = [],
-  init = true
+  init = true,
+  componentInfoObjects,
 }) {
 
-  // console.log("descendantClasses")
-  // console.log(descendantClasses)
+
+  let matchChildToTypes = child =>
+    descendantTypes.some(ct => componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: child.componentType,
+      baseComponentType: ct
+    }));
+
 
   let childrenToCheck = [];
 
-  if (useReplacementsForComposites && ancestor instanceof compositeClass) {
+  if (useReplacementsForComposites && componentInfoObjects.isInheritedComponentType({
+    inheritedComponentType: ancestor.componentType,
+    baseComponentType: "_composite"
+  })) {
     if (init) {
       // if not init, parent will also be checked.
       // Since replacements will be children of parent,
       // don't need to gather them here
       childrenToCheck.push(...replacementsForComposites({
         composite: ancestor,
-        compositeClass,
+        componentInfoObjects,
         includeComposites: includeNonActiveChildren,
       }))
     }
@@ -32,20 +41,22 @@ export function gatherDescendants({ ancestor, descendantClasses,
     if (includeNonActiveChildren && definingChildrenFirst) {
       // add defining children in order
       for (let child of ancestor.definingChildren) {
-        if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
-          childrenToCheck.push(child);
-        }
+        childrenToCheck.push(child);
       }
     }
 
 
     // first add active children in order
     if (ancestor.activeChildren) {
-      for (let child of ancestor.activeChildren) {
-        if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
-          if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
-            childrenToCheck.push(child);
-          }
+      for (let [ind, child] of ancestor.activeChildren.entries()) {
+
+        // add a fake componentName to placeholders
+        if (!child.componentName) {
+          child.componentName = `__placeholder_${ind}`;
+        }
+
+        if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
+          childrenToCheck.push(child);
         }
       }
     }
@@ -54,10 +65,8 @@ export function gatherDescendants({ ancestor, descendantClasses,
       if (!definingChildrenFirst) {
         // add any non-active defining children in order
         for (let child of ancestor.definingChildren) {
-          if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
-            if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
-              childrenToCheck.push(child);
-            }
+          if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
+            childrenToCheck.push(child);
           }
         }
       }
@@ -67,12 +76,23 @@ export function gatherDescendants({ ancestor, descendantClasses,
         for (let childName in ancestor.allChildren) {
           let childObj = ancestor.allChildren[childName];
           if (childObj.definingChildrenIndex === undefined && childObj.activeChildrenIndex === undefined) {
-            let child = childObj.component;
-            if (includePropertyChildren || !child.doenetAttributes.isPropertyChild) {
-              childrenToCheck.push(child);
+            childrenToCheck.push(childObj.component);
+          }
+        }
+
+        // since placeholders that were adapted are not in allChildren,
+        // check for those separately
+        for (let [ind, child] of ancestor.activeChildren.entries()) {
+          let adapted = child.adaptedFrom
+          if (adapted && !adapted.componentName) {
+            // add fake componentName
+            adapted.componentName = `__placeholder_adapted_${ind}`;
+            if (!childrenToCheck.map(x => x.componentName).includes(adapted.componentName)) {
+              childrenToCheck.push(adapted);
             }
           }
         }
+
       }
     }
   }
@@ -80,12 +100,15 @@ export function gatherDescendants({ ancestor, descendantClasses,
   if (ignoreReplacementsOfMatchedComposites) {
     // first check if have matched any composites, so can ignore their replacements
     for (let child of childrenToCheck) {
-      let matchedChild = descendantClasses.some(x => child instanceof x);
-      if (matchedChild && child instanceof compositeClass) {
+      let matchedChild = matchChildToTypes(child);
+      if (matchedChild && componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: child.componentType,
+        baseComponentType: "_composite"
+      })) {
         namesToIgnore = [
           ...namesToIgnore,
           ...replacementsForComposites({
-            composite: child, compositeClass, includeComposites: true
+            composite: child, componentInfoObjects, includeComposites: true
           }).map(x => x.componentName)
         ]
       }
@@ -138,7 +161,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
   let replacementNamesOfMatchedComposites = [];
 
   for (let child of childrenToCheck) {
-    let matchedChild = descendantClasses.some(x => child instanceof x);
+    let matchedChild = matchChildToTypes(child);
     if (matchedChild) {
       descendants.push({
         componentName: child.componentName,
@@ -150,14 +173,14 @@ export function gatherDescendants({ ancestor, descendantClasses,
       // recurse
       let additionalDescendants = gatherDescendants({
         ancestor: child,
-        descendantClasses, recurseToMatchedChildren,
-        useReplacementsForComposites, compositeClass,
+        descendantTypes, recurseToMatchedChildren,
+        useReplacementsForComposites,
         includeNonActiveChildren,
-        includePropertyChildren,
         skipOverAdapters,
         ignoreReplacementsOfMatchedComposites,
         definingChildrenFirst,
         init: false,
+        componentInfoObjects,
       });
       descendants.push(...additionalDescendants);
     }
@@ -171,7 +194,7 @@ export function gatherDescendants({ ancestor, descendantClasses,
 }
 
 
-function replacementsForComposites({ composite, compositeClass, includeComposites = false }) {
+function replacementsForComposites({ composite, includeComposites = false, componentInfoObjects }) {
 
   let replacements = [];
 
@@ -185,11 +208,14 @@ function replacementsForComposites({ composite, compositeClass, includeComposite
     }
 
     for (let replacement of originalReplacements) {
-      if (replacement instanceof compositeClass) {
+      if (componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: replacement.componentType,
+        baseComponentType: "_composite"
+      })) {
         if (includeComposites) {
           replacements.push(replacement);
         }
-        replacements.push(...replacementsForComposites({ composite: replacement, compositeClass, includeComposites }))
+        replacements.push(...replacementsForComposites({ composite: replacement, componentInfoObjects, includeComposites }))
       } else {
         replacements.push(replacement)
       }

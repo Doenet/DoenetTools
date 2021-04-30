@@ -36,11 +36,11 @@ export default class Triangle extends Polygon {
         let [pointInd, dim] = arrayKey.split(",");
         let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-        let verticesChild = dependencyValuesByKey[arrayKey].verticesChild;
-        if (verticesChild.length === 1
-          && verticesChild[0].stateValues["pointX" + varEnding]
+        let verticesAttr = dependencyValuesByKey[arrayKey].vertices;
+        if (verticesAttr !== null
+          && verticesAttr.stateValues["pointX" + varEnding]
         ) {
-          vertices[arrayKey] = verticesChild[0].stateValues["pointX" + varEnding];
+          vertices[arrayKey] = verticesAttr.stateValues["pointX" + varEnding];
         } else {
 
           let defaultValue;
@@ -103,13 +103,12 @@ export default class Triangle extends Polygon {
         let [pointInd, dim] = arrayKey.split(",");
         let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-        if (dependencyValuesByKey[arrayKey].verticesChild.length === 1
-          && dependencyValuesByKey[arrayKey].verticesChild[0].stateValues["pointX" + varEnding]
+        if (dependencyValuesByKey[arrayKey].vertices !== null
+          && dependencyValuesByKey[arrayKey].vertices.stateValues["pointX" + varEnding]
         ) {
           instructions.push({
-            setDependency: dependencyNamesByKey[arrayKey].verticesChild,
+            setDependency: dependencyNamesByKey[arrayKey].vertices,
             desiredValue: desiredStateVariableValues.vertices[arrayKey],
-            childIndex: 0,
             variableIndex: 0,
           })
 
@@ -129,134 +128,134 @@ export default class Triangle extends Polygon {
       }
 
     }
-    stateVariableDefinitions.vertices.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues,
-      stateValues, initialChange, arrayKeys, workspace,
-    }) {
+    // stateVariableDefinitions.vertices.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues,
+    //   stateValues, initialChange, arrayKeys, workspace,
+    // }) {
 
-      // console.log(`inverseDefinition of vertices of triangle`);
-      // console.log(desiredStateVariableValues)
-      // console.log(JSON.parse(JSON.stringify(stateValues)))
-      // console.log(arrayKeys);
-      // console.log(dependencyValues);
+    //   // console.log(`inverseDefinition of vertices of triangle`);
+    //   // console.log(desiredStateVariableValues)
+    //   // console.log(JSON.parse(JSON.stringify(stateValues)))
+    //   // console.log(arrayKeys);
+    //   // console.log(dependencyValues);
 
-      // if not draggable, then disallow initial change 
-      if (initialChange && !stateValues.draggable) {
-        return { success: false };
-      }
+    //   // if not draggable, then disallow initial change 
+    //   if (initialChange && !stateValues.draggable) {
+    //     return { success: false };
+    //   }
 
-      let arrayKey;
-      if (arrayKeys) {
-        arrayKey = Number(arrayKeys[0]);
-      }
+    //   let arrayKey;
+    //   if (arrayKeys) {
+    //     arrayKey = Number(arrayKeys[0]);
+    //   }
 
-      if (!workspace.desiredVertices) {
-        workspace.desiredVertices = {};
-      }
+    //   if (!workspace.desiredVertices) {
+    //     workspace.desiredVertices = {};
+    //   }
 
-      if (arrayKey === undefined) {
-        // working with entire array
+    //   if (arrayKey === undefined) {
+    //     // working with entire array
 
-        let instructions = [];
+    //     let instructions = [];
 
-        let nVerticesSpecified = 0;
-        if (dependencyValues.verticesChild.length === 1) {
-          nVerticesSpecified = Math.min(3, dependencyValues.verticesChild[0].stateValues.nPoints);
+    //     let nVerticesSpecified = 0;
+    //     if (dependencyValues.verticesAttr.length === 1) {
+    //       nVerticesSpecified = Math.min(3, dependencyValues.verticesAttr[0].stateValues.nPoints);
 
-          let verticesForVerticesChild;
-          if (Array.isArray(desiredStateVariableValues)) {
-            verticesForVerticesChild = desiredStateVariableValues.vertices.slice(0, nVerticesSpecified)
-          } else {
-            verticesForVerticesChild = {};
-            for (let key in desiredStateVariableValues.vertices) {
-              if (Number(key) < nVerticesSpecified) {
-                verticesForVerticesChild[key] = desiredStateVariableValues.vertices[key]
-              }
-            }
-            if (Object.keys(verticesForVerticesChild).length === 0) {
-              verticesForVerticesChild = undefined;
-            }
-          }
+    //       let verticesForVerticesAttr;
+    //       if (Array.isArray(desiredStateVariableValues)) {
+    //         verticesForVerticesAttr = desiredStateVariableValues.vertices.slice(0, nVerticesSpecified)
+    //       } else {
+    //         verticesForVerticesAttr = {};
+    //         for (let key in desiredStateVariableValues.vertices) {
+    //           if (Number(key) < nVerticesSpecified) {
+    //             verticesForVerticesAttr[key] = desiredStateVariableValues.vertices[key]
+    //           }
+    //         }
+    //         if (Object.keys(verticesForVerticesAttr).length === 0) {
+    //           verticesForVerticesAttr = undefined;
+    //         }
+    //       }
 
-          if (verticesForVerticesChild) {
-            instructions.push({
-              setDependency: "verticesChild",
-              desiredValue: verticesForVerticesChild,
-              childIndex: 0,
-              variableIndex: 0
-            })
-          }
-        }
+    //       if (verticesForVerticesAttr) {
+    //         instructions.push({
+    //           setDependency: "verticesAttr",
+    //           desiredValue: verticesForVerticesAttr,
+    //           childIndex: 0,
+    //           variableIndex: 0
+    //         })
+    //       }
+    //     }
 
-        for (let ind = nVerticesSpecified; ind < 3; ind++) {
-          if (desiredStateVariableValues.vertices[ind] !== undefined) {
+    //     for (let ind = nVerticesSpecified; ind < 3; ind++) {
+    //       if (desiredStateVariableValues.vertices[ind] !== undefined) {
 
-            // Since we don't have a vertex child that will do the merge,
-            // we must manually merge here.
-            let desiredVertex = mergeVertex({
-              workspaceVertices: workspace.desiredVertices[ind],
-              currentVertexValue: stateValues.vertices[ind],
-              desiredVertex: desiredStateVariableValues.vertices[ind],
-            });
+    //         // Since we don't have a vertex child that will do the merge,
+    //         // we must manually merge here.
+    //         let desiredVertex = mergeVertex({
+    //           workspaceVertices: workspace.desiredVertices[ind],
+    //           currentVertexValue: stateValues.vertices[ind],
+    //           desiredVertex: desiredStateVariableValues.vertices[ind],
+    //         });
 
-            workspace.desiredVertices[ind] = desiredVertex.tree;
+    //         workspace.desiredVertices[ind] = desiredVertex.tree;
 
-            instructions.push({
-              setStateVariable: "vertices",
-              value: { [ind]: desiredVertex.simplify() },
-            })
-          }
-        }
+    //         instructions.push({
+    //           setStateVariable: "vertices",
+    //           value: { [ind]: desiredVertex.simplify() },
+    //         })
+    //       }
+    //     }
 
-        return {
-          success: true,
-          instructions
-        }
-      } else {
+    //     return {
+    //       success: true,
+    //       instructions
+    //     }
+    //   } else {
 
-        // just have one arrayKey
-        if (arrayKey > 2) {
-          return { success: false }
-        }
+    //     // just have one arrayKey
+    //     if (arrayKey > 2) {
+    //       return { success: false }
+    //     }
 
-        if (dependencyValues.verticesChild.length === 1) {
-          // so child variable of verticesChild is an array entry (rather than array)
-          let nVerticesSpecified = Math.min(3, dependencyValues.verticesChild[0].stateValues.nPoints);
-          if (arrayKey < nVerticesSpecified) {
-            return {
-              success: true,
-              instructions: [{
-                setDependency: "verticesChild",
-                desiredValue: desiredStateVariableValues.vertices[arrayKey],
-                childIndex: 0,
-                variableIndex: 0,
-              }]
-            }
+    //     if (dependencyValues.verticesAttr.length === 1) {
+    //       // so child variable of verticesAttr is an array entry (rather than array)
+    //       let nVerticesSpecified = Math.min(3, dependencyValues.verticesAttr[0].stateValues.nPoints);
+    //       if (arrayKey < nVerticesSpecified) {
+    //         return {
+    //           success: true,
+    //           instructions: [{
+    //             setDependency: "verticesAttr",
+    //             desiredValue: desiredStateVariableValues.vertices[arrayKey],
+    //             childIndex: 0,
+    //             variableIndex: 0,
+    //           }]
+    //         }
 
-          }
-        }
+    //       }
+    //     }
 
 
-        // Since we don't have a vertex child that will do the merge,
-        // we must manually merge here.
-        let desiredVertex = mergeVertex({
-          workspaceVertices: workspace.desiredVertices[arrayKey],
-          currentVertexValue: stateValues.vertices[arrayKey],
-          desiredVertex: desiredStateVariableValues.vertices[arrayKey],
-        });
+    //     // Since we don't have a vertex child that will do the merge,
+    //     // we must manually merge here.
+    //     let desiredVertex = mergeVertex({
+    //       workspaceVertices: workspace.desiredVertices[arrayKey],
+    //       currentVertexValue: stateValues.vertices[arrayKey],
+    //       desiredVertex: desiredStateVariableValues.vertices[arrayKey],
+    //     });
 
-        workspace.desiredVertices[arrayKey] = desiredVertex.tree;
+    //     workspace.desiredVertices[arrayKey] = desiredVertex.tree;
 
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "vertices",
-            value: { [arrayKey]: desiredVertex.simplify() },
-          }]
-        }
+    //     return {
+    //       success: true,
+    //       instructions: [{
+    //         setStateVariable: "vertices",
+    //         value: { [arrayKey]: desiredVertex.simplify() },
+    //       }]
+    //     }
 
-      }
+    //   }
 
-    }
+    // }
 
 
     stateVariableDefinitions.nVertices = {

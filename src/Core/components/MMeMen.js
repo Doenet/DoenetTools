@@ -1,5 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { latexToAst } from '../utils/math';
 
 export class M extends InlineComponent {
   static componentType = "m";
@@ -29,9 +30,9 @@ export class M extends InlineComponent {
       comparison: 'atLeast',
       number: 0,
     });
-    let atLeastZeroMathlists = childLogic.newLeaf({
-      name: "atLeastZeroMathlists",
-      componentType: 'mathlist',
+    let atLeastZeroMathLists = childLogic.newLeaf({
+      name: "atLeastZeroMathLists",
+      componentType: 'mathList',
       comparison: 'atLeast',
       number: 0,
     });
@@ -43,9 +44,9 @@ export class M extends InlineComponent {
       number: 0,
     });
 
-    let atLeastZeroMathinputs = childLogic.newLeaf({
-      name: "atLeastZeroMathinputs",
-      componentType: 'mathinput',
+    let atLeastZeroMathInputs = childLogic.newLeaf({
+      name: "atLeastZeroMathInputs",
+      componentType: 'mathInput',
       comparison: 'atLeast',
       number: 0,
     });
@@ -56,9 +57,9 @@ export class M extends InlineComponent {
         atLeastZeroStrings,
         atLeastZeroTexts,
         atLeastZeroMaths,
-        atLeastZeroMathlists,
+        atLeastZeroMathLists,
         atLeastZeroMs,
-        atLeastZeroMathinputs
+        atLeastZeroMathInputs
       ],
       requireConsecutive: true,
       setAsBase: true,
@@ -138,7 +139,7 @@ export class M extends InlineComponent {
         for (let child of dependencyValues.stringTextMathChildren) {
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
-            baseComponentType: "mathinput"
+            baseComponentType: "mathInput"
           })) {
             if (lastLatex.length > 0) {
               latexWithInputChildren.push(lastLatex);
@@ -182,7 +183,7 @@ export class M extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let expression;
         try {
-          expression = me.fromLatex(dependencyValues.latex);
+          expression = me.fromAst(latexToAst.convert(dependencyValues.latex));
         } catch (e) {
           // just return latex if can't parse with math-expressions
           return { newValues: { text: dependencyValues.latex } };
@@ -192,21 +193,6 @@ export class M extends InlineComponent {
     }
 
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        mathinputChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroMathinputs"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.mathinputChildren.map(x => x.componentName)
-          }
-        };
-      }
-    }
 
 
     return stateVariableDefinitions;
@@ -239,6 +225,24 @@ export class Men extends M {
     stateVariableDefinitions.renderMode.definition = () => ({
       newValues: { renderMode: "numbered" }
     });
+
+    stateVariableDefinitions.equationTag = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        equationCounter: {
+          dependencyType: "counter",
+          counterName: "equation"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: { equationTag: String(dependencyValues.equationCounter) }
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 }

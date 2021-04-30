@@ -11,13 +11,50 @@ export default class Angle extends GraphicalComponent {
     ]
   };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.draggable = { default: true, forRenderer: true };
-    properties.radius = { default: me.fromAst(1) };
-    properties.renderAsAcuteAngle = { default: false, forRenderer: true, };
-    properties.inDegrees = { default: false, forRenderer: true };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.radius = {
+      createComponentOfType: "math",
+      createStateVariable: "radius",
+      defaultValue: me.fromAst(1),
+      public: true,
+    };
+    attributes.renderAsAcuteAngle = {
+      createComponentOfType: "boolean",
+      createStateVariable: "renderAsAcuteAngle",
+      defaultValue: false,
+      public: true,
+      forRenderer: true
+    };
+    attributes.inDegrees = {
+      createComponentOfType: "boolean",
+      createStateVariable: "inDegrees",
+      defaultValue: false,
+      public: true,
+      forRenderer: true
+    };
+
+    attributes.radians = {
+      createComponentOfType: "math",
+    };
+    attributes.degrees = {
+      createComponentOfType: "math",
+    };
+    attributes.through = {
+      createComponentOfType: "_pointListComponent",
+    };
+    attributes.betweenLines = {
+      createComponentOfType: "_lineListComponent",
+    };
+
+    return attributes;
   }
 
 
@@ -28,11 +65,12 @@ export default class Angle extends GraphicalComponent {
       childrenRegex: "s",
       replacementFunction: ({ matchedChildren }) => ({
         success: true,
-        newChildren: [{
-          componentType: "radians",
-          children: matchedChildren,
-          doenetAttributes: { isPropertyChild: true }
-        }],
+        newAttributes: {
+          radians: {
+            componentType: "math",
+            children: matchedChildren
+          }
+        },
       })
     });
 
@@ -41,50 +79,6 @@ export default class Angle extends GraphicalComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-
-    let atMostOneRadians = childLogic.newLeaf({
-      name: "atMostOneRadians",
-      componentType: 'radians',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let exactlyOneDegrees = childLogic.newLeaf({
-      name: "exactlyOneDegrees",
-      componentType: 'degrees',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let exactlyOneThrough = childLogic.newLeaf({
-      name: "exactlyOneThrough",
-      componentType: 'through',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let exactlyOneBetweenLines = childLogic.newLeaf({
-      name: "exactlyOneBetweenLines",
-      componentType: 'betweenLines',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "throughLogic",
-      operator: 'xor',
-      propositions: [exactlyOneThrough, exactlyOneBetweenLines, exactlyOneDegrees,
-        atMostOneRadians],
-      setAsBase: true
-    });
-
-    return childLogic;
-  }
 
   static returnStateVariableDefinitions() {
 
@@ -92,17 +86,17 @@ export default class Angle extends GraphicalComponent {
 
     stateVariableDefinitions.lineNames = {
       returnDependencies: () => ({
-        betweenLinesChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneBetweenLines",
-          variableNames: ["lineNames"]
-        }
+        betweenLines: {
+          dependencyType: "attributeComponent",
+          attributeName: "betweenLines",
+          variableNames: ["lineNames"],
+        },
       }),
       definition({ dependencyValues }) {
         let lineNames = [];
 
-        if (dependencyValues.betweenLinesChild.length === 1) {
-          lineNames = dependencyValues.betweenLinesChild[0].stateValues.lineNames;
+        if (dependencyValues.betweenLines !== null) {
+          lineNames = dependencyValues.betweenLines.stateValues.lineNames;
         }
         return { newValues: { lineNames } }
       }
@@ -110,16 +104,16 @@ export default class Angle extends GraphicalComponent {
 
     stateVariableDefinitions.betweenLinesName = {
       returnDependencies: () => ({
-        betweenLinesChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneBetweenLines",
-        }
+        betweenLines: {
+          dependencyType: "attributeComponent",
+          attributeName: "betweenLines",
+        },
       }),
       definition({ dependencyValues }) {
         let betweenLinesName = null;
 
-        if (dependencyValues.betweenLinesChild.length === 1) {
-          betweenLinesName = dependencyValues.betweenLinesChild[0].componentName
+        if (dependencyValues.betweenLines !== null) {
+          betweenLinesName = dependencyValues.betweenLines.componentName
         }
         return { newValues: { betweenLinesName } }
       }
@@ -127,17 +121,17 @@ export default class Angle extends GraphicalComponent {
 
     stateVariableDefinitions.nPointsSpecified = {
       returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneThrough",
-          variableNames: ["nPoints"]
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
+          variableNames: ["nPoints"],
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.throughChild.length === 1) {
+        if (dependencyValues.through !== null) {
           return {
             newValues: {
-              nPointsSpecified: dependencyValues.throughChild[0].stateValues.nPoints
+              nPointsSpecified: dependencyValues.through.stateValues.nPoints
             }
           }
 
@@ -154,18 +148,20 @@ export default class Angle extends GraphicalComponent {
       entryPrefixes: ["pointX", "point"],
       stateVariablesDeterminingDependencies: ["nPointsSpecified", "betweenLinesName"],
       returnArraySizeDependencies: () => ({
-        radiansChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneRadians"
+        radians: {
+          dependencyType: "attributeComponent",
+          attributeName: "radians",
+          variableNames: ["value"],
         },
-        degreesChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneDegrees"
+        degrees: {
+          dependencyType: "attributeComponent",
+          attributeName: "degrees",
+          variableNames: ["value"],
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (dependencyValues.radiansChild.length === 1 ||
-          dependencyValues.degreesChild.length === 1
+        if (dependencyValues.radians !== null ||
+          dependencyValues.degrees !== null
         ) {
           return [0, 0]
         } else {
@@ -246,10 +242,10 @@ export default class Angle extends GraphicalComponent {
             let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
             dependenciesByKey[arrayKey] = {
-              throughChild: {
-                dependencyType: "child",
-                childLogicName: "exactlyOneThrough",
-                variableNames: ["pointX" + varEnding]
+              through: {
+                dependencyType: "attributeComponent",
+                attributeName: "through",
+                variableNames: ["pointX" + varEnding],
               },
             }
           } else if (pointInd === "2" && stateValues.nPointsSpecified === 2) {
@@ -259,10 +255,10 @@ export default class Angle extends GraphicalComponent {
             let varEnding = "2_" + (Number(dim) + 1)
 
             dependenciesByKey[arrayKey] = {
-              throughChild: {
-                dependencyType: "child",
-                childLogicName: "exactlyOneThrough",
-                variableNames: ["pointX" + varEnding]
+              through: {
+                dependencyType: "attributeComponent",
+                attributeName: "through",
+                variableNames: ["pointX" + varEnding],
               },
             }
 
@@ -341,8 +337,8 @@ export default class Angle extends GraphicalComponent {
 
             let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
             let specifiedPointComponent;
-            if (dependencyValuesByKey[arrayKey].throughChild.length === 1) {
-              specifiedPointComponent = dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding];
+            if (dependencyValuesByKey[arrayKey].through !== null) {
+              specifiedPointComponent = dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding];
             }
             if (specifiedPointComponent === undefined) {
               if ((pointInd === "0" && dim === "1") || (pointInd === "2" && dim === "0")) {
@@ -360,8 +356,8 @@ export default class Angle extends GraphicalComponent {
 
             let varEnding = "2_" + (Number(dim) + 1)
             let specifiedPointComponent;
-            if (dependencyValuesByKey[arrayKey].throughChild.length === 1) {
-              specifiedPointComponent = dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding];
+            if (dependencyValuesByKey[arrayKey].through !== null) {
+              specifiedPointComponent = dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding];
             }
             if (specifiedPointComponent === undefined) {
               if (dim === "0") {
@@ -401,15 +397,15 @@ export default class Angle extends GraphicalComponent {
       componentType: "math",
       forRenderer: true,
       returnDependencies: () => ({
-        radiansChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneRadians",
-          variableNames: ["value"]
+        radians: {
+          dependencyType: "attributeComponent",
+          attributeName: "radians",
+          variableNames: ["value"],
         },
-        degreesChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneDegrees",
-          variableNames: ["value"]
+        degrees: {
+          dependencyType: "attributeComponent",
+          attributeName: "degrees",
+          variableNames: ["value"],
         },
         points: {
           dependencyType: "stateVariable",
@@ -419,16 +415,16 @@ export default class Angle extends GraphicalComponent {
       }),
       definition({ dependencyValues }) {
 
-        if (dependencyValues.radiansChild.length === 1) {
+        if (dependencyValues.radians !== null) {
           return {
             newValues: {
-              radians: dependencyValues.radiansChild[0].stateValues.value.simplify()
+              radians: dependencyValues.radians.stateValues.value.simplify()
             }
           }
-        } else if (dependencyValues.degreesChild.length === 1) {
+        } else if (dependencyValues.degrees !== null) {
           return {
             newValues: {
-              radians: dependencyValues.degreesChild[0].stateValues.value.multiply(me.fromAst(["/", 'pi', 180])).simplify()
+              radians: dependencyValues.degrees.stateValues.value.multiply(me.fromAst(["/", 'pi', 180])).simplify()
             }
           }
         }
@@ -501,18 +497,20 @@ export default class Angle extends GraphicalComponent {
       entryPrefixes: ["numericalPoint"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
-        radiansChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneRadians"
+        radians: {
+          dependencyType: "attributeComponent",
+          attributeName: "radians",
+          variableNames: ["value"],
         },
-        degreesChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneDegrees"
+        degrees: {
+          dependencyType: "attributeComponent",
+          attributeName: "degrees",
+          variableNames: ["value"],
         },
       }),
       returnArraySize({ dependencyValues }) {
-        if (dependencyValues.radiansChild.length === 1 ||
-          dependencyValues.degreesChild.length === 1
+        if (dependencyValues.radians !== null ||
+          dependencyValues.degrees !== null
         ) {
           return [0]
         } else {
@@ -577,7 +575,7 @@ export default class Angle extends GraphicalComponent {
   }
 
 
-  adapters = ["radians"];
+  static adapters = ["radians"];
 
 }
 

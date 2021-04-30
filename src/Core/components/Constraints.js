@@ -6,12 +6,6 @@ export default class Constraints extends BaseComponent {
   static componentType = "constraints";
   static rendererType = undefined;
 
-  // remove default properties from base component
-  static createPropertiesObject() {
-    return {};
-  }
-
-
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 

@@ -23,39 +23,30 @@ export default class Circle extends Curve {
     ]
   };
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.through = {
+      createComponentOfType: "_pointListComponent",
+    };
+    attributes.center = {
+      createComponentOfType: "point",
+    };
+    attributes.radius = {
+      createComponentOfType: "math",
+    };
+
+    delete attributes.parMin;
+    delete attributes.parMax;
+    delete attributes.variable;
+
+    return attributes;
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
-
-    let exactlyOneThrough = childLogic.newLeaf({
-      name: "exactlyOneThrough",
-      componentType: 'through',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let atMostOneCenter = childLogic.newLeaf({
-      name: "atMostOneCenter",
-      componentType: 'center',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let exactlyOneRadius = childLogic.newLeaf({
-      name: "exactlyOneRadius",
-      componentType: 'radius',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "radiusCenterOrThrough",
-      operator: 'or',
-      propositions: [exactlyOneRadius, exactlyOneThrough, atMostOneCenter],
-      setAsBase: true,
-    });
 
     return childLogic;
   }
@@ -77,20 +68,20 @@ export default class Circle extends Curve {
     }
 
 
-    stateVariableDefinitions.parmax = {
+    stateVariableDefinitions.parMax = {
       public: true,
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parmax: NaN } })
+      definition: () => ({ newValues: { parMax: NaN } })
     }
 
-    stateVariableDefinitions.parmin = {
+    stateVariableDefinitions.parMin = {
       public: true,
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parmin: NaN } })
+      definition: () => ({ newValues: { parMin: NaN } })
     }
 
 
@@ -107,17 +98,17 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneThrough",
+        throughAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
           variableNames: ["nPoints"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.throughChild.length === 1) {
+        if (dependencyValues.throughAttr !== null) {
           return {
             newValues: {
-              nThroughPoints: dependencyValues.throughChild[0].stateValues.nPoints
+              nThroughPoints: dependencyValues.throughAttr.stateValues.nPoints
             }
           }
         } else {
@@ -139,7 +130,7 @@ export default class Circle extends Curve {
           // point or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -195,9 +186,9 @@ export default class Circle extends Curve {
 
 
           dependenciesByKey[arrayKey] = {
-            throughChild: {
-              dependencyType: "child",
-              childLogicName: "exactlyOneThrough",
+            throughAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "through",
               variableNames: ["pointX" + varEnding]
             }
           }
@@ -217,11 +208,11 @@ export default class Circle extends Curve {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          let throughChild = dependencyValuesByKey[arrayKey].throughChild;
-          if (throughChild.length === 1
-            && throughChild[0].stateValues["pointX" + varEnding]
+          let throughAttr = dependencyValuesByKey[arrayKey].throughAttr;
+          if (throughAttr !== null
+            && throughAttr.stateValues["pointX" + varEnding]
           ) {
-            throughPoints[arrayKey] = throughChild[0].stateValues["pointX" + varEnding];
+            throughPoints[arrayKey] = throughAttr.stateValues["pointX" + varEnding];
           } else {
             throughPoints[arrayKey] = me.fromAst('\uff3f');
           }
@@ -251,13 +242,12 @@ export default class Circle extends Curve {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          if (dependencyValuesByKey[arrayKey].throughChild.length === 1
-            && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]
+          if (dependencyValuesByKey[arrayKey].throughAttr !== null
+            && dependencyValuesByKey[arrayKey].throughAttr.stateValues["pointX" + varEnding]
           ) {
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].throughChild,
+              setDependency: dependencyNamesByKey[arrayKey].throughAttr,
               desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
-              childIndex: 0,
               variableIndex: 0,
             })
 
@@ -320,9 +310,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.havePrescribedCenter = {
       returnDependencies: () => ({
-        centerChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneCenter"
+        centerAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "center"
         },
         centerShadow: {
           dependencyType: "stateVariable",
@@ -331,7 +321,7 @@ export default class Circle extends Curve {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          havePrescribedCenter: dependencyValues.centerChild.length === 1
+          havePrescribedCenter: dependencyValues.centerAttr !== null
             || dependencyValues.centerShadow !== null
         },
         checkForActualChange: { havePrescribedCenter: true }
@@ -364,9 +354,9 @@ export default class Circle extends Curve {
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
-            centerChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneCenter",
+            centerAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "center",
               variableNames: ["x" + varEnding],
             },
           }
@@ -382,8 +372,8 @@ export default class Circle extends Curve {
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
 
-          if (dependencyValuesByKey[arrayKey].centerChild.length === 1) {
-            prescribedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerChild[0].stateValues["x" + varEnding];
+          if (dependencyValuesByKey[arrayKey].centerAttr !== null) {
+            prescribedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerAttr.stateValues["x" + varEnding];
           } else if (globalDependencyValues.centerShadow !== null) {
             prescribedCenter[arrayKey] = globalDependencyValues.centerShadow.get_component(Number(arrayKey));
           }
@@ -407,14 +397,11 @@ export default class Circle extends Curve {
         // so that the x-coordinates is processed last and takes precedence
         for (let arrayKey of Object.keys(desiredStateVariableValues.prescribedCenter).reverse()) {
 
-          if (dependencyValuesByKey[arrayKey].centerChild &&
-            dependencyValuesByKey[arrayKey].centerChild.length === 1
-          ) {
+          if (dependencyValuesByKey[arrayKey].centerAttr !== null) {
 
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].centerChild,
+              setDependency: dependencyNamesByKey[arrayKey].centerAttr,
               desiredValue: desiredStateVariableValues.prescribedCenter[arrayKey],
-              childIndex: 0,
               variableIndex: 0,
             })
           } else if (globalDependencyValues.centerShadow !== null) {
@@ -453,9 +440,9 @@ export default class Circle extends Curve {
     stateVariableDefinitions.prescribedRadius = {
       defaultValue: null,
       returnDependencies: () => ({
-        radiusChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneRadius",
+        radiusAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "radius",
           variableNames: ["value"],
         },
         radiusShadow: {
@@ -464,10 +451,10 @@ export default class Circle extends Curve {
         },
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.radiusChild.length === 1) {
+        if (dependencyValues.radiusAttr !== null) {
           return {
             newValues: {
-              prescribedRadius: dependencyValues.radiusChild[0].stateValues.value
+              prescribedRadius: dependencyValues.radiusAttr.stateValues.value
             }
           }
         } else {
@@ -479,11 +466,11 @@ export default class Circle extends Curve {
         }
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
-        if (dependencyValues.radiusChild.length === 1) {
+        if (dependencyValues.radiusAttr !== null) {
           return {
             success: true,
             instructions: [{
-              setDependency: "radiusChild",
+              setDependency: "radiusAttr",
               desiredValue: desiredStateVariableValues.prescribedRadius,
               childIndex: 0,
               variableIndex: 0
@@ -504,9 +491,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.havePrescribedRadius = {
       returnDependencies: () => ({
-        radiusChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneRadius"
+        radiusAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "radius"
         },
         radiusShadow: {
           dependencyType: "stateVariable",
@@ -515,7 +502,7 @@ export default class Circle extends Curve {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          havePrescribedRadius: dependencyValues.radiusChild.length === 1
+          havePrescribedRadius: dependencyValues.radiusAttr !== null
             || dependencyValues.radiusShadow !== null
         },
         checkForActualChange: { havePrescribedRadius: true }
@@ -1313,10 +1300,10 @@ export default class Circle extends Curve {
             }
 
 
-            let centerx = 0.5 * (dist2 * (x1 + x2) + (y2 - y1) * Math.sqrt((4 * r2 - dist2) * dist2))
+            let centerx = 0.5 * (dist2 * (x1 + x2) + (y1 - y2) * Math.sqrt((4 * r2 - dist2) * dist2))
               / dist2
 
-            let centery = 0.5 * (dist2 * (y1 + y2) + (x1 - x2) * Math.sqrt((4 * r2 - dist2) * dist2))
+            let centery = 0.5 * (dist2 * (y1 + y2) + (x2 - x1) * Math.sqrt((4 * r2 - dist2) * dist2))
               / dist2;
 
             return { newValues: { numericalCenter: [centerx, centery] } }
@@ -1736,7 +1723,7 @@ export default class Circle extends Curve {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       stateVariablesDeterminingDependencies: [
@@ -2040,11 +2027,6 @@ export default class Circle extends Curve {
         }
 
       }
-    }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { childrenToRender: [] } })
     }
 
     stateVariableDefinitions.nearestPoint = {

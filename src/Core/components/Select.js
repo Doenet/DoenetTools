@@ -4,11 +4,12 @@ import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import me from 'math-expressions';
+import { textToAst } from '../utils/math';
 
 export default class Select extends CompositeComponent {
   static componentType = "select";
 
-  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createPropertiesObject({})).map(x => x.toLowerCase());
+  // static assignNewNamespaceToAllChildrenExcept = Object.keys(this.createAttributesObject({})).map(x => x.toLowerCase());
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
@@ -17,24 +18,35 @@ export default class Select extends CompositeComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
 
-  static acceptType = true;
-
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.numberToSelect = { default: 1 };
-    properties.withReplacement = { default: false };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.numberToSelect = {
+      createComponentOfType: "number",
+      createStateVariable: "numberToSelect",
+      defaultValue: 1,
+      public: true,
+    }
+    attributes.withReplacement = {
+      createComponentOfType: "boolean",
+      createStateVariable: "withReplacement",
+      defaultValue: false,
+      public: true,
+    }
+    attributes.type = {
+      createPrimitiveOfType: "string"
+    }
+    return attributes;
   }
 
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    function breakStringsIntoOptionsBySpaces({ matchedChildren, componentProps }) {
+    function breakStringsIntoOptionsBySpaces({ matchedChildren, componentAttributes }) {
 
       let type;
-      if (componentProps.type) {
-        type = componentProps.type
+      if (componentAttributes.type) {
+        type = componentAttributes.type
       } else {
         type = "math";
       }
@@ -52,7 +64,7 @@ export default class Select extends CompositeComponent {
             ...a,
             ...c.state.value.split(/\s+/)
               .filter(s => s)
-              .map(s => type === "math" ? me.fromText(s) : (type === "number" ? Number(s) : s))
+              .map(s => type === "math" ? me.fromAst(textToAst.convert(s)) : (type === "number" ? Number(s) : s))
               .map(s => ({
                 componentType: "option",
                 children: [{
@@ -172,6 +184,7 @@ export default class Select extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
+        console.log(dependencyValues)
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
@@ -269,7 +282,7 @@ export default class Select extends CompositeComponent {
         // }
 
 
-        if (dependencyValues.numberToSelect < 1 || dependencyValues.nOptions === 0) {
+        if (!(dependencyValues.numberToSelect >= 1) || dependencyValues.nOptions === 0) {
           return {
             makeEssential: ["selectedIndices"],
             newValues: {
@@ -278,11 +291,6 @@ export default class Select extends CompositeComponent {
             makeImmutable: ["selectedIndices"]
           }
         }
-
-        if (Number.isNaN(dependencyValues.numberToSelect)) {
-          return { newValues: { selectedIndices: null } }
-        }
-
 
         // if desiredIndices is specfied, use those
         if (dependencyValues.variants && dependencyValues.variants.desiredVariant !== undefined) {
@@ -448,19 +456,16 @@ export default class Select extends CompositeComponent {
     }
 
 
-    stateVariableDefinitions.readyToExpand = {
+    stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({
         selectedIndices: {
           dependencyType: "stateVariable",
           variableName: "selectedIndices"
         }
       }),
-      definition: function ({ dependencyValues }) {
-
-        let readyToExpand = dependencyValues.selectedIndices !== null;
-
+      definition () {
         return {
-          newValues: { readyToExpand }
+          newValues: { readyToExpandWhenResolved: true }
         }
       }
     }
@@ -471,7 +476,7 @@ export default class Select extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, componentInfoObjects }) {
 
-    // console.log(`create serialized replacements for ${component.componentName}`);
+    console.log(`create serialized replacements for ${component.componentName}`);
 
     let replacements = [];
 
@@ -494,31 +499,12 @@ export default class Select extends CompositeComponent {
         originalName: selectedChildName,
       }
 
-      if (selectedChild.variants) {
-        serializedChild.variants = deepClone(selectedChild.variants);
+      if (selectedChild.attributes.newNamespace) {
+        serializedChild.attributes = { newNamespace: true }
       }
 
-
-      if (component.stateValues.hide) {
-        // if select is hidden, then make each of its replacements hidden
-        if (!serializedChild.state) {
-          serializedChild.state = {};
-        }
-
-        serializedChild.state.hide = true;
-
-        // // if assigning names to grandchild, then hide those as well
-        // // so that refs of those will be hidden, for consistency
-        // if (Array.isArray(name)) {
-        //   if (serializedChild.children) {
-        //     for (let grandchild of serializedChild.children) {
-        //       if (!grandchild.state) {
-        //         grandchild.state = {};
-        //       }
-        //       grandchild.state.hide = true;
-        //     }
-        //   }
-        // }
+      if (selectedChild.variants) {
+        serializedChild.variants = deepClone(selectedChild.variants);
       }
 
       replacements.push(serializedChild);
@@ -558,7 +544,7 @@ export default class Select extends CompositeComponent {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.doenetAttributes.newNamespace,
+      parentCreatesNewNamespace: component.attributes.newNamespace,
       componentInfoObjects,
     });
 
@@ -650,7 +636,7 @@ export default class Select extends CompositeComponent {
         }
 
       } else if (componentType === "selectWeight") {
-        // uniquevariants disabled if have a child with selectWeight specified
+        // uniqueVariants disabled if have a child with selectWeight specified
         return { succes: false }
       } else if (componentType !== "hide" && componentType !== "modifyIndirectly") {
         if (componentType === "string") {

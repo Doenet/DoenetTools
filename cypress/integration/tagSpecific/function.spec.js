@@ -1570,11 +1570,10 @@ describe('Function Tag Tests', function () {
         let minimumLocation2Anchor = cesc('#' + components["/minimumlocation2"].replacements[0].componentName);
         let minimumValue2Anchor = cesc('#' + components["/minimumvalue2"].replacements[0].componentName);
 
-        let extremumLocation3AnchorOld = extremumLocation3Anchor;
-        let extremumLocation3Anchor = cesc('#' + components["/extremumlocation3"].replacements[0].componentName);
-        let extremumValue3AnchorOld = extremumValue3Anchor;
-        let extremumValue3Anchor = cesc('#' + components["/extremumvalue3"].replacements[0].componentName);
-
+        // let extremumLocation3AnchorOld = extremumLocation3Anchor;
+        // let extremumLocation3AnchorNew = cesc('#' + components["/extremumlocation3"].replacements[0].componentName);
+        // let extremumValue3AnchorOld = extremumValue3Anchor;
+        // let extremumValue3AnchorNew = cesc('#' + components["/extremumvalue3"].replacements[0].componentName);
 
         cy.get(numberMaximaAnchor).should('have.text', '1');
         cy.get(maximumLocation1Anchor).invoke('text').then((text) => {
@@ -1609,7 +1608,7 @@ describe('Function Tag Tests', function () {
         cy.get(extremumLocation2Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(1.5, 0.01);
         });
-        cy.get(extremumLocation3AnchorOld).should('not.exist')
+        // cy.get(extremumLocation3AnchorOld).should('not.exist')
         cy.get(extremumLocation3Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(3, 0.01);
         });
@@ -1619,7 +1618,7 @@ describe('Function Tag Tests', function () {
         cy.get(extremumValue2Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-.21, 0.01);
         });
-        cy.get(extremumValue3AnchorOld).should('not.exist')
+        // cy.get(extremumValue3AnchorOld).should('not.exist')
         cy.get(extremumValue3Anchor).invoke('text').then((text) => {
           expect(Number(text.replace(/−/, '-'))).closeTo(-1, 0.01);
         });

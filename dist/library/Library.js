@@ -724,12 +724,13 @@ export default function Library(props) {
   }, []);
   const history = useHistory();
   const profile = useContext(ProfileContext);
+  console.log(">>>profile", profile);
   if (profile.signedIn === "0") {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
       title: "Library"
     }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
       style: {margin: "10px"}
-    }, /* @__PURE__ */ React.createElement("h1", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Library currently requirers sign in for use"), /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("a", {
+    }, /* @__PURE__ */ React.createElement("h1", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Library currently requires sign in for use"), /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("a", {
       href: "/signin"
     }, "Sign in with this link"))))));
   }

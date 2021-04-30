@@ -2,15 +2,26 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class Ref extends InlineComponent {
   static componentType = "ref";
+  static renderChildren = true;
 
   static acceptTname = true;
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.texttype = { default: "type-global" };
-    properties.uri = { default: null, forRenderer: true }
-    // properties.type = { default: null, forRenderer: true }
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.textType = {
+      createComponentOfType: "text",
+      createStateVariable: "textType",
+      defaultValue: "type-global",
+      public: true,
+    };
+    attributes.uri = {
+      createComponentOfType: "_textFromSingleStringChild",
+      createStateVariable: "uri",
+      defaultValue: null,
+      public: true,
+      forRenderer: true
+    };
+    return attributes;
   }
 
 
@@ -48,7 +59,7 @@ export default class Ref extends InlineComponent {
         }
       },
     };
-    
+
 
     stateVariableDefinitions.targetInactive = {
       stateVariablesDeterminingDependencies: ["targetComponent"],
@@ -85,10 +96,14 @@ export default class Ref extends InlineComponent {
         uri: {
           dependencyType: "stateVariable",
           variableName: "uri"
+        },
+        targetInactive: {
+          dependencyType: "stateVariable",
+          variableName: "targetInactive"
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.targetComponent === null) {
+        if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
           return { newValues: { targetName: "" } }
         } else {
           if (dependencyValues.uri !== null) {
@@ -130,23 +145,54 @@ export default class Ref extends InlineComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
-      returnDependencies: () => ({
-        inlineChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroAnything",
-          variableNames: ["text"],
-          variablesOptional: true
-        },
-        uri: {
-          dependencyType: "stateVariable",
-          variableName: "uri"
+      stateVariablesDeterminingDependencies: ["targetName"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          inlineChildren: {
+            dependencyType: "child",
+            childLogicName: "atLeastZeroAnything",
+            variableNames: ["text"],
+            variablesOptional: true
+          },
+          uri: {
+            dependencyType: "stateVariable",
+            variableName: "uri"
+          },
+          targetInactive: {
+            dependencyType: "stateVariable",
+            variableName: "targetInactive"
+          }
+        };
+
+        if (stateValues.targetName) {
+          dependencies.equationTag = {
+            dependencyType: "stateVariable",
+            componentName: stateValues.targetName,
+            variableName: "equationTag",
+            variablesOptional: true,
+          }
+          dependencies.title = {
+            dependencyType: "stateVariable",
+            componentName: stateValues.targetName,
+            variableName: "title",
+            variablesOptional: true,
+          }
         }
-      }),
+
+
+        return dependencies;
+      },
       definition: function ({ dependencyValues }) {
         let linkText = "";
         if (dependencyValues.inlineChildren.length === 0) {
           if (dependencyValues.uri !== null) {
             linkText = dependencyValues.uri;
+          } else if (!dependencyValues.targetInactive) {
+            if (dependencyValues.title !== null) {
+              linkText = dependencyValues.title;
+            } else if (dependencyValues.equationTag !== null) {
+              linkText = '(' + dependencyValues.equationTag + ')';
+            }
           }
         } else {
           for (let child of dependencyValues.inlineChildren) {
@@ -155,23 +201,11 @@ export default class Ref extends InlineComponent {
             }
           }
         }
-        return { newValues: { linkText } }
-      }
-    }
 
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        inlineChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroAnything"
+        if (!linkText) {
+          linkText = "???";
         }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.inlineChildren.map(x => x.componentName) }
-        };
+        return { newValues: { linkText } }
       }
     }
 

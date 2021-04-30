@@ -5,6 +5,8 @@ import me from 'math-expressions';
 export default class Intersection extends CompositeComponent {
   static componentType = "intersection";
 
+  static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -44,7 +46,7 @@ export default class Intersection extends CompositeComponent {
       })
     }
 
-    stateVariableDefinitions.readyToExpand = {
+    stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({
         lineChildren: {
           dependencyType: "stateVariable",
@@ -53,7 +55,7 @@ export default class Intersection extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpand: true } };
+        return { newValues: { readyToExpandWhenResolved: true } };
       },
     }
 
@@ -62,10 +64,6 @@ export default class Intersection extends CompositeComponent {
 
 
   static createSerializedReplacements({ component, components }) {
-
-    // evaluate readyToExpand so that it is marked fresh,
-    // as it being marked stale triggers replacement update
-    component.stateValues.readyToExpand;
 
     let numberLineChildren = component.stateValues.lineChildren.length;
 
@@ -128,6 +126,7 @@ export default class Intersection extends CompositeComponent {
         return { replacements: [] };
       } else {
 
+        // two identical lines, return first line
         let childName = component.stateValues.lineChildren[0].componentName;
         let serializedChild = components[childName].serialize({ forCopy: true });
         if (!serializedChild.state) {
@@ -150,21 +149,12 @@ export default class Intersection extends CompositeComponent {
       replacements: [{
         componentType: "point",
         state: { coords, draggable: false, fixed: true },
-        downstreamDependencies: {
-          [component.componentName]: [{
-            dependencyType: "nonShadowingReplacement",
-          }]
-        },
       }]
     };
 
   }
 
   static calculateReplacementChanges({ component, components }) {
-
-    // evaluate readyToExpand so that it is marked fresh,
-    // as it being marked stale triggers replacement update
-    component.stateValues.readyToExpand;
 
     let replacementChanges = [];
 

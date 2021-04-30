@@ -10,33 +10,23 @@ export default class Parabola extends Curve {
     "nThroughPoints", "throughPoints",
   ] };
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.through = {
+      createComponentOfType: "_pointListComponent",
+    };
+
+    delete attributes.parMin;
+    delete attributes.parMax;
+    delete attributes.variable;
+
+    return attributes
+  }
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
-
-    let atMostOneThrough = childLogic.newLeaf({
-      name: "atMostOneThrough",
-      componentType: 'through',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let atMostOneVariables = childLogic.newLeaf({
-      name: "atMostOneVariables",
-      componentType: 'variables',
-      comparison: 'atMost',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    childLogic.newOperator({
-      name: "parabolaLogic",
-      operator: 'and',
-      propositions: [atMostOneThrough, atMostOneVariables],
-      setAsBase: true,
-    });
 
     return childLogic;
   }
@@ -55,20 +45,20 @@ export default class Parabola extends Curve {
       definition: () => ({ newValues: { curveType: "function" } })
     }
 
-    stateVariableDefinitions.parmax = {
+    stateVariableDefinitions.parMax = {
       public: true,
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parmax: NaN } })
+      definition: () => ({ newValues: { parMax: NaN } })
     }
 
-    stateVariableDefinitions.parmin = {
+    stateVariableDefinitions.parMin = {
       public: true,
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parmin: NaN } })
+      definition: () => ({ newValues: { parMin: NaN } })
     }
 
     // variable to store essential value of a
@@ -96,21 +86,21 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneThrough",
+        throughAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
           variableNames: ["nPoints"]
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.throughChild.length === 0) {
+        if (dependencyValues.throughAttr === null) {
           return {
             newValues: { nThroughPoints: 0 }
           }
         } else {
           return {
             newValues: {
-              nThroughPoints: dependencyValues.throughChild[0].stateValues.nPoints
+              nThroughPoints: dependencyValues.throughAttr.stateValues.nPoints
             }
           }
         }
@@ -131,7 +121,7 @@ export default class Parabola extends Curve {
           // through point or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -188,9 +178,9 @@ export default class Parabola extends Curve {
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
-            throughChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneThrough",
+            throughAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "through",
               variableNames: ["pointX" + varEnding]
             }
           }
@@ -211,11 +201,11 @@ export default class Parabola extends Curve {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          let throughChild = dependencyValuesByKey[arrayKey].throughChild;
-          if (throughChild.length === 1
-            && throughChild[0].stateValues["pointX" + varEnding]
+          let throughAttr = dependencyValuesByKey[arrayKey].throughAttr;
+          if (throughAttr !== null
+            && throughAttr.stateValues["pointX" + varEnding]
           ) {
-            let numericalVal = throughChild[0].stateValues["pointX" + varEnding].evaluate_to_constant();
+            let numericalVal = throughAttr.stateValues["pointX" + varEnding].evaluate_to_constant();
             if (Number.isFinite(numericalVal)) {
               throughPoints[arrayKey] = me.fromAst(numericalVal);
             } else {
@@ -248,11 +238,11 @@ export default class Parabola extends Curve {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          if (dependencyValuesByKey[arrayKey].throughChild.length === 1
-            && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]
+          if (dependencyValuesByKey[arrayKey].throughAttr !== null
+            && dependencyValuesByKey[arrayKey].throughAttr.stateValues["pointX" + varEnding]
           ) {
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].throughChild,
+              setDependency: dependencyNamesByKey[arrayKey].throughAttr,
               desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
               childIndex: 0,
               variableIndex: 0,
@@ -924,7 +914,7 @@ export default class Parabola extends Curve {
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       returnArraySizeDependencies: () => ({}),
@@ -1020,7 +1010,7 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.equation = {
       public: true,
-      componentType: "equation",
+      componentType: "math",
       // TODO: implement additional properties
       additionalProperties: { simplify: "numberspreserveorder", displaysmallaszero: true },
 
@@ -1119,11 +1109,6 @@ export default class Parabola extends Curve {
           }
         }
       })
-    }
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { childrenToRender: [] } })
     }
 
     return stateVariableDefinitions;

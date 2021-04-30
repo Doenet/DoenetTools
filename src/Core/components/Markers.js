@@ -88,6 +88,7 @@ export default class Markers extends BaseComponent {
       public: true,
       isArray: true,
       entryPrefixes: ["item"],
+      hasVariableComponentType: true,
       returnDependencies: () => ({
         markerType: {
           dependencyType: "stateVariable",

@@ -12,14 +12,12 @@ import * as SingleCharacterComponents from './components/SingleCharacterComponen
 import * as Sectioning from './components/Sectioning';
 import * as Lists from './components/Lists';
 import * as DynamicalSystems from './components/dynamicalSystems';
-import * as FeedbackDefinition from './components/FeedbackDefinition';
-import * as StyleDefinition from './components/StyleDefinition';
-import * as StyleDefinitionComponents from './components/StyleDefinitionComponents';
+import * as FeedbackDefinitions from './components/FeedbackDefinitions';
+import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
-import Letters from './components/Letters';
 import TextList from './components/TextList';
 import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
@@ -46,18 +44,18 @@ import Curve from './components/Curve';
 import BezierControls from './components/BezierControls';
 import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
+import LineListComponent from './components/abstract/LineListComponent';
 import VectorListComponent from './components/abstract/VectorListComponent';
 import AngleListComponent from './components/abstract/AngleListComponent';
 import Vector from './components/Vector';
 import Angle from './components/Angle';
-import Equation from './components/Equation';
 import Answer from './components/Answer';
 import Award from './components/Award';
 import When from './components/When';
-import Mathinput from './components/Mathinput';
-import Textinput from './components/Textinput';
-import Booleaninput from './components/Booleaninput';
-import Choiceinput from './components/Choiceinput';
+import MathInput from './components/MathInput';
+import TextInput from './components/TextInput';
+import BooleanInput from './components/BooleanInput';
+import ChoiceInput from './components/ChoiceInput';
 import Choice from './components/Choice';
 import NumberComponent from './components/Number';
 import Integer from './components/Integer';
@@ -78,7 +76,7 @@ import AttractToGrid from './components/AttractToGrid';
 import ConstrainTo from './components/ConstrainTo';
 import AttractTo from './components/AttractTo';
 import ConstraintUnion from './components/ConstraintUnion';
-import ConstraintToAttractor from './components/ConstraintToAttractor';
+import TransformConstraintIntoAttractor from './components/TransformConstraintIntoAttractor';
 import Intersection from './components/Intersection';
 import UpdateValue from './components/UpdateValue';
 import MathTarget from './components/MathTarget';
@@ -92,7 +90,7 @@ import Spreadsheet from './components/Spreadsheet';
 import Cell from './components/Cell';
 import Row from './components/Row';
 import Column from './components/Column';
-import Cellblock from './components/Cellblock';
+import CellBlock from './components/CellBlock';
 import Table from './components/Table';
 import Variants from './components/Variants';
 import Seeds from './components/Seeds';
@@ -124,8 +122,6 @@ import ConsiderAsResponses from './components/ConsiderAsResponses';
 import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
 import SelectByCondition from './components/SelectByCondition';
-import Empty from './components/Empty';
-import BindValueTo from './components/BindValueTo';
 
 
 //Extended
@@ -136,7 +132,6 @@ import GraphicalComponent from './components/abstract/GraphicalComponent';
 import ConstraintComponent from './components/abstract/ConstraintComponent';
 import Input from './components/abstract/Input';
 import CompositeComponent from './components/abstract/CompositeComponent';
-import ComponentWithAnyChildren from './components/abstract/ComponentWithAnyChildren';
 import BooleanBaseOperator from './components/abstract/BooleanBaseOperator';
 import BooleanBaseOperatorOfMath from './components/abstract/BooleanBaseOperatorOfMath';
 import MathBaseOperator from './components/abstract/MathBaseOperator';
@@ -165,12 +160,11 @@ const componentTypeArray = [
   ...Object.values(Sectioning),
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
-  ...Object.values(FeedbackDefinition),
-  ...Object.values(StyleDefinition),
-  ...Object.values(StyleDefinitionComponents),
+  ...Object.values(FeedbackDefinitions),
+  ...Object.values(StyleDefinitions),
   Document,
   StringComponent,
-  Text, Letters, TextList,
+  Text, TextList,
   RandomizedTextList,
   P,
   BooleanComponent, BooleanList,
@@ -191,9 +185,8 @@ const componentTypeArray = [
   BezierControls, ControlVectors,
   Vector,
   Angle,
-  Equation,
   Answer, Award, When,
-  Mathinput, Textinput, Booleaninput, Choiceinput,
+  MathInput, TextInput, BooleanInput, ChoiceInput,
   Choice,
   NumberComponent, Integer,
   Graph,
@@ -207,7 +200,7 @@ const componentTypeArray = [
   Cell,
   Row,
   Column,
-  Cellblock,
+  CellBlock,
   Table,
   Markers,
   Panel,
@@ -218,7 +211,7 @@ const componentTypeArray = [
   ConstrainTo,
   AttractTo,
   ConstraintUnion,
-  ConstraintToAttractor,
+  TransformConstraintIntoAttractor,
   Intersection,
   UpdateValue, MathTarget, NewMathValue,
   ConstrainToAngles, AttractToAngles,
@@ -250,12 +243,6 @@ const componentTypeArray = [
   SelectByIndex,
   Case,
   SelectByCondition,
-  Empty,
-  BindValueTo,
-];
-
-const componentTypeArrayExtended = [
-  ...componentTypeArray,
   ...Object.values(ComponentWithSelectableType),
   BaseComponent,
   InlineComponent,
@@ -264,8 +251,8 @@ const componentTypeArrayExtended = [
   ConstraintComponent,
   Input,
   CompositeComponent,
-  ComponentWithAnyChildren,
   PointListComponent,
+  LineListComponent,
   VectorListComponent,
   AngleListComponent,
   BooleanBaseOperator,
@@ -282,35 +269,43 @@ const componentTypeArrayExtended = [
 
 export function standardComponentClasses() {
   const componentClasses = {};
+  const lowerCaseComponentTypes = new Set();
   for (let ct of componentTypeArray) {
     let newComponentType = ct.componentType;
-    if (newComponentType === undefined) {
-      throw Error("Cannot create component as componentType is undefined for class " + ct)
+
+    if (newComponentType.substring(0, 1) !== "_") {
+
+      if (newComponentType === undefined) {
+        throw Error("Cannot create component as componentType is undefined for class " + ct)
+      }
+      let lowerCaseType = newComponentType.toLowerCase();
+      if (lowerCaseComponentTypes.has(lowerCaseType)) {
+        throw Error("component type " + newComponentType + " defined in two classes");
+      }
+      if (!(/[a-zA-Z]/.test(newComponentType.substring(0, 1)))) {
+        throw Error("Invalid component type " + newComponentType + ". Component types must begin with a letter.");
+      }
+      componentClasses[newComponentType] = ct;
+      lowerCaseComponentTypes.add(lowerCaseType);
     }
-    newComponentType = newComponentType.toLowerCase();
-    if (newComponentType in componentClasses) {
-      throw Error("component type " + newComponentType + " defined in two classes");
-    }
-    if (!(/[a-z]/.test(newComponentType.substring(0, 1)))) {
-      throw Error("Invalid component type " + newComponentType + ". Component types must begin with a letter.");
-    }
-    componentClasses[newComponentType] = ct;
   }
   return componentClasses;
 }
 
 export function allComponentClasses() {
   const componentClasses = {};
-  for (let ct of componentTypeArrayExtended) {
+  const lowerCaseComponentTypes = new Set();
+  for (let ct of componentTypeArray) {
     let newComponentType = ct.componentType;
     if (newComponentType === undefined) {
       throw Error("Cannot create component as componentType is undefined for class " + ct)
     }
-    newComponentType = newComponentType.toLowerCase();
-    if (newComponentType in componentClasses) {
+    let lowerCaseType = newComponentType.toLowerCase();
+    if (lowerCaseComponentTypes.has(lowerCaseType)) {
       throw Error("component type " + newComponentType + " defined in two classes");
     }
     componentClasses[newComponentType] = ct;
+    lowerCaseComponentTypes.add(lowerCaseType);
   }
   return componentClasses;
 }
@@ -318,17 +313,19 @@ export function allComponentClasses() {
 
 export function componentTypesCreatingVariants() {
   const componentClasses = {};
+  const lowerCaseComponentTypes = new Set();
   for (let ct of componentTypeArray) {
     if (ct.createsVariants) {
       let newComponentType = ct.componentType;
       if (newComponentType === undefined) {
         throw Error("Cannot create component as componentType is undefined for class " + ct)
       }
-      newComponentType = newComponentType.toLowerCase();
-      if (newComponentType in componentClasses) {
+      let lowerCaseType = newComponentType.toLowerCase();
+      if (lowerCaseComponentTypes.has(lowerCaseType)) {
         throw Error("component type " + newComponentType + " defined in two classes");
       }
       componentClasses[newComponentType] = ct;
+      lowerCaseComponentTypes.add(lowerCaseType);
     }
   }
   return componentClasses;
@@ -337,6 +334,7 @@ export function componentTypesCreatingVariants() {
 
 export function componentTypeWithPotentialVariants() {
   const componentClasses = {};
+  const lowerCaseComponentTypes = new Set();
   for (let ct of componentTypeArray) {
     if (ct.createsVariants ||
       ct.setUpVariantIfVariantControlChild ||
@@ -346,11 +344,12 @@ export function componentTypeWithPotentialVariants() {
       if (newComponentType === undefined) {
         throw Error("Cannot create component as componentType is undefined for class " + ct)
       }
-      newComponentType = newComponentType.toLowerCase();
-      if (newComponentType in componentClasses) {
+      let lowerCaseType = newComponentType.toLowerCase();
+      if (lowerCaseComponentTypes.has(lowerCaseType)) {
         throw Error("component type " + newComponentType + " defined in two classes");
       }
       componentClasses[newComponentType] = ct;
+      lowerCaseComponentTypes.add(lowerCaseType);
     }
   }
   return componentClasses;

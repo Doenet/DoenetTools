@@ -1,40 +1,11 @@
-import React, { useState,useEffect }  from 'react';
+import React from 'react';
 import Tool from '../_framework/Tool';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
-import { 
-  useRecoilValue, 
-  useRecoilCallback,
-  atom, 
-} from "recoil";
-import {fileByContentId} from '../_framework/Overlays/Editor';
-
-const contentDoenetMLAtom = atom({
-  key:"contentDoenetMLAtom",
-  default:{updateNumber:0,doenetML:""}
-})
 
 export default function Content(props) {
-  console.log("props", props);
-  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));      //TODO
-  let newParams = {...urlParamsObj} 
-
-
-  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (contentId)=>{
-    const response = await snapshot.getPromise(fileByContentId(contentId));
-    const doenetML = response.data;
-    const viewerObj = await snapshot.getPromise(contentDoenetMLAtom);
-    const updateNumber = viewerObj.updateNumber+1;
-    set(contentDoenetMLAtom,{updateNumber,doenetML})
-  })
-
-  useEffect(() => {                         
-    initDoenetML(newParams.contentId)
- }, []);
-
- const viewerDoenetML = useRecoilValue(contentDoenetMLAtom);
-
-  const [attemptNumber,setAttemptNumber] = useState(1);
-  const [updateNumber,setUpdateNumber] = useState(1);
+  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+  const contentId = urlParamsObj?.contentId;
+  const attemptNumber = 1;
   const showCorrectness = true;
   const readOnly = false;
   const solutionDisplayMode = "button";
@@ -42,6 +13,7 @@ export default function Content(props) {
   const showHints = true;
   const ignoreDatabase = true;
   const requestedVariant = {index:1}; 
+
   return (
     
     <Tool>
@@ -49,11 +21,9 @@ export default function Content(props) {
 
       </headerPanel>
        <mainPanel>
-
-         <p>DoenetViewer</p>
-         {newParams.contentId ? <DoenetViewer
-          key={'doenetviewer' + viewerDoenetML?.updateNumber}
-          doenetML={viewerDoenetML?.doenetML}
+         {contentId ? <DoenetViewer
+          key='doenetviewer'
+          contentId={contentId}
           flags={{
             showCorrectness,
             readOnly,

@@ -98,11 +98,10 @@ export class Problem extends SectioningComponent {
   static componentType = "problem";
   static rendererType = "section";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.aggregateScores = { default: true };
-
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.aggregateScores.defaultValue = true;
+    return attributes;
   }
 
 
@@ -143,7 +142,7 @@ export class Exercise extends Problem {
 
 
 export class Example extends SectioningComponent {
-  static componentType = "Example";
+  static componentType = "example";
   static rendererType = "section";
 
   static returnStateVariableDefinitions() {
@@ -170,12 +169,19 @@ export class AnswerSet extends SectioningComponent {
   static rendererType = "section";
 
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.aggregateScores = { default: true };
-    properties.sectionWideCheckWork = { default: true, forRenderer: true, ignorePropagationFromAncestors: true };
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.aggregateScores.defaultValue = true;
+    attributes.sectionWideCheckWork = {
+      createComponentOfType: "boolean",
+      createStateVariable: "sectionWideCheckWork",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+      ignorePropagationFromAncestors: true
+    };
 
-    return properties;
+    return attributes;
   }
 
 

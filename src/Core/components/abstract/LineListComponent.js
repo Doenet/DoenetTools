@@ -1,9 +1,9 @@
 import BaseComponent from './BaseComponent';
 
 export default class LineListComponent extends BaseComponent {
-  static componentType = "_linelistcomponent";
+  static componentType = "_lineListComponent";
   static rendererType = "container";
-
+  static renderChildren = true;
 
 
   static returnSugarInstructions() {
@@ -70,6 +70,7 @@ export default class LineListComponent extends BaseComponent {
         lineChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroLines",
+          skipComponentNames: true,
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -122,21 +123,6 @@ export default class LineListComponent extends BaseComponent {
         return { newValues: { lineNames } }
 
       }
-    }
-
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        lineChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroLines",
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.lineChildren.map(x => x.componentName)
-        }
-      })
     }
 
     return stateVariableDefinitions;

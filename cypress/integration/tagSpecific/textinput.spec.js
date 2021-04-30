@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Textinput Tag Tests', function () {
+describe('TextInput Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')

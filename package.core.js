@@ -22,7 +22,7 @@ require('esbuild').build({
   format: 'esm',
   bundle: true,
   minify: true,
-  watch: true,
+  // watch: true,
   define: {
     global:"window",
   },

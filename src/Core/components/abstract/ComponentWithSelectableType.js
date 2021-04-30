@@ -1,17 +1,23 @@
 import BaseComponent from './BaseComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression } from '../../utils/math';
+import { convertValueToMathExpression, textToAst } from '../../utils/math';
 import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 
 export class ComponentWithSelectableType extends BaseComponent {
-  static componentType = "_componentwithselectabletype";
+  static componentType = "_componentWithSelectableType";
   static rendererType = undefined;
-
-  static acceptType = true;
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value", "type"] };
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.type = {
+      createPrimitiveOfType: "text"
+    }
+    return attributes;
+  }
 
 
   static returnChildLogic(args) {
@@ -64,6 +70,7 @@ export class ComponentWithSelectableType extends BaseComponent {
 
     stateVariableDefinitions.value = {
       public: true,
+      hasVariableComponentType: true,
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -73,7 +80,6 @@ export class ComponentWithSelectableType extends BaseComponent {
           dependencyType: "child",
           childLogicName: "atMostOneChild",
           variableNames: ["value"],
-          requireChildLogicInitiallySatisfied: true,
         },
       }),
       definition({ dependencyValues }) {
@@ -102,18 +108,24 @@ export class ComponentWithSelectableType extends BaseComponent {
 
 
 export class ComponentListWithSelectableType extends ComponentWithSelectableType {
-  static componentType = "_componentlistwithselectabletype";
+  static componentType = "_componentListWithSelectableType";
 
-  static acceptType = true;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.type = {
+      createPrimitiveOfType: "text"
+    }
+    return attributes;
+  }
 
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    function breakIntoTypesBySpacesAndAddType({ matchedChildren, componentProps, parentProps }) {
+    function breakIntoTypesBySpacesAndAddType({ matchedChildren, componentAttributes, parentAttributes }) {
 
-      let type = componentProps.type;
+      let type = componentAttributes.type;
       if (!type) {
-        type = parentProps.type;
+        type = parentAttributes.type;
       }
       if (!type) {
         type = "number";
@@ -207,6 +219,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       isArray: true,
       entryPrefixes: ["value"],
       stateVariablesDeterminingDependencies: ["childForValue"],
+      hasVariableComponentType: true,
       returnArraySizeDependencies: () => ({
         nValues: {
           dependencyType: "stateVariable",
@@ -287,15 +300,22 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
 
 export class ComponentListOfListsWithSelectableType extends ComponentWithSelectableType {
-  static componentType = "_componentlistoflistswithselectabletype";
-  static componentTypeSingular = "_componentlistwithselectabletype";
-  static acceptType = true;
+  static componentType = "_componentListOfListsWithSelectableType";
+  static componentTypeSingular = "_componentListWithSelectableType";
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.type = {
+      createPrimitiveOfType: "text"
+    }
+    return attributes;
+  }
 
   static returnSugarInstructions() {
     let sugarInstructions = [];
     let listClass = this;
 
-    let breakIntoListsByParensAndAddType = function ({ matchedChildren, componentProps, parentProps }) {
+    let breakIntoListsByParensAndAddType = function ({ matchedChildren, componentAttributes, parentAttributes }) {
 
       let results = breakEmbeddedStringsIntoParensPieces({
         componentList: matchedChildren,
@@ -306,9 +326,9 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         return { success: false }
       }
 
-      let type = componentProps.type;
+      let type = componentAttributes.type;
       if (!type) {
-        type = parentProps.type;
+        type = parentAttributes.type;
       }
       if (!type) {
         type = "number";
@@ -455,7 +475,7 @@ function convertValueToType(value, type) {
   } else if (type === "math") {
     if (typeof value === "string") {
       try {
-        return me.fromText(value);
+        return me.fromAst(textToAst.convert(value));
       } catch (e) {
       }
     }

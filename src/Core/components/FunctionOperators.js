@@ -2,13 +2,25 @@ import FunctionBaseOperator from './abstract/FunctionBaseOperator';
 import me from 'math-expressions';
 
 export class ClampFunction extends FunctionBaseOperator {
-  static componentType = "clampfunction";
+  static componentType = "clampFunction";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.lowerValue = { default: 0 };
-    properties.upperValue = { default: 1 };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.lowerValue = {
+      createComponentOfType: "number",
+      createStateVariable: "lowerValue",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.upperValue = {
+      createComponentOfType: "number",
+      createStateVariable: "upperValue",
+      defaultValue: 1,
+      public: true,
+    };
+
+    return attributes;
   }
 
   static returnStateVariableDefinitions({ numerics }) {
@@ -69,13 +81,23 @@ export class ClampFunction extends FunctionBaseOperator {
 }
 
 export class WrapFunctionPeriodic extends FunctionBaseOperator {
-  static componentType = "wrapfunctionperiodic";
+  static componentType = "wrapFunctionPeriodic";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.lowerValue = { default: 0 };
-    properties.upperValue = { default: 1 };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.lowerValue = {
+      createComponentOfType: "number",
+      createStateVariable: "lowerValue",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.upperValue = {
+      createComponentOfType: "number",
+      createStateVariable: "upperValue",
+      defaultValue: 1,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnStateVariableDefinitions({ numerics }) {

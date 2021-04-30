@@ -6,11 +6,21 @@ export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
   static rendererType = "math";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.forceSymbolic = { default: false };
-    properties.forceNumeric = { default: false };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.forceSymbolic = {
+      createComponentOfType: "boolean",
+      createStateVariable: "forceSymbolic",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.forceNumeric = {
+      createComponentOfType: "boolean",
+      createStateVariable: "forceNumeric",
+      defaultValue: false,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnChildLogic(args) {

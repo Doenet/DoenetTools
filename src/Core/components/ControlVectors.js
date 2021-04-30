@@ -1,17 +1,26 @@
 import VectorListComponent from './abstract/VectorListComponent';
 
 export default class ControlVectors extends VectorListComponent {
-  static componentType = "controlvectors";
+  static componentType = "controlVectors";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.direction = {
-      default: "symmetric",
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.direction = {
+      createComponentOfType: "text",
+      createStateVariable: "direction",
+      defaultValue: "symmetric",
+      public: true,
       toLowerCase: true,
       validValues: ["symmetric", "previous", "next", "both", "none"]
     };
-    properties.pointNumber = { default: null }
-    return properties;
+    attributes.pointNumber = {
+      createComponentOfType: "number",
+      createStateVariable: "pointNumber",
+      defaultValue: null,
+      public: true,
+    };
+    return attributes;
   }
 
 

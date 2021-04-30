@@ -4,7 +4,6 @@ import { useStackId } from '../ToolRoot';
 import DragPanel, { handleDirection } from './Panel';
 
 const Wrapper = styled.div`
-  height: 100%;
   width: 100%;
   overflow: hidden auto;
 `;

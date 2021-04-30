@@ -2,8 +2,9 @@ import BaseComponent from './BaseComponent';
 import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 
 export default class VectorListComponent extends BaseComponent {
-  static componentType = "_vectorlistcomponent";
+  static componentType = "_vectorListComponent";
   static rendererType = "container";
+  static renderChildren = true;
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
@@ -69,6 +70,7 @@ export default class VectorListComponent extends BaseComponent {
         vectorChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroVectors",
+          skipComponentNames: true,
         }
       }),
       definition: ({ dependencyValues }) => ({
@@ -83,7 +85,8 @@ export default class VectorListComponent extends BaseComponent {
         vectorChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroVectors",
-          variableNames: ["nDimensions"]
+          variableNames: ["nDimensions"],
+          skipPlaceholders: true,
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -112,16 +115,6 @@ export default class VectorListComponent extends BaseComponent {
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["vectorX", "vector"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "vectorX") {
-          return [];
-        } else {
-          // vector or entire array
-          // wrap inner dimension by both <vector> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["vector", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vectorX") {
           // vectorX1_2 is the 2nd component of the first vector
@@ -146,10 +139,10 @@ export default class VectorListComponent extends BaseComponent {
           }
         } else {
           // vector3 is all components of the third vector
+          let vectorInd = Number(varEnding) - 1;
           if (!arraySize) {
             return [];
           }
-          let vectorInd = Number(varEnding) - 1;
           if (Number.isInteger(vectorInd) && vectorInd >= 0 && vectorInd < arraySize[0]) {
             // array of "vectorInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => vectorInd + "," + i)
@@ -210,10 +203,11 @@ export default class VectorListComponent extends BaseComponent {
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyNamesByKey
+        dependencyNamesByKey,
+        // componentName
       }) {
 
-        // console.log('array inverse definition of vectors of vectorlist')
+        // console.log(`array inverse definition of vectors of vectorlist of ${componentName}`)
         // console.log(desiredStateVariableValues)
         // console.log(arrayKeys);
 
@@ -235,21 +229,6 @@ export default class VectorListComponent extends BaseComponent {
         }
 
       }
-    }
-
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        vectorChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroVectors",
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.vectorChildren.map(x => x.componentName)
-        }
-      })
     }
 
     return stateVariableDefinitions;

@@ -63,8 +63,7 @@ function Container(props){
   style={{
       maxWidth: "850px",
       // border: "1px red solid",
-      padding: "20px",
-      display:"grid"
+      margin: "20px",
   }
   }
   >
@@ -867,10 +866,12 @@ export default function Library(props) {
       </headerPanel>
 
       <mainPanel>
-        <div style={{margin:"10px"}}>
-          <h1>You are not signed in</h1>
-          <h2>Library currently requirers sign in for use</h2> 
-          <h2><a href='/signin'>Sign in with this link</a></h2>
+        <div style={{border:"1px solid grey",borderRadius:"20px",margin:"auto",marginTop:"10%",padding:"10px",width:"50%"}}>
+          <div style={{textAlign:"center",alignItems:"center",marginBottom:"20px"}}>
+          <h2>You are not signed in</h2>
+          <h2>Library currently requires sign in for use</h2> 
+          <button style={{background:"#1a5a99",borderRadius:"5px"}}><a href='/signin' style={{color:"white",textDecoration:"none"}}>Sign in with this link</a></button>
+          </div>
           </div>
       </mainPanel>
     
@@ -912,18 +913,19 @@ export default function Library(props) {
     <GlobalFont/>
     <Tool>
       <navPanel isInitOpen>
-      <div style={{marginBottom:"40px",height:"100vh"}} 
-       onClick={useOutsideDriveSelector} >
-      <Drive types={['content','course']}  foldersOnly={true} />
+      <div style={{height:"100vh"}} onClick={useOutsideDriveSelector}>
+         <div  style={{paddingBottom:"40px"}}>
+        <Drive types={['content','course']}  foldersOnly={true} />
+      </div>
       </div>
       </navPanel>
 
       <headerPanel title="Library">
       </headerPanel>
 
-      <mainPanel responsiveControls={breadcrumbContainer}> 
+      <mainPanel > 
       <AutoSelect />
-
+      {breadcrumbContainer}
         <div 
         onClick={()=>{
           clearSelections()

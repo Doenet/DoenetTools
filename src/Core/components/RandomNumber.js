@@ -3,7 +3,7 @@ import SelectFromSequence from './SelectFromSequence';
 import me from 'math-expressions';
 
 export default class RandomNumber extends NumberComponent {
-  static componentType = "randomnumber";
+  static componentType = "randomNumber";
 
   static previewSerializedComponent({sharedParameters}) {
 
@@ -19,18 +19,18 @@ export default class RandomNumber extends NumberComponent {
     return;
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
     // possible types
     // discrete: determined by from, to, and step
     // uniform: between from and to (step ignored)
     // gaussian: gaussian with prescribed mean and standard deviation
-    properties.type = {default: "discrete"};
-    properties.mean = {default: null};
-    properties.standarddeviation = {default: null};
-    properties.variance = {default: null};
+    attributes.type = {default: "discrete"};
+    attributes.mean = {default: null};
+    attributes.standarddeviation = {default: null};
+    attributes.variance = {default: null};
 
-    return properties;
+    return attributes;
   }
 
 

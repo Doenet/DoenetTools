@@ -73,13 +73,23 @@ export class Product extends MathBaseOperator {
 }
 
 export class ClampNumber extends MathBaseOperatorOneInput {
-  static componentType = "clampnumber";
+  static componentType = "clampNumber";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.lowerValue = { default: 0 };
-    properties.upperValue = { default: 1 };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.lowerValue = {
+      createComponentOfType: "number",
+      createStateVariable: "lowerValue",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.upperValue = {
+      createComponentOfType: "number",
+      createStateVariable: "upperValue",
+      defaultValue: 1,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnStateVariableDefinitions() {
@@ -158,13 +168,23 @@ function clamp({ value, lowerValue, upperValue }) {
 
 
 export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
-  static componentType = "wrapnumberperiodic";
+  static componentType = "wrapNumberPeriodic";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.lowerValue = { default: 0 };
-    properties.upperValue = { default: 1 };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.lowerValue = {
+      createComponentOfType: "number",
+      createStateVariable: "lowerValue",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.upperValue = {
+      createComponentOfType: "number",
+      createStateVariable: "upperValue",
+      defaultValue: 1,
+      public: true,
+    };
+    return attributes;
   }
 
 
@@ -261,11 +281,21 @@ function makePeriodic({ value, lowerValue, upperValue }) {
 export class Round extends MathBaseOperatorOneInput {
   static componentType = "round";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.numberDecimals = { default: 0 };
-    properties.numberDigits = { default: null };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.numberDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "numberDecimals",
+      defaultValue: 0,
+      public: true,
+    };
+    attributes.numberDigits = {
+      createComponentOfType: "number",
+      createStateVariable: "numberDigits",
+      defaultValue: null,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnStateVariableDefinitions() {
@@ -320,12 +350,12 @@ export class Round extends MathBaseOperatorOneInput {
 
 
 export class ConvertSetToList extends MathBaseOperatorOneInput {
-  static componentType = "convertsettolist";
+  static componentType = "convertSetToList";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    delete properties.unordered;
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    delete attributes.unordered;
+    return attributes;
   }
 
 
@@ -567,10 +597,15 @@ export class Mean extends MathBaseOperator {
 export class Variance extends MathBaseOperator {
   static componentType = "variance";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.population = { default: false };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.population = {
+      createComponentOfType: "boolean",
+      createStateVariable: "population",
+      defaultValue: false,
+      public: true,
+    };
+    return attributes;
   }
 
   static returnStateVariableDefinitions() {
@@ -655,7 +690,7 @@ function calculateSymbolicVariance(inputs, population) {
 }
 
 export class StandardDeviation extends Variance {
-  static componentType = "standarddeviation";
+  static componentType = "standardDeviation";
 
   static returnStateVariableDefinitions() {
 

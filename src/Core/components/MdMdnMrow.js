@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import { M } from './MMeMen';
 import me from 'math-expressions';
+import { latexToAst } from '../utils/math';
 
 export class Md extends InlineComponent {
   static componentType = "md";
@@ -32,6 +33,19 @@ export class Md extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.mrowChildNames = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        mrowChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroMrows",
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { mrowChildNames: dependencyValues.mrowChildren.map(x => x.componentName) }
+      })
+    }
+
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
@@ -40,15 +54,27 @@ export class Md extends InlineComponent {
         mrowChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
-          variableNames: ["latex", "hide"],
+          variableNames: ["latex", "hide", "equationTag", "numbered"],
         }
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.mrowChildren.length > 0) {
-          let latex = dependencyValues.mrowChildren
-            .filter(x => !x.stateValues.hide)
-            .map(x => x.stateValues.latex)
-            .join('\\\\');
+          let latex = "";
+          for (let child of dependencyValues.mrowChildren) {
+            if (child.stateValues.hide) {
+              continue;
+            }
+            if (latex.length > 0) {
+              latex += '\\\\'
+            }
+            if (child.stateValues.numbered) {
+              latex += `\\tag{${child.stateValues.equationTag}}`
+            } else {
+              latex += `\\notag `
+            }
+            latex += child.stateValues.latex;
+
+          }
           return { newValues: { latex } }
 
         } else {
@@ -68,7 +94,7 @@ export class Md extends InlineComponent {
         mrowChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMrows",
-          variableNames: ["latexWithInputChildren"],
+          variableNames: ["latexWithInputChildren", "hide", "equationTag", "numbered"],
         },
         latex: {
           dependencyType: "stateVariable",
@@ -81,9 +107,20 @@ export class Md extends InlineComponent {
           let inputInd = 0;
           let lastLatex = "";
 
-          for(let mrow of dependencyValues.mrowChildren) {
-            for(let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
-              if(typeof latexOrChildInd === "number") {
+          for (let mrow of dependencyValues.mrowChildren) {
+            if (mrow.stateValues.hide) {
+              continue;
+            }
+            if (lastLatex.length > 0) {
+              lastLatex += '\\\\'
+            }
+            if (mrow.stateValues.numbered) {
+              lastLatex += `\\tag{${mrow.stateValues.equationTag}}`
+            } else{
+              lastLatex += '\\notag '
+            }
+            for (let latexOrChildInd of mrow.stateValues.latexWithInputChildren) {
+              if (typeof latexOrChildInd === "number") {
                 if (lastLatex.length > 0) {
                   latexWithInputChildren.push(lastLatex);
                   lastLatex = "";
@@ -94,7 +131,6 @@ export class Md extends InlineComponent {
                 lastLatex += latexOrChildInd
               }
             }
-            lastLatex += '\\\\'
 
           }
           if (lastLatex.length > 0) {
@@ -126,7 +162,7 @@ export class Md extends InlineComponent {
         try {
           expressionText = dependencyValues.stateValues.latex
             .split('\\\\')
-            .map(x => me.fromLatex(x).toString())
+            .map(x => me.fromAst(latexToAst.convert(x)).toString())
             .join('\\\\');
         } catch (e) {
           // just return latex if can't parse with math-expressions
@@ -143,22 +179,9 @@ export class Md extends InlineComponent {
     }
 
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        mrowChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroMrows",
-          variableNames: ["childrenToRender"],
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            childrenToRender: dependencyValues.mrowChildren.reduce(
-              (a,c) => [...a, ...c.stateValues.childrenToRender], [])
-          }
-        };
-      }
+    stateVariableDefinitions.numbered = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { numbered: false } })
     }
 
     return stateVariableDefinitions;
@@ -173,9 +196,11 @@ export class Mdn extends Md {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.renderMode.definition = () => ({
-      newValues: { renderMode: "alignnumbered" }
-    });
+    stateVariableDefinitions.numbered = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { numbered: true } })
+    }
+
     return stateVariableDefinitions;
   }
 }
@@ -184,6 +209,15 @@ export class Mdn extends Md {
 export class Mrow extends M {
   static componentType = "mrow";
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.number = {
+      createComponentOfType: "boolean",
+    };
+    return attributes;
+  }
+
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -191,6 +225,63 @@ export class Mrow extends M {
     stateVariableDefinitions.renderMode.definition = () => ({
       newValues: { renderMode: "display" }
     });
+
+    stateVariableDefinitions.numbered = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        parentNumbered: {
+          dependencyType: "parentStateVariable",
+          variableName: "numbered"
+        },
+        numberAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "number",
+          variableNames: ["value"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        let numbered;
+        if (dependencyValues.numberAttr !== null) {
+          numbered = dependencyValues.numberAttr.stateValues.value;
+        } else {
+          numbered = dependencyValues.parentNumbered;
+        }
+
+        return {
+          newValues: { numbered }
+        }
+      }
+    }
+
+    stateVariableDefinitions.equationTag = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["numbered"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.numbered) {
+          return {
+            equationCounter: {
+              dependencyType: "counter",
+              counterName: "equation"
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        if (dependencyValues.equationCounter !== undefined) {
+          return {
+            newValues: { equationTag: String(dependencyValues.equationCounter) }
+          }
+        } else {
+          return { newValues: { equationTag: null } }
+        }
+      }
+    }
+
+
     return stateVariableDefinitions;
   }
-} 
+}

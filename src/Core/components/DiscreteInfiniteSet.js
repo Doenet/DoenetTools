@@ -3,7 +3,7 @@ import me from 'math-expressions';
 import {breakEmbeddedStringByCommas, breakIntoVectorComponents} from './commonsugar/breakstrings';
 
 export default class DiscreteInfiniteSet extends MathComponent {
-  static componentType = "discreteinfiniteset";
+  static componentType = "discreteInfiniteSet";
 
   static previewSerializedComponent({serializedComponent, sharedParameters, components}) {
     if(serializedComponent.children === undefined) {
@@ -47,11 +47,11 @@ export default class DiscreteInfiniteSet extends MathComponent {
 
   }
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.minindex = {default: me.fromAst(['-', Infinity])};
-    properties.maxindex = {default: me.fromAst(Infinity)};
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.minindex = {default: me.fromAst(['-', Infinity])};
+    attributes.maxindex = {default: me.fromAst(Infinity)};
+    return attributes;
   }
 
 

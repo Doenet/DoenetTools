@@ -3,10 +3,15 @@ import InlineComponent from './InlineComponent';
 export default class Input extends InlineComponent {
   static componentType = "_input";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.collaborateGroups = { default: undefined };
-    return properties;
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.collaborateGroups = {
+      createComponentOfType: "collaborateGroups",
+      createStateVariable: "collaborateGroups",
+      defaultValue: undefined,
+      public: true,
+    };
+    return attributes;
   }
 
 

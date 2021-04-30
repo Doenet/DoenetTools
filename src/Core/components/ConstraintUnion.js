@@ -3,7 +3,7 @@ import { findFiniteNumericalValue } from '../utils/math';
 import { applyConstraintFromComponentConstraints } from '../utils/constraints';
 
 export default class ConstraintUnion extends ConstraintComponent {
-  static componentType = "constraintunion";
+  static componentType = "constraintUnion";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

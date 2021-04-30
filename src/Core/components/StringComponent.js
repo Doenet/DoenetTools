@@ -7,9 +7,14 @@ export default class StringComponent extends InlineComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value"] };
 
-  static createPropertiesObject() {
+  static createAttributesObject() {
     return {
-      hide: { default: false },
+      hide: {
+        createComponentOfType: "boolean",
+        createStateVariable: "hide",
+        defaultValue: false,
+        public: true,
+      },
     };
   }
 

@@ -2,9 +2,9 @@ import BaseComponent from './BaseComponent';
 import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
 
 export default class PointListComponent extends BaseComponent {
-  static componentType = "_pointlistcomponent";
+  static componentType = "_pointListComponent";
   static rendererType = "container";
-
+  static renderChildren = true;
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
@@ -69,6 +69,7 @@ export default class PointListComponent extends BaseComponent {
         pointChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
+          skipComponentNames: true,
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -85,7 +86,8 @@ export default class PointListComponent extends BaseComponent {
         pointChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroPoints",
-          variableNames: ["nDimensions"]
+          variableNames: ["nDimensions"],
+          skipPlaceholders: true,
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -113,16 +115,6 @@ export default class PointListComponent extends BaseComponent {
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "pointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointX") {
           // pointX1_2 is the 2nd component of the first point
@@ -207,6 +199,9 @@ export default class PointListComponent extends BaseComponent {
           }
         }
 
+        // console.log("result")
+        // console.log(JSON.parse(JSON.stringify(points)));
+        
         return { newValues: { points } }
 
       },
@@ -236,21 +231,6 @@ export default class PointListComponent extends BaseComponent {
         }
 
       }
-    }
-
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        pointChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroPoints",
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.pointChildren.map(x => x.componentName)
-        }
-      })
     }
 
     return stateVariableDefinitions;

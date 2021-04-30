@@ -3,7 +3,7 @@ import me from 'math-expressions';
 import { convertValueToMathExpression } from '../utils/math';
 
 export default class LineSegment extends GraphicalComponent {
-  static componentType = "linesegment";
+  static componentType = "lineSegment";
 
   actions = {
     moveLineSegment: this.moveLineSegment.bind(
@@ -15,42 +15,22 @@ export default class LineSegment extends GraphicalComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["endpoints"] };
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.draggable = { default: true, forRenderer: true };
-    return properties;
-  }
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
 
-  // static returnSugarInstructions() {
-  //   let sugarInstructions = super.returnSugarInstructions();
+    attributes.endpoints = {
+      createComponentOfType: "_pointListComponent"
+    }
 
-  //   sugarInstructions.push({
-  //     childrenRegex: /s/,
-  //     replacementFunction: ({ matchedChildren }) => ({
-  //       success: true,
-  //       newChildren: [{ componentType: "endpoints", children: matchedChildren }],
-  //     })
-  //   });
-
-  //   return sugarInstructions;
-
-  // }
-
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    childLogic.newLeaf({
-      name: "atMostOneEndpoints",
-      componentType: 'endpoints',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-      setAsBase: true
-    });
-
-    return childLogic;
+    return attributes;
   }
 
 
@@ -92,9 +72,9 @@ export default class LineSegment extends GraphicalComponent {
       public: true,
       componentType: "number",
       returnDependencies: () => ({
-        endpointsChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneEndpoints",
+        endpointsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "endpoints",
           variableNames: ["nDimensions"],
         }
       }),
@@ -103,8 +83,8 @@ export default class LineSegment extends GraphicalComponent {
         // console.log('definition of nDimensions')
         // console.log(dependencyValues)
 
-        if (dependencyValues.endpointsChild.length === 1) {
-          let nDimensions = dependencyValues.endpointsChild[0].stateValues.nDimensions;
+        if (dependencyValues.endpointsAttr !== null) {
+          let nDimensions = dependencyValues.endpointsAttr.stateValues.nDimensions;
           return {
             newValues: { nDimensions },
             checkForActualChange: { nDimensions: true }
@@ -130,7 +110,7 @@ export default class LineSegment extends GraphicalComponent {
           // endpoint or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -185,9 +165,9 @@ export default class LineSegment extends GraphicalComponent {
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
-            endpointsChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneEndpoints",
+            endpointsAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "endpoints",
               variableNames: ["pointX" + varEnding]
             }
           }
@@ -209,10 +189,10 @@ export default class LineSegment extends GraphicalComponent {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
-            && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]
+          if (dependencyValuesByKey[arrayKey].endpointsAttr !== null
+            && dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding]
           ) {
-            endpoints[arrayKey] = dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding];
+            endpoints[arrayKey] = dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding];
           } else {
             if (arrayKey === "0,0") {
               essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
@@ -256,11 +236,11 @@ export default class LineSegment extends GraphicalComponent {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          if (dependencyValuesByKey[arrayKey].endpointsChild.length === 1
-            && dependencyValuesByKey[arrayKey].endpointsChild[0].stateValues["pointX" + varEnding]
+          if (dependencyValuesByKey[arrayKey].endpointsAttr !== null
+            && dependencyValuesByKey[arrayKey].endpointsAttr.stateValues["pointX" + varEnding]
           ) {
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].endpointsChild,
+              setDependency: dependencyNamesByKey[arrayKey].endpointsAttr,
               desiredValue: desiredStateVariableValues.endpoints[arrayKey],
               childIndex: 0,
               variableIndex: 0,

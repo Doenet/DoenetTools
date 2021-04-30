@@ -1,9 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
-import { createUniqueName } from '../utils/naming';
 import {
   returnBreakStringsSugarFunction
 } from './commonsugar/breakstrings';
-import { returnNVariables } from '../utils/math';
 
 import me from 'math-expressions';
 
@@ -25,36 +23,95 @@ export default class Curve extends GraphicalComponent {
   };
 
   static primaryStateVariableForDefinition = "fShadow";
-  static get stateVariablesShadowedForReference() { return [
-    "variableForChild", "parmin", "parmax",
-    "curveType", "nThroughPoints", "nDimensions", "throughPoints"
-  ] };
+  static get stateVariablesShadowedForReference() {
+    return [
+      "variableForChild", "parMin", "parMax",
+      "curveType", "nThroughPoints", "nDimensions", "throughPoints"
+    ]
+  };
 
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-    properties.draggable = { default: true, forRenderer: true };
-    properties.label.propagateToDescendants = true;
-    properties.showLabel.propagateToDescendants = true;
-    properties.layer.propagateToDescendants = true;
-    properties.flipFunction = { default: false, forRenderer: true };
-    properties.nDiscretizationPoints = { default: 500 };
-    properties.periodic = { default: false };
-
-    properties.splineTension = {
-      default: 0.8,
-      clamp: [0, 1]
+    attributes.draggable = {
+      createComponentOfType: "boolean",
+      createStateVariable: "draggable",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
     };
-    properties.extrapolateBackward = { default: false, forRenderer: true };
-    properties.extrapolateForward = { default: false, forRenderer: true };
-    properties.splineForm = {
-      default: "centripetal",
+
+    attributes.label.propagateToDescendants = true;
+    attributes.showLabel.propagateToDescendants = true;
+    attributes.layer.propagateToDescendants = true;
+
+    attributes.flipFunction = {
+      createComponentOfType: "boolean",
+      createStateVariable: "flipFunction",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.nDiscretizationPoints = {
+      createComponentOfType: "number",
+      createStateVariable: "nDiscretizationPoints",
+      defaultValue: 100,
+      public: true,
+    };
+    attributes.periodic = {
+      createComponentOfType: "boolean",
+      createStateVariable: "periodic",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.splineTension = {
+      createComponentOfType: "number",
+      createStateVariable: "splineTension",
+      defaultValue: 0.8,
+      clamp: [0, 1],
+      public: true,
+    };
+    attributes.extrapolateBackward = {
+      createComponentOfType: "boolean",
+      createStateVariable: "extrapolateBackward",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.extrapolateForward = {
+      createComponentOfType: "boolean",
+      createStateVariable: "extrapolateForward",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.splineForm = {
+      createComponentOfType: "text",
+      createStateVariable: "splineForm",
+      defaultValue: "centripetal",
+      public: true,
       toLowerCase: true,
       validValues: ["centripetal", "uniform"]
     };
+    attributes.variable = {
+      createComponentOfType: "variable",
+      createStateVariable: "variableForChild",
+      defaultValue: me.fromAst("x"),
+    }
 
-    return properties;
+    attributes.through = {
+      createComponentOfType: "_pointListComponent"
+    }
+    attributes.parMin = {
+      createComponentOfType: "math"
+    }
+    attributes.parMax = {
+      createComponentOfType: "math"
+    }
+
+
+    return attributes;
   }
 
   static returnSugarInstructions() {
@@ -109,65 +166,18 @@ export default class Curve extends GraphicalComponent {
       number: 0
     })
 
-    let atMostOneThrough = childLogic.newLeaf({
-      name: "atMostOneThrough",
-      componentType: 'through',
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    });
-
     let atMostOneBezierControls = childLogic.newLeaf({
       name: "atMostOneBezierControls",
-      componentType: 'beziercontrols',
+      componentType: 'bezierControls',
       comparison: 'atMost',
       number: 1
     });
 
-    let throughAndControls = childLogic.newOperator({
-      name: "throughAndControls",
-      operator: 'and',
-      propositions: [atMostOneThrough, atMostOneBezierControls],
-    });
-
-    let functionsXorThrough = childLogic.newOperator({
-      name: "functionsXorThrough",
-      operator: 'xor',
-      propositions: [atLeastZeroFunctions, throughAndControls],
-    });
-
-    let atMostOneVariable = childLogic.newLeaf({
-      name: "atMostOneVariable",
-      componentType: "variable",
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let atMostOneParMin = childLogic.newLeaf({
-      name: "atMostOneParMin",
-      componentType: "parmin",
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
-    let atMostOneParMax = childLogic.newLeaf({
-      name: "atMostOneParMax",
-      componentType: "parmax",
-      comparison: "atMost",
-      number: 1,
-      takePropertyChildren: true,
-    })
-
     childLogic.newOperator({
-      name: "curveLogic",
-      operator: 'and',
-      propositions: [
-        functionsXorThrough, atMostOneVariable,
-        atMostOneParMin, atMostOneParMax
-      ],
-      setAsBase: true,
+      name: "functionsXorControl",
+      operator: 'xor',
+      propositions: [atLeastZeroFunctions, atMostOneBezierControls],
+      setAsBase: true
     });
 
     return childLogic;
@@ -208,34 +218,6 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.variableForChild = {
-      defaultValue: me.fromAst("x"),
-      returnDependencies: () => ({
-        variableChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneVariable",
-          variableNames: ["value"],
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.variableChild.length === 1) {
-          return {
-            newValues: {
-              variableForChild: dependencyValues.variableChild[0].stateValues.value
-            }
-          }
-        } else {
-          return {
-            useEssentialOrDefaultValue: {
-              variableForChild: {
-                variablesToCheck: ["variable", "variableForChild"]
-              }
-            }
-          }
-        }
-      }
-    }
-
     stateVariableDefinitions.curveType = {
       forRenderer: true,
       returnDependencies: () => ({
@@ -243,14 +225,14 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "child",
           childLogicName: "atLeastZeroFunctions"
         },
-        throughChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneThrough"
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through"
         }
       }),
       definition({ dependencyValues }) {
         let curveType = "function"
-        if (dependencyValues.throughChild.length === 1) {
+        if (dependencyValues.through !== null) {
           curveType = "bezier"
         } else if (dependencyValues.functionChildren.length > 1) {
           curveType = "parameterization"
@@ -277,7 +259,7 @@ export default class Curve extends GraphicalComponent {
 
 
 
-    stateVariableDefinitions.parmax = {
+    stateVariableDefinitions.parMax = {
       public: true,
       componentType: "number",
       forRenderer: true,
@@ -287,9 +269,9 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "curveType",
         },
-        parMaxChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneParMax",
+        parMaxAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "parMax",
           variableNames: ["value"]
         },
         nThroughPoints: {
@@ -302,30 +284,30 @@ export default class Curve extends GraphicalComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        let parmax;
+        let parMax;
         if (dependencyValues.curveType === "bezier") {
-          parmax = dependencyValues.nThroughPoints - 1;
+          parMax = dependencyValues.nThroughPoints - 1;
           if (dependencyValues.extrapolateForward) {
-            parmax *= 2;
+            parMax *= 2;
           }
-        } else if (dependencyValues.parMaxChild.length === 1) {
-          parmax = dependencyValues.parMaxChild[0].stateValues.value.evaluate_to_constant();
-          if (!Number.isFinite(parmax)) {
-            parmax = NaN;
+        } else if (dependencyValues.parMaxAttr !== null) {
+          parMax = dependencyValues.parMaxAttr.stateValues.value.evaluate_to_constant();
+          if (!Number.isFinite(parMax)) {
+            parMax = NaN;
           }
         } else {
           return {
             useEssentialOrDefaultValue: {
-              parmax: { variablesToCheck: ["parmax"] }
+              parMax: { variablesToCheck: ["parMax"] }
             }
           }
         }
 
-        return { newValues: { parmax } }
+        return { newValues: { parMax } }
       }
     }
 
-    stateVariableDefinitions.parmin = {
+    stateVariableDefinitions.parMin = {
       forRenderer: true,
       public: true,
       componentType: "number",
@@ -335,9 +317,9 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "curveType",
         },
-        parMinChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneParMin",
+        parMinAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "parMin",
           variableNames: ["value"]
         },
         nThroughPoints: {
@@ -350,40 +332,40 @@ export default class Curve extends GraphicalComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        let parmin;
+        let parMin;
         if (dependencyValues.curveType === "bezier") {
-          parmin = 0;
+          parMin = 0;
           if (dependencyValues.extrapolateBackward) {
-            parmin = -(dependencyValues.nThroughPoints - 1);
+            parMin = -(dependencyValues.nThroughPoints - 1);
           }
-        } else if (dependencyValues.parMinChild.length === 1) {
-          parmin = dependencyValues.parMinChild[0].stateValues.value.evaluate_to_constant();
-          if (!Number.isFinite(parmin)) {
-            parmin = NaN;
+        } else if (dependencyValues.parMinAttr !== null) {
+          parMin = dependencyValues.parMinAttr.stateValues.value.evaluate_to_constant();
+          if (!Number.isFinite(parMin)) {
+            parMin = NaN;
           }
         } else {
           return {
             useEssentialOrDefaultValue: {
-              parmin: { variablesToCheck: ["parmin"] }
+              parMin: { variablesToCheck: ["parMin"] }
             }
           }
         }
-        return { newValues: { parmin } }
+        return { newValues: { parMin } }
       }
     }
 
     stateVariableDefinitions.nThroughPoints = {
       returnDependencies: () => ({
-        throughChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneThrough",
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
           variableNames: ["nPoints"]
         }
       }),
       definition({ dependencyValues }) {
         let nThroughPoints = 0;
-        if (dependencyValues.throughChild.length === 1) {
-          nThroughPoints = dependencyValues.throughChild[0].stateValues.nPoints
+        if (dependencyValues.through !== null) {
+          nThroughPoints = dependencyValues.through.stateValues.nPoints
         }
         return { newValues: { nThroughPoints } }
       }
@@ -394,17 +376,17 @@ export default class Curve extends GraphicalComponent {
       componentType: "number",
       returnDependencies() {
         return {
-          throughChild: {
-            dependencyType: "child",
-            childLogicName: "atMostOneThrough",
-            variableNames: ["nDimensions"],
+          through: {
+            dependencyType: "attributeComponent",
+            attributeName: "through",
+            variableNames: ["nDimensions"]
           }
         }
       },
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.throughChild.length === 1) {
-          let nDimensions = dependencyValues.throughChild[0].stateValues.nDimensions;
+        if (dependencyValues.through !== null) {
+          let nDimensions = dependencyValues.through.stateValues.nDimensions;
           return {
             newValues: { nDimensions },
             checkForActualChange: { nDimensions: true }
@@ -431,7 +413,7 @@ export default class Curve extends GraphicalComponent {
           // throughPoint or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -491,9 +473,9 @@ export default class Curve extends GraphicalComponent {
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
           dependenciesByKey[arrayKey] = {
-            throughChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneThrough",
+            through: {
+              dependencyType: "attributeComponent",
+              attributeName: "through",
               variableNames: ["pointX" + varEnding]
             }
           }
@@ -513,11 +495,11 @@ export default class Curve extends GraphicalComponent {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          let throughChild = dependencyValuesByKey[arrayKey].throughChild;
-          if (throughChild.length === 1
-            && throughChild[0].stateValues["pointX" + varEnding]
+          let through = dependencyValuesByKey[arrayKey].through;
+          if (through !== null
+            && through.stateValues["pointX" + varEnding]
           ) {
-            throughPoints[arrayKey] = throughChild[0].stateValues["pointX" + varEnding];
+            throughPoints[arrayKey] = through.stateValues["pointX" + varEnding];
           } else {
             throughPoints[arrayKey] = me.fromAst(0);
           }
@@ -546,11 +528,11 @@ export default class Curve extends GraphicalComponent {
           let [pointInd, dim] = arrayKey.split(",");
           let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
 
-          if (dependencyValuesByKey[arrayKey].throughChild.length === 1
-            && dependencyValuesByKey[arrayKey].throughChild[0].stateValues["pointX" + varEnding]
+          if (dependencyValuesByKey[arrayKey].through !== null
+            && dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding]
           ) {
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].throughChild,
+              setDependency: dependencyNamesByKey[arrayKey].through,
               desiredValue: desiredStateVariableValues.throughPoints[arrayKey],
               childIndex: 0,
               variableIndex: 0,
@@ -746,7 +728,7 @@ export default class Curve extends GraphicalComponent {
           // controlVector or entire array
           // wrap inner dimension by both <vector> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["vector", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -902,9 +884,9 @@ export default class Curve extends GraphicalComponent {
           let vectorInd = arrayIndices[1];
 
           let direction = dependencyValuesByKey[arrayKey].direction;
-          if (!direction) {
-            direction = "none";
-          }
+          // if (!direction) {
+          //   direction = "none";
+          // }
 
 
           if (direction === "none") {
@@ -948,48 +930,36 @@ export default class Curve extends GraphicalComponent {
             }
 
 
+          } else if ((arrayIndices[1] === 0 && direction === "next") ||
+            (arrayIndices[1] === 0 && direction === "next")
+          ) {
+            // calculate control vector from spline
+
+            // only two of these three will be defined
+            let point1 = dependencyValuesByKey[arrayKey]["throughPoint" + pointInd]
+            let point2 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 1)]
+            let point3 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 2)]
+
+
+            let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
+              tau: globalDependencyValues.splineTension,
+              eps: numerics.eps,
+              splineForm: globalDependencyValues.splineForm,
+              point1: point1 ? point1 : point3,
+              point2,
+              point3: undefined,
+            });
+
+            for (let dim = 0; dim < 2; dim++) {
+              let arrayKeyDim = pointInd + "," + vectorInd + "," + dim;
+              newControlValues[arrayKeyDim] = coordsNumeric[dim];
+            }
+
           } else {
-
             // if have a vector from control child, use that
-
-            let foundControlFromControlChild = false;
-
-            let controlChild = dependencyValuesByKey[arrayKey].controlChild;
-            if (controlChild.length === 1) {
-              let control = controlChild[0].stateValues["control" + jointVarEnding];
-              if (control) {
-                foundControlFromControlChild = true;
-                newControlValues[arrayKey] = control;
-              }
-            }
-
-            if (!foundControlFromControlChild) {
-              // calculate control vector from spline
-
-              // only two of these three will be defined
-              let point1 = dependencyValuesByKey[arrayKey]["throughPoint" + pointInd]
-              let point2 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 1)]
-              let point3 = dependencyValuesByKey[arrayKey]["throughPoint" + (pointInd + 2)]
-
-
-              let { coordsNumeric, numericEntries } = calculateControlVectorFromSpline({
-                tau: globalDependencyValues.splineTension,
-                eps: numerics.eps,
-                splineForm: globalDependencyValues.splineForm,
-                point1: point1 ? point1 : point3,
-                point2,
-                point3: undefined,
-              });
-
-              for (let dim = 0; dim < 2; dim++) {
-                let arrayKeyDim = pointInd + "," + vectorInd + "," + dim;
-                newControlValues[arrayKeyDim] = coordsNumeric[dim];
-              }
-
-
-            }
+            newControlValues[arrayKey] = dependencyValuesByKey[arrayKey].controlChild[0]
+              .stateValues["control" + jointVarEnding];
           }
-
 
         }
 
@@ -1112,7 +1082,7 @@ export default class Curve extends GraphicalComponent {
           // controlPoint or entire array
           // wrap inner dimension by both <point> and <xs>
           // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
@@ -1703,13 +1673,13 @@ export default class Curve extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "nDiscretizationPoints"
         },
-        parmin: {
+        parMin: {
           dependencyType: "stateVariable",
-          variableName: "parmin"
+          variableName: "parMin"
         },
-        parmax: {
+        parMax: {
           dependencyType: "stateVariable",
-          variableName: "parmax"
+          variableName: "parMax"
         },
         periodic: {
           dependencyType: "stateVariable",
@@ -1976,8 +1946,8 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
 function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
   let fs = dependencyValues.fs;
-  let parmin = dependencyValues.parmin;
-  let parmax = dependencyValues.parmax;
+  let parMin = dependencyValues.parMin;
+  let parMax = dependencyValues.parMax;
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
   let periodic = dependencyValues.periodic;
 
@@ -2004,8 +1974,8 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
       return dx1 * dx1 + dx2 * dx2;
     }
 
-    let minT = parmin;
-    let maxT = parmax;
+    let minT = parMin;
+    let maxT = parMax;
 
     let Nsteps = nDiscretizationPoints;
     let delta = (maxT - minT) / Nsteps;

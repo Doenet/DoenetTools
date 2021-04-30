@@ -4,28 +4,16 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 
 export default function SignOut() {
-  const [signedOutAttempts, setSignedOutAttempts] = useState(0);
+  const [signOutAttempted, setSignOutAttempted] = useState(false);
 
   useEffect(() => {
     localStorage.clear(); //Clear out the profile
 
-    const payload = {
-      params: {},
-    };
     axios
-      .get('/api/signOut.php', payload)
-      .then(() => {
-        Cookies.remove('TrackingConsent', { path: '/', sameSite: 'strict' });
-        Cookies.remove('Stay', {
-          path: '/',
-          expires: 24000,
-          sameSite: 'strict',
-        });
-        Cookies.remove('Device', {
-          path: '/',
-          expires: 24000,
-          sameSite: 'strict',
-        });
+      .get('/api/signOut.php', {params: {}})
+      .then((resp) => {
+      console.log(">>>signout resp",resp)
+      setSignOutAttempted(true);
       })
       .catch((error) => {
         this.setState({ error: error });
@@ -64,7 +52,7 @@ export default function SignOut() {
     );
   }
 
-  if (signedOutAttempts > 4) {
+  if (signOutAttempted) {
     return (
       <>
         <div
@@ -95,9 +83,6 @@ export default function SignOut() {
     );
   }
 
-  setTimeout(() => {
-    setSignedOutAttempts(signedOutAttempts + 1);
-  }, 100);
 
   return (
     <>

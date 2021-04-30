@@ -10,12 +10,26 @@ export class Extremum extends BaseComponent {
   static get stateVariablesShadowedForReference() { return ["location", "value"] };
 
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.location = {
+      createComponentOfType: "math"
+    }
+    attributes.value = {
+      createComponentOfType: "math"
+    }
+
+    return attributes;
+
+  }
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
     let breakIntoLocationValueByCommas = function ({ matchedChildren }) {
       let childrenToComponentFunction = x => ({
-        componentType: "x", children: x
+        componentType: "math", children: x
       });
 
       let breakFunction = returnBreakStringsSugarFunction({
@@ -30,45 +44,62 @@ export class Extremum extends BaseComponent {
         // then just wrap string with a value
         return {
           success: true,
-          newChildren: [{
-            componentType: "value",
-            doenetAttributes: { isPropertyChild: true },
-            children: matchedChildren
-          }]
+          newAttributes: {
+            value: {
+              componentType: "math",
+              children: matchedChildren
+            }
+          }
         }
       }
 
       if (result.success) {
         if (result.newChildren.length === 1) {
           // one component is a value
-          result.newChildren[0].componentType = "value";
-          result.newChildren[0].doenetAttributes = { isPropertyChild: true };
+          return {
+            success: true,
+            newAttributes: {
+              value: result.newChildren[0]
+            }
+          }
         } else if (result.newChildren.length === 2) {
           // two components is a location and value
-          result.newChildren[0].componentType = "location";
-          result.newChildren[0].doenetAttributes = { isPropertyChild: true };
-          result.newChildren[1].componentType = "value";
-          result.newChildren[1].doenetAttributes = { isPropertyChild: true };
+
+          let locationComponent = result.newChildren[0];
+          let valueComponent = result.newChildren[1];
+
+          let newAttributes = {
+            location: locationComponent,
+            value: valueComponent
+          }
 
           // remove components that are empty
-          if (result.newChildren[1].children.length === 0 ||
+          if (locationComponent.children.length === 0 ||
             (
-              result.newChildren[1].children.length === 1 &&
-              result.newChildren[1].children[0].componentType === "string" &&
-              result.newChildren[1].children[0].state.value.trim() === ""
+              locationComponent.children.length === 1 &&
+              locationComponent.children[0].componentType === "string" &&
+              locationComponent.children[0].state.value.trim() === ""
             )
           ) {
-            result.newChildren.splice(1, 1)
+            delete newAttributes.location;
           }
-          if (result.newChildren[0].children.length === 0 ||
+
+          if (valueComponent.children.length === 0 ||
             (
-              result.newChildren[0].children.length === 1 &&
-              result.newChildren[0].children[0].componentType === "string" &&
-              result.newChildren[0].children[0].state.value.trim() === ""
+              valueComponent.children.length === 1 &&
+              valueComponent.children[0].componentType === "string" &&
+              valueComponent.children[0].state.value.trim() === ""
             )
           ) {
-            result.newChildren.splice(0, 1)
+            delete newAttributes.value;
           }
+
+          return {
+            success: true,
+            newAttributes
+          }
+
+
         } else {
           return { success: false }
         }
@@ -91,37 +122,11 @@ export class Extremum extends BaseComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneLocation = childLogic.newLeaf({
-      name: "exactlyOneLocation",
-      componentType: 'location',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let exactlyOneValue = childLogic.newLeaf({
-      name: "exactlyOneValue",
-      componentType: 'value',
-      number: 1,
-      takePropertyChildren: true,
-    });
-
-    let locationOrValue = childLogic.newOperator({
-      name: "locationOrValue",
-      operator: 'or',
-      propositions: [exactlyOneLocation, exactlyOneValue],
-    });
-
-    let atMostOnePoint = childLogic.newLeaf({
+    childLogic.newLeaf({
       name: "atMostOnePoint",
       componentType: "point",
       comparison: "atMost",
       number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "locationValueXorPoint",
-      operator: 'xor',
-      propositions: [locationOrValue, atMostOnePoint],
       setAsBase: true,
     });
 
@@ -151,14 +156,14 @@ export class Extremum extends BaseComponent {
           childLogicName: "atMostOnePoint",
           variableNames: ["nDimensions", "xs"]
         },
-        locationChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneLocation",
+        location: {
+          dependencyType: "attributeComponent",
+          attributeName: "location",
           variableNames: ["value"]
         },
-        valueChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneValue",
+        value: {
+          dependencyType: "attributeComponent",
+          attributeName: "value",
           variableNames: ["value"]
         },
       }),
@@ -176,11 +181,11 @@ export class Extremum extends BaseComponent {
             value = extremumChild.stateValues.xs[1];
           }
         } else {
-          if (dependencyValues.locationChild.length === 1) {
-            location = dependencyValues.locationChild[0].stateValues.value;
+          if (dependencyValues.location !== null) {
+            location = dependencyValues.location.stateValues.value;
           }
-          if (dependencyValues.valueChild.length === 1) {
-            value = dependencyValues.valueChild[0].stateValues.value;
+          if (dependencyValues.value !== null) {
+            value = dependencyValues.value.stateValues.value;
           }
         }
 
@@ -222,17 +227,17 @@ export class Extremum extends BaseComponent {
 
 }
 
-export class Maximum extends Extremum {
-  static componentType = "maximum";
-}
+// export class Maximum extends Extremum {
+//   static componentType = "maximum";
+// }
 
-export class Minimum extends Extremum {
-  static componentType = "minimum";
-}
+// export class Minimum extends Extremum {
+//   static componentType = "minimum";
+// }
 
 export class Extrema extends BaseComponent {
   static componentType = "extrema";
-  static rendererType = "container";
+  static rendererType = undefined;
   static componentTypeSingular = "extremum"
   static get componentTypeCapitalized() {
     return this.componentType.charAt(0).toUpperCase() + this.componentType.slice(1);
@@ -395,43 +400,6 @@ export class Extrema extends BaseComponent {
           return extremaClass.componentTypeSingular + "Value" + (Number(ind1) + 1)
         }
       },
-      // getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
-      //   if (arrayEntryPrefix === "pointX") {
-      //     // pointX1_2 is the 2nd component of the first point
-      //     let indices = varEnding.split('_').map(x => Number(x) - 1)
-      //     if (indices.length === 2 && indices.every(
-      //       (x, i) => Number.isInteger(x) && x >= 0
-      //     )) {
-      //       if (arraySize) {
-      //         if (indices.every((x, i) => x < arraySize[i])) {
-      //           return [String(indices)];
-      //         } else {
-      //           return [];
-      //         }
-      //       } else {
-      //         // if don't know array size, just guess that the entry is OK
-      //         // It will get corrected once array size is known.
-      //         // TODO: better to return empty array?
-      //         return [String(indices)];
-      //       }
-      //     } else {
-      //       return [];
-      //     }
-      //   } else {
-      //     // point3 is all components of the third point
-      //     if (!arraySize) {
-      //       return [];
-      //     }
-      //     let extremumInd = Number(varEnding) - 1;
-      //     if (Number.isInteger(extremumInd) && extremumInd >= 0 && extremumInd < arraySize[0]) {
-      //       // array of "extremumInd,i", where i=0, ..., arraySize[1]-1
-      //       return Array.from(Array(arraySize[1]), (_, i) => extremumInd + "," + i)
-      //     } else {
-      //       return [];
-      //     }
-      //   }
-
-      // },
       returnArraySizeDependencies: () => ({
         nChildren: {
           dependencyType: "stateVariable",
@@ -446,7 +414,7 @@ export class Extrema extends BaseComponent {
         for (let arrayKey of arrayKeys) {
           let [extremumInd, dim] = arrayKey.split(',');
           let varName;
-          if(stateValues.childIdentities[extremumInd].componentType === extremaClass.componentTypeSingular) {
+          if (stateValues.childIdentities[extremumInd].componentType === extremaClass.componentTypeSingular) {
             varName = Number(dim) === 0 ? "location" : "value"
           } else {
             varName = "x" + (Number(dim) + 1);
@@ -517,33 +485,18 @@ export class Extrema extends BaseComponent {
       }
     }
 
-
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        extremumChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroExtrema",
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          childrenToRender: dependencyValues.extremumChildren.map(x => x.componentName)
-        }
-      })
-    }
-
     return stateVariableDefinitions;
 
   }
 
 }
 
-export class Maxima extends Extrema {
-  static componentType = "maxima";
-  static componentTypeSingular = "maximum"
-}
+// export class Maxima extends Extrema {
+//   static componentType = "maxima";
+//   static componentTypeSingular = "maximum"
+// }
 
-export class Minima extends Extrema {
-  static componentType = "minima";
-  static componentTypeSingular = "minimum"
-}
+// export class Minima extends Extrema {
+//   static componentType = "minima";
+//   static componentTypeSingular = "minimum"
+// }

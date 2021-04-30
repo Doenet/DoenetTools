@@ -15,1233 +15,6 @@ describe('Vector Tag Tests', function () {
 
   })
 
-  it('vector with single sugared point, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <vector>(-4,2)</vector>
-  </graph>
-
-  <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
-  </graph>
-  `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let tail = components['/_copy1'].replacements[0];
-      let head = components['/_copy2'].replacements[0];
-      let displacement = components['/_copy3'].replacements[0];
-
-      cy.window().then((win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-
-      })
-
-      cy.log('move vector up and to the right')
-      cy.window().then((win) => {
-
-        let tailcoords = [
-          components['/_vector1'].stateValues.tail[0],
-          components['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          components['/_vector1'].stateValues.head[0],
-          components['/_vector1'].stateValues.head[1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
-
-        components['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify().tree;
-        let taily = tailcoords[1].simplify().tree;
-        let headx = headcoords[0].simplify().tree;
-        let heady = headcoords[1].simplify().tree;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        tail.movePoint({ x: tailx, y: taily });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied head')
-      cy.window().then((win) => {
-
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        head.movePoint({ x: headx, y: heady });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move displacement')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-    })
-  })
-
-  it('vector with single point, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <vector><point>(-4,2)</point></vector>
-  </graph>
-
-  <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
-  </graph>
-  `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let tail = components['/_copy1'].replacements[0];
-      let head = components['/_copy2'].replacements[0];
-      let displacement = components['/_copy3'].replacements[0];
-
-      cy.window().then((win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-
-      })
-
-      cy.log('move vector up and to the right')
-      cy.window().then((win) => {
-
-        let tailcoords = [
-          components['/_vector1'].stateValues.tail[0],
-          components['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          components['/_vector1'].stateValues.head[0],
-          components['/_vector1'].stateValues.head[1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
-
-        components['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify().tree;
-        let taily = tailcoords[1].simplify().tree;
-        let headx = headcoords[0].simplify().tree;
-        let heady = headcoords[1].simplify().tree;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        tail.movePoint({ x: tailx, y: taily });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied head')
-      cy.window().then((win) => {
-
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        head.movePoint({ x: headx, y: heady });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move displacement')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-    })
-  })
-
-  it('vector with just head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <vector head="(-4,2)"/>
-  </graph>
-
-  <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
-  </graph>
-  `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let tail = components['/_copy1'].replacements[0];
-      let head = components['/_copy2'].replacements[0];
-      let displacement = components['/_copy3'].replacements[0];
-
-      cy.window().then((win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-
-      })
-
-      cy.log('move vector up and to the right')
-      cy.window().then((win) => {
-
-        let tailcoords = [
-          components['/_vector1'].stateValues.tail[0],
-          components['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          components['/_vector1'].stateValues.head[0],
-          components['/_vector1'].stateValues.head[1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
-
-        components['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify().tree;
-        let taily = tailcoords[1].simplify().tree;
-        let headx = headcoords[0].simplify().tree;
-        let heady = headcoords[1].simplify().tree;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied tail keeps head fixed')
-      cy.window().then((win) => {
-
-        let tailx = -7;
-        let taily = 5;
-        let headx = -1;
-        let heady = 4;
-
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        tail.movePoint({ x: tailx, y: taily });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied head')
-      cy.window().then((win) => {
-
-        let tailx = -7;
-        let taily = 5;
-        let headx = -3;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        head.movePoint({ x: headx, y: heady });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-
-      cy.log('move displacement')
-      cy.window().then((win) => {
-
-        let tailx = -7;
-        let taily = 5;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-    })
-  })
-
-
-  it('vector with just displacement, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <vector displacement ="(-4,2)" />
-  </graph>
-
-  <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
-  </graph>
-  `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let tail = components['/_copy1'].replacements[0];
-      let head = components['/_copy2'].replacements[0];
-      let displacement = components['/_copy3'].replacements[0];
-
-      cy.window().then((win) => {
-        let tailx = 0;
-        let taily = 0;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-
-      })
-
-      cy.log('move vector up and to the right')
-      cy.window().then((win) => {
-
-        let tailcoords = [
-          components['/_vector1'].stateValues.tail[0],
-          components['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          components['/_vector1'].stateValues.head[0],
-          components['/_vector1'].stateValues.head[1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
-
-        components['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify().tree;
-        let taily = tailcoords[1].simplify().tree;
-        let headx = headcoords[0].simplify().tree;
-        let heady = headcoords[1].simplify().tree;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -3;
-        let heady = 8;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        tail.movePoint({ x: tailx, y: taily });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied head')
-      cy.window().then((win) => {
-
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        head.movePoint({ x: headx, y: heady });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move displacement')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-    })
-  })
-
-  it('vector with head and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <vector tail="(4,1)" head="(-4,2)" />
-  </graph>
-
-  <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
-  </graph>
-  `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let tail = components['/_copy1'].replacements[0];
-      let head = components['/_copy2'].replacements[0];
-      let displacement = components['/_copy3'].replacements[0];
-
-      cy.window().then((win) => {
-        let tailx = 4;
-        let taily = 1;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-
-      })
-
-      cy.log('move vector up and to the right')
-      cy.window().then((win) => {
-
-        let tailcoords = [
-          components['/_vector1'].stateValues.tail[0],
-          components['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          components['/_vector1'].stateValues.head[0],
-          components['/_vector1'].stateValues.head[1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
-
-        components['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify().tree;
-        let taily = tailcoords[1].simplify().tree;
-        let headx = headcoords[0].simplify().tree;
-        let heady = headcoords[1].simplify().tree;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied tail keeps head fixed')
-      cy.window().then((win) => {
-
-        let tailx = -7;
-        let taily = 5;
-        let headx = -1;
-        let heady = 4;
-
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        tail.movePoint({ x: tailx, y: taily });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied head')
-      cy.window().then((win) => {
-
-        let tailx = -7;
-        let taily = 5;
-        let headx = -3;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        head.movePoint({ x: headx, y: heady });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-
-      cy.log('move displacement')
-      cy.window().then((win) => {
-
-        let tailx = -7;
-        let taily = 5;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-    })
-  })
-
-  it('vector with displacement and tail, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <vector displacement="(-8,1)" tail="(4,1)" />
-  </graph>
-
-  <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
-  </graph>
-  `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let tail = components['/_copy1'].replacements[0];
-      let head = components['/_copy2'].replacements[0];
-      let displacement = components['/_copy3'].replacements[0];
-
-      cy.window().then((win) => {
-        let tailx = 4;
-        let taily = 1;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-
-      })
-
-      cy.log('move vector up and to the right')
-      cy.window().then((win) => {
-
-        let tailcoords = [
-          components['/_vector1'].stateValues.tail[0],
-          components['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          components['/_vector1'].stateValues.head[0],
-          components['/_vector1'].stateValues.head[1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
-
-        components['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify().tree;
-        let taily = tailcoords[1].simplify().tree;
-        let headx = headcoords[0].simplify().tree;
-        let heady = headcoords[1].simplify().tree;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied tail moves vector')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = -7;
-        let heady = 7;
-
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        tail.movePoint({ x: tailx, y: taily });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied head')
-      cy.window().then((win) => {
-
-
-        let tailx = 1;
-        let taily = 6;
-        let headx = 4;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        head.movePoint({ x: headx, y: heady });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move displacement')
-      cy.window().then((win) => {
-
-        let tailx = 1;
-        let taily = 6;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let headx = tailx + displacementx;
-        let heady = taily + displacementy;
-
-        displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-    })
-
-  })
-
-  it('vector with displacement and head, head/tail/displacement copied', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <vector displacement="(-8,1)" head="(-4,2)" />
-  </graph>
-
-  <graph>
-  <copy prop="tail" tname="_vector1" />
-  <copy prop="head" tname="_vector1" />
-  <copy prop="displacement" tname="_vector1" />
-  </graph>
-  `}, "*");
-    });
-
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', 'a');
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let tail = components['/_copy1'].replacements[0];
-      let head = components['/_copy2'].replacements[0];
-      let displacement = components['/_copy3'].replacements[0];
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let tailx = 4;
-        let taily = 1;
-        let headx = -4;
-        let heady = 2;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-
-      })
-
-      cy.log('move vector up and to the right')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let tailcoords = [
-          components['/_vector1'].stateValues.tail[0],
-          components['/_vector1'].stateValues.tail[1],
-        ];
-        let headcoords = [
-          components['/_vector1'].stateValues.head[0],
-          components['/_vector1'].stateValues.head[1],
-        ];
-
-        let moveX = 3;
-        let moveY = 2;
-
-        tailcoords[0] = tailcoords[0].add(moveX).simplify();
-        tailcoords[1] = tailcoords[1].add(moveY).simplify();
-        headcoords[0] = headcoords[0].add(moveX).simplify();
-        headcoords[1] = headcoords[1].add(moveY).simplify();
-
-        components['/_vector1'].moveVector({
-          tailcoords: tailcoords,
-          headcoords: headcoords
-        });
-
-        let tailx = tailcoords[0].simplify().tree;
-        let taily = tailcoords[1].simplify().tree;
-        let headx = headcoords[0].simplify().tree;
-        let heady = headcoords[1].simplify().tree;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied head moves vector')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let tailx = 5;
-        let taily = -10;
-        let headx = -3;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        head.movePoint({ x: headx, y: heady });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move copied tail')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let tailx = -7;
-        let taily = 5;
-        let headx = -3;
-        let heady = -9;
-        let displacementx = headx - tailx;
-        let displacementy = heady - taily;
-
-        tail.movePoint({ x: tailx, y: taily });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-
-      cy.log('move displacement')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let headx = -3;
-        let heady = -9;
-        let displacementtailx = 3;
-        let displacementtaily = -5;
-        let displacementheadx = 6;
-        let displacementheady = -9;
-        let displacementx = displacementheadx - displacementtailx;
-        let displacementy = displacementheady - displacementtaily;
-
-        let tailx = headx - displacementx;
-        let taily = heady - displacementy;
-
-        displacement.moveVector({
-          tailcoords: [displacementtailx, displacementtaily],
-          headcoords: [displacementheadx, displacementheady]
-        });
-
-        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
-        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
-        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-        expect(tail.stateValues.xs[0].tree).eq(tailx);
-        expect(tail.stateValues.xs[1].tree).eq(taily);
-        expect(head.stateValues.xs[0].tree).eq(headx);
-        expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
-        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
-        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
-      })
-    })
-  })
-
   it('vector with no arguments, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1421,13 +194,14 @@ describe('Vector Tag Tests', function () {
     })
   })
 
-  it('vector with just tail, head/tail/displacement copied', () => {
+
+  it('vector with sugared tuple giving xs, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector tail="(3,4)"/>
+  <vector>(-4,2)</vector>
   </graph>
 
   <graph>
@@ -1448,11 +222,10 @@ describe('Vector Tag Tests', function () {
       let displacement = components['/_copy3'].replacements[0];
 
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        let tailx = 3;
-        let taily = 4;
-        let headx = 4;
-        let heady = 4;
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
@@ -1463,7 +236,7 @@ describe('Vector Tag Tests', function () {
         expect(tail.stateValues.xs[1].tree).eq(taily);
         expect(head.stateValues.xs[0].tree).eq(headx);
         expect(head.stateValues.xs[1].tree).eq(heady);
-        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([0, 0]);
         expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
         expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
 
@@ -1471,7 +244,6 @@ describe('Vector Tag Tests', function () {
 
       cy.log('move vector up and to the right')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
         let tailcoords = [
           components['/_vector1'].stateValues.tail[0],
@@ -1514,15 +286,13 @@ describe('Vector Tag Tests', function () {
         expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
 
-      cy.log('move copied tail')
+      cy.log('move copied tail moves vector')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
-        let headx = 7;
-        let heady = 6;
-
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
 
@@ -1542,11 +312,11 @@ describe('Vector Tag Tests', function () {
 
       cy.log('move copied head')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
-        let headx = -3;
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
         let heady = -9;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
@@ -1567,10 +337,9 @@ describe('Vector Tag Tests', function () {
 
       cy.log('move displacement')
       cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
 
-        let tailx = -7;
-        let taily = 5;
+        let tailx = 1;
+        let taily = 6;
         let displacementtailx = 3;
         let displacementtaily = -5;
         let displacementheadx = 6;
@@ -1586,6 +355,701 @@ describe('Vector Tag Tests', function () {
           headcoords: [displacementheadx, displacementheady]
         });
 
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with point giving displacement, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector><point>(-4,2)</point></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector from vector giving displacement, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector><vector>(-4,2)</vector></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with just displacement, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector displacement ="(-4,2)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with xs, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector xs="-4 2" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
 
         expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
         expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
@@ -1776,13 +1240,13 @@ describe('Vector Tag Tests', function () {
 
   })
 
-  it('vector with xs, head/tail/displacement copied', () => {
+  it('vector with y, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector xs="-4 2" />
+  <vector y="2" />
   </graph>
 
   <graph>
@@ -1805,7 +1269,7 @@ describe('Vector Tag Tests', function () {
       cy.window().then((win) => {
         let tailx = 0;
         let taily = 0;
-        let headx = -4;
+        let headx = 0;
         let heady = 2;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
@@ -1872,7 +1336,7 @@ describe('Vector Tag Tests', function () {
 
         let tailx = 1;
         let taily = 6;
-        let headx = -3;
+        let headx = 1;
         let heady = 8;
         let displacementx = headx - tailx;
         let displacementy = heady - taily;
@@ -1948,15 +1412,545 @@ describe('Vector Tag Tests', function () {
         expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
       })
     })
+
   })
 
-  it('vector with x, y and tail, head/tail/displacement copied', () => {
+
+  it('vector with sugared tuple giving xs and tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector x="-8" y="1" tail="(4,1)" />
+  <vector tail="(4,1)" >(-8,1)</vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+
+  })
+
+  it('vector with displacement point child and tail, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector tail="(4,1)" ><point>(-8,1)</point></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+
+  })
+
+  it('vector with displacement vector child and tail, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector tail="(4,1)" ><vector>(-8,1)</vector></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+
+  })
+
+  it('vector with displacement and tail, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector displacement="(-8,1)" tail="(4,1)" />
   </graph>
 
   <graph>
@@ -2302,13 +2296,901 @@ describe('Vector Tag Tests', function () {
 
   })
 
-  it('vector with x, y and head, head/tail/displacement copied', () => {
+  it('vector with x, y and tail, head/tail/displacement copied', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <vector x="-8" y="1" head="(-4,2)" />
+  <vector x="-8" y="1" tail="(4,1)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -7;
+        let heady = 7;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+
+  })
+
+  it('vector with y and tail, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector y="1" tail="(4,1)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 4;
+        let taily = 1;
+        let headx = 4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 1;
+        let heady = 7;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+
+  })
+  
+
+
+  it('vector with sugared tuple giving xs and head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector head="(-4,2)" >(-8,1)</vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let headx = -3;
+        let heady = -9;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let tailx = headx - displacementx;
+        let taily = heady - displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with displacement point child and head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector head="(-4,2)" ><point>(-8,1)</point></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let headx = -3;
+        let heady = -9;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let tailx = headx - displacementx;
+        let taily = heady - displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with displacement vector child and head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector head="(-4,2)" ><vector>(-8,1)</vector></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let headx = -3;
+        let heady = -9;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let tailx = headx - displacementx;
+        let taily = heady - displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with displacement and head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector displacement="(-8,1)" head="(-4,2)" />
   </graph>
 
   <graph>
@@ -2657,6 +3539,894 @@ describe('Vector Tag Tests', function () {
       })
     })
   })
+
+  it('vector with x, y and head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector x="-8" y="1" head="(-4,2)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = 5;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let headx = -3;
+        let heady = -9;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let tailx = headx - displacementx;
+        let taily = heady - displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with y and head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector y="1" head="(-4,2)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        let tailx = -4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head moves vector')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -3;
+        let taily = -10;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let headx = -3;
+        let heady = -9;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let tailx = headx - displacementx;
+        let taily = heady - displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+
+  it('vector with just head, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector head="(-4,2)"/>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail keeps head fixed')
+      cy.window().then((win) => {
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -1;
+        let heady = 4;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = -7;
+        let taily = 5;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with head and tail, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector tail="(4,1)" head="(-4,2)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 4;
+        let taily = 1;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail keeps head fixed')
+      cy.window().then((win) => {
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -1;
+        let heady = 4;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = -7;
+        let taily = 5;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector with just tail, head/tail/displacement copied', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector tail="(3,4)"/>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        let tailx = 3;
+        let taily = 4;
+        let headx = 4;
+        let heady = 4;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = 7;
+        let heady = 6;
+
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let headx = -3;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let tailx = -7;
+        let taily = 5;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
 
   it('copied vectors', () => {
     cy.window().then((win) => {
@@ -6351,7 +8121,7 @@ describe('Vector Tag Tests', function () {
 
       x2 = 7;
       y2 = -3;
-      let head1=components["/_vector1"].activeChildren.filter(x=>x.componentType==="head")[0];
+      let head1=components["/_vector1"].attributes.head;
       head1.movePoint({ x: x2, y: y2 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -6368,7 +8138,7 @@ describe('Vector Tag Tests', function () {
 
       x1 = -1;
       y1 = -4;
-      let tail1=components["/_vector1"].activeChildren.filter(x=>x.componentType==="tail")[0];
+      let tail1=components["/_vector1"].attributes.tail;
       tail1.movePoint({ x: x1, y: y1 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -6385,7 +8155,7 @@ describe('Vector Tag Tests', function () {
 
       x3 = 9;
       y3 = -8;
-      let tail2=components["/_vector2"].activeChildren.filter(x=>x.componentType==="tail")[0];
+      let tail2=components["/_vector2"].attributes.tail;
       tail2.movePoint({ x: x3, y: y3 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -6402,7 +8172,7 @@ describe('Vector Tag Tests', function () {
 
       x2 = 3;
       y2 = 2;
-      let head2=components["/_vector2"].activeChildren.filter(x=>x.componentType==="head")[0];
+      let head2=components["/_vector2"].attributes.head;
       head2.movePoint({ x: x2, y: y2 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -6419,7 +8189,7 @@ describe('Vector Tag Tests', function () {
 
       x1 = -5;
       y1 = 8;
-      let head3=components["/_vector3"].activeChildren.filter(x=>x.componentType==="head")[0];
+      let head3=components["/_vector3"].attributes.head;
       head3.movePoint({ x: x1, y: y1 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -6436,7 +8206,7 @@ describe('Vector Tag Tests', function () {
 
       x3 = 0;
       y3 = -5;
-      let tail3=components["/_vector3"].activeChildren.filter(x=>x.componentType==="tail")[0];
+      let tail3=components["/_vector3"].attributes.tail;
       tail3.movePoint({ x: x3, y: y3 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -6695,6 +8465,1572 @@ describe('Vector Tag Tests', function () {
     })
 
 
+  })
+  
+  it('point inside vector overrides displacement', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector displacement="(9, 10)" ><point>(-4,2)</point></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector inside vector overrides displacement', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector displacement="(9, 10)" ><vector>(-4,2)</vector></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('point inside vector overrides xs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector xs="9 10" ><point>(-4,2)</point></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector inside vector overrides xs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector xs="9 10" ><vector>(-4,2)</vector></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('diplacement overrides xs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector xs="9 10" displacement="(-4,2)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('point inside vector overrides x and y', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector x="9" y="10" ><point>(-4,2)</point></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('vector inside vector overrides x and y', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector x="9" y="10" ><vector>(-4,2)</vector></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('diplacement overrides x and y', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector x="9" y="10" displacement="(-4,2)" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
+  })
+
+  it('xs overrides x and y', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector x="9" y="10" xs="-4 2" />
+  </graph>
+
+  <graph>
+  <copy prop="tail" tname="_vector1" />
+  <copy prop="head" tname="_vector1" />
+  <copy prop="displacement" tname="_vector1" />
+  </graph>
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let tail = components['/_copy1'].replacements[0];
+      let head = components['/_copy2'].replacements[0];
+      let displacement = components['/_copy3'].replacements[0];
+
+      cy.window().then((win) => {
+        let tailx = 0;
+        let taily = 0;
+        let headx = -4;
+        let heady = 2;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+
+      })
+
+      cy.log('move vector up and to the right')
+      cy.window().then((win) => {
+
+        let tailcoords = [
+          components['/_vector1'].stateValues.tail[0],
+          components['/_vector1'].stateValues.tail[1],
+        ];
+        let headcoords = [
+          components['/_vector1'].stateValues.head[0],
+          components['/_vector1'].stateValues.head[1],
+        ];
+
+        let moveX = 3;
+        let moveY = 2;
+
+        tailcoords[0] = tailcoords[0].add(moveX).simplify();
+        tailcoords[1] = tailcoords[1].add(moveY).simplify();
+        headcoords[0] = headcoords[0].add(moveX).simplify();
+        headcoords[1] = headcoords[1].add(moveY).simplify();
+
+        components['/_vector1'].moveVector({
+          tailcoords: tailcoords,
+          headcoords: headcoords
+        });
+
+        let tailx = tailcoords[0].simplify().tree;
+        let taily = tailcoords[1].simplify().tree;
+        let headx = headcoords[0].simplify().tree;
+        let heady = headcoords[1].simplify().tree;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied tail moves vector')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = -3;
+        let heady = 8;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        tail.movePoint({ x: tailx, y: taily });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move copied head')
+      cy.window().then((win) => {
+
+
+        let tailx = 1;
+        let taily = 6;
+        let headx = 4;
+        let heady = -9;
+        let displacementx = headx - tailx;
+        let displacementy = heady - taily;
+
+        head.movePoint({ x: headx, y: heady });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([0, 0]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+
+      cy.log('move displacement')
+      cy.window().then((win) => {
+
+        let tailx = 1;
+        let taily = 6;
+        let displacementtailx = 3;
+        let displacementtaily = -5;
+        let displacementheadx = 6;
+        let displacementheady = -9;
+        let displacementx = displacementheadx - displacementtailx;
+        let displacementy = displacementheady - displacementtaily;
+
+        let headx = tailx + displacementx;
+        let heady = taily + displacementy;
+
+        displacement.moveVector({
+          tailcoords: [displacementtailx, displacementtaily],
+          headcoords: [displacementheadx, displacementheady]
+        });
+
+        expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([tailx, taily]);
+        expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([headx, heady]);
+        expect(components['/_vector1'].stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+        expect(tail.stateValues.xs[0].tree).eq(tailx);
+        expect(tail.stateValues.xs[1].tree).eq(taily);
+        expect(head.stateValues.xs[0].tree).eq(headx);
+        expect(head.stateValues.xs[1].tree).eq(heady);
+        expect(displacement.stateValues.tail.map(x => x.tree)).eqls([displacementtailx, displacementtaily]);
+        expect(displacement.stateValues.head.map(x => x.tree)).eqls([displacementheadx, displacementheady]);
+        expect(displacement.stateValues.displacement.map(x => x.tree)).eqls([displacementx, displacementy]);
+      })
+    })
   })
 
 });
