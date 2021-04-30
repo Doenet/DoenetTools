@@ -78,7 +78,8 @@ export default class BezierControls extends BaseComponent {
       returnDependencies: () => ({
         nParentPoints: {
           dependencyType: "parentStateVariable",
-          variableName: "nThroughPoints"
+          variableName: "nThroughPoints",
+          skipComponentNames: true,
         }
       }),
       definition({ dependencyValues }) {
@@ -173,8 +174,14 @@ export default class BezierControls extends BaseComponent {
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyNamesByKey, dependencyValuesByKey
+        dependencyNamesByKey, dependencyValuesByKey,
+        // componentName
       }) {
+
+        // console.log(`inverse definition of directions for beziercontrols of ${componentName}`)
+        // console.log(JSON.parse(JSON.stringify(desiredStateVariableValues)));
+        // console.log(JSON.parse(JSON.stringify(dependencyNamesByKey)));
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)));
 
         let instructions = [];
         let newDirectionValues = {};
@@ -334,8 +341,7 @@ export default class BezierControls extends BaseComponent {
 
 
           let direction = stateValues.directions[arrayIndices[0]];
-          console.log(`direction: ${direction}`)
-          if (direction && direction !== "none" &&
+          if (direction !== "none" &&
             (arrayIndices[1] === 0 || arrayIndices[1] === 1)
           ) {
             let controlInd = stateValues.pointIndMap[arrayIndices[0]];
@@ -373,9 +379,9 @@ export default class BezierControls extends BaseComponent {
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys, componentName }) {
 
-        console.log(`definition of controls for beziercontrols of ${componentName}`)
-        console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)));
-        console.log(JSON.parse(JSON.stringify(arrayKeys)))
+        // console.log(`definition of controls for beziercontrols of ${componentName}`)
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)));
+        // console.log(JSON.parse(JSON.stringify(arrayKeys)))
 
         let newControlValues = {};
         let essentialControls = {};
@@ -385,23 +391,58 @@ export default class BezierControls extends BaseComponent {
           let varEndings = arrayIndices.map(x => x + 1);
 
           let direction = dependencyValuesByKey[arrayKey].direction;
-          if (!direction) {
-            // newControlValues[arrayKey] = null;
-            essentialControls[arrayKey] = {
-              variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
-            }
-          } else {
-            if (arrayIndices[1] === 0) {
-              if (direction === "none" || direction === "next") {
-                // newControlValues[arrayKey] = null;
-                essentialControls[arrayKey] = {
-                  variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
+
+          if (arrayIndices[1] === 0) {
+            if (direction === "none" || direction === "next") {
+              // Note: use essential controls, which will be ignored,
+              // rather than setting to null
+              // as setting to null in the case of no control child,
+              // will set the essential value to null, leading to a null
+              // control vector if the direction is changed away from none/next
+              essentialControls[arrayKey] = {
+                variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
+              }
+            } else {
+              let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+              let useEssential = true;
+              if (controlChild && controlChild.length === 1) {
+                let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
+                if (value) {
+                  useEssential = false;
+                  value = value.evaluate_to_constant();
+                  if (!Number.isFinite(value)) {
+                    value = NaN;
+                  }
+                  newControlValues[arrayKey] = me.fromAst(value);
                 }
-              } else {
-                let controlChild = dependencyValuesByKey[arrayKey].controlChild;
-                let useEssential = true;
-                if (controlChild && controlChild.length === 1) {
-                  let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
+              }
+
+              if (useEssential) {
+                if (direction === "symmetric") {
+                  newControlValues[arrayKey] = dependencyValuesByKey[arrayKey].essentialSymmetricControl
+                } else {
+                  essentialControls[arrayKey] = {
+                    variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
+                  }
+                }
+              }
+            }
+          } else if (arrayIndices[1] === 1) {
+            if (direction === "none" || direction === "previous") {
+              // Note: use essential controls, which will be ignored,
+              // rather than setting to null
+              // as setting to null in the case of no control child,
+              // will set the essential value to null, leading to a null
+              // control vector if the direction is changed away from none/previous
+              essentialControls[arrayKey] = {
+                variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
+              }
+            } else {
+              let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+              let useEssential = true;
+              if (controlChild && controlChild.length === 1) {
+                if (direction === "both") {
+                  let value = controlChild[0].stateValues["vectorX2_" + varEndings[2]];
                   if (value) {
                     useEssential = false;
                     value = value.evaluate_to_constant();
@@ -410,64 +451,31 @@ export default class BezierControls extends BaseComponent {
                     }
                     newControlValues[arrayKey] = me.fromAst(value);
                   }
-                }
-
-                if (useEssential) {
-                  if (direction === "symmetric") {
-                    newControlValues[arrayKey] = dependencyValuesByKey[arrayKey].essentialSymmetricControl
-                  } else {
-                    essentialControls[arrayKey] = {
-                      variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
+                } else {
+                  let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
+                  if (value) {
+                    useEssential = false;
+                    value = value.evaluate_to_constant();
+                    if (!Number.isFinite(value)) {
+                      value = NaN;
+                    }
+                    if (direction === "symmetric") {
+                      newControlValues[arrayKey] = me.fromAst(-value);
+                    } else {
+                      newControlValues[arrayKey] = me.fromAst(value);
                     }
                   }
                 }
               }
-            } else if (arrayIndices[1] === 1) {
-              if (direction === "none" || direction === "previous") {
-                // newControlValues[arrayKey] = null;
-                essentialControls[arrayKey] = {
-                  variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
-                }
-              } else {
-                let controlChild = dependencyValuesByKey[arrayKey].controlChild;
-                let useEssential = true;
-                if (controlChild && controlChild.length === 1) {
-                  if (direction === "both") {
-                    let value = controlChild[0].stateValues["vectorX2_" + varEndings[2]];
-                    if (value) {
-                      useEssential = false;
-                      value = value.evaluate_to_constant();
-                      if (!Number.isFinite(value)) {
-                        value = NaN;
-                      }
-                      newControlValues[arrayKey] = me.fromAst(value);
-                    }
-                  } else {
-                    let value = controlChild[0].stateValues["vectorX1_" + varEndings[2]];
-                    if (value) {
-                      useEssential = false;
-                      value = value.evaluate_to_constant();
-                      if (!Number.isFinite(value)) {
-                        value = NaN;
-                      }
-                      if (direction === "symmetric") {
-                        newControlValues[arrayKey] = me.fromAst(-value);
-                      } else {
-                        newControlValues[arrayKey] = me.fromAst(value);
-                      }
-                    }
-                  }
-                }
 
-                if (useEssential) {
-                  if (direction === "symmetric") {
-                    if (dependencyValuesByKey[arrayKey].essentialSymmetricControl) {
-                      newControlValues[arrayKey] = me.fromAst(-dependencyValuesByKey[arrayKey].essentialSymmetricControl.tree)
-                    }
-                  } else {
-                    essentialControls[arrayKey] = {
-                      variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
-                    }
+              if (useEssential) {
+                if (direction === "symmetric") {
+                  if (dependencyValuesByKey[arrayKey].essentialSymmetricControl) {
+                    newControlValues[arrayKey] = me.fromAst(-dependencyValuesByKey[arrayKey].essentialSymmetricControl.tree)
+                  }
+                } else {
+                  essentialControls[arrayKey] = {
+                    variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
                   }
                 }
               }

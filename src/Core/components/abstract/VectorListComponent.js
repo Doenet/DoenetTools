@@ -115,23 +115,14 @@ export default class VectorListComponent extends BaseComponent {
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["vectorX", "vector"],
-      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize, desiredEntrySize }) {
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vectorX") {
           // vectorX1_2 is the 2nd component of the first vector
           let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === 2 && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
-            if (desiredEntrySize) {
-              // If give a desired entry size, then ignore array size.
-              // Since by default, we return just 1 entry,
-              // return that one entry as long as the size is positive in all dimensions
-              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else if (arraySize) {
+            if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -149,18 +140,6 @@ export default class VectorListComponent extends BaseComponent {
         } else {
           // vector3 is all components of the third vector
           let vectorInd = Number(varEnding) - 1;
-          if (desiredEntrySize) {
-            if (desiredEntrySize[0] > 0 && Number.isInteger(vectorInd) && vectorInd >= 0) {
-              // if have desired entry size, then assume specify size after wrapping components
-              // In this case, if the entry size is positive, will return all components
-              // for point while ignoring arraySize[0]
-
-              // array of "vectorInd,i", where i=0, ..., arraySize[1]-1
-              return Array.from(Array(arraySize[1]), (_, i) => vectorInd + "," + i)
-            } else {
-              return [];
-            }
-          }
           if (!arraySize) {
             return [];
           }
@@ -224,10 +203,11 @@ export default class VectorListComponent extends BaseComponent {
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        dependencyNamesByKey
+        dependencyNamesByKey,
+        // componentName
       }) {
 
-        // console.log('array inverse definition of vectors of vectorlist')
+        // console.log(`array inverse definition of vectors of vectorlist of ${componentName}`)
         // console.log(desiredStateVariableValues)
         // console.log(arrayKeys);
 

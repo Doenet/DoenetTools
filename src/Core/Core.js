@@ -161,8 +161,8 @@ export default class Core {
       }
     }
 
-    console.log(`serialized components at the beginning`)
-    console.log(deepClone(serializedComponents));
+    // console.log(`serialized components at the beginning`)
+    // console.log(deepClone(serializedComponents));
 
 
     this.documentName = serializedComponents[0].componentName;
@@ -232,8 +232,8 @@ export default class Core {
 
     // console.log(serializedComponents)
     // console.timeEnd('start up time');
-    console.log("** components at the end of the core constructor **");
-    console.log(this._components);
+    // console.log("** components at the end of the core constructor **");
+    // console.log(this._components);
 
     if (calledAsynchronously) {
       this.coreReadyCallback()
@@ -1398,6 +1398,12 @@ export default class Core {
     parent.unexpandedCompositesReady = result.unexpandedCompositesReady;
     parent.unexpandedCompositesNotReady = result.unexpandedCompositesNotReady;
 
+    let previousActiveChildren;
+
+    if (parent.activeChildren) {
+      previousActiveChildren = parent.activeChildren.map(x => x.componentName);
+    }
+
     parent.activeChildren = parent.definingChildren.slice(); // shallow copy
 
     // allChildren include activeChildren, definingChildren,
@@ -1462,7 +1468,15 @@ export default class Core {
       }
     }
 
-    this.dependencies.addBlockersFromChangedActiveChildren(parent);
+    let nActiveChildrenChanged = true;
+
+    if (previousActiveChildren) {
+      nActiveChildrenChanged = previousActiveChildren.length !== parent.activeChildren.length;
+    }
+
+    this.dependencies.addBlockersFromChangedActiveChildren({
+      parent, nActiveChildrenChanged
+    });
 
     let ind = this.derivingChildResults.indexOf(parent.componentName);
 
@@ -2087,11 +2101,6 @@ export default class Core {
             }
           } else if (dep.dependencyType === "ancestorProp") {
             ancestorProps[dep.attribute] = dep.ancestorIdentity;
-          } else if (dep.dependencyType === "nonShadowingReplacement") {
-            redefineDependencies = {
-              linkSource: "nonShadowingReplacement",
-              compositeName: name,
-            }
           }
         }
       }
@@ -2505,8 +2514,6 @@ export default class Core {
     let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
-    let isNonShadowingReplacement = redefineDependencies.linkSource === "nonShadowingReplacement";
-
     let additionalAttributesFromStateVariables = {};
 
     if (redefineDependencies.propVariable) {
@@ -2557,8 +2564,7 @@ export default class Core {
         },
       };
 
-      if (!isNonShadowingReplacement &&
-        (!redefineDependencies.propVariable || attributeSpecification.propagateToProps)
+      if ((!redefineDependencies.propVariable || attributeSpecification.propagateToProps)
         && (attribute in targetComponent.state)
       ) {
         thisDependencies.targetVariable = {
@@ -2747,14 +2753,16 @@ export default class Core {
           return { newValues: { [varName]: childVariable } };
         };
 
-        stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
+        stateVarDef.inverseDefinition = function ({ desiredStateVariableValues,
+          dependencyValues,
+        }) {
 
           if (!dependencyValues.attributeComponent) {
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
                 dependencyValues.targetAttributesToIgnore.includes(attribute))
-              && !usedDefault.targetVariable) {
+            ) {
               //  if target has attribute, set that value
               return {
                 success: true,
@@ -2809,10 +2817,6 @@ export default class Core {
             = attributeSpecification[attribute];
         }
       }
-    }
-
-    if (isNonShadowingReplacement) {
-      return;
     }
 
     if (redefineDependencies.propVariable) {
@@ -3602,23 +3606,13 @@ export default class Core {
         // A component class's function could use arrayEntryPrefix
         stateVarObj.getArrayKeysFromVarName = function ({
           arrayEntryPrefix, varEnding, arraySize, nDimensions,
-          desiredEntrySize
         }) {
           let indices = varEnding.split('_').map(x => Number(x) - 1)
           if (indices.length === nDimensions && indices.every(
             (x, i) => Number.isInteger(x) && x >= 0
           )) {
 
-            if (desiredEntrySize) {
-              // If give a desired entry size, then ignore array size.
-              // Since by default, we return just 1 entry,
-              // return that one entry as long as the size is positive in all dimensions
-              if (indices.every((x, i) => desiredEntrySize[i] > 0)) {
-                return [String(indices)];
-              } else {
-                return [];
-              }
-            } else if (arraySize) {
+            if (arraySize) {
               if (indices.every((x, i) => x < arraySize[i])) {
                 return [String(indices)];
               } else {
@@ -3731,20 +3725,11 @@ export default class Core {
         // array entry prefix, but is just based on the variable ending.
         // A component class's function could use arrayEntryPrefix
         stateVarObj.getArrayKeysFromVarName = function ({
-          arrayEntryPrefix, varEnding, arraySize, desiredEntrySize
+          arrayEntryPrefix, varEnding, arraySize
         }) {
           let index = Number(varEnding) - 1;
           if (Number.isInteger(index) && index >= 0) {
-            if (desiredEntrySize) {
-              // If give a desired entry size, then ignore array size.
-              // Since by default, we return just 1 entry,
-              // return that one entry as long as the size is positive
-              if (desiredEntrySize[0] > 0) {
-                return [String(index)];
-              } else {
-                return [];
-              }
-            } else if (arraySize) {
+            if (arraySize) {
               if (index < arraySize[0]) {
                 return [String(index)];
               } else {
@@ -7446,8 +7431,8 @@ export default class Core {
     }
 
 
-    console.log("**** Components after updateValue");
-    console.log(this._components);
+    // console.log("**** Components after updateValue");
+    // console.log(this._components);
 
     // if (sourceOfUpdate !== undefined && sourceOfUpdate.instructionsByComponent !== undefined) {
     //   let updateKeys = Object.keys(sourceOfUpdate.instructionsByComponent);

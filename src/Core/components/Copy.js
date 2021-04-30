@@ -978,7 +978,7 @@ export default class Copy extends CompositeComponent {
     if (replacementTypes.length !== component.stateValues.nComponentsSpecified ||
       !replacementTypes.every(x => x === component.attributes.componentType)) {
 
-      console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
+      // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
 
       // since clearing out all replacements, reset all workspace variables
       workspace.numReplacementsBySource = [];
@@ -1325,7 +1325,7 @@ export default class Copy extends CompositeComponent {
       if (needToRecreate) {
 
         let prevNumReplacements = 0;
-        if (prevSourceName !== undefined) {
+        if (sourceNum in workspace.numReplacementsBySource) {
           prevNumReplacements = workspace.numReplacementsBySource[sourceNum];
         }
 
@@ -1609,55 +1609,35 @@ export function replacementFromProp({ component, components,
 
     let numReplacementsForSource = nComponentsForSource;
 
-    if (numReplacementsForSource === undefined) {
-      if (stateVarObj.isArray) {
-        numReplacementsForSource = stateVarObj.arraySize.
-          slice(0, stateVarObj.arraySize.length - numWrappingComponents)
-          .reduce((a, c) => a * c, 1);
-      } else {
-
-        if (stateVarObj.arrayKeys.length === 0) {
-          // have an undefined array entry
-          numReplacementsForSource = 0;
-
-        } else if (numWrappingComponents === 0) {
-          // with no wrapping components, will just output
-          // one component for each component of the array
-          numReplacementsForSource = stateVarObj.arrayKeys.length;
-        } else if (numWrappingComponents >= stateVarObj.nDimensions) {
-          // if had an outer wrapping component, would just have a single component
-          numReplacementsForSource = 1;
-        } else if (numWrappingComponents === stateVarObj.nDimensions - 1) {
-          // if the second from outer dimension is wrapped
-          // then just count the number of entries in the original array
-          numReplacementsForSource = unflattenedArrayKeys.length;
-        } else {
-          // if have at least two unwrapped dimensions,
-          // flatten the array so that the entries counted are the outermost wrapped
-          // Note: we need to create a 3D array entry to access this,
-          // so this code is so far untested
-          let nLevelsToFlatten = stateVarObj.nDimensions - numWrappingComponents - 1;
-          numReplacementsForSource = flattenLevels(unflattenedArrayKeys, nLevelsToFlatten).length;
-        }
-      }
+    if (stateVarObj.isArray) {
+      numReplacementsForSource = stateVarObj.arraySize.
+        slice(0, stateVarObj.arraySize.length - numWrappingComponents)
+        .reduce((a, c) => a * c, 1);
     } else {
-      // since numReplacesForSource was prescribed by nComponentsForSource
-      // try to find unflattendArrayKeys that will match the size
-      if (stateVarObj.isArray) {
-        unflattenedArrayKeys = stateVarObj.getAllArrayKeys(
-          stateVarObj.arraySize, false, [numReplacementsForSource]);
+
+      if (stateVarObj.arrayKeys.length === 0) {
+        // have an undefined array entry
+        numReplacementsForSource = 0;
+
+      } else if (numWrappingComponents === 0) {
+        // with no wrapping components, will just output
+        // one component for each component of the array
+        numReplacementsForSource = stateVarObj.arrayKeys.length;
+      } else if (numWrappingComponents >= stateVarObj.nDimensions) {
+        // if had an outer wrapping component, would just have a single component
+        numReplacementsForSource = 1;
+      } else if (numWrappingComponents === stateVarObj.nDimensions - 1) {
+        // if the second from outer dimension is wrapped
+        // then just count the number of entries in the original array
+        numReplacementsForSource = unflattenedArrayKeys.length;
       } else {
-        unflattenedArrayKeys = arrayStateVarObj.getArrayKeysFromVarName({
-          arrayEntryPrefix: stateVarObj.entryPrefix,
-          varEnding: stateVarObj.varEnding,
-          arraySize: stateVarObj.arraySize,
-          desiredEntrySize: [numReplacementsForSource]
-        })
-
-
+        // if have at least two unwrapped dimensions,
+        // flatten the array so that the entries counted are the outermost wrapped
+        // Note: we need to create a 3D array entry to access this,
+        // so this code is so far untested
+        let nLevelsToFlatten = stateVarObj.nDimensions - numWrappingComponents - 1;
+        numReplacementsForSource = flattenLevels(unflattenedArrayKeys, nLevelsToFlatten).length;
       }
-
-
     }
 
     if (numWrappingComponents === 0) {

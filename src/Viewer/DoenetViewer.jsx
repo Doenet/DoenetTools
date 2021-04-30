@@ -42,7 +42,7 @@ export function serializedComponentsReviver(key, value) {
 }
 
 
-class DoenetViewer extends Component {
+class DoenetViewerChild extends Component {
   constructor(props) {
     super(props);
     this.update = this.update.bind(this);
@@ -468,6 +468,34 @@ class DoenetViewer extends Component {
     return this.documentRenderer;
   }
 
+}
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { 
+      hasError: false,
+      errorMsg: "" };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { 
+      hasError: true,
+      errorMsg: error.toString()
+     };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <b>{this.state.errorMsg}</b>;
+    }
+
+    return this.props.children; 
+  }
+}
+
+function DoenetViewer(props){
+  return <ErrorBoundary><DoenetViewerChild {...props} /></ErrorBoundary>
 }
 
 export default DoenetViewer;

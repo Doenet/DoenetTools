@@ -216,6 +216,7 @@ export class DependencyHandler {
             upDep.removeDownstreamComponent({
               indexToRemove: upDep.downstreamComponentNames.indexOf(componentName),
             })
+            upDep.onDownstreamComponentChange();
           }
         }
       }
@@ -232,7 +233,9 @@ export class DependencyHandler {
 
   }
 
-  addBlockersFromChangedActiveChildren(parent) {
+  addBlockersFromChangedActiveChildren({
+    parent, nActiveChildrenChanged
+  }) {
 
     // console.log(`mark dependencies of active children of ${parent.componentName}`)
 
@@ -242,16 +245,18 @@ export class DependencyHandler {
 
     if (this.updateTriggers.childDependenciesByParent[parent.componentName]) {
       for (let dep of this.updateTriggers.childDependenciesByParent[parent.componentName]) {
-        for (let varName of dep.upstreamVariableNames) {
-          this.addBlocker({
-            blockerComponentName: dep.upstreamComponentName,
-            blockerType: "recalculateDownstreamComponents",
-            blockerStateVariable: varName,
-            blockerDependency: dep.dependencyName,
-            componentNameBlocked: dep.upstreamComponentName,
-            typeBlocked: "stateVariable",
-            stateVariableBlocked: varName,
-          })
+        if (!(!nActiveChildrenChanged && dep.skipComponentNames && dep.originalDownstreamVariableNames.length === 0)) {
+          for (let varName of dep.upstreamVariableNames) {
+            this.addBlocker({
+              blockerComponentName: dep.upstreamComponentName,
+              blockerType: "recalculateDownstreamComponents",
+              blockerStateVariable: varName,
+              blockerDependency: dep.dependencyName,
+              componentNameBlocked: dep.upstreamComponentName,
+              typeBlocked: "stateVariable",
+              stateVariableBlocked: varName,
+            })
+          }
         }
       }
     }
@@ -550,18 +555,23 @@ export class DependencyHandler {
       let determinedAllShadows = true;
 
       for (let varName of allStateVariablesAffected) {
-        let result = this.resolveItem({
-          componentName: determineIfShadowData.targetComponent.componentName,
-          type: "stateVariable",
-          stateVariable: varName,
-        });
+        let stateObj = determineIfShadowData.targetComponent.state[varName];
+        let resolved = stateObj.isResolved;
+
+        if (!resolved) {
+          let result = this.resolveItem({
+            componentName: determineIfShadowData.targetComponent.componentName,
+            type: "stateVariable",
+            stateVariable: varName,
+          });
+
+          resolved = result.success;
+        }
 
 
-        if (result.success) {
+        if (resolved) {
           // since varName of targetComponent is now resolved
           // can evaluate it and then determine if it is essential
-
-          let stateObj = determineIfShadowData.targetComponent.state[varName];
 
           stateObj.value;
 
@@ -655,14 +665,20 @@ export class DependencyHandler {
       // check if can actually resolve all variables of determineDeps
       if (determineDeps.originalDownstreamVariableNames.length > 0) {
         for (let [ind, cName] of determineDeps.downstreamComponentNames.entries()) {
+          let comp = this._components[cName];
           for (let vName of determineDeps.mappedDownstreamVariableNamesByComponent[ind]) {
-            let result = this.resolveItem({
-              componentName: cName,
-              type: "stateVariable",
-              stateVariable: vName
-            });
+            let resolved = comp.state[vName].isResolved;
 
-            if (!result.success) {
+            if (!resolved) {
+              let result = this.resolveItem({
+                componentName: cName,
+                type: "stateVariable",
+                stateVariable: vName
+              });
+              resolved = result.success;
+            }
+
+            if (!resolved) {
               resolvedAll = false;
 
               for (let vName2 of allStateVariablesAffected) {
@@ -1957,7 +1973,7 @@ export class DependencyHandler {
       dependencyBlocked: dependency
     })
 
-    return this.processNewlyResolved({
+    let result = this.processNewlyResolved({
       componentNameNewlyResolved: componentName,
       typeNewlyResolved: type,
       stateVariableNewlyResolved: stateVariable,
@@ -1965,6 +1981,8 @@ export class DependencyHandler {
       expandComposites,
       force, recurseUpstream,
     });
+
+    return result;
 
   }
 
@@ -1980,8 +1998,7 @@ export class DependencyHandler {
     // }
     // this.resolveLevels++;
 
-    // console.log(`${" ".repeat(this.resolveLevels - 1)}resolve item ${componentName}, ${type}, ${stateVariable}, ${dependency}, ${expandComposites}, ${force}`)
-
+    // console.log(`${" ".repeat(this.resolveLevels - 1)}${this.resolveLevels}. resolve item ${componentName}, ${type}, ${stateVariable}, ${dependency}, ${expandComposites}, ${force}`)
 
     // Note: even if expandComposites=false and force=false
     // we still might expand composites and force evaluate
@@ -2018,7 +2035,7 @@ export class DependencyHandler {
         });
 
         if (!result.success) {
-          // console.log(`${" ".repeat(this.resolveLevels - 1)}couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
+          // console.log(`${" ".repeat(this.resolveLevels - 1)}${this.resolveLevels}. couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
           // this.resolveLevels--;
           return result;
         }
@@ -2026,6 +2043,11 @@ export class DependencyHandler {
 
     }
 
+    let stateVarObj;
+    if (type === "stateVariable" && this._components[componentName]) {
+      stateVarObj = this._components[componentName].state[stateVariable];
+      stateVarObj.currentlyResolving = true;
+    }
 
     while (Object.keys(neededForItem).length > 0) {
       for (let blockerType in neededForItem) {
@@ -2060,6 +2082,9 @@ export class DependencyHandler {
       }
     }
 
+    if (stateVarObj) {
+      stateVarObj.currentlyResolving = false;
+    }
 
     // item is resolved
     let finalResult = this.resolveIfReady({
@@ -2100,7 +2125,7 @@ export class DependencyHandler {
 
     }
 
-    // console.log(`${" ".repeat(this.resolveLevels - 1)}done resolving item ${componentName}, ${type}, ${stateVariable}, ${dependency}, ${expandComposites}, ${force}`)
+    // console.log(`${" ".repeat(this.resolveLevels - 1)}${this.resolveLevels}. done resolving item ${componentName}, ${type}, ${stateVariable}, ${dependency}, ${expandComposites}, ${force}`)
     // this.resolveLevels--;
 
     return finalResult;
@@ -2408,6 +2433,9 @@ class Dependency {
         index,
       });
     }
+
+    this.onDownstreamComponentChange();
+
   }
 
   addDownstreamComponent({ downstreamComponentName, downstreamComponentType, index }) {
@@ -2792,8 +2820,7 @@ class Dependency {
             if (!this.variablesOptional || mappedVarName in depComponent.state) {
               if (!depComponent.state[mappedVarName].deferred) {
                 componentObj.stateValues[nameForOutput] = depComponent.stateValues[mappedVarName];
-                if (this.valuesChanged[componentInd][mappedVarName].changed
-                ) {
+                if (this.valuesChanged[componentInd][mappedVarName].changed) {
                   if (!changes.valuesChanged) {
                     changes.valuesChanged = {};
                   }
@@ -2939,10 +2966,13 @@ class Dependency {
 
     }
 
+    this.onDownstreamComponentChange();
+
     return { success: newDownComponents.success };
 
   }
 
+  onDownstreamComponentChange() { }
 }
 
 
@@ -3635,7 +3665,6 @@ class ChildDependency extends Dependency {
 
     // console.log(`determine downstream components of ${this.dependencyName} of ${this.representativeStateVariable} of ${this.upstreamComponentName}`)
 
-    this.compositeIndices = [];
 
     let parent = this.dependencyHandler._components[this.parentName];
 
@@ -3828,26 +3857,7 @@ class ChildDependency extends Dependency {
     let activeChildrenMatched = activeChildrenIndices.map(x => parent.activeChildren[x]);
     let downstreamComponentNames = activeChildrenMatched.map((x, i) => x.componentName ? x.componentName : `__placeholder_${i}`);
 
-    for (let [definingInd, definingChild] of parent.definingChildren.entries()) {
-      if (this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: definingChild.componentType,
-        baseComponentType: "_composite",
-      })) {
-        if (definingChild.isExpanded) {
-          let recursiveReplacementAdapterNames =
-            definingChild.stateValues.fullRecursiveReplacements
-              .map(x => this.dependencyHandler.components[x.componentName])
-              .map(x => x.adapterUsed ? x.adapterUsed : x)
-              .map(x => x.componentName);
 
-          for (let [ind, childName] of downstreamComponentNames.entries()) {
-            if (recursiveReplacementAdapterNames.includes(childName)) {
-              this.compositeIndices[ind] = definingInd;
-            }
-          }
-        }
-      }
-    }
 
     return {
       success: true,
@@ -3894,6 +3904,38 @@ class ChildDependency extends Dependency {
       }
     }
 
+
+  }
+
+  onDownstreamComponentChange() {
+
+    this.compositeIndices = [];
+
+    if (this.downstreamComponentNames.length > 0) {
+
+      let parent = this.dependencyHandler._components[this.parentName];
+
+      for (let [definingInd, definingChild] of parent.definingChildren.entries()) {
+        if (this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: definingChild.componentType,
+          baseComponentType: "_composite",
+        })) {
+          if (definingChild.isExpanded) {
+            let recursiveReplacementAdapterNames =
+              definingChild.stateValues.fullRecursiveReplacements
+                .map(x => this.dependencyHandler.components[x.componentName])
+                .map(x => x.adapterUsed ? x.adapterUsed : x)
+                .map(x => x.componentName);
+
+            for (let [ind, childName] of this.downstreamComponentNames.entries()) {
+              if (recursiveReplacementAdapterNames.includes(childName)) {
+                this.compositeIndices[ind] = definingInd;
+              }
+            }
+          }
+        }
+      }
+    }
 
   }
 
@@ -5912,16 +5954,21 @@ class DetermineDependenciesDependency extends Dependency {
 
   markStale() {
 
+    let component = this.dependencyHandler._components[this.upstreamComponentName];
+
     for (let varName of this.upstreamVariableNames) {
-      this.dependencyHandler.addBlocker({
-        blockerComponentName: this.upstreamComponentName,
-        blockerType: "determineDependencies",
-        blockerStateVariable: varName,
-        blockerDependency: this.dependencyName,
-        componentNameBlocked: this.upstreamComponentName,
-        typeBlocked: "stateVariable",
-        stateVariableBlocked: varName,
-      });
+
+      if (!(component && component.state[varName] && component.state[varName].currentlyResolving)) {
+        this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "determineDependencies",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
     }
 
   }
