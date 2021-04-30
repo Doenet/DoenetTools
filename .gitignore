@@ -48,3 +48,5 @@ doenet_docker/volumes/db/*
 
 package-lock.json
 .eslintrc.js
+
+src/API/vendor
