@@ -257,12 +257,12 @@ describe('Math Display Tag Tests', function () {
       <mrow>cos(x) \\amp = z</mrow>
     </mdn>
     <md>
-      <mrow numbered="true">q \\amp = sin(x)</mrow>
-      <mrow numbered="true">cos(x) \\amp = z</mrow>
+      <mrow number="true">q \\amp = sin(x)</mrow>
+      <mrow number="true">cos(x) \\amp = z</mrow>
     </md>
     <mdn>
-      <mrow numbered="false">q \\amp = sin(x)</mrow>
-      <mrow numbered="false">cos(x) \\amp = z</mrow>
+      <mrow number="false">q \\amp = sin(x)</mrow>
+      <mrow number="false">cos(x) \\amp = z</mrow>
     </mdn>
     `}, "*");
     });
@@ -479,14 +479,14 @@ describe('Math Display Tag Tests', function () {
     <men name="x">x</men>
     <mdn name="ms">
       <map assignNames="m1 m2 m3 m4 m5 m6">
-        <template newNamespace><mrow name='eq' numbered="mod($i,2)=1">$i m &amp;= $v</mrow></template>
+        <template newNamespace><mrow name='eq' number="mod($i,2)=1">$i m &amp;= $v</mrow></template>
         <sources indexAlias="i" alias="v"><sequence length="$m" from="11" /></sources>
       </map>
     </mdn>
     <men name="y">y</men>
     <mdn name="ns">
       <map assignNames="n1 n2 n3 n4 n5 n6">
-        <template newNamespace><mrow name="eq" numbered="(-1)^$i = 1">$i n &= $v</mrow></template>
+        <template newNamespace><mrow name="eq" number="(-1)^$i = 1">$i n &= $v</mrow></template>
         <sources indexAlias="i" alias="v"><sequence length="$n" from="11" /></sources>
       </map>
     </mdn>

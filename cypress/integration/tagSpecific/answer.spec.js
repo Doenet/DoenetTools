@@ -21,7 +21,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer>x+y</answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType='math' /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
   `}, "*");
     });
@@ -85,7 +85,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`, {force: true});
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -114,7 +114,7 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter wrong answer")
-        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}x`, {force: true}).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}x`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
@@ -170,7 +170,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType='text' /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
 
   `}, "*");
@@ -193,9 +193,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
       cy.get(text1Anchor).should('have.text', '')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -213,9 +211,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
       cy.get(text1Anchor).should('have.text', ' hello there ')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -291,14 +287,91 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from one math', () => {
+  // test for bug where submitted response was not initially text
+  // when had only one copy of referring to all submitted responses
+  it('answer sugar from one string, set to text, copy all responses', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer type="text">hello there</answer></p>
+  <p>Submitted responses: <copy prop="submittedResponses" tname="_answer1" componentType="text" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputAnchor = cesc('#' + textinputName + '_input');
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+
+      cy.get('#\\/_p2').should('have.text', 'Submitted responses: ')
+
+      cy.log("Type correct answer in")
+      cy.get(textinputAnchor).type(` hello there {enter}`)
+
+      cy.get('#\\/_p2').should('have.text', 'Submitted responses:  hello there ')
+
+      cy.window().then((win) => {
+        let text1 = components['/_copy1'].replacements[0];
+        let text1Anchor = cesc('#' + text1.componentName);
+        cy.get(textinputAnchor).should('have.value', ' hello there ');
+        cy.get(text1Anchor).should('have.text', ' hello there ')
+
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
+          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect(components[textinputName].stateValues.value).eq(' hello there ');
+        });
+
+
+        cy.log("Enter wrong answer")
+        cy.get(textinputAnchor).clear().type(`hello  there`).blur();
+
+        cy.log('Test value displayed in browser')
+        cy.get(textinputAnchor).should('have.value', 'hello  there');
+        cy.get(text1Anchor).should('have.text', ' hello there ')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
+          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
+          expect(components[textinputName].stateValues.value).eq('hello  there');
+          // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
+        });
+
+        cy.log("Submit answer")
+        cy.get(textinputSubmitAnchor).click();
+
+        cy.log('Test value displayed in browser')
+        cy.get(textinputAnchor).should('have.value', 'hello  there');
+        cy.get(text1Anchor).should('have.text', 'hello  there')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+          expect(components['/_answer1'].stateValues.currentResponses).eqls(['hello  there']);
+          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['hello  there']);
+          expect(components[textinputName].stateValues.value).eq('hello  there');
+          // expect(components[textinputName].stateValues.submittedValue).eq('hello  there');
+        });
+      })
+    })
+  });
+
+  it('answer award with math', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <p><answer><award><math>x+y</math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType="math" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
   `}, "*");
     });
@@ -361,7 +434,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`, {force:true});
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -389,7 +462,7 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter wrong answer")
-        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, {force: true}).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
@@ -437,14 +510,14 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from one math, initally unresolved', () => {
+  it('answer award with math, initally unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <p><answer><award><math>x+y-3+<copy tname="n" /></math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType="math" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
 
   <copy name="n2" tname="n3" />
@@ -514,7 +587,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`, {force:true});
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -542,7 +615,7 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter wrong answer")
-        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, {force:true}).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
@@ -590,14 +663,14 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from one text', () => {
+  it('answer award with text', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <p><answer type="text"><award><text>  hello there </text></award></answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType='text' /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
   `}, "*");
     });
@@ -619,9 +692,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
       cy.get(text1Anchor).should('have.text', '')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -639,9 +710,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
       cy.get(text1Anchor).should('have.text', ' hello there ')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -717,14 +786,14 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from one text, initally unresolved', () => {
+  it('answer award with text, initally unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <p><answer type="text"><award><text><copy tname="n" /></text></award></answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType="text" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
 
   <copy name="n2" tname="n3" />
@@ -756,9 +825,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
       cy.get(text1Anchor).should('have.text', '')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -776,9 +843,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
       cy.get(text1Anchor).should('have.text', ' hello there ')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -854,14 +919,14 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from multiple shortcut awards', () => {
+  it('answer multiple shortcut awards', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <p><answer><award><math>x+y</math></award><award credit="0.5"><math>x</math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType="math" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
   `}, "*");
     });
@@ -926,7 +991,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.log("Press enter to submit")
-      cy.get(mathinputAnchor).type(`{enter}`, {force: true});
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
 
       // wrap to change value of math2Anchor
       cy.window().then((win) => {
@@ -954,7 +1019,7 @@ describe('Answer Tag Tests', function () {
 
 
         cy.log("Enter partially correct answer")
-        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, {force:true}).blur();
+        cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true }).blur();
 
         cy.log('Test value displayed in browser')
         // cy.get(mathinputAnchor).should('have.value', 'x');
@@ -1050,14 +1115,14 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from multiple shortcut awards, initially unresolved', () => {
+  it('answer multiple shortcut awards, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <p><answer><award><math><copy tname="rightAnswer" /></math></award><award credit="0.5"><math>x-3+<copy tname="n" /></math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType='math' /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
 
   <math name="rightAnswer">x+y-3+<copy tname="n" /></math>
@@ -1253,14 +1318,14 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from multiple awards, set to text', () => {
+  it('answer multiple awards, set to text', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <p><answer type="text"><award><text>hello there</text></award><award credit="0.5"><text>bye</text></award></answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType='text' /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
   `}, "*");
     });
@@ -1283,9 +1348,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', '');
       cy.get(text1Anchor).should('have.text', '')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -1303,9 +1366,7 @@ describe('Answer Tag Tests', function () {
       cy.log('Test value displayed in browser')
       cy.get(textinputAnchor).should('have.value', ' hello there ');
       cy.get(text1Anchor).should('have.text', ' hello there ')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(text2Anchor).should('have.text', '')
       cy.get(number1Anchor).should('have.text', '0')
 
       cy.log('Test internal values')
@@ -1418,172 +1479,7 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it.skip('answer sugar from multiple awards, based on text', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p><answer><award><text>hello there</text></award><award credit="0.5"><text>bye</text></award></answer></p>
-  <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
-  <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
-      let textinputAnchor = cesc('#' + textinputName + '_input');
-      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
-      let text1 = components['/_copy1'].replacements[0];
-      let text1Anchor = cesc('#' + text1.componentName);
-      let text2 = components['/_copy2'].replacements[0];
-      let text2Anchor = cesc('#' + text2.componentName);
-      let number1 = components['/_copy3'].replacements[0];
-      let number1Anchor = cesc('#' + number1.componentName);
-
-      cy.log('Test value displayed in browser')
-      cy.get(textinputAnchor).should('have.value', '');
-      cy.get(text1Anchor).should('have.text', '')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(number1Anchor).should('have.text', '0')
-
-      cy.log('Test internal values')
-      cy.window().then((win) => {
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[textinputName].stateValues.value).eq('');
-        // expect(components[textinputName].stateValues.submittedValue).eq('＿');
-      });
-
-      cy.log("Type correct answer in")
-      cy.get(textinputAnchor).type(` hello there `).blur();
-
-      cy.log('Test value displayed in browser')
-      cy.get(textinputAnchor).should('have.value', ' hello there ');
-      cy.get(text1Anchor).should('have.text', ' hello there ')
-      cy.get(text2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(number1Anchor).should('have.text', '0')
-
-      cy.log('Test internal values')
-      cy.window().then((win) => {
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[textinputName].stateValues.value).eq(' hello there ');
-        // expect(components[textinputName].stateValues.submittedValue).eq('＿');
-      });
-
-
-      cy.log("Press enter to submit")
-      cy.get(textinputAnchor).type(`{enter}`);
-
-      // wrap to change value of text2Anchor
-      cy.window().then((win) => {
-        text2 = components['/_copy2'].replacements[0];
-        text2Anchor = cesc('#' + text2.componentName);
-
-        cy.log('Test value displayed in browser')
-        cy.get(textinputAnchor).should('have.value', ' hello there ');
-        cy.get(text1Anchor).should('have.text', ' hello there ')
-        cy.get(text2Anchor).should('have.text', ' hello there ')
-        cy.get(number1Anchor).should('have.text', '1')
-
-        cy.log('Test internal values')
-        cy.window().then((win) => {
-          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls([' hello there ']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
-          expect(components[textinputName].stateValues.value).eq(' hello there ');
-          // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
-        });
-
-
-        cy.log("Enter partially correct answer")
-        cy.get(textinputAnchor).clear().type(`bye`).blur();
-
-        cy.log('Test value displayed in browser')
-        cy.get(textinputAnchor).should('have.value', 'bye');
-        cy.get(text1Anchor).should('have.text', 'bye')
-        cy.get(text2Anchor).should('have.text', ' hello there ')
-        cy.get(number1Anchor).should('have.text', '1')
-
-        cy.log('Test internal values')
-        cy.window().then((win) => {
-          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['bye']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls([' hello there ']);
-          expect(components[textinputName].stateValues.value).eq('bye');
-          // expect(components[textinputName].stateValues.submittedValue).eq(' hello there ');
-        });
-
-        cy.log("Submit answer")
-        cy.get(textinputSubmitAnchor).click();
-
-        cy.log('Test value displayed in browser')
-        cy.get(textinputAnchor).should('have.value', 'bye');
-        cy.get(text1Anchor).should('have.text', 'bye')
-        cy.get(text2Anchor).should('have.text', 'bye')
-        cy.get(number1Anchor).should('have.text', '0.5')
-
-        cy.log('Test internal values')
-        cy.window().then((win) => {
-          expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['bye']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
-          expect(components[textinputName].stateValues.value).eq('bye');
-          // expect(components[textinputName].stateValues.submittedValue).eq('bye');
-        });
-
-
-        cy.log("Enter incorrect answer")
-        cy.get(textinputAnchor).clear().type(`y`).blur();
-
-        cy.log('Test value displayed in browser')
-        cy.get(textinputAnchor).should('have.value', 'y');
-        cy.get(text1Anchor).should('have.text', 'y')
-        cy.get(text2Anchor).should('have.text', 'bye')
-        cy.get(number1Anchor).should('have.text', '0.5')
-
-        cy.log('Test internal values')
-        cy.window().then((win) => {
-          expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['bye']);
-          expect(components[textinputName].stateValues.value).eq('y');
-          // expect(components[textinputName].stateValues.submittedValue).eq('bye');
-        });
-
-        cy.log("Submit answer")
-        cy.get(textinputAnchor).type(`{enter}`);
-
-        cy.log('Test value displayed in browser')
-        cy.get(textinputAnchor).should('have.value', 'y');
-        cy.get(text1Anchor).should('have.text', 'y')
-        cy.get(text2Anchor).should('have.text', 'y')
-        cy.get(number1Anchor).should('have.text', '0')
-
-        cy.log('Test internal values')
-        cy.window().then((win) => {
-          expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-          expect(components['/_answer1'].stateValues.currentResponses).eqls(['y']);
-          expect(components['/_answer1'].stateValues.submittedResponses).eqls(['y']);
-          expect(components[textinputName].stateValues.value).eq('y');
-          // expect(components[textinputName].stateValues.submittedValue).eq('y');
-        });
-      })
-    })
-
-  });
-
-  it('answer sugar from multiple awards, namespaces', () => {
+  it('answer multiple awards, namespaces', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1594,7 +1490,7 @@ describe('Answer Tag Tests', function () {
     <award credit="0.5" newNamespace><math>x</math></award>
   </answer></p>
   <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+  <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType='math' /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" tname="_answer1" /></p>
   </section>
 
@@ -1798,9 +1694,9 @@ describe('Answer Tag Tests', function () {
   <p>First current response again: <copy name="cr1" prop="currentResponse1" tname="_answer1" /></p>
   <p>Second current response: <copy name="cr2" prop="currentResponse2" tname="_answer1" /></p>
   <p>Both current responses together: <copy name="crs" prop="currentResponses" tname="_answer1" /></p>
-  <p>First submitted response: <copy name="sr" prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
-  <p>First submitted response again: <copy name="sr1" prop="submittedResponse1" tname="_answer1" includeUndefinedObjects /></p>
-  <p>Second submitted response: <copy name="sr2" prop="submittedResponse2" tname="_answer1" includeUndefinedObjects /></p>
+  <p>First submitted response: <copy name="sr" prop="submittedResponse" tname="_answer1" componentType="math" /></p>
+  <p>First submitted response again: <copy name="sr1" prop="submittedResponse1" tname="_answer1" componentType="math" /></p>
+  <p>Second submitted response: <copy name="sr2" prop="submittedResponse2" tname="_answer1" componentType="math" /></p>
   <p>Both submitted responses together: <copy name="srs" prop="submittedResponses" tname="_answer1" /></p>
   <p>Credit for submitted responses: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
   `}, "*");
@@ -2328,9 +2224,9 @@ describe('Answer Tag Tests', function () {
   <p>First current response again: <copy name="cr1" prop="currentResponse1" tname="_answer1" /></p>
   <p>Second current response: <copy name="cr2" prop="currentResponse2" tname="_answer1" /></p>
   <p>Both current responses together: <copy name="crs" prop="currentResponses" tname="_answer1" /></p>
-  <p>First submitted response: <copy name="sr" prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
-  <p>First submitted response again: <copy name="sr1" prop="submittedResponse1" tname="_answer1" includeUndefinedObjects /></p>
-  <p>Second submitted response: <copy name="sr2" prop="submittedResponse2" tname="_answer1" includeUndefinedObjects /></p>
+  <p>First submitted response: <copy name="sr" prop="submittedResponse" tname="_answer1" componentType="text" /></p>
+  <p>First submitted response again: <copy name="sr1" prop="submittedResponse1" tname="_answer1" componentType="text" /></p>
+  <p>Second submitted response: <copy name="sr2" prop="submittedResponse2" tname="_answer1" componentType="text" /></p>
   <p>Both submitted responses together: <copy name="srs" prop="submittedResponses" tname="_answer1" /></p>
   <p>Credit for submitted responses: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
   `}, "*");
@@ -2372,15 +2268,9 @@ describe('Answer Tag Tests', function () {
       cy.get(cr2Anchor).should('have.text', '')
       cy.get(crsaAnchor).should('have.text', '')
       cy.get(crsbAnchor).should('have.text', '')
-      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(srAnchor).should('have.text', '')
+      cy.get(sr1Anchor).should('have.text', '')
+      cy.get(sr2Anchor).should('have.text', '')
       // cy.get(srsaAnchor).should('have.text', '＿')
       // cy.get(srsbAnchor).should('have.text', '＿')
       cy.get(caAnchor).should('have.text', '0')
@@ -2403,9 +2293,9 @@ describe('Answer Tag Tests', function () {
         expect(cr2.stateValues.value).eq('')
         expect(crsa.stateValues.value).eq('')
         expect(crsb.stateValues.value).eq('')
-        expect(sr.stateValues.value.tree).eq('\uFF3F')
-        expect(sr1.stateValues.value.tree).eq('\uFF3F')
-        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        expect(sr.stateValues.value).eq('')
+        expect(sr1.stateValues.value).eq('')
+        expect(sr2.stateValues.value).eq('')
         // expect(srsa.stateValues.value).eq('\uFF3F')
         // expect(srsb.stateValues.value).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
@@ -2424,15 +2314,9 @@ describe('Answer Tag Tests', function () {
       cy.get(cr2Anchor).should('have.text', 'snow')
       cy.get(crsaAnchor).should('have.text', 'rain')
       cy.get(crsbAnchor).should('have.text', 'snow')
-      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(srAnchor).should('have.text', '')
+      cy.get(sr1Anchor).should('have.text', '')
+      cy.get(sr2Anchor).should('have.text', '')
       // cy.get(srsaAnchor).should('have.text', '＿')
       // cy.get(srsbAnchor).should('have.text', '＿')
       cy.get(caAnchor).should('have.text', '0')
@@ -2455,9 +2339,9 @@ describe('Answer Tag Tests', function () {
         expect(cr2.stateValues.value).eq('snow')
         expect(crsa.stateValues.value).eq('rain')
         expect(crsb.stateValues.value).eq('snow')
-        expect(sr.stateValues.value.tree).eq('\uFF3F')
-        expect(sr1.stateValues.value.tree).eq('\uFF3F')
-        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        expect(sr.stateValues.value).eq('')
+        expect(sr1.stateValues.value).eq('')
+        expect(sr2.stateValues.value).eq('')
         // expect(srsa.stateValues.value).eq('\uFF3F')
         // expect(srsb.stateValues.value).eq('\uFF3F')
         expect(ca.stateValues.value).eq(0)
@@ -3087,7 +2971,7 @@ describe('Answer Tag Tests', function () {
         <p>Enter <m>x^$n</m>: <answer><award><math>x^$n</math></award></answer></p>
         <p>Credit achieved: <copy prop="creditAchieved" tname="_answer1" /></p>
         <p>Current response: <copy prop="currentResponse" tname="_answer1" /></p>
-        <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+        <p>Submitted response: <copy prop="submittedResponse" tname="_answer1" componentType="math" /></p>
       </template>
       <sources alias="n"><sequence from="1" to="3" /></sources>
     </map>
@@ -3414,7 +3298,7 @@ describe('Answer Tag Tests', function () {
         <p>Enter <m>x^$n</m>: <answer><award><math>x^$n</math></award></answer></p>
         <p>Credit achieved: <copy assignNames="ca" prop="creditAchieved" tname="_answer1" /></p>
         <p>Current response: <copy assignNames="cr" prop="currentResponse" tname="_answer1" /></p>
-        <p>Submitted response: <copy assignNames="sr" prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
+        <p>Submitted response: <copy assignNames="sr" prop="submittedResponse" tname="_answer1" componentType="math" /></p>
       </template>
       <sources alias="n"><sequence from="1" to="3" /></sources>
     </map>
@@ -4702,7 +4586,7 @@ describe('Answer Tag Tests', function () {
   </choiceinput>
   </answer>.</p>
   <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
   `}, "*");
     });
@@ -4716,7 +4600,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
     cy.get("#\\/cr").should('have.text', '')
-    cy.get("#\\/sr").should('have.text', '＿')
+    cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = {};
@@ -4745,7 +4629,235 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
     cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', '＿')
+    cy.get("#\\/sr").should('have.text', '')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
+    });
+
+    cy.log("Click submit button")
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('be.visible');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'dog')
+    cy.get("#\\/sr").should('have.text', 'dog')
+    cy.get("#\\/credit").should('have.text', '1')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
+    });
+
+    cy.log("Select incorrect answer")
+    cy.get('#\\/_choiceinput1').select(`monkey`);
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'monkey')
+    cy.get("#\\/sr").should('have.text', 'dog')
+    cy.get("#\\/credit").should('have.text', '1')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
+    });
+
+    cy.log("Press enter on submit button")
+    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'monkey')
+    cy.get("#\\/sr").should('have.text', 'monkey')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
+    });
+
+    cy.log("Select partially correct answer")
+    cy.get('#\\/_choiceinput1').select(`cat`);
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'cat')
+    cy.get("#\\/sr").should('have.text', 'monkey')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["monkey"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
+    });
+
+    cy.log("Press enter on submit button")
+    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+
+    cy.get("#\\/cr").should('have.text', 'cat')
+    cy.get("#\\/sr").should('have.text', 'cat')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
+    });
+
+
+    cy.log("Select incorrect answer again")
+    cy.get('#\\/_choiceinput1').select(`monkey`);
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'monkey')
+    cy.get("#\\/sr").should('have.text', 'cat')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["dog"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["dog"]]);
+    });
+
+
+    cy.log("Remembers submitted answer")
+    cy.get('#\\/_choiceinput1').select(`cat`);
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('have.text', '50 %');
+
+    cy.get("#\\/cr").should('have.text', 'cat')
+    cy.get("#\\/sr").should('have.text', 'cat')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
+    });
+
+  });
+
+  it('answer with inline choiceinput, specify component type for submitted', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>The animal is a <answer>
+  <choiceinput inline>
+    <choice credit="0.5">cat</choice>
+    <choice credit="1">dog</choice>
+    <choice>monkey</choice>
+  </choiceinput>
+  </answer>.</p>
+  <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
+  <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_choiceinput1').should('have.value', '');
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', '')
+    cy.get("#\\/sr").should('have.text', '')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    let indexByName = {};
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      for (let [ind, val] of components['/_choiceinput1'].stateValues.choiceTexts.entries()) {
+        indexByName[val] = ind + 1;
+      }
+
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls([]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([]);
+
+    });
+
+    cy.log("Select correct answer")
+    cy.get('#\\/_choiceinput1').select(`dog`);
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'dog')
+    cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then((win) => {
@@ -4930,7 +5042,7 @@ describe('Answer Tag Tests', function () {
   </choiceinput>
   </answer>.</p>
   <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
   `}, "*");
     });
@@ -4946,7 +5058,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1').should('have.text', 'catdogmonkey');
 
     cy.get("#\\/cr").should('have.text', '')
-    cy.get("#\\/sr").should('have.text', '＿')
+    cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = { cat: 1, dog: 2, monkey: 3 };
@@ -4975,7 +5087,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
     cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', '＿')
+    cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then((win) => {
@@ -5160,7 +5272,7 @@ describe('Answer Tag Tests', function () {
     <choice>monkey</choice>
   </answer>.</p>
   <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
   `}, "*");
     });
@@ -5184,7 +5296,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '＿')
+      cy.get("#\\/sr").should('have.text', '')
       cy.get("#\\/credit").should('have.text', '0')
 
       let indexByName = {};
@@ -5213,7 +5325,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '＿')
+      cy.get("#\\/sr").should('have.text', '')
       cy.get("#\\/credit").should('have.text', '0')
 
       cy.window().then((win) => {
@@ -5396,7 +5508,7 @@ describe('Answer Tag Tests', function () {
     <choice>monkey</choice>
   </answer>.</p>
   <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
   `}, "*");
     });
@@ -5421,7 +5533,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputAnchor).should('have.text', 'catdogmonkey');
 
       cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '＿')
+      cy.get("#\\/sr").should('have.text', '')
       cy.get("#\\/credit").should('have.text', '0')
 
       let indexByName = { cat: 1, dog: 2, monkey: 3 };
@@ -5451,7 +5563,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '＿')
+      cy.get("#\\/sr").should('have.text', '')
       cy.get("#\\/credit").should('have.text', '0')
 
       cy.window().then((win) => {
@@ -5637,7 +5749,7 @@ describe('Answer Tag Tests', function () {
   </choiceinput>
   </answer>
   <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
   `}, "*");
     });
@@ -5653,7 +5765,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
     cy.get("#\\/cr").should('have.text', '')
-    cy.get("#\\/sr").should('have.text', '＿')
+    cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
     let indexByName = {};
@@ -5684,7 +5796,7 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
     cy.get("#\\/cr").should('have.text', 'dog')
-    cy.get("#\\/sr").should('have.text', '＿')
+    cy.get("#\\/sr").should('have.text', '')
     cy.get("#\\/credit").should('have.text', '0')
 
     cy.window().then((win) => {
@@ -5883,7 +5995,7 @@ describe('Answer Tag Tests', function () {
     <choice>monkey</choice>
   </answer>
   <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
   `}, "*");
     });
@@ -5909,7 +6021,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '＿')
+      cy.get("#\\/sr").should('have.text', '')
       cy.get("#\\/credit").should('have.text', '0')
 
       let indexByName = {};
@@ -5940,7 +6052,7 @@ describe('Answer Tag Tests', function () {
       cy.get(choiceinputPartialAnchor).should('not.exist');
 
       cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '＿')
+      cy.get("#\\/sr").should('have.text', '')
       cy.get("#\\/credit").should('have.text', '0')
 
       cy.window().then((win) => {
@@ -6769,323 +6881,6 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it.skip('answer math from one string, split into options', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p>All three: <answer>x+y, (x+y)/2, (x,y)</answer></p>
-  <p>Individuals: <answer splitintooptions>x+y, (x+y)/2, (x,y)</answer></p>
-  <p>Credit for response 1: <copy name="ca1" prop="creditAchieved" tname="_answer1" /></p>
-  <p>Submitted response 1: <copy name="sr1" prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
-  <p>Credit for response 2: <copy name="ca2" prop="creditAchieved" tname="_answer2" /></p>
-  <p>Submitted response 2: <copy name="sr2" prop="submittedResponse" tname="_answer2" includeUndefinedObjects /></p>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinput1Name = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
-      let ca1 = components['/ca1'].replacements[0];
-      let ca1Anchor = cesc('#' + ca1.componentName);
-      let ca2 = components['/ca2'].replacements[0];
-      let ca2Anchor = cesc('#' + ca2.componentName);
-      let sr1 = components['/sr1'].replacements[0];
-      let sr1Anchor = cesc('#' + sr1.componentName);
-      let sr2 = components['/sr2'].replacements[0];
-      let sr2Anchor = cesc('#' + sr2.componentName);
-
-      cy.get(mathinput1Anchor).should('have.value', '');
-      cy.get(mathinput2Anchor).should('have.value', '');
-      cy.get(ca1Anchor).should('have.text', '0');
-      cy.get(ca2Anchor).should('have.text', '0');
-      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-
-      cy.log("Enter first part")
-      cy.get(mathinput1Anchor).type(`x+y{enter}`);
-      cy.get(mathinput2Anchor).type(`x+y{enter}`);
-
-      // wrap to change value of sr anchors
-      cy.window().then((win) => {
-        sr1 = components['/sr1'].replacements[0];
-        sr1Anchor = cesc('#' + sr1.componentName);
-        sr2 = components['/sr2'].replacements[0];
-        sr2Anchor = cesc('#' + sr2.componentName);
-
-        cy.get(mathinput1Anchor).should('have.value', 'x+y');
-        cy.get(mathinput2Anchor).should('have.value', 'x+y');
-
-        cy.get(ca1Anchor).should('have.text', '0');
-        cy.get(ca2Anchor).should('have.text', '1');
-        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('x+y')
-        });
-        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('x+y')
-        });
-
-        cy.log("Enter second part")
-        cy.get(mathinput1Anchor).clear().type(`x/2+y/2{enter}`);
-        cy.get(mathinput2Anchor).clear().type(`x/2+y/2{enter}`);
-
-        cy.get(mathinput1Anchor).should('have.value', 'x/2+y/2');
-        cy.get(mathinput2Anchor).should('have.value', 'x/2+y/2');
-
-        cy.get(ca1Anchor).should('have.text', '0');
-        cy.get(ca2Anchor).should('have.text', '1');
-        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('x2+y2')
-        });
-        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('x2+y2')
-        });
-
-        cy.log("Enter third part")
-        cy.get(mathinput1Anchor).clear().type(`(x, y )  {enter}`);
-        cy.get(mathinput2Anchor).clear().type(`(x, y )  {enter}`);
-
-        cy.get(mathinput1Anchor).should('have.value', '(x, y )  ');
-        cy.get(mathinput2Anchor).should('have.value', '(x, y )  ');
-
-        cy.get(ca1Anchor).should('have.text', '0');
-        cy.get(ca2Anchor).should('have.text', '1');
-        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(x,y)')
-        });
-        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('(x,y)')
-        });
-
-        cy.log("Enter all parts")
-        cy.get(mathinput1Anchor).clear().type(`x+ y, x/2 +y/2,(x, y )  {enter}`);
-        cy.get(mathinput2Anchor).clear().type(`x+ y, x/2 +y/2,(x, y )  {enter}`);
-
-        cy.get(mathinput1Anchor).should('have.value', 'x+ y, x/2 +y/2,(x, y )  ');
-        cy.get(mathinput2Anchor).should('have.value', 'x+ y, x/2 +y/2,(x, y )  ');
-
-        cy.get(ca1Anchor).should('have.text', '1');
-        cy.get(ca2Anchor).should('have.text', '0');
-        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('x+y,x2+y2,(x,y)')
-        });
-        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal('x+y,x2+y2,(x,y)')
-        });
-
-      })
-
-    })
-  });
-
-  it.skip('answer text from one string, split into options', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p>All three: <answer type="text">hello there, doenet, (we're almost here, but not quite)</answer></p>
-  <p>Individuals: <answer type="text" splitintooptions>hello there, doenet, (we're almost here, but not quite)</answer></p>
-  <p>Credit for response 1: <copy name="ca1" prop="creditAchieved" tname="_answer1" /></p>
-  <p>Submitted response 1: <copy name="sr1" prop="submittedResponse" tname="_answer1" includeUndefinedObjects /></p>
-  <p>Credit for response 2: <copy name="ca2" prop="creditAchieved" tname="_answer2" /></p>
-  <p>Submitted response 2: <copy name="sr2" prop="submittedResponse" tname="_answer2" includeUndefinedObjects /></p>
- `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let textinput1Name = components['/_answer1'].stateValues.inputChild.componentName
-      let textinput1Anchor = cesc('#' + textinput1Name + '_input');
-      let textinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let textinput2Anchor = cesc('#' + textinput2Name + '_input');
-      let ca1 = components['/ca1'].replacements[0];
-      let ca1Anchor = cesc('#' + ca1.componentName);
-      let ca2 = components['/ca2'].replacements[0];
-      let ca2Anchor = cesc('#' + ca2.componentName);
-      let sr1 = components['/sr1'].replacements[0];
-      let sr1Anchor = cesc('#' + sr1.componentName);
-      let sr2 = components['/sr2'].replacements[0];
-      let sr2Anchor = cesc('#' + sr2.componentName);
-
-      cy.get(textinput1Anchor).should('have.value', '');
-      cy.get(textinput2Anchor).should('have.value', '');
-      cy.get(ca1Anchor).should('have.text', '0');
-      cy.get(ca2Anchor).should('have.text', '0');
-      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
-
-      cy.log("Enter first part")
-      cy.get(textinput1Anchor).type(` hello there   {enter}`);
-      cy.get(textinput2Anchor).type(` hello there   {enter}`);
-
-      // wrap to change value of sr anchors
-      cy.window().then((win) => {
-        sr1 = components['/sr1'].replacements[0];
-        sr1Anchor = cesc('#' + sr1.componentName);
-        sr2 = components['/sr2'].replacements[0];
-        sr2Anchor = cesc('#' + sr2.componentName);
-
-        cy.get(textinput1Anchor).should('have.value', ' hello there   ');
-        cy.get(textinput2Anchor).should('have.value', ' hello there   ');
-        cy.get(ca1Anchor).should('have.text', '0');
-        cy.get(ca2Anchor).should('have.text', '1');
-        cy.get(sr1Anchor).should('have.text', ' hello there   ')
-        cy.get(sr2Anchor).should('have.text', ' hello there   ')
-
-        cy.log("Enter second part")
-        cy.get(textinput1Anchor).clear().type(`doenet {enter}`);
-        cy.get(textinput2Anchor).clear().type(`doenet {enter}`);
-
-        cy.get(textinput1Anchor).should('have.value', 'doenet ');
-        cy.get(textinput2Anchor).should('have.value', 'doenet ');
-        cy.get(ca1Anchor).should('have.text', '0');
-        cy.get(ca2Anchor).should('have.text', '1');
-        cy.get(sr1Anchor).should('have.text', 'doenet ')
-        cy.get(sr2Anchor).should('have.text', 'doenet ')
-
-        cy.log("Enter third part")
-        cy.get(textinput1Anchor).clear().type(`(we're almost here, but not quite)  {enter}`);
-        cy.get(textinput2Anchor).clear().type(`(we're almost here, but not quite)  {enter}`);
-
-        cy.get(textinput1Anchor).should('have.value', `(we're almost here, but not quite)  `);
-        cy.get(textinput2Anchor).should('have.value', `(we're almost here, but not quite)  `);
-        cy.get(ca1Anchor).should('have.text', '0');
-        cy.get(ca2Anchor).should('have.text', '1');
-        cy.get(sr1Anchor).should('have.text', `(we're almost here, but not quite)  `)
-        cy.get(sr2Anchor).should('have.text', `(we're almost here, but not quite)  `)
-
-        cy.log("Enter all parts")
-        cy.get(textinput1Anchor).clear().type(`  hello there, doenet, (we're almost here, but not quite)    {enter}`);
-        cy.get(textinput2Anchor).clear().type(`  hello there, doenet, (we're almost here, but not quite)    {enter}`);
-
-        cy.get(textinput1Anchor).should('have.value', `  hello there, doenet, (we're almost here, but not quite)    `);
-        cy.get(textinput2Anchor).should('have.value', `  hello there, doenet, (we're almost here, but not quite)    `);
-        cy.get(ca1Anchor).should('have.text', '1');
-        cy.get(ca2Anchor).should('have.text', '0');
-        cy.get(sr1Anchor).should('have.text', `  hello there, doenet, (we're almost here, but not quite)    `)
-        cy.get(sr2Anchor).should('have.text', `  hello there, doenet, (we're almost here, but not quite)    `)
-
-      })
-    })
-  });
-
-  it.skip('answer with incomplete awards, split into options', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p>Only split: <answer splitintooptions>a,b,c</answer></p>
-  <p>Option specified in award:
-  <answer>
-    <award splitintooptions>a,b,c</award>
-    <award>f,g</award>
-  </answer>
-  </p>
-  <p>Option specified in answer:
-  <answer splitintooptions>
-    <award>a,b,c</award>
-    <award splitintooptions="false">f,g</award>
-  </answer>
-  </p>
- `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let mathinput1Name = components['/_answer1'].stateValues.inputChild.componentName
-      let mathinput1Anchor = cesc('#' + mathinput1Name + '_input');
-      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
-      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
-      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
-      let mathinput2Anchor = cesc('#' + mathinput2Name + '_input');
-      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
-      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
-      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
-      let mathinput3Anchor = cesc('#' + mathinput3Name + '_input');
-      let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
-      let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
-      let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
-
-      cy.get(mathinput1Anchor).should('have.value', '');
-      cy.get(mathinput2Anchor).should('have.value', '');
-      cy.get(mathinput3Anchor).should('have.value', '');
-      cy.get(mathinput1SubmitAnchor).should('be.visible');
-      cy.get(mathinput2SubmitAnchor).should('be.visible');
-      cy.get(mathinput3SubmitAnchor).should('be.visible');
-
-      cy.log("Enter first option")
-      cy.get(mathinput1Anchor).clear().type(`a{enter}`);
-      cy.get(mathinput2Anchor).clear().type(`a{enter}`);
-      cy.get(mathinput3Anchor).clear().type(`a{enter}`);
-      cy.get(mathinput1CorrectAnchor).should('be.visible');
-      cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3CorrectAnchor).should('be.visible');
-
-      cy.log("Enter second option")
-      cy.get(mathinput1Anchor).clear().type(`b{enter}`);
-      cy.get(mathinput2Anchor).clear().type(`b{enter}`);
-      cy.get(mathinput3Anchor).clear().type(`b{enter}`);
-      cy.get(mathinput1CorrectAnchor).should('be.visible');
-      cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3CorrectAnchor).should('be.visible');
-
-      cy.log("Enter third option")
-      cy.get(mathinput1Anchor).clear().type(`c{enter}`);
-      cy.get(mathinput2Anchor).clear().type(`c{enter}`);
-      cy.get(mathinput3Anchor).clear().type(`c{enter}`);
-      cy.get(mathinput1CorrectAnchor).should('be.visible');
-      cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3CorrectAnchor).should('be.visible');
-
-      cy.log("Enter options as a whole")
-      cy.get(mathinput1Anchor).clear().type(`a,b,c{enter}`);
-      cy.get(mathinput2Anchor).clear().type(`a,b,c{enter}`);
-      cy.get(mathinput3Anchor).clear().type(`a,b,c{enter}`);
-      cy.get(mathinput1IncorrectAnchor).should('be.visible');
-      cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3IncorrectAnchor).should('be.visible');
-
-      cy.log("Enter first of unsplit group")
-      cy.get(mathinput2Anchor).clear().type(`f{enter}`);
-      cy.get(mathinput3Anchor).clear().type(`f{enter}`);
-      cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3IncorrectAnchor).should('be.visible');
-
-      cy.log("Enter second of unsplit group")
-      cy.get(mathinput2Anchor).clear().type(`g{enter}`);
-      cy.get(mathinput3Anchor).clear().type(`g{enter}`);
-      cy.get(mathinput2IncorrectAnchor).should('be.visible');
-      cy.get(mathinput3IncorrectAnchor).should('be.visible');
-
-      cy.log("Enter entire unsplit group")
-      cy.get(mathinput2Anchor).clear().type(`f,g{enter}`);
-      cy.get(mathinput3Anchor).clear().type(`f,g{enter}`);
-      cy.get(mathinput2CorrectAnchor).should('be.visible');
-      cy.get(mathinput3CorrectAnchor).should('be.visible');
-
-    })
-  });
-
   it('answer, any letter', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -7211,8 +7006,8 @@ describe('Answer Tag Tests', function () {
           </when></award>
         </answer>
         
-        <p>Your math answer is <copy name="sr1" prop="submittedResponse" tname="a" includeUndefinedObjects /></p>
-        <p>Your text answer is <copy name="sr2" prop="submittedResponse2" tname="a" includeUndefinedObjects/></p>
+        <p>Your math answer is <copy name="sr1" prop="submittedResponse" tname="a" componentType="math" /></p>
+        <p>Your text answer is <copy name="sr2" prop="submittedResponse2" tname="a" componentType="text" /></p>
         <p>Credit for your answers <copy name="ca" prop="creditAchieved" tname="a" /></p>
  `}, "*");
     });
@@ -7229,18 +7024,14 @@ describe('Answer Tag Tests', function () {
       cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(sr2Anchor).should('have.text', '')
       cy.get(caAnchor).should('have.text', '0')
 
       cy.get("#\\/_mathinput1 textarea").type("2{enter}", { force: true });
       cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('＿')
       });
-      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('＿')
-      });
+      cy.get(sr2Anchor).should('have.text', '')
       cy.get(caAnchor).should('have.text', '0')
 
       cy.get('#\\/a_submit').click();
@@ -7307,7 +7098,7 @@ describe('Answer Tag Tests', function () {
           </when></award>
         </answer>
         
-        <p>Your answer: <copy name="sr" prop="submittedResponse" tname="a" includeUndefinedObjects /></p>
+        <p>Your answer: <copy name="sr" prop="submittedResponse" tname="a" componentType="math" /></p>
         <p>Credit for your answer <copy name="ca" prop="creditAchieved" tname="a"/></p>
  `}, "*");
     });
@@ -7387,6 +7178,51 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('answer with unicode', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer>x+2pi+3gamma+4mu+5xi+6eta</answer></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.log("Symbols as escaped text")
+      cy.get(mathinputAnchor).type(`x+2\\pi+3\\gamma+4\\mu+5\\xi+6\\eta{enter}{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+
+      cy.log("Incorrect answer")
+      cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+
+      cy.log("Symbols as unicode")
+      cy.get(mathinputAnchor).type(`{end}{backspace}x+2π+3γ+4μ+5ξ+6η{enter}{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+
+    })
+  });
 
 
 })

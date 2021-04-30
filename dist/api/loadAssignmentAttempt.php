@@ -53,10 +53,12 @@ if (!isset($_REQUEST["assignmentId"])) {
     ci.stateVariables AS stateVariables,
     ci.variant AS variant,
     ci.timestamp AS timestamp,
-    c.doenetML AS doenetML
+    cb.doenetML AS doenetML
     FROM content_interactions AS ci
     LEFT JOIN content AS c
     ON c.contentId = ci.contentId
+    LEFT JOIN content_branch as cb
+    ON c.branchId = cb.branchId
     LEFT JOIN user_assignment AS ua
     ON ua.assignmentId = '$assignmentId'
     AND ua.userId = '$userId'

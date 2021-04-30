@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Mathinput Graph Tests', function () {
+describe('MathInput Graph Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')

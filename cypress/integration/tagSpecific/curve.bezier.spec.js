@@ -5595,7 +5595,7 @@ describe('Curve Tag Bezier Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <curve through="(1,2) (3,4) (-5,6) $(_curve1{prop='throughPoint1'})">
+  <curve through="(1,2) (3,4) (-5,6) $(_curve1{prop='throughPoint1' componentType='point'})">
   <bezierControls />
   </curve>
   </graph>
@@ -6007,7 +6007,7 @@ describe('Curve Tag Bezier Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <curve through="$(_curve1{prop='throughPoint4' includeUndefinedObjects}) (3,4) (-5,6) (1,2)">
+  <curve through="$(_curve1{prop='throughPoint4' componentType='point'}) (3,4) (-5,6) (1,2)">
   <bezierControls />
   </curve>
   </graph>
@@ -6419,7 +6419,7 @@ describe('Curve Tag Bezier Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <curve through="$(_curve1{prop='throughPoint4'}) (3,4) (-5,6) (1,2) ($(_curve1{prop='throughPointX1_1'})+1, 2)">
+  <curve through="$(_curve1{prop='throughPoint4' componentType='point'}) (3,4) (-5,6) (1,2) ($(_curve1{prop='throughPointX1_1'})+1, 2)">
   <bezierControls />
   </curve>
   </graph>
@@ -6947,7 +6947,7 @@ describe('Curve Tag Bezier Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <curve through="$(_curve1{prop='throughPoint4'}) (1,2) (3,4) $(_curve1{prop='throughPoint7'}) (5,7) (-5,7) $(_curve1{prop='throughPoint10' includeUndefinedObjects}) (3,1) (5,0) (-5,-1)" />
+  <curve through="$(_curve1{prop='throughPoint4' componentType='point'}) (1,2) (3,4) $(_curve1{prop='throughPoint7' componentType='point'}) (5,7) (-5,7) $(_curve1{prop='throughPoint10' componentType='point'}) (3,1) (5,0) (-5,-1)" />
   </graph>
 
   <graph name="g2" newNamespace>
@@ -8481,7 +8481,7 @@ describe('Curve Tag Bezier Tests', function () {
   <curve through="(1,2) (3,4) (-5,6) (3,5)">
   <beziercontrols>
     <controlVectors><vector>
-      (<extract prop="y"><copy prop="controlVector1_2" tname="_curve1" /></extract>,
+      (<copy prop="controlVectorX1_2_2" tname="_curve1" />,
       5)
     </vector></controlVectors>
     <controlVectors direction="both">
@@ -8492,11 +8492,11 @@ describe('Curve Tag Bezier Tests', function () {
       </vector>
     </controlVectors>
     <controlVectors><vector>
-      (<extract prop="y"><copy prop="controlVector4_1" tname="_curve1" /></extract>,
+      (<copy prop="controlVectorX4_1_2" tname="_curve1" />,
       4)
     </vector></controlVectors>
     <controlVectors><vector>
-      (<extract prop="y"><copy prop="controlVector3_1" tname="_curve1" /></extract>,
+      (<copy prop="controlVectorX3_1_2" tname="_curve1" />,
       -2)
     </vector></controlVectors>
   </beziercontrols>

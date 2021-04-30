@@ -44,40 +44,6 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it.skip('full unsugared <through><point> line', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <line label='l'>
-      <through>
-        <point>(1,2)</point>
-        <point>(4,7)</point>
-      </through>
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.log('points are where they should be')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', 1, 2])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 4, 7])
-
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
-
-    })
-  })
-
   it('through = string of points', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -93,47 +59,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
-
-      cy.log('points are where they should be')
-      cy.window().then((win) => {
-        expect(point1.stateValues.xs[0].tree).eq(1)
-        expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
-        expect(point2.stateValues.xs[0].tree).eq(4)
-        expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
-
-        expect(components['/_line1'].stateValues.label).eq('l')
-        expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
-
-      })
-    })
-  })
-
-  it.skip('sugar <through> from string', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <line label='l'>
-        (1,2),(4,7)
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let through1 = components["/_line1"].activeChildren[1];
-      let point1 = through1.activeChildren[0];
-      let point2 = through1.activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       cy.log('points are where they should be')
       cy.window().then((win) => {
@@ -169,51 +97,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
-
-      cy.log('points are where they should be')
-      cy.window().then((win) => {
-        expect(point1.stateValues.xs[0].tree).eq(1)
-        expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
-        expect(point2.stateValues.xs[0].tree).eq(4)
-        expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
-
-        expect(components['/_line1'].stateValues.label).eq('l')
-        expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
-
-      })
-    })
-  })
-
-  it.skip('sugar <point> label as a component', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <line>
-    <label>l</label>
-      <through>
-        (1,2),(4,7)
-      </through>
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let point1 = components['/_through1'].activeChildren[0];
-      let point2 = components['/_through1'].activeChildren[1];
-
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       cy.log('points are where they should be')
       cy.window().then((win) => {
@@ -637,10 +523,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
       let line2 = components['/_copy1'].replacements[0];
 
       cy.log('line starts off correctly')
@@ -830,115 +715,6 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it.skip('line via copied through', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <point>(0,0)</point>
-  <point>(1,3)</point>
-  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
-  </graph>
-  
-  <graph>
-  <line><copy tname="_through1" /></line>
-  </graph>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let point1 = components['/_copy1'].replacements[0];
-      let point2 = components['/_copy2'].replacements[0];
-
-      cy.log('line starts off correctly')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(3, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(0, 1E-12);
-
-      });
-
-      cy.log('move points')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        point1.movePoint({ x: -3, y: 5 });
-        point2.movePoint({ x: 5, y: 1 });
-
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(-0.5, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(3.5, 1E-12);
-
-      });
-
-      cy.log('move line1')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let point1coords = [
-          components['/_line1'].stateValues.points[0][0],
-          components['/_line1'].stateValues.points[0][1],
-        ];
-        let point2coords = [
-          components['/_line1'].stateValues.points[1][0],
-          components['/_line1'].stateValues.points[1][1],
-        ];
-
-        let moveX = -2;
-        let moveY = -1;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        components['/_line1'].moveLine({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(-0.5, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(1.5, 1E-12);
-
-      });
-
-      cy.log('move line2')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let point1coords = [
-          components['/_line1'].stateValues.points[0][0],
-          components['/_line1'].stateValues.points[0][1],
-        ];
-        let point2coords = [
-          components['/_line1'].stateValues.points[1][0],
-          components['/_line1'].stateValues.points[1][1],
-        ];
-
-        let moveX = -5;
-        let moveY = -2;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        components['/_line2'].moveLine({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(-0.5, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(-3, 1E-12);
-
-      });
-    })
-
-  })
-
   it('copy points of line', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -961,7 +737,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -1140,7 +916,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -1382,7 +1158,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       point1.movePoint({ x: 4, y: 4 });
@@ -1510,9 +1286,9 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <line through="$(_line2{prop='point2'}) (1,0)" />
-  <line through="$(_line3{prop='point2'}) (3,2)" />
-  <line through="$(_line1{prop='point2'}) (-1,4)" />
+  <line through="$(_line2{prop='point2' componentType='point'}) (1,0)" />
+  <line through="$(_line3{prop='point2' componentType='point'}) (3,2)" />
+  <line through="$(_line1{prop='point2' componentType='point'}) (-1,4)" />
   </graph>
   `}, "*");
     });
@@ -1521,18 +1297,15 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughChild1 = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild1.activeChildren[0];
-      let point2 = throughChild1.activeChildren[1];
-      let throughChild2 = components["/_line2"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point3 = throughChild2.activeChildren[0];
-      let point4 = throughChild2.activeChildren[1];
-      let throughChild3 = components["/_line3"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point5 = throughChild3.activeChildren[0];
-      let point6 = throughChild3.activeChildren[1];
+      let throughComponent1 = components["/_line1"].attributes.through;
+      let point1 = throughComponent1.activeChildren[0];
+      let point2 = throughComponent1.activeChildren[1];
+      let throughComponent2 = components["/_line2"].attributes.through;
+      let point3 = throughComponent2.activeChildren[0];
+      let point4 = throughComponent2.activeChildren[1];
+      let throughComponent3 = components["/_line3"].attributes.through;
+      let point5 = throughComponent3.activeChildren[0];
+      let point6 = throughComponent3.activeChildren[1];
 
       let x1 = 1, y1 = 0;
       let x2 = 3, y2 = 2;
@@ -4921,10 +4694,9 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
-      let point1 = throughChild.activeChildren[0];
-      let point2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       let x1 = 3, y1 = 3;
       let x2 = 4, y2 = 5;
@@ -5098,8 +4870,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
+      let throughChild = components["/_line1"].attributes.through;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
@@ -5278,8 +5049,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
+      let throughChild = components["/_line1"].attributes.through;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
@@ -5488,8 +5258,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
 
       let P2a = components['/P2a'].replacements[0];
-      let throughChild = components["/_line1"].activeChildren
-        .filter(x => x.componentType === "through")[0];
+      let throughChild = components["/_line1"].attributes.through;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
@@ -5666,102 +5435,6 @@ describe('Line Tag Tests', function () {
 
       })
 
-
-    })
-  })
-
-  it.skip('value of hidden of points changes with line', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p><booleaninput label="Hide line" name="hidel" prefill="true" /></p>
-  <p><booleaninput label="Hide first point" name="hidep" prefill="false" /></p>
-  <graph>
-    <line label='l' hide="$hidel">
-      <through hide="false">
-        <point hide="$hidep">(1,2)</point>
-        <point>(4,7)</point>
-      </through>
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    // TODO: line never render its children, so point is never shown.
-    // Should we just delete this test?  It never checked the renderers
-    // so the state variables check still work
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.log('everything hidden, but only line has hide specified')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(false)
-      expect(components['/_point1'].stateValues.hidden).eq(true)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(true)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(true)
-      expect(components['/_line1'].stateValues.hidden).eq(true)
-
-    })
-
-    // explictly hide first point
-    cy.get('#\\/hidep').click();
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(true)
-      expect(components['/_point1'].stateValues.hidden).eq(true)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(true)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(true)
-      expect(components['/_line1'].stateValues.hidden).eq(true)
-
-    })
-
-    // unhide line
-    cy.get('#\\/hidel').click();
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(true)
-      expect(components['/_point1'].stateValues.hidden).eq(true)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(false)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(false)
-      expect(components['/_line1'].stateValues.hidden).eq(false)
-
-    })
-
-    // unhide point
-    cy.get('#\\/hidep').click();
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(false)
-      expect(components['/_point1'].stateValues.hidden).eq(false)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(false)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(false)
-      expect(components['/_line1'].stateValues.hidden).eq(false)
 
     })
   })

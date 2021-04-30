@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Mathinput Tag Tests', function () {
+describe('MathInput Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
@@ -582,7 +582,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Original math: <math>1+2x</math></p>
-    <p>Mathinput based on math: <mathinput bindValueTo="$_math1" /></p>
+    <p>MathInput based on math: <mathinput bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
@@ -736,7 +736,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>b</text>
     <p>Original math: <math>1+2x</math></p>
-    <p>Mathinput based on math: <mathinput prefill="x^2/9" bindValueTo="$_math1" /></p>
+    <p>MathInput based on math: <mathinput prefill="x^2/9" bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
@@ -796,7 +796,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>c</text>
     <p>Original math: <math simplify>1+<math>3x</math></math></p>
-    <p>Mathinput based on math: <mathinput bindValueTo="$_math1" /></p>
+    <p>MathInput based on math: <mathinput bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>
@@ -922,7 +922,7 @@ describe('Mathinput Tag Tests', function () {
         doenetML: `
     <text>d</text>
     <p>Original math: <math>1+<math>2x</math><math>z</math></math></p>
-    <p>Mathinput based on math: <mathinput bindValueTo="$_math1" /></p>
+    <p>MathInput based on math: <mathinput bindValueTo="$_math1" /></p>
     <p>Copied mathinput: <copy tname="_mathinput1" name="mathinput2" /></p>
     <p>Value of original mathinput: <copy tname="_mathinput1" prop="value" name="value1" /></p>
     <p>Immediate value of original mathinput: <copy tname="_mathinput1" prop="immediateValue" name="immediate1" /></p>

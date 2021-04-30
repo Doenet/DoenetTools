@@ -194,7 +194,7 @@ describe('Circle Tag Tests', function () {
       let radiusNumber = components["/radiusNumber"].replacements[0]
       let circle2 = components["/circle2"].replacements[0];
       let circle3 = components["/graph4"].replacements[0].activeChildren[0];
-      let center1 = components["/_circle1"].activeChildren.filter(x => x.componentType === "center")[0];
+      let center1 = components["/_circle1"].attributes["center"];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -4126,7 +4126,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let definingCenter = components["/_circle1"].activeChildren[1];
+      let definingCenter = components["/_circle1"].attributes["center"]
       let centerPoint = components["/centerPoint"].replacements[0]
       let radiusNumber = components["/radiusNumber"].replacements[0]
       let circle2 = components["/circle2"].replacements[0];
@@ -5772,9 +5772,9 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughChild = components["/_circle1"].activeChildren.filter(x => x.componentType === "through")[0]
-      let throughPoint1 = throughChild.activeChildren[0];
-      let throughPoint2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
 
       let t1x = 1, t1y = 2;
       let t2x = 3, t2y = 4;
@@ -5805,7 +5805,7 @@ describe('Circle Tag Tests', function () {
         components['/_circle1'].moveCircle({ center: newCenter });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -5837,7 +5837,7 @@ describe('Circle Tag Tests', function () {
         centerPoint.movePoint({ x: newCenter[0], y: newCenter[1] });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -5864,7 +5864,7 @@ describe('Circle Tag Tests', function () {
         throughPoint1.movePoint({ x: t1x, y: t1y });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -5890,7 +5890,7 @@ describe('Circle Tag Tests', function () {
         throughPoint2.movePoint({ x: t2x, y: t2y });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -5918,7 +5918,7 @@ describe('Circle Tag Tests', function () {
         throughPoint2.movePoint({ x: t2x, y: t2y });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -5962,9 +5962,9 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughChild = components["/_circle1"].activeChildren.filter(x => x.componentType === "through")[0]
-      let throughPoint1 = throughChild.activeChildren[0];
-      let throughPoint2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
 
       let t1x = 1, t1y = 2;
       let t2x = 2, t2y = 3;
@@ -6152,9 +6152,9 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughChild = components["/_circle1"].activeChildren.filter(x => x.componentType === "through")[0]
-      let throughPoint1 = throughChild.activeChildren[0];
-      let throughPoint2 = throughChild.activeChildren[1];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
 
       let t1x = 1, t1y = 2;
       let t2x = 2, t2y = 3;
@@ -6337,10 +6337,10 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughChild = components["/_circle1"].activeChildren.filter(x => x.componentType === "through")[0]
-      let throughPoint1 = throughChild.activeChildren[0];
-      let throughPoint2 = throughChild.activeChildren[1];
-      let throughPoint3 = throughChild.activeChildren[2];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
+      let throughPoint3 = throughComponent.activeChildren[2];
 
       let t1x = 2, t1y = 3;
       let t2x = 1, t2y = 2;
