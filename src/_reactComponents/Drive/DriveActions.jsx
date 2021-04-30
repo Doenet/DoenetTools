@@ -400,6 +400,12 @@ export const useCopyItems = () => {
           targetDriveId,
           targetFolderId
         });
+
+        // Specify copy in label when copying within same drive
+        if (item.driveId === targetDriveId) {
+          const newItemLabel = `Copy of ${newItem.label}`
+          newItem.label = newItemLabel;
+        }
       
         // Generate sortOrder for cloned item
         const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
@@ -541,11 +547,6 @@ export const useCopyItems = () => {
 
     }
 
-    // Specify copy in label when copying within same drive
-    if (item.driveId === targetDriveId) {
-      const newItemLabel = `Copy of ${newItem.label}`
-      newItem.label = newItemLabel;
-    }   
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
     globalDictionary[newItemId] = newItem;
