@@ -867,7 +867,9 @@ function Folder(props){
  
   if (folderInfoObj.state === "loading"){ return null;}
  
-  let openCloseText = isOpen ? <FontAwesomeIcon icon={faChevronDown}/> : <FontAwesomeIcon icon={faChevronRight}/>;
+  let openCloseText = isOpen ? 
+    <span data-cy="folderToggleCloseIcon"><FontAwesomeIcon icon={faChevronDown}/></span> : 
+    <span data-cy="folderToggleOpenIcon"><FontAwesomeIcon icon={faChevronRight}/></span>;
 
   let openCloseButton = <button 
   style={{border: "none", backgroundColor: bgcolor, borderRadius: "5px"}}

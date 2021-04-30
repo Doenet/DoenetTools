@@ -42,51 +42,84 @@ describe("Library", function () {
   //   });    
   // })
 
-  it('Single-clicking on a folder should select it and displays information about it in the InfoPanel', function() {
-    cy.get('[data-cy=addFolderButton]').click();
+  // it('Single-clicking on a folder should select it and displays information about it in the InfoPanel', function() {
+  //   cy.get('[data-cy=addFolderButton]').click();
 
-    // Check for item label equality across Drive and InfoPanel
-    let folderLabel = "";
-    cy.get('[data-cy=mainPanel]').within(() => {
-      cy.get('[data-cy=driveItem]').first().click();
-      cy.get('[data-cy=driveItem]').first().within(() => {
-        cy.get('[data-cy=folderLabel]').invoke('text').then(label => {
-          folderLabel = label;
-        })
-      })
-    }); 
-    cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
-      expect(folderLabel.trim()).equal(infoPanelItemLabel.trim());
-    })   
-  });
+  //   // Check for item label equality across Drive and InfoPanel
+  //   let folderLabel = "";
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().click();
+  //     cy.get('[data-cy=driveItem]').first().within(() => {
+  //       cy.get('[data-cy=folderLabel]').invoke('text').then(label => {
+  //         folderLabel = label;
+  //       })
+  //     })
+  //   }); 
+  //   cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
+  //     expect(folderLabel.trim()).equal(infoPanelItemLabel.trim());
+  //   })   
+  // });
 
-  it('Creating a new DoenetML by clicking on the Add DoenetML button', function() {
-    cy.get('[data-cy=addDoenetMLButton]').click();
+  // it('Single-clicking on a folder caret should expand/close folder', function() {
+  //   cy.get('[data-cy=addFolderButton]').click();
 
-    // Verify item existence and type
-    cy.get(':nth-child(1) > [data-cy=driveItem]').should('exist');
-    cy.get(':nth-child(1) > [data-cy=driveItem]').within(() => {
-      cy.get('[data-cy=doenetMLIcon]').should('exist');
-    });    
-  })
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().within(() => {
+  //       cy.get('[data-cy=folderToggleOpenIcon]').click();
+  //       cy.get('[data-cy=folderToggleOpenIcon]').should('not.exist');
+  //       cy.get('[data-cy=folderToggleCloseIcon]').should('exist');
 
-  it('Single-clicking on a DoenetML should select it and displays information about it in the InfoPanel', function() {
-    cy.get('[data-cy=addDoenetMLButton]').click();
+  //       cy.get('[data-cy=folderToggleCloseIcon]').click();
+  //       cy.get('[data-cy=folderToggleCloseIcon]').should('not.exist');
+  //       cy.get('[data-cy=folderToggleOpenIcon]').should('exist');
+  //     })
+  //   });
+  // });
 
-    // Check for item label equality across Drive and InfoPanel
-    let doenetMLLabel = "";
-    cy.get('[data-cy=mainPanel]').within(() => {
-      cy.get('[data-cy=driveItem]').first().click();
-      cy.get('[data-cy=driveItem]').first().within(() => {
-        cy.get('[data-cy=doenetMLLabel]').invoke('text').then(label => {
-          doenetMLLabel = label;
-        })
-      })
-    }); 
-    cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
-      expect(doenetMLLabel.trim()).equal(infoPanelItemLabel.trim());
-    })   
-  });
+  // it('Double-clicking on a folder should expand/close folder', function() {
+  //   cy.get('[data-cy=addFolderButton]').click();
+
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     const folder = cy.get('[data-cy=driveItem]').first();
+  //     folder.within(() => {
+  //       folder.dblclick();
+  //       cy.get('[data-cy=folderToggleOpenIcon]').should('not.exist');
+  //       cy.get('[data-cy=folderToggleCloseIcon]').should('exist');
+
+  //       folder.dblclick();
+  //       cy.get('[data-cy=folderToggleCloseIcon]').should('not.exist');
+  //       cy.get('[data-cy=folderToggleOpenIcon]').should('exist');
+  //     })
+  //   });
+  // });
+
+  // it('Creating a new DoenetML by clicking on the Add DoenetML button', function() {
+  //   cy.get('[data-cy=addDoenetMLButton]').click();
+
+  //   // Verify item existence and type
+  //   cy.get(':nth-child(1) > [data-cy=driveItem]').should('exist');
+  //   cy.get(':nth-child(1) > [data-cy=driveItem]').within(() => {
+  //     cy.get('[data-cy=doenetMLIcon]').should('exist');
+  //   });    
+  // })
+
+  // it('Single-clicking on a DoenetML should select it and displays information about it in the InfoPanel', function() {
+  //   cy.get('[data-cy=addDoenetMLButton]').click();
+
+  //   // Check for item label equality across Drive and InfoPanel
+  //   let doenetMLLabel = "";
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().click();
+  //     cy.get('[data-cy=driveItem]').first().within(() => {
+  //       cy.get('[data-cy=doenetMLLabel]').invoke('text').then(label => {
+  //         doenetMLLabel = label;
+  //       })
+  //     })
+  //   }); 
+  //   cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
+  //     expect(doenetMLLabel.trim()).equal(infoPanelItemLabel.trim());
+  //   })   
+  // });
 });
 
 /*
