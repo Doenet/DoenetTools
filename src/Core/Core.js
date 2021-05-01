@@ -5781,7 +5781,7 @@ export default class Core {
             continue;
           }
 
-          if (upDep.originalDownstreamVariableNames.length > 0) {
+          if (upDep.mappedDownstreamVariableNamesByComponent) {
 
             // if have multiple components, there must be multiple variables
             // ensure that varName is one of them
