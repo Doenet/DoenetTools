@@ -657,9 +657,51 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
       }
     }
+
+    if (component.componentType === "award" && component.children) {
+      let targetsAreResponses = component.attributes.targetsAreResponses;
+      if (targetsAreResponses) {
+        let targetNames = targetsAreResponses.split(/\s+/).filter(s => s);
+        for (let tName of targetNames) {
+          addResponsesToDescendantsWithTname(component.children, tName);
+        }
+
+      }
+
+    }
+
   }
 
   return serializedComponents;
+
+}
+
+function addResponsesToDescendantsWithTname(components, tName) {
+
+  for (let component of components) {
+    let propsOrDAttrs = component.props;
+    if(!propsOrDAttrs) {
+      propsOrDAttrs = component.doenetAttributes;
+    }
+    if (propsOrDAttrs) {
+      for (let prop in propsOrDAttrs) {
+        if (prop.toLowerCase() === "tname" && propsOrDAttrs[prop] === tName) {
+          if(!component.attributes) {
+            component.attributes = {};
+          }
+          let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
+          if (!foundIsResponse) {
+            component.attributes.isResponse = true;
+          }
+        }
+      }
+
+    }
+
+    if (component.children) {
+      addResponsesToDescendantsWithTname(component.children, tName)
+    }
+  }
 
 }
 

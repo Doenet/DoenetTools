@@ -1002,8 +1002,8 @@ export default class Answer extends InlineComponent {
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
-          variableName: "creditAchievedIfSubmit",
-          changedValuesOnly: true,
+          variableNames: ["creditAchievedIfSubmit"],
+          includeImmediateValueWithValue: true,
         },
       }),
       definition({ dependencyValues }) {
