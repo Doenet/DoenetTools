@@ -8,7 +8,7 @@
     "prettier.requireConfig": true,
     "editor.formatOnSave": true
   },
-  "postCreateCommand": "docker exec -d doenet_php_1 ln -s -T /vendor/ vendor && npm install",
+  "postCreateCommand": "npm install",
   "extensions": [
     "ms-azuretools.vscode-docker",
     "eg2.vscode-npm-script",
