@@ -19,6 +19,39 @@ export class ComponentWithSelectableType extends BaseComponent {
     return attributes;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = [];
+
+    function addTypeAroundMultipleChildren({ matchedChildren, componentAttributes, parentAttributes }) {
+
+      let type = componentAttributes.type;
+      if (!type) {
+        type = parentAttributes.type;
+      }
+      if (!type) {
+        type = "number";
+      } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
+        console.warn(`Invalid type ${type}, setting type to number`);
+        type = "number";
+      }
+
+      return {
+        success: true,
+        newChildren: [{
+          componentType: type,
+          children: matchedChildren
+        }]
+      }
+    }
+
+    sugarInstructions.push({
+      childrenRegex: /..+/,
+      replacementFunction: addTypeAroundMultipleChildren
+    });
+
+    return sugarInstructions;
+
+  }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);

@@ -14,7 +14,7 @@ export default class Feedback extends BlockComponent {
     let attributes = super.createAttributesObject(args);
     delete attributes.hide;
     attributes.condition = {
-      createComponentOfType: "condition"
+      createComponentOfType: "boolean"
     }
 
     return attributes;

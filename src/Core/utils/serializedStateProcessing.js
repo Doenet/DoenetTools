@@ -901,14 +901,18 @@ function createEvaluateIfFindMatchedClosingParens({
     let evaluateComponent = {
       componentType: "evaluate",
       doenetAttributes: { createdFromMacro: true },
-      children: [
-        ...componentsFromMacro,
-        {
-          componentType: "input",
+      attributes: {
+        function: {
+          componentType: "function",
+          doenetAttributes: {createdFromMacro: true},
+          children: componentsFromMacro
+        },
+        input: {
+          componentType: "mathList",
           doenetAttributes: { createdFromMacro: true },
           children: inputArray
         }
-      ]
+      }
     }
 
 

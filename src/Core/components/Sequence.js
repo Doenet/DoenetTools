@@ -343,7 +343,7 @@ export default class Sequence extends CompositeComponent {
           if (dependencyValues.type === "number") {
             let numericalTo = findFiniteNumericalValue(dependencyValues.specifiedTo);
             if (!Number.isFinite(numericalTo)) {
-              console.warn("Invalid from of number sequence.  Must be a number")
+              console.warn("Invalid to of number sequence.  Must be a number")
               validSequence = false;
             }
           } else if (Number.isNaN(dependencyValues.specifiedTo)) {

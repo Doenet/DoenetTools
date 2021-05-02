@@ -2488,12 +2488,14 @@ class Dependency {
           }
 
           // check if vName begins when an arrayEntry
-          let arrayEntryPrefixesLongestToShortest = Object.keys(downComponent.arrayEntryPrefixes)
-            .sort((a, b) => b.length - a.length);
-          for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
-            if (vName.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
-              let arrayVarName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
-              return downComponent.state[arrayVarName].arraySizeStateVariable
+          if (downComponent.arrayEntryPrefixes) {
+            let arrayEntryPrefixesLongestToShortest = Object.keys(downComponent.arrayEntryPrefixes)
+              .sort((a, b) => b.length - a.length);
+            for (let arrayEntryPrefix of arrayEntryPrefixesLongestToShortest) {
+              if (vName.substring(0, arrayEntryPrefix.length) === arrayEntryPrefix) {
+                let arrayVarName = downComponent.arrayEntryPrefixes[arrayEntryPrefix];
+                return downComponent.state[arrayVarName].arraySizeStateVariable
+              }
             }
           }
           return `__${vName}_is_not_an_array`;
