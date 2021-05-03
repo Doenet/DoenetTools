@@ -2092,6 +2092,7 @@ export default class Core {
               arrayStateVariable: dep.arrayStateVariable,
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
+              substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2107,10 +2108,6 @@ export default class Core {
     }
 
     let stateVariableDefinitions = {};
-
-    // this.createChildLogicStateVariableDefinitions({
-    //   childLogic, stateVariableDefinitions, componentName, parentName
-    // });
 
     if (!redefineDependencies) {
       this.createAttributeStateVariableDefinitions({
@@ -2139,11 +2136,6 @@ export default class Core {
         });
       }
     }
-
-    // this.createAllResolvedStateVariableDefinition({
-    //   childLogic, stateVariableDefinitions,
-    // });
-
 
 
     return stateVariableDefinitions;
@@ -2826,12 +2818,18 @@ export default class Core {
         // being created has specified should be given the value when it
         // is created from an outside source like a reference to a prop or an adapter
         let primaryStateVariableForDefinition = "value";
-        if (componentClass.primaryStateVariableForDefinition) {
+        if (redefineDependencies.substituteForPrimaryStateVariable) {
+          primaryStateVariableForDefinition = redefineDependencies.substituteForPrimaryStateVariable;
+        } else if (componentClass.primaryStateVariableForDefinition) {
           primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
         }
         let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
         if (!stateDef) {
-          throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
+          if (redefineDependencies.substituteForPrimaryStateVariable) {
+            throw Error(`Invalid public state variable of componentType ${componentClass.componentType}: substitueForPrimaryStateVariable ${redefineDependencies.substituteForPrimaryStateVariable} does not exist`)
+          } else {
+            throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
+          }
         }
         stateDef.returnDependencies = () => ({
           targetVariable: {
@@ -3280,6 +3278,11 @@ export default class Core {
     stateVarObj.wrappingComponents = arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix);
     stateVarObj.entryPrefix = arrayEntryPrefix;
     stateVarObj.varEnding = stateVariable.slice(arrayEntryPrefix.length)
+
+    if (arrayStateVarObj.createWorkspace) {
+      stateVarObj.createWorkspace = true;
+      stateVarObj.workspace = arrayStateVarObj.workspace;
+    }
 
     // if any of the additional state variables defined are arrays,
     // (which should be all of them)
@@ -4495,9 +4498,9 @@ export default class Core {
     definitionArgs.freshnessInfo = stateVarObj.freshnessInfo;
 
 
-    if (component instanceof this.allComponentClasses._composite) {
-      definitionArgs.replacementsWorkspace = new Proxy(component.replacementsWorkspace, readOnlyProxyHandler);
-    }
+    // if (component instanceof this.allComponentClasses._composite) {
+    //   definitionArgs.replacementsWorkspace = new Proxy(component.replacementsWorkspace, readOnlyProxyHandler);
+    // }
 
     let result;
 
@@ -5121,17 +5124,21 @@ export default class Core {
       args.arraySize = stateVarObj.arraySize;
     }
 
-    if (stateVarObj.providePreviousValuesInDefinition) {
-      let allStateVariablesDefined = [stateVariable];
-      if (stateVarObj.additionalStateVariablesDefined) {
-        allStateVariablesDefined.push(...stateVarObj.additionalStateVariablesDefined)
-      }
-      let previousValues = {};
-      for (let varName of allStateVariablesDefined) {
-        previousValues[varName] = component.state[varName]._previousValue;
-      }
-      args.previousValues = previousValues;
+    if (stateVarObj.createWorkspace) {
+      args.workspace = stateVarObj.workspace;
     }
+
+    // if (stateVarObj.providePreviousValuesInDefinition) {
+    //   let allStateVariablesDefined = [stateVariable];
+    //   if (stateVarObj.additionalStateVariablesDefined) {
+    //     allStateVariablesDefined.push(...stateVarObj.additionalStateVariablesDefined)
+    //   }
+    //   let previousValues = {};
+    //   for (let varName of allStateVariablesDefined) {
+    //     previousValues[varName] = component.state[varName]._previousValue;
+    //   }
+    //   args.previousValues = previousValues;
+    // }
 
     return args;
   }
@@ -7056,7 +7063,7 @@ export default class Core {
       return true;
     }
     let baseClass = this.allComponentClasses[baseComponentType];
-    if(!baseClass) {
+    if (!baseClass) {
       return false;
     }
     return baseClass.isPrototypeOf(

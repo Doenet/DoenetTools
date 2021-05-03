@@ -1,11 +1,9 @@
 import MathList from './MathList';
 import me from 'math-expressions';
+import { isValidVariable } from '../utils/math';
 
 export default class Variables extends MathList {
   static componentType = "variables";
-
-  // TODO: how to add this feature?
-  static additionalStateVariablesForProperties = ["validVariables"];
 
   // when another component has a attribute that is a mathList,
   // use the maths state variable to populate that attribute
@@ -69,22 +67,7 @@ export default class Variables extends MathList {
 
         for (let variable of dependencyValues.variables) {
 
-          // to be a valid variable, tree must be either
-          // - a string, or
-          // - a string with a subscript that is a string or a number
-          let tree = variable.tree;
-          let validVariable = true;
-          if (typeof tree === "string") {
-            if (tree === '\uFF3F') {  // long underscore
-              validVariable = false;
-            }
-          } else if (!Array.isArray(tree) ||
-            tree[0] !== '_' ||
-            (typeof tree[1] !== "string") ||
-            ((typeof tree[2] !== "string" && typeof tree[2] !== "number"))
-          ) {
-            validVariable = false;
-          }
+          let validVariable = isValidVariable(variable);
           if (!validVariable) {
             console.warn("Invalid value for " + thisComponentType);
             validVariable = false;

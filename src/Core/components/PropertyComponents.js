@@ -1,9 +1,9 @@
 import TextComponent from './Text';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
-import MathWithVariable from './abstract/MathWithVariable';
 import TextOrInline from './abstract/TextOrInline';
 import Option from './Option';
 import Template from './Template';
+import MathComponent from './Math';
 
 
 
@@ -27,14 +27,14 @@ export class Seed extends TextFromSingleStringChild {
   static rendererType = "text";
 }
 
-export class RightHandSide extends MathWithVariable {
-  static componentType = "righthandside";
+export class RightHandSide extends MathComponent {
+  static componentType = "rightHandSide";
   static rendererType = "math";
 }
 
 export class Description extends TextOrInline {
   static componentType = "description";
-  static rendererType = "textOrInline";
+  static rendererType = undefined;
 }
 
 export class Else extends Option {
