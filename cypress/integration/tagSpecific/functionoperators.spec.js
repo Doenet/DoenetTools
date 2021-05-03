@@ -33,7 +33,7 @@ describe('Function Operator Tag Tests', function () {
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../clamp01" /><input>$x</input></evaluate></template>
+      <template newNamespace><evaluate function="$(../clamp01)" input="$x" /></template>
       <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
@@ -123,7 +123,7 @@ describe('Function Operator Tag Tests', function () {
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../wrap01" /><input>$x</input></evaluate></template>
+      <template newNamespace><evaluate function="$(../wrap01)" input="$x" /></template>
       <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>

@@ -12,7 +12,7 @@ export default class Case extends Option {
     let attributes = super.createAttributesObject(args);
 
     attributes.condition = {
-      createComponentOfType: "condition",
+      createComponentOfType: "boolean",
     };
 
     return attributes;

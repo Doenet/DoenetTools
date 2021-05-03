@@ -11,29 +11,19 @@ describe('UpdateValue Tag Tests',function() {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <text>a</text>
     <number name="step">20/<copy tname="count" /></number>
+    <number name="count">2</number>
     <graph>
-    <map>
-    <template>
-    <linesegment>
-      <endpoints>
-      <point><coords>($x, sin($x))</coords></point>
-      <point><coords>($x+<copy tname="step" />, sin($x+<copy tname="step" />))</coords></point>
-      </endpoints>
-    </linesegment>
+    <map assignNames="l1 l2 l3 l4 l5 l6 l7 l8 l9 l10 l11 l12 l13 l14 l15 l16" >
+    <template newNamespace>
+    <linesegment endpoints="($x, sin($x)) ($x+$(../step), sin($x+$(../step)))" />
     </template>
     <sources alias="x">
-    <sequence from="-10">
-      <to><number>10-<copy tname="step" /></number></to>
-      <count><number name="count">2</number></count>
-    </sequence>
+    <sequence from="-10" to="10-$step" length="$count" />
     </sources>
     </map>
     </graph>
     <p></p>
-    <updatevalue label="double">
-      <mathtarget><copy tname="count" /></mathtarget>
-      <newmathvalue>2<copy tname="count" /></newmathvalue>
-    </updatevalue>
+    <updatevalue label="double" mathtarget="$count" newmathvalue="2$count" />
     `},"*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -47,17 +37,17 @@ describe('UpdateValue Tag Tests',function() {
       let count = 2;
       let step = 20/count;
 
-      expect(components['/count'].state.number).eq(count);
-      expect(components['/step'].state.number).eq(step);
+      expect(components['/count'].stateValues.value).eq(count);
+      expect(components['/step'].stateValues.value).eq(step);
 
       for(let ind=1; ind<= count; ind++) {
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][0]
           .evaluate_to_constant()).closeTo(left+(ind-1)*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+(ind-1)*step),1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][0]
           .evaluate_to_constant()).closeTo(left+ind*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+ind*step),1E-12);
       }
     });
@@ -70,17 +60,18 @@ describe('UpdateValue Tag Tests',function() {
       let count = 4;
       let step = 20/count;
 
-      expect(components['/count'].state.number).eq(count);
-      expect(components['/step'].state.number).eq(step);
+
+      expect(components['/count'].stateValues.value).eq(count);
+      expect(components['/step'].stateValues.value).eq(step);
 
       for(let ind=1; ind<= count; ind++) {
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][0]
           .evaluate_to_constant()).closeTo(left+(ind-1)*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+(ind-1)*step),1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][0]
           .evaluate_to_constant()).closeTo(left+ind*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+ind*step),1E-12);
       }
     });
@@ -93,17 +84,18 @@ describe('UpdateValue Tag Tests',function() {
       let count = 8;
       let step = 20/count;
 
-      expect(components['/count'].state.number).eq(count);
-      expect(components['/step'].state.number).eq(step);
+
+      expect(components['/count'].stateValues.value).eq(count);
+      expect(components['/step'].stateValues.value).eq(step);
 
       for(let ind=1; ind<= count; ind++) {
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][0]
           .evaluate_to_constant()).closeTo(left+(ind-1)*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+(ind-1)*step),1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][0]
           .evaluate_to_constant()).closeTo(left+ind*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+ind*step),1E-12);
       }
     });
@@ -116,17 +108,18 @@ describe('UpdateValue Tag Tests',function() {
       let count = 16;
       let step = 20/count;
 
-      expect(components['/count'].state.number).eq(count);
-      expect(components['/step'].state.number).eq(step);
+
+      expect(components['/count'].stateValues.value).eq(count);
+      expect(components['/step'].stateValues.value).eq(step);
 
       for(let ind=1; ind<= count; ind++) {
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][0]
           .evaluate_to_constant()).closeTo(left+(ind-1)*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[0].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[0][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+(ind-1)*step),1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(0)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][0]
           .evaluate_to_constant()).closeTo(left+ind*step,1E-12);
-        expect(components['/__map1_'+(ind-1)+'_linesegment1'].state.endpoints[1].get_component(1)
+        expect(components['/l'+ind+'/_linesegment1'].stateValues.endpoints[1][1]
           .evaluate_to_constant()).closeTo(Math.sin(left+ind*step),1E-12);
       }
     });

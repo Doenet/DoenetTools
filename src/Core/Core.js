@@ -7055,7 +7055,11 @@ export default class Core {
     if (inheritedComponentType === baseComponentType) {
       return true;
     }
-    return this.allComponentClasses[baseComponentType].isPrototypeOf(
+    let baseClass = this.allComponentClasses[baseComponentType];
+    if(!baseClass) {
+      return false;
+    }
+    return baseClass.isPrototypeOf(
       this.allComponentClasses[inheritedComponentType]
     );
   }

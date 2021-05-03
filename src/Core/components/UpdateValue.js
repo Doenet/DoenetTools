@@ -14,6 +14,10 @@ export default class UpdateValue extends InlineComponent {
   }
   static componentType = "updateValue";
 
+  static get stateVariablesShadowedForReference() {
+    return ["targetedMathName", "newMathValue"]
+  }
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     // attributes.width = {default: 300};
@@ -25,33 +29,14 @@ export default class UpdateValue extends InlineComponent {
       public: true,
       forRenderer: true,
     };
+    attributes.mathTarget = {
+      createComponentOfType: "math"
+    };
+    attributes.newMathValue = {
+      createComponentOfType: "math"
+    }
 
     return attributes;
-  }
-
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
-
-    let exactlyOneMathTarget = childLogic.newLeaf({
-      name: "exactlyOneMathTarget",
-      componentType: 'mathtarget',
-      number: 1,
-    });
-
-    let exactlyOneNewMathValue = childLogic.newLeaf({
-      name: "exactlyOneNewMathValue",
-      componentType: 'newmathvalue',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "updateValueLogic",
-      operator: 'and',
-      propositions: [exactlyOneMathTarget, exactlyOneNewMathValue],
-      setAsBase: true,
-    });
-
-    return childLogic;
   }
 
 
@@ -63,34 +48,42 @@ export default class UpdateValue extends InlineComponent {
     stateVariableDefinitions.targetedMathName = {
       returnDependencies: () => ({
         mathTarget: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneMathTarget",
-          variableNames: ["mathChildName"]
+          dependencyType: "attributeComponent",
+          attributeName: "mathTarget",
         },
       }),
       definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            targetedMathName: dependencyValues.mathTarget[0].stateValues.mathChildName
-          }
-        };
+        if (dependencyValues.mathTarget) {
+          return {
+            newValues: {
+              targetedMathName: dependencyValues.mathTarget.componentName
+            }
+          };
+        } else {
+          return { newValues: { targetedMathName: null } }
+        }
+
       },
     }
 
     stateVariableDefinitions.newMathValue = {
       returnDependencies: () => ({
-        newMathValueChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneNewMathValue",
+        newMathValue: {
+          dependencyType: "attributeComponent",
+          attributeName: "newMathValue",
           variableNames: ["value"]
         },
       }),
       definition: function ({ dependencyValues }) {
-        return {
-          newValues: {
-            newMathValue: dependencyValues.newMathValueChild[0].stateValues.value
-          }
-        };
+        if (dependencyValues.newMathValue) {
+          return {
+            newValues: {
+              newMathValue: dependencyValues.newMathValue.stateValues.value
+            }
+          };
+        } else {
+          return { newValues: { newMathValue: null } }
+        }
       },
     }
 
@@ -99,26 +92,28 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
-  updateValue({ }) {
-    this.coreFunctions.requestUpdate({
-      updateInstructions: [{
-        updateType: "updateValue",
-        componentName: this.stateValues.targetedMathName,
-        stateVariable: "value",
-        value: this.stateValues.newMathValue,
-      }],
-      event: {
-        verb: "selected",
-        object: {
-          componentName: this.componentName,
-          componentType: this.componentType,
-        },
-        result: {
-          response: this.stateValues.newMathValue,
-          responseText: this.stateValues.newMathValue.toString(),
+  updateValue() {
+    if (this.stateValues.targetedMathName && this.stateValues.newMathValue) {
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.stateValues.targetedMathName,
+          stateVariable: "value",
+          value: this.stateValues.newMathValue,
+        }],
+        event: {
+          verb: "selected",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            response: this.stateValues.newMathValue,
+            responseText: this.stateValues.newMathValue.toString(),
+          }
         }
-      }
-    });
+      });
+    }
 
   }
 

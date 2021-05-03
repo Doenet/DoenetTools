@@ -79,8 +79,6 @@ import ConstraintUnion from './components/ConstraintUnion';
 import TransformConstraintIntoAttractor from './components/TransformConstraintIntoAttractor';
 import Intersection from './components/Intersection';
 import UpdateValue from './components/UpdateValue';
-import MathTarget from './components/MathTarget';
-import NewMathValue from './components/NewMathValue';
 import Panel from './components/Panel';
 import ConstrainToAngles from './components/ConstrainToAngles';
 import AttractToAngles from './components/AttractToAngles';
@@ -108,7 +106,6 @@ import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
 import Image from './components/Image';
 import Video from './components/Video';
 import Embed from './components/Embed';
-import Meta from './components/Meta';
 import Hint from './components/Hint';
 import Solution from './components/Solution';
 import IntComma from './components/IntComma';
@@ -213,7 +210,7 @@ const componentTypeArray = [
   ConstraintUnion,
   TransformConstraintIntoAttractor,
   Intersection,
-  UpdateValue, MathTarget, NewMathValue,
+  UpdateValue,
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
@@ -230,7 +227,6 @@ const componentTypeArray = [
   Image,
   Video,
   Embed,
-  Meta,
   Hint, Solution,
   IntComma,
   Pluralize,

@@ -22,56 +22,38 @@ describe('Evaluate Tag Tests', function () {
   <function name="f_numeric" variable="$variable" formula="$formula" />
 
   <p>Evaluate symbolic: 
-    <evaluate name="result_symbolic">
-      <copy tname="f_symbolic" />
-      <input>$input</input>
-    </evaluate>
+    <evaluate name="result_symbolic" function="$f_symbolic" input="$input" />
   </p>
 
   <p name="p_symbolic2">Evaluate symbolic using macro:  <math name="result_symbolic2">$$f_symbolic($input)</math></p>
 
-  <p>Evaluated symbolic result again: <copy prop="evaluatedResult" tname="result_symbolic" assignNames="result_symbolic3" /></p>
+  <p>Evaluated symbolic result again: <copy prop="value" tname="result_symbolic" assignNames="result_symbolic3" /></p>
 
 
   <p>Evaluate numeric: 
-    <evaluate name="result_numeric">
-      <copy tname="f_numeric" />
-      <input>$input</input>
-    </evaluate>
+    <evaluate name="result_numeric" function="$f_numeric" input="$input" />
   </p>
 
   <p>Evaluate numeric using macro:  <math name="result_numeric2">$$f_numeric($input)</math></p>
 
 
-  <p>Evaluated numeric result again: <copy prop="evaluatedResult" tname="result_numeric" assignNames="result_numeric3" /></p>
+  <p>Evaluated numeric result again: <copy prop="value" tname="result_numeric" assignNames="result_numeric3" /></p>
 
 
   <p>Force evaluate symbolic: 
-  <evaluate forceSymbolic name="result_force_symbolic">
-    <copy tname="f_symbolic" />
-    <input>$input</input>
-  </evaluate>
+  <evaluate forceSymbolic name="result_force_symbolic" function="$f_symbolic" input="$input" />
   </p>
 
   <p>Force evaluate symbolic numeric function: 
-  <evaluate forceSymbolic name="result_force_symbolic_numeric">
-    <copy tname="f_numeric" />
-    <input>$input</input>
-  </evaluate>
+  <evaluate forceSymbolic name="result_force_symbolic_numeric" function="$f_numeric" input="$input" />
   </p>
 
   <p>Force evaluate numeric: 
-  <evaluate forceNumeric name="result_force_numeric">
-    <copy tname="f_numeric" />
-    <input>$input</input>
-  </evaluate>
+  <evaluate forceNumeric name="result_force_numeric" function="$f_numeric" input="$input" />
   </p>
 
   <p>Force evaluate numeric symbolic function: 
-  <evaluate forceNumeric name="result_force_numeric_symbolic">
-    <copy tname="f_symbolic" />
-    <input>$input</input>
-  </evaluate>
+  <evaluate forceNumeric name="result_force_numeric_symbolic" function="$f_symbolic" input="$input" />
   </p>
 
 
