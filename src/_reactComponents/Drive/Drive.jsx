@@ -42,6 +42,7 @@ import {
  */
 import {
   DropTargetsContext,
+  DropTargetsConstant,
   WithDropTarget  
 } from '../DropTarget';
 import Draggable from '../Draggable';
@@ -533,6 +534,7 @@ function DriveRouted(props){
 
   // console.log("=== DriveRouted")
   const [numColumns,setNumColumns] = useState(1);
+  const { onDragEnterInvalidArea, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
 
   let hideUnpublished = false; //Default to showing unpublished
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
@@ -582,28 +584,30 @@ function DriveRouted(props){
 
 
   return <>
-
-   {heading}
-  
-  {/* <CustomComponent /> */}
-  <Folder 
-  driveId={props.driveId} 
-  folderId={rootFolderId} 
-  indentLevel={0}  
-  driveObj={props.driveObj} 
-  rootCollapsible={props.rootCollapsible}
-  driveInstanceId={driveInstanceId.current}
-  isNav={props.isNav}
-  urlClickBehavior={props.urlClickBehavior}
-  route={props.route}
-  pathItemId={pathItemId}
-  hideUnpublished={hideUnpublished}
-  foldersOnly={props.foldersOnly}
-  doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
-  numColumns={numColumns}
-  />
-
- 
+    {heading}
+    <Folder 
+      driveId={props.driveId} 
+      folderId={rootFolderId} 
+      indentLevel={0}  
+      driveObj={props.driveObj} 
+      rootCollapsible={props.rootCollapsible}
+      driveInstanceId={driveInstanceId.current}
+      isNav={props.isNav}
+      urlClickBehavior={props.urlClickBehavior}
+      route={props.route}
+      pathItemId={pathItemId}
+      hideUnpublished={hideUnpublished}
+      foldersOnly={props.foldersOnly}
+      doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
+      numColumns={numColumns}
+    />
+    <WithDropTarget
+      key={DropTargetsConstant.INVALID_DROP_AREA_ID}
+      id={DropTargetsConstant.INVALID_DROP_AREA_ID}
+      registerDropTarget={registerDropTarget} 
+      unregisterDropTarget={unregisterDropTarget}
+      dropCallbacks={{onDragEnter: onDragEnterInvalidArea}}
+    />
   </>
 }
 
@@ -852,7 +856,7 @@ function Folder(props){
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
-  const { onDragStart, onDrag, onDragOverContainer, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
+  const { onDragStart, onDrag, onDragOverContainer, onDragEnd, onDragExit, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
@@ -909,15 +913,11 @@ function Folder(props){
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
 
   const isDraggedOver = dropState.activeDropTargetId === itemId && !dragState.draggedItemsId?.has(itemId);
-  let textColor = "#000000";
   if (isDraggedOver) { 
     bgcolor = "#f0f0f0";
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) { bgcolor = "hsl(209,54%,82%)"; }
-
-  // const test = dragState.dragShadowParentId === props.item?.parentFolderId && !dragState.draggedItemsId?.has(itemId);
-  // if (test) { borderSide = "2px dotted #37ceff"; }
 
   // Update refs for variables used in DnD callbacks to eliminate re-registration
   useEffect(() => {
@@ -1225,6 +1225,7 @@ function Folder(props){
     dropCallbacks={{
       onDragOver: onDragOver,
       onDragHover: onDragHover,
+      onDragExit: () => { onDragExit({driveId: props.driveId, itemId: props.folderId}) },
       onDrop: onDrop
     }}
     >
@@ -1928,12 +1929,14 @@ function useDnDCallbacks() {
   const {copyItems, onCopyItemsError} = useCopyItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
   const optionKeyPressed = useKeyPressedListener("Alt");  // Listen for option key events
+  const optionKeyPressedRef = useRef(optionKeyPressed);
 
   useEffect(() => {
     setDragState((dragState) => ({      
       ...dragState,
       copyMode: optionKeyPressed
     }));
+    optionKeyPressedRef.current = optionKeyPressed;
   }, [optionKeyPressed]);
 
   const onDragStart = ({ ev=null, nodeId, driveId, onDragStartCallback }) => {
@@ -1966,10 +1969,6 @@ function useDnDCallbacks() {
   };
 
   const onDragOverContainer = ({ id, driveId, isBreadcrumb=false }) => {
-    // Update driveId if changed
-    if (draggedOverDriveIdRef.current !== driveId) {
-      
-    }
     setDragState((dragState) => {
       const { draggedOverDriveId, initialDriveId, copyMode } = dragState;
       let newDraggedOverDriveId = draggedOverDriveId;
@@ -1978,7 +1977,7 @@ function useDnDCallbacks() {
         newDraggedOverDriveId = driveId;
       }
 
-      // newCopyMode = initialDriveId !== driveId;
+      newCopyMode = initialDriveId !== driveId;
       
       return {
         ...dragState,
@@ -2039,6 +2038,27 @@ function useDnDCallbacks() {
     dropActions.handleDrop();
   };
 
+  const onDragExit = ({driveId, itemId }) => {
+    setDragState((dragState) => {
+      const { initialDriveId, copyMode } = dragState;
+      let newCopyMode = copyMode;
+      if (initialDriveId !== driveId) {
+        newCopyMode = false;
+      }
+
+      // Option key event takes precedent
+      newCopyMode |= optionKeyPressedRef.current;
+
+      return {
+        ...dragState,
+        copyMode: newCopyMode
+      }
+    }); 
+  }
+
+  const onDragEnterInvalidArea = () => {
+  }
+
   function renderDragGhost(id, element) {
     const dragGhostId = `drag-ghost-${id}`;
     return <DragGhost id={dragGhostId} numItems={numItems} element={element} copyMode={dragState.copyMode} />;
@@ -2049,6 +2069,8 @@ function useDnDCallbacks() {
     onDrag,
     onDragOverContainer,
     onDragEnd,
+    onDragExit,
+    onDragEnterInvalidArea,
     renderDragGhost,
     registerDropTarget: dropActions.registerDropTarget,
     unregisterDropTarget: dropActions.unregisterDropTarget
