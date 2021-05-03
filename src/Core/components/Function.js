@@ -15,6 +15,8 @@ export default class Function extends InlineComponent {
     ]
   };
 
+  static primaryStateVariableForDefinition = "numericalfShadow";
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
@@ -210,6 +212,27 @@ export default class Function extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.numericalfShadow = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          numericalfShadow: {}
+        }
+      }),
+    }
+
+    stateVariableDefinitions.symbolicfShadow = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          symbolicfShadow: {}
+        }
+      }),
+    }
+
+
     stateVariableDefinitions.symbolic = {
       public: true,
       componentType: "boolean",
@@ -224,6 +247,14 @@ export default class Function extends InlineComponent {
           dependencyType: "child",
           childLogicName: "atMostOneFunction",
           variableNames: ["symbolic"]
+        },
+        numericalfShadow: {
+          dependencyType: "stateVariable",
+          variableName: "numericalfShadow"
+        },
+        symbolicfShadow: {
+          dependencyType: "stateVariable",
+          variableName: "symbolicfShadow"
         }
       }),
       definition({ dependencyValues }) {
@@ -231,6 +262,10 @@ export default class Function extends InlineComponent {
           return { newValues: { symbolic: dependencyValues.symbolicAttr.stateValues.value } }
         } else if (dependencyValues.functionChild.length === 1) {
           return { newValues: { symbolic: dependencyValues.functionChild[0].stateValues.symbolic } }
+        } else if (dependencyValues.numericalfShadow) {
+          return { newValues: { symbolic: false } }
+        } else if (dependencyValues.symbolicfShadow) {
+          return { newValues: { symbolic: true } }
         } else {
           return { useEssentialOrDefaultValue: { symbolic: { variablesToCheck: ["symbolic"] } } }
         }
@@ -614,11 +649,19 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
+            },
+            symbolicfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "symbolicfShadow"
+            },
+            numericalfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "numericalfShadow"
             }
           }
         }
       },
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
 
         if (dependencyValues.isInterpolatedFunction) {
           let numericalf = returnInterpolatedFunction(dependencyValues);
@@ -633,6 +676,29 @@ export default class Function extends InlineComponent {
           return {
             newValues: {
               symbolicf: dependencyValues.functionChild[0].stateValues.symbolicf
+            }
+          }
+        } else if (!usedDefault.formula) {
+          return {
+            newValues: {
+              symbolicf: returnSymbolicFunctionFromFormula(dependencyValues)
+            }
+          }
+        } else if (dependencyValues.symbolicfShadow) {
+          return {
+            newValues: { symbolicf: dependencyValues.symbolicfShadow }
+          }
+
+        } else if (dependencyValues.numericalfShadow) {
+          return {
+            newValues: {
+              symbolicf: function (x) {
+                let input = x.evaluate_to_constant();
+                if(input === null) {
+                  return NaN;
+                }
+                return me.fromAst(dependencyValues.numericalfShadow(input))
+              }
             }
           }
         } else {
@@ -687,11 +753,19 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
+            },
+            symbolicfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "symbolicfShadow"
+            },
+            numericalfShadow: {
+              dependencyType: "stateVariable",
+              variableName: "numericalfShadow"
             }
           }
         }
       },
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         if (dependencyValues.isInterpolatedFunction) {
           return {
             newValues: {
@@ -703,6 +777,28 @@ export default class Function extends InlineComponent {
           return {
             newValues: {
               numericalf: dependencyValues.functionChild[0].stateValues.numericalf
+            }
+          }
+        } else if (!usedDefault.formula) {
+          return {
+            newValues: {
+              numericalf: returnNumericalFunctionFromFormula(dependencyValues)
+            }
+          }
+        } else if (dependencyValues.numericalfShadow) {
+          return {
+            newValues: { numericalf: dependencyValues.numericalfShadow }
+          }
+        } else if (dependencyValues.symbolicfShadow) {
+          return {
+            newValues: {
+              numericalf: function (x) {
+                let val = dependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
+                if (val === null) {
+                  val = NaN
+                }
+                return val;
+              }
             }
           }
         } else {

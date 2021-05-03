@@ -241,10 +241,32 @@ export function substituteUnicodeInLatexString(latexString) {
     ['\u03C9', '\\omega '], // 'ω'
   ]
 
-  for(let sub of substitutions) {
+  for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1])
   }
 
   return latexString;
 
+}
+
+export function isValidVariable(expression) {
+  // to be a valid variable, tree must be either
+  // - a string other than long underscore, or
+  // - a string with a subscript that is a string or a number
+  let tree = expression.tree;
+  let validVariable = true;
+  if (typeof tree === "string") {
+    if (tree === '\uFF3F') {  // long underscore
+      validVariable = false;
+    }
+  } else if (!Array.isArray(tree) ||
+    tree[0] !== '_' ||
+    (typeof tree[1] !== "string") ||
+    ((typeof tree[2] !== "string" && typeof tree[2] !== "number"))
+  ) {
+    validVariable = false;
+  }
+
+  return validVariable;
+  
 }
