@@ -9,7 +9,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./:/home/node/workspace
       - node_modules:/home/node/workspace/node_modules
-      - /home/node/workspace/dist_local
     networks:
       - dev_net
     command: tail -f /dev/null
@@ -18,7 +17,7 @@ services:
     build: './doenet_docker/apache'
     volumes:
       - ./src/api:/usr/local/apache2/htdocs/api
-      - ./dist/media:/usr/local/apache2/htdocs/media
+      - ./src/media:/usr/local/apache2/htdocs/media
     networks:
       - dev_net
     depends_on:

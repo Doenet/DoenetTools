@@ -57,15 +57,6 @@ module.exports = {
         });
       },
     },
-    {
-      src: '/media/.*',
-      dest: (req, res) => {
-        return proxy.web(req, res, {
-          hostname: 'apache',
-          port: 80,
-        });
-      },
-    },
   ],
 
   optimize: {
