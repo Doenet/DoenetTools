@@ -28,7 +28,7 @@ export default class Polygon extends DoenetRenderer {
       strokeColor: 'none',
       highlightStrokeColor: 'none',
       highlightFillColor: 'lightgray',
-      visible: this.doenetSvData.draggable === true,
+      visible: this.doenetSvData.draggable && !this.doenetSvData.fixed,
       withLabel: false,
       layer: 10 * this.doenetSvData.layer + 8,
     };
@@ -43,7 +43,7 @@ export default class Polygon extends DoenetRenderer {
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
     };
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxBorderAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
@@ -52,7 +52,7 @@ export default class Polygon extends DoenetRenderer {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: this.doenetSvData.draggable !== true,
+      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer: 10 * this.doenetSvData.layer + 7,
 
       //specific to polygon

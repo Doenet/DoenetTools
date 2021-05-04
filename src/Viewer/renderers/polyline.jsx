@@ -43,7 +43,7 @@ export default class Line extends DoenetRenderer {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hidden && validCoords,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: this.doenetSvData.draggable !== true,
+      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer: 10 * this.doenetSvData.layer + 7,
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
@@ -52,7 +52,7 @@ export default class Line extends DoenetRenderer {
     };
 
 
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
@@ -65,7 +65,7 @@ export default class Line extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: 10 * this.doenetSvData.layer + 9,
     });
-    if (!this.doenetSvData.draggable && !this.doenetSvData.hidden && validCoords) {
+    if ((!this.doenetSvData.draggable || this.doenetSvData.fixed) && !this.doenetSvData.hidden && validCoords) {
       this.jsxPointAttributes.visible = false;
     }
 
