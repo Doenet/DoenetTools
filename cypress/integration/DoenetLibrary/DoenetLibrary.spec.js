@@ -272,4 +272,23 @@ describe("Library items creation and deletion", function () {
   //     expect(infoPanelItemLabel.trim()).equal(newDoenetMLLabel);
   //   })   
   // });
+
+  it('Testing DND', function() {
+    cy.get('[data-cy=addFolderButton]').click();
+    cy.get('[data-cy=mainPanel]').within(() => {
+      cy.get('[data-cy=driveItem]').invoke('attr', 'data-cy', 'folderItem')
+    });
+
+    cy.get('[data-cy=addDoenetMLButton]').click();
+    cy.get('[data-cy=mainPanel]').within(() => {
+      cy.get('[data-cy=driveItem]').invoke('attr', 'data-cy', 'doenetMLItem')
+    });
+
+    cy.get('[data-cy=addDoenetMLButton]').click();
+    cy.get('[data-cy=mainPanel]').within(() => {
+      cy.get('[data-cy=driveItem]').invoke('attr', 'data-cy', 'doenetMLItem2')
+    });
+    
+    cy.get('[data-cy=folderItem]').dragTo("[data-cy=doenetMLItem2]", { delay: 50, steps: 30, smooth: true });
+  });
 });
