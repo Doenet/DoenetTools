@@ -7224,5 +7224,227 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('mark targets as responses', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Enter minimum: <mathinput name="min" /></p>
+        <p>Enter value larger than $min: <mathinput name="val" /></p>
+        
+        <answer name="a"> 
+         <award targetsAreResponses="val"><when>$val > $min</when></award>
+        </answer>
+        
+        <p>Current response <copy name="cr" prop="currentResponses" tname="a" componentType="math" /></p>
+        <p>Submitted response <copy name="sr" prop="submittedResponses" tname="a" componentType="math" /></p>
+        <p>Credit: <copy name="ca" prop="creditAchieved" tname="a" /></p>
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let crAnchor = cesc('#' + components['/cr'].replacements[0].componentName);
+      let srAnchor = cesc('#' + components['/sr'].replacements[0].componentName);
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.window().then((win) => {
+        expect(components["/a"].stateValues.nResponses).eq(1)
+      });
+
+      cy.get("#\\/min textarea").type("2{enter}", { force: true });
+      cy.get('#\\/a_submit').click();
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+
+      cy.get("#\\/val textarea").type("3{enter}", { force: true });
+      
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+    })
+  });
+
+
+  it('immediate value used for submit button', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Enter value larger than 3: <mathinput name="val" /></p>
+        
+        <answer name="a"> 
+         <award targetsAreResponses="val"><when>$val > 3</when></award>
+        </answer>
+        
+        <p>Current response: <copy name="cr" prop="currentResponses" tname="a" componentType="math" /></p>
+        <p>Submitted response: <copy name="sr" prop="submittedResponses" tname="a" componentType="math" /></p>
+        <p>Credit: <copy name="ca" prop="creditAchieved" tname="a" /></p>
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let crAnchor = cesc('#' + components['/cr'].replacements[0].componentName);
+      let srAnchor = cesc('#' + components['/sr'].replacements[0].componentName);
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
+
+
+      let submitAnchor = cesc('#/a_submit');
+      let correctAnchor = cesc('#/a_correct');
+      let incorrectAnchor = cesc('#/a_incorrect');
+
+      cy.get(submitAnchor).should('be.visible');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('not.exist');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+
+      cy.get("#\\/val textarea").type("3{enter}", { force: true });
+
+      cy.get(submitAnchor).should('be.visible');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('not.exist');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(submitAnchor).should('not.exist');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('be.visible');
+
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+
+      cy.get("#\\/val textarea").type("{end}{backspace}4", { force: true });
+
+      cy.get(submitAnchor).should('be.visible');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('not.exist');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get("#\\/val textarea").type("{end}{backspace}3", { force: true });
+
+      cy.get(submitAnchor).should('not.exist');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('be.visible');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get("#\\/val textarea").type("{end}{backspace}5", { force: true });
+
+      cy.get(submitAnchor).should('be.visible');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('not.exist');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get("#\\/val textarea").blur();
+
+      cy.get(submitAnchor).should('be.visible');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('not.exist');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+
+      cy.get('#\\/a_submit').click();
+      cy.get(submitAnchor).should('not.exist');
+      cy.get(correctAnchor).should('be.visible');
+      cy.get(incorrectAnchor).should('not.exist');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('5')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+    })
+  });
+
 
 })

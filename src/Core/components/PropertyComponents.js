@@ -1,11 +1,9 @@
-import BooleanComponent from './Boolean';
 import TextComponent from './Text';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
-import MathWithVariable from './abstract/MathWithVariable';
-import MathList from './MathList';
 import TextOrInline from './abstract/TextOrInline';
 import Option from './Option';
 import Template from './Template';
+import MathComponent from './Math';
 
 
 
@@ -29,41 +27,14 @@ export class Seed extends TextFromSingleStringChild {
   static rendererType = "text";
 }
 
-export class RightHandSide extends MathWithVariable {
-  static componentType = "righthandside";
+export class RightHandSide extends MathComponent {
+  static componentType = "rightHandSide";
   static rendererType = "math";
-}
-
-export class Input extends MathList {
-  static componentType = "input";
-  static rendererType = "asList";
 }
 
 export class Description extends TextOrInline {
   static componentType = "description";
-  static rendererType = "textorinline";
-}
-
-
-export class Keyword extends TextComponent {
-  static componentType = "keyword";
-  static rendererType = "text";
-}
-
-
-export class Target extends TextComponent {
-  static componentType = "target";
-  static rendererType = "text";
-}
-
-export class SortResults extends BooleanComponent {
-  static componentType = "sortresults";
-  static rendererType = "boolean";
-}
-
-export class Condition extends BooleanComponent {
-  static componentType = "condition";
-  static rendererType = "boolean";
+  static rendererType = undefined;
 }
 
 export class Else extends Option {

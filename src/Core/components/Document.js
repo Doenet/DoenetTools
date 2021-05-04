@@ -43,14 +43,6 @@ export default class Document extends BaseComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atMostOneMeta = childLogic.newLeaf({
-      name: "atMostOneMeta",
-      componentType: "meta",
-      comparison: "atMost",
-      number: 1,
-      allowSpillover: false,
-    })
-
     let atMostOneVariantControl = childLogic.newLeaf({
       name: "atMostOneVariantControl",
       componentType: "variantControl",
@@ -83,7 +75,7 @@ export default class Document extends BaseComponent {
     childLogic.newOperator({
       name: "variantTitleDescriptionMetaAnything",
       operator: "and",
-      propositions: [atMostOneVariantControl, atMostOneTitle, atMostOneDescription, atMostOneMeta, anything],
+      propositions: [atMostOneVariantControl, atMostOneTitle, atMostOneDescription, anything],
       setAsBase: true,
     })
 

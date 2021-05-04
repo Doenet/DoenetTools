@@ -2,43 +2,47 @@ import Polyline from '../Polyline';
 import me from 'math-expressions';
 
 export default class CobwebPolyline extends Polyline {
-  static componentType = "cobwebpolyline";
-  static rendererType = "cobwebpolyline";
+  static componentType = "cobwebPolyline";
+  static rendererType = "cobwebPolyline";
 
-  static createPropertiesObject(args) {
-    let properties = super.createPropertiesObject(args);
-    properties.attractThreshold = { default: 0.5 };
-    properties.nPoints = { default: 1, clamp: [0, Infinity], forRenderer: true };
-    properties.variable = { default: me.fromAst('x'), forRenderer: true }
-    return properties;
-  }
+  static get stateVariablesShadowedForReference() { return ["initialPoint", "f"] };
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    attributes.attractThreshold = {
+      createComponentOfType: "number",
+      createStateVariable: "attractThreshold",
+      defaultValue: 0.5,
+      public: true,
+    };
 
-    childLogic.deleteAllLogic();
+    attributes.nPoints = {
+      createComponentOfType: "number",
+      createStateVariable: "nPoints",
+      defaultValue: 1,
+      public: true,
+      clamp: [0, Infinity],
+      forRenderer: true,
+    };
 
-    let exactlyOneInitialPoint = childLogic.newLeaf({
-      name: 'exactlyOneInitialPoint',
-      componentType: "initialpoint",
-      number: 1,
-    });
+    attributes.variable = {
+      createComponentOfType: "variable",
+      createStateVariable: "variable",
+      defaultValue: me.fromAst('x'),
+      public: true,
+      forRenderer: true,
+    };
 
-    let exactlyOneFunction = childLogic.newLeaf({
-      name: "exactlyOneFunction",
-      componentType: "function",
-      number: 1,
-    });
+    attributes.initialPoint = {
+      createComponentOfType: "point"
+    }
 
-    childLogic.newOperator({
-      name: "initialPointAndFunction",
-      operator: "and",
-      propositions: [exactlyOneInitialPoint, exactlyOneFunction],
-      setAsBase: true,
-    })
+    attributes.function = {
+      createComponentOfType: "function"
+    }
 
-    return childLogic;
+    return attributes;
 
   }
 
@@ -53,14 +57,17 @@ export default class CobwebPolyline extends Polyline {
 
     stateVariableDefinitions.initialPoint = {
       isArray: true,
+      public: true,
+      componentType: "math",
       entryPrefixes: ["initialPointX"],
+      defaultEntryValue: me.fromAst(0),
       returnWrappingComponents(prefix) {
         if (prefix === "initialPointX") {
           return [];
         } else {
           // entire array
           // wrap by both <point> and <xs>
-          return [["point", { componentType: "xs", doenetAttributes: { isPropertyChild: true } }]];
+          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
         }
       },
       returnArraySizeDependencies: () => ({}),
@@ -70,9 +77,9 @@ export default class CobwebPolyline extends Polyline {
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
           dependenciesByKey[arrayKey] = {
-            initialPointChild: {
-              dependencyType: "child",
-              childLogicName: "exactlyOneInitialPoint",
+            initialPointAttr: {
+              dependencyType: "attributeComponent",
+              attributeName: "initialPoint",
               variableNames: ["x" + varEnding]
             }
           }
@@ -81,16 +88,25 @@ export default class CobwebPolyline extends Polyline {
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
         let initialPoint = {};
+        let essentialInitialPoint = {};
         for (let arrayKey of arrayKeys) {
           let varEnding = Number(arrayKey) + 1;
-          if (dependencyValuesByKey[arrayKey].initialPointChild.length === 1) {
-            initialPoint[arrayKey] = dependencyValuesByKey[arrayKey].initialPointChild[0].stateValues["x" + varEnding];
+          if (dependencyValuesByKey[arrayKey].initialPointAttr) {
+            initialPoint[arrayKey] = dependencyValuesByKey[arrayKey].initialPointAttr.stateValues["x" + varEnding];
           } else {
-            // if child logic isn't satisfied, could be missing initial point child
-            initialPoint[arrayKey] = 0;
+            essentialInitialPoint[arrayKey] = {}
           }
         }
-        return { newValues: { initialPoint } }
+        let result = {};
+
+        if (Object.keys(initialPoint).length > 0) {
+          result.newValues = { initialPoint }
+        }
+        if (Object.keys(essentialInitialPoint).length > 0) {
+          result.useEssentialOrDefaultValue = { initialPoint: essentialInitialPoint }
+        }
+
+        return result
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
         dependencyValuesByKey, dependencyNamesByKey,
@@ -103,18 +119,20 @@ export default class CobwebPolyline extends Polyline {
         let instructions = [];
         for (let arrayKey in desiredStateVariableValues.initialPoint) {
 
-          if (dependencyValuesByKey[arrayKey].initialPointChild.length === 1
-            && dependencyValuesByKey[arrayKey].initialPointChild[0].stateValues["x" + (Number(arrayKey) + 1)]
+          if (dependencyValuesByKey[arrayKey].initialPointAttr
+            && dependencyValuesByKey[arrayKey].initialPointAttr.stateValues["x" + (Number(arrayKey) + 1)]
           ) {
             instructions.push({
-              setDependency: dependencyNamesByKey[arrayKey].initialPointChild,
+              setDependency: dependencyNamesByKey[arrayKey].initialPointAttr,
               desiredValue: desiredStateVariableValues.initialPoint[arrayKey],
-              childIndex: 0,
               variableIndex: 0,
             })
 
           } else {
-            return { success: false };
+            instructions.push({
+              setStateVariable: "initialPoint",
+              value: { [arrayKey]: desiredStateVariableValues.initialPoint[arrayKey] }
+            })
           }
 
         }
@@ -130,15 +148,15 @@ export default class CobwebPolyline extends Polyline {
     stateVariableDefinitions.f = {
       forRenderer: true,
       returnDependencies: () => ({
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneFunction",
+        functionAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "function",
           variableNames: ["numericalf"]
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.functionChild.length === 1) {
-          return { newValues: { f: dependencyValues.functionChild[0].stateValues.numericalf } }
+        if (dependencyValues.functionAttr) {
+          return { newValues: { f: dependencyValues.functionAttr.stateValues.numericalf } }
         } else {
           return { newValues: { f: null } }
         }
@@ -445,7 +463,6 @@ export default class CobwebPolyline extends Polyline {
       // console.log(`inverseArrayDefinition of vertices of polyline`);
       // console.log(desiredStateVariableValues)
       // console.log(JSON.parse(JSON.stringify(stateValues)))
-      // console.log(dependencyValuesByKey);
 
 
       // if not draggable, then disallow initial change 
@@ -616,222 +633,47 @@ export default class CobwebPolyline extends Polyline {
       }
     }
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { childrenToRender: [] } })
-    }
+    // stateVariableDefinitions.lastVertex = {
+    //   stateVariablesDeterminingDependencies: ["nPoints"],
+    //   isArray: true,
+    //   public: true,
+    //   componentType: "math",
+    //   entryPrefixes: ["lastVertexX"],
+    //   returnWrappingComponents(prefix) {
+    //     if (prefix === "lastVertexX") {
+    //       return [];
+    //     } else {
+    //       // entire array
+    //       // wrap by both <point> and <xs>
+    //       return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+    //     }
+    //   },
+    //   returnArraySizeDependencies: () => ({}),
+    //   returnArraySize: () => [2],
+    //   returnArrayDependenciesByKey({ stateValues, arrayKeys }) {
+    //     let dependenciesByKey = {};
+
+    //     for (let arrayKey of arrayKeys) {
+    //       dependenciesByKey[arrayKey] = {
+    //         lastVertex: {
+    //           dependencyType: "stateVariable",
+    //           variableName: `vertexX${stateValues.nPoints}_${Number(arrayKey) + 1}`
+    //         }
+    //       }
+    //     }
+    //     return { dependenciesByKey }
+    //   },
+    //   arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+    //     let lastVertex = {};
+    //     for (let arrayKey of arrayKeys) {
+    //       lastVertex[arrayKey] = dependencyValuesByKey[arrayKey].lastVertex
+    //     }
+    //     return { newValues: { lastVertex } }
+    //   }
+    // }
 
     return stateVariableDefinitions;
   }
 
-
-  updateState(args = {}) {
-
-    super.updateState(args);
-
-    if (args.init) {
-
-
-      this.makePublicStateVariableArray({
-        variableName: "iteratevalues",
-        componentType: "number",
-      });
-      this.makePublicStateVariableArrayEntry({
-        entryName: "iteratevalue",
-        arrayVariableName: "iteratevalues",
-      });
-      this.makePublicStateVariableAlias({
-        variableName: "lastvertex",
-        targetName: "vertex",
-        arrayIndex: '-1',
-      })
-
-
-      this.state.draggablePoints = [];
-    }
-
-
-    let initialPointChanged = false;
-
-    if (childrenChanged || trackChanges.getVariableChanges({ component: this.state.initialPointChild, variable: "coords" })
-      || trackChanges.getVariableChanges({ component: this, variable: "vertices", index: 0 })
-    ) {
-      this.state.initialPoint = this.state.initialPointChild.state.coords.copy();
-      this.state.vertices[0] = this.state.initialPoint;
-      initialPointChanged = true;
-    }
-
-
-    let nCurrentVertices = this.state.vertices.length;
-    if (this.state.nPoints > nCurrentVertices) {
-      let topAvailable = Math.min(this.state.nPoints, nCurrentVertices + this.state.removedVertices.length);
-      if (topAvailable > nCurrentVertices) {
-        this.state.vertices.push(...this.state.removedVertices.slice(0, topAvailable - nCurrentVertices));
-        this.state.removedVertices = this.state.removedVertices.slice(topAvailable - nCurrentVertices);
-        nCurrentVertices = topAvailable;
-      }
-      for (let ind = nCurrentVertices; ind < this.state.nPoints; ind++) {
-        let newCoords = me.fromAst(["tuple", 0, 0]);
-        this.state.vertices.push(newCoords);
-      }
-    } else if (this.state.nPoints < nCurrentVertices) {
-      this.state.removedVertices = [...this.state.vertices.slice(this.state.nPoints), ...this.state.removedVertices];
-      this.state.vertices.length = this.state.nPoints;
-      this.state.correctvertices.length = this.state.nPoints - 1;
-    }
-
-    if (this.state.draggablePoints.length !== this.state.nPoints) {
-      this.state.draggablePoints = new Array(this.state.nPoints).fill(false);
-      if (this.state.nPoints > 1) {
-        this.state.draggablePoints[this.state.nPoints - 1] = true;
-      }
-    }
-
-    let pointsToAttract = [];
-
-    if (initialPointChanged) {
-      // if initial point changed, attract all points except first
-      pointsToAttract = [...Array(this.state.nPoints).keys()].slice(1);
-      this.state.correctvertices = [];
-    } else if (this.state.nPoints > 1) {
-      // attract just last point
-      pointsToAttract = [this.state.nPoints - 1];
-    }
-
-    for (let pointInd of pointsToAttract) {
-
-      let attractPoint;
-      if (pointInd % 2 === 1) {
-        // odd point number, so attract to function
-
-        let prevVertex = this.state.vertices[pointInd - 1];
-        let prevValue = this.findFiniteNumericalValue(prevVertex.get_component(0));
-        let newValue = this.state.f(prevValue);
-        attractPoint = [prevValue, newValue];
-
-      } else {
-        // even point number, so attract to diagonal
-        let prevVertex = this.state.vertices[pointInd - 1];
-        let prevValue = this.findFiniteNumericalValue(prevVertex.get_component(1));
-        attractPoint = [prevValue, prevValue]
-      }
-
-      if (attractPoint !== undefined) {
-        let thisVertex = this.state.vertices[pointInd];
-        let x1 = this.findFiniteNumericalValue(thisVertex.get_component(0));
-        let x2 = this.findFiniteNumericalValue(thisVertex.get_component(1));
-
-        let distance2FromAttractor = Math.pow(x1 - attractPoint[0], 2) + Math.pow(x2 - attractPoint[1], 2);
-
-        if (distance2FromAttractor < this.state.attractThreshold * this.state.attractThreshold) {
-          this.state.vertices[pointInd] = me.fromAst(["tuple", ...attractPoint]);
-          this.state.correctvertices[pointInd - 1] = true;
-        } else {
-          this.state.correctvertices[pointInd - 1] = false;
-        }
-      }
-    }
-
-    // get the y-values of the odd vertices
-    this.state.iteratevalues = this.state.vertices
-      .filter((v, i) => i % 2 === 1)
-      .map(v => v.get_component(1).evaluate_to_constant())
-
-
-  }
-
-
-  initializeRenderer({ }) {
-    if (this.renderer !== undefined) {
-      this.updateRenderer();
-      return;
-    }
-
-    if (this.unresolvedState.vertices === undefined) {
-      const actions = {
-        movePolyline: this.movePolyline,
-      }
-      this.renderer = new this.availableRenderers.polyline2d({
-        key: this.componentName,
-        actions: actions,
-        label: this.state.label,
-        draggable: false,
-        layer: this.state.layer,
-        visible: !this.state.hide,
-        pointcoords: this.state.vertices.map(x =>
-          [x.get_component(0).evaluate_to_constant(),
-          x.get_component(1).evaluate_to_constant()]),
-        color: this.state.selectedStyle.lineColor,
-        width: this.state.selectedStyle.lineWidth,
-        style: this.state.selectedStyle.lineStyle,
-        pointColor: this.state.selectedStyle.markerColor,
-        pointSize: this.state.selectedStyle.markerSize,
-        pointStyle: this.state.selectedStyle.markerStyle,
-      });
-    }
-  }
-
-  updateRenderer() {
-    this.renderer.updatePolyline({
-      visible: !this.state.hide,
-      pointcoords: this.state.vertices.map(x =>
-        [x.get_component(0).evaluate_to_constant(),
-        x.get_component(1).evaluate_to_constant()]),
-    });
-  }
-
-
-  calculateDownstreamChanges({
-    stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate
-  }) {
-
-    let newStateVariables = {};
-    let verticesChanged = new Set([]);
-
-    let newVertices = Array(this.state.nPoints);
-
-    for (let varName in stateVariablesToUpdate) {
-      if (varName === "vertices") {
-        if (newStateVariables[varName] === undefined) {
-          newStateVariables[varName] = {
-            isArray: true,
-            changes: { arrayComponents: {} }
-          }
-        }
-        for (let ind in stateVariablesToUpdate[varName].changes.arrayComponents) {
-          verticesChanged.add(Number(ind));
-          newVertices[ind] = newStateVariables[varName].changes.arrayComponents[ind] =
-            stateVariablesToUpdate[varName].changes.arrayComponents[ind];
-        }
-      }
-    }
-
-    // if changed vertex 0, change initial condition point
-    if (verticesChanged.has(0)) {
-      dependenciesToUpdate[this.state.initialPointChild.componentName] = {
-        coords: { changes: newVertices[0] }
-      }
-    }
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // add stateVariable to stateVariableChangesToSave if is essential
-    // and no shadow sources were updated
-    for (let varname in newStateVariables) {
-      if (this._state[varname].essential === true &&
-        !shadowedStateVariables.has(varname) && !isReplacement) {
-        stateVariableChangesToSave[varname] = newStateVariables[varname];
-      }
-    }
-
-    return true;
-
-  }
 
 }

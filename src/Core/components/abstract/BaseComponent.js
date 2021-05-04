@@ -194,6 +194,7 @@ export default class BaseComponent {
         createStateVariable: "fixed",
         defaultValue: false,
         public: true,
+        forRenderer: true,
       },
       styleNumber: {
         createComponentOfType: "number",
@@ -328,7 +329,8 @@ export default class BaseComponent {
       "inverseArrayDefinitionByKey",
       "basedOnArrayKeyStateVariables",
       "markStale", "getPreviousDependencyValuesForMarkStale",
-      "determineDependenciesImmediately"
+      "determineDependenciesImmediately",
+      "createWorkspace", "workspace",
     ];
 
     let stateVariableDefinitions = {};
@@ -336,6 +338,10 @@ export default class BaseComponent {
     for (let varName in newDefinitions) {
       let thisDef = newDefinitions[varName];
       stateVariableDefinitions[varName] = thisDef;
+
+      if(thisDef.createWorkspace) {
+        thisDef.workspace = {};
+      }
 
       if (thisDef.additionalStateVariablesDefined) {
         for (let [ind, otherVarObj] of thisDef.additionalStateVariablesDefined.entries()) {

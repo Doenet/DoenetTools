@@ -15,7 +15,7 @@ export default class ConditionalContent extends CompositeComponent {
     delete attributes.hide;
 
     attributes.condition = {
-      createComponentOfType: "condition"
+      createComponentOfType: "boolean"
     }
 
     return attributes;
