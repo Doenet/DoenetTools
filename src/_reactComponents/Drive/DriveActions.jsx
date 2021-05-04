@@ -400,6 +400,12 @@ export const useCopyItems = () => {
           targetDriveId,
           targetFolderId
         });
+
+        // Specify copy in label when copying within same drive
+        if (item.driveId === targetDriveId) {
+          const newItemLabel = `Copy of ${newItem.label}`
+          newItem.label = newItemLabel;
+        }
       
         // Generate sortOrder for cloned item
         const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
@@ -426,7 +432,7 @@ export const useCopyItems = () => {
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          branchId: "",
+          branchId: newItem.branchId,
           versionId: nanoid(),
           label: newItem.label,
           type: newItem.itemType,
@@ -513,7 +519,9 @@ export const useCopyItems = () => {
     // Clone item
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
+    const newBranchId = nanoid();
     newItem.itemId = newItemId;
+    newItem.branchId = newBranchId;
     
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
@@ -539,11 +547,6 @@ export const useCopyItems = () => {
 
     }
 
-    // Specify copy in label when copying within same drive
-    if (item.driveId === targetDriveId) {
-      const newItemLabel = `Copy of ${newItem.label}`
-      newItem.label = newItemLabel;
-    }   
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
     globalDictionary[newItemId] = newItem;
