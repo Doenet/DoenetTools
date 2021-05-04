@@ -3284,6 +3284,10 @@ export default class Core {
       stateVarObj.workspace = arrayStateVarObj.workspace;
     }
 
+    if (arrayStateVarObj.basedOnArrayKeyStateVariables) {
+      stateVarObj.basedOnArrayKeyStateVariables = true;
+    }
+
     // if any of the additional state variables defined are arrays,
     // (which should be all of them)
     // transform to their array entry
@@ -5128,17 +5132,17 @@ export default class Core {
       args.workspace = stateVarObj.workspace;
     }
 
-    // if (stateVarObj.providePreviousValuesInDefinition) {
-    //   let allStateVariablesDefined = [stateVariable];
-    //   if (stateVarObj.additionalStateVariablesDefined) {
-    //     allStateVariablesDefined.push(...stateVarObj.additionalStateVariablesDefined)
-    //   }
-    //   let previousValues = {};
-    //   for (let varName of allStateVariablesDefined) {
-    //     previousValues[varName] = component.state[varName]._previousValue;
-    //   }
-    //   args.previousValues = previousValues;
-    // }
+    if (stateVarObj.providePreviousValuesInDefinition) {
+      let allStateVariablesDefined = [stateVariable];
+      if (stateVarObj.additionalStateVariablesDefined) {
+        allStateVariablesDefined.push(...stateVarObj.additionalStateVariablesDefined)
+      }
+      let previousValues = {};
+      for (let varName of allStateVariablesDefined) {
+        previousValues[varName] = component.state[varName]._previousValue;
+      }
+      args.previousValues = previousValues;
+    }
 
     return args;
   }
@@ -7894,7 +7898,7 @@ export default class Core {
             }
 
             // haven't implemented combining when have additional dependency values
-            if (!newInstruction.additionalDependencyValues) {
+            if (!(newInstruction.additionalDependencyValues || depStateVarObj.basedOnArrayKeyStateVariables)) {
               foundArrayInstruction = true;
 
               if (!arrayInstructionInProgress) {
@@ -8154,8 +8158,8 @@ export default class Core {
 
   submitResponseCallBack(results) {
 
-    console.log(`submit response callback`)
-    console.log(results);
+    // console.log(`submit response callback`)
+    // console.log(results);
     return;
 
     if (!results.success) {

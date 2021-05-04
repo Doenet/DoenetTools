@@ -194,6 +194,7 @@ export default class BaseComponent {
         createStateVariable: "fixed",
         defaultValue: false,
         public: true,
+        forRenderer: true,
       },
       styleNumber: {
         createComponentOfType: "number",
