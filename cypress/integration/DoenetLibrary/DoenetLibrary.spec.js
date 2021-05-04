@@ -2,6 +2,7 @@ import { expect } from "chai";
 
 describe("Course creation in Library", function () {
   beforeEach(() => {
+    cy.visit('/signin');
     cy.visit('/library');
   });
 
@@ -33,11 +34,13 @@ describe("Course creation in Library", function () {
 
 describe("Library items creation and deletion", function () {
   beforeEach(() => {
+    cy.visit('/signin');
+    cy.wait(500);
     cy.visit('/library');
 
     // Create a new course and select it
     cy.get('[data-cy=createNewCourseButton]').click();
-    cy.wait(500);
+    cy.wait(1000);
     cy.get('[data-cy=navPanel]').within(() => {
       cy.get('[data-cy=navDriveHeader]').first().click();
     });
@@ -157,15 +160,20 @@ describe("Library items creation and deletion", function () {
       cy.get('[data-cy=driveItem]').first().click();
     });
 
+    cy.get('[data-cy=infoPanelItemLabelInput]')
+      .clear()
+      .type(newFolderLabel)
+      .type('{enter}');
+
     cy.get('[data-cy=mainPanel]').within(() => {
       cy.get('[data-cy=driveItem]').first().within(() => {
-        cy.get('[data-cy=folderLabel]').invoke('text').then(label => {
-          folderLabel = label;
+        cy.get('[data-cy=folderLabel]').invoke('text').then(folderLabel => {
+          expect(folderLabel.trim()).equal(newFolderLabel);
         })
       })
     }); 
     cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
-      expect(folderLabel.trim()).equal(infoPanelItemLabel.trim());
+      expect(infoPanelItemLabel.trim()).equal(newFolderLabel);
     })   
   });
 

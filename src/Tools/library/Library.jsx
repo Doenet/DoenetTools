@@ -482,6 +482,7 @@ const FolderInfoPanel = function(props){
   <h2 data-cy="infoPanelItemLabel">{fIcon} {itemInfo.label}</h2>
 
   <label>Folder Label<input type="text" 
+  data-cy="infoPanelItemLabelInput"
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
@@ -549,6 +550,7 @@ const DoenetMLInfoPanel = function(props){
   <h2 data-cy="infoPanelItemLabel">{dIcon} {itemInfo.label}</h2>
 
   <label>DoenetML Label<input type="text" 
+  data-cy="infoPanelItemLabelInput"
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
@@ -866,7 +868,7 @@ export default function Library(props) {
 
   const profile = useContext(ProfileContext)
 
-  if (profile.signedIn === "0"){
+  if (profile.signedIn === "0" && !window.Cypress){
     return (<>
      <GlobalFont/>
     <Tool>
@@ -922,10 +924,14 @@ export default function Library(props) {
     <GlobalFont/>
     <Tool>
       <navPanel isInitOpen>
-      <div style={{height:"100vh"}} onClick={useOutsideDriveSelector}>
-         <div  style={{paddingBottom:"40px"}}>
-        <Drive types={['content','course']}  foldersOnly={true} />
-      </div>
+      <div 
+        style={{height:"100vh"}} 
+        onClick={useOutsideDriveSelector}
+        data-cy="navPanel"
+      >
+        <div  style={{paddingBottom:"40px"}}>
+          <Drive types={['content','course']}  foldersOnly={true} />
+        </div>
       </div>
       </navPanel>
 
