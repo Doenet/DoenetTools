@@ -151,31 +151,31 @@ describe("Library items creation and deletion", function () {
   //   });
   // });
 
-  it('Renaming a folder through the input box in the InfoPanel', function() {
-    const newFolderLabel = "Test label";
+  // it('Renaming a folder through the input box in the InfoPanel', function() {
+  //   const newFolderLabel = "Test label";
 
-    cy.get('[data-cy=addFolderButton]').click();
+  //   cy.get('[data-cy=addFolderButton]').click();
 
-    cy.get('[data-cy=mainPanel]').within(() => {
-      cy.get('[data-cy=driveItem]').first().click();
-    });
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().click();
+  //   });
 
-    cy.get('[data-cy=infoPanelItemLabelInput]')
-      .clear()
-      .type(newFolderLabel)
-      .type('{enter}');
+  //   cy.get('[data-cy=infoPanelItemLabelInput]')
+  //     .clear()
+  //     .type(newFolderLabel)
+  //     .type('{enter}');
 
-    cy.get('[data-cy=mainPanel]').within(() => {
-      cy.get('[data-cy=driveItem]').first().within(() => {
-        cy.get('[data-cy=folderLabel]').invoke('text').then(folderLabel => {
-          expect(folderLabel.trim()).equal(newFolderLabel);
-        })
-      })
-    }); 
-    cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
-      expect(infoPanelItemLabel.trim()).equal(newFolderLabel);
-    })   
-  });
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().within(() => {
+  //       cy.get('[data-cy=folderLabel]').invoke('text').then(folderLabel => {
+  //         expect(folderLabel.trim()).equal(newFolderLabel);
+  //       })
+  //     })
+  //   }); 
+  //   cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
+  //     expect(infoPanelItemLabel.trim()).equal(newFolderLabel);
+  //   })   
+  // });
 
   // it('Creating a new DoenetML at drive level by clicking on the Add DoenetML button', function() {
   //   cy.get('[data-cy=addDoenetMLButton]').click();
@@ -244,6 +244,32 @@ describe("Library items creation and deletion", function () {
   //   }); 
   //   cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
   //     expect(doenetMLLabel.trim()).equal(infoPanelItemLabel.trim());
+  //   })   
+  // });
+
+  // it('Renaming a doenetML through the input box in the InfoPanel', function() {
+  //   const newDoenetMLLabel = "Test label";
+
+  //   cy.get('[data-cy=addDoenetMLButton]').click();
+
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().click();
+  //   });
+
+  //   cy.get('[data-cy=infoPanelItemLabelInput]')
+  //     .clear()
+  //     .type(newDoenetMLLabel)
+  //     .type('{enter}');
+
+  //   cy.get('[data-cy=mainPanel]').within(() => {
+  //     cy.get('[data-cy=driveItem]').first().within(() => {
+  //       cy.get('[data-cy=doenetMLLabel]').invoke('text').then(doenetMLLabel => {
+  //         expect(doenetMLLabel.trim()).equal(newDoenetMLLabel);
+  //       })
+  //     })
+  //   }); 
+  //   cy.get('[data-cy=infoPanelItemLabel]').invoke('text').then(infoPanelItemLabel => {
+  //     expect(infoPanelItemLabel.trim()).equal(newDoenetMLLabel);
   //   })   
   // });
 });
