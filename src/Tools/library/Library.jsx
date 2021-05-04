@@ -773,10 +773,10 @@ function AddMenuPanel(props){
         itemType: "Folder"
       });
       result.then(resp => {
-        if (resp.data.success){
+        if (resp.data?.success){
           addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
         }else{
-          onAddItemError({errorMessage: resp.data.message});
+          onAddItemError({errorMessage: resp.data});
         }
       }).catch( e => {
         onAddItemError({errorMessage: e.message});
@@ -798,7 +798,7 @@ function AddMenuPanel(props){
         if (resp.data.success){
           addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
         }else{
-          onAddItemError({errorMessage: resp.data.message});
+          onAddItemError({errorMessage: resp.data});
         }
       }).catch( e => {
         onAddItemError({errorMessage: e.message});

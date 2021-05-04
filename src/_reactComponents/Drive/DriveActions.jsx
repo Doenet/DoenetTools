@@ -97,6 +97,7 @@ export const useAddItem = () => {
       const result = axios.get('/api/addItem.php', payload);
 
       result.then(resp => {
+        console.log(">>>", resp)
         if (resp.data.success){
           // Insert item info into destination folder
           set(folderDictionary(driveIdFolderId), newObj)
@@ -426,7 +427,7 @@ export const useCopyItems = () => {
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          branchId: "",
+          branchId: nanoid(),
           versionId: nanoid(),
           label: newItem.label,
           type: newItem.itemType,
