@@ -740,27 +740,5 @@ export default class ODESystem extends InlineComponent {
 
   }
 
-  updateState(args = {}) {
-
-
-
-    this.state.calculatedNumericSolutions = [];
-    this.state.endingNumericalValues = [];
-    this.state.maxPossibleTime = undefined;
-
-    this.state.numericalsolutions = this.state.variables.map((_, i) => this.returnNumericSolution(i))
-
-    // explicitly add new value for numericalsolutions
-    // so change is detected even if functions look the same
-    trackChanges.addNewValue(this, "numericalsolutions");
-
-  }
-
-
-
-  returnNumericSolution(ind) {
-
-  }
-
 
 }

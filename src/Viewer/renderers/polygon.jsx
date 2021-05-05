@@ -103,7 +103,6 @@ export default class Polygon extends DoenetRenderer {
     let newPointcoords;
 
     function onDragBorder(i) {
-      console.log(`on drag border: ${i}`)
 
       // create update instructions for moving entire polygon
       newPointcoords = {};
