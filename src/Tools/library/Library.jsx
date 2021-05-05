@@ -950,9 +950,11 @@ export default function Library(props) {
 
  
   // Breadcrumb container
-  let breadcrumbContainer = null;
+  let mainBreadcrumbContainer = null;
+  let supportBreadcrumbContainer = null;
   if (routePathDriveId) {
-    breadcrumbContainer = <BreadcrumbContainer />;
+    mainBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main" />;
+    supportBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="support" />;
   }
 
   const driveCardSelection = ({item}) => {
@@ -974,12 +976,12 @@ export default function Library(props) {
       </div>
       </navPanel>
 
-      <headerPanel title="Library">
-      </headerPanel>
+      <headerPanel title="Library" />
+  
 
       <mainPanel > 
       <AutoSelect />
-      {breadcrumbContainer}
+      {mainBreadcrumbContainer}
         <div 
         onClick={()=>{
           clearSelections()
@@ -1018,6 +1020,7 @@ export default function Library(props) {
           
         </mainPanel>
       <supportPanel>
+        {supportBreadcrumbContainer}
       <Container>
 
       <Drive 

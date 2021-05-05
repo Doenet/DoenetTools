@@ -533,6 +533,7 @@ function DriveRouted(props){
 
   const [numColumns,setNumColumns] = useState(1);
   const { onDragEnterInvalidArea, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
+  const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey))
 
   let hideUnpublished = false; //Default to showing unpublished
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
@@ -554,17 +555,13 @@ function DriveRouted(props){
 
   //Use Route to determine path variables
   let pathFolderId = props.driveId; //default 
-  let pathDriveId = props.driveId; //default
-  let routePathDriveId = "";
-  let routePathFolderId = "";  
-  let pathItemId = "";  
-  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-  //use defaults if not defined
-  if (urlParamsObj?.path !== undefined){
-    [routePathDriveId,routePathFolderId,pathItemId] = urlParamsObj.path.split(":");
-    if (routePathDriveId !== ""){ pathDriveId = routePathDriveId}
-    if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
-  }
+
+  let routePathDriveId = drivePath.driveId;
+  let routePathFolderId = drivePath.parentFolderId;  
+  let pathItemId = drivePath.itemId;  
+  if (routePathFolderId !== ""){pathFolderId = routePathFolderId}
+
+
   //If navigation then build from root else build from path
   let rootFolderId = pathFolderId;
   if(props.isNav){
@@ -578,8 +575,6 @@ function DriveRouted(props){
     heading = <DriveHeader driveInstanceId={props.driveInstanceId} setNumColumns={setNumColumns}/>
   }
    
-  
-
 
   return <>
     {heading}
