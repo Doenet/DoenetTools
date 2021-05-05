@@ -9,7 +9,7 @@ import React from 'react'
 import { faTh} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivePathSyncFamily, folderDictionary, fetchDrivesQuery } from '../Drive/Drive';
-import { useRecoilValue, atomFamily, selectorFamily } from 'recoil';
+import { useRecoilValue, useRecoilState, atomFamily, selectorFamily } from 'recoil';
 
 const breadcrumbItemAtomFamily = atomFamily({
   key:"breadcrumbItemAtomFamily",
@@ -31,7 +31,7 @@ const breadcrumbItemAtomFamily = atomFamily({
           folderId:folderInfo.folderInfo.itemId,
           label:folderInfo.folderInfo.label,
         })
-        folderId = folderInfo.parentFolderId;
+        folderId = folderInfo.folderInfo.parentFolderId;
       }
       const drivesInfo = get(fetchDrivesQuery);
       let driveObj = {type:"Drive",folderId:driveId}
@@ -49,7 +49,7 @@ const breadcrumbItemAtomFamily = atomFamily({
 
 
 export const BreadcrumbContainer = (props) => {
-  const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey))
+  const [drivePath,setDrivePath] = useRecoilState(drivePathSyncFamily(props.drivePathSyncKey))
   const items = useRecoilValue(breadcrumbItemAtomFamily({driveId:drivePath.driveId,folderId:drivePath.parentFolderId}))
  
   // console.log(">>>drivePath",drivePath)
@@ -57,10 +57,17 @@ export const BreadcrumbContainer = (props) => {
   // console.log(">>>items",items)
 
 
-  let leftmostBreadcrumb = <FontAwesomeIcon icon={faTh}/>
+  let leftmostBreadcrumb = <span onClick={()=>{
+    setDrivePath({
+      driveId:"",
+      parentFolderId:"",
+      itemId:"",
+      type:""
+    })
+  }}><FontAwesomeIcon icon={faTh}/></span>
 
   if (drivePath.driveId === ""){
-    return leftmostBreadcrumb;
+    return <div style={{margin:"10px"}}>{leftmostBreadcrumb}</div>;
   }
 
   let reversed = [...items];
@@ -68,10 +75,17 @@ export const BreadcrumbContainer = (props) => {
 
   let children = [];
   for (let item of reversed){
-    children.push(<span>{item.label} / </span>)
+    children.push(<span onClick={()=>{
+      setDrivePath({
+        driveId:drivePath.driveId,
+        parentFolderId:item.folderId,
+        itemId:item.folderId,
+        type:"Folder"
+      })
+    }}>{item.label} / </span>)
   }
 
-  return <div>{leftmostBreadcrumb} {children}</div>
+  return <div style={{margin:"10px"}}>{leftmostBreadcrumb} {children}</div>
 
   // const items = useBreadcrumbItems();
   // const { clearItems: clearBreadcrumb } = useContext(BreadcrumbContext);
