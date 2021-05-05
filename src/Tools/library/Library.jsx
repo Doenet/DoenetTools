@@ -87,7 +87,7 @@ const selectedDriveInformation = selector({
   }
 })
 
-const selectedInformation = selector({
+export const selectedInformation = selector({
   key:"selectedInformation",
   get: ({get})=>{
     const globalSelected = get(globalSelectedNodesAtom);

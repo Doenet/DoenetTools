@@ -102,14 +102,13 @@ if ($init == 'true'){
   dc.sortOrder as sortOrder,
   u.url as url,
   u.description as urlDescription,
-  a.title as assignment_title,
-  a.contentId as contentId,
-  a.isPublished as assignment_isPublished
+  ad.title as assignment_title,
+  ad.contentId as contentId
 FROM drive_content AS dc
 LEFT JOIN url AS u
 ON u.urlId = dc.urlId
-LEFT JOIN assignment AS a
-ON dc.assignmentId = a.assignmentId
+LEFT JOIN assignment_draft AS ad
+ON dc.assignmentId = ad.assignmentId
   WHERE driveId = '$driveId'
   AND isDeleted = 0
   ";
@@ -130,7 +129,6 @@ ON dc.assignmentId = a.assignmentId
     "url"=>$row['url'],
     "urlDescription"=>$row['urlDescription'],
     "assignment_title"=>$row['assignment_title'],
-    "assignment_isPublished"=>$row['assignment_isPublished'],
     "isAssignment"=>$row['isAssignment'],
     "sortOrder"=>$row['sortOrder']
   );
