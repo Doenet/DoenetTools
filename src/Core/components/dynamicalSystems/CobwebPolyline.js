@@ -34,6 +34,13 @@ export default class CobwebPolyline extends Polyline {
       forRenderer: true,
     };
 
+    attributes.nIterationsRequired = {
+      createComponentOfType: "number",
+      createStateVariable: "nIterationsRequired",
+      defaultValue: 1,
+      public: true,
+    }
+
     attributes.initialPoint = {
       createComponentOfType: "point"
     }
@@ -570,6 +577,43 @@ export default class CobwebPolyline extends Polyline {
             fractionCorrectVertices, nGradedVertices, nCorrectVertices
           }
         }
+      }
+    }
+
+    stateVariableDefinitions.fractionCorrectVerticesAdjusted = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        nCorrectVertices: {
+          dependencyType: "stateVariable",
+          variableName: "nCorrectVertices"
+        },
+        nGradedVertices: {
+          dependencyType: "stateVariable",
+          variableName: "nGradedVertices"
+        },
+        nIterationsRequired: {
+          dependencyType: "stateVariable",
+          variableName: "nIterationsRequired"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let nVerticesRequired = 0;
+        if (dependencyValues.nIterationsRequired > 0) {
+          nVerticesRequired = 2 * dependencyValues.nIterationsRequired - 1;
+        }
+
+        let nGradedVerticesAdjusted = Math.max(dependencyValues.nGradedVertices, nVerticesRequired)
+
+        let fractionCorrectVerticesAdjusted;
+
+        if (nGradedVerticesAdjusted === 0) {
+          fractionCorrectVerticesAdjusted = 0;
+        } else {
+          fractionCorrectVerticesAdjusted = dependencyValues.nCorrectVertices / nGradedVerticesAdjusted;
+        }
+
+        return { newValues: { fractionCorrectVerticesAdjusted } }
       }
     }
 

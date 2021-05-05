@@ -231,7 +231,7 @@ export default class Point extends DoenetRenderer {
       return null;
     }
 
-    let mathJaxify = "\\(" + this.doenetSvData.coords.toLatex() + "\\)";
+    let mathJaxify = "\\(" + this.doenetSvData.coordsForDisplay.toLatex() + "\\)";
     return <><a name={this.componentName} /><span id={this.componentName}>{mathJaxify}</span></>
   }
 }
