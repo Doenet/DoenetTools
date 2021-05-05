@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useEffect, useState, Suspense, useContext } from "react";
+import React, { useEffect, useState, Suspense, useContext, useRef } from "react";
 import { nanoid } from 'nanoid';
 import { 
   faChalkboard,
@@ -16,6 +16,7 @@ import {
 import {
   atom,
   useSetRecoilState,
+  useRecoilState,
   useRecoilValue,
   selector,
   selectorFamily,
@@ -39,6 +40,7 @@ import Drive, {
   encodeParams,
   fetchDriveUsers,
   fetchDrivesQuery,
+  drivePathSyncFamily
 } from "../../_reactComponents/Drive/Drive";
 import { 
   useAddItem,
@@ -828,6 +830,58 @@ function AutoSelect(props){
   return null;
 }
 
+function URLPathSync(props){
+
+  const [drivePath,setDrivePath] = useRecoilState(drivePathSyncFamily("main"))
+  const history = useHistory();
+  const init = useRef(true);
+  const sourceOfPathChange = useRef(false);
+
+  useEffect(()=>{
+    if (!sourceOfPathChange.current){
+      let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+      if (urlParamsObj?.path){
+        const  [routePathDriveId,routePathFolderId,pathItemId,type] = urlParamsObj.path.split(":");
+        setDrivePath({driveId:routePathDriveId,parentFolderId:routePathFolderId,itemId:pathItemId,type})
+      }
+    }
+    sourceOfPathChange.current = false;
+    
+  },[props.route, setDrivePath])
+
+
+  useEffect(()=>{
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+    //Update the URL Parameter if drivePath changes
+    let changed = false;
+    if (urlParamsObj?.path){
+      const  [routePathDriveId,routePathFolderId,pathItemId,type] = urlParamsObj.path.split(":");
+
+      if (routePathDriveId !== drivePath.driveId ||
+        routePathFolderId !== drivePath.parentFolderId ||
+        pathItemId !== drivePath.itemId
+        ){
+          changed = true;
+        }
+    }else{
+      //When first open and no path parameter
+      changed = true;
+    }
+
+    if (changed && !init.current){
+      let newParams = {...urlParamsObj} 
+      newParams['path'] = `${drivePath.driveId}:${drivePath.parentFolderId}:${drivePath.itemId}:${drivePath.type}`
+      history.push('?'+encodeParams(newParams))
+      sourceOfPathChange.current = true;
+
+    }
+    init.current = false;
+    
+  },[drivePath])
+  
+  return null;
+}
+
 export default function Library(props) {
   // console.log("=== 📚 Doenet Library Tool",props);  
 
@@ -897,9 +951,11 @@ export default function Library(props) {
 
  
   // Breadcrumb container
-  let breadcrumbContainer = null;
+  let mainBreadcrumbContainer = null;
+  let supportBreadcrumbContainer = null;
   if (routePathDriveId) {
-    breadcrumbContainer = <BreadcrumbContainer />;
+    mainBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main" />;
+    supportBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="support" />;
   }
 
   const driveCardSelection = ({item}) => {
@@ -911,21 +967,22 @@ export default function Library(props) {
   return (
     <>
     <GlobalFont/>
+    <URLPathSync route={props.route}/>
     <Tool>
       <navPanel isInitOpen>
       <div style={{height:"100vh"}} onClick={useOutsideDriveSelector}>
          <div  style={{paddingBottom:"40px"}}>
-        <Drive types={['content','course']}  foldersOnly={true} />
+        <Drive types={['content','course']}  foldersOnly={true} drivePathSyncKey="main"/>
       </div>
       </div>
       </navPanel>
 
-      <headerPanel title="Library">
-      </headerPanel>
+      <headerPanel title="Library" />
+  
 
       <mainPanel > 
       <AutoSelect />
-      {breadcrumbContainer}
+      {mainBreadcrumbContainer}
         <div 
         onClick={()=>{
           clearSelections()
@@ -933,10 +990,13 @@ export default function Library(props) {
         className={routePathDriveId ? 'mainPanelStyle' : ''}
         >
           <Container>
-          <Drive types={['content','course']}  urlClickBehavior="select" 
-        doenetMLDoubleClickCallback={(info)=>{
-          openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
-          }}/>
+          <Drive types={['content','course']}  
+            drivePathSyncKey="main"
+            urlClickBehavior="select" 
+            doenetMLDoubleClickCallback={(info)=>{
+              openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
+            }}
+          />
           </Container>
         
 
@@ -950,6 +1010,7 @@ export default function Library(props) {
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
        <DriveCards
+       drivePathSyncKey="main"
        types={['course']}
        subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
@@ -960,10 +1021,34 @@ export default function Library(props) {
           
         </mainPanel>
       <supportPanel>
+        {supportBreadcrumbContainer}
       <Container>
 
-      <Drive types={['content','course']}  urlClickBehavior="select" />
+      <Drive 
+        drivePathSyncKey="support"
+        types={['content','course']}  
+        urlClickBehavior="select" 
+        doenetMLDoubleClickCallback={(info)=>{
+          openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
+        }}
+        />
       </Container>
+
+      <div 
+        onClick={
+          cleardrivecardSelection
+        }
+        tabIndex={0}
+        className={routePathDriveId ? '' : 'mainPanelStyle' }
+        >
+       <DriveCards
+       drivePathSyncKey="support"
+       types={['course']}
+       subTypes={['Administrator']}
+       routePathDriveId={routePathDriveId}
+       driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
+       />
+        </div>
       </supportPanel>
 
       <menuPanel title="Selected" isInitOpen>

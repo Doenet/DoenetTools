@@ -13,10 +13,33 @@ $userId = $jwtArray['userId'];
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 
 $success = TRUE;
-$results_arr = array();
+$message = "";
 
-//TODO: Check for permisions first
+if ($driveId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing driveId';
+}elseif ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to learn of drive users";
+}
 
+//Check for permisions
+if ($success){
+  $sql = "
+  SELECT canViewDrive
+  FROM drive_user
+  WHERE userId = '$userId'
+  AND driveId = '$driveId'
+  ";
+  $result = $conn->query($sql); 
+  $row = $result->fetch_assoc();
+  if ($row['canViewDrive'] == '0'){
+    $success = FALSE;
+    $message = "You need need permission to learn of drive users";
+  }
+}
+
+if ($success){
 
   $sql = "
   SELECT 
@@ -62,14 +85,15 @@ if ($result->num_rows > 0){
     }
   }
 }
-
+}
 
 $response_arr = array(
   "success"=>$success,
   "admins"=>$admins,
   "owners"=>$owners,
-  "usersRole"=>$usersRole
-  );
+  "usersRole"=>$usersRole,
+  "message"=>$message
+);
 
 // set response code - 200 OK
 http_response_code(200);

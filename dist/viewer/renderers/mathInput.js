@@ -30,6 +30,7 @@ export default class MathInput extends DoenetRenderer {
   }
   calculateMathExpressionFromLatex(text) {
     let expression;
+    text = substituteUnicodeInLatexString(text);
     try {
       expression = me.fromLatex(text);
     } catch (e) {
@@ -227,4 +228,55 @@ export default class MathInput extends DoenetRenderer {
 function stripLatex(latex) {
   let s = latex.replaceAll(`\\,`, "");
   return s;
+}
+function substituteUnicodeInLatexString(latexString) {
+  let substitutions = [
+    ["α", "\\alpha "],
+    ["β", "\\beta "],
+    ["ϐ", "\\beta "],
+    ["Γ", "\\Gamma "],
+    ["γ", "\\gamma "],
+    ["Δ", "\\Delta "],
+    ["δ", "\\delta "],
+    ["ε", "\\epsilon "],
+    ["ϵ", "\\epsilon "],
+    ["ζ", "\\zeta "],
+    ["η", "\\eta "],
+    ["Θ", "\\Theta "],
+    ["ϴ", "\\Theta "],
+    ["θ", "\\theta "],
+    ["ᶿ", "\\theta "],
+    ["ϑ", "\\theta "],
+    ["ι", "\\iota "],
+    ["κ", "\\kappa "],
+    ["Λ", "\\Lambda "],
+    ["λ", "\\lambda "],
+    ["μ", "\\mu "],
+    ["µ", "\\mu "],
+    ["ν", "\\nu "],
+    ["Ξ", "\\Xi "],
+    ["ξ", "\\xi "],
+    ["Π", "\\Pi "],
+    ["π", "\\pi "],
+    ["ϖ", "\\pi "],
+    ["ρ", "\\rho "],
+    ["ϱ", "\\rho "],
+    ["Σ", "\\Sigma "],
+    ["σ", "\\sigma "],
+    ["ς", "\\sigma "],
+    ["τ", "\\tau "],
+    ["Υ", "\\Upsilon "],
+    ["υ", "\\upsilon "],
+    ["Φ", "\\Phi "],
+    ["φ", "\\phi "],
+    ["ϕ", "\\phi "],
+    ["Ψ", "\\Psi "],
+    ["ψ", "\\psi "],
+    ["Ω", "\\Omega "],
+    ["ω", "\\omega "]
+  ];
+  for (let sub of substitutions) {
+    latexString = latexString.replaceAll(sub[0], sub[1]);
+  }
+  return latexString;
 }

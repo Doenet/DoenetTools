@@ -61,7 +61,7 @@ export default class CobwebPolyline extends DoenetRenderer {
       jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
     this.jsxPointAttributes = {
-      fixed: !this.doenetSvData.draggable,
+      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       visible: !this.doenetSvData.hidden && validCoords,
       withLabel: true,
       name: "A",

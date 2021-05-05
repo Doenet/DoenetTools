@@ -17,23 +17,49 @@ $destinationDriveId = mysqli_real_escape_string($conn,$_POST["destinationDriveId
 $destinationItemId = mysqli_real_escape_string($conn,$_POST["destinationItemId"]); 
 $newSortOrder = mysqli_real_escape_string($conn,$_POST["newSortOrder"]); 
 
-$success = FALSE;
-$sql = "
-SELECT canMoveItemsAndFolders
-FROM drive_user
-WHERE userId = '$userId'
-AND driveId = '$sourceDriveId'
-";
-$result = $conn->query($sql); 
-$canMoveSource = FALSE;
-if ($result->num_rows > 0){
-$row = $result->fetch_assoc();
-$canMoveSource = $row["canMoveItemsAndFolders"];
+$success = TRUE;
+$message = "";
+
+if ($sourceDriveId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing sourceDriveId';
+}elseif ($destinationDriveId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing destinationDriveId';
+}elseif ($destinationItemId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing destinationItemId';
+}elseif ($newSortOrder == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing newSortOrder';
+}elseif ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to move items";
 }
 
-if ($destinationDriveId == $sourceDriveId){
-  $canAddDesination = TRUE;
-}else{
+//Test if user has permission to move source
+if ($success){
+  $sql = "
+  SELECT canMoveItemsAndFolders
+  FROM drive_user
+  WHERE userId = '$userId'
+  AND driveId = '$sourceDriveId'
+  ";
+  $result = $conn->query($sql); 
+  $canMoveSource = FALSE;
+  if ($result->num_rows > 0){
+  $row = $result->fetch_assoc();
+  $canMoveSource = $row["canMoveItemsAndFolders"];
+  }
+  if (!$canMoveSource){
+    $success = FALSE;
+    $message = "You don't have permission to move the items from the source";
+  }
+
+}
+
+//Test if user has permission to move to destination
+if ($success){
   $sql = "
   SELECT canAddItemsAndFolders
   FROM drive_user
@@ -46,10 +72,17 @@ if ($destinationDriveId == $sourceDriveId){
   $row = $result->fetch_assoc();
   $canAddDesination = $row["canAddItemsAndFolders"];
   }
+  if (!$canAddDesination){
+    $success = FALSE;
+    $message = "You don't have permission to move the items into this location";
+  }
 }
 
-if ($canAddDesination && $canMoveSource){
-  $success = TRUE;
+
+  
+
+
+if ($success){
   $number_items = count($_POST["selectedItemIds"]);
 
   $new_values = "";
@@ -85,11 +118,12 @@ if ($canAddDesination && $canMoveSource){
           WHERE itemId IN $id_list)";
 
   $result = $conn->query($sql); 
-}else{
-  $success = FALSE;
 }
+
+
 $response_arr = array( 
     "success" => $success,
+    "message"=>$message
    );
  // set response code - 200 OK
  http_response_code(200);

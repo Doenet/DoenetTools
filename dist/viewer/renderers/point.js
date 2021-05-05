@@ -13,14 +13,14 @@ export default class Point extends DoenetRenderer {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: this.doenetSvData.draggable !== true,
+      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer: 10 * this.doenetSvData.layer + 9,
       fillColor: this.doenetSvData.selectedStyle.markerColor,
       strokeColor: this.doenetSvData.selectedStyle.markerColor,
       size: this.doenetSvData.selectedStyle.markerSize,
       face: normalizeStyle(this.doenetSvData.selectedStyle.markerStyle)
     };
-    if (this.doenetSvData.draggable) {
+    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
       jsxPointAttributes.highlightFillColor = "#EEEEEE";
       jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
       jsxPointAttributes.showInfoBox = true;
@@ -86,7 +86,7 @@ export default class Point extends DoenetRenderer {
       this.pointJXG.visProp["visible"] = false;
       this.pointJXG.visPropCalc["visible"] = false;
     }
-    if (this.doenetSvData.draggable) {
+    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
       this.pointJXG.visProp.highlightfillcolor = "#EEEEEE";
       this.pointJXG.visProp.highlightstrokecolor = "#C3D9FF";
       this.pointJXG.visProp.showinfobox = true;
@@ -151,7 +151,7 @@ export default class Point extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
-    let mathJaxify = "\\(" + this.doenetSvData.coords.toLatex() + "\\)";
+    let mathJaxify = "\\(" + this.doenetSvData.coordsForDisplay.toLatex() + "\\)";
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
       name: this.componentName
     }), /* @__PURE__ */ React.createElement("span", {

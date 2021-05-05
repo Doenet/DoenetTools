@@ -1,6 +1,6 @@
-import { r as reactDom } from './common/index-adccaeb8.js';
-import { r as react } from './common/index-ecd9f9fe.js';
-import './common/_commonjsHelpers-16be0a9e.js';
+import { r as reactDom } from './common/index-89dd978b.js';
+import { r as react } from './common/index-f66788ca.js';
+import './common/_commonjsHelpers-f5d70792.js';
 
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -772,7 +772,7 @@ function batchStart() {
       applyActionsToStore(store, actions);
     }
 
-    const popped = batchStack.pop();
+    batchStack.pop();
   };
 }
 
@@ -1846,7 +1846,7 @@ Map.prototype.getHash = function (hash, key) {
 */
 
 
-var get = hamt.get = function (key, map) {
+hamt.get = function (key, map) {
   return tryGetHash(undefined, map._config.hash(key), key, map);
 };
 
@@ -3694,7 +3694,7 @@ const {
 } = react;
 
 function useComponentName() {
-  const nameRef = useRef$1();
+  useRef$1();
 
 
   return '<component name not available>'; // @oss-only
@@ -4342,7 +4342,7 @@ function useRecoilCallback(fn, deps) {
 
       ret = cb(...args);
     });
-    !!(ret instanceof Sentinel) ?  Recoil_invariant(false) : void 0;
+    !!(ret instanceof Sentinel) ? Recoil_invariant(false) : void 0;
     return ret;
   }, deps != null ? [...deps, storeRef] : undefined // eslint-disable-line fb-www/react-hooks-deps
   );
@@ -4929,7 +4929,7 @@ const addLeaf = (root, route, parent, value, branchKey, handlers) => {
     if (route.length) {
       const [path, ...rest] = route;
       const [nodeKey, nodeValue] = path;
-      !(root.type === 'branch' && root.nodeKey === nodeKey) ?  Recoil_invariant(false) : void 0;
+      !(root.type === 'branch' && root.nodeKey === nodeKey) ? Recoil_invariant(false) : void 0;
       root.branches.set(nodeValue, addLeaf(root.branches.get(nodeValue), rest, root, value, nodeValue, handlers));
     }
   }
@@ -5675,7 +5675,7 @@ function selector(options) {
     const depsAfterCacheDone = new Set();
     const executionInfo = getExecutionInfo(store);
     const cachedVal = cache.get(nodeKey => {
-      !(typeof nodeKey === 'string') ?  Recoil_invariant(false) : void 0;
+      !(typeof nodeKey === 'string') ? Recoil_invariant(false) : void 0;
       const loadable = getCachedNodeLoadable(store, state, nodeKey);
       return loadable.contents;
     }, {
@@ -5909,7 +5909,7 @@ function selector(options) {
 
   function selectorPeek(store, state) {
     const cacheVal = cache.get(nodeKey => {
-      !(typeof nodeKey === 'string') ?  Recoil_invariant(false) : void 0;
+      !(typeof nodeKey === 'string') ? Recoil_invariant(false) : void 0;
       const peek = peekNodeLoadable$1(store, state, nodeKey);
       return peek === null || peek === void 0 ? void 0 : peek.contents;
     });

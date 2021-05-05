@@ -1,4 +1,4 @@
-import { p as process } from './common/process-2545f00a.js';
+import { p as process } from './common/process-e9e98960.js';
 
 var bind = function bind(fn, thisArg) {
   return function wrap() {
@@ -1425,36 +1425,36 @@ function createInstance(defaultConfig) {
 }
 
 // Create the default instance to be exported
-var axios = createInstance(defaults_1);
+var axios$1 = createInstance(defaults_1);
 
 // Expose Axios class to allow class inheritance
-axios.Axios = Axios_1;
+axios$1.Axios = Axios_1;
 
 // Factory for creating new instances
-axios.create = function create(instanceConfig) {
-  return createInstance(mergeConfig(axios.defaults, instanceConfig));
+axios$1.create = function create(instanceConfig) {
+  return createInstance(mergeConfig(axios$1.defaults, instanceConfig));
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = Cancel_1;
-axios.CancelToken = CancelToken_1;
-axios.isCancel = isCancel;
+axios$1.Cancel = Cancel_1;
+axios$1.CancelToken = CancelToken_1;
+axios$1.isCancel = isCancel;
 
 // Expose all/spread
-axios.all = function all(promises) {
+axios$1.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = spread;
+axios$1.spread = spread;
 
 // Expose isAxiosError
-axios.isAxiosError = isAxiosError;
+axios$1.isAxiosError = isAxiosError;
 
-var axios_1 = axios;
+var axios_1 = axios$1;
 
 // Allow use of default import syntax in TypeScript
-var _default = axios;
+var _default = axios$1;
 axios_1.default = _default;
 
-var axios$1 = axios_1;
+var axios = axios_1;
 
-export default axios$1;
+export default axios;
