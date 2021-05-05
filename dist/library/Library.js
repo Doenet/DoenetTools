@@ -569,6 +569,7 @@ const ItemInfo = function() {
 function AddCourseDriveButton(props) {
   const history = useHistory();
   const [addToast, ToastType] = useToast();
+  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"));
   const createNewDrive = useRecoilCallback(({set}) => async ({label, newDriveId, newCourseId, image, color}) => {
     let newDrive = {
       courseId: newCourseId,
@@ -636,10 +637,12 @@ function AddCourseDriveButton(props) {
       }).catch((e) => {
         onError({errorMessage: e.message});
       });
-      let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-      let newParams = {...urlParamsObj};
-      newParams["path"] = `:::`;
-      history.push("?" + encodeParams(newParams));
+      setDrivePath({
+        driveId: ":",
+        parentFolderId: ":",
+        itemId: ":",
+        type: ""
+      });
     }
   });
 }
@@ -748,6 +751,7 @@ export default function Library(props) {
   const {openOverlay, activateMenuPanel} = useToolControlHelper();
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
+  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"));
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
   if (urlParamsObj?.path !== void 0) {
@@ -776,28 +780,34 @@ export default function Library(props) {
       style: {color: "white", textDecoration: "none"}
     }, "Sign in with this link")))))));
   }
-  function useOutsideDriveSelector() {
-    let newParams = {};
-    newParams["path"] = `:::`;
-    history.push("?" + encodeParams(newParams));
+  function useOutsideDriveSelector(setDrivePath2) {
   }
   function cleardrivecardSelection() {
     setDrivecardSelection([]);
   }
-  let mainBreadcrumbContainer = null;
-  let supportBreadcrumbContainer = null;
-  if (routePathDriveId) {
-    mainBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
-      drivePathSyncKey: "main"
+  let mainBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
+    drivePathSyncKey: "main"
+  });
+  let supportBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
+    drivePathSyncKey: "support"
+  });
+  const setDrivecardMainPath = useSetRecoilState(drivePathSyncFamily("main"));
+  const setDrivecardsupportPath = useSetRecoilState(drivePathSyncFamily("support"));
+  const mainDriveCardSelection = ({item}) => {
+    setDrivecardMainPath({
+      driveId: item.driveId,
+      parentFolderId: item.driveId,
+      itemId: item.driveId,
+      type: "Drive"
     });
-    supportBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
-      drivePathSyncKey: "support"
+  };
+  const supportDriveCardSelection = ({item}) => {
+    setDrivecardsupportPath({
+      driveId: item.driveId,
+      parentFolderId: item.driveId,
+      itemId: item.driveId,
+      type: "Drive"
     });
-  }
-  const driveCardSelection = ({item}) => {
-    let newParams = {};
-    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    history.push("?" + encodeParams(newParams));
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(URLPathSync, {
     route: props.route
@@ -805,7 +815,7 @@ export default function Library(props) {
     isInitOpen: true
   }, /* @__PURE__ */ React.createElement("div", {
     style: {height: "100vh"},
-    onClick: useOutsideDriveSelector
+    onClick: () => useOutsideDriveSelector(setDrivePath)
   }, /* @__PURE__ */ React.createElement("div", {
     style: {paddingBottom: "40px"}
   }, /* @__PURE__ */ React.createElement(Drive, {
@@ -836,7 +846,7 @@ export default function Library(props) {
     subTypes: ["Administrator"],
     routePathDriveId,
     driveDoubleClickCallback: ({item}) => {
-      driveCardSelection({item});
+      mainDriveCardSelection({item});
     }
   }))), /* @__PURE__ */ React.createElement("supportPanel", null, supportBreadcrumbContainer, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
     drivePathSyncKey: "support",
@@ -855,7 +865,7 @@ export default function Library(props) {
     subTypes: ["Administrator"],
     routePathDriveId,
     driveDoubleClickCallback: ({item}) => {
-      driveCardSelection({item});
+      supportDriveCardSelection({item});
     }
   }))), /* @__PURE__ */ React.createElement("menuPanel", {
     title: "Selected",

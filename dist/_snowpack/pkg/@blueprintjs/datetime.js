@@ -1,10 +1,10 @@
-import { c as createCommonjsModule, g as getDefaultExportFromCjs, a as commonjsGlobal } from '../common/_commonjsHelpers-f5d70792.js';
-import { r as react } from '../common/index-f66788ca.js';
+import { c as createCommonjsModule, a as commonjsGlobal, g as getDefaultExportFromCjs } from '../common/_commonjsHelpers-4f955397.js';
+import { r as react } from '../common/index-678ccbe9.js';
 import { p as process } from '../common/process-e9e98960.js';
-import { g as global } from '../common/_polyfill-node_global-a48e63f2.js';
-import { p as propTypes } from '../common/index-4bda1d4e.js';
-import { r as reactDom } from '../common/index-89dd978b.js';
-import { i as index } from '../common/ResizeObserver.es-3d2a6acd.js';
+import { p as propTypes } from '../common/index-ad697a84.js';
+import { g as global } from '../common/polyfill-node_global-a90d30ee.js';
+import { r as reactDom } from '../common/index-d53bc1a3.js';
+import { i as index } from '../common/ResizeObserver.es-696c4793.js';
 
 /*
  * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
@@ -309,7 +309,6 @@ var POPOVER_WARN_DOUBLE_CONTENT = ns$1 + " <Popover> with two children ignores c
 var POPOVER_WARN_DOUBLE_TARGET = ns$1 + " <Popover> with children ignores target prop; use either prop or children.";
 var POPOVER_WARN_EMPTY_CONTENT = ns$1 + " Disabling <Popover> with empty/whitespace content...";
 var POPOVER_WARN_HAS_BACKDROP_INLINE = ns$1 + " <Popover usePortal={false}> ignores hasBackdrop";
-var POPOVER_WARN_PLACEMENT_AND_POSITION_MUTEX = ns$1 + " <Popover> supports either placement or position prop, not both.";
 var POPOVER_WARN_UNCONTROLLED_ONINTERACTION = ns$1 + " <Popover> onInteraction is ignored when uncontrolled.";
 var PORTAL_CONTEXT_CLASS_NAME_STRING = ns$1 + " <Portal> context blueprintPortalClassName must be string";
 var SPINNER_WARN_CLASSES_SIZE = ns$1 + " <Spinner> Classes.SMALL/LARGE are ignored if size prop is set.";
@@ -869,7 +868,6 @@ var reactLifecyclesCompat_es = /*#__PURE__*/Object.freeze({
     polyfill: polyfill$3
 });
 
-var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
   var target = {};
@@ -885,11 +883,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   return target;
 }
 
-module.exports = _objectWithoutPropertiesLoose;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-});
-
-var _objectWithoutPropertiesLoose = /*@__PURE__*/getDefaultExportFromCjs(objectWithoutPropertiesLoose);
+var objectWithoutPropertiesLoose = _objectWithoutPropertiesLoose;
 
 var _extends_1 = createCommonjsModule(function (module) {
 function _extends() {
@@ -907,45 +901,12 @@ function _extends() {
     return target;
   };
 
-  module.exports["default"] = module.exports, module.exports.__esModule = true;
   return _extends.apply(this, arguments);
 }
 
 module.exports = _extends;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
 });
 
-var _extends$1 = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
-
-var setPrototypeOf = createCommonjsModule(function (module) {
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  module.exports["default"] = module.exports, module.exports.__esModule = true;
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-});
-
-var inheritsLoose = createCommonjsModule(function (module) {
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-  setPrototypeOf(subClass, superClass);
-}
-
-module.exports = _inheritsLoose;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-});
-
-var _inheritsLoose = /*@__PURE__*/getDefaultExportFromCjs(inheritsLoose);
-
-var assertThisInitialized = createCommonjsModule(function (module) {
 function _assertThisInitialized(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -954,13 +915,29 @@ function _assertThisInitialized(self) {
   return self;
 }
 
-module.exports = _assertThisInitialized;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
+var assertThisInitialized = _assertThisInitialized;
+
+var setPrototypeOf = createCommonjsModule(function (module) {
+function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+module.exports = _setPrototypeOf;
 });
 
-var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
+function _inheritsLoose(subClass, superClass) {
+  subClass.prototype = Object.create(superClass.prototype);
+  subClass.prototype.constructor = subClass;
+  setPrototypeOf(subClass, superClass);
+}
 
-var defineProperty$3 = createCommonjsModule(function (module) {
+var inheritsLoose = _inheritsLoose;
+
 function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
@@ -976,11 +953,7 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-module.exports = _defineProperty;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-});
-
-var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty$3);
+var defineProperty$3 = _defineProperty;
 
 var toStr$4 = Object.prototype.toString;
 
@@ -1173,7 +1146,7 @@ var shams = function hasSymbols() {
 
 	var symVal = 42;
 	obj[sym] = symVal;
-	for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax, no-unreachable-loop
+	for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax
 	if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
 
 	if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
@@ -1191,7 +1164,7 @@ var shams = function hasSymbols() {
 	return true;
 };
 
-var origSymbol = typeof Symbol !== 'undefined' && Symbol;
+var origSymbol = commonjsGlobal.Symbol;
 
 
 var hasSymbols$3 = function hasNativeSymbols() {
@@ -4892,7 +4865,7 @@ var ManagerReferenceNodeSetterContext = createContext();
 var Manager =
 /*#__PURE__*/
 function (_React$Component) {
-  _inheritsLoose(Manager, _React$Component);
+  inheritsLoose(Manager, _React$Component);
 
   function Manager() {
     var _this;
@@ -4903,9 +4876,9 @@ function (_React$Component) {
 
     _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "referenceNode", void 0);
+    defineProperty$3(assertThisInitialized(_this), "referenceNode", void 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setReferenceNode", function (newReferenceNode) {
+    defineProperty$3(assertThisInitialized(_this), "setReferenceNode", function (newReferenceNode) {
       if (newReferenceNode && _this.referenceNode !== newReferenceNode) {
         _this.referenceNode = newReferenceNode;
 
@@ -4979,7 +4952,7 @@ var initialArrowStyle = {};
 var InnerPopper =
 /*#__PURE__*/
 function (_React$Component) {
-  _inheritsLoose(InnerPopper, _React$Component);
+  inheritsLoose(InnerPopper, _React$Component);
 
   function InnerPopper() {
     var _this;
@@ -4990,18 +4963,18 @@ function (_React$Component) {
 
     _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
+    defineProperty$3(assertThisInitialized(_this), "state", {
       data: undefined,
       placement: undefined
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "popperInstance", void 0);
+    defineProperty$3(assertThisInitialized(_this), "popperInstance", void 0);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "popperNode", null);
+    defineProperty$3(assertThisInitialized(_this), "popperNode", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "arrowNode", null);
+    defineProperty$3(assertThisInitialized(_this), "arrowNode", null);
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setPopperNode", function (popperNode) {
+    defineProperty$3(assertThisInitialized(_this), "setPopperNode", function (popperNode) {
       if (!popperNode || _this.popperNode === popperNode) return;
       setRef(_this.props.innerRef, popperNode);
       _this.popperNode = popperNode;
@@ -5009,11 +4982,11 @@ function (_React$Component) {
       _this.updatePopperInstance();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setArrowNode", function (arrowNode) {
+    defineProperty$3(assertThisInitialized(_this), "setArrowNode", function (arrowNode) {
       _this.arrowNode = arrowNode;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateStateModifier", {
+    defineProperty$3(assertThisInitialized(_this), "updateStateModifier", {
       enabled: true,
       order: 900,
       fn: function fn(data) {
@@ -5028,13 +5001,13 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getOptions", function () {
+    defineProperty$3(assertThisInitialized(_this), "getOptions", function () {
       return {
         placement: _this.props.placement,
         eventsEnabled: _this.props.eventsEnabled,
         positionFixed: _this.props.positionFixed,
-        modifiers: _extends$1({}, _this.props.modifiers, {
-          arrow: _extends$1({}, _this.props.modifiers && _this.props.modifiers.arrow, {
+        modifiers: _extends_1({}, _this.props.modifiers, {
+          arrow: _extends_1({}, _this.props.modifiers && _this.props.modifiers.arrow, {
             enabled: !!_this.arrowNode,
             element: _this.arrowNode
           }),
@@ -5046,25 +5019,25 @@ function (_React$Component) {
       };
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getPopperStyle", function () {
-      return !_this.popperNode || !_this.state.data ? initialStyle : _extends$1({
+    defineProperty$3(assertThisInitialized(_this), "getPopperStyle", function () {
+      return !_this.popperNode || !_this.state.data ? initialStyle : _extends_1({
         position: _this.state.data.offsets.popper.position
       }, _this.state.data.styles);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getPopperPlacement", function () {
+    defineProperty$3(assertThisInitialized(_this), "getPopperPlacement", function () {
       return !_this.state.data ? undefined : _this.state.placement;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getArrowStyle", function () {
+    defineProperty$3(assertThisInitialized(_this), "getArrowStyle", function () {
       return !_this.arrowNode || !_this.state.data ? initialArrowStyle : _this.state.data.arrowStyles;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getOutOfBoundariesState", function () {
+    defineProperty$3(assertThisInitialized(_this), "getOutOfBoundariesState", function () {
       return _this.state.data ? _this.state.data.hide : undefined;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "destroyPopperInstance", function () {
+    defineProperty$3(assertThisInitialized(_this), "destroyPopperInstance", function () {
       if (!_this.popperInstance) return;
 
       _this.popperInstance.destroy();
@@ -5072,10 +5045,10 @@ function (_React$Component) {
       _this.popperInstance = null;
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updatePopperInstance", function () {
+    defineProperty$3(assertThisInitialized(_this), "updatePopperInstance", function () {
       _this.destroyPopperInstance();
 
-      var _assertThisInitialize = _assertThisInitialized(_assertThisInitialized(_this)),
+      var _assertThisInitialize = assertThisInitialized(_this),
           popperNode = _assertThisInitialize.popperNode;
 
       var referenceElement = _this.props.referenceElement;
@@ -5083,7 +5056,7 @@ function (_React$Component) {
       _this.popperInstance = new Popper$1(referenceElement, popperNode, _this.getOptions());
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scheduleUpdate", function () {
+    defineProperty$3(assertThisInitialized(_this), "scheduleUpdate", function () {
       if (_this.popperInstance) {
         _this.popperInstance.scheduleUpdate();
       }
@@ -5136,7 +5109,7 @@ function (_React$Component) {
   return InnerPopper;
 }(react.Component);
 
-_defineProperty(InnerPopper, "defaultProps", {
+defineProperty$3(InnerPopper, "defaultProps", {
   placement: 'bottom',
   eventsEnabled: true,
   referenceElement: undefined,
@@ -5144,10 +5117,10 @@ _defineProperty(InnerPopper, "defaultProps", {
 });
 function Popper(_ref) {
   var referenceElement = _ref.referenceElement,
-      props = _objectWithoutPropertiesLoose(_ref, ["referenceElement"]);
+      props = objectWithoutPropertiesLoose(_ref, ["referenceElement"]);
 
   return react.createElement(ManagerReferenceNodeContext.Consumer, null, function (referenceNode) {
-    return react.createElement(InnerPopper, _extends$1({
+    return react.createElement(InnerPopper, _extends_1({
       referenceElement: referenceElement !== undefined ? referenceElement : referenceNode
     }, props));
   });
@@ -5156,7 +5129,7 @@ function Popper(_ref) {
 var InnerReference =
 /*#__PURE__*/
 function (_React$Component) {
-  _inheritsLoose(InnerReference, _React$Component);
+  inheritsLoose(InnerReference, _React$Component);
 
   function InnerReference() {
     var _this;
@@ -5167,7 +5140,7 @@ function (_React$Component) {
 
     _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "refHandler", function (node) {
+    defineProperty$3(assertThisInitialized(_this), "refHandler", function (node) {
       setRef(_this.props.innerRef, node);
       safeInvoke(_this.props.setReferenceNode, node);
     });
@@ -5193,7 +5166,7 @@ function (_React$Component) {
 
 function Reference(props) {
   return react.createElement(ManagerReferenceNodeSetterContext.Consumer, null, function (setReferenceNode) {
-    return react.createElement(InnerReference, _extends$1({
+    return react.createElement(InnerReference, _extends_1({
       setReferenceNode: setReferenceNode
     }, props));
   });
@@ -5207,7 +5180,6 @@ function _interopRequireDefault(obj) {
 }
 
 module.exports = _interopRequireDefault;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
 });
 
 var hasClass_1 = createCommonjsModule(function (module, exports) {
@@ -7394,7 +7366,7 @@ var Popover = /** @class */ (function (_super) {
         // as JSX component instead of intrinsic element. but because of its
         // type, tsc actually recognizes that it is _any_ intrinsic element, so
         // it can typecheck the HTML props!!
-        var _b = this.props, className = _b.className, disabled = _b.disabled, fill = _b.fill, placement = _b.placement, _c = _b.position, position = _c === void 0 ? "auto" : _c;
+        var _b = this.props, className = _b.className, disabled = _b.disabled, fill = _b.fill, placement = _b.placement;
         var isOpen = this.state.isOpen;
         var wrapperTagName = this.props.wrapperTagName;
         if (fill) {
@@ -7410,7 +7382,9 @@ var Popover = /** @class */ (function (_super) {
             _a[FILL] = fill,
             _a));
         var wrapper = react.createElement(wrapperTagName, { className: wrapperClasses }, react.createElement(Reference, { innerRef: this.handleTargetRef }, this.renderTarget), react.createElement(Overlay, { autoFocus: this.props.autoFocus, backdropClassName: POPOVER_BACKDROP, backdropProps: this.props.backdropProps, canEscapeKeyClose: this.props.canEscapeKeyClose, canOutsideClickClose: this.props.interactionKind === PopoverInteractionKind.CLICK, className: this.props.portalClassName, enforceFocus: this.props.enforceFocus, hasBackdrop: this.props.hasBackdrop, isOpen: isOpen && !isContentEmpty, onClose: this.handleOverlayClose, onClosed: this.props.onClosed, onClosing: this.props.onClosing, onOpened: this.props.onOpened, onOpening: this.props.onOpening, transitionDuration: this.props.transitionDuration, transitionName: POPOVER, usePortal: this.props.usePortal, portalContainer: this.props.portalContainer },
-            react.createElement(Popper, { innerRef: this.handlePopoverRef, placement: placement !== null && placement !== void 0 ? placement : positionToPlacement(position), modifiers: this.getPopperModifiers() }, this.renderPopover)));
+            react.createElement(Popper, { innerRef: this.handlePopoverRef, 
+                // eslint-disable-next-line deprecation/deprecation
+                placement: placement !== null && placement !== void 0 ? placement : positionToPlacement(this.props.position), modifiers: this.getPopperModifiers() }, this.renderPopover)));
         return react.createElement(Manager, null, wrapper);
     };
     Popover.prototype.componentDidMount = function () {
@@ -7439,16 +7413,13 @@ var Popover = /** @class */ (function (_super) {
             console.warn(POPOVER_WARN_HAS_BACKDROP_INLINE);
         }
         if (props.hasBackdrop && props.interactionKind !== PopoverInteractionKind.CLICK) {
-            console.error(POPOVER_HAS_BACKDROP_INTERACTION);
-        }
-        if (props.placement !== undefined && props.position !== undefined) {
-            console.warn(POPOVER_WARN_PLACEMENT_AND_POSITION_MUTEX);
+            throw new Error(POPOVER_HAS_BACKDROP_INTERACTION);
         }
         var childrenCount = react.Children.count(props.children);
         var hasContentProp = props.content !== undefined;
         var hasTargetProp = props.target !== undefined;
         if (childrenCount === 0 && !hasTargetProp) {
-            console.error(POPOVER_REQUIRES_TARGET);
+            throw new Error(POPOVER_REQUIRES_TARGET);
         }
         if (childrenCount > 2) {
             console.warn(POPOVER_WARN_TOO_MANY_CHILDREN);
@@ -7553,8 +7524,9 @@ var Popover = /** @class */ (function (_super) {
         minimal: false,
         modifiers: {},
         openOnTargetFocus: true,
-        // N.B. we don't set a default for `placement` or `position` here because that would trigger
-        // a warning in validateProps if the other prop is specified by a user of this component
+        // N.B. we don't set a default for `placement` here because that would override
+        // the deprecated `position` prop
+        position: "auto",
         targetTagName: "span",
         transitionDuration: 300,
         usePortal: true,
@@ -7573,7 +7545,6 @@ var IconSvgPaths16 = {
     "add": ["M10.99 6.99h-2v-2c0-.55-.45-1-1-1s-1 .45-1 1v2h-2c-.55 0-1 .45-1 1s.45 1 1 1h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1zm-3-7c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.68 6-6 6z"],
     "add-column-left": ["M15 0H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-5 14H2V2h8v12zm4 0h-3V2h3v12zM4 9h1v1c0 .55.45 1 1 1s1-.45 1-1V9h1c.55 0 1-.45 1-1s-.45-1-1-1H7V6c0-.55-.45-1-1-1s-1 .45-1 1v1H4c-.55 0-1 .45-1 1s.45 1 1 1z"],
     "add-column-right": ["M8 9h1v1c0 .55.45 1 1 1s1-.45 1-1V9h1c.55 0 1-.45 1-1s-.45-1-1-1h-1V6c0-.55-.45-1-1-1s-1 .45-1 1v1H8c-.55 0-1 .45-1 1s.45 1 1 1zm7-9H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zM5 14H2V2h3v12zm9 0H6V2h8v12z"],
-    "add-location": ["M8 0a1 1 0 110 2 6 6 0 106 6 1 1 0 012 0 8 8 0 11-8-8zm0 5a3 3 0 110 6 3 3 0 010-6zm5-5a1 1 0 011 1v.999L15 2a1 1 0 010 2h-1v1a1 1 0 01-2 0V4h-1a1 1 0 010-2h1V1a1 1 0 011-1z"],
     "add-row-bottom": ["M6 11h1v1c0 .55.45 1 1 1s1-.45 1-1v-1h1c.55 0 1-.45 1-1s-.45-1-1-1H9V8c0-.55-.45-1-1-1s-1 .45-1 1v1H6c-.55 0-1 .45-1 1s.45 1 1 1zm9-11H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 14H2V6h12v8zm0-9H2V2h12v3z"],
     "add-row-top": ["M15 0H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 14H2v-3h12v3zm0-4H2V2h12v8zM6 7h1v1c0 .55.45 1 1 1s1-.45 1-1V7h1c.55 0 1-.45 1-1s-.45-1-1-1H9V4c0-.55-.45-1-1-1s-1 .45-1 1v1H6c-.55 0-1 .45-1 1s.45 1 1 1z"],
     "add-to-artifact": ["M14 4.01h-1v-1c0-.55-.45-1-1-1s-1 .45-1 1v1h-1c-.55 0-1 .45-1 1s.45 1 1 1h1v1c0 .55.45 1 1 1s1-.45 1-1v-1h1c.55 0 1-.45 1-1 0-.56-.45-1-1-1zm-13 2h6c.55 0 1-.45 1-1s-.45-1-1-1H1c-.55 0-1 .45-1 1s.45 1 1 1zm8 6H1c-.55 0-1 .45-1 1s.45 1 1 1h8c.55 0 1-.45 1-1 0-.56-.45-1-1-1zm0-4H1c-.55 0-1 .45-1 1s.45 1 1 1h8c.55 0 1-.45 1-1 0-.56-.45-1-1-1z"],
@@ -7989,10 +7960,7 @@ var IconSvgPaths16 = {
     "series-filtered": ["M9.29 9.3c.3.62.8 1.12 1.42 1.41l-1 1c-.18.18-.43.29-.71.29s-.53-.11-.71-.3L5 8.41l-3 3V13h13c.55 0 1 .45 1 1s-.45 1-1 1H1c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1s1 .45 1 1v4.59l2.29-2.3C4.47 6.11 4.72 6 5 6s.53.11.71.29L9 9.59l.29-.29zM15.48 1c.31 0 .52.26.52.57 0 .16-.06.3-.17.41l-2.86 2.73v2.63c0 .16-.06.3-.17.41l-.82 1.1c-.1.1-.25.17-.41.17-.31 0-.57-.26-.57-.57V4.71L8.17 1.98A.566.566 0 018 1.57c0-.31.26-.57.57-.57h6.91z"],
     "series-search": ["M9.6 8.94a4.937 4.937 0 001.82.01c.1-.01.22-.04.39-.08l.23-.07c.04-.01.08-.02.11-.04l.22.22-2.7 2.72c-.18.19-.43.3-.71.3s-.53-.11-.71-.3L4.98 8.41l-2.99 3V13h12.94c.55 0 1 .45 1 1s-.45 1-1 1H1c-.55 0-1-.45-1-1V3.99c0-.55.45-1 1-1s1 .45 1 1v4.59l2.28-2.3c.17-.18.42-.29.7-.29s.53.11.7.29l3.28 3.3.64-.64zm6.22-.41c.1.12.17.27.18.44 0 .34-.27.61-.61.61a.57.57 0 01-.43-.18l-2.24-2.25c-.13.08-.26.16-.4.23-.02.01-.05.02-.07.03-.14.06-.27.12-.42.17h-.01c-.14.05-.29.08-.44.11-.04.01-.08.02-.11.02-.15.02-.3.04-.46.04-1.85 0-3.35-1.51-3.35-3.37S8.96 1.01 10.81 1c1.85 0 3.35 1.51 3.35 3.37 0 .16-.02.31-.04.47-.01.04-.01.07-.02.11-.02.15-.05.29-.1.44v.01c-.05.15-.11.28-.17.42-.01.02-.02.05-.03.07-.07.14-.14.27-.23.4l2.25 2.24zm-5.01-1.94c1.22 0 2.21-.99 2.21-2.22 0-1.23-.99-2.22-2.21-2.22S8.6 3.14 8.6 4.37c0 1.22.99 2.22 2.21 2.22z"],
     "settings": ["M3 1c0-.55-.45-1-1-1S1 .45 1 1v3h2V1zm0 4H1c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1zm12-4c0-.55-.45-1-1-1s-1 .45-1 1v2h2V1zM9 1c0-.55-.45-1-1-1S7 .45 7 1v6h2V1zM1 15c0 .55.45 1 1 1s1-.45 1-1v-5H1v5zM15 4h-2c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 11c0 .55.45 1 1 1s1-.45 1-1V9h-2v6zM9 8H7c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-2 7c0 .55.45 1 1 1s1-.45 1-1v-2H7v2z"],
-    "shapes": ["M5.92 8.139c.44-.282 1.006-.121 1.264.358l2.689 4.988c.083.155.127.33.127.51C10 14.55 9.587 15 9.077 15H3.924a.864.864 0 01-.438-.12c-.449-.263-.617-.873-.376-1.362l2.465-4.989c.08-.162.2-.297.346-.39zM12 4a3 3 0 110 6 3 3 0 010-6zM6 1a1 1 0 011 1v4a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1h4z"],
     "share": ["M10.99 13.99h-9v-9h4.76l2-2H.99c-.55 0-1 .45-1 1v11c0 .55.45 1 1 1h11c.55 0 1-.45 1-1V7.24l-2 2v4.75zm4-14h-5c-.55 0-1 .45-1 1s.45 1 1 1h2.59L7.29 7.28a1 1 0 00-.3.71 1.003 1.003 0 001.71.71l5.29-5.29V6c0 .55.45 1 1 1s1-.45 1-1V1c0-.56-.45-1.01-1-1.01z"],
-    "shared-filter": ["M13.843 15.163c.232.53.138.837.138.837H6.017s-.088-.308.138-.837c.226-.53 1.338-.88 2.079-1.206.735-.332.66-.53.685-.8 0-.03.006-.068.006-.105a2.171 2.171 0 01-.61-.892v-.006s-.006-.006-.006-.012c-.025-.074-.056-.16-.075-.24-.176-.031-.276-.222-.314-.394a.8.8 0 01-.1-.437c.025-.253.131-.37.244-.419v-.037c0-.313.032-.775.088-1.07A1.835 1.835 0 018.85 8.37c.315-.24.76-.37 1.156-.37.396 0 .842.13 1.156.37.301.233.534.56.64.935.026.08.045.166.057.246.057.295.088.75.088 1.064v.043c.113.05.214.167.232.413a.75.75 0 01-.1.437c-.038.172-.132.357-.301.387a1.77 1.77 0 01-.076.24.136.136 0 01-.006.025 2.346 2.346 0 01-.597.892v.111c.025.277-.075.474.666.8.741.326 1.853.67 2.079 1.2z",
-        "M14.852 15h1.131s.083-.27-.12-.732c-.16-.373-.82-.641-1.411-.88a15.328 15.328 0 01-.409-.17c-.565-.25-.57-.412-.577-.61-.001-.03-.002-.06-.005-.09v-.097c.22-.2.401-.469.522-.781 0 0 .005-.016.005-.022.028-.07.05-.14.066-.21.149-.026.231-.188.264-.339a.655.655 0 00.088-.382c-.016-.215-.104-.318-.203-.36v-.039c0-.274-.028-.673-.077-.931a1.598 1.598 0 00-.61-1.034 1.736 1.736 0 00-1.285-.3c.236.285.42.622.529.996.038.124.065.248.083.36.048.257.079.578.093.867a1.736 1.736 0 01.08 1.624 1.65 1.65 0 01-.217.453 1.42 1.42 0 01-.176.209c-.08.204-.178.4-.292.585l.202.083c.285.117.64.261.9.387.226.11.475.245.698.414.213.161.476.408.63.764.034.08.065.159.091.235zM12.14 14.12l.09.037zM11 1c.55 0 1 .45 1 1 0 .28-.11.53-.29.7L8 6.41v1.374a2.813 2.813 0 00-.833 1.589 6.925 6.925 0 00-.092.86 1.64 1.64 0 00-.25.739l-.001.004c-.02.217.006.413.046.573L5.71 12.71A1.003 1.003 0 014 12V6.41L.29 2.71A1.003 1.003 0 011 1h10z"],
     "shield": ["M8 16c4.667-3.048 7-7.238 7-12.571-1.556 0-3.889-1.143-7-3.429-3.111 2.286-5.444 3.429-7 3.429C1 8.762 3.333 12.952 8 16zM8 2.121c2.005 1.388 3.715 2.304 5.186 2.735-.342 3.702-2.05 6.683-5.186 9.038V2.121z"],
     "shop": ["M3 2h10c.55 0 1-.45 1-1s-.45-1-1-1H3c-.55 0-1 .45-1 1s.45 1 1 1zm9 11H4v-3H2v5c0 .55.45 1 1 1h10c.55 0 1-.45 1-1v-5h-2v3zm4-6l-1.01-3.17C14.9 3.36 14.49 3 14 3H2c-.49 0-.9.36-.98.83L.01 7H0c0 1.1.9 2 2 2s2-.9 2-2c0 1.1.9 2 2 2s2-.9 2-2c0 1.1.9 2 2 2s2-.9 2-2c0 1.1.9 2 2 2s2-.9 2-2z"],
     "shopping-cart": ["M14 10H7.72l-.33-1H13c.39 0 .72-.23.89-.56h.01l2-4h-.01c.06-.13.11-.28.11-.44 0-.55-.45-1-1-1H5.39l-.44-1.32h-.01C4.8 1.29 4.44 1 4 1H1c-.55 0-1 .45-1 1s.45 1 1 1h2.28l2.33 7H4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2h6c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2zM6.05 5h7.33l-1 2H6.72l-.67-2z"],
@@ -8100,7 +8068,6 @@ var IconSvgPaths20 = {
     "add": ["M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm5-9h-4V5c0-.55-.45-1-1-1s-1 .45-1 1v4H5c-.55 0-1 .45-1 1s.45 1 1 1h4v4c0 .55.45 1 1 1s1-.45 1-1v-4h4c.55 0 1-.45 1-1s-.45-1-1-1z"],
     "add-column-left": ["M4 11h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1H8V7c0-.55-.45-1-1-1s-1 .45-1 1v2H4c-.55 0-1 .45-1 1s.45 1 1 1zM19 0H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-7 18H2V2h10v16zm6 0h-5V2h5v16z"],
     "add-column-right": ["M10 11h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1h-2V7c0-.55-.45-1-1-1s-1 .45-1 1v2h-2c-.55 0-1 .45-1 1s.45 1 1 1zm9-11H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zM7 18H2V2h5v16zm11 0H8V2h10v16z"],
-    "add-location": ["M10 0a1 1 0 010 2 8 8 0 108 8 1 1 0 012 0c0 5.523-4.477 10-10 10S0 15.523 0 10 4.477 0 10 0zm0 6a4 4 0 110 8 4 4 0 010-8zm6-6c.6 0 1 .4 1 1v2h2c.6 0 1 .4 1 1s-.4 1-1 1h-2v2c0 .6-.4 1-1 1s-1-.4-1-1V5h-2c-.6 0-1-.4-1-1 0-.5.4-1 1-1h2V1c0-.6.4-1 1-1z"],
     "add-row-bottom": ["M19 0H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 18H2V8h16v10zm0-11H2V2h16v5zM7 14h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1h-2v-2c0-.55-.45-1-1-1s-1 .45-1 1v2H7c-.55 0-1 .45-1 1s.45 1 1 1z"],
     "add-row-top": ["M7 8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h2c.55 0 1-.45 1-1s-.45-1-1-1h-2V4c0-.55-.45-1-1-1s-1 .45-1 1v2H7c-.55 0-1 .45-1 1s.45 1 1 1zm12-8H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 18H2v-5h16v5zm0-6H2V2h16v10z"],
     "add-to-artifact": ["M13 12H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zm0 4H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zM1 6h9c.55 0 1-.45 1-1s-.45-1-1-1H1c-.55 0-1 .45-1 1s.45 1 1 1zm12 2H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zm6-4h-2V2c0-.55-.45-1-1-1s-1 .45-1 1v2h-2c-.55 0-1 .45-1 1s.45 1 1 1h2v2c0 .55.45 1 1 1s1-.45 1-1V6h2c.55 0 1-.45 1-1s-.45-1-1-1z"],
@@ -8526,11 +8493,7 @@ var IconSvgPaths20 = {
     "series-filtered": ["M12.14 10.45c.21.67.65 1.23 1.22 1.61l-1.65 1.65c-.18.18-.43.29-.71.29s-.53-.11-.71-.3L7 10.41l-5 5V17h17c.55 0 1 .45 1 1s-.45 1-1 1H1a.998.998 0 01-1-1V4c0-.55.45-1 1-1s1 .45 1 1v8.59l4.29-4.3C6.47 8.11 6.72 8 7 8s.53.11.71.29l3.29 3.3 1.14-1.14zM19.35 1a.642.642 0 01.46 1.1l-3.03 3.03v2.95c0 .18-.07.34-.19.46l-1.28 1.29c-.11.1-.27.17-.45.17-.35 0-.64-.29-.64-.64V5.13L11.19 2.1a.642.642 0 01.45-1.1h7.71z"],
     "series-search": ["M11.28 11.31l-.28.28-3.29-3.3C7.53 8.11 7.28 8 7 8s-.53.11-.71.29L2 12.59V4c0-.55-.45-1-1-1s-1 .45-1 1v14a.998.998 0 001 1h18c.55 0 1-.45 1-1s-.45-1-1-1H2v-1.59l5-5 3.29 3.29c.18.19.43.3.71.3s.53-.11.71-.29l2.09-2.09c-.17.02-.34.02-.51.02-.7 0-1.38-.12-2.01-.33zm-.93-6c0-1.62 1.31-2.93 2.93-2.93s2.93 1.31 2.93 2.93-1.31 2.93-2.93 2.93-2.93-1.31-2.93-2.93zm6.47 2.43c.11-.17.21-.33.29-.51.01-.03.03-.06.04-.09.08-.18.16-.35.21-.54.06-.2.1-.38.14-.58.01-.05.01-.09.02-.14.03-.2.05-.39.05-.6 0-2.37-1.93-4.3-4.3-4.3-2.37.01-4.3 1.93-4.3 4.31s1.93 4.3 4.3 4.3c.21 0 .4-.02.6-.05.04 0 .09-.01.14-.02.2-.03.38-.08.57-.14.2-.06.37-.14.55-.21.03-.01.06-.03.09-.04.18-.09.34-.19.51-.29l2.87 2.87c.14.14.33.22.56.22.43 0 .78-.35.78-.78a.938.938 0 00-.23-.56l-2.89-2.85z"],
     "settings": ["M4 1c0-.55-.45-1-1-1S2 .45 2 1v5h2V1zM2 19c0 .55.45 1 1 1s1-.45 1-1v-6H2v6zm9-18c0-.55-.45-1-1-1S9 .45 9 1v8h2V1zm7 0c0-.55-.45-1-1-1s-1 .45-1 1v3h2V1zM9 19c0 .55.45 1 1 1s1-.45 1-1v-3H9v3zm9-14h-2c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1zm-2 14c0 .55.45 1 1 1s1-.45 1-1v-8h-2v8zM4 7H2c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1zm7 3H9c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1z"],
-    "shapes": ["M7.88 11.12a.958.958 0 011.277.33l3.719 6.207c.081.136.124.29.124.447 0 .495-.419.896-.936.896H4.936a.969.969 0 01-.436-.103.878.878 0 01-.392-1.21l3.409-6.208a.915.915 0 01.362-.36zM15 5a4 4 0 110 8 4 4 0 010-8zM8 1a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1h6z"],
     "share": ["M15 18H2V5h8.76l2-2H1c-.55 0-1 .45-1 1v15c0 .55.45 1 1 1h15c.55 0 1-.45 1-1V7.24l-2 2V18zm4-18h-7c-.55 0-1 .45-1 1s.45 1 1 1h4.59l-7.3 7.29a1.003 1.003 0 001.42 1.42L18 3.41V8c0 .55.45 1 1 1s1-.45 1-1V1c0-.55-.45-1-1-1z"],
-    "shared-filter": ["M13.917 17.209c1.01.454 2.543.928 2.873 1.643.31.722.186 1.148.186 1.148H6.026s-.13-.426.186-1.148 1.842-1.203 2.86-1.65c1.017-.447.914-.722.948-1.093 0-.048.007-.097.007-.145a3.067 3.067 0 01-.839-1.237l-.007-.007c0-.007-.006-.014-.006-.02a1.757 1.757 0 01-.11-.337c-.234-.042-.372-.296-.426-.537a1.045 1.045 0 01-.138-.598c.034-.35.179-.509.337-.57v-.056c0-.44.034-1.065.117-1.478a2.508 2.508 0 01.962-1.623c.426-.33 1.038-.501 1.58-.501.544 0 1.155.172 1.588.502a2.496 2.496 0 01.963 1.622c.075.413.117 1.045.117 1.478v.062c.15.062.288.22.323.564.02.268-.083.502-.138.598-.048.234-.185.488-.42.537a2.635 2.635 0 01-.116.364 3.094 3.094 0 01-.818 1.224c0 .055 0 .11.007.158.034.378-.103.653.914 1.1z",
-        "M14.976 16.57c-.24-.099-.455-.186-.65-.273l-.007-.004a3.801 3.801 0 01-.194-.091c.224-.288.41-.609.554-.946l.001-.002.013-.033c.018-.043.036-.087.052-.13l.011-.027.016-.04c.105-.092.19-.19.256-.284.129-.184.213-.38.265-.563.105-.226.225-.592.192-1.026l-.001-.011-.002-.011a1.854 1.854 0 00-.325-.91 9.924 9.924 0 00-.12-1.246 3.09 3.09 0 00-.106-.475l-.001-.006a3.543 3.543 0 00-.763-1.353c.27-.092.56-.139.83-.139.495 0 1.05.156 1.444.456a2.269 2.269 0 01.875 1.475c.069.375.106.95.106 1.344v.056c.138.056.263.2.294.513.019.244-.075.456-.125.543-.044.213-.169.444-.381.488-.025.1-.056.206-.094.3a2.815 2.815 0 01-.756 1.144c0 .05 0 .1.006.144.004.043.006.086.007.127.01.283.018.518.824.872.192.087.404.173.623.263.83.34 1.752.717 1.99 1.231.28.657.168 1.044.168 1.044h-2.081a3.864 3.864 0 00-.188-.542l-.005-.013-.006-.012c-.183-.397-.491-.681-.76-.88a5.614 5.614 0 00-.896-.522 17.36 17.36 0 00-.916-.4l-.15-.061zM14 1c.55 0 1 .45 1 1 0 .28-.11.53-.29.7L10 7.41v.897a3.182 3.182 0 00-.69.4 3.508 3.508 0 00-1.343 2.259c-.07.37-.107.836-.122 1.237a1.836 1.836 0 00-.339.926c-.046.458.09.84.195 1.06.053.178.138.376.27.56.055.08.125.162.21.242v.143l.053.052L6.71 16.71A1.003 1.003 0 015 16V7.41L.29 2.71A1.003 1.003 0 011 1h13z",
-        "M9.059 14.361c-.23-.044-.366-.296-.42-.535a1.045 1.045 0 01-.138-.598c.034-.35.179-.509.337-.57v-.056c0-.44.034-1.065.117-1.478A2.508 2.508 0 0110 9.441V13c0 .28-.11.53-.29.71l-.651.651z"],
     "shield": ["M10 20c6-3.81 9-9.048 9-15.714-2 0-5-1.429-9-4.286-4 2.857-7 4.286-9 4.286C1 10.952 4 16.19 10 20zm0-17.348c2.577 1.734 4.776 2.88 6.667 3.419-.44 4.627-2.636 8.353-6.667 11.297V2.652z"],
     "shop": ["M17.94 3.63c-.01-.02-.01-.03-.02-.04l-.03-.09h-.01c-.18-.3-.49-.5-.86-.5h-14c-.42 0-.77.25-.92.61L0 8.5h.02a2.5 2.5 0 005 0 2.5 2.5 0 005 0 2.5 2.5 0 005 0 2.5 2.5 0 005 0l-2.08-4.87zM3.02 2h14c.55 0 1-.45 1-1s-.45-1-1-1h-14c-.55 0-1 .45-1 1s.44 1 1 1zm13 14h-12v-4h-2v7c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-7h-2v4z"],
     "shopping-cart": ["M18 14H8.72l-.67-2H17c.44 0 .8-.29.94-.69h.01l2-6h-.01c.03-.1.06-.2.06-.31 0-.55-.45-1-1-1H5.39l-.44-1.32h-.01C4.8 2.29 4.44 2 4 2H1c-.55 0-1 .45-1 1s.45 1 1 1h2.28l3.33 10H5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2h9c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2zM6.05 6h11.56l-1.33 4H7.39L6.05 6z"],
@@ -9967,6 +9930,10 @@ var _react2 = _interopRequireDefault(react);
 
 
 
+var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
 var _LocaleUtils2 = _interopRequireDefault(LocaleUtils);
 
 
@@ -10016,7 +9983,7 @@ var Caption = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: classNames.caption, role: 'heading', 'aria-live': 'polite' },
+        { className: classNames.caption, role: 'heading' },
         _react2.default.createElement(
           'div',
           { onClick: onClick, onKeyUp: this.handleKeyUp },
@@ -10029,6 +9996,16 @@ var Caption = function (_Component) {
   return Caption;
 }(react.Component);
 
+Caption.propTypes = {
+  date: _propTypes2.default.instanceOf(Date),
+  months: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  locale: _propTypes2.default.string,
+  localeUtils: _propTypes2.default.object,
+  onClick: _propTypes2.default.func,
+  classNames: _propTypes2.default.shape({
+    caption: _propTypes2.default.string.isRequired
+  }).isRequired
+};
 Caption.defaultProps = {
   localeUtils: _LocaleUtils2.default
 };
@@ -10086,6 +10063,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
+
+
+
+var _propTypes2 = _interopRequireDefault(propTypes);
 
 
 
@@ -10213,6 +10194,24 @@ var Navbar = function (_Component) {
   return Navbar;
 }(react.Component);
 
+Navbar.propTypes = {
+  classNames: _propTypes2.default.shape({
+    navBar: _propTypes2.default.string.isRequired,
+    navButtonPrev: _propTypes2.default.string.isRequired,
+    navButtonNext: _propTypes2.default.string.isRequired,
+    navButtonInteractionDisabled: _propTypes2.default.string.isRequired
+  }),
+  className: _propTypes2.default.string,
+  showPreviousButton: _propTypes2.default.bool,
+  showNextButton: _propTypes2.default.bool,
+  onPreviousClick: _propTypes2.default.func,
+  onNextClick: _propTypes2.default.func,
+  dir: _propTypes2.default.string,
+  labels: _propTypes2.default.shape({
+    previousMonth: _propTypes2.default.string.isRequired,
+    nextMonth: _propTypes2.default.string.isRequired
+  })
+};
 Navbar.defaultProps = {
   classNames: _classNames2.default,
   dir: 'ltr',
@@ -10238,6 +10237,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
+
+
+
+var _propTypes2 = _interopRequireDefault(propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10306,6 +10309,21 @@ var Weekdays = function (_Component) {
   return Weekdays;
 }(react.Component);
 
+Weekdays.propTypes = {
+  classNames: _propTypes2.default.shape({
+    weekday: _propTypes2.default.string.isRequired,
+    weekdays: _propTypes2.default.string.isRequired,
+    weekdaysRow: _propTypes2.default.string.isRequired
+  }).isRequired,
+
+  firstDayOfWeek: _propTypes2.default.number.isRequired,
+  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  showWeekNumbers: _propTypes2.default.bool,
+  locale: _propTypes2.default.string.isRequired,
+  localeUtils: _propTypes2.default.object.isRequired,
+  weekdayElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(_react2.default.Component)])
+};
 exports.default = Weekdays;
 
 });
@@ -10742,6 +10760,10 @@ var _react2 = _interopRequireDefault(react);
 
 
 
+var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
 
 
 
@@ -10879,6 +10901,31 @@ var Day = function (_Component) {
   return Day;
 }(react.Component);
 
+Day.propTypes = {
+  classNames: _propTypes2.default.shape({
+    day: _propTypes2.default.string.isRequired
+  }).isRequired,
+
+  day: _propTypes2.default.instanceOf(Date).isRequired,
+  children: _propTypes2.default.node.isRequired,
+
+  ariaDisabled: _propTypes2.default.bool,
+  ariaLabel: _propTypes2.default.string,
+  ariaSelected: _propTypes2.default.bool,
+  empty: _propTypes2.default.bool,
+  modifiers: _propTypes2.default.object,
+  modifiersStyles: _propTypes2.default.object,
+  onClick: _propTypes2.default.func,
+  onKeyDown: _propTypes2.default.func,
+  onMouseEnter: _propTypes2.default.func,
+  onMouseLeave: _propTypes2.default.func,
+  onMouseDown: _propTypes2.default.func,
+  onMouseUp: _propTypes2.default.func,
+  onTouchEnd: _propTypes2.default.func,
+  onTouchStart: _propTypes2.default.func,
+  onFocus: _propTypes2.default.func,
+  tabIndex: _propTypes2.default.number
+};
 Day.defaultProps = {
   tabIndex: -1
 };
@@ -10986,6 +11033,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
+
+
+
+var _propTypes2 = _interopRequireDefault(propTypes);
 
 
 
@@ -11175,6 +11226,54 @@ var Month = function (_Component) {
   return Month;
 }(react.Component);
 
+Month.propTypes = {
+  classNames: _propTypes2.default.shape({
+    body: _propTypes2.default.string.isRequired,
+    month: _propTypes2.default.string.isRequired,
+    outside: _propTypes2.default.string.isRequired,
+    today: _propTypes2.default.string.isRequired,
+    week: _propTypes2.default.string.isRequired,
+    weekNumber: _propTypes2.default.string.isRequired,
+    disabled: _propTypes2.default.string.isRequired,
+    selected: _propTypes2.default.string.isRequired
+  }).isRequired,
+  tabIndex: _propTypes2.default.number,
+
+  month: _propTypes2.default.instanceOf(Date).isRequired,
+  months: _propTypes2.default.arrayOf(_propTypes2.default.string),
+
+  modifiersStyles: _propTypes2.default.object,
+
+  showWeekDays: _propTypes2.default.bool,
+  showOutsideDays: _propTypes2.default.bool,
+
+  renderDay: _propTypes2.default.func.isRequired,
+  renderWeek: _propTypes2.default.func.isRequired,
+
+  captionElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(_react2.default.Component)]).isRequired,
+  weekdayElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(_react2.default.Component)]),
+
+  fixedWeeks: _propTypes2.default.bool,
+  showWeekNumbers: _propTypes2.default.bool,
+
+  locale: _propTypes2.default.string.isRequired,
+  localeUtils: _propTypes2.default.object.isRequired,
+  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  firstDayOfWeek: _propTypes2.default.number.isRequired,
+
+  onCaptionClick: _propTypes2.default.func,
+  onDayClick: _propTypes2.default.func,
+  onDayFocus: _propTypes2.default.func,
+  onDayKeyDown: _propTypes2.default.func,
+  onDayMouseEnter: _propTypes2.default.func,
+  onDayMouseLeave: _propTypes2.default.func,
+  onDayMouseDown: _propTypes2.default.func,
+  onDayMouseUp: _propTypes2.default.func,
+  onDayTouchEnd: _propTypes2.default.func,
+  onDayTouchStart: _propTypes2.default.func,
+  onWeekClick: _propTypes2.default.func
+};
 exports.default = Month;
 
 });
@@ -11190,6 +11289,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
+
+
+
+var _propTypes2 = _interopRequireDefault(propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11252,6 +11355,15 @@ var Weekday = function (_Component) {
   return Weekday;
 }(react.Component);
 
+Weekday.propTypes = {
+  weekday: _propTypes2.default.number,
+  className: _propTypes2.default.string,
+  locale: _propTypes2.default.string,
+  localeUtils: _propTypes2.default.object,
+
+  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string)
+};
 exports.default = Weekday;
 
 });
@@ -11270,6 +11382,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
+
+
+
+var _propTypes2 = _interopRequireDefault(propTypes);
 
 
 
@@ -11793,6 +11909,97 @@ var DayPicker = exports.DayPicker = function (_Component) {
   return DayPicker;
 }(react.Component);
 
+DayPicker.propTypes = {
+  // Rendering months
+  initialMonth: _propTypes2.default.instanceOf(Date),
+  month: _propTypes2.default.instanceOf(Date),
+  numberOfMonths: _propTypes2.default.number,
+  fromMonth: _propTypes2.default.instanceOf(Date),
+  toMonth: _propTypes2.default.instanceOf(Date),
+  canChangeMonth: _propTypes2.default.bool,
+  reverseMonths: _propTypes2.default.bool,
+  pagedNavigation: _propTypes2.default.bool,
+  todayButton: _propTypes2.default.string,
+  showWeekNumbers: _propTypes2.default.bool,
+  showWeekDays: _propTypes2.default.bool,
+
+  // Modifiers
+  selectedDays: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.func, _propTypes2.default.array]),
+  disabledDays: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.func, _propTypes2.default.array]),
+
+  modifiers: _propTypes2.default.object,
+  modifiersStyles: _propTypes2.default.object,
+
+  // Localization
+  dir: _propTypes2.default.string,
+  firstDayOfWeek: _propTypes2.default.oneOf([0, 1, 2, 3, 4, 5, 6]),
+  labels: _propTypes2.default.shape({
+    nextMonth: _propTypes2.default.string.isRequired,
+    previousMonth: _propTypes2.default.string.isRequired
+  }),
+  locale: _propTypes2.default.string,
+  localeUtils: _propTypes2.default.shape({
+    formatMonthTitle: _propTypes2.default.func,
+    formatWeekdayShort: _propTypes2.default.func,
+    formatWeekdayLong: _propTypes2.default.func,
+    getFirstDayOfWeek: _propTypes2.default.func
+  }),
+  months: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
+  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string),
+
+  // Customization
+  showOutsideDays: _propTypes2.default.bool,
+  enableOutsideDaysClick: _propTypes2.default.bool,
+  fixedWeeks: _propTypes2.default.bool,
+
+  // CSS and HTML
+  classNames: _propTypes2.default.shape({
+    body: _propTypes2.default.string,
+    container: _propTypes2.default.string,
+    day: _propTypes2.default.string.isRequired,
+    disabled: _propTypes2.default.string.isRequired,
+    footer: _propTypes2.default.string,
+    interactionDisabled: _propTypes2.default.string,
+    months: _propTypes2.default.string,
+    month: _propTypes2.default.string,
+    navBar: _propTypes2.default.string,
+    outside: _propTypes2.default.string.isRequired,
+    selected: _propTypes2.default.string.isRequired,
+    today: _propTypes2.default.string.isRequired,
+    todayButton: _propTypes2.default.string,
+    week: _propTypes2.default.string,
+    wrapper: _propTypes2.default.string
+  }),
+  className: _propTypes2.default.string,
+  containerProps: _propTypes2.default.object,
+  tabIndex: _propTypes2.default.number,
+
+  // Custom elements
+  renderDay: _propTypes2.default.func,
+  renderWeek: _propTypes2.default.func,
+  weekdayElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(react.Component)]),
+  navbarElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(react.Component)]),
+  captionElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(react.Component)]),
+
+  // Events
+  onBlur: _propTypes2.default.func,
+  onFocus: _propTypes2.default.func,
+  onKeyDown: _propTypes2.default.func,
+  onDayClick: _propTypes2.default.func,
+  onDayKeyDown: _propTypes2.default.func,
+  onDayMouseEnter: _propTypes2.default.func,
+  onDayMouseLeave: _propTypes2.default.func,
+  onDayMouseDown: _propTypes2.default.func,
+  onDayMouseUp: _propTypes2.default.func,
+  onDayTouchStart: _propTypes2.default.func,
+  onDayTouchEnd: _propTypes2.default.func,
+  onDayFocus: _propTypes2.default.func,
+  onMonthChange: _propTypes2.default.func,
+  onCaptionClick: _propTypes2.default.func,
+  onWeekClick: _propTypes2.default.func,
+  onTodayButtonClick: _propTypes2.default.func
+};
 DayPicker.defaultProps = {
   classNames: _classNames2.default,
   tabIndex: 0,
@@ -12617,16 +12824,16 @@ var DatePicker = /** @class */ (function (_super) {
     DatePicker.prototype.validateProps = function (props) {
         var defaultValue = props.defaultValue, initialMonth = props.initialMonth, maxDate = props.maxDate, minDate = props.minDate, value = props.value;
         if (defaultValue != null && !isDayInRange(defaultValue, [minDate, maxDate])) {
-            console.error(DATEPICKER_DEFAULT_VALUE_INVALID);
+            throw new Error(DATEPICKER_DEFAULT_VALUE_INVALID);
         }
         if (initialMonth != null && !isMonthInRange(initialMonth, [minDate, maxDate])) {
-            console.error(DATEPICKER_INITIAL_MONTH_INVALID);
+            throw new Error(DATEPICKER_INITIAL_MONTH_INVALID);
         }
         if (maxDate != null && minDate != null && maxDate < minDate && !areSameDay(maxDate, minDate)) {
-            console.error(DATEPICKER_MAX_DATE_INVALID);
+            throw new Error(DATEPICKER_MAX_DATE_INVALID);
         }
         if (value != null && !isDayInRange(value, [minDate, maxDate])) {
-            console.error(DATEPICKER_VALUE_INVALID);
+            throw new Error(DATEPICKER_VALUE_INVALID);
         }
     };
     DatePicker.prototype.renderOptionsBar = function () {

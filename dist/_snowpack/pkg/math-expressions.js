@@ -1,5 +1,5 @@
-import { g as global } from './common/_polyfill-node_global-a48e63f2.js';
-import { B as Buffer } from './common/_polyfill-node_buffer-a4f325bf.js';
+import { g as global } from './common/polyfill-node_global-a90d30ee.js';
+import { B as Buffer } from './common/polyfill-node_buffer-f61935e6.js';
 import { p as process } from './common/process-e9e98960.js';
 
 const get_tree = function (expr_or_tree) {

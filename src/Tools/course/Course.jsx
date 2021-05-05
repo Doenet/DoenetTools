@@ -181,7 +181,7 @@ export default function Course(props) {
   }
   let breadcrumbContainer = null;
   if (routePathDriveId) {
-    breadcrumbContainer = <BreadcrumbContainer />;
+    breadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main"/>;
   }
 
   const setEnrollment = (e) => {
@@ -261,7 +261,7 @@ export default function Course(props) {
           style={{ marginBottom: '40px', height: '100vh' }}
           onClick={useOutsideDriveSelector}
         >
-          <Drive driveId={routePathDriveId} foldersOnly={true} />
+          <Drive driveId={routePathDriveId} foldersOnly={true} drivePathSyncKey="main"/>
         </div>
       </navPanel>
 
@@ -285,6 +285,7 @@ export default function Course(props) {
                   subTypes={['Administrator']}
                   // types={['content','course']}
                   urlClickBehavior="select"
+                  drivePathSyncKey="main"
                   doenetMLDoubleClickCallback={(info) => {
                     let isAssignment =
                       info.item.isAssignment === '0' ? 'content' : 'assignment';
@@ -309,6 +310,7 @@ export default function Course(props) {
                 routePathDriveId={routePathDriveId}
                 isOneDriveSelect={true}
                 types={['course']}
+                drivePathSyncKey="main"
                 subTypes={['Administrator']}
                 driveDoubleClickCallback={({ item }) => {
                   DriveCardCallBack({ item });
@@ -319,6 +321,7 @@ export default function Course(props) {
                 routePathDriveId={routePathDriveId}
                 isOneDriveSelect={true}
                 types={['course']}
+                drivePathSyncKey="main"
                 subTypes={['Student']}
                 driveDoubleClickCallback={({ item }) => {
                   DriveCardCallBack({ item });

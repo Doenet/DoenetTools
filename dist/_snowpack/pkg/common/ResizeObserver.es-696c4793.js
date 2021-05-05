@@ -1,4 +1,4 @@
-import { g as global } from './_polyfill-node_global-a48e63f2.js';
+import { g as global } from './polyfill-node_global-a90d30ee.js';
 
 /**
  * A collection of shims that provide minimal functionality of the ES6 collections.

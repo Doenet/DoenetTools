@@ -1,7 +1,6 @@
-import { B as Buffer } from './common/_polyfill-node_buffer-a4f325bf.js';
-import { g as global } from './common/_polyfill-node_global-a48e63f2.js';
+import { B as Buffer } from './common/polyfill-node_buffer-f61935e6.js';
+import { g as global } from './common/polyfill-node_global-a90d30ee.js';
 import { p as process, n as nextTick } from './common/process-e9e98960.js';
-import { b as getDefaultExportFromNamespaceIfNotNamed } from './common/_commonjsHelpers-f5d70792.js';
 
 var domain;
 
@@ -347,12 +346,6 @@ EventEmitter.prototype.removeListener =
 
       return this;
     };
-    
-// Alias for removeListener added in NodeJS 10.0
-// https://nodejs.org/api/events.html#events_emitter_off_eventname_listener
-EventEmitter.prototype.off = function(type, listener){
-    return this.removeListener(type, listener);
-};
 
 EventEmitter.prototype.removeAllListeners =
     function removeAllListeners(type) {
@@ -2877,7 +2870,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-var _polyfillNode_stream = /*#__PURE__*/Object.freeze({
+var polyfillNode_stream = /*#__PURE__*/Object.freeze({
   __proto__: null,
   'default': Stream,
   Readable: Readable,
@@ -2952,8 +2945,6 @@ class ResizeableBuffer{
 
 var ResizeableBuffer_1 = ResizeableBuffer;
 
-var require$$0 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(_polyfillNode_stream);
-
 /*
 CSV Parse
 
@@ -2961,7 +2952,7 @@ Please look at the [project documentation](https://csv.js.org/parse/) for
 additional information.
 */
 
-const { Transform } = require$$0;
+const { Transform } = polyfillNode_stream;
 
 
 // white space characters
