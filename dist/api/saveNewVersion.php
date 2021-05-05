@@ -22,17 +22,57 @@ $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
 $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
 
 
+$success = TRUE;
+$message = "";
+
+if ($title == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing title';
+  }elseif ($branchId == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing branchId';
+  }elseif ($versionId == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing versionId';
+  }elseif ($isDraft == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing isDraft';
+}elseif ($isNamed == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing isNamed';
+// }elseif ($isNewTitle == ""){
+//     $success = FALSE;
+//     $message = 'Internal Error: missing isNewTitle';
+  }elseif ($userId == ""){
+    $success = FALSE;
+    $message = "You need to be signed in to create a $type";
+  }
+
 //Add new version to content table
 //TODO: Update draft version (Overwrite BranchId named file)
 
-//TODO: Test if we have permission to save to branchId
+
+//Test if we have permission to save to branchId
+if ($success){
+    $sql = "
+    SELECT canAddItemsAndFolders
+    FROM drive_user
+    WHERE userId = '$userId'
+    AND driveId = '$driveId'
+    ";
+    $result = $conn->query($sql); 
+    $row = $result->fetch_assoc();
+    if ($row['canAddItemsAndFolders'] == '0'){
+      $success = FALSE;
+      $message = "You need need permission to add versions";
+    }
+}
+
+if ($success){
 
 //save to file as contentid
 $contentId = hash('sha256', $dangerousDoenetML);
-$response_arr = array(
-    "success"=> TRUE,
-    "contentId"=> $contentId
-);
+
 
 if ($isDraft){
     $sql = "UPDATE content 
@@ -89,7 +129,7 @@ if ($isDraft){
     }
     
 }
-
+}
 
 
 function saveDoenetML($fileName,$dangerousDoenetML){
@@ -101,7 +141,12 @@ function saveDoenetML($fileName,$dangerousDoenetML){
     fclose($newfile);
 }
 
-
+$response_arr = array(
+    "success"=>$success,
+    "versionId"=> $versionId,
+    "message"=>$message,
+    "contentId"=> $contentId
+);
 
 // set response code - 200 OK
 http_response_code(200);

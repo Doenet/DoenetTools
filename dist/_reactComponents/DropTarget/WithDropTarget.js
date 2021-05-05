@@ -1,9 +1,17 @@
 import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
 const WithDropTarget = ({children, id, registerDropTarget, unregisterDropTarget, dropCallbacks}) => {
   const dropRef = useRef();
-  const {onDragOver, onDragHover, onDrop} = dropCallbacks;
+  const {onDragOver, onDragHover, onDrop, onDragEnter, onDragExit} = dropCallbacks;
   useEffect(() => {
-    registerDropTarget({id, ref: dropRef.current, onDragOver, onDragHover, onDrop});
+    registerDropTarget({
+      id,
+      ref: dropRef.current,
+      onDragOver,
+      onDragHover,
+      onDragEnter,
+      onDragExit,
+      onDrop
+    });
     return () => {
       unregisterDropTarget(id);
     };

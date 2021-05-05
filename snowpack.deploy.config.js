@@ -16,6 +16,7 @@ module.exports = {
     'src/Viewer': '/viewer',
     'src/_reactComponents': '/_reactComponents',
     'src/_utils': '/_utils',
+    'src/Api_temp': '/api',
   },
   plugins: [
     '@snowpack/plugin-react-refresh',

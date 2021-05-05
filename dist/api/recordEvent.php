@@ -25,13 +25,63 @@ $version =  mysqli_real_escape_string($conn,$_POST["version"]);
 $variant =  mysqli_real_escape_string($conn,$_POST["variant"]);
 $timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
 
+$success = TRUE;
+$message = "";
 
-$sql = "INSERT INTO event (userId,deviceName,assignmentId,contentId,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
-VALUES ('$userId','$device','$assignmentId','$contentId','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
+if ($assignmentId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing assignmentId';
+}elseif ($contentId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing contentId';
+}elseif ($attemptNumber == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing attemptNumber';
+}elseif ($verb == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing verb';
+}elseif ($object == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing object';
+}elseif ($result == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing result';
+}elseif ($context == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing context';
+}elseif ($version == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing version';
+}elseif ($variant == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing variant';
+}elseif ($timestamp == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing timestamp';
+}
+//TODO: Handle Anonymous
+// elseif ($userId == ""){
+//   $success = FALSE;
+//   $message = "You need to be signed in to create a $type";
+// }
 
-$result = $conn->query($sql);
+
+if ($success){
+  $sql = "INSERT INTO event (userId,deviceName,assignmentId,contentId,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
+  VALUES ('$userId','$device','$assignmentId','$contentId','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
+
+  $result = $conn->query($sql);
+}
+
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
 
 http_response_code(200);
+
+// make it json format
+echo json_encode($response_arr);
 
 $conn->close();
 

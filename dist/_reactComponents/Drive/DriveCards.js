@@ -11,13 +11,15 @@ import {
   atom,
   useSetRecoilState,
   useRecoilValue,
+  useRecoilState,
   useRecoilValueLoadable
 } from "../../_snowpack/pkg/recoil.js";
 import {
-  fetchDrivesSelector
+  fetchDrivesSelector,
+  drivePathSyncFamily
 } from "./Drive.js";
 const DriveCards = (props) => {
-  const {routePathDriveId, driveDoubleClickCallback, isOneDriveSelect, subTypes, types} = props;
+  const {routePathDriveId, driveDoubleClickCallback, isOneDriveSelect, subTypes, types, drivePathSyncKey} = props;
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let driveInfo = [];
   if (drivesInfo.state === "hasValue") {
@@ -29,6 +31,7 @@ const DriveCards = (props) => {
       driveDoubleClickCallback,
       subTypes,
       types,
+      drivePathSyncKey,
       isOneDriveSelect,
       driveInfo
     });
@@ -42,7 +45,7 @@ const DriveCards = (props) => {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, drivecardComponent);
 };
 const DriveCardWrapper = (props) => {
-  const {driveDoubleClickCallback, isOneDriveSelect, subTypes, driveInfo, types} = props;
+  const {driveDoubleClickCallback, isOneDriveSelect, subTypes, driveInfo, drivePathSyncKey, types} = props;
   const history = useHistory();
   let encodeParams = (p) => Object.entries(p).map((kv) => kv.map(encodeURIComponent).join("=")).join("&");
   let driveCardItems = [];
@@ -86,11 +89,18 @@ const DriveCardWrapper = (props) => {
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
   const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
   const setOpenMenuPanel = useMenuPanelController();
+  const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(props.drivePathSyncKey));
+  if (driveCardPath.driveId !== "") {
+    return null;
+  }
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
-      let newParams = {};
-      newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-      history.push("?" + encodeParams(newParams));
+      setDrivecardPath({
+        driveId: item.driveId,
+        parentFolderId: item.driveId,
+        itemId: item.driveId,
+        type: "Drive"
+      });
     }
   };
   const handleKeyUp = (e, item) => {

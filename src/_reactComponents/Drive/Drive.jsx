@@ -273,7 +273,7 @@ export default function Drive(props){
           <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
            <Route path="/" render={(routeprops)=>
             <Suspense fallback={<div></div>}>
-              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj} />
             </Suspense>
            }></Route>
          </Switch></Router></React.Fragment>)
@@ -457,7 +457,6 @@ export const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenId
   return sortOrder;
 }
 
-
 function DriveHeader(props){
   const [width,setWidth] = useState(0);
   const [numColumns,setNumColumns] = useState(4);
@@ -529,12 +528,12 @@ function DriveHeader(props){
 
 } 
 
-
 function DriveRouted(props){
-
   // console.log("=== DriveRouted")
+
   const [numColumns,setNumColumns] = useState(1);
   const { onDragEnterInvalidArea, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
+  const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey))
 
   let hideUnpublished = false; //Default to showing unpublished
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
@@ -556,17 +555,13 @@ function DriveRouted(props){
 
   //Use Route to determine path variables
   let pathFolderId = props.driveId; //default 
-  let pathDriveId = props.driveId; //default
-  let routePathDriveId = "";
-  let routePathFolderId = "";  
-  let pathItemId = "";  
-  let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-  //use defaults if not defined
-  if (urlParamsObj?.path !== undefined){
-    [routePathDriveId,routePathFolderId,pathItemId] = urlParamsObj.path.split(":");
-    if (routePathDriveId !== ""){ pathDriveId = routePathDriveId}
-    if (routePathFolderId !== ""){pathFolderId = routePathFolderId;}
-  }
+
+  let routePathDriveId = drivePath.driveId;
+  let routePathFolderId = drivePath.parentFolderId;  
+  let pathItemId = drivePath.itemId;  
+  if (routePathFolderId !== ""){pathFolderId = routePathFolderId}
+
+
   //If navigation then build from root else build from path
   let rootFolderId = pathFolderId;
   if(props.isNav){
@@ -580,8 +575,6 @@ function DriveRouted(props){
     heading = <DriveHeader driveInstanceId={props.driveInstanceId} setNumColumns={setNumColumns}/>
   }
    
-  
-
 
   return <>
     {heading}
@@ -600,6 +593,7 @@ function DriveRouted(props){
       foldersOnly={props.foldersOnly}
       doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
       numColumns={numColumns}
+      drivePathSyncKey={props.drivePathSyncKey}
     />
     <WithDropTarget
       key={DropTargetsConstant.INVALID_DROP_AREA_ID}
@@ -847,19 +841,33 @@ const folderOpenSelector = selectorFamily({
 export let encodeParams = p => 
 Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
 
+export const drivePathSyncFamily = atomFamily({
+  key:"drivePathSyncFamily",
+  default:{
+    driveId:"",
+    parentFolderId:"",
+    itemId:"",
+    type:""
+  }
+})
+
 function Folder(props){
 
   let itemId = props?.folderId;
   if (!itemId){ itemId = props.driveId}
-  let history = useHistory();
   
+  let drivePathSyncKey = props.drivePathSyncKey;
+  if (!drivePathSyncKey) {drivePathSyncKey = "_"}
+
+  const setDrivePath = useSetRecoilState(drivePathSyncFamily(drivePathSyncKey));
+
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
   const {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, onDragExit, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
-  const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
+  // const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
 
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
@@ -1083,11 +1091,7 @@ function Folder(props){
         if (props.isNav){
           clearSelections();
           //Only select one item
-          let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-
-          let newParams = {...urlParamsObj} 
-          newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Folder`
-          history.push('?'+encodeParams(newParams))
+          setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
         }else{
           e.preventDefault();
           e.stopPropagation();
@@ -1104,7 +1108,9 @@ function Folder(props){
         onDoubleClick={(e)=>{
           e.preventDefault();
           e.stopPropagation();
-          toggleOpen();
+          // toggleOpen();
+          setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
+
         }}
         onBlur={(e) => {
           //Don't clear on navigation changes
@@ -1164,10 +1170,7 @@ function Folder(props){
         if (props.isNav){
           clearSelections();
           //Only select one item
-          let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-          let newParams = {...urlParamsObj} 
-          newParams['path'] = `${props.driveId}:${itemId}:${itemId}:Drive`
-          history.push('?'+encodeParams(newParams))
+          setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Drive"})
         }
         setSelectedDrive(props.driveId);
       }
@@ -1278,6 +1281,7 @@ function Folder(props){
             parentFolderId={props.folderId}
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
+            drivePathSyncKey={props.drivePathSyncKey}
             />)
         }
       }else{
@@ -1300,6 +1304,7 @@ function Folder(props){
             foldersOnly={props.foldersOnly}
             doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
             numColumns={props.numColumns}
+            drivePathSyncKey={props.drivePathSyncKey}
             />)
           break;
           case "Url":
@@ -1315,6 +1320,8 @@ function Folder(props){
               pathItemId={props.pathItemId}
               deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
+              setDrivePath={setDrivePath}
+
             />)
           break;
           case "DoenetML":
@@ -1330,6 +1337,7 @@ function Folder(props){
               doubleClickCallback={props.doenetMLDoubleClickCallback}
               deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
+              setDrivePath={setDrivePath}
             />)
           break;
           case "DragShadow":
@@ -1560,7 +1568,6 @@ const selectedDriveItems = selectorFamily({
 const DoenetML = React.memo((props)=>{
   // console.log(`=== 📜 DoenetML`)
 
-  const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
@@ -1601,7 +1608,7 @@ const DoenetML = React.memo((props)=>{
   if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
   let label = props.item?.label;
-  if (props.item?.assignment_isPublished === "1" && props.item?.isAssignment === "1"){
+  if (props.item?.assignment_isPublished === "1" || props.item?.isAssignment === "1"){
     label = props.item?.assignment_title;
   }
 
@@ -1672,10 +1679,8 @@ const DoenetML = React.memo((props)=>{
         e.stopPropagation();
         if (props.isNav){
           //Only select one item
-          let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-          let newParams = {...urlParamsObj} 
-          newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:DoenetML`
-          history.push('?'+encodeParams(newParams))
+          props.setDrivePath({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"DoenetML"})
+
         }else{
           e.preventDefault();
           e.stopPropagation();
@@ -1768,7 +1773,6 @@ const Url = React.memo((props)=>{
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
 
-  const history = useHistory();
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
@@ -1828,10 +1832,7 @@ const Url = React.memo((props)=>{
         if (props.urlClickBehavior === "select"){
           if (props.isNav){
             //Only select one item
-            let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-            let newParams = {...urlParamsObj} 
-            newParams['path'] = `${props.driveId}:${props.item.parentFolderId}:${props.item.itemId}:Url`
-            history.push('?'+encodeParams(newParams))
+          props.setDrivePath({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"Url"})
           }else{
             e.preventDefault();
             e.stopPropagation();
