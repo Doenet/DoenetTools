@@ -1,20 +1,73 @@
-import React from "react";
-import Tool from "../Tool";
+/**
+ * External dependencies
+ */
+import React from 'react';
+import { atom, useRecoilValue, useRecoilValueLoadable } from 'recoil';
 
-export default function Assignment({ contentId, branchId, assignmentId }) {
+/**
+ * Internal dependencies
+ */
+import Tool from '../Tool';
+import DoenetViewer from '../../../Viewer/DoenetViewer';
+import { assignmentDictionary } from '../../course/Course';
+
+export const assignmentDoenetMLAtom = atom({
+  key: 'assignmentDoenetMLAtom',
+  default: { updateNumber: 0, doenetML: '', attemptnumber: 0 },
+});
+
+export default function Assignment({
+  branchId = '',
+  assignmentId = '',
+  contentId = '',
+  title,
+}) {
+  const assignmentInfo = useRecoilValueLoadable(assignmentDictionary());
+  let aInfo = '';
+
+  if (assignmentInfo?.state === 'hasValue') {
+    aInfo = assignmentInfo?.contents;
+    if (aInfo?.assignmentId) {
+      assignmentId = aInfo?.assignmentId;
+    }
+  }
+  function DoenetViewerPanel(props) {
+    const assignmentDoenetML = useRecoilValue(assignmentDoenetMLAtom);
+    let attemptNumber = 1;
+    let requestedVariant = { index: attemptNumber };
+    let solutionDisplayMode = 'button';
+
+    return (
+      <DoenetViewer
+        key={'doenetviewer' + assignmentDoenetML?.updateNumber}
+        doenetML={assignmentDoenetML?.doenetML}
+        flags={{
+          showCorrectness: true,
+          readOnly: true,
+          solutionDisplayMode: solutionDisplayMode,
+          showFeedback: true,
+          showHints: true,
+        }}
+        attemptNumber={attemptNumber}
+        contentId={contentId ? contentId : branchId}
+        assignmentId={assignmentId ? assignmentId : contentId}
+        ignoreDatabase={true}
+        requestedVariant={requestedVariant}
+      />
+    );
+  }
+
   return (
     <Tool>
-      <headerPanel></headerPanel>
+      <headerPanel title={title} />
 
       <mainPanel>
-        This is the Assignment on branch: {branchId}, with content: {contentId},
-        assignment:
-        {assignmentId}
+        <div style={{ overflowY: 'scroll', height: 'calc(100vh - 84px)' }}>
+          <DoenetViewerPanel />
+        </div>
       </mainPanel>
 
       <supportPanel></supportPanel>
-
-      <menuPanel title={"actions"}></menuPanel>
     </Tool>
   );
 }
