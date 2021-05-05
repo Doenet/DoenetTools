@@ -1,13 +1,6 @@
-import { b as getDefaultExportFromNamespaceIfNotNamed, c as createCommonjsModule, d as commonjsRequire, a as commonjsGlobal } from './_commonjsHelpers-f5d70792.js';
+import { c as createCommonjsModule, b as commonjsRequire, a as commonjsGlobal } from './_commonjsHelpers-4f955397.js';
 
-var _polyfillNode_crypto = {};
-
-var _polyfillNode_crypto$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	'default': _polyfillNode_crypto
-});
-
-var require$$0 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(_polyfillNode_crypto$1);
+var require$$0 = {};
 
 var core = createCommonjsModule(function (module, exports) {
 (function (root, factory) {

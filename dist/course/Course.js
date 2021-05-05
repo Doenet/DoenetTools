@@ -144,7 +144,9 @@ export default function Course(props) {
   }
   let breadcrumbContainer = null;
   if (routePathDriveId) {
-    breadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, null);
+    breadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
+      drivePathSyncKey: "main"
+    });
   }
   const setEnrollment = (e) => {
     e.preventDefault();
@@ -201,7 +203,8 @@ export default function Course(props) {
     onClick: useOutsideDriveSelector
   }, /* @__PURE__ */ React.createElement(Drive, {
     driveId: routePathDriveId,
-    foldersOnly: true
+    foldersOnly: true,
+    drivePathSyncKey: "main"
   }))), /* @__PURE__ */ React.createElement("mainPanel", {
     responsiveControls
   }, /* @__PURE__ */ React.createElement(AutoSelect, null), openEnrollment ? /* @__PURE__ */ React.createElement(Enrollment, {
@@ -216,6 +219,7 @@ export default function Course(props) {
     hideUnpublished,
     subTypes: ["Administrator"],
     urlClickBehavior: "select",
+    drivePathSyncKey: "main",
     doenetMLDoubleClickCallback: (info) => {
       let isAssignment = info.item.isAssignment === "0" ? "content" : "assignment";
       openOverlay({
@@ -233,6 +237,7 @@ export default function Course(props) {
     routePathDriveId,
     isOneDriveSelect: true,
     types: ["course"],
+    drivePathSyncKey: "main",
     subTypes: ["Administrator"],
     driveDoubleClickCallback: ({item}) => {
       DriveCardCallBack({item});
@@ -241,6 +246,7 @@ export default function Course(props) {
     routePathDriveId,
     isOneDriveSelect: true,
     types: ["course"],
+    drivePathSyncKey: "main",
     subTypes: ["Student"],
     driveDoubleClickCallback: ({item}) => {
       DriveCardCallBack({item});

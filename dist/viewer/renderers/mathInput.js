@@ -21,7 +21,7 @@ export default class MathInput extends DoenetRenderer {
     this.latexValue = stripLatex(this.doenetSvData.value.toLatex());
     this.valueToRevertTo = this.mathExpression;
     this.latexValueToRevertTo = this.latexValue;
-    if (this.latexValue === "＿") {
+    if (this.latexValue === "\uFF3F") {
       this.latexValue = "";
     }
   }
@@ -34,7 +34,7 @@ export default class MathInput extends DoenetRenderer {
     try {
       expression = me.fromLatex(text);
     } catch (e) {
-      expression = me.fromAst("＿");
+      expression = me.fromAst("\uFF3F");
     }
     return expression;
   }
@@ -111,7 +111,7 @@ export default class MathInput extends DoenetRenderer {
     if (!this.valueToRevertTo.equalsViaSyntax(this.doenetSvData.value)) {
       this.mathExpression = this.doenetSvData.value;
       this.latexValue = stripLatex(this.mathExpression.toLatex());
-      if (this.latexValue === "＿") {
+      if (this.latexValue === "\uFF3F") {
         this.latexValue = "";
       }
       this.valueToRevertTo = this.doenetSvData.value;
@@ -231,49 +231,49 @@ function stripLatex(latex) {
 }
 function substituteUnicodeInLatexString(latexString) {
   let substitutions = [
-    ["α", "\\alpha "],
-    ["β", "\\beta "],
-    ["ϐ", "\\beta "],
-    ["Γ", "\\Gamma "],
-    ["γ", "\\gamma "],
-    ["Δ", "\\Delta "],
-    ["δ", "\\delta "],
-    ["ε", "\\epsilon "],
-    ["ϵ", "\\epsilon "],
-    ["ζ", "\\zeta "],
-    ["η", "\\eta "],
-    ["Θ", "\\Theta "],
-    ["ϴ", "\\Theta "],
-    ["θ", "\\theta "],
-    ["ᶿ", "\\theta "],
-    ["ϑ", "\\theta "],
-    ["ι", "\\iota "],
-    ["κ", "\\kappa "],
-    ["Λ", "\\Lambda "],
-    ["λ", "\\lambda "],
-    ["μ", "\\mu "],
-    ["µ", "\\mu "],
-    ["ν", "\\nu "],
-    ["Ξ", "\\Xi "],
-    ["ξ", "\\xi "],
-    ["Π", "\\Pi "],
-    ["π", "\\pi "],
-    ["ϖ", "\\pi "],
-    ["ρ", "\\rho "],
-    ["ϱ", "\\rho "],
-    ["Σ", "\\Sigma "],
-    ["σ", "\\sigma "],
-    ["ς", "\\sigma "],
-    ["τ", "\\tau "],
-    ["Υ", "\\Upsilon "],
-    ["υ", "\\upsilon "],
-    ["Φ", "\\Phi "],
-    ["φ", "\\phi "],
-    ["ϕ", "\\phi "],
-    ["Ψ", "\\Psi "],
-    ["ψ", "\\psi "],
-    ["Ω", "\\Omega "],
-    ["ω", "\\omega "]
+    ["\u03B1", "\\alpha "],
+    ["\u03B2", "\\beta "],
+    ["\u03D0", "\\beta "],
+    ["\u0393", "\\Gamma "],
+    ["\u03B3", "\\gamma "],
+    ["\u0394", "\\Delta "],
+    ["\u03B4", "\\delta "],
+    ["\u03B5", "\\epsilon "],
+    ["\u03F5", "\\epsilon "],
+    ["\u03B6", "\\zeta "],
+    ["\u03B7", "\\eta "],
+    ["\u0398", "\\Theta "],
+    ["\u03F4", "\\Theta "],
+    ["\u03B8", "\\theta "],
+    ["\u1DBF", "\\theta "],
+    ["\u03D1", "\\theta "],
+    ["\u03B9", "\\iota "],
+    ["\u03BA", "\\kappa "],
+    ["\u039B", "\\Lambda "],
+    ["\u03BB", "\\lambda "],
+    ["\u03BC", "\\mu "],
+    ["\xB5", "\\mu "],
+    ["\u03BD", "\\nu "],
+    ["\u039E", "\\Xi "],
+    ["\u03BE", "\\xi "],
+    ["\u03A0", "\\Pi "],
+    ["\u03C0", "\\pi "],
+    ["\u03D6", "\\pi "],
+    ["\u03C1", "\\rho "],
+    ["\u03F1", "\\rho "],
+    ["\u03A3", "\\Sigma "],
+    ["\u03C3", "\\sigma "],
+    ["\u03C2", "\\sigma "],
+    ["\u03C4", "\\tau "],
+    ["\u03A5", "\\Upsilon "],
+    ["\u03C5", "\\upsilon "],
+    ["\u03A6", "\\Phi "],
+    ["\u03C6", "\\phi "],
+    ["\u03D5", "\\phi "],
+    ["\u03A8", "\\Psi "],
+    ["\u03C8", "\\psi "],
+    ["\u03A9", "\\Omega "],
+    ["\u03C9", "\\omega "]
   ];
   for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1]);

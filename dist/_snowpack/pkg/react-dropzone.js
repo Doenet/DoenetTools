@@ -1,6 +1,6 @@
-import { r as react } from './common/index-f66788ca.js';
-import { p as propTypes } from './common/index-4bda1d4e.js';
-import { c as createCommonjsModule, g as getDefaultExportFromCjs } from './common/_commonjsHelpers-f5d70792.js';
+import { r as react } from './common/index-678ccbe9.js';
+import { p as propTypes } from './common/index-ad697a84.js';
+import { c as createCommonjsModule, g as getDefaultExportFromCjs } from './common/_commonjsHelpers-4f955397.js';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -1050,9 +1050,8 @@ function useDropzone() {
     event.preventDefault();
     event.persist();
     stopPropagation(event);
-    var hasFiles = isEvtWithFiles(event);
 
-    if (hasFiles && event.dataTransfer) {
+    if (event.dataTransfer) {
       try {
         event.dataTransfer.dropEffect = 'copy';
       } catch (_unused) {}
@@ -1060,7 +1059,7 @@ function useDropzone() {
 
     }
 
-    if (hasFiles && onDragOver) {
+    if (isEvtWithFiles(event) && onDragOver) {
       onDragOver(event);
     }
 
