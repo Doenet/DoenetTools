@@ -867,6 +867,7 @@ function URLPathSync(props){
       //When first open and no path parameter
       changed = true;
     }
+    
     if (changed && !init.current){
       let newParams = {...urlParamsObj} 
       newParams['path'] = `${drivePath.driveId}:${drivePath.parentFolderId}:${drivePath.itemId}:${drivePath.type}`
