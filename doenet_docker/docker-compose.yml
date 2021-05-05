@@ -7,8 +7,7 @@ services:
       - 80:80
       # - 443:443
     volumes:
-      - ../dist_local/api:/usr/local/apache2/htdocs/api
-      - ../dist_local/media:/usr/local/apache2/htdocs/media
+      - ../dist_local:/usr/local/apache2/htdocs
     depends_on:
       - php
       - mysql
@@ -17,8 +16,7 @@ services:
   php:
     build: './php'
     volumes:
-      - ../dist_local/api:/usr/local/apache2/htdocs/api
-      - vendor:/usr/local/apache2/htdocs/api/vendor
+      - ../dist_local:/usr/local/apache2/htdocs
     restart: always
 
   mysql:
@@ -30,5 +28,6 @@ services:
       - ./volumes/db_init:/docker-entrypoint-initdb.d
     restart: always
 
-volumes:
-  vendor:
+  # node:
+  #   build: './node'
+  #   # image: node:13.8
