@@ -66,8 +66,9 @@ export const BreadcrumbContainer = (props) => {
     })
   }}><FontAwesomeIcon icon={faTh}/></span>
 
+  //Don't show up if not in a drive
   if (drivePath.driveId === ""){
-    return <div style={{margin:"10px"}}>{leftmostBreadcrumb}</div>;
+    return null;
   }
 
   let reversed = [...items];
