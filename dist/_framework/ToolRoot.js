@@ -19,6 +19,7 @@ export const useToolControlHelper = () => {
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportDividerController();
   const [
+    Content,
     Assignment,
     Editor,
     Image,
@@ -26,6 +27,7 @@ export const useToolControlHelper = () => {
     GradebookAssignmentView,
     GradebookAttemptView
   ] = useRef([
+    lazy(() => import("./Overlays/Content.js")),
     lazy(() => import("./Overlays/Assignment.js")),
     lazy(() => import("./Overlays/Editor.js")),
     lazy(() => import("./Overlays/Image.js")),
@@ -74,13 +76,26 @@ export const useToolControlHelper = () => {
           })
         ]);
         break;
+      case "content":
+        setLayers((old) => [
+          ...old,
+          /* @__PURE__ */ React.createElement(Content, {
+            contentId,
+            branchId,
+            title,
+            key: `ContentLayer${old.length + 1}`
+          })
+        ]);
+        break;
       case "assignment":
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Assignment, {
             branchId,
+            title,
             assignmentId,
             courseId,
+            contentId,
             key: `AssignmentLayer${old.length + 1}`
           })
         ]);

@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useRef
 } from "../../_snowpack/pkg/react.js";
+import DropTargetsContants from "./constants.js";
 import {DropTargetsContext} from "./context.js";
 export default function DropTargetsProvider({children}) {
   const [draggedObject, setDraggedObject] = useState(null);
@@ -30,7 +31,15 @@ export default function DropTargetsProvider({children}) {
     }
     return null;
   }, []);
-  const registerDropTarget = useCallback(({id, ref, onDragOver, onDragHover, onDrop}) => {
+  const registerDropTarget = useCallback(({
+    id,
+    ref,
+    onDragOver,
+    onDragHover,
+    onDragEnter,
+    onDragExit,
+    onDrop
+  }) => {
     let dropTargetObj = dropTargetsRef.current[id];
     if (!dropTargetObj)
       dropTargetObj = [];
@@ -38,6 +47,8 @@ export default function DropTargetsProvider({children}) {
       ref,
       onDragOver,
       onDragHover,
+      onDragEnter,
+      onDragExit,
       onDrop
     };
     dropTargetObj.push(newDropTarget);
@@ -54,7 +65,11 @@ export default function DropTargetsProvider({children}) {
       dropTargetObj?.onDragOver({x, y, dropTargetRef: dropTargetObj.ref});
     }
     if (dropTargetId !== activeDropTargetId) {
-      handleDragExit(activeDropTargetId);
+      if (!dropTargetId) {
+        dropTargetId = DropTargetsContants.INVALID_DROP_AREA_ID;
+        dropTargetObj = dropTargetsRef.current[dropTargetId]?.[0];
+      }
+      handleDragExit({dropTargetId: activeDropTargetId});
       handleDragEnter({dropTargetId, dropTargetObj});
     }
     setActiveDropTargetId(dropTargetId);
@@ -63,6 +78,7 @@ export default function DropTargetsProvider({children}) {
     if (timerDropTargetId.current === dropTargetId)
       return;
     if (dropTargetId) {
+      dropTargetObj && dropTargetObj.onDragEnter && dropTargetObj.onDragEnter();
       timerDropTargetId.current = dropTargetId;
       timerRef.current = setTimeout(() => {
         if (dropTargetObj.onDragHover && activeDropTargetIdRef.current) {
@@ -72,7 +88,14 @@ export default function DropTargetsProvider({children}) {
       }, 1500);
     }
   };
-  const handleDragExit = (dropTargetId) => {
+  const handleDragExit = ({dropTargetId}) => {
+    const dropTargetObjs = dropTargetsRef.current[dropTargetId];
+    if (dropTargetObjs) {
+      for (let dropTargetObj of dropTargetObjs) {
+        if (dropTargetObj.onDragExit)
+          dropTargetObj.onDragExit();
+      }
+    }
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }

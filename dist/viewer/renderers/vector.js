@@ -23,14 +23,14 @@ export default class Vector extends DoenetRenderer {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: this.doenetSvData.draggable !== true,
+      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer,
       strokeColor: this.doenetSvData.selectedStyle.markerColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
     };
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxVectorAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
     let endpoints = [
@@ -46,7 +46,7 @@ export default class Vector extends DoenetRenderer {
       highlightFillColor: "lightgray",
       layer: layer + 1
     });
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxPointAttributes.visible = false;
     }
     let tailPointAttributes = Object.assign({}, jsxPointAttributes);
@@ -124,7 +124,7 @@ export default class Vector extends DoenetRenderer {
     if (validPoints) {
       this.vectorJXG.visProp["visible"] = visible;
       this.vectorJXG.visPropCalc["visible"] = visible;
-      if (this.doenetSvData.draggable) {
+      if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
         this.vectorJXG.visProp["fixed"] = false;
         if (this.doenetSvData.tailDraggable) {
           this.point1JXG.visProp["visible"] = visible;

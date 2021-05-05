@@ -1,56 +1,78 @@
-import React, {useContext} from "../../_snowpack/pkg/react.js";
-import {useBreadcrumbItems} from "./hooks/useBreadcrumbItems.js";
-import BreadcrumbItem from "./components/BreadcrumbItem.js";
-import BreadcrumbDivider from "./components/BreadcrumbDivider.js";
-import {BreadcrumbContext} from "./BreadcrumbProvider.js";
-import {
-  useHistory
-} from "../../_snowpack/pkg/react-router-dom.js";
-import {faChevronLeft, faTh} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import React from "../../_snowpack/pkg/react.js";
+import {faTh} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-export const BreadcrumbContainer = ({divider = "/", ...props}) => {
-  const items = useBreadcrumbItems();
-  const {clearItems: clearBreadcrumb} = useContext(BreadcrumbContext);
-  let children = items.map((item, index) => /* @__PURE__ */ React.createElement(BreadcrumbItem, {
-    key: `breadcrumbItem${index}`
-  }, item.element));
-  const lastIndex = children.length - 1;
-  children = children.reduce((acc, child, index) => {
-    let notLast = index < lastIndex;
-    if (notLast) {
-      acc.push(child, /* @__PURE__ */ React.createElement(BreadcrumbDivider, {
-        key: `breadcrumbDivider${index}`
-      }, divider));
-    } else {
-      acc.push(child);
+import {drivePathSyncFamily, folderDictionary, fetchDrivesQuery} from "../Drive/Drive.js";
+import {useRecoilValue, useRecoilState, atomFamily, selectorFamily} from "../../_snowpack/pkg/recoil.js";
+const breadcrumbItemAtomFamily = atomFamily({
+  key: "breadcrumbItemAtomFamily",
+  default: selectorFamily({
+    key: "breadcrumbItemAtomFamily/Default",
+    get: (driveIdFolderId) => ({get}) => {
+      let items = [];
+      let driveId = driveIdFolderId.driveId;
+      let folderId = driveIdFolderId.folderId;
+      if (!driveId) {
+        return items;
+      }
+      while (folderId) {
+        let folderInfo = get(folderDictionary({driveId, folderId}));
+        if (!folderInfo.folderInfo.itemId) {
+          break;
+        }
+        items.push({
+          type: "Folder",
+          folderId: folderInfo.folderInfo.itemId,
+          label: folderInfo.folderInfo.label
+        });
+        folderId = folderInfo.folderInfo.parentFolderId;
+      }
+      const drivesInfo = get(fetchDrivesQuery);
+      let driveObj = {type: "Drive", folderId: driveId};
+      for (let drive of drivesInfo.driveIdsAndLabels) {
+        if (drive.driveId === driveId) {
+          driveObj.label = drive.label;
+          break;
+        }
+      }
+      items.push(driveObj);
+      return items;
     }
-    return acc;
-  }, []);
-  const breadcrumbContainerStyle = {
-    listStyle: "none",
-    display: "flex",
-    flexWrap: "wrap",
-    overflow: "hidden",
-    padding: "12px 0px",
-    alignItems: "center",
-    width: "100%",
-    borderBottom: "1px solid #cdcdcd",
-    margin: "0"
-  };
-  const history = useHistory();
-  let encodeParams = (p) => Object.entries(p).map((kv) => kv.map(encodeURIComponent).join("=")).join("&");
-  const leftmostBreadcrumb = () => {
-    clearBreadcrumb();
-    let newParams = {};
-    newParams["path"] = `:::`;
-    history.push("?" + encodeParams(newParams));
-  };
-  return /* @__PURE__ */ React.createElement("ol", {
-    style: breadcrumbContainerStyle
-  }, /* @__PURE__ */ React.createElement("div", {
-    onClick: leftmostBreadcrumb,
-    style: {marginLeft: "10px", marginRight: "10px"}
+  })
+});
+export const BreadcrumbContainer = (props) => {
+  const [drivePath, setDrivePath] = useRecoilState(drivePathSyncFamily(props.drivePathSyncKey));
+  const items = useRecoilValue(breadcrumbItemAtomFamily({driveId: drivePath.driveId, folderId: drivePath.parentFolderId}));
+  if (drivePath.driveId === "") {
+    return null;
+  }
+  let leftmostBreadcrumb = /* @__PURE__ */ React.createElement("span", {
+    onClick: () => {
+      setDrivePath({
+        driveId: "",
+        parentFolderId: "",
+        itemId: "",
+        type: ""
+      });
+    }
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faTh
-  })), children);
+  }));
+  let reversed = [...items];
+  reversed.reverse();
+  let children = [];
+  for (let item of reversed) {
+    children.push(/* @__PURE__ */ React.createElement("span", {
+      onClick: () => {
+        setDrivePath({
+          driveId: drivePath.driveId,
+          parentFolderId: item.folderId,
+          itemId: item.folderId,
+          type: "Folder"
+        });
+      }
+    }, item.label, " / "));
+  }
+  return /* @__PURE__ */ React.createElement("div", {
+    style: {margin: "10px"}
+  }, leftmostBreadcrumb, " ", children);
 };

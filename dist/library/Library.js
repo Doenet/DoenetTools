@@ -1,4 +1,4 @@
-import React, {useEffect, useState, Suspense, useContext} from "../_snowpack/pkg/react.js";
+import React, {useEffect, useState, Suspense, useContext, useRef} from "../_snowpack/pkg/react.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {
   faChalkboard,
@@ -13,6 +13,7 @@ import {
 import {
   atom,
   useSetRecoilState,
+  useRecoilState,
   useRecoilValue,
   selector,
   selectorFamily,
@@ -31,7 +32,8 @@ import Drive, {
   fetchDrivesSelector,
   encodeParams,
   fetchDriveUsers,
-  fetchDrivesQuery
+  fetchDrivesQuery,
+  drivePathSyncFamily
 } from "../_reactComponents/Drive/Drive.js";
 import {
   useAddItem,
@@ -71,7 +73,7 @@ const selectedDriveInformation = selector({
     set(drivecardSelectedNodesAtom, (old) => [...old, newObj]);
   }
 });
-const selectedInformation = selector({
+export const selectedInformation = selector({
   key: "selectedInformation",
   get: ({get}) => {
     const globalSelected = get(globalSelectedNodesAtom);
@@ -706,6 +708,42 @@ function AutoSelect(props) {
   }
   return null;
 }
+function URLPathSync(props) {
+  const [drivePath, setDrivePath] = useRecoilState(drivePathSyncFamily("main"));
+  const history = useHistory();
+  const init = useRef(true);
+  const sourceOfPathChange = useRef(false);
+  useEffect(() => {
+    if (!sourceOfPathChange.current) {
+      let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+      if (urlParamsObj?.path) {
+        const [routePathDriveId, routePathFolderId, pathItemId, type] = urlParamsObj.path.split(":");
+        setDrivePath({driveId: routePathDriveId, parentFolderId: routePathFolderId, itemId: pathItemId, type});
+      }
+    }
+    sourceOfPathChange.current = false;
+  }, [props.route, setDrivePath]);
+  useEffect(() => {
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+    let changed = false;
+    if (urlParamsObj?.path) {
+      const [routePathDriveId, routePathFolderId, pathItemId, type] = urlParamsObj.path.split(":");
+      if (routePathDriveId !== drivePath.driveId || routePathFolderId !== drivePath.parentFolderId || pathItemId !== drivePath.itemId) {
+        changed = true;
+      }
+    } else {
+      changed = true;
+    }
+    if (changed && !init.current) {
+      let newParams = {...urlParamsObj};
+      newParams["path"] = `${drivePath.driveId}:${drivePath.parentFolderId}:${drivePath.itemId}:${drivePath.type}`;
+      history.push("?" + encodeParams(newParams));
+      sourceOfPathChange.current = true;
+    }
+    init.current = false;
+  }, [drivePath]);
+  return null;
+}
 export default function Library(props) {
   const {openOverlay, activateMenuPanel} = useToolControlHelper();
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -724,15 +762,19 @@ export default function Library(props) {
   }, []);
   const history = useHistory();
   const profile = useContext(ProfileContext);
-  console.log(">>>profile", profile);
   if (profile.signedIn === "0") {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
       title: "Library"
     }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
-      style: {margin: "10px"}
-    }, /* @__PURE__ */ React.createElement("h1", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Library currently requires sign in for use"), /* @__PURE__ */ React.createElement("h2", null, /* @__PURE__ */ React.createElement("a", {
-      href: "/signin"
-    }, "Sign in with this link"))))));
+      style: {border: "1px solid grey", borderRadius: "20px", margin: "auto", marginTop: "10%", padding: "10px", width: "50%"}
+    }, /* @__PURE__ */ React.createElement("div", {
+      style: {textAlign: "center", alignItems: "center", marginBottom: "20px"}
+    }, /* @__PURE__ */ React.createElement("h2", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Library currently requires sign in for use"), /* @__PURE__ */ React.createElement("button", {
+      style: {background: "#1a5a99", borderRadius: "5px"}
+    }, /* @__PURE__ */ React.createElement("a", {
+      href: "/signin",
+      style: {color: "white", textDecoration: "none"}
+    }, "Sign in with this link")))))));
   }
   function useOutsideDriveSelector() {
     let newParams = {};
@@ -742,32 +784,44 @@ export default function Library(props) {
   function cleardrivecardSelection() {
     setDrivecardSelection([]);
   }
-  let breadcrumbContainer = null;
+  let mainBreadcrumbContainer = null;
+  let supportBreadcrumbContainer = null;
   if (routePathDriveId) {
-    breadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, null);
+    mainBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
+      drivePathSyncKey: "main"
+    });
+    supportBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
+      drivePathSyncKey: "support"
+    });
   }
   const driveCardSelection = ({item}) => {
     let newParams = {};
     newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
     history.push("?" + encodeParams(newParams));
   };
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("navPanel", {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(URLPathSync, {
+    route: props.route
+  }), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("navPanel", {
     isInitOpen: true
   }, /* @__PURE__ */ React.createElement("div", {
-    style: {marginBottom: "40px", height: "100vh"},
+    style: {height: "100vh"},
     onClick: useOutsideDriveSelector
+  }, /* @__PURE__ */ React.createElement("div", {
+    style: {paddingBottom: "40px"}
   }, /* @__PURE__ */ React.createElement(Drive, {
     types: ["content", "course"],
-    foldersOnly: true
-  }))), /* @__PURE__ */ React.createElement("headerPanel", {
+    foldersOnly: true,
+    drivePathSyncKey: "main"
+  })))), /* @__PURE__ */ React.createElement("headerPanel", {
     title: "Library"
-  }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement(AutoSelect, null), breadcrumbContainer, /* @__PURE__ */ React.createElement("div", {
+  }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement(AutoSelect, null), mainBreadcrumbContainer, /* @__PURE__ */ React.createElement("div", {
     onClick: () => {
       clearSelections();
     },
     className: routePathDriveId ? "mainPanelStyle" : ""
   }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
     types: ["content", "course"],
+    drivePathSyncKey: "main",
     urlClickBehavior: "select",
     doenetMLDoubleClickCallback: (info) => {
       openOverlay({type: "editor", branchId: info.item.branchId, title: info.item.label});
@@ -777,15 +831,32 @@ export default function Library(props) {
     tabIndex: 0,
     className: routePathDriveId ? "" : "mainPanelStyle"
   }, /* @__PURE__ */ React.createElement(DriveCards, {
+    drivePathSyncKey: "main",
     types: ["course"],
     subTypes: ["Administrator"],
     routePathDriveId,
     driveDoubleClickCallback: ({item}) => {
       driveCardSelection({item});
     }
-  }))), /* @__PURE__ */ React.createElement("supportPanel", null, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
+  }))), /* @__PURE__ */ React.createElement("supportPanel", null, supportBreadcrumbContainer, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
+    drivePathSyncKey: "support",
     types: ["content", "course"],
-    urlClickBehavior: "select"
+    urlClickBehavior: "select",
+    doenetMLDoubleClickCallback: (info) => {
+      openOverlay({type: "editor", branchId: info.item.branchId, title: info.item.label});
+    }
+  })), /* @__PURE__ */ React.createElement("div", {
+    onClick: cleardrivecardSelection,
+    tabIndex: 0,
+    className: routePathDriveId ? "" : "mainPanelStyle"
+  }, /* @__PURE__ */ React.createElement(DriveCards, {
+    drivePathSyncKey: "support",
+    types: ["course"],
+    subTypes: ["Administrator"],
+    routePathDriveId,
+    driveDoubleClickCallback: ({item}) => {
+      driveCardSelection({item});
+    }
   }))), /* @__PURE__ */ React.createElement("menuPanel", {
     title: "Selected",
     isInitOpen: true

@@ -29,7 +29,7 @@ let nanInfinityReviver = function(key, value) {
 export function serializedComponentsReviver(key, value) {
   return me.reviver(key, nanInfinityReviver(key, value));
 }
-class DoenetViewer extends Component {
+class DoenetViewerChild extends Component {
   constructor(props) {
     super(props);
     this.update = this.update.bind(this);
@@ -79,19 +79,35 @@ class DoenetViewer extends Component {
     if (variant !== null) {
       this.requestedVariant = JSON.parse(variant, serializedComponentsReviver);
     }
-    this.core = new Core({
-      coreReadyCallback: this.coreReady,
-      coreUpdatedCallback: this.update,
-      doenetML: this.doenetML,
-      externalFunctions: {
-        localStateChanged: this.localStateChanged,
-        submitResponse: this.submitResponse,
-        recordSolutionView: this.recordSolutionView,
-        recordEvent: this.recordEvent
-      },
-      flags: this.props.flags,
-      requestedVariant: this.requestedVariant
-    });
+    if (this.props.core) {
+      this.core = new this.props.core({
+        coreReadyCallback: this.coreReady,
+        coreUpdatedCallback: this.update,
+        doenetML: this.doenetML,
+        externalFunctions: {
+          localStateChanged: this.localStateChanged,
+          submitResponse: this.submitResponse,
+          recordSolutionView: this.recordSolutionView,
+          recordEvent: this.recordEvent
+        },
+        flags: this.props.flags,
+        requestedVariant: this.requestedVariant
+      });
+    } else {
+      this.core = new Core({
+        coreReadyCallback: this.coreReady,
+        coreUpdatedCallback: this.update,
+        doenetML: this.doenetML,
+        externalFunctions: {
+          localStateChanged: this.localStateChanged,
+          submitResponse: this.submitResponse,
+          recordSolutionView: this.recordSolutionView,
+          recordEvent: this.recordEvent
+        },
+        flags: this.props.flags,
+        requestedVariant: this.requestedVariant
+      });
+    }
   }
   coreReady() {
     this.resultingVariant = this.core.document.state.selectedVariantInfo.value;
@@ -125,11 +141,8 @@ class DoenetViewer extends Component {
     }
     let renderPromises = [];
     let rendererClassNames = [];
-    console.log("rendererTypesInDocument");
-    console.log(this.core.rendererTypesInDocument);
     for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
-      console.log(`>>>dynamic import '${rendererClassName}'`);
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
@@ -186,15 +199,11 @@ class DoenetViewer extends Component {
     });
   }
   loadDoenetML(contentId, callback) {
-    const loadFromContentIdUrl = "/api/loadFromContentId.php";
-    const data = {
-      contentId
-    };
-    axios.post(loadFromContentIdUrl, data).then((resp) => {
+    axios.get(`/media/${contentId}.doenet`).then((resp) => {
       if (callback) {
         callback({
           contentId,
-          doenetML: resp.data.doenetML
+          doenetML: resp.data
         });
       }
     });
@@ -294,6 +303,32 @@ class DoenetViewer extends Component {
   render() {
     return this.documentRenderer;
   }
+}
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasError: false,
+      errorMsg: ""
+    };
+  }
+  static getDerivedStateFromError(error) {
+    return {
+      hasError: true,
+      errorMsg: error.toString()
+    };
+  }
+  render() {
+    if (this.state.hasError) {
+      return /* @__PURE__ */ React.createElement("b", null, this.state.errorMsg);
+    }
+    return this.props.children;
+  }
+}
+function DoenetViewer(props) {
+  return /* @__PURE__ */ React.createElement(ErrorBoundary, null, /* @__PURE__ */ React.createElement(DoenetViewerChild, {
+    ...props
+  }));
 }
 export default DoenetViewer;
 async function renderersloadComponent(promises, rendererClassNames) {
