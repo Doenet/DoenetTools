@@ -917,6 +917,23 @@ export const useRenameItem = () => {
 
 export const useAssignmentCallbacks = () => {
   const [addToast, ToastType] = useToast();
+
+  const makeAssignment = useRecoilCallback(({set})=> 
+  ({driveIdFolderId, itemId, payload})=>{
+    set(folderDictionary(driveIdFolderId),(old)=>{
+      let newObj = JSON.parse(JSON.stringify(old));
+      let newItemObj = newObj.contentsDictionary[itemId];          
+      newItemObj.isAssignment = "1";
+      newItemObj.assignment_title = payload?.assignment_title;      
+      newItemObj.assignmentId = payload?.assignmentId;
+      return newObj;
+    })
+  }
+)
+
+const onmakeAssignmentError = ({errorMessage=null}) => {
+  addToast(`make assignment error: ${errorMessage}`, ToastType.ERROR);
+}
   const publishAssignment = useRecoilCallback(({set})=> 
     ({driveIdFolderId, itemId, payload})=>{
       set(folderDictionary(driveIdFolderId),(old)=>{
@@ -924,7 +941,7 @@ export const useAssignmentCallbacks = () => {
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.assignment_isPublished = "1";
         newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payload?.title;
+        newItemObj.assignment_title = payload?.assignment_title;
         newItemObj.assignmentId = payload?.assignmentId;
         return newObj;
       })
@@ -956,7 +973,7 @@ export const useAssignmentCallbacks = () => {
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payloadAssignment?.title;
+        newItemObj.assignment_title = payloadAssignment?.assignment_title;     
         newItemObj.assignmentId = payloadAssignment?.assignmentId;
         return newObj;
       })
@@ -984,6 +1001,8 @@ export const useAssignmentCallbacks = () => {
   }
 
   return { 
+    makeAssignment,
+    onmakeAssignmentError,
     publishAssignment, 
     onPublishAssignmentError,
     publishContent,

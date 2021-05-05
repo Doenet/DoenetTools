@@ -1608,7 +1608,7 @@ const DoenetML = React.memo((props)=>{
   if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
   let label = props.item?.label;
-  if (props.item?.assignment_isPublished === "1" && props.item?.isAssignment === "1"){
+  if (props.item?.assignment_isPublished === "1" || props.item?.isAssignment === "1"){
     label = props.item?.assignment_title;
   }
 

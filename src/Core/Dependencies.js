@@ -28,6 +28,7 @@ export class DependencyHandler {
       childDependenciesByParent: {},
       parentDependenciesByParent: {},
       dependenciesMissingComponentBySpecifiedName: {},
+      dependenciesBasedOnDependenciesOfStateVariables: {}
     }
 
     this.resolveBlockers = {
@@ -788,6 +789,38 @@ export class DependencyHandler {
           component,
           varName
         })
+      }
+    }
+
+    let triggersForComponent = this.updateTriggers.dependenciesBasedOnDependenciesOfStateVariables[componentName];
+    if (triggersForComponent) {
+      for (let varName of allStateVariablesAffected) {
+        let triggersForVarName = triggersForComponent[varName];
+        if (triggersForVarName) {
+          for (let dep of triggersForVarName) {
+            if (dep.gettingValue) {
+              let compWithUpdated = dep.varsWithUpdatedDeps[componentName];
+              if (!compWithUpdated) {
+                compWithUpdated = dep.varsWithUpdatedDeps[componentName] = [];
+              }
+              if (!compWithUpdated.includes(varName)) {
+                compWithUpdated.push(varName);
+              }
+            } else {
+              for (let vName of dep.upstreamVariableNames) {
+                this.addBlocker({
+                  blockerComponentName: dep.upstreamComponentName,
+                  blockerType: "recalculateDownstreamComponents",
+                  blockerStateVariable: vName,
+                  blockerDependency: dep.dependencyName,
+                  componentNameBlocked: dep.upstreamComponentName,
+                  typeBlocked: "stateVariable",
+                  stateVariableBlocked: vName,
+                })
+              }
+            }
+          }
+        }
       }
     }
 
@@ -2702,6 +2735,9 @@ class Dependency {
       [this.mappedDownstreamVariableNamesByComponent[index1], this.mappedDownstreamVariableNamesByComponent[index2]]
         = [this.mappedDownstreamVariableNamesByComponent[index2], this.mappedDownstreamVariableNamesByComponent[index1]];
 
+      [this.valuesChanged[index1], this.valuesChanged[index2]]
+        = [this.valuesChanged[index2], this.valuesChanged[index1]];
+
     }
 
     for (let upVarName of this.upstreamVariableNames) {
@@ -2976,7 +3012,6 @@ class Dependency {
             downstreamComponentName: downCompName,
             downstreamComponentType: newDownComponents.downstreamComponentTypes[ind],
             index: ind,
-            createVariables: true,
           });
 
         }
@@ -2984,6 +3019,32 @@ class Dependency {
       }
 
     }
+
+    if (this.originalVariablesByComponent) {
+
+      for (let [ind, downCompName] of [...this.downstreamComponentNames].entries()) {
+        if (this.mappedDownstreamVariableNamesByComponent[ind].length !==
+          this.originalDownstreamVariableNamesByComponent[ind].length ||
+          this.mappedDownstreamVariableNamesByComponent[ind].some((v, i) =>
+            this.originalDownstreamVariableNamesByComponent[ind][i] !== v)
+        ) {
+
+
+          // remove and add back downstream component
+          // so that the variables are reinitialized
+
+          this.removeDownstreamComponent({ indexToRemove: ind });
+
+          this.addDownstreamComponent({
+            downstreamComponentName: downCompName,
+            downstreamComponentType: newDownComponents.downstreamComponentTypes[ind],
+            index: ind,
+          });
+        }
+
+      }
+    }
+
 
     this.onDownstreamComponentChange();
 
@@ -3436,11 +3497,24 @@ class RecursiveDependencyValuesDependency extends Dependency {
       }
     }
 
+    let triggersForComponent = this.dependencyHandler.updateTriggers.dependenciesBasedOnDependenciesOfStateVariables[componentName];
+    if (!triggersForComponent) {
+      triggersForComponent = this.dependencyHandler.updateTriggers.dependenciesBasedOnDependenciesOfStateVariables[componentName] = {};
+    }
+
     for (let varName of variableNames) {
 
       if (!thisComponentObj.variableNames.includes(varName)) {
 
         thisComponentObj.variableNames.push(varName);
+
+        let triggersForVarName = triggersForComponent[varName];
+        if (!triggersForVarName) {
+          triggersForVarName = triggersForComponent[varName] = [];
+        }
+        if (!triggersForVarName.includes(this)) {
+          triggersForVarName.push(this);
+        }
 
         let stateVarObj = component.state[varName];
 
@@ -3508,6 +3582,44 @@ class RecursiveDependencyValuesDependency extends Dependency {
     }
 
 
+  }
+
+  getValue() {
+
+    this.gettingValue = true;
+    this.varsWithUpdatedDeps = {};
+
+    let result;
+    let accumulatedVarsWithUpdatedDeps = {};
+
+    let foundNewUpdated = true;
+
+    while (foundNewUpdated) {
+      foundNewUpdated = false;
+      result = super.getValue();
+
+      for (let cName in this.varsWithUpdatedDeps) {
+        let compAccumulated = accumulatedVarsWithUpdatedDeps[cName];
+        if (!compAccumulated) {
+          compAccumulated = accumulatedVarsWithUpdatedDeps[cName] = [];
+        }
+        for (let vName of this.varsWithUpdatedDeps[cName]) {
+          if (!compAccumulated.includes(vName)) {
+            compAccumulated.push(vName);
+            foundNewUpdated = true;
+          }
+        }
+      }
+
+      if (foundNewUpdated) {
+        this.recalculateDownstreamComponents();
+      }
+
+    }
+
+    this.gettingValue = false;
+
+    return result;
   }
 
   deleteFromUpdateTriggers() {

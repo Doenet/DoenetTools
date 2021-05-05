@@ -45,6 +45,20 @@ export default class Point extends GraphicalComponent {
       createComponentOfType: "coords",
     };
 
+    attributes.displayDigits = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+
     return attributes;
   }
 
@@ -717,7 +731,6 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.coords = {
       public: true,
       componentType: "coords",
-      forRenderer: true,
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
@@ -785,6 +798,38 @@ export default class Point extends GraphicalComponent {
 
       }
 
+    }
+
+    stateVariableDefinitions.coordsForDisplay = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        coords: {
+          dependencyType: "stateVariable",
+          variableName: "coords"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        // for display via latex and text, round any decimal numbers to the significant digits
+        // determined by displaydigits or displaydecimals
+        let coordsForDisplay;
+
+        if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+          coordsForDisplay = dependencyValues.coords.round_numbers_to_decimals(dependencyValues.displayDecimals);
+        } else {
+          coordsForDisplay = dependencyValues.coords.round_numbers_to_precision(dependencyValues.displayDigits);
+        }
+
+        return { newValues: { coordsForDisplay } }
+
+      }
     }
 
     // currently value is used by answer to get variable for response
