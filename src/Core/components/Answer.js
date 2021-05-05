@@ -2,6 +2,8 @@ import InlineComponent from './abstract/InlineComponent';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { createUniqueName, getNamespaceFromName } from '../utils/naming';
 import { deepCompare } from '../utils/deepFunctions';
+// import sha1 from 'crypto-js/sha1';
+// import Base64 from 'crypto-js/enc-base64';
 
 export default class Answer extends InlineComponent {
   constructor(args) {
@@ -1010,6 +1012,7 @@ export default class Answer extends InlineComponent {
         return {
           newValues: {
             creditAchievedDependencies: dependencyValues.currentCreditAchievedDependencies
+            // creditAchievedDependencies: Base64.stringify(sha1(JSON.stringify(dependencyValues.currentCreditAchievedDependencies)))
           }
         }
       },
@@ -1053,6 +1056,8 @@ export default class Answer extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
 
+        // let justSubmitted = dependencyValues.currentCreditAchievedDependencies
+        //   === dependencyValues.creditAchievedDependenciesAtSubmit;
         let justSubmitted = deepCompare(
           dependencyValues.currentCreditAchievedDependencies,
           dependencyValues.creditAchievedDependenciesAtSubmit

@@ -23,7 +23,7 @@ describe('ODEsystem Tag Tests', function () {
     <point x='$zeroFixed' y='$ic' />
     </graph>
 
-    <number fixed hide name="zeroFixed">0</number>d
+    <number fixed hide name="zeroFixed">0</number>
   `}, "*");
     });
 
