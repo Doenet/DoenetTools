@@ -652,6 +652,7 @@ const ItemInfo = function (){
 function AddCourseDriveButton(props){
   const history = useHistory();
   const [addToast, ToastType] = useToast();
+  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
 
   const createNewDrive = useRecoilCallback(({set})=> 
   async ({label,newDriveId,newCourseId,image,color})=>{
@@ -729,11 +730,12 @@ function AddCourseDriveButton(props){
     }).catch((e)=>{
       onError({errorMessage: e.message});
     })
-    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    let newParams = {...urlParamsObj} 
-    newParams['path'] = `:::`
-    history.push('?'+encodeParams(newParams))
-
+   setDrivePath({
+    driveId:":",
+    parentFolderId:":",
+    itemId:":",
+    type:""
+  })
   }}/>
 }
 
@@ -890,6 +892,8 @@ export default function Library(props) {
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
+  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
+
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search)
@@ -936,32 +940,46 @@ export default function Library(props) {
   }
 
 
-  function useOutsideDriveSelector() {
-    let newParams = {};
-    newParams["path"] = `:::`;
-    history.push("?" + encodeParams(newParams));
-  }
-
-  function cleardrivecardSelection(){
-    setDrivecardSelection([]);
+  function useOutsideDriveSelector(setDrivePath) { //TODO 
+    // setDrivePath({
+    //   driveId:":",
+    //   parentFolderId:":",
+    //   itemId:":",
+    //   type:""
+    // })
     // let newParams = {};
     // newParams["path"] = `:::`;
     // history.push("?" + encodeParams(newParams));
   }
 
- 
-  // Breadcrumb container
-  let mainBreadcrumbContainer = null;
-  let supportBreadcrumbContainer = null;
-  if (routePathDriveId) {
-    mainBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main" />;
-    supportBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="support" />;
+  function cleardrivecardSelection(){
+    setDrivecardSelection([]);
+  
   }
 
-  const driveCardSelection = ({item}) => {
-    let newParams = {};
-    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    history.push("?" + encodeParams(newParams));
+ 
+  // Breadcrumb container
+  let mainBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main" />;
+  let supportBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="support" />;
+
+  const setDrivecardMainPath = useSetRecoilState(drivePathSyncFamily("main"))
+  const setDrivecardsupportPath = useSetRecoilState(drivePathSyncFamily("support"))
+
+  const mainDriveCardSelection = ({item}) => {
+    setDrivecardMainPath({
+      driveId:item.driveId,
+      parentFolderId:item.driveId,
+      itemId:item.driveId,
+      type:"Drive"
+    })
+  }
+  const supportDriveCardSelection = ({item}) => {
+    setDrivecardsupportPath({
+      driveId:item.driveId,
+      parentFolderId:item.driveId,
+      itemId:item.driveId,
+      type:"Drive"
+    })
   }
 
   return (
@@ -970,7 +988,7 @@ export default function Library(props) {
     <URLPathSync route={props.route}/>
     <Tool>
       <navPanel isInitOpen>
-      <div style={{height:"100vh"}} onClick={useOutsideDriveSelector}>
+      <div style={{height:"100vh"}} onClick={()=>useOutsideDriveSelector(setDrivePath)} >
          <div  style={{paddingBottom:"40px"}}>
         <Drive types={['content','course']}  foldersOnly={true} drivePathSyncKey="main"/>
       </div>
@@ -1014,7 +1032,7 @@ export default function Library(props) {
        types={['course']}
        subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
+       driveDoubleClickCallback={({item})=>{mainDriveCardSelection({item})}}
        />
         </div>
         
@@ -1046,7 +1064,7 @@ export default function Library(props) {
        types={['course']}
        subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
+       driveDoubleClickCallback={({item})=>{supportDriveCardSelection({item})}}
        />
         </div>
       </supportPanel>
