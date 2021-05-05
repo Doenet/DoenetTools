@@ -2735,6 +2735,9 @@ class Dependency {
       [this.mappedDownstreamVariableNamesByComponent[index1], this.mappedDownstreamVariableNamesByComponent[index2]]
         = [this.mappedDownstreamVariableNamesByComponent[index2], this.mappedDownstreamVariableNamesByComponent[index1]];
 
+      [this.valuesChanged[index1], this.valuesChanged[index2]]
+        = [this.valuesChanged[index2], this.valuesChanged[index1]];
+
     }
 
     for (let upVarName of this.upstreamVariableNames) {
