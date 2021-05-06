@@ -173,5 +173,63 @@ export default class Graph extends BlockComponent {
     return stateVariableDefinitions;
   }
 
+  changeAxisLimits({ xmin, xmax, ymin, ymax }) {
+
+    let updateInstructions = [];
+
+    if (xmin !== undefined) {
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "xmin",
+        value: xmin
+      })
+    }
+    if (xmax !== undefined) {
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "xmax",
+        value: xmax
+      })
+    }
+    if (ymin !== undefined) {
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "ymin",
+        value: ymin
+      })
+    }
+    if (ymax !== undefined) {
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "ymax",
+        value: ymax
+      })
+    }
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions,
+      event: {
+        verb: "interacted",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          xmin, xmax, ymin, ymax
+        }
+      }
+    })
+
+  }
+
+  actions = {
+    changeAxisLimits: this.changeAxisLimits.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 
 }
