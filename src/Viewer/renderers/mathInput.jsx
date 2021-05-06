@@ -82,9 +82,11 @@ export default class MathInput extends DoenetRenderer {
     let expression;
 
     text = substituteUnicodeInLatexString(text);
+    let fromLatex = getCustomFromLatex({
+      functionSymbols: this.doenetSvData.functionSymbols,
+    });
     try {
-      // expression = me.fromAst(latexToAst.convert(text));
-      expression = me.fromLatex(text);
+      expression = fromLatex(text);
     } catch (e) {
       // TODO: error on bad text
       expression = me.fromAst('\uFF3F');
@@ -402,9 +404,34 @@ function stripLatex(latex) {
 // }
 
 
+//---------------------------------------------------------------
 
 // since can't import this from core/utils/math.js
-// include function here
+// include functions here
+
+// TODO: determine how to import so don't repeat code
+
+var appliedFunctionSymbols = [
+  "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
+  "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
+  "asech", "asin", "asinh", "atan", "atanh",
+  "cos", "cosh", "cot", "coth", "csc", "csch", "sec",
+  "sech", "sin", "sinh", "tan", "tanh",
+  'arcsin', 'arccos', 'arctan', 'arccsc', 'arcsec', 'arccot', 'cosec',
+  'arg',
+  'min', 'max', 'mean', 'median',
+  'floor', 'ceil', 'round',
+  'sum', 'prod', 'var', 'std',
+  'count', 'mod'
+];
+
+function getCustomFromLatex({ functionSymbols }) {
+  return x => me.fromAst((new me.converters.latexToAstObj({
+    appliedFunctionSymbols, functionSymbols
+  })).convert(x))
+}
+
+
 function substituteUnicodeInLatexString(latexString) {
 
   let substitutions = [
