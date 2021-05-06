@@ -393,7 +393,7 @@ const DriveInfoPanel = function(props){
   }
 
   return <>
-  <h2>{dIcon} {panelDriveLabel}</h2>
+  <h2 data-cy="infoPanelItemLabel">{dIcon} {panelDriveLabel}</h2>
   <label>Course Name<input type="text" 
   value={driveLabel} 
   onChange={(e)=>setDriveLabel(e.target.value)} 
