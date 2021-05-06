@@ -144,13 +144,13 @@ describe('Copy Tag Tests', function () {
       expect(components['/frmt'].replacements[0].stateValues.value).eq("text");
 
       expect(components['/frmt2'].replacements[0].stateValues.modifyIndirectly).eq(false);
-      expect(components['/frmt2'].replacements[0].stateValues.hide).eq(true);
+      expect(components['/frmt2'].replacements[0].stateValues.hidden).eq(true);
       expect(components['/frmt2'].replacements[0].stateValues.value).eq("text");
 
       // all attributes copied when don't use prop
       expect(components['/frmt3'].replacements[0].stateValues.modifyIndirectly).eq(false);
       expect(components['/frmt3'].replacements[0].stateValues.value).eq("text");
-      expect(components['/frmt3'].replacements[0].stateValues.hide).eq(true);
+      expect(components['/frmt3'].replacements[0].stateValues.hidden).eq(true);
 
       expect(components['/A'].stateValues.label).eq("A");
       expect(components['/cA'].replacements[0].stateValues.value.tree).eqls(["vector", 1, 2]);
@@ -177,8 +177,8 @@ describe('Copy Tag Tests', function () {
     <graph>
       <copy name="p2" tname="_point1"/>
       <point>
-        <x><copy prop="y" tname="p2"/></x>
-        <y><copy prop="x1" tname="p2"/></y>
+        (<copy prop="y" tname="p2"/>,
+        <copy prop="x1" tname="p2"/>)
       </point>
     </graph>
     `}, "*");
@@ -267,7 +267,7 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <vector><displacement>(-4,2)</displacement><tail>(1,1)</tail></vector>
+    <vector displacement="(-4,2)" tail="(1,1)" />
     </graph>
   
     <graph>
@@ -415,7 +415,7 @@ describe('Copy Tag Tests', function () {
 
     <p hide="false">
       <aslist hide="false">
-        <sequence from="a" count="$_mathinput1" />
+        <sequence type="letters" from="a" length="$_mathinput1" />
       </aslist>
     </p>
     
@@ -523,5 +523,130 @@ describe('Copy Tag Tests', function () {
       });
     })
   });
+
+  it('copy macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a=<mathinput name="a" prefill="5" /></p>
+    <p>b=<mathinput name="b" prefill="2" /></p>
+    <p>c=<mathinput name="c" prefill="3" /></p>
+
+    <p name="orig"><m>ax^2+bx+c = <math name="s">$a x^2 + $b x + $c</math></m></p>
+    <p name="single"><m>ax^2+bx+c = $s</m></p>
+    <p name="double"><m>ax^2+bx+c = $$s</m></p>
+    <p name="triple"><m>ax^2+bx+c = $$$s</m></p>
+    <p name="singlem">$_m1</p>
+    <p name="doublem">$$_m1</p>
+    <p name="triplem">$$$_m1</p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/orig').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
+    })
+    cy.get('#\\/single').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
+    })
+    cy.get('#\\/double').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=$$s')
+    })
+    cy.get('#\\/triple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=$$$s')
+    })
+    cy.get('#\\/singlem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=5x2+2x+3')
+    })
+    cy.get('#\\/doublem').should('have.text', '$$_m1');
+    cy.get('#\\/triplem').should('have.text', '$$$_m1');
+
+
+    cy.log('Enter new numbers');
+    cy.get('#\\/a textarea').type("{end}{backspace}9{enter}", { force: true })
+    cy.get('#\\/b textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/c textarea').type("{end}{backspace}7{enter}", { force: true })
+
+    cy.get('#\\/orig').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
+    })
+    cy.get('#\\/single').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
+    })
+    cy.get('#\\/double').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=$$s')
+    })
+    cy.get('#\\/triple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=$$$s')
+    })
+    cy.get('#\\/singlem').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ax2+bx+c=9x2+6x+7')
+    })
+    cy.get('#\\/doublem').should('have.text', '$$_m1');
+    cy.get('#\\/triplem').should('have.text', '$$$_m1');
+
+
+  });
+
+  it('copy ignores hide by default', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Hidden text: <text name="hidden" hide>secret</text></p>
+    <p>Revealed by default: $hidden</p>
+    <p>Force to stay hidden: <copy tname="hidden" targetAttributesToIgnore="" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_p1').should('have.text', 'Hidden text: ');
+    cy.get('#\\/_p2').should('have.text', 'Revealed by default: secret');
+    cy.get('#\\/_p3').should('have.text', 'Force to stay hidden: ');
+
+
+  });
+
+  it('copies hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <text name="target">hello</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first copy" />
+    <booleaninput name='h2' prefill="true" label="Hide second copy" />
+
+    <p name="c1">copy 1: <copy hide="$h1" tname="target" /></p>
+    <p name="c2">copy 2: <copy hide="$h2" tname="target" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
+    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/c1').should('have.text', 'copy 1: ')
+    cy.get('#\\/c2').should('have.text', 'copy 2: hello')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/c1').should('have.text', 'copy 1: hello')
+    cy.get('#\\/c2').should('have.text', 'copy 2: ')
+
+  })
 
 });

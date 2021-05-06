@@ -113,8 +113,8 @@ describe('Extract Tag Tests', function () {
     <graph>
       <copy name="copy" tname="original" />
       <point name="transformed">
-        <x><copy prop="y" tname="copy2" /></x>
-        <y><extract prop="x1"><copy name="copy2" tname="copy" /></extract></y>
+        (<copy prop="y" tname="copy2" />,
+        <extract prop="x1"><copy name="copy2" tname="copy" /></extract>)
       </point>
     </graph>
 
@@ -184,12 +184,7 @@ describe('Extract Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <extract prop="center">
-    <circle>
-      <through>
-        <copy tname="_point1" />
-        <copy tname="_point2" />
-      </through>
-    </circle>
+    <circle through="$_point1 $_point2" />
     </extract>
     
     <copy name="x1" prop="x" tname="_extract1" />,
@@ -253,7 +248,7 @@ describe('Extract Tag Tests', function () {
 
     <p><aslist>
     <extract prop="text">
-      <sequence count="$n" />
+      <sequence length="$n" />
     </extract>
     </aslist></p>
     
@@ -359,9 +354,9 @@ describe('Extract Tag Tests', function () {
     <p><aslist>
     <extract prop="x">
       <map>
-        <template newnamespace><point>(<copy tname="_source" />+<copy prop="value" tname="../m" />,0)</point></template>
-        <sources>
-          <sequence count="$n" />
+        <template newnamespace><point>($a+<copy prop="value" tname="../m" />,0)</point></template>
+        <sources alias="a">
+          <sequence length="$n" />
         </sources>
       </map>
     </extract>
@@ -596,6 +591,58 @@ describe('Extract Tag Tests', function () {
 
     })
   });
+
+  // not sure if this is desired, but it is current behavior
+  it('extract ignores hide', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>See hidden text: <extract prop="value"><text name="hidden" hide>secret</text></extract></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_p1').should('have.text', 'See hidden text: secret');
+
+
+  });
+
+  it('extracts hide dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='h1' prefill="false" label="Hide first extract" />
+    <booleaninput name='h2' prefill="true" label="Hide second extract" />
+
+    <p name="e1">extract 1: <extract hide="$h1" prop="value" ><text>hello</text></extract></p>
+    <p name="e2">extract 2: <extract hide="$h2" prop="value" ><text>hello</text></extract></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/e1').should('have.text', 'extract 1: hello')
+    cy.get('#\\/e2').should('have.text', 'extract 2: ')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/e1').should('have.text', 'extract 1: ')
+    cy.get('#\\/e2').should('have.text', 'extract 2: hello')
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+
+    cy.get('#\\/e1').should('have.text', 'extract 1: hello')
+    cy.get('#\\/e2').should('have.text', 'extract 2: ')
+
+  })
 
 
 });

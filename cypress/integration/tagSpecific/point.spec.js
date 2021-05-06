@@ -51,9 +51,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point label="P">(5,6)</point>
-    <point label="Q">
-      <coords>(1, <copy prop="y" tname="_point1" />)</coords>
-    </point>
+    <point label="Q" coords="(1, $(_point1{prop='y'}))" />
   </graph>
   <copy prop="x2" tname="_point2" />
     `}, "*");
@@ -160,7 +158,7 @@ describe('Point Tag Tests', function () {
   </graph>
 
   <point name="source">
-    <coords>(<math modifyIndirectly="false">a</math>,2,3)</coords>
+    (<math modifyIndirectly="false">a</math>,2,3)
   </point>
   <copy prop="x" tname="_point1" />
   `}, "*");
@@ -203,7 +201,7 @@ describe('Point Tag Tests', function () {
   </graph>
 
   <point name="source">
-    <coords>(<math modifyIndirectly="false">a</math>,2,3)</coords>
+    (<math modifyIndirectly="false">a</math>,2,3)
   </point>
   <copy prop="x" tname="_point1" />
   `}, "*");
@@ -240,17 +238,11 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <point>
-    <x><copy prop="y" tname="source" /></x>
-    <y><copy prop="z" tname="source" /></y>
-  </point>
+  <point x="$(source{prop='y'})" y = "$(source{prop='z'})" />
   </graph>
 
-  <point name="source">
-    <x modifyIndirectly="false">a</x>
-    <y>2</y>
-    <z>3</z>
-  </point>
+  <math name="a" modifyIndirectly="false">a</math>
+  <point name="source" x="$a" y="2" z="3" />
   <copy prop="x" tname="_point1" />
   `}, "*");
     });
@@ -286,18 +278,12 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <point>
-    <x><copy prop="y" tname="source3" /></x>
-    <y><copy prop="z" tname="source3" /></y>
-  </point>
+  <point x="$(source3{prop='y'})" y = "$(source3{prop='z'})" />
   </graph>
 
   <copy name="source2" tname="source" />
-  <point name="source">
-    <x modifyIndirectly="false">a</x>
-    <y>2</y>
-    <z>3</z>
-  </point>
+  <math name="a" modifyIndirectly="false">a</math>
+  <point name="source" x="$a" y="2" z="3" />
   <copy name="source3" tname="source2" />
   <copy prop="x" tname="_point1" />
 
@@ -447,7 +433,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<math name="x">1</math>, sin(<copy tname="x" />))
+    (<math name="x">1</math>, sin($x))
   </point>
   </graph>
   `}, "*");
@@ -567,7 +553,7 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
   <point>
-    (<copy tname="d" />,3-<copy tname="d" />)
+    ($d,3-$d)
   </point>
   </graph>
   <math name="d">5</math>
@@ -934,13 +920,64 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point x="1" y="2">
     <constraints>
       <constrainToGrid/>
     </constraints>
-    <x>1</x><y>2</y>
   </point>
 
+  </graph>
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.log(`move point to (1.2,3.6)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.2, y: 3.6 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (-9.8,-7.4)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -9.8, y: -7.4 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-10);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(-7);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -10, -7]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−10,−7)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+  });
+
+  it('point constrained to grid, copied from outside', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <constraints name="toGrid">
+    <constrainToGrid/>
+  </constraints>
+
+  <graph>
+  <point x="1" y="2">
+    $toGrid
+  </point>
   </graph>
   <math><copy prop="coords" tname="_point1" /></math>
   <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
@@ -986,12 +1023,11 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point xs="1 3.1">
     <constraints>
       <constrainToGrid dx="2" dy="2"/>
       <constrainToGrid dx="2" dy="2" xoffset="1" yoffset="1" />
     </constraints>
-    <xs>1,3.1</xs>
   </point>
 
   </graph>
@@ -1044,12 +1080,10 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
     <point name="original">(1,2)</point>
-    <point name="constrained">
+    <point name="constrained" x="$(original{prop='x'})+1" y="$(original{prop='y'})+1" >
       <constraints>
         <constrainToGrid/>
       </constraints>
-      <x><copy prop="x" tname="original" />+1</x>
-      <y><copy prop="y" tname="original" />+1</y>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1173,12 +1207,10 @@ describe('Point Tag Tests', function () {
 
   <graph>
     <point name="original">(1.2,3.6)</point>
-    <point name="constrained">
+    <point name="constrained" x="$(original{prop='x'})+1" y="$(original{prop='y'})+1">
       <constraints>
         <constrainToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" />
       </constraints>
-      <xs><x><copy prop="x" tname="original" />+1</x>
-        <x><copy prop="y" tname="original" />+1</x></xs>
     </point>
     <point name="follower">
         (<copy prop="x" tname="constrained" />+1,
@@ -1331,11 +1363,77 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point xs="-7.1 8.9">
     <constraints>
       <attractToGrid/>
     </constraints>
-    <xs>-7.1,8.9</xs>
+  </point>
+
+  </graph>
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -7, 9]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−7,9)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (1.1,3.6)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.1, y: 3.6 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1.1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(3.6);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1.1, 3.6]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(false);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1.1,3.6)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "false")
+
+    cy.log(`move point to (1.1,3.9)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 1.1, y: 3.9 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 1, 4]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,4)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+  });
+
+  it('point attracted to grid, copied from outside', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <constraints name="toGrid">
+    <attractToGrid/>
+  </constraints>
+
+  <graph>
+
+  <point xs="-7.1 8.9">
+    $toGrid
   </point>
 
   </graph>
@@ -1396,11 +1494,10 @@ describe('Point Tag Tests', function () {
   <text>a</text>
   <graph>
 
-  <point>
+  <point xs="3.1 -3.4">
     <constraints>
       <attractToGrid includeGridlines="true"/>
     </constraints>
-    <xs>3.1,-3.4</xs>
   </point>
 
   </graph>
@@ -1486,11 +1583,10 @@ describe('Point Tag Tests', function () {
 
   <graph>
 
-  <point>
+  <point xs="-7.1 8.9">
     <constraints>
       <attractToGrid dx="$dx" dy="$dy" xoffset="$xoffset" yoffset="$yoffset" xthreshold="$xthreshold" ythreshold="$ythreshold" />
     </constraints>
-    <xs>-7.1,8.9</xs>
   </point>
 
   </graph>
@@ -1582,17 +1678,11 @@ describe('Point Tag Tests', function () {
   <graph>
   <point>(0,2)</point>
   <point>(2,0)</point>
-  <line>
-    <through>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-    </through>
-  </line>
-  <point name="A">
+  <line through="$_point1 $_point2"/>
+  <point name="A" xs="-1 -5">
     <constraints>
       <constrainTo><copy tname="_line1" /></constrainTo>
     </constraints>
-    <xs>-1,-5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1654,17 +1744,11 @@ describe('Point Tag Tests', function () {
   <graph>
   <point>(0,2)</point>
   <point>(2,0)</point>
-  <line>
-    <through>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-    </through>
-  </line>
-  <point name="A">
+  <line through="$_point1 $_point2"/>
+  <point name="A" xs="-1 -5">
     <constraints>
       <attractTo><copy tname="_line1" /></attractTo>
     </constraints>
-    <xs>-1,-5</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1728,12 +1812,12 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template newNamespace>
-      <point hide>(<copy tname="_source" />,<copy tname="_source" />+2)</point>
+      <point hide>($n,$n+2)</point>
     </template>
-    <sources><sequence from="-10" to="10"/></sources>
+    <sources alias="n"><sequence from="-10" to="10"/></sources>
   </map>
 
-  <point>
+  <point xs="3 2">
     <constraints>
     <constrainTo>
       <copy tname="_line1" />
@@ -1741,7 +1825,6 @@ describe('Point Tag Tests', function () {
       <copy tname="_map1" />
     </constrainTo>
     </constraints>
-    <xs>3,2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1805,12 +1888,12 @@ describe('Point Tag Tests', function () {
   <line hide>y = x - 3</line>
   <map>
     <template newNamespace>
-      <point hide>(<copy tname="_source" />,<copy tname="_source" />+2)</point>
+      <point hide>($n,$n+2)</point>
     </template>
-    <sources><sequence from="-10" to="10"/></sources>
+    <sources alias="n"><sequence from="-10" to="10"/></sources>
   </map>
 
-  <point>
+  <point xs="3 2">
     <constraints>
       <attractTo threshold="1">
         <copy tname="_line1" />
@@ -1818,7 +1901,6 @@ describe('Point Tag Tests', function () {
         <copy tname="_map1" />
       </attractTo>
     </constraints>
-    <xs>3,2</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="_point1" />
@@ -1906,7 +1988,7 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
     <constraintUnion>
       <constrainTo><copy tname="_line1" /></constrainTo>
@@ -1915,7 +1997,6 @@ describe('Point Tag Tests', function () {
       <constrainToGrid dx="2" dy="2"/>
     </constraintUnion>
     </constraints>
-    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -1988,18 +2069,17 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
-    <constraintToAttractor>
+    <transformConstraintIntoAttractor>
       <constraintUnion>
         <constrainTo><copy tname="_line1" /></constrainTo>
         <constrainTo><copy tname="_line2" /><copy tname="_line3" /></constrainTo>
         <constrainTo><copy tname="_line4" /></constrainTo>
         <constrainToGrid dx="2" dy="2"/>
       </constraintUnion>
-    </constraintToAttractor>
+    </transformConstraintIntoAttractor>
     </constraints>
-    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2103,7 +2183,7 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
     <attractTo>
       <copy tname="_line1" />
@@ -2120,7 +2200,6 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
     </constraints>
-    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2272,7 +2351,7 @@ describe('Point Tag Tests', function () {
   <line>x=y</line>
   <line>x=2y+8</line>
   <line>x=-2y-8</line>
-  <point name="A">
+  <point name="A" xs="7 3">
     <constraints>
     <constrainTo>
       <copy tname="_line1" />
@@ -2289,7 +2368,6 @@ describe('Point Tag Tests', function () {
       <intersection><copy tname="_line3" /><copy tname="_line4" /></intersection>
     </attractTo>
     </constraints>
-    <xs>7,3</xs>
   </point>
   </graph>
   <copy prop="constraintUsed" name="constraintUsed" tname="A" />
@@ -2413,8 +2491,8 @@ describe('Point Tag Tests', function () {
   <point>(3,2)</point>
   <point>(4,2)</point>
   
-  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
-  <line><through><copy tname="_point3" /><copy tname="_point4" /></through></line>
+  <line through="$_point1 $_point2" />
+  <line through="$_point3 $_point4" />
   <intersection><copy tname="_line1" /><copy tname="_line2" /></intersection>
   
   </graph>
@@ -2491,6 +2569,118 @@ describe('Point Tag Tests', function () {
 
   });
 
+  it('intersection of two lines hides dynamically', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <graph>
+  <point>(1,2)</point>
+  <point>(2,2)</point>
+  <point>(3,2)</point>
+  <point>(4,2)</point>
+  <line through="$_point1 $_point2" />
+  <line through="$_point3 $_point4" />
+  </graph>
+
+  <booleaninput name='h1' prefill="false" label="Hide first intersection" />
+  <booleaninput name='h2' prefill="true" label="Hide second intersection" />
+  
+  <p name="i1">Intersection 1: <intersection hide="$h1"><copy tname="_line1" /><copy tname="_line2" /></intersection></p>
+  <p name="i2">Intersection 2: <intersection hide="$h2"><copy tname="_line1" /><copy tname="_line2" /></intersection></p>
+  
+  <text>a</text>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0=y−2')
+    })
+    cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+
+    cy.get('#\\/h1_input').click();
+    cy.get('#\\/h2_input').click();
+    cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+    cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0=y−2')
+    })
+
+
+    cy.log(`make first line vertical`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 3, y: 5 });
+      components['/_point2'].movePoint({ x: 3, y: -5 });
+
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,2)')
+      })
+
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,2)')
+      })
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+    })
+
+    cy.log(`make second line vertical`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point3'].movePoint({ x: -4, y: 5 });
+      components['/_point4'].movePoint({ x: -4, y: -5 });
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+    })
+
+    cy.log(`make lines intersect again`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -8, y: -7 });
+      components['/_point2'].movePoint({ x: 8, y: 9 });
+      components['/_point3'].movePoint({ x: 4, y: 6 });
+      components['/_point4'].movePoint({ x: -4, y: -6 });
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      })
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      })
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+
+    })
+
+    cy.log(`make lines equal again`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 6, y: 9 });
+      components['/_point2'].movePoint({ x: -6, y: -9 });
+      components['/_point3'].movePoint({ x: 4, y: 6 });
+      components['/_point4'].movePoint({ x: -4, y: -6 });
+      cy.get('#\\/i1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0=18x−12y')
+      })
+      cy.get('#\\/i2').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/h1_input').click();
+      cy.get('#\\/h2_input').click();
+      cy.get('#\\/i1').find('.mjx-mrow').should('not.exist');
+      cy.get('#\\/i2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('0=18x−12y')
+      })
+    })
+
+  });
+
   // gap not so relevant any more with new sugar
   // but doesn't hurt to keep test
   it('sugar coords with defining gap', () => {
@@ -2512,7 +2702,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/_point1'].activeChildren[0].activeChildren[0];
+      let x1 = components['/_point1'].attributes.xs.activeChildren[0];
       let math1 = x1.definingChildren[0];
       let math1Name = math1.componentName;
       let math2 = x1.definingChildren[2];
@@ -2653,10 +2843,7 @@ describe('Point Tag Tests', function () {
     <point>(1,2)</point>
     <copy tname="_point1" />
     <copy tname="_point1" />
-    <point>
-      <x><copy prop="y" tname="_copy1" /></x>
-      <y><copy prop="x" tname="_copy2" /></y>
-    </point>
+    <point x = "$(_copy1{prop='y'})" y="$(_copy2{prop='x'})" />
   </graph>
   `}, "*");
     });
@@ -2721,10 +2908,7 @@ describe('Point Tag Tests', function () {
     <point>(1,2)</point>
     <copy tname="_point1" />
     <copy tname="_point1" />
-    <point>
-      <x><copy prop="y" tname="_copy1" /></x>
-      <y><copy prop="x" tname="_copy2" /></y>
-    </point>
+    <point x = "$(_copy1{prop='y'})" y="$(_copy2{prop='x'})" />
   </graph>
   `}, "*");
     });
@@ -2792,10 +2976,7 @@ describe('Point Tag Tests', function () {
     </graph>
     
     <graph>
-      <point name="p1">
-        <x>3</x>
-        <y>7</y>
-      </point>
+      <point name="p1" x="3" y="7" />
     </graph>
   `}, "*");
     });
@@ -2877,10 +3058,7 @@ describe('Point Tag Tests', function () {
   </graph>
   
   <graph>
-    <point name="p1">
-      <x>3</x>
-      <y>7</y>
-    </point>
+    <point name="p1" x="3" y="7"/>
   </graph>
   `}, "*");
     });
@@ -2974,14 +3152,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <x><copy prop="y" tname="_point2" /></x>
-      <y>7</y>
-    </point>
-    <point>
-      <x><copy prop="y" tname="_point1" /></x>
-      <y>9</y>
-    </point>
+    <point x="$(_point2{prop='y'})" y="7" />
+    <point x="$(_point1{prop='y'})" y="9" />
   
   </graph>
       
@@ -3115,14 +3287,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <x><copy prop="y" tname="P2a" /></x>
-      <y>7</y>
-    </point>
-    <point>
-      <x><copy prop="y" tname="P1a" /></x>
-      <y>9</y>
-    </point>
+    <point x="$(P2a{prop='y'})" y="7" />
+    <point x="$(P1a{prop='y'})" y="9" />
   </graph>
   
   <graph>
@@ -3389,13 +3555,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <coords>(<copy prop="y" tname="_point2" />,7)</coords>
-    </point>
-    <point>
-      <x><copy prop="y" tname="_point1" /></x>
-      <y>9</y>
-    </point>
+    <point coords="($(_point2{prop='y'}), 7)" />
+    <point x="$(_point1{prop='y'})" y="9" />
   
   </graph>
   `}, "*");
@@ -3522,10 +3683,7 @@ describe('Point Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <point>
-      <x>3</x>
-      <y><copy prop="ymax" fixed="true" tname="_graph1" /></y>
-    </point>
+    <point x="3" y="$(_graph1{prop='ymax' fixed='true'})" />
     <point>
       (<copy prop="xmin" fixed="true" tname="_graph1" />,5)
     </point>
@@ -3695,21 +3853,15 @@ describe('Point Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+    <math hide name="fixed0" fixed>0</math>
     <graph>
-      <point>
+      <point x="-4" y="1">
         <constraints>
           <attractTo><point>(1,-7)</point></attractTo>
         </constraints>
-        <x>-4</x><y>1</y>
       </point>
-      <point>
-        <x><copy prop="x" tname="_point1" /></x>
-        <y fixed>0</y>
-      </point>
-        <point>
-        <y><copy prop="y" tname="_point1" /></y>
-        <x fixed>0</x>
-      </point>
+      <point x="$(_point1{prop='x'})" y="$fixed0" />
+      <point y="$(_point1{prop='y'})" x="$fixed0" />
     </graph>
   `}, "*");
     });
@@ -3816,7 +3968,7 @@ describe('Point Tag Tests', function () {
     });
   })
 
-  it.only('change point dimensions', () => {
+  it('change point dimensions', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -3824,7 +3976,7 @@ describe('Point Tag Tests', function () {
     <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
 
     <section name="thePoints"><title>The points</title>
-    <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
+    <p>The point: <point coords="$originalCoords"/></p>
     <p>The point copied: <copy name="point2" tname="_point1"/></p>
     <p>The point copied again: <copy name="point3" tname="point2"/></p>
     </section>
@@ -3857,24 +4009,24 @@ describe('Point Tag Tests', function () {
     </section>
 
     <section><title>For point 1</title>
-    <p>Change coords: <mathinput name="coords1b"><bindValueTo><copy prop="coords" tname="_point1"/></bindValueTo></mathinput></p>
-    <p>Change x-coordinate: <mathinput name="point1x1b"><bindValueTo><copy prop="x1" tname="_point1"/></bindValueTo></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point1x2b"><bindValueTo><copy prop="x2" tname="_point1" includeUndefinedObjects/></bindValueTo></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point1x3b"><bindValueTo><copy prop="x3" tname="_point1" includeUndefinedObjects/></bindValueTo></mathinput></p>    
+    <p>Change coords: <mathinput name="coords1b" bindValueTo="$(_point1{prop='coords'})" /></p>
+    <p>Change x-coordinate: <mathinput name="point1x1b" bindValueTo="$(_point1{prop='x1'})" /></p>
+    <p>Change y-coordinate: <mathinput name="point1x2b" bindValueTo="$(_point1{prop='x2' type='math'})" /></p>
+    <p>Change z-coordinate: <mathinput name="point1x3b" bindValueTo="$(_point1{prop='x3' type='math'})" /></p>    
     </section>
 
     <section><title>For point 2</title>
-    <p>Change coords: <mathinput name="coords2b"><bindValueTo><copy prop="coords" tname="point2"/></bindValueTo></mathinput></p>
-    <p>Change x-coordinate: <mathinput name="point2x1b"><bindValueTo><copy prop="x1" tname="point2"/></bindValueTo></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point2x2b"><bindValueTo><copy prop="x2" tname="point2" includeUndefinedObjects/></bindValueTo></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point2x3b"><bindValueTo><copy prop="x3" tname="point2" includeUndefinedObjects/></bindValueTo></mathinput></p>    
+    <p>Change coords: <mathinput name="coords2b" bindValueTo="$(point2{prop='coords'})" /></p>
+    <p>Change x-coordinate: <mathinput name="point2x1b" bindValueTo="$(point2{prop='x1'})" /></p>
+    <p>Change y-coordinate: <mathinput name="point2x2b" bindValueTo="$(point2{prop='x2' type='math'})" /></p>
+    <p>Change z-coordinate: <mathinput name="point2x3b" bindValueTo="$(point2{prop='x3' type='math'})" /></p>    
     </section>
 
     <section><title>For point 3</title>
-    <p>Change coords: <mathinput name="coords3b"><bindValueTo><copy prop="coords" tname="point3"/></bindValueTo></mathinput></p>
-    <p>Change x-coordinate: <mathinput name="point3x1b"><bindValueTo><copy prop="x1" tname="point3"/></bindValueTo></mathinput></p>
-    <p>Change y-coordinate: <mathinput name="point3x2b"><bindValueTo><copy prop="x2" tname="point3" includeUndefinedObjects/></bindValueTo></mathinput></p>
-    <p>Change z-coordinate: <mathinput name="point3x3b"><bindValueTo><copy prop="x3" tname="point3" includeUndefinedObjects/></bindValueTo></mathinput></p>    
+    <p>Change coords: <mathinput name="coords3b" bindValueTo="$(point3{prop='coords'})" /></p>
+    <p>Change x-coordinate: <mathinput name="point3x1b" bindValueTo="$(point3{prop='x1'})" /></p>
+    <p>Change y-coordinate: <mathinput name="point3x2b" bindValueTo="$(point3{prop='x2' type='math'})" /></p>
+    <p>Change z-coordinate: <mathinput name="point3x3b" bindValueTo="$(point3{prop='x3' type='math'})" /></p>    
     </section>
 
     <section><title>collecting</title>
@@ -7040,7 +7192,7 @@ describe('Point Tag Tests', function () {
     <p>Specify point coordinates: <mathinput name="originalCoords" /></p>
 
     <section name="thePoints"><title>The points</title>
-    <p>The point: <point><coords><copy prop="value" tname="originalCoords"/></coords></point></p>
+    <p>The point: <point coords="$originalCoords" /></p>
     <p>The point copied: <copy name="point2" tname="_point1"/></p>
     <p>The point copied again: <copy name="point3" tname="point2"/></p>
     </section>
@@ -7128,7 +7280,7 @@ describe('Point Tag Tests', function () {
           expect(point3.stateValues.xs[0].tree).eq('a');
           expect(point3.stateValues.xs[1].tree).eq('b');
           expect(point3.stateValues.x1.tree).eq('a');
-          expect(point3.stateValues.x2.tree).eq('b');
+          // expect(point3.stateValues.x2.tree).eq('b');
           expect(point3.stateValues.x3).eq(undefined);
 
         });
@@ -7215,8 +7367,8 @@ describe('Point Tag Tests', function () {
           expect(point3.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
           expect(point3.stateValues.xs[2].tree).eqls(["^", "w", 2]);
           expect(point3.stateValues.x1.tree).eqls(["*", 2, "x"]);
-          expect(point3.stateValues.x2.tree).eqls(["/", "u", "v"]);
-          expect(point3.stateValues.x3.tree).eqls(["^", "w", 2]);
+          // expect(point3.stateValues.x2.tree).eqls(["/", "u", "v"]);
+          // expect(point3.stateValues.x3.tree).eqls(["^", "w", 2]);
 
         });
 
@@ -7261,7 +7413,7 @@ describe('Point Tag Tests', function () {
           expect(point3.stateValues.xs[0].tree).eq('p');
           expect(point3.stateValues.xs[1].tree).eq('q');
           expect(point3.stateValues.x1.tree).eq('p');
-          expect(point3.stateValues.x2.tree).eq('q');
+          // expect(point3.stateValues.x2.tree).eq('q');
           expect(point3.stateValues.x3).eq(undefined);
 
         });

@@ -72,13 +72,13 @@ describe('Math Tag Tests', function () {
     })
   })
 
-  it('hidden string ref/math string', () => {
+  it('hidden string copy/math string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy tname="_math1" /> + 5</math>
+    <math>3<copy tname="_math1" targetAttributesToIgnore="" /> + 5</math>
     `}, "*");
     });
 
@@ -252,7 +252,7 @@ describe('Math Tag Tests', function () {
       let point = components['/_copy1'].replacements[0];
       let coords = point.adapterUsed;
       expect(components['/_math1'].stateValues.value.tree).eq(5);
-      expect(components['/_math1'].activeChildren[2].componentName).equal(coords.componentName);
+      expect(components['/_math1'].activeChildren[1].componentName).equal(coords.componentName);
       expect(coords.adaptedFrom.componentName).eq(point.componentName);
     })
 
@@ -263,9 +263,9 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math simplify>2<sequence count="0"/>3</math>
+  <math simplify>2<sequence length="0"/>3</math>
   <graph>
-  <point><coords>(<copy tname="_math1" />, 3)</coords></point>
+  <point>(<copy tname="_math1" />, 3)</point>
   </graph>
   `}, "*");
     });
@@ -281,8 +281,8 @@ describe('Math Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       // string children are originally 1 and 3
-      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("2");
-      expect(components['/_math1'].activeChildren[2].stateValues.value).eq("3");
+      expect(components['/_math1'].activeChildren[0].stateValues.value).eq("2");
+      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("3");
       expect(components['/_math1'].stateValues.value.tree).eq(6);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(6);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
@@ -295,15 +295,15 @@ describe('Math Tag Tests', function () {
       components['/_point1'].movePoint({ x: 7, y: 9 });
       console.log(`point moved`)
       // second child takes value, third is blank
-      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("7");
-      expect(components['/_math1'].activeChildren[2].stateValues.value).eq("");
+      expect(components['/_math1'].activeChildren[0].stateValues.value).eq("7");
+      expect(components['/_math1'].activeChildren[1].stateValues.value).eq("");
       expect(components['/_math1'].stateValues.value.tree).eq(7);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(7);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(9);
     });
   });
 
-  it('math displayed rounded to 14 significant digits by default', () => {
+  it('math displayed rounded to 10 significant digits by default', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -635,6 +635,82 @@ describe('Math Tag Tests', function () {
       expect(components['/_math2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
       expect(components['/_math1'].stateValues.displaySmallAsZero).eq(false);
       expect(components['/_math2'].stateValues.displaySmallAsZero).eq(true);
+    });
+
+
+  });
+
+  it('display digits and decimals', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math>621802.3520303639164826281</math></p>
+  <p><math>31.3835205397397634 x + 4pi</math></p>
+  <p><copy tname="_math1" assignNames="dig5a" displayDigits="5" /></p>
+  <p><copy tname="_math2" assignNames="dig5b" displayDigits="5" /></p>
+  <p><copy tname="_math1" assignNames="dec5a" displayDecimals="5" /></p>
+  <p><copy tname="_math2" assignNames="dec5b" displayDecimals="5" /></p>
+  <p><copy tname="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy tname="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621802.352')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.38352054x+4π')
+    })
+    cy.get('#\\/dig5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621800')
+    })
+    cy.get('#\\/dig5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.384x+4π')
+    })
+    cy.get('#\\/dec5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621802.35203')
+    })
+    cy.get('#\\/dec5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.38352x+4π')
+    })
+    cy.get('#\\/dig5dec1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621800')
+    })
+    cy.get('#\\/dig5dec1b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.384x+4π')
+    })
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_math1'].stateValues.value.tree).eq(621802.3520303639)
+      expect(components['/_math2'].stateValues.value.tree).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(components['/dig5a'].stateValues.value.tree).eq(621802.3520303639)
+      expect(components['/dig5b'].stateValues.value.tree).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(components['/dec5a'].stateValues.value.tree).eq(621802.3520303639)
+      expect(components['/dec5b'].stateValues.value.tree).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(components['/dig5dec1a'].stateValues.value.tree).eq(621802.3520303639)
+      expect(components['/dig5dec1b'].stateValues.value.tree).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(components['/_math1'].stateValues.valueForDisplay.tree).eq(621802.352)
+      expect(components['/_math2'].stateValues.valueForDisplay.tree).eqls(
+        ['+', ['*', 31.38352054, 'x'], ['*', 4, 'pi']]);
+      expect(components['/dig5a'].stateValues.valueForDisplay.tree).eq(621800)
+      expect(components['/dig5b'].stateValues.valueForDisplay.tree).eqls(
+        ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
+      expect(components['/dec5a'].stateValues.valueForDisplay.tree).eq(621802.35203)
+      expect(components['/dec5b'].stateValues.valueForDisplay.tree).eqls(
+        ['+', ['*', 31.38352, 'x'], ['*', 4, 'pi']]);
+      expect(components['/dig5dec1a'].stateValues.valueForDisplay.tree).eq(621800)
+      expect(components['/dig5dec1b'].stateValues.valueForDisplay.tree).eqls(
+        ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
+
     });
 
 

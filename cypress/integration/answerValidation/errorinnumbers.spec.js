@@ -1000,6 +1000,7 @@ describe('Allow error in numbers validation tests', function () {
 
   });
 
+  // Note: currently failing.  Need to investigate
   it('symbolic, evaluate numbers, preserve order', () => {
     cy.window().then((win) => {
       win.postMessage({

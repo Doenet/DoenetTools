@@ -1,17 +1,15 @@
-# See https://help.github.com/ignore-files/ for more about ignoring files.
+.snowpack
+build
+dist_local
+node_modules
 
-
-# dependencies
-/node_modules
-
-# testing
-/coverage
 
 # production
-/build
+# /dist
 
 # local build files
 /dist_local
+
 
 # misc
 .DS_Store
@@ -29,7 +27,7 @@ yarn-error.log*
 package-lock.json
 
 .vscode
-src/defaultCode.doenet
+# src/Tools/test/testCode.doenet
 #ignore the distribution
 # dist/index.html
 # dist/main.js
@@ -49,3 +47,4 @@ docker\ alp/
 doenet_docker/volumes/db/*
 
 package-lock.json
+.eslintrc.js

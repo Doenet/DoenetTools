@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Booleaninput Tag Tests', function () {
+describe('BooleanInput Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
@@ -224,7 +224,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput bindValueTo="$_boolean1" /></p>
     <p>Reffed boolean: <copy tname="_boolean1" /></p>
     <p>Reffed boolean input: <copy prop="value" tname="_booleaninput1" /></p>
     `}, "*");
@@ -237,9 +237,9 @@ describe('Booleaninput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let boolean2 = components['/_copy2'].replacements[0];
+      let boolean2 = components['/_copy1'].replacements[0];
       let boolean2Anchor = cesc('#' + boolean2.componentName);
-      let boolean3 = components['/_copy3'].replacements[0];
+      let boolean3 = components['/_copy2'].replacements[0];
       let boolean3Anchor = cesc('#' + boolean3.componentName);
 
       cy.get('#\\/_boolean1').should('have.text', 'true');
@@ -278,7 +278,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>b</text>
     <p>Original boolean: <boolean>true</boolean></p>
-    <p>booleaninput based on boolean: <booleaninput prefill="false"><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput prefill="false" bindValueTo="$_boolean1" /></p>
     `}, "*");
     });
 
@@ -297,7 +297,7 @@ describe('Booleaninput Tag Tests', function () {
         doenetML: `
     <text>c</text>
     <p>Original boolean: <boolean>can't <text>update</text> <text>me</text></boolean></p>
-    <p>booleaninput based on boolean: <booleaninput><bindValueTo><copy tname="_boolean1" /></bindValueTo></booleaninput></p>
+    <p>booleaninput based on boolean: <booleaninput bindValueTo="$_boolean1" /></p>
     `}, "*");
     });
 

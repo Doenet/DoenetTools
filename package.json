@@ -1,106 +1,135 @@
 {
-  "name": "doenet-core",
-  "version": "0.4.0",
+  "scripts": {
+    "start": "cd doenet_docker && docker-compose up -d && cd ..  && snowpack build --config snowpack.config.js",
+    "docker:build": "cd doenet_docker && docker-compose build",
+    "dev": "snowpack dev --config snowpack.config.js",
+    "hot": "snowpack dev --config snowpack.config.js",
+    "clean": "snowpack --reload --config snowpack.config.js",
+    "build": "snowpack build --config snowpack.deploy.config.js",
+    "build:core": "node package.core.js",
+    "deploy": "snowpack build --config snowpack.deploy.config.js",
+    "test": "cypress open",
+    "test:all": "cypress run -b 'chrome' --config video=false --headless",
+    "publish_db": "cd doenet_docker && docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql doenet_docker_mysql_1 mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
+    "reset_db": "docker exec -i doenet_docker_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql",
+    "format": "prettier --write \"src/**/*.{js,jsx}\"",
+    "lint": "prettier --check \"src/**/*.{js,jsx}\""
+  },
   "dependencies": {
-    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@blueprintjs/core": "^3.39.0",
     "@blueprintjs/datetime": "^3.20.5",
-    "@codemirror/next": "^0.10.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
-    "@fortawesome/free-regular-svg-icons": "^5.15.1",
-    "@fortawesome/free-solid-svg-icons": "^5.15.1",
-    "@fortawesome/react-fontawesome": "^0.1.12",
-    "@handsontable/react": "^2.1.0",
+    "@fortawesome/free-regular-svg-icons": "^5.15.2",
+    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@handsontable/react": "^5.0.0",
     "axios": "^0.21.1",
-    "brace": "^0.11.1",
-    "codemirror": "^5.59.2",
-    "compromise": "~13.3.1",
+    "codemirror": "^5.60.0",
+    "compromise": "^13.10.6",
     "compromise-numbers": "^1.2.0",
-    "crypto": "^1.0.1",
-    "csv-parse": "^4.14.1",
-    "csv-parser": "^2.3.5",
-    "handsontable": "^6.2.2",
-    "math-expressions": "2.0.0-alpha26",
-    "mersenne-twister": "1.1.0",
-    "moment": "^2.29.1",
-    "nanoid": "^2.1.11",
-    "prop-types": "^15.7.2",
+    "crypto-js": "^4.0.0",
+    "cssesc": "^3.0.0",
+    "csv-parse": "^4.15.3",
+    "handsontable": "^8.3.2",
+    "js-cookie": "^2.2.1",
+    "math-expressions": "^2.0.0-alpha26",
+    "mersenne-twister": "^1.1.0",
+    "nanoid": "^3.1.22",
+    "react": "^16.14.0",
     "react-codemirror2": "^7.2.1",
-    "react-cookie": "^4.0.3",
-    "react-datepicker": "^2.16.0",
-    "react-datetime-picker": "^2.9.0",
-    "react-draggable": "3.0.5",
-    "react-dropzone": "^11.2.4",
-    "react-indexed-db": "^1.0.12",
+    "react-dom": "^16.14.0",
+    "react-dropzone": "^11.3.1",
     "react-is": "^17.0.1",
     "react-mathjax2": "0.0.2",
     "react-mathquill": "^1.0.1",
+    "react-measure": "^2.5.2",
     "react-router": "^5.2.0",
-    "react-spring": "^8.0.27",
-    "react-table": "^7.6.2",
+    "react-router-dom": "^5.2.0",
+    "react-spring": "npm:@react-spring/web@^9.1.1",
+    "react-table": "^7.6.3",
+    "react-use-gesture": "^9.1.3",
     "react-visibility-sensor": "^5.1.1",
-    "recoil": "^0.1.2",
-    "resize-observer-polyfill": "^1.5.1",
-    "stats.js": "0.17.0",
-    "styled-components": "^5.2.1",
-    "three": "^0.125.0",
-    "three-text2d": "0.4.1"
-  },
-  "scripts": {
-    "start": "cd doenet_docker && docker-compose up",
-    "healthcheck": "npx wait-on http://localhost:80 && docker exec doenet_docker_mysql_1 /bin/sh wait_on_mysql.sh",
-    "docker:build": "cd doenet_docker && docker-compose build",
-    "docker:lamp": "cd doenet_docker_lamp_only && docker-compose up",
-    "docker:webpack": "cd doenet_docker_webpack_only && docker-compose up",
-    "webpack": "webpack --mode development --config webpack.local.config.js --watch --progress --build-delimiter '                                    ..,,,,,..\n                           ,,,,,,,,,,,,,,,,,,,,,,,,,,,\n                      ,,,,,,,.......................,,,,,,,\n                  .,,,,,.................................,,,,,.\n               .,,,,......................*///,.............,,,,,\n             .,,,,..................%*             %,..........,,,,.\n           .,,,...........&#   &.,/                   &..........,,,,.\n          ,,,,.........#                                %..........,,,,\n        .,,,..........&.            .*(##(*.             ,...........,,,\n       .,,,...........&.        %##############%          %...........,,,\n       ,,,.........(%#,%.     %%#######//#%%%#####        &............,,,\n      ,,,......%....         (%%####*      /%#####/          .##.......,,,,\n      ,,,....#..             /%%%#################*              ,,.....,,,\n     ,,,,....,.               **(%%%###########(**                ,,....,,,.\n     ,,,.....*.                  **************                   ,.....,,,.\n     ,,,,....%.                                                  ,*.....,,,.\n      ,,,...../*..                .............................(/.......,,,\n      ,,,........./###((((///////////****,,,,,............@@@@@@@@.....,,,,\n       ,,,.........@@@@........@@@@....@@@@@.@@....@@.@@@@@..@@........,,,\n        ,,,........@@..@@@...@@@..@@@..@@....@@@...@@.@@.....@@.......,,,\n         ,,,.......@@...@@..@@......@@.@@@@@.@@.@..@@.@@@@@..@@.....,,,,\n          ,,,,.....@@...@@..@@......@@.@@....@@..@.@@.@@.....@@....,,,,\n           .,,,,...@@..@@@...@@@..@@@..@@....@@...@@@.@@.....@@..,,,,\n             .,,,,.@@@@........@@@@....@@@@@.@@....@@.@@@@@..@@,,,,\n                ,,,,,.......................................,,,,,\n                  .,,,,,,...............................,,,,,,\n                      ,,,,,,,......................,,,,,,,.\n                           .,,,,,,,,,,,,,,,,,,,,,,,,,.\n                                     .......'",
-    "build": "webpack --mode production --config webpack.deployment.config.js",
-    "lint": "prettier-eslint --write true \"$(pwd)/src/**/*.js\" && prettier-eslint --write true \"$(pwd)/cypress/**/*.js\"",
-    "test": "cypress open",
-    "test:all": "cypress run -b 'chrome' --config video=false",
-    "generate-docs:components": "babel-node generate-components-json.js",
-    "docs": "babel-node test2.js",
-    "deploy": "cd doenet_docker_deploy && docker-compose up",
-    "publish_db": "cd doenet_docker && docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql doenet_docker_mysql_1 mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
-    "reset_db": "docker exec -i doenet_docker_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql"
+    "recoil": "^0.2.0",
+    "styled-components": "^5.2.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.7",
-    "@babel/core": "^7.12.7",
-    "@babel/eslint-parser": "^7.12.17",
-    "@babel/node": "^7.12.6",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/preset-env": "^7.12.7",
-    "@babel/preset-react": "^7.12.7",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-loader": "^8.2.1",
-    "babel-plugin-styled-components": "^1.12.0",
-    "copy-webpack-plugin": "^5.1.2",
-    "css-loader": "^1.0.0",
-    "cypress": "^3.8.3",
-    "eslint": "^7.14.0",
-    "eslint-config-prettier": "^8.1.0",
+    "@snowpack/plugin-dotenv": "^2.1.0",
+    "@snowpack/plugin-react-refresh": "^2.4.2",
+    "@snowpack/web-test-runner-plugin": "^0.2.0",
+    "@testing-library/react": "^11.2.6",
+    "@web/test-runner": "^0.12.19",
+    "chai": "^4.2.0",
+    "cypress": "^7.2.0",
+    "esbuild": "^0.9.7",
+    "eslint": "^7.24.0",
+    "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "file-loader": "^4.3.0",
-    "html-loader": "^0.5.5",
-    "html-webpack-plugin": "^3.2.0",
-    "mini-css-extract-plugin": "^0.4.5",
-    "npm": "^6.14.9",
-    "prettier-eslint": "^12.0.0",
-    "prettier-eslint-cli": "^5.0.0",
-    "raw-loader": "^0.5.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-router-dom": "^5.2.0",
-    "regenerator-runtime": "^0.13.7",
-    "url-loader": "^1.1.2",
-    "wait-on": "^5.2.1",
-    "webpack": "^4.44.2",
-    "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.2"
+    "http-proxy": "^1.18.1",
+    "prettier": "^2.0.5",
+    "snowpack": "^3.0.13",
+    "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
-  "optionalDependencies": {
-    "fsevents": "^2.1.2"
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/errors",
+      "plugin:react/recommended",
+      "plugin:jsx-a11y/recommended",
+      "prettier"
+    ],
+    "rules": {
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "react/prop-types": "off",
+      "no-console": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": [
+        "warn",
+        {
+          "additionalHooks": "useRecoilCallback"
+        }
+      ]
+    },
+    "plugins": [
+      "react",
+      "import",
+      "jsx-a11y",
+      "react-hooks"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 11,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "env": {
+      "browser": true,
+      "es2020": true,
+      "node": true
+    },
+    "settings": {
+      "import/resolver": {
+        "node": {
+          "paths": [
+            "src"
+          ],
+          "extensions": [
+            ".js",
+            ".jsx",
+            ".ts",
+            ".tsx"
+          ]
+        }
+      },
+      "react": {
+        "version": "detect"
+      }
+    }
   }
 }

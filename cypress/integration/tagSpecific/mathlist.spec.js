@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Mathlist Tag Tests', function () {
+describe('MathList Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
@@ -19,8 +19,8 @@ describe('Mathlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist>a,1+1,</mathlist>
-    <mathlist simplify="full">a,1+1,</mathlist>
+    <mathlist>a 1+1 </mathlist>
+    <mathlist simplify="full">a  1+1</mathlist>
     ` }, "*");
     });
 
@@ -28,13 +28,13 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
+      let child1Name = components['/_mathlist1'].activeChildren[0].componentName;
       let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
+      let child2Name = components['/_mathlist1'].activeChildren[1].componentName;
       let child2Anchor = cesc('#' + child2Name);
-      let child3Name = components['/_mathlist2'].stateValues.childrenToRender[0];
+      let child3Name = components['/_mathlist2'].activeChildren[0].componentName;
       let child3Anchor = cesc('#' + child3Name);
-      let child4Name = components['/_mathlist2'].stateValues.childrenToRender[1];
+      let child4Name = components['/_mathlist2'].activeChildren[1].componentName;
       let child4Anchor = cesc('#' + child4Name);
 
 
@@ -58,8 +58,8 @@ describe('Mathlist Tag Tests', function () {
         expect(components['/_mathlist1'].activeChildren[1].stateValues.value.tree).eqls(['+', 1, 1]);
         expect(components['/_mathlist1'].stateValues.maths[0].tree).eq('a');
         expect(components['/_mathlist1'].stateValues.maths[1].tree).eqls(['+', 1, 1]);
-        expect(components['/_mathlist2'].activeChildren[1].stateValues.value.tree).eq('a');
-        expect(components['/_mathlist2'].activeChildren[2].stateValues.value.tree).eq(2);
+        expect(components['/_mathlist2'].activeChildren[0].stateValues.value.tree).eq('a');
+        expect(components['/_mathlist2'].activeChildren[1].stateValues.value.tree).eq(2);
         expect(components['/_mathlist2'].stateValues.maths[0].tree).eq('a');
         expect(components['/_mathlist2'].stateValues.maths[1].tree).eq(2);
       })
@@ -71,7 +71,7 @@ describe('Mathlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathlist>a,(, 1+1,</mathlist>
+    <mathlist>a (  1+1 </mathlist>
     ` }, "*");
     });
 
@@ -80,11 +80,11 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[0];
+      let child1Name = components['/_mathlist1'].activeChildren[0].componentName;
       let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[1];
+      let child2Name = components['/_mathlist1'].activeChildren[1].componentName;
       let child2Anchor = cesc('#' + child2Name);
-      let child3Name = components['/_mathlist1'].stateValues.childrenToRender[2];
+      let child3Name = components['/_mathlist1'].activeChildren[2].componentName;
       let child3Anchor = cesc('#' + child3Name);
 
       cy.log('Test value displayed in browser')
@@ -147,7 +147,7 @@ describe('Mathlist Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathlist>
-      <math>a</math>, q, <math>1+1</math> h
+      <math>a</math> q <math>1+1</math> h
     </mathlist>
     ` }, "*");
     });
@@ -234,26 +234,26 @@ describe('Mathlist Tag Tests', function () {
     <text>a</text>
     <mathlist>
       <math>a</math>
-      <mathlist>q,r</mathlist>
+      <mathlist>q r</mathlist>
       <math>h</math>
       <mathlist>
         <mathlist>
           <math>b</math>
-          <mathlist>u,v</mathlist>
+          <mathlist>u v</mathlist>
         </mathlist>
-        <mathlist>i,j</mathlist>
+        <mathlist>i j</mathlist>
       </mathlist>
     </mathlist>
 
-    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
 
     ` }, "*");
     });
@@ -262,17 +262,17 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
+      let child1Name = components['/_mathlist2'].activeChildren[0].componentName;
       let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
+      let child2Name = components['/_mathlist2'].activeChildren[1].componentName;
       let child2Anchor = cesc('#' + child2Name);
-      let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
+      let child5Name = components['/_mathlist5'].activeChildren[0].componentName;
       let child5Anchor = cesc('#' + child5Name);
-      let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
+      let child6Name = components['/_mathlist5'].activeChildren[1].componentName;
       let child6Anchor = cesc('#' + child6Name);
-      let child7Name = components['/_mathlist1'].stateValues.childrenToRender[7];
+      let child7Name = components['/_mathlist6'].activeChildren[0].componentName;
       let child7Anchor = cesc('#' + child7Name);
-      let child8Name = components['/_mathlist1'].stateValues.childrenToRender[8];
+      let child8Name = components['/_mathlist6'].activeChildren[1].componentName;
       let child8Anchor = cesc('#' + child8Name);
 
       cy.log('Test value displayed in browser')
@@ -412,27 +412,27 @@ describe('Mathlist Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <mathlist>
-      a,
-      <mathlist>q,r</mathlist>, 
+      a
+      <mathlist>q r</mathlist>  
       <math>h</math>
       <mathlist>
         <mathlist>
           b
-          <mathlist>u,v</mathlist>
+          <mathlist>u v</mathlist>
         </mathlist>
-        <mathlist>i,j</mathlist>
+        <mathlist>i  j</mathlist>
       </mathlist>
     </mathlist>
 
-    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
 
     ` }, "*");
     });
@@ -441,21 +441,21 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child0Name = components['/_mathlist1'].stateValues.childrenToRender[0];
+      let child0Name = components['/_mathlist1'].activeChildren[0].componentName;
       let child0Anchor = cesc('#' + child0Name);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
+      let child1Name = components['/_mathlist2'].activeChildren[0].componentName;
       let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
+      let child2Name = components['/_mathlist2'].activeChildren[1].componentName;
       let child2Anchor = cesc('#' + child2Name);
-      let child4Name = components['/_mathlist1'].stateValues.childrenToRender[4];
+      let child4Name = components['/_mathlist4'].activeChildren[0].componentName;
       let child4Anchor = cesc('#' + child4Name);
-      let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
+      let child5Name = components['/_mathlist5'].activeChildren[0].componentName;
       let child5Anchor = cesc('#' + child5Name);
-      let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
+      let child6Name = components['/_mathlist5'].activeChildren[1].componentName;
       let child6Anchor = cesc('#' + child6Name);
-      let child7Name = components['/_mathlist1'].stateValues.childrenToRender[7];
+      let child7Name = components['/_mathlist6'].activeChildren[0].componentName;
       let child7Anchor = cesc('#' + child7Name);
-      let child8Name = components['/_mathlist1'].stateValues.childrenToRender[8];
+      let child8Name = components['/_mathlist6'].activeChildren[1].componentName;
       let child8Anchor = cesc('#' + child8Name);
 
       cy.log('Test value displayed in browser')
@@ -596,33 +596,34 @@ describe('Mathlist Tag Tests', function () {
     <text>a</text>
     <mathlist>
       <math>a</math>
-      <mathlist>q,r</mathlist>
-      <copy prop="math3" tname="_mathlist1" />
+      <mathlist>q r</mathlist>
+      <copy prop="math3" tname="_mathlist1" assignNames="m4" componentType="math" />
       <mathlist>
         <mathlist name="mid">
-          <math><copy prop="math1" tname="_mathlist1"/></math>
-          <mathlist>u,v</mathlist>
+          <math><copy prop="math1" tname="_mathlist1" componentType="math" /></math>
+          <mathlist>u v</mathlist>
         </mathlist>
         <mathlist>
-          <copy prop="math2" tname="_mathlist1"/>
-          <copy prop="math5" tname="_mathlist1"/>
+          <copy prop="math2" tname="_mathlist1" assignNames="m8" componentType="math" />
+          <copy prop="math5" tname="_mathlist1" assignNames="m9" componentType="math" />
         </mathlist>
       </mathlist>
-      <copy tname="mid" />
+      <copy tname="mid" assignNames="mid2" />
     </mathlist>
 
-    <mathinput><bindValueTo><copy prop="math1" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math2" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math3" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math4" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math5" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math6" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math7" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math8" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math9" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math10" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math11" tname="_mathlist1" /></bindValueTo></mathinput>
-    <mathinput><bindValueTo><copy prop="math12" tname="_mathlist1" /></bindValueTo></mathinput>
+    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math10'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math11'})" />
+    <mathinput bindValueTo="$(_mathlist1{prop='math12'})" />
+
     ` }, "*");
     });
 
@@ -630,29 +631,29 @@ describe('Mathlist Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let child0Name = components['/_mathlist1'].stateValues.childrenToRender[0];
+      let child0Name = "/_math1";
       let ca0 = cesc('#' + child0Name);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
+      let child1Name = components['/_mathlist2'].activeChildren[0].componentName;
       let ca1 = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
+      let child2Name = components['/_mathlist2'].activeChildren[1].componentName;
       let ca2 = cesc('#' + child2Name);
-      let child3Name = components['/_mathlist1'].stateValues.childrenToRender[3];
+      let child3Name = "/m4";
       let ca3 = cesc('#' + child3Name);
-      let child4Name = components['/_mathlist1'].stateValues.childrenToRender[4];
+      let child4Name = "/_math2";
       let ca4 = cesc('#' + child4Name);
-      let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
+      let child5Name = components['/_mathlist5'].activeChildren[0].componentName;
       let ca5 = cesc('#' + child5Name);
-      let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
+      let child6Name = components['/_mathlist5'].activeChildren[1].componentName;
       let ca6 = cesc('#' + child6Name);
-      let child7Name = components['/_mathlist1'].stateValues.childrenToRender[7];
+      let child7Name = "/m8";
       let ca7 = cesc('#' + child7Name);
-      let child8Name = components['/_mathlist1'].stateValues.childrenToRender[8];
+      let child8Name = "/m9";
       let ca8 = cesc('#' + child8Name);
-      let child9Name = components['/_mathlist1'].stateValues.childrenToRender[9];
+      let child9Name = components['/mid2'].activeChildren[0].componentName;
       let ca9 = cesc('#' + child9Name);
-      let child10Name = components['/_mathlist1'].stateValues.childrenToRender[10];
+      let child10Name = components['/mid2'].activeChildren[1].activeChildren[0].componentName;
       let ca10 = cesc('#' + child10Name);
-      let child11Name = components['/_mathlist1'].stateValues.childrenToRender[11];
+      let child11Name = components['/mid2'].activeChildren[1].activeChildren[1].componentName;
       let ca11 = cesc('#' + child11Name);
 
 
@@ -722,14 +723,14 @@ describe('Mathlist Tag Tests', function () {
     <text>a</text>
     <mathlist maximumnumber="7">
       <math>a</math>
-      <mathlist maximumnumber="2">q,r,l,k</mathlist>
+      <mathlist maximumnumber="2">q r l k</mathlist>
       <math>h</math>
       <mathlist maximumnumber="4">
         <mathlist maximumnumber="2">
           <math>b</math>
-          <mathlist>u,v</mathlist>
+          <mathlist>u v</mathlist>
         </mathlist>
-        <mathlist>i,j,k</mathlist>
+        <mathlist>i j k</mathlist>
       </mathlist>
     </mathlist>
     ` }, "*");
@@ -739,38 +740,63 @@ describe('Mathlist Tag Tests', function () {
 
 
     cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let child1Name = components['/_mathlist1'].stateValues.childrenToRender[1];
-      let child1Anchor = cesc('#' + child1Name);
-      let child2Name = components['/_mathlist1'].stateValues.childrenToRender[2];
-      let child2Anchor = cesc('#' + child2Name);
-      let child5Name = components['/_mathlist1'].stateValues.childrenToRender[5];
-      let child5Anchor = cesc('#' + child5Name);
-      let child6Name = components['/_mathlist1'].stateValues.childrenToRender[6];
-      let child6Anchor = cesc('#' + child6Name);
+      // let components = Object.assign({}, win.state.components);
+      // let child1Name = components['/_mathlist2'].activeChildren[0].componentName;
+      // let child1Anchor = cesc('#' + child1Name);
+      // let child2Name = components['/_mathlist2'].activeChildren[1].componentName;
+      // let child2Anchor = cesc('#' + child2Name);
+      // let child5Name = components['/_mathlist5'].activeChildren[0].componentName;
+      // let child5Anchor = cesc('#' + child5Name);
+      // let child6Name = components['/_mathlist6'].activeChildren[0].componentName;
+      // let child6Anchor = cesc('#' + child6Name);
 
-      cy.log('Test value displayed in browser')
-      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      // cy.log('Test value displayed in browser')
+      // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('a')
+      // })
+      // cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('q')
+      // })
+      // cy.get(child2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('r')
+      // })
+      // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('h')
+      // })
+      // cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('b')
+      // })
+      // cy.get(child5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('u')
+      // })
+      // cy.get(child6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('i')
+      // })
+
+
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('a')
-      })
-      cy.get(child1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      });
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(1).invoke('text').then((text) => {
         expect(text.trim()).equal('q')
-      })
-      cy.get(child2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      });
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('r')
-      })
-      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      });
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(3).invoke('text').then((text) => {
         expect(text.trim()).equal('h')
-      })
-      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      });
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal('b')
-      })
-      cy.get(child5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      });
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(5).invoke('text').then((text) => {
         expect(text.trim()).equal('u')
-      })
-      cy.get(child6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      });
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
         expect(text.trim()).equal('i')
-      })
+      });
+      cy.get('#\\/_document1').find('.mjx-mrow').eq(7).should('not.exist')
+
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -804,7 +830,7 @@ describe('Mathlist Tag Tests', function () {
     })
   })
 
-  it('mathlist ancestor prop simplify', () => {
+  it.skip('mathlist ancestor prop simplify', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -828,7 +854,7 @@ describe('Mathlist Tag Tests', function () {
       <math name="ee" simplify="none">e+e</math>
       <math name="ff" simplify="full">f+f</math>
     </p>
-    <p><textinput><bindValueTo><copy prop="simplify" tname="_mathlist1" /></bindValueTo></textinput></p>
+    <p><textinput bindValueTo="$(_mathlist1{prop='simplify'})"/></p>
     ` }, "*");
     });
 
@@ -1188,7 +1214,7 @@ describe('Mathlist Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><mathlist hide="true">a,b,c</mathlist></p>
+    <p><mathlist hide="true">a b c</mathlist></p>
 
     <p><copy name="mathlist1a" hide="false" tname="_mathlist1" /></p>
 

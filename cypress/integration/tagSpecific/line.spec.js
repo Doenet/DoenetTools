@@ -23,12 +23,7 @@ describe('Line Tag Tests', function () {
   <graph>
   <point label='P'>(3,5)</point>
   <point label='Q'>(-4,-1)</point>
-    <line>
-      <through>
-        <copy tname="_point1" />
-        <copy tname="_point2" />
-      </through>
-    </line>
+    <line through="$_point1 $_point2 "/>
   </graph>
     `}, "*");
     });
@@ -49,62 +44,24 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('full unsugared <through><point> line', () => {
+  it('through = string of points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <line label='l'>
-      <through>
-        <point>(1,2)</point>
-        <point>(4,7)</point>
-      </through>
-    </line>
+    <line label='l' through="(1,2) (4,7)" />
   </graph>
     `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('points are where they should be')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', 1, 2])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', 4, 7])
-
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
-
-    })
-  })
-
-  it('sugar <point> from string inside <through>', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <line label='l'>
-      <through>
-        (1,2),(4,7)
-      </through>
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let point1 = components['/_through1'].activeChildren[0];
-      let point2 = components['/_through1'].activeChildren[1];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       cy.log('points are where they should be')
       cy.window().then((win) => {
@@ -122,44 +79,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it.skip('sugar <through> from string', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <line label='l'>
-        (1,2),(4,7)
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let through1 = components["/_line1"].activeChildren[1];
-      let point1 = through1.activeChildren[0];
-      let point2 = through1.activeChildren[1];
-
-      cy.log('points are where they should be')
-      cy.window().then((win) => {
-        expect(point1.stateValues.xs[0].tree).eq(1)
-        expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
-        expect(point2.stateValues.xs[0].tree).eq(4)
-        expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
-
-        expect(components['/_line1'].stateValues.label).eq('l')
-        expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
-
-      })
-    })
-  })
-
-  it('<through> with points from strings and maths', () => {
+  it('through = points from strings and maths', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -167,15 +87,7 @@ describe('Line Tag Tests', function () {
   <math>1</math>
   <math>2</math>
   <graph>
-    <line label='l'>
-      <through>
-        <point>
-          <x><copy tname="_math1" /></x>
-          <y><copy tname="_math2" /></y>
-        </point>
-        <point>(4,7)</point>
-      </through>
-    </line>
+    <line label='l' through="($_math1, $_math2) (4,7) " />
   </graph>
     `}, "*");
     });
@@ -185,50 +97,9 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components["/_line1"].activeChildren[1];
-      let point1 = through1.activeChildren[0];
-      let point2 = through1.activeChildren[1];
-
-      cy.log('points are where they should be')
-      cy.window().then((win) => {
-        expect(point1.stateValues.xs[0].tree).eq(1)
-        expect(point1.stateValues.xs[1].tree).eq(2)
-        expect(point1.stateValues.coords.tree).eqls(['vector', 1, 2])
-        expect(point2.stateValues.xs[0].tree).eq(4)
-        expect(point2.stateValues.xs[1].tree).eq(7)
-        expect(point2.stateValues.coords.tree).eqls(['vector', 4, 7])
-
-        expect(components['/_line1'].stateValues.label).eq('l')
-        expect(components['/_line1'].stateValues.slope.tree).eqls(['/', 5, 3])
-
-      })
-    })
-  })
-
-  it.skip('sugar <point> label as a component', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <line>
-    <label>l</label>
-      <through>
-        (1,2),(4,7)
-      </through>
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let point1 = components['/_through1'].activeChildren[0];
-      let point2 = components['/_through1'].activeChildren[1];
-
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
 
       cy.log('points are where they should be')
       cy.window().then((win) => {
@@ -251,7 +122,6 @@ describe('Line Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math>1</math>
   <graph>
     <line>
       5x-2y=3
@@ -318,9 +188,7 @@ describe('Line Tag Tests', function () {
   <text>a</text>
   <math>1</math>
   <graph>
-    <line><equation>
-      5x-2y=3
-    </equation></line>
+    <line equation="5x-2y=3" />
   </graph>
   `}, "*");
     });
@@ -387,11 +255,7 @@ describe('Line Tag Tests', function () {
   <math>5x</math>
   <number>2</number>
   <graph>
-    <line>
-      <equation>
-        <copy tname="_math1" />-<copy tname="_number1" />y=3
-      </equation>
-    </line>
+    <line equation="$_math1 - $_number1 y = 3" />
   </graph>
   `}, "*");
     });
@@ -420,7 +284,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line variables="u,v">
+    <line variables="u v">
       5u-2v=3
     </line>
   </graph>
@@ -509,13 +373,11 @@ describe('Line Tag Tests', function () {
   <graph>
 
   <point>
-  <coords>
   (<copy prop="y" tname="_point2" />,
   <copy tname="a" />)
-  </coords>
   </point>
   <point>(5,3)</point>
-  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
+  <line through="$_point1 $_point2" />
   </graph>
   <math name="a" hide simplify><copy prop="x" tname="_point2" />+1</math>
   `}, "*");
@@ -648,7 +510,7 @@ describe('Line Tag Tests', function () {
   <graph>
   <point>(0,0)</point>
   <point>(1,3)</point>
-  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
+  <line through="$_point1 $_point2" />
   </graph>
   
   <graph>
@@ -661,9 +523,10 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point1 = components['/_copy1'].replacements[0];
-      let point2 = components['/_copy2'].replacements[0];
-      let line2 = components['/_copy3'].replacements[0];
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
+      let line2 = components['/_copy1'].replacements[0];
 
       cy.log('line starts off correctly')
       cy.window().then((win) => {
@@ -852,122 +715,13 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('line via copied through', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-  <point>(0,0)</point>
-  <point>(1,3)</point>
-  <line><through><copy tname="_point1" /><copy tname="_point2" /></through></line>
-  </graph>
-  
-  <graph>
-  <line><copy tname="_through1" /></line>
-  </graph>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let point1 = components['/_copy1'].replacements[0];
-      let point2 = components['/_copy2'].replacements[0];
-
-      cy.log('line starts off correctly')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(3, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(0, 1E-12);
-
-      });
-
-      cy.log('move points')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        point1.movePoint({ x: -3, y: 5 });
-        point2.movePoint({ x: 5, y: 1 });
-
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(-0.5, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(3.5, 1E-12);
-
-      });
-
-      cy.log('move line1')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let point1coords = [
-          components['/_line1'].stateValues.points[0][0],
-          components['/_line1'].stateValues.points[0][1],
-        ];
-        let point2coords = [
-          components['/_line1'].stateValues.points[1][0],
-          components['/_line1'].stateValues.points[1][1],
-        ];
-
-        let moveX = -2;
-        let moveY = -1;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        components['/_line1'].moveLine({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(-0.5, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(1.5, 1E-12);
-
-      });
-
-      cy.log('move line2')
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        let point1coords = [
-          components['/_line1'].stateValues.points[0][0],
-          components['/_line1'].stateValues.points[0][1],
-        ];
-        let point2coords = [
-          components['/_line1'].stateValues.points[1][0],
-          components['/_line1'].stateValues.points[1][1],
-        ];
-
-        let moveX = -5;
-        let moveY = -2;
-
-        point1coords[0] = point1coords[0].add(moveX);
-        point1coords[1] = point1coords[1].add(moveY);
-        point2coords[0] = point2coords[0].add(moveX);
-        point2coords[1] = point2coords[1].add(moveY);
-
-        components['/_line2'].moveLine({
-          point1coords: point1coords,
-          point2coords: point2coords
-        });
-
-        expect(components['/_line2'].stateValues.slope.evaluate_to_constant()).closeTo(-0.5, 1E-12);
-        expect(components['/_line2'].stateValues.yintercept.evaluate_to_constant()).closeTo(-3, 1E-12);
-
-      });
-    })
-
-  })
-
   it('copy points of line', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-  <line><through>(1,2),(3,4)</through></line>
+  <line through="(1,2) (3,4)" />
   </graph>
   <graph>
   <copy prop="point1" tname="_line1" />
@@ -983,7 +737,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -1148,14 +902,10 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <line><through>(-1,-2),(-3,-4)</through></line>
+  <line through="(-1,-2) (-3,-4)" />
   </graph>
   <graph>
-  <line>
-    <through>
-      <copy prop="points" tname="_line1" />
-    </through>
-  </line>
+  <line through="$(_line1{prop='points'})" />
   <copy prop="points" tname="_line1" />
   </graph>
   `}, "*");
@@ -1166,7 +916,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -1293,9 +1043,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line>
-      <through>(5,-4),(1,4)</through>
-    </line>
+    <line through="(5,-4) (1,4)" />
   </graph>
 
   <p>Variables are <copy prop="var1" tname="_line1" /> and <copy prop="var2" tname="_line1" />.</p>
@@ -1366,19 +1114,13 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line>
-      <through>(5,1),(1,5)</through>
-    </line>
+    <line through="(5,1)(1,5)" />
   </graph>
   <graph>
-  <line><copy prop="equation" tname="_line1" /></line>
+  <line equation="$(_line1{prop='equation'})" />
   </graph>
   <graph>
-  <line variables="u,v">
-    <equation>
-      <copy prop="coeffvar1" tname="_line1" />u + <copy prop="coeffvar2" tname="_line1" />v + <copy prop="coeff0" tname="_line1" /> =0
-    </equation>
-  </line>
+  <line variables="u v" equation="$(_line1{prop='coeffvar1'})u +$(_line1{prop='coeffvar2'})v + $(_line1{prop='coeff0'}) = 0" />
   </graph>
   `}, "*");
     });
@@ -1416,7 +1158,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].activeChildren[0];
+      let through1 = components['/_line1'].attributes.through;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       point1.movePoint({ x: 4, y: 4 });
@@ -1446,31 +1188,20 @@ describe('Line Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <math name="threeFixed" fixed>3</math>
+
   <graph>
-  <line>
-    <through>
-      <point>(1,2)</point>
-      <point>
-        <x><copy prop="y" tname="_point1" /></x>
-        <y><copy prop="x" tname="_point1" /></y>
-      </point>
-    </through>
-  </line> 
-  <point name="x1">
-    <x><extract prop="x"><copy prop="point1" tname="_line1" /></extract></x>
-    <y fixed>3</y>
-  </point>
+  <point hide name="A">(1,2)</point>
+  <line through="$A ($(A{prop='y'}),$(A{prop='x'})) "/>
+  <point name="x1" x="$(_line1{prop='pointX1_1'})" y="$threeFixed" />
   <point name="x2">
-    <x><extract prop="x"><copy prop="point2" tname="_line1" /></extract></x>
-    <y fixed>4</y>
+    (<extract prop="x"><copy prop="point2" tname="_line1" /></extract>,
+    <math fixed>4</math>)
   </point>
-  <point name="y1">
-    <y><extract prop="y"><copy prop="point1" tname="_line1" /></extract></y>
-    <x fixed>3</x>
-  </point>
+  <point name="y1" y="$(_line1{prop='pointX1_2'})" x="$threeFixed" />
   <point name="y2">
-    <y><extract prop="y"><copy prop="point2" tname="_line1" /></extract></y>
-    <x fixed>4</x>
+    (<math fixed>4</math>,
+    <extract prop="y"><copy prop="point2" tname="_line1" /></extract>)
   </point>
 </graph>
   `}, "*");
@@ -1555,24 +1286,9 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <line>
-    <through>
-    <copy prop="point2" tname="_line2" />
-    <point>(1,0)</point>
-    </through>
-  </line>
-  <line>
-    <through hide="false">
-    <copy prop="point2" tname="_line3" />
-    <point>(3,2)</point>
-    </through>
-  </line>
-  <line>
-    <through hide="false">
-    <copy prop="point2" tname="_line1" />
-    <point>(-1,4)</point>
-    </through>
-  </line>
+  <line through="$(_line2{prop='point2' componentType='point'}) (1,0)" />
+  <line through="$(_line3{prop='point2' componentType='point'}) (3,2)" />
+  <line through="$(_line1{prop='point2' componentType='point'}) (-1,4)" />
   </graph>
   `}, "*");
     });
@@ -1581,12 +1297,15 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point1 = components['/_through1'].activeChildren[0];
-      let point2 = components['/_through1'].activeChildren[1];
-      let point3 = components['/_through2'].activeChildren[1];
-      let point4 = components['/_through2'].activeChildren[2];
-      let point5 = components['/_through3'].activeChildren[1];
-      let point6 = components['/_through3'].activeChildren[2];
+      let throughComponent1 = components["/_line1"].attributes.through;
+      let point1 = throughComponent1.activeChildren[0];
+      let point2 = throughComponent1.activeChildren[1];
+      let throughComponent2 = components["/_line2"].attributes.through;
+      let point3 = throughComponent2.activeChildren[0];
+      let point4 = throughComponent2.activeChildren[1];
+      let throughComponent3 = components["/_line3"].attributes.through;
+      let point5 = throughComponent3.activeChildren[0];
+      let point6 = throughComponent3.activeChildren[1];
 
       let x1 = 1, y1 = 0;
       let x2 = 3, y2 = 2;
@@ -1952,7 +1671,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line><through/></line>
+    <line through="" />
     <copy name="A" prop="point1" tname="_line1" />
     <copy name="B" prop="point2" tname="_line1" />
   </graph>
@@ -2206,7 +1925,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line><through>(-5,9)</through></line>
+    <line through="(-5,9)" />
     <copy name="A" prop="point1" tname="_line1" />
     <copy name="B" prop="point2" tname="_line1" />
   </graph>
@@ -2461,7 +2180,8 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line><through><point fixed>(-5,9)</point></through></line>
+    <point hide fixed>(-5,9)</point>
+    <line through="$_point1" />
     <copy name="A" prop="point1" tname="_line1" />
     <copy name="B" prop="point2" tname="_line1" />
   </graph>
@@ -2703,20 +2423,19 @@ describe('Line Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <map hide>
+    <template>
+      <point>
+        ($x + <math>0</math>,
+        2$x + <math>0</math>)
+      </point>
+    </template>
+    <sources alias="x">
+      <sequence length="$_mathinput1" />
+    </sources>
+  </map>
   <graph>
-    <line><through>
-    <map>
-      <template>
-        <point>
-          <x><copy tname="_source" /> + <math>0</math></x>
-          <y>2<copy tname="_source" /> + <math>0</math></y>
-        </point>
-      </template>
-      <sources>
-        <sequence count="$_mathinput1" />
-      </sources>
-    </map>
-    </through></line>
+    <line through="$_map1" />
     <copy name="A" prop="point1" tname="_line1" />
     <copy name="B" prop="point2" tname="_line1" />
   </graph>
@@ -3852,17 +3571,18 @@ describe('Line Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <map hide>
+    <template>
+      <point>
+        ($x, 2$x)
+      </point>
+    </template>
+    <sources alias="x">
+      <sequence length="$_mathinput1" />
+    </sources>
+  </map>
   <graph>
-    <line><through>
-    <map>
-      <template>
-        <point><x><copy tname="_source" /></x><y>2<copy tname="_source" /></y></point>
-      </template>
-      <sources>
-        <sequence count="$_mathinput1" />
-      </sources>
-    </map>
-    </through></line>
+    <line through="$_map1" />
     <copy name="A" prop="point1" tname="_line1" />
     <copy name="B" prop="point2" tname="_line1" />
   </graph>
@@ -4951,12 +4671,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line>
-      <through hide="false">
-      <point><x>3</x><y><copy prop="pointX1_1" tname="_line1"/></y></point>
-      <point>(4,5)</point>
-      </through>
-    </line>
+    <line through="(3, $(_line1{prop='pointX1_1'})) (4,5)" />
   </graph>
 
   <graph>
@@ -4979,6 +4694,10 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
+      let throughComponent = components["/_line1"].attributes.through;
+      let point1 = throughComponent.activeChildren[0];
+      let point2 = throughComponent.activeChildren[1];
+
       let x1 = 3, y1 = 3;
       let x2 = 4, y2 = 5;
 
@@ -4987,8 +4706,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5000,13 +4719,13 @@ describe('Line Tag Tests', function () {
         x1 = y1 = 7;
         let y1try = 13;
 
-        components['/_point1'].movePoint({ x: x1, y: y1try });
+        point1.movePoint({ x: x1, y: y1try });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5018,13 +4737,13 @@ describe('Line Tag Tests', function () {
         x2 = -3
         y2 = 9;
 
-        components['/_point2'].movePoint({ x: x2, y: y2 });
+        point2.movePoint({ x: x2, y: y2 });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5042,8 +4761,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5061,8 +4780,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5088,8 +4807,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5115,8 +4834,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5132,12 +4851,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line>
-      <through hide="false">
-      <point><x>3</x><y><copy prop="pointX1_1" tname="la"/></y></point>
-      <point>(4,5)</point>
-      </through>
-    </line>
+    <line through="(3,$(la{prop='pointX1_1'})) (4,5)" />
   </graph>
 
   <graph>
@@ -5156,6 +4870,10 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
+      let throughChild = components["/_line1"].attributes.through;
+      let point1 = throughChild.activeChildren[0];
+      let point2 = throughChild.activeChildren[1];
+
       let x1 = 3, y1 = 3;
       let x2 = 4, y2 = 5;
 
@@ -5164,8 +4882,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5177,13 +4895,13 @@ describe('Line Tag Tests', function () {
         x1 = y1 = 7;
         let y1try = 13;
 
-        components['/_point1'].movePoint({ x: x1, y: y1try });
+        point1.movePoint({ x: x1, y: y1try });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5195,13 +4913,13 @@ describe('Line Tag Tests', function () {
         x2 = -3
         y2 = 9;
 
-        components['/_point2'].movePoint({ x: x2, y: y2 });
+        point2.movePoint({ x: x2, y: y2 });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5219,8 +4937,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5238,8 +4956,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5265,8 +4983,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5292,8 +5010,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5309,12 +5027,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line>
-      <through hide="false">
-      <point><x>2<copy prop="pointX2_2" tname="_line1"/> +1</x><y>2<copy prop="pointX2_1" tname="_line1"/> +1</y></point>
-      <point><x><copy prop="pointX1_1" tname="_line1"/> +1</x><y>1</y></point>
-      </through>
-    </line>
+    <line through="(2$(_line1{prop='pointX2_2'})+1, 2$(_line1{prop='pointX2_1'})+1) ($(_line1{prop='pointX1_1'})+1, 1)"/>
   </graph>
 
   <graph>
@@ -5336,6 +5049,10 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
+      let throughChild = components["/_line1"].attributes.through;
+      let point1 = throughChild.activeChildren[0];
+      let point2 = throughChild.activeChildren[1];
+
       let y2 = 1;
       let x1 = 2 * y2 + 1;
       let x2 = x1 + 1;
@@ -5346,8 +5063,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5363,13 +5080,13 @@ describe('Line Tag Tests', function () {
         x2 = x1 + 1;
         y1 = 2 * x2 + 1;
 
-        components['/_point1'].movePoint({ x: x1, y: y1try });
+        point1.movePoint({ x: x1, y: y1try });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5385,13 +5102,13 @@ describe('Line Tag Tests', function () {
         y2 = (x1 - 1) / 2;
         y1 = 2 * x2 + 1;
 
-        components['/_point2'].movePoint({ x: x2, y: y2try });
+        point2.movePoint({ x: x2, y: y2try });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5414,8 +5131,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5438,8 +5155,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5470,8 +5187,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5502,8 +5219,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5519,12 +5236,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line>
-      <through hide="false">
-      <point><x>2<copy prop="pointX2_2" tname="la"/> +1</x><y>2<copy prop="pointX2_1" tname="la"/> +1</y></point>
-      <point><x><copy prop="pointX1_1" tname="la"/> +1</x><y>1</y></point>
-      </through>
-    </line>
+    <line through="(2$(la{prop='pointX2_2'})+1,2$(la{prop='pointX2_1'})+1) ($(la{prop='pointX1_1'})+1,1)" />
   </graph>
 
   <graph>
@@ -5544,7 +5256,11 @@ describe('Line Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let la = components['/la'].replacements[0];
       let P1a = components['/P1a'].replacements[0];
+
       let P2a = components['/P2a'].replacements[0];
+      let throughChild = components["/_line1"].attributes.through;
+      let point1 = throughChild.activeChildren[0];
+      let point2 = throughChild.activeChildren[1];
 
       let y2 = 1;
       let x1 = 2 * y2 + 1;
@@ -5556,8 +5272,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5573,13 +5289,13 @@ describe('Line Tag Tests', function () {
         x2 = x1 + 1;
         y1 = 2 * x2 + 1;
 
-        components['/_point1'].movePoint({ x: x1, y: y1try });
+        point1.movePoint({ x: x1, y: y1try });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5595,13 +5311,13 @@ describe('Line Tag Tests', function () {
         y2 = (x1 - 1) / 2;
         y1 = 2 * x2 + 1;
 
-        components['/_point2'].movePoint({ x: x2, y: y2try });
+        point2.movePoint({ x: x2, y: y2try });
         expect(components['/_line1'].stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5624,8 +5340,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5648,8 +5364,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5680,8 +5396,8 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
@@ -5712,109 +5428,13 @@ describe('Line Tag Tests', function () {
         expect(components['/_line1'].stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
         expect(la.stateValues.points[0].map(x => x.tree)).eqls([x1, y1]);
         expect(la.stateValues.points[1].map(x => x.tree)).eqls([x2, y2]);
-        expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", x1, y1]);
-        expect(components['/_point2'].stateValues.coords.tree).eqls(["vector", x2, y2]);
+        expect(point1.stateValues.coords.tree).eqls(["vector", x1, y1]);
+        expect(point2.stateValues.coords.tree).eqls(["vector", x2, y2]);
         expect(P1a.stateValues.coords.tree).eqls(["vector", x1, y1]);
         expect(P2a.stateValues.coords.tree).eqls(["vector", x2, y2]);
 
       })
 
-
-    })
-  })
-
-  it('value of hidden of points changes with line', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p><booleaninput label="Hide line" name="hidel" prefill="true" /></p>
-  <p><booleaninput label="Hide first point" name="hidep" prefill="false" /></p>
-  <graph>
-    <line label='l' hide="$hidel">
-      <through hide="false">
-        <point hide="$hidep">(1,2)</point>
-        <point>(4,7)</point>
-      </through>
-    </line>
-  </graph>
-    `}, "*");
-    });
-
-    // TODO: line never render its children, so point is never shown.
-    // Should we just delete this test?  It never checked the renderers
-    // so the state variables check still work
-
-    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
-
-    cy.log('everything hidden, but only line has hide specified')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(false)
-      expect(components['/_point1'].stateValues.hidden).eq(true)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(true)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(true)
-      expect(components['/_line1'].stateValues.hidden).eq(true)
-
-    })
-
-    // explictly hide first point
-    cy.get('#\\/hidep').click();
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(true)
-      expect(components['/_point1'].stateValues.hidden).eq(true)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(true)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(true)
-      expect(components['/_line1'].stateValues.hidden).eq(true)
-
-    })
-
-    // unhide line
-    cy.get('#\\/hidel').click();
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(true)
-      expect(components['/_point1'].stateValues.hidden).eq(true)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(false)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(false)
-      expect(components['/_line1'].stateValues.hidden).eq(false)
-
-    })
-
-    // unhide point
-    cy.get('#\\/hidep').click();
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(1)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(2)
-      expect(components['/_point1'].stateValues.hide).eq(false)
-      expect(components['/_point1'].stateValues.hidden).eq(false)
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(4)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(7)
-      expect(components['/_point2'].stateValues.hide).eq(false)
-      expect(components['/_point2'].stateValues.hidden).eq(false)
-      expect(components['/_line1'].stateValues.label).eq('l')
-      expect(components['/_line1'].stateValues.hide).eq(false)
-      expect(components['/_line1'].stateValues.hidden).eq(false)
 
     })
   })

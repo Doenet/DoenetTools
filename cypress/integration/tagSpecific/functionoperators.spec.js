@@ -27,20 +27,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../clamp01" /><input><copy tname="_source" /></input></evaluate></template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace><evaluate function="$(../clamp01)" input="$x" /></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../clampn35)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../clampn35)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -73,23 +73,23 @@ describe('Function Operator Tag Tests', function () {
 
       for (let i = 1; i <= 21; i++) {
         cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(indToVal(i).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(indToVal(i).toString())
         });
 
         cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(clamp01(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(clamp01(indToVal(i)).toString())
         });
 
         cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(clampn35(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(clampn35(indToVal(i)).toString())
         });
 
         cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(clamp01(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(clamp01(indToVal(i)).toString())
         });
 
         cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(clampn35(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(clampn35(indToVal(i)).toString())
         });
       }
 
@@ -117,20 +117,20 @@ describe('Function Operator Tag Tests', function () {
 
     <p><aslist>
     <map>
-      <template newNamespace>$$(../original)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace><evaluate><copy tname="../wrap01" /><input><copy tname="_source" /></input></evaluate></template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace><evaluate function="$(../wrap01)" input="$x" /></template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
     <map>
-      <template newNamespace>$$(../wrapn23)(<copy tname="_source" />)</template>
-      <sources><sequence step="0.2" from="-2" to="2" /></sources>
+      <template newNamespace>$$(../wrapn23)($x)</template>
+      <sources alias="x"><sequence step="0.2" from="-2" to="2" /></sources>
     </map>
     </aslist></p>
     <p><aslist>
@@ -163,23 +163,23 @@ describe('Function Operator Tag Tests', function () {
 
       for (let i = 1; i <= 21; i++) {
         cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(indToVal(i).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(indToVal(i).toString())
         });
 
         cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(wrap01(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(wrap01(indToVal(i)).toString())
         });
 
         cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(wrapn23(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(wrapn23(indToVal(i)).toString())
         });
 
         cy.get(map4ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(wrap01(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(wrap01(indToVal(i)).toString())
         });
 
         cy.get(map5ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim().replace('−', '-')).equal(wrapn23(indToVal(i)).toString())
+          expect(text.trim().replace(/−/g, '-')).equal(wrapn23(indToVal(i)).toString())
         });
       }
 
@@ -205,33 +205,30 @@ describe('Function Operator Tag Tests', function () {
     <p><m>c =</m> <mathinput name="c" prefill="1" /></p>
     <p><m>x =</m> <mathinput name="x" prefill="x" /></p>
 
+    <math hide name="formula" simplify>
+        $a sin($b$x + $c)
+    </math>
+
     <p><m>f($x) =
-    <function name="f" variable="$x">
-      <formula simplify>
-        <copy prop="value" tname="a"/>
-         sin(<copy prop="value" tname="b"/>$x + <copy prop="value" tname="c"/>)
-      </formula>
-    </function>
+    <function name="f" variable="$x" formula="$formula" />
     </m></p>
 
     <p><m>f'($x) =
-    <derivative name="g">$$f</derivative>
+    <derivative name="g">$f</derivative>
     </m></p>
 
     <graph>
-      $$f
-      $$g
-      <point>
+      $f
+      $g
+      <point x="3" y="4">
         <constraints>
-          <constrainTo>$$f</constrainTo>
+          <constrainTo>$f</constrainTo>
         </constraints>
-        <x>3</x><y>4</y>
       </point>
-      <point>
+      <point x="3" y="4">
         <constraints>
-          <constrainTo>$$g</constrainTo>
+          <constrainTo>$g</constrainTo>
         </constraints>
-        <x>3</x><y>4</y>
       </point>
     </graph>
 
@@ -341,8 +338,8 @@ describe('Function Operator Tag Tests', function () {
       <function name="f3">xyz</function>
       <function name="f4" variable="z">xyz</function>
       <derivative name="d1"><function>x^2</function></derivative>
-      <derivative name="d2"><formula><math>x^2</math></formula></derivative>
-      <derivative name="d3"><function><formula>x^2sin(z)</formula></function></derivative>
+      <derivative name="d2"><math>x^2</math></derivative>
+      <derivative name="d3"><function formula="x^2sin(z)" /></derivative>
       <derivative name="d4" variable="z">x^2sin(z)</derivative>
       <derivative name="d5"><copy tname="f1" /></derivative>
       <derivative name="d6"><copy tname="f2" /></derivative>
@@ -405,9 +402,7 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <graph>
-        <function>
-          <minimum>(3,4)</minimum>
-        </function>
+        <function minima='(3,4)' />
         <derivative><copy tname="_function1"/></derivative>
         <derivative><copy tname="_derivative1"/></derivative>
         <derivative><copy tname="_derivative2"/></derivative>
@@ -445,11 +440,7 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <graph>
-        <function>
-          <minimum>(3,4)</minimum>
-          <through>(-1,5),(4,2)</through>
-          <maximum>(1,0)</maximum>
-        </function>
+        <function minima="(3,4)" through="(-1,5)(4,2)" maxima="(1,0)" />
         <derivative stylenumber="2"><copy tname="_function1"/></derivative>
         <derivative stylenumber="3"><copy tname="_derivative1"/></derivative>
         <derivative stylenumber="4"><copy tname="_derivative2"/></derivative>
@@ -490,5 +481,280 @@ describe('Function Operator Tag Tests', function () {
     })
   })
 
+  it('extrema of derivative', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><m>c_1 =</m> <mathinput name="c_1" prefill="1" /></p>
+    <p><m>c_2 =</m> <mathinput name="c_2" prefill="1" /></p>
+    <p><m>c_3 =</m> <mathinput name="c_3" prefill="3" /></p>
+    <p><m>c_4 =</m> <mathinput name="c_4" prefill="4" /></p>
+    <p><m>c_5 =</m> <mathinput name="c_5" prefill="5" /></p>
+    <p><m>c_6 =</m> <mathinput name="c_6" prefill="1" /></p>
+    <p><m>x =</m> <mathinput name="x" prefill="x" /></p>
+
+    <math hide name="formula" simplify>
+      $c_1 $x^5/20 - $c_1($c_2+$c_3+$c_4) $x^4/12
+      + $c_1($c_2*$c_3 + $c_2 $c_4 + $c_3$c_4)$x^3/6
+      - $c_1$c_2$c_3$c_4$x^2/2 + $c_5$x + $c_6
+    </math>
+
+    <p><m>f($x) =
+    <function name="f" variable="$x" formula="$formula" />
+    </m></p>
+
+    <p><m>f'($x) =
+    <derivative name="fp">$f</derivative>
+    </m></p>
+
+    <p>again, <m>f'($x) = <copy tname="fp" name="fp2" />
+    </m></p>
+
+
+    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" tname="fp" /></p>
+    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" tname="fp" /></extract></p> 
+
+    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" tname="fp" /></p>
+    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" tname="fp" /></extract></p> 
+
+    <p>To repeat:</p>
+    <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" tname="fp2" /></p>
+    <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" tname="fp2" /></extract></p> 
+
+    <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" tname="fp2" /></p>
+    <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" tname="fp2" /></extract></p> 
+
+
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+
+    function fp(x, c1, c2, c3, c4, c5) {
+      return c1 * x ** 4 / 4 - c1 * (c2 + c3 + c4) * x ** 3 / 3 + c1 * (c2 * c3 + c2 * c4 + c3 * c4) * x ** 2 / 2 - c1 * c2 * c3 * c4 * x + c5;
+    }
+
+    function fpMinima(c1, c2, c3, c4, c5) {
+      let extrema = [c2, c3, c4].sort((a, b) => a - b);
+      let minima = [];
+      if (c1 > 0) {
+        minima.push([extrema[0], fp(extrema[0], c1, c2, c3, c4, c5)]);
+        minima.push([extrema[2], fp(extrema[2], c1, c2, c3, c4, c5)]);
+      } else {
+        minima.push([extrema[1], fp(extrema[1], c1, c2, c3, c4, c5)]);
+      }
+      return minima;
+    }
+
+    function fpMaxima(c1, c2, c3, c4, c5) {
+      let extrema = [c2, c3, c4].sort((a, b) => a - b);
+      let maxima = [];
+      if (c1 > 0) {
+        maxima.push([extrema[1], fp(extrema[1], c1, c2, c3, c4, c5)]);
+      } else {
+        maxima.push([extrema[0], fp(extrema[0], c1, c2, c3, c4, c5)]);
+        maxima.push([extrema[2], fp(extrema[2], c1, c2, c3, c4, c5)]);
+      }
+      return maxima;
+    }
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      function verifyExtrema(c1, c2, c3, c4, c5) {
+        let minima = fpMinima(c1, c2, c3, c4, c5);
+        let nMinima = minima.length;
+        let maxima = fpMaxima(c1, c2, c3, c4, c5);
+        let nMaxima = maxima.length;
+
+        expect(components[""])
+
+        cy.get('#\\/nMinima').should('have.text', nMinima.toString())
+        cy.get('#\\/nMinima2').should('have.text', nMinima.toString())
+        cy.get('#\\/min1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.replace(/−/g, '-').trim()).equal(`(${minima[0][0]},${me.math.round(minima[0][1], 5)})`)
+        })
+        cy.get('#\\/min12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.replace(/−/g, '-').trim()).equal(`(${minima[0][0]},${me.math.round(minima[0][1], 5)})`)
+        })
+        if (nMinima === 2) {
+          cy.get('#\\/min2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.replace(/−/g, '-').trim()).equal(`(${minima[1][0]},${me.math.round(minima[1][1], 5)})`)
+          })
+          cy.get('#\\/min22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.replace(/−/g, '-').trim()).equal(`(${minima[1][0]},${me.math.round(minima[1][1], 5)})`)
+          })
+        } else {
+          cy.get('#\\/min2').should('not.exist')
+          cy.get('#\\/min22').should('not.exist')
+        }
+        cy.get('#\\/nMaxima').should('have.text', nMaxima.toString())
+        cy.get('#\\/nMaxima2').should('have.text', nMaxima.toString())
+        cy.get('#\\/max1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[0][0]},${me.math.round(maxima[0][1], 5)})`)
+        })
+        cy.get('#\\/max12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[0][0]},${me.math.round(maxima[0][1], 5)})`)
+        })
+        if (nMaxima === 2) {
+          cy.get('#\\/max2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[1][0]},${me.math.round(maxima[1][1], 5)})`)
+          })
+          cy.get('#\\/max22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.replace(/−/g, '-').trim()).equal(`(${maxima[1][0]},${me.math.round(maxima[1][1], 5)})`)
+          })
+        } else {
+          cy.get('#\\/max2').should('not.exist')
+          cy.get('#\\/max22').should('not.exist')
+        }
+      }
+
+      let c1 = 1, c2 = 1, c3 = 3, c4 = 4, c5 = 5, c6 = 1, v = 'x';
+
+      verifyExtrema(c1, c2, c3, c4, c5)
+
+      cy.window().then((win) => {
+
+        c1 = 3;
+        cy.get(cesc('#/c_1') + ' textarea').type(`{end}{backspace}{backspace}${c1}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+        c2 = -5;
+        cy.get(cesc('#/c_2') + ' textarea').type(`{end}{backspace}{backspace}${c2}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+        c3 = 1;
+        cy.get(cesc('#/c_3') + ' textarea').type(`{end}{backspace}{backspace}${c3}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+        c4 = -6;
+        cy.get(cesc('#/c_4') + ' textarea').type(`{end}{backspace}{backspace}${c4}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+        c5 = 3;
+        cy.get(cesc('#/c_5') + ' textarea').type(`{end}{backspace}{backspace}${c5}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+        c6 = 2;
+        cy.get(cesc('#/c_6') + ' textarea').type(`{end}{backspace}{backspace}${c6}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+        v = 'y';
+        cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+
+      })
+
+
+      cy.window().then((win) => {
+
+        c1 = 2;
+        cy.get(cesc('#/c_1') + ' textarea').type(`{end}{backspace}{backspace}${c1}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5);
+
+        c2 = 4;
+        cy.get(cesc('#/c_2') + ' textarea').type(`{end}{backspace}{backspace}${c2}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5);
+
+        c3 = -8;
+        cy.get(cesc('#/c_3') + ' textarea').type(`{end}{backspace}{backspace}${c3}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5);
+
+        c4 = 9;
+        cy.get(cesc('#/c_4') + ' textarea').type(`{end}{backspace}{backspace}${c4}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5);
+
+        c5 = -2;
+        cy.get(cesc('#/c_5') + ' textarea').type(`{end}{backspace}{backspace}${c5}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5);
+
+        c6 = 6;
+        cy.get(cesc('#/c_6') + ' textarea').type(`{end}{backspace}{backspace}${c6}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5);
+
+        v = 'q';
+        cy.get(cesc('#/x') + ' textarea').type(`{end}{backspace}{backspace}${v}{enter}`, { force: true });
+        verifyExtrema(c1, c2, c3, c4, c5)
+
+      })
+
+    })
+
+
+
+  })
+
+  it('extrema of derivative of interpolated function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <graph>
+        <function name="f" minima="(-5,-3) (0,-5)" maxima="(-3,0) (6,8)" />
+        <derivative name="fp" stylenumber="2"><copy tname="f"/></derivative>
+      </graph>
+
+      <copy tname="fp" name="fp2" />
+
+      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima" tname="fp" /></p>
+      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min1 min2"><copy prop="minima" tname="fp" /></extract></p> 
+  
+      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima" tname="fp" /></p>
+      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max1 max2"><copy prop="maxima" tname="fp" /></extract></p> 
+  
+      <p>To repeat:</p>
+      <p>Number of minima of f': <copy prop="numberminima" assignNames="nMinima2" tname="fp2" /></p>
+      <p>Minima of f': <extract prop="coords" displayDecimals="5" assignNames="min12 min22"><copy prop="minima" tname="fp2" /></extract></p> 
+  
+      <p>Number of maxima of f': <copy prop="numbermaxima" assignNames="nMaxima2" tname="fp2" /></p>
+      <p>Maxima of f': <extract prop="coords" displayDecimals="5" assignNames="max12 max22"><copy prop="maxima" tname="fp2" /></extract></p> 
+  
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/nMinima').should('have.text', '1')
+    cy.get('#\\/nMinima2').should('have.text', '1')
+
+    cy.get('#\\/nMaxima').should('have.text', '2')
+    cy.get('#\\/nMaxima2').should('have.text', '2')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let fp = components["/fp"].stateValues.numericalf;
+
+      let max1x = (-5-3)/2
+      cy.get('#\\/max1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.replace(/−/g, '-').trim()).equal(`(${max1x},${me.math.round(fp(max1x), 5)})`)
+      })
+      cy.get('#\\/max12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.replace(/−/g, '-').trim()).equal(`(${max1x},${me.math.round(fp(max1x), 5)})`)
+      })
+
+      let min1x = (-3+0)/2
+      cy.get('#\\/min1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.replace(/−/g, '-').trim()).equal(`(${min1x},${me.math.round(fp(min1x), 5)})`)
+      })
+      cy.get('#\\/min12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.replace(/−/g, '-').trim()).equal(`(${min1x},${me.math.round(fp(min1x), 5)})`)
+      })
+
+      let max2x = (0+6)/2
+      cy.get('#\\/max2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.replace(/−/g, '-').trim()).equal(`(${max2x},${me.math.round(fp(max2x), 5)})`)
+      })
+      cy.get('#\\/max22').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.replace(/−/g, '-').trim()).equal(`(${max2x},${me.math.round(fp(max2x), 5)})`)
+      })
+
+
+    })
+  })
 
 })

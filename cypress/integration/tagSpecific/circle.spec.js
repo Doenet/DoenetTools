@@ -15,10 +15,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -40,15 +37,15 @@ describe('Circle Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([0, 0]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([0, 0]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([0, 0]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(1);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(1);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([0, 0]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([0, 0]);
         expect(circle2.stateValues.numericalCenter).eqls([0, 0]);
         expect(circle2.stateValues.radius.tree).eq(1);
         expect(circle2.stateValues.numericalRadius).eq(1);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([0, 0]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([0, 0]);
         expect(circle3.stateValues.numericalCenter).eqls([0, 0]);
         expect(circle3.stateValues.radius.tree).eq(1);
         expect(circle3.stateValues.numericalRadius).eq(1);
@@ -61,15 +58,15 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/_circle1'].moveCircle({ center: [2, 3] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([2, 3]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([2, 3]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([2, 3]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(1);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(1);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([2, 3]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([2, 3]);
         expect(circle2.stateValues.numericalCenter).eqls([2, 3]);
         expect(circle2.stateValues.radius.tree).eq(1);
         expect(circle2.stateValues.numericalRadius).eq(1);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([2, 3]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([2, 3]);
         expect(circle3.stateValues.numericalCenter).eqls([2, 3]);
         expect(circle3.stateValues.radius.tree).eq(1);
         expect(circle3.stateValues.numericalRadius).eq(1);
@@ -83,15 +80,15 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/_point1'].movePoint({ x: 5, y: 0 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([2, 3]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([2, 3]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([2, 3]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([2, 3]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([2, 3]);
         expect(circle2.stateValues.numericalCenter).eqls([2, 3]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([2, 3]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([2, 3]);
         expect(circle3.stateValues.numericalCenter).eqls([2, 3]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
@@ -104,15 +101,15 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         centerPoint.movePoint({ x: -6, y: -2 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-6, -2]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([-6, -2]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([-6, -2]);
         expect(circle2.stateValues.numericalCenter).eqls([-6, -2]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([-6, -2]);
         expect(circle3.stateValues.numericalCenter).eqls([-6, -2]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
@@ -125,15 +122,15 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         circle2.moveCircle({ center: [-7, 9] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-7, 9]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-7, 9]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([-7, 9]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-7, 9]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([-7, 9]);
         expect(circle2.stateValues.numericalCenter).eqls([-7, 9]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-7, 9]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([-7, 9]);
         expect(circle3.stateValues.numericalCenter).eqls([-7, 9]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
@@ -147,15 +144,15 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         circle3.moveCircle({ center: [6, -8] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([6, -8]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([6, -8]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([6, -8]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([6, -8]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([6, -8]);
         expect(circle2.stateValues.numericalCenter).eqls([6, -8]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([6, -8]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([6, -8]);
         expect(circle3.stateValues.numericalCenter).eqls([6, -8]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
@@ -174,14 +171,11 @@ describe('Circle Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <circle><center>(-1,3)</center></circle>
+    <circle center="(-1,3)" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -200,23 +194,24 @@ describe('Circle Tag Tests', function () {
       let radiusNumber = components["/radiusNumber"].replacements[0]
       let circle2 = components["/circle2"].replacements[0];
       let circle3 = components["/graph4"].replacements[0].activeChildren[0];
+      let center1 = components["/_circle1"].attributes["center"];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-1, 3]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-1, 3]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([-1, 3]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(1);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(1);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-1, 3]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([-1, 3]);
         expect(circle2.stateValues.numericalCenter).eqls([-1, 3]);
         expect(circle2.stateValues.radius.tree).eq(1);
         expect(circle2.stateValues.numericalRadius).eq(1);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-1, 3]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([-1, 3]);
         expect(circle3.stateValues.numericalCenter).eqls([-1, 3]);
         expect(circle3.stateValues.radius.tree).eq(1);
         expect(circle3.stateValues.numericalRadius).eq(1);
-        expect(components['/_center1'].stateValues.xs[0].tree).eq(-1);
-        expect(components['/_center1'].stateValues.xs[1].tree).eq(3);
+        expect(center1.stateValues.xs[0].tree).eq(-1);
+        expect(center1.stateValues.xs[1].tree).eq(3);
         expect(centerPoint.stateValues.xs[0].tree).eq(-1);
         expect(centerPoint.stateValues.xs[1].tree).eq(3);
         expect(radiusNumber.stateValues.value.tree).eq(1);
@@ -226,20 +221,20 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/_circle1'].moveCircle({ center: [2, 4] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([2, 4]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([2, 4]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([2, 4]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(1);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(1);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([2, 4]);
         expect(circle2.stateValues.numericalCenter).eqls([2, 4]);
         expect(circle2.stateValues.radius.tree).eq(1);
         expect(circle2.stateValues.numericalRadius).eq(1);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([2, 4]);
         expect(circle3.stateValues.numericalCenter).eqls([2, 4]);
         expect(circle3.stateValues.radius.tree).eq(1);
         expect(circle3.stateValues.numericalRadius).eq(1);
-        expect(components['/_center1'].stateValues.xs[0].tree).eq(2);
-        expect(components['/_center1'].stateValues.xs[1].tree).eq(4);
+        expect(center1.stateValues.xs[0].tree).eq(2);
+        expect(center1.stateValues.xs[1].tree).eq(4);
         expect(centerPoint.stateValues.xs[0].tree).eq(2);
         expect(centerPoint.stateValues.xs[1].tree).eq(4);
         expect(radiusNumber.stateValues.value.tree).eq(1);
@@ -250,20 +245,20 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/_point1'].movePoint({ x: 5, y: 0 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([2, 4]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([2, 4]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([2, 4]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([2, 4]);
         expect(circle2.stateValues.numericalCenter).eqls([2, 4]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([2, 4]);
         expect(circle3.stateValues.numericalCenter).eqls([2, 4]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_center1'].stateValues.xs[0].tree).eq(2);
-        expect(components['/_center1'].stateValues.xs[1].tree).eq(4);
+        expect(center1.stateValues.xs[0].tree).eq(2);
+        expect(center1.stateValues.xs[1].tree).eq(4);
         expect(centerPoint.stateValues.xs[0].tree).eq(2);
         expect(centerPoint.stateValues.xs[1].tree).eq(4);
         expect(radiusNumber.stateValues.value.tree).eq(5);
@@ -272,21 +267,21 @@ describe('Circle Tag Tests', function () {
       cy.log("change center via defining point")
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        components['/_center1'].movePoint({ x: -6, y: -2 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
+        center1.movePoint({ x: -6, y: -2 });
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-6, -2]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([-6, -2]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([-6, -2]);
         expect(circle2.stateValues.numericalCenter).eqls([-6, -2]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([-6, -2]);
         expect(circle3.stateValues.numericalCenter).eqls([-6, -2]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_center1'].stateValues.xs[0].tree).eq(-6);
-        expect(components['/_center1'].stateValues.xs[1].tree).eq(-2);
+        expect(center1.stateValues.xs[0].tree).eq(-6);
+        expect(center1.stateValues.xs[1].tree).eq(-2);
         expect(centerPoint.stateValues.xs[0].tree).eq(-6);
         expect(centerPoint.stateValues.xs[1].tree).eq(-2);
         expect(radiusNumber.stateValues.value.tree).eq(5);
@@ -297,20 +292,20 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         centerPoint.movePoint({ x: -7, y: 8 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-7, 8]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-7, 8]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([-7, 8]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-7, 8]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([-7, 8]);
         expect(circle2.stateValues.numericalCenter).eqls([-7, 8]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-7, 8]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([-7, 8]);
         expect(circle3.stateValues.numericalCenter).eqls([-7, 8]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_center1'].stateValues.xs[0].tree).eq(-7);
-        expect(components['/_center1'].stateValues.xs[1].tree).eq(8);
+        expect(center1.stateValues.xs[0].tree).eq(-7);
+        expect(center1.stateValues.xs[1].tree).eq(8);
         expect(centerPoint.stateValues.xs[0].tree).eq(-7);
         expect(centerPoint.stateValues.xs[1].tree).eq(8);
         expect(radiusNumber.stateValues.value.tree).eq(5);
@@ -320,20 +315,20 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         circle2.moveCircle({ center: [9, -10] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([9, -10]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([9, -10]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([9, -10]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([9, -10]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([9, -10]);
         expect(circle2.stateValues.numericalCenter).eqls([9, -10]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([9, -10]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([9, -10]);
         expect(circle3.stateValues.numericalCenter).eqls([9, -10]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_center1'].stateValues.xs[0].tree).eq(9);
-        expect(components['/_center1'].stateValues.xs[1].tree).eq(-10);
+        expect(center1.stateValues.xs[0].tree).eq(9);
+        expect(center1.stateValues.xs[1].tree).eq(-10);
         expect(centerPoint.stateValues.xs[0].tree).eq(9);
         expect(centerPoint.stateValues.xs[1].tree).eq(-10);
         expect(radiusNumber.stateValues.value.tree).eq(5);
@@ -343,218 +338,20 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         circle3.moveCircle({ center: [-3, -4] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, -4]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, -4]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([-3, -4]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(5);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-3, -4]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([-3, -4]);
         expect(circle2.stateValues.numericalCenter).eqls([-3, -4]);
         expect(circle2.stateValues.radius.tree).eq(5);
         expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-3, -4]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([-3, -4]);
         expect(circle3.stateValues.numericalCenter).eqls([-3, -4]);
         expect(circle3.stateValues.radius.tree).eq(5);
         expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_center1'].stateValues.xs[0].tree).eq(-3);
-        expect(components['/_center1'].stateValues.xs[1].tree).eq(-4);
-        expect(centerPoint.stateValues.xs[0].tree).eq(-3);
-        expect(centerPoint.stateValues.xs[1].tree).eq(-4);
-        expect(radiusNumber.stateValues.value.tree).eq(5);
-      })
-    })
-  });
-
-  it('circle with full center point', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <graph>
-    <circle><center><point>(-1,3)</point></center></circle>
-    </graph>
-    <graph>
-    <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
-    </graph>
-    <copy prop="radius" name="radiusNumber" tname="_circle1" />
-    <graph name="graph3">
-      <copy name="circle2" tname="_circle1" />
-    </graph>
-    <copy name="graph4" tname="graph3" />
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let centerPoint = components["/centerPoint"].replacements[0]
-      let radiusNumber = components["/radiusNumber"].replacements[0]
-      let circle2 = components["/circle2"].replacements[0];
-      let circle3 = components["/graph4"].replacements[0].activeChildren[0];
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-1, 3]);
-        expect(components['/_circle1'].stateValues.numericalCenter).eqls([-1, 3]);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-        expect(components['/_circle1'].stateValues.numericalRadius).eq(1);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-1, 3]);
-        expect(circle2.stateValues.numericalCenter).eqls([-1, 3]);
-        expect(circle2.stateValues.radius.tree).eq(1);
-        expect(circle2.stateValues.numericalRadius).eq(1);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-1, 3]);
-        expect(circle3.stateValues.numericalCenter).eqls([-1, 3]);
-        expect(circle3.stateValues.radius.tree).eq(1);
-        expect(circle3.stateValues.numericalRadius).eq(1);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(-1);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
-        expect(centerPoint.stateValues.xs[0].tree).eq(-1);
-        expect(centerPoint.stateValues.xs[1].tree).eq(3);
-        expect(radiusNumber.stateValues.value.tree).eq(1);
-      })
-
-      cy.log("move circle")
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        components['/_circle1'].moveCircle({ center: [2, 4] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([2, 4]);
-        expect(components['/_circle1'].stateValues.numericalCenter).eqls([2, 4]);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-        expect(components['/_circle1'].stateValues.numericalRadius).eq(1);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
-        expect(circle2.stateValues.numericalCenter).eqls([2, 4]);
-        expect(circle2.stateValues.radius.tree).eq(1);
-        expect(circle2.stateValues.numericalRadius).eq(1);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
-        expect(circle3.stateValues.numericalCenter).eqls([2, 4]);
-        expect(circle3.stateValues.radius.tree).eq(1);
-        expect(circle3.stateValues.numericalRadius).eq(1);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(2);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-        expect(centerPoint.stateValues.xs[0].tree).eq(2);
-        expect(centerPoint.stateValues.xs[1].tree).eq(4);
-        expect(radiusNumber.stateValues.value.tree).eq(1);
-      })
-
-
-      cy.log("change radius")
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        components['/_point2'].movePoint({ x: 5, y: 0 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([2, 4]);
-        expect(components['/_circle1'].stateValues.numericalCenter).eqls([2, 4]);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-        expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
-        expect(circle2.stateValues.numericalCenter).eqls([2, 4]);
-        expect(circle2.stateValues.radius.tree).eq(5);
-        expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([2, 4]);
-        expect(circle3.stateValues.numericalCenter).eqls([2, 4]);
-        expect(circle3.stateValues.radius.tree).eq(5);
-        expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(2);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
-        expect(centerPoint.stateValues.xs[0].tree).eq(2);
-        expect(centerPoint.stateValues.xs[1].tree).eq(4);
-        expect(radiusNumber.stateValues.value.tree).eq(5);
-      })
-
-      cy.log("change center via defining point")
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        components['/_point1'].movePoint({ x: -6, y: -2 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
-        expect(components['/_circle1'].stateValues.numericalCenter).eqls([-6, -2]);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-        expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
-        expect(circle2.stateValues.numericalCenter).eqls([-6, -2]);
-        expect(circle2.stateValues.radius.tree).eq(5);
-        expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-6, -2]);
-        expect(circle3.stateValues.numericalCenter).eqls([-6, -2]);
-        expect(circle3.stateValues.radius.tree).eq(5);
-        expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(-6);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(-2);
-        expect(centerPoint.stateValues.xs[0].tree).eq(-6);
-        expect(centerPoint.stateValues.xs[1].tree).eq(-2);
-        expect(radiusNumber.stateValues.value.tree).eq(5);
-      })
-
-
-      cy.log("change center via reffed point")
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        centerPoint.movePoint({ x: -7, y: 8 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-7, 8]);
-        expect(components['/_circle1'].stateValues.numericalCenter).eqls([-7, 8]);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-        expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-7, 8]);
-        expect(circle2.stateValues.numericalCenter).eqls([-7, 8]);
-        expect(circle2.stateValues.radius.tree).eq(5);
-        expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-7, 8]);
-        expect(circle3.stateValues.numericalCenter).eqls([-7, 8]);
-        expect(circle3.stateValues.radius.tree).eq(5);
-        expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(-7);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(8);
-        expect(centerPoint.stateValues.xs[0].tree).eq(-7);
-        expect(centerPoint.stateValues.xs[1].tree).eq(8);
-        expect(radiusNumber.stateValues.value.tree).eq(5);
-      })
-
-
-      cy.log("move circle2")
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        circle2.moveCircle({ center: [9, -10] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([9, -10]);
-        expect(components['/_circle1'].stateValues.numericalCenter).eqls([9, -10]);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-        expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([9, -10]);
-        expect(circle2.stateValues.numericalCenter).eqls([9, -10]);
-        expect(circle2.stateValues.radius.tree).eq(5);
-        expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([9, -10]);
-        expect(circle3.stateValues.numericalCenter).eqls([9, -10]);
-        expect(circle3.stateValues.radius.tree).eq(5);
-        expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(9);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(-10);
-        expect(centerPoint.stateValues.xs[0].tree).eq(9);
-        expect(centerPoint.stateValues.xs[1].tree).eq(-10);
-        expect(radiusNumber.stateValues.value.tree).eq(5);
-      })
-
-
-      cy.log("move circle3")
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        circle3.moveCircle({ center: [-3, -4] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, -4]);
-        expect(components['/_circle1'].stateValues.numericalCenter).eqls([-3, -4]);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-        expect(components['/_circle1'].stateValues.numericalRadius).eq(5);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([-3, -4]);
-        expect(circle2.stateValues.numericalCenter).eqls([-3, -4]);
-        expect(circle2.stateValues.radius.tree).eq(5);
-        expect(circle2.stateValues.numericalRadius).eq(5);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([-3, -4]);
-        expect(circle3.stateValues.numericalCenter).eqls([-3, -4]);
-        expect(circle3.stateValues.radius.tree).eq(5);
-        expect(circle3.stateValues.numericalRadius).eq(5);
-        expect(components['/_point1'].stateValues.xs[0].tree).eq(-3);
-        expect(components['/_point1'].stateValues.xs[1].tree).eq(-4);
+        expect(center1.stateValues.xs[0].tree).eq(-3);
+        expect(center1.stateValues.xs[1].tree).eq(-4);
         expect(centerPoint.stateValues.xs[0].tree).eq(-3);
         expect(centerPoint.stateValues.xs[1].tree).eq(-4);
         expect(radiusNumber.stateValues.value.tree).eq(5);
@@ -574,10 +371,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -600,15 +394,15 @@ describe('Circle Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         let x = 0, y = 0, r = 2;
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([x, y]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle2.stateValues.numericalCenter).eqls([x, y]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle3.stateValues.numericalCenter).eqls([x, y]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -624,15 +418,15 @@ describe('Circle Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         let x = 3, y = 4, r = 2;
         components['/_circle1'].moveCircle({ center: [x, y] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([x, y]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle2.stateValues.numericalCenter).eqls([x, y]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle3.stateValues.numericalCenter).eqls([x, y]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -649,15 +443,15 @@ describe('Circle Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         let x = 3, y = 4, r = 5;
         components['/_point1'].movePoint({ x: r, y: 0 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([x, y]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle2.stateValues.numericalCenter).eqls([x, y]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle3.stateValues.numericalCenter).eqls([x, y]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -674,15 +468,15 @@ describe('Circle Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         let x = 3, y = 4, r = 7;
         components['/_point2'].movePoint({ x: r, y: 0 });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([x, y]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle2.stateValues.numericalCenter).eqls([x, y]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle3.stateValues.numericalCenter).eqls([x, y]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -698,15 +492,15 @@ describe('Circle Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         let x = -5, y = -2, r = 7;
         centerPoint.movePoint({ x: x, y: y });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([x, y]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle2.stateValues.numericalCenter).eqls([x, y]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle3.stateValues.numericalCenter).eqls([x, y]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -722,15 +516,15 @@ describe('Circle Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         let x = 9, y = -10, r = 7;
         circle2.moveCircle({ center: [x, y] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([x, y]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle2.stateValues.numericalCenter).eqls([x, y]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle3.stateValues.numericalCenter).eqls([x, y]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -746,15 +540,15 @@ describe('Circle Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         let x = -3, y = -4, r = 7;
         circle3.moveCircle({ center: [x, y] });
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([x, y]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle2.stateValues.numericalCenter).eqls([x, y]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([x, y]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([x, y]);
         expect(circle3.stateValues.numericalCenter).eqls([x, y]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -776,14 +570,11 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,-3)</point>
-    <circle><through><copy tname="_point1" /></through></circle>
+    <circle through="$_point1" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -809,15 +600,15 @@ describe('Circle Tag Tests', function () {
         let tx = 2, ty = -3;
         let r = 1;
         let cx = tx, cy = ty - r;
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -837,15 +628,15 @@ describe('Circle Tag Tests', function () {
         let r = 1;
         let cx = tx, cy = ty - r;
         components['/_circle1'].moveCircle({ center: [cx, cy] })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -865,15 +656,15 @@ describe('Circle Tag Tests', function () {
         let r = 1;
         let cx = tx, cy = ty - r;
         components['/_point1'].movePoint({ x: tx, y: ty })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -893,15 +684,15 @@ describe('Circle Tag Tests', function () {
         let r = 1;
         let cx = tx, cy = ty - r;
         centerPoint.movePoint({ x: cx, y: cy })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -921,15 +712,15 @@ describe('Circle Tag Tests', function () {
         let cx = 3, cy = -6;
         let tx = 3, ty = cy + r;
         components['/_point2'].movePoint({ x: r, y: 0 })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -950,15 +741,15 @@ describe('Circle Tag Tests', function () {
         let cx = 3, cy = -3;
         let tx = 3, ty = cy + r;
         components['/_point2'].movePoint({ x: rtry, y: 0 })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -978,15 +769,15 @@ describe('Circle Tag Tests', function () {
         let cx = 3, cy = -5;
         let tx = 3, ty = cy + r;
         components['/_point2'].movePoint({ x: r, y: 0 })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -1008,15 +799,15 @@ describe('Circle Tag Tests', function () {
         let tx = 9, ty = cy + r;
 
         circle2.moveCircle({ center: [cx, cy] })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -1037,15 +828,15 @@ describe('Circle Tag Tests', function () {
         let cx = -3, cy = -4;
         let tx = -3, ty = cy + r;
         circle3.moveCircle({ center: [cx, cy] })
-        expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.numericalCenter).eqls([cx, cy]);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
         expect(components['/_circle1'].stateValues.numericalRadius).eq(r);
-        expect(circle2.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle2.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle2.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle2.stateValues.radius.tree).eq(r);
         expect(circle2.stateValues.numericalRadius).eq(r);
-        expect(circle3.stateValues.center.map(x=>x.tree)).eqls([cx, cy]);
+        expect(circle3.stateValues.center.map(x => x.tree)).eqls([cx, cy]);
         expect(circle3.stateValues.numericalCenter).eqls([cx, cy]);
         expect(circle3.stateValues.radius.tree).eq(r);
         expect(circle3.stateValues.numericalRadius).eq(r);
@@ -1068,14 +859,11 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,-3)</point><point>(3,4)</point>
-    <circle><through><copy tname="_point1" /><copy tname="_point2" /></through></circle>
+    <circle through="$_point1 $_point2"/>
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -1431,15 +1219,12 @@ describe('Circle Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <circle><through><copy tname="_point1" /><copy tname="_point2" /></through></circle>
+    <circle through="$_point1 $_point2" />
     <point>(2,-3)</point><point>(3,4)</point>
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -1799,16 +1584,14 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(2,-3)</point><point>(3,4)</point><point>(-3,4)</point>
-    <circle><through><copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" /></through></circle>
+    <circle through="$_point1 $_point2 $_point3" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
+    <copy prop="diameter" name="diam" tname="_circle1" />
     <graph name="graph3">
       <copy name="circle2" tname="_circle1" />
     </graph>
@@ -1823,6 +1606,7 @@ describe('Circle Tag Tests', function () {
 
       let centerPoint = components["/centerPoint"].replacements[0]
       let radiusNumber = components["/radiusNumber"].replacements[0]
+      let diam = components["/diam"].replacements[0]
       let circle2 = components["/circle2"].replacements[0];
       let circle3 = components["/graph4"].replacements[0].activeChildren[0];
 
@@ -1863,6 +1647,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
       cy.log('move circle up and to the right')
@@ -1911,6 +1696,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
       cy.log('move first point to be in straight line')
@@ -1949,6 +1735,7 @@ describe('Circle Tag Tests', function () {
         expect(Number.isFinite(centerPoint.stateValues.xs[0].tree)).false;
         expect(Number.isFinite(centerPoint.stateValues.xs[1].tree)).false;
         expect(Number.isFinite(radiusNumber.stateValues.value.tree)).false;
+        expect(Number.isFinite(diam.stateValues.value.tree)).false;
       })
 
       cy.log('move second point')
@@ -1990,6 +1777,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
       cy.log('move third point')
@@ -2030,6 +1818,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
       cy.log('move points to be identical')
@@ -2074,6 +1863,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2117,6 +1907,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2160,6 +1951,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2205,6 +1997,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2248,6 +2041,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2298,6 +2092,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
       cy.log('half radius around center')
@@ -2347,6 +2142,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2396,6 +2192,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2445,6 +2242,7 @@ describe('Circle Tag Tests', function () {
         expect(centerPoint.stateValues.xs[0].tree).closeTo(cx, 1E-12);
         expect(centerPoint.stateValues.xs[1].tree).closeTo(cy, 1E-12);
         expect(radiusNumber.stateValues.value.tree).closeTo(r, 1E-12);
+        expect(diam.stateValues.value.tree).closeTo(2 * r, 1E-12);
       })
 
 
@@ -2459,15 +2257,12 @@ describe('Circle Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <circle><through><copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" /></through></circle>
+    <circle through="$_point1 $_point2 $_point3" />
     <point>(2,-3)</point><point>(3,4)</point><point>(-3,4)</point>
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -3123,16 +2918,11 @@ describe('Circle Tag Tests', function () {
     <graph>
     <point>(2,0)</point><point>(3,4)</point>
 
-    <circle radius="$pX">
-      <through><copy tname="_point2" /></through>
-    </circle>
+    <circle radius="$pX" through="$_point2" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -3400,16 +3190,11 @@ describe('Circle Tag Tests', function () {
     <graph>
     <point>(2,0)</point><point>(3,4)</point><point>(5,6)</point>
 
-    <circle radius="$pX">
-      <through><copy tname="_point2" /><copy tname="_point3" /></through>
-    </circle>
+    <circle radius="$pX" through="$_point2 $_point3" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -3953,17 +3738,11 @@ describe('Circle Tag Tests', function () {
     <graph>
     <point>(3,4)</point><point>(5,6)</point>
 
-    <circle>
-      <center><copy tname="_point1" /></center>
-      <through><copy tname="_point2" /></through>
-    </circle>
+    <circle center="$_point1" through="$_point2" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -4328,16 +4107,11 @@ describe('Circle Tag Tests', function () {
     <graph>
     <point>(3,0)</point>
 
-    <circle radius="$pX">
-      <center>(-3,5)</center>
-    </circle>
+    <circle radius="$pX" center="(-3,5)" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <graph name="graph3">
@@ -4352,7 +4126,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let definingCenter = components["/_circle1"].activeChildren[1];
+      let definingCenter = components["/_circle1"].attributes["center"]
       let centerPoint = components["/centerPoint"].replacements[0]
       let radiusNumber = components["/radiusNumber"].replacements[0]
       let circle2 = components["/circle2"].replacements[0];
@@ -4473,11 +4247,8 @@ describe('Circle Tag Tests', function () {
     <math hide name="pX"><copy prop="x" tname="_point1" /></math>
     <point>(3,0)</point><point>(-1,7)</point>
     <graph>
-    <circle radius="$pX">
-      <center><copy tname="_point2" /></center>
-    </circle>
-    <point>
-      <x>-4</x><y>-6</y>
+    <circle radius="$pX" center="$_point2" />
+    <point x="-4" y="-6">
       <constraints>
         <constrainTo><copy tname="_circle1" /></constrainTo>
       </constraints>
@@ -4485,10 +4256,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
-    <point>
-      <x><copy prop="radius" tname="_circle1" /></x>
-      <y>0</y>
-    </point>
+    <point x="$(_circle1{prop='radius'})" y="0" />
     </graph>
     <copy prop="radius" name="radiusNumber" tname="_circle1" />
     <copy name="graph2" tname="_graph1" />
@@ -4732,16 +4500,13 @@ describe('Circle Tag Tests', function () {
     <text>a</text>
     <graph>
     <point>(3,0)</point><point>(-1,7)</point>
-    <circle>
-      <center><copy tname="_point1" /></center>
-      <through><copy tname="_point2" /></through>
-    </circle>
+    <circle center="$_point1" through="$_point2" />
     </graph>
     <graph>
     <copy prop="center" name="centerPoint" tname="_circle1" />
     <point>
-      <x><copy prop="y" tname="centerPoint" /></x>
-      <y><copy prop="radius" tname="_circle1" /></y>
+      (<copy prop="y" tname="centerPoint" />,
+      <copy prop="radius" tname="_circle1" />)
     </point>
     <copy name="circle2" tname="_circle1" />
     </graph>
@@ -5057,29 +4822,23 @@ describe('Circle Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
+    <point hide name="fixedZero" fixed>(0,0)</point>
     <graph>
-    <triangle layer="1" name="t"><vertices>(1,2),(3,5),(-5,2)</vertices></triangle>
+    <triangle layer="1" name="t" vertices="(1,2) (3,5) (-5,2)" />
   
-    <circle name="c">
-      <through>
-        <copy prop="vertex1" tname="t" />
-        <copy prop="vertex2" tname="t" />
-        <copy prop="vertex3" tname="t" />
-      </through>
-    </circle>
+    <circle name="c" through="$(t{prop='vertex1'}) $(t{prop='vertex2'}) $(t{prop='vertex3'})" />
   
     <point name="x">
-      <x><extract prop="x"><copy prop="center" tname="c" /></extract></x>
-      <y fixed>0</y>
+      (<extract prop="x"><copy prop="center" tname="c" /></extract>,
+      $fixedZero)
     </point>
   
     <point name="y">
-      <x fixed>0</x>
-      <y><extract prop="y"><copy prop="center" tname="c" /></extract></y>
+      ($fixedZero,
+      <extract prop="y"><copy prop="center" tname="c" /></extract>)
     </point>
     <point name="r">
-      <x><copy prop="radius" tname="c" /></x>
-      <y>5</y>
+      (<copy prop="radius" tname="c" />, 5)
     </point>
   
     </graph>
@@ -5361,9 +5120,7 @@ describe('Circle Tag Tests', function () {
   <text>a</text>
   <math hide name="r"><extract prop="y"><copy prop="center" tname="_circle1" /></extract></math>
   <graph>
-    <circle radius="$r">
-      <center>(1,2)</center>
-    </circle>
+    <circle radius="$r" center="(1,2)" />
     <copy prop="center" tname="_circle1" />
   </graph>
     `}, "*");
@@ -5373,7 +5130,7 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
@@ -5382,7 +5139,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [-3, 5] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, 5]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, 5]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(5);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
     })
@@ -5391,7 +5148,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_copy2'].replacements[0].movePoint({ x: 8, y: 7 });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, 7]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, 7]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(7);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
     })
@@ -5400,7 +5157,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [3, -2] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([3, -2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([3, -2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -2])
     })
@@ -5409,7 +5166,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_copy2'].replacements[0].movePoint({ x: 1, y: 4 });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 4]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 4]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(4);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
     })
@@ -5422,12 +5179,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle radius="2">
-      <center>
-        <x>1</x>
-        <y><copy prop="radius" tname="_circle1" /></y>
-      </center>
-    </circle>
+    <circle radius="2" center="(1,$(_circle1{prop='radius'}))" />
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5437,45 +5189,109 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [-3, 5] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, 5]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, 5]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
     })
 
     cy.log("move center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_copy2'].replacements[0].movePoint({ x: 8, y: 7 });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, 7]);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: 7 });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, 7]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(7);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
     })
 
     cy.log("move circle below x-axis");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [3, -2] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([3, 0]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([3, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
     })
 
     cy.log("move circle back up with center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_copy2'].replacements[0].movePoint({ x: 1, y: 4 });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 4]);
+      components['/_copy1'].replacements[0].movePoint({ x: 1, y: 4 });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 4]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(4);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
+    })
+
+  })
+
+  it('circle where center depends on diameter', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <circle radius="2" center="(1,$(_circle1{prop='diameter'}))" />
+    <copy prop="center" tname="_circle1" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 4]);
+      expect(components['/_circle1'].stateValues.radius.tree).eq(2);
+      expect(components['/_circle1'].stateValues.diameter.tree).eq(4);
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
+    })
+
+    cy.log("move circle");
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_circle1'].moveCircle({ center: [-3, 6] });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, 6]);
+      expect(components['/_circle1'].stateValues.radius.tree).eq(3);
+      expect(components['/_circle1'].stateValues.diameter.tree).eq(6);
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 6])
+    })
+
+    cy.log("move center point");
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: 4 });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, 4]);
+      expect(components['/_circle1'].stateValues.radius.tree).eq(2);
+      expect(components['/_circle1'].stateValues.diameter.tree).eq(4);
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 4])
+    })
+
+    cy.log("move circle below x-axis");
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_circle1'].moveCircle({ center: [3, -2] });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([3, 0]);
+      expect(components['/_circle1'].stateValues.radius.tree).eq(0);
+      expect(components['/_circle1'].stateValues.diameter.tree).eq(0);
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
+    })
+
+    cy.log("move circle back up with center point");
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_copy1'].replacements[0].movePoint({ x: 1, y: 8 });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 8]);
+      expect(components['/_circle1'].stateValues.radius.tree).eq(4);
+      expect(components['/_circle1'].stateValues.diameter.tree).eq(8);
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 8])
     })
 
   })
@@ -5486,12 +5302,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle>
-      <center>
-        <x>1</x>
-        <y><copy prop="radius" tname="_circle1" /></y>
-      </center>
-    </circle>
+    <circle center="(1,$(_circle1{prop='radius'}))" />
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5501,45 +5312,45 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 1]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 1]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
     })
 
     cy.log("move circle");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [-3, 5] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, 5]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, 5]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(5);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 5])
     })
 
     cy.log("move center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_copy2'].replacements[0].movePoint({ x: 8, y: 7 });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, 7]);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: 7 });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, 7]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(7);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, 7])
     })
 
     cy.log("move circle below x-axis");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [3, -2] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([3, 0]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([3, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 3, 0])
     })
 
     cy.log("move circle back up with center point");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      components['/_copy2'].replacements[0].movePoint({ x: 1, y: 4 });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 4]);
+      components['/_copy1'].replacements[0].movePoint({ x: 1, y: 4 });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 4]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(4);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 4])
     })
 
   })
@@ -5550,14 +5361,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle radius="2">
-      <through>
-        <point>
-          <x>1</x>
-          <y>2<copy prop="radius" tname="_circle1" /></y>
-        </point>
-      </through>
-    </circle>
+    <circle radius="2" through="(1,2$(_circle1{prop='radius'}))" />
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5567,9 +5371,9 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -5581,9 +5385,9 @@ describe('Circle Tag Tests', function () {
       // so that center of circle would be (5+2)/2
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -5591,19 +5395,19 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = (7 + 3.5) / 2;  // given previous radius is 3.5
-      components['/_copy2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [4, -6] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, 0]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([4, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
     })
 
     cy.log("move circle back up with center point");
@@ -5611,10 +5415,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = (4 + 0) / 2;  // given previous radius is 0
-      components['/_copy2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -5625,14 +5429,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle>
-      <through>
-        <point>
-          <x>1</x>
-          <y>2<copy prop="radius" tname="_circle1" /></y>
-        </point>
-      </through>
-    </circle>
+    <circle through="(1,2$(_circle1{prop='radius'}))" />
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5642,9 +5439,9 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 1]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 1]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 1])
     })
 
     cy.log("move circle");
@@ -5656,9 +5453,9 @@ describe('Circle Tag Tests', function () {
       // so that center of circle would be (5+1)/2
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -5666,19 +5463,19 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = (7 + 3) / 2;  // given previous radius is 3
-      components['/_copy2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_circle1'].moveCircle({ center: [4, -6] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, 0]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([4, 0]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, 0])
     })
 
     cy.log("move circle back up with center point");
@@ -5686,10 +5483,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = (4 + 0) / 2;  // given previous radius is 0
-      components['/_copy2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -5701,9 +5498,7 @@ describe('Circle Tag Tests', function () {
   <text>a</text>
   <math name="r" hide><extract prop="y"><copy prop="throughPoint1" tname="_circle1" /></extract>/2</math>
   <graph>
-    <circle radius="$r">
-      <through>(1,4)</through>
-    </circle>
+    <circle radius="$r" through="(1,4)" />
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5713,7 +5508,7 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
@@ -5727,7 +5522,7 @@ describe('Circle Tag Tests', function () {
       // so that center of circle would be (5+2)/2
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
@@ -5738,7 +5533,7 @@ describe('Circle Tag Tests', function () {
       let desiredHeight = 7;
       let actualHeight = (7 + 3.5) / 2;  // given previous radius is 3.5
       components['/_copy2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
@@ -5751,7 +5546,7 @@ describe('Circle Tag Tests', function () {
       // would move through point to -6+5.25,
       // but radius becomes zero, so center is at -6+5.25
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(0);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
@@ -5762,7 +5557,7 @@ describe('Circle Tag Tests', function () {
       let desiredHeight = 4;
       let actualHeight = (4 + 0) / 2;  // given previous radius is 0
       components['/_copy2'].replacements[0].movePoint({ x: 1, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
       expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
@@ -5775,13 +5570,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle>
-      <through>(1,4)</through>
-      <center>
-        <x><extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract></x>
-        <y><extract prop="y"><copy prop="throughPoint1" tname="_circle1" /></extract>/2</y>
-      </center>
-    </circle>
+    <circle through="(1,4)" center="($(_circle1{prop='throughPointX1_1'}), $(_circle1{prop='throughPointX1_2'})/2)"/>
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5791,9 +5580,9 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -5805,9 +5594,9 @@ describe('Circle Tag Tests', function () {
       // so that center of circle would be (5+2)/2
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -5815,10 +5604,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = 7;  // since moving center itself
-      components['/_copy3'].replacements[0].movePoint({ x: 8, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
@@ -5827,9 +5616,9 @@ describe('Circle Tag Tests', function () {
       let desiredHeight = -8;
       let actualHeight = (-8 + 7) / 2; // given previous radius is 7
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(-actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
 
     cy.log("move circle back up with center point");
@@ -5837,10 +5626,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = 4;  // since moving point itself
-      components['/_copy3'].replacements[0].movePoint({ x: 1, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -5851,15 +5640,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle>
-      <through>
-        <point>
-          <x><extract prop="x"><copy prop="center" tname="_circle1" /></extract></x>
-          <y><extract prop="y"><copy prop="center" tname="_circle1" /></extract>2</y>
-        </point>
-      </through>
-      <center>(1,2)</center>
-    </circle>
+    <circle through="($(_circle1{prop='centerX1'}),$(_circle1{prop='centerX2'})2)" center="(1,2)" />
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5869,9 +5650,9 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(2);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -5883,9 +5664,9 @@ describe('Circle Tag Tests', function () {
       // so that center of circle would be (5+2)/2
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -5893,10 +5674,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = 7;  // since moving center itself
-      components['/_copy3'].replacements[0].movePoint({ x: 8, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
     cy.log("move circle below x-axis");
@@ -5905,9 +5686,9 @@ describe('Circle Tag Tests', function () {
       let desiredHeight = -8;
       let actualHeight = (-8 + 7) / 2; // given previous radius is 7
       components['/_circle1'].moveCircle({ center: [4, desiredHeight] });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([4, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([4, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(-actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 4, actualHeight])
     })
 
     cy.log("move circle back up with center point");
@@ -5915,10 +5696,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 4;
       let actualHeight = 4;  // since moving point itself
-      components['/_copy3'].replacements[0].movePoint({ x: 1, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 1, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(actualHeight);
-      expect(components['/_copy3'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, actualHeight])
     })
 
   })
@@ -5929,12 +5710,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle>
-      <center>
-        <x>1</x>
-        <y><extract prop="x"><copy prop="center" tname="_circle1"/></extract>+1</y>
-      </center>
-    </circle>
+    <circle center="(1, $(_circle1{prop='centerX1'})+1)" />
     <copy prop="center" tname="_circle1" />
   </graph>
   `}, "*");
@@ -5944,9 +5720,9 @@ describe('Circle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([1, 2]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([1, 2]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 1, 2])
     })
 
     cy.log("move circle");
@@ -5956,9 +5732,9 @@ describe('Circle Tag Tests', function () {
       let actualHeight = -2;
       components['/_circle1'].moveCircle({ center: [-3, desiredHeight] });
 
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([-3, actualHeight]);
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([-3, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", -3, actualHeight])
     })
 
     cy.log("move center point");
@@ -5966,10 +5742,10 @@ describe('Circle Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let desiredHeight = 7;
       let actualHeight = 9;  // since moving center itself
-      components['/_copy2'].replacements[0].movePoint({ x: 8, y: desiredHeight });
-      expect(components['/_circle1'].stateValues.center.map(x=>x.tree)).eqls([8, actualHeight]);
+      components['/_copy1'].replacements[0].movePoint({ x: 8, y: desiredHeight });
+      expect(components['/_circle1'].stateValues.center.map(x => x.tree)).eqls([8, actualHeight]);
       expect(components['/_circle1'].stateValues.radius.tree).eq(1);
-      expect(components['/_copy2'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
+      expect(components['/_copy1'].replacements[0].stateValues.coords.tree).eqls(["vector", 8, actualHeight])
     })
 
   })
@@ -5984,11 +5760,7 @@ describe('Circle Tag Tests', function () {
       -<extract prop="x"><copy prop="throughPoint2" tname="_circle1" /></extract>)
   </math>
   <graph>
-    <circle radius="$r">
-      <through hide="false">
-      (1,2),(3,4)
-      </through>
-    </circle>
+    <circle radius="$r" through="(1,2) (3,4)" />
     <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
@@ -6000,8 +5772,9 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughPoint1 = components["/_through1"].activeChildren[1];
-      let throughPoint2 = components["/_through1"].activeChildren[2];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
 
       let t1x = 1, t1y = 2;
       let t2x = 3, t2y = 4;
@@ -6010,8 +5783,8 @@ describe('Circle Tag Tests', function () {
         let components = Object.assign({}, win.state.components);
         let r = Math.abs(t1x - t2x);
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
-        expect(components['/_circle1'].stateValues.throughPoints[0].map(x=>x.tree)).eqls([t1x, t1y])
-        expect(components['/_circle1'].stateValues.throughPoints[1].map(x=>x.tree)).eqls([t2x, t2y])
+        expect(components['/_circle1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([t1x, t1y])
+        expect(components['/_circle1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([t2x, t2y])
         expect(throughPoint1.stateValues.coords.tree).eqls(["vector", t1x, t1y])
         expect(throughPoint2.stateValues.coords.tree).eqls(["vector", t2x, t2y])
 
@@ -6032,7 +5805,7 @@ describe('Circle Tag Tests', function () {
         components['/_circle1'].moveCircle({ center: newCenter });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -6064,7 +5837,7 @@ describe('Circle Tag Tests', function () {
         centerPoint.movePoint({ x: newCenter[0], y: newCenter[1] });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -6091,7 +5864,7 @@ describe('Circle Tag Tests', function () {
         throughPoint1.movePoint({ x: t1x, y: t1y });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -6117,7 +5890,7 @@ describe('Circle Tag Tests', function () {
         throughPoint2.movePoint({ x: t2x, y: t2y });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -6145,7 +5918,7 @@ describe('Circle Tag Tests', function () {
         throughPoint2.movePoint({ x: t2x, y: t2y });
 
         let r = Math.abs(t1x - t2x);
-        expect(components['/_circle1'].stateValues.radius.tree).eq(r);
+        expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
 
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][0]).closeTo(t1x, 1E-12);
         expect(components['/_circle1'].stateValues.numericalThroughPoints[0][1]).closeTo(t1y, 1E-12);
@@ -6177,15 +5950,7 @@ describe('Circle Tag Tests', function () {
     <extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract>
   </math>
   <graph>
-    <circle radius="$r">
-      <through hide="false">
-        <point>(1,2)</point>
-        <point>
-          <x><copy prop="radius" tname="_circle1" />+1</x>
-          <y>3</y>
-        </point>
-      </through>
-    </circle>
+    <circle radius="$r" through="(1,2) ($(_circle1{prop='radius'})+1,3)" />
     <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
@@ -6197,8 +5962,9 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughPoint1 = components["/_through1"].activeChildren[1];
-      let throughPoint2 = components["/_through1"].activeChildren[2];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
 
       let t1x = 1, t1y = 2;
       let t2x = 2, t2y = 3;
@@ -6208,8 +5974,8 @@ describe('Circle Tag Tests', function () {
 
         let r = t1x;
         expect(components['/_circle1'].stateValues.radius.tree).eq(r);
-        expect(components['/_circle1'].stateValues.throughPoints[0].map(x=>x.tree)).eqls([t1x, t1y])
-        expect(components['/_circle1'].stateValues.throughPoints[1].map(x=>x.tree)).eqls([t2x, t2y])
+        expect(components['/_circle1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([t1x, t1y])
+        expect(components['/_circle1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([t2x, t2y])
         expect(throughPoint1.stateValues.coords.tree).eqls(["vector", t1x, t1y])
         expect(throughPoint2.stateValues.coords.tree).eqls(["vector", t2x, t2y])
 
@@ -6374,15 +6140,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle>
-      <through hide="false">
-        <point>(1,2)</point>
-        <point>
-        <x><extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract>+1</x>
-        <y>3</y>
-        </point>
-      </through>
-    </circle>
+    <circle through="(1,2) ($(_circle1{prop='throughPointX1_1'})+1,3)"/>
     <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
@@ -6394,8 +6152,9 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughPoint1 = components["/_through1"].activeChildren[1];
-      let throughPoint2 = components["/_through1"].activeChildren[2];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
 
       let t1x = 1, t1y = 2;
       let t2x = 2, t2y = 3;
@@ -6409,8 +6168,8 @@ describe('Circle Tag Tests', function () {
         let cy = (t1y + t2y) / 2;
 
         expect(components['/_circle1'].stateValues.radius.tree).closeTo(r, 1E-12);
-        expect(components['/_circle1'].stateValues.throughPoints[0].map(x=>x.tree)).eqls([t1x, t1y])
-        expect(components['/_circle1'].stateValues.throughPoints[1].map(x=>x.tree)).eqls([t2x, t2y])
+        expect(components['/_circle1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([t1x, t1y])
+        expect(components['/_circle1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([t2x, t2y])
         expect(throughPoint1.stateValues.coords.tree).eqls(["vector", t1x, t1y])
         expect(throughPoint2.stateValues.coords.tree).eqls(["vector", t2x, t2y])
 
@@ -6566,19 +6325,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle>
-      <through hide="false">
-        <point>
-        <x><extract prop="x"><copy prop="throughPoint2" tname="_circle1" /></extract>+1</x>
-        <y>3</y>
-        </point>
-        <point>(1,2)</point>
-        <point>
-          <x><extract prop="x"><copy prop="throughPoint1" tname="_circle1" /></extract>+1</x>
-          <y>5</y>
-        </point>
-      </through>
-    </circle>
+    <circle through="($(_circle1{prop='throughPointX2_1'})+1,3) (1,2) ($(_circle1{prop='throughPointX1_1'})+1,5)" />
     <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>
   `}, "*");
@@ -6590,9 +6337,10 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughPoint1 = components["/_through1"].activeChildren[1];
-      let throughPoint2 = components["/_through1"].activeChildren[2];
-      let throughPoint3 = components["/_through1"].activeChildren[3];
+      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughPoint1 = throughComponent.activeChildren[0];
+      let throughPoint2 = throughComponent.activeChildren[1];
+      let throughPoint3 = throughComponent.activeChildren[2];
 
       let t1x = 2, t1y = 3;
       let t2x = 1, t2y = 2;
@@ -6603,9 +6351,9 @@ describe('Circle Tag Tests', function () {
 
 
         expect(Number.isFinite(components['/_circle1'].stateValues.radius.tree)).true;
-        expect(components['/_circle1'].stateValues.throughPoints[0].map(x=>x.tree)).eqls([t1x, t1y])
-        expect(components['/_circle1'].stateValues.throughPoints[1].map(x=>x.tree)).eqls([t2x, t2y])
-        expect(components['/_circle1'].stateValues.throughPoints[2].map(x=>x.tree)).eqls([t3x, t3y])
+        expect(components['/_circle1'].stateValues.throughPoints[0].map(x => x.tree)).eqls([t1x, t1y])
+        expect(components['/_circle1'].stateValues.throughPoints[1].map(x => x.tree)).eqls([t2x, t2y])
+        expect(components['/_circle1'].stateValues.throughPoints[2].map(x => x.tree)).eqls([t3x, t3y])
         expect(throughPoint1.stateValues.coords.tree).eqls(["vector", t1x, t1y])
         expect(throughPoint2.stateValues.coords.tree).eqls(["vector", t2x, t2y])
         expect(throughPoint3.stateValues.coords.tree).eqls(["vector", t3x, t3y])
@@ -6821,8 +6569,8 @@ describe('Circle Tag Tests', function () {
   <graph>
     <circle/>
     <point>
-     <x><extract prop="y"><copy prop="center" tname="_circle1" /></extract></x>
-     <y><extract prop="x"><copy prop="center" tname="_circle1" /></extract></y>
+     (<extract prop="y"><copy prop="center" tname="_circle1" /></extract>,
+     <extract prop="x"><copy prop="center" tname="_circle1" /></extract>)
     </point>
     <copy prop="center" name="centerPoint" tname="_circle1" />
   </graph>

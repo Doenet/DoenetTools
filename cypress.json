@@ -1,4 +1,5 @@
 {
-    "baseUrl": "http://localhost:80",
-    "numTestsKeptInMemory": 1
+  "baseUrl": "http://localhost",
+  "numTestsKeptInMemory": 20,
+  "defaultCommandTimeout": 10000
 }

@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('Choiceinput Tag Tests', function () {
+describe('ChoiceInput Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
@@ -622,8 +622,7 @@ describe('Choiceinput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput>
-      <bindValueTo><copy tname="_textinput1" prop="value" /></bindValueTo>
+    <choiceinput bindValueTo="$_textinput1">
       <choice>caT</choice>
       <choice>  dog </choice>
       <choice>Monkey</choice>

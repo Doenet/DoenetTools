@@ -56,7 +56,7 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <lineSegment><endpoints>(3,-8)</endpoints></lineSegment>
+    <lineSegment endpoints="(3,-8)" />
   </graph>
   `}, "*");
     });
@@ -104,12 +104,7 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point label='P'>(3,5)</point>
   <point label='Q'>(-4,-1)</point>
-    <lineSegment>
-      <endpoints>
-        <copy tname="_point1" />
-        <copy tname="_point2" />
-      </endpoints>
-    </lineSegment>
+    <lineSegment endpoints="$_point1 $_point2" />
   </graph>
   `}, "*");
     });
@@ -179,7 +174,7 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <lineSegment><endpoints>(3,5),(-4,9)</endpoints></lineSegment>
+    <lineSegment endpoints="(3,5) (-4,9)" />
   </graph>
   `}, "*");
     });
@@ -189,8 +184,8 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].activeChildren[0].activeChildren[0];
-      let point2 = components["/_linesegment1"].activeChildren[0].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
 
       cy.log('Test location')
       cy.window().then((win) => {
@@ -256,18 +251,7 @@ describe('LineSegment Tag Tests', function () {
   <number>3</number>
   <graph>
   <point>(-2,1)</point>
-  <linesegment>
-    <endpoints>
-      <point>
-        <x><copy tname="_number1" /></x>
-        <y><copy prop="x" tname="_point1" /></y>
-      </point>
-      <point>
-        <x><copy prop="y" tname="_point1" /></x>
-        <y>5</y>
-      </point>
-    </endpoints>
-  </linesegment>
+  <linesegment endpoints="($_number1, $(_point1{prop='x'})) ($(_point1{prop='y'}),5) "/>
   </graph>
   `}, "*");
     });
@@ -326,80 +310,84 @@ describe('LineSegment Tag Tests', function () {
     })
   })
 
-  it('lineSegment with point based on sugared strings', () => {
+  it('lineSegment with endpoints based on sugared strings 2', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <lineSegment><endpoints>
-      <point>(-1,2)</point>
-      <point>(-2,3)</point>
-    </endpoints></lineSegment>
+    <lineSegment endpoints="(-1,2) (-2,3)" />
   </graph>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.log('move point1 via segment to (-2,-3)')
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      components['/_linesegment1'].moveLineSegment({
-        point1coords: [-2, -3],
-        point2coords: [-2, 3]
-      });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(-2)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(-3)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', -2, -3])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(-2)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(3)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', -2, 3])
-      expect(components['/_linesegment1'].stateValues.endpoints[0].map(x => x.tree)).eqls([-2, -3]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].map(x => x.tree)).eqls([-2, 3]);
-
-    })
-
-    cy.log('move line segment up and to the right')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1coords = [
-        components['/_linesegment1'].stateValues.endpoints[0][0],
-        components['/_linesegment1'].stateValues.endpoints[0][1],
-      ];
-      let point2coords = [
-        components['/_linesegment1'].stateValues.endpoints[1][0],
-        components['/_linesegment1'].stateValues.endpoints[1][1],
-      ];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
 
-      let moveX = 3;
-      let moveY = 2;
+      cy.log('move point1 via segment to (-2,-3)')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        components['/_linesegment1'].moveLineSegment({
+          point1coords: [-2, -3],
+          point2coords: [-2, 3]
+        });
+        expect(point1.stateValues.xs[0].tree).eq(-2)
+        expect(point1.stateValues.xs[1].tree).eq(-3)
+        expect(point1.stateValues.coords.tree).eqls(['vector', -2, -3])
+        expect(point2.stateValues.xs[0].tree).eq(-2)
+        expect(point2.stateValues.xs[1].tree).eq(3)
+        expect(point2.stateValues.coords.tree).eqls(['vector', -2, 3])
+        expect(components['/_linesegment1'].stateValues.endpoints[0].map(x => x.tree)).eqls([-2, -3]);
+        expect(components['/_linesegment1'].stateValues.endpoints[1].map(x => x.tree)).eqls([-2, 3]);
 
-      point1coords[0] = point1coords[0].add(moveX);
-      point1coords[1] = point1coords[1].add(moveY);
-      point2coords[0] = point2coords[0].add(moveX);
-      point2coords[1] = point2coords[1].add(moveY);
+      })
 
-      components['/_linesegment1'].moveLineSegment({
-        point1coords: point1coords,
-        point2coords: point2coords
-      });
+      cy.log('move line segment up and to the right')
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
 
-      let p1x = point1coords[0].simplify().tree;
-      let p1y = point1coords[1].simplify().tree;
-      let p2x = point2coords[0].simplify().tree;
-      let p2y = point2coords[1].simplify().tree;
+        let point1coords = [
+          components['/_linesegment1'].stateValues.endpoints[0][0],
+          components['/_linesegment1'].stateValues.endpoints[0][1],
+        ];
+        let point2coords = [
+          components['/_linesegment1'].stateValues.endpoints[1][0],
+          components['/_linesegment1'].stateValues.endpoints[1][1],
+        ];
 
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(p1x)
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(p1y)
-      expect(components['/_point1'].stateValues.coords.tree).eqls(['vector', p1x, p1y])
-      expect(components['/_point2'].stateValues.xs[0].tree).eq(p2x)
-      expect(components['/_point2'].stateValues.xs[1].tree).eq(p2y)
-      expect(components['/_point2'].stateValues.coords.tree).eqls(['vector', p2x, p2y])
-      expect(components['/_linesegment1'].stateValues.endpoints[0].map(x => x.tree)).eqls([p1x, p1y]);
-      expect(components['/_linesegment1'].stateValues.endpoints[1].map(x => x.tree)).eqls([p2x, p2y]);
+        let moveX = 3;
+        let moveY = 2;
 
+        point1coords[0] = point1coords[0].add(moveX);
+        point1coords[1] = point1coords[1].add(moveY);
+        point2coords[0] = point2coords[0].add(moveX);
+        point2coords[1] = point2coords[1].add(moveY);
+
+        components['/_linesegment1'].moveLineSegment({
+          point1coords: point1coords,
+          point2coords: point2coords
+        });
+
+        let p1x = point1coords[0].simplify().tree;
+        let p1y = point1coords[1].simplify().tree;
+        let p2x = point2coords[0].simplify().tree;
+        let p2y = point2coords[1].simplify().tree;
+
+        expect(point1.stateValues.xs[0].tree).eq(p1x)
+        expect(point1.stateValues.xs[1].tree).eq(p1y)
+        expect(point1.stateValues.coords.tree).eqls(['vector', p1x, p1y])
+        expect(point2.stateValues.xs[0].tree).eq(p2x)
+        expect(point2.stateValues.xs[1].tree).eq(p2y)
+        expect(point2.stateValues.coords.tree).eqls(['vector', p2x, p2y])
+        expect(components['/_linesegment1'].stateValues.endpoints[0].map(x => x.tree)).eqls([p1x, p1y]);
+        expect(components['/_linesegment1'].stateValues.endpoints[1].map(x => x.tree)).eqls([p2x, p2y]);
+
+      })
     })
   })
 
@@ -418,12 +406,7 @@ describe('LineSegment Tag Tests', function () {
   <copy tname="_copy4" />
   
   <graph>
-    <lineSegment>
-      <endpoints>
-        <copy tname="_copy5" />
-        <copy tname="_copy6" />
-      </endpoints>
-    </lineSegment>
+    <lineSegment endpoints="$_copy5 $_copy6" />
   </graph>
   <copy prop="y" tname="_point1" />
   `}, "*");
@@ -434,8 +417,8 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].activeChildren[0].activeChildren[0];
-      let point2 = components["/_linesegment1"].activeChildren[0].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
 
       cy.log('move point 10 to (0,-3)')
       cy.window().then((win) => {
@@ -498,19 +481,11 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <linesegment><endpoints>
-      <point>(-1,2)</point>
-      <point>(-2,3)</point>
-    </endpoints></linesegment>
+    <linesegment endpoints="(-1,2) (-2,3)" />
     <point>(-4,7)</point>
     <point>(3,5)</point>
-    <linesegment>
-      <endpoints>
-        <copy tname="_point3" />
-        <copy tname="_point4" />
-      </endpoints>
-    </linesegment>
-    <linesegment><endpoints>(-9,-1),(-3,6)</endpoints></linesegment>
+    <linesegment endpoints="$_point1 $_point2" />
+    <linesegment endpoints="(-9,-1) (-3,6) "/>
   </graph>
 
   <graph>
@@ -891,12 +866,7 @@ describe('LineSegment Tag Tests', function () {
   <text>a</text>
   <mathinput name="x" prefill="q"/>
   <graph>
-    <lineSegment>
-      <endpoints>
-        <point><coords>(<copy prop="value" tname="x" />,2)</coords></point>
-        <point>(-2,3)</point>
-      </endpoints>
-    </lineSegment>
+    <lineSegment endpoints="($x,2) (-2,3)" />
   </graph>
   `}, "*");
     });
@@ -930,18 +900,12 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <linesegment>
-    <endpoints>
-      <copy tname="_point1" /><copy tname="_point2" />
-    </endpoints>
-  </linesegment>
+  <linesegment endpoints="$_point1 $_point2" />
 
-  <point>
+  <point x="-5" y="2">
     <constraints>
       <constrainTo><copy tname="_linesegment1" /></constrainTo>
     </constraints>
-    <x>-5</x>
-    <y>2</y>
   </point>
   </graph>
   `}, "*");
@@ -1057,18 +1021,12 @@ describe('LineSegment Tag Tests', function () {
   <graph>
   <point>(1,2)</point>
   <point>(3,4)</point>
-  <linesegment>
-    <endpoints>
-      <copy tname="_point1" /><copy tname="_point2" />
-    </endpoints>
-  </linesegment>
+  <linesegment endpoints="$_point1 $_point2" />
 
-  <point>
+  <point x="-5" y="2">
     <constraints>
       <attractTo><copy tname="_linesegment1" /></attractTo>
     </constraints>
-    <x>-5</x>
-    <y>2</y>
   </point>
   </graph>
   `}, "*");
@@ -1182,7 +1140,7 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment><endpoints>(1,2),(3,4)</endpoints></linesegment>
+  <linesegment endpoints="(1,2)(3,4)"/>
   </graph>
   <graph>
   <copy prop="endpoint1" name="point3" tname="_linesegment1" />
@@ -1199,8 +1157,8 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].activeChildren[0].activeChildren[0];
-      let point2 = components["/_linesegment1"].activeChildren[0].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
       let point3 = components["/point3"].replacements[0]
       let point4 = components["/point4"].replacements[0]
       let point5 = components["/points56"].replacements[0]
@@ -1364,14 +1322,10 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment><endpoints>(-1,-2),(-3,-4)</endpoints></linesegment>
+  <linesegment endpoints="(-1,-2) (-3,-4)" />
   </graph>
   <graph>
-  <linesegment>
-    <endpoints>
-      <copy prop="endpoints" name="points34" tname="_linesegment1" />
-    </endpoints>
-  </linesegment>
+  <linesegment endpoints="$(_linesegment1{prop='endpoints'})" />
   </graph>
   `}, "*");
     });
@@ -1381,10 +1335,10 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].activeChildren[0].activeChildren[0];
-      let point2 = components["/_linesegment1"].activeChildren[0].activeChildren[1];
-      let point3 = components["/points34"].replacements[0]
-      let point4 = components["/points34"].replacements[1]
+      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
+      let point3 = components["/_linesegment2"].attributes["endpoints"].activeChildren[0];
+      let point4 = components["/_linesegment2"].attributes["endpoints"].activeChildren[1];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1511,29 +1465,22 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment>
-    <endpoints>
-    <point>(1,2)</point>
-    <point><coords>
-      (<copy prop="y" tname="_point1" />, <copy prop="x" tname="_point1" />)
-    </coords></point>
-    </endpoints>
-  </linesegment> 
+  <linesegment endpoints="(1,2) ($(_linesegment1{prop='endpointX1_2'}), $(_linesegment1{prop='endpointX1_1'}))" />
   <point name="x1">
-    <x><extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract></x>
-    <y fixed>3</y>
+    (<extract prop="x"><copy prop="endpoint1" tname="_linesegment1" /></extract>,
+    <math fixed>3</math>)
   </point>
   <point name="x2">
-    <x><extract prop="x"><copy prop="endpoint2" tname="_linesegment1" /></extract></x>
-    <y fixed>4</y>
+    (<extract prop="x"><copy prop="endpoint2" tname="_linesegment1" /></extract>,
+    <math fixed>4</math>)
   </point>
   <point name="y1">
-    <y><extract prop="y"><copy prop="endpoint1" tname="_linesegment1" /></extract></y>
-    <x fixed>3</x>
+    (<math fixed>3</math>,
+    <extract prop="y"><copy prop="endpoint1" tname="_linesegment1" /></extract>)
   </point>
   <point name="y2">
-    <y><extract prop="y"><copy prop="endpoint2" tname="_linesegment1" /></extract></y>
-    <x fixed>4</x>
+    (<math fixed>4</math>,
+    <extract prop="y"><copy prop="endpoint2" tname="_linesegment1" /></extract>)
   </point>
 </graph>
   `}, "*");
@@ -1619,24 +1566,9 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment>
-    <endpoints>
-    <copy prop="endpoint2" tname="_linesegment2" />
-    <point>(1,0)</point>
-    </endpoints>
-  </linesegment>
-  <linesegment>
-    <endpoints hide="false">
-    <copy prop="endpoint2" tname="_linesegment3" />
-    <point>(3,2)</point>
-    </endpoints>
-  </linesegment>
-  <linesegment>
-    <endpoints hide="false">
-    <copy prop="endpoint2" tname="_linesegment1" />
-    <point>(-1,4)</point>
-    </endpoints>
-  </linesegment>
+  <linesegment endpoints="$(_linesegment2{prop='endpoint2' componentType='point'}) (1,0)" />
+  <linesegment endpoints="$(_linesegment3{prop='endpoint2' componentType='point'}) (3,2)" />
+  <linesegment endpoints="$(_linesegment1{prop='endpoint2' componentType='point'}) (-1,4)" />
   </graph>
   `}, "*");
     });
@@ -1645,12 +1577,12 @@ describe('LineSegment Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point1 = components["/_linesegment1"].activeChildren[0].activeChildren[0];
-      let point2 = components["/_linesegment1"].activeChildren[0].activeChildren[1];
-      let point3 = components["/_linesegment2"].activeChildren[0].activeChildren[1];
-      let point4 = components["/_linesegment2"].activeChildren[0].activeChildren[2];
-      let point5 = components["/_linesegment3"].activeChildren[0].activeChildren[1];
-      let point6 = components["/_linesegment3"].activeChildren[0].activeChildren[2];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
+      let point3 = components["/_linesegment2"].attributes["endpoints"].activeChildren[0];
+      let point4 = components["/_linesegment2"].attributes["endpoints"].activeChildren[1];
+      let point5 = components["/_linesegment3"].attributes["endpoints"].activeChildren[0];
+      let point6 = components["/_linesegment3"].attributes["endpoints"].activeChildren[1];
 
       let x1 = 1, y1 = 0;
       let x2 = 3, y2 = 2;

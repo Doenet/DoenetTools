@@ -20,23 +20,16 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <copy prop="angle" tname="_angle1" />
+  <p>Angle again: $_angle1</p>
+  
   <mathinput prefill="2"/>
   <mathinput prefill="2"/>
 
   <graph>
-  <point>
-    <x><copy prop="value" tname="_mathinput1" /></x>
-    <y><copy prop="value" tname="_mathinput2" /></y>
-  </point>
+  <point x="$_mathinput1" y="$_mathinput2" />
   <point>(2,4)</point>
   <point>(4,2)</point>
-    <angle>
-      <through>
-        <copy tname="_point1" />
-        <copy tname="_point2" />
-        <copy tname="_point3" />
-      </through>
-    </angle>
+  <angle through="$_point1 $_point2 $_point3" />
   </graph>
   `}, "*");
     });
@@ -50,10 +43,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI / 4, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(Math.PI / 4, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
@@ -62,10 +58,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(7 * Math.PI / 4, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(7 * Math.PI / 4, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(7 * Math.PI / 4, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(7 * Math.PI / 4, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}0{enter}', { force: true });
@@ -74,10 +73,14 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
+      })
+
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI / 2, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(Math.PI / 2, 1E-12);
       })
 
 
@@ -87,10 +90,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(3 * Math.PI / 2, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(3 * Math.PI / 2, 1E-12);
       })
 
     })
@@ -102,41 +108,20 @@ describe('Angle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <copy prop="angle" tname="_angle1" />
+  <p>Angle again: $_angle1</p>
   <mathinput prefill="2"/>
   <mathinput prefill="2"/>
   <mathinput prefill="-2"/>
   <mathinput prefill="2"/>
 
   <graph>
-  <point>
-    <x><copy prop="value" tname="_mathinput1" /></x>
-    <y><copy prop="value" tname="_mathinput2" /></y>
-  </point>
-  <point>
-    <x><copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput3" />)</x>
-    <y><copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput3" />)</y>
-  </point>
-  <point>
-    <x><copy prop="value" tname="_mathinput1" /> + cos(<copy prop="value" tname="_mathinput4" />)</x>
-    <y><copy prop="value" tname="_mathinput2" /> + sin(<copy prop="value" tname="_mathinput4" />)</y>
-    </point>
-  <line>
-    <through>
-      <copy tname="_point1" />
-      <copy tname="_point2" />
-    </through>
-  </line>
-  <line>
-    <through>
-      <copy tname="_point1" />
-      <copy tname="_point3" />
-    </through>
-  </line>
+  <point x="$_mathinput1" y="$_mathinput2" />
+  <point x="$_mathinput1 + cos($_mathinput3)" y="$_mathinput2 + sin($_mathinput3)" />
+  <point x="$_mathinput1 + cos($_mathinput4)" y="$_mathinput2 + sin($_mathinput4)" />
+  <line through="$_point1 $_point2" />
+  <line through="$_point1 $_point3" />
 
-  <angle radius="2">
-    <copy tname="_line1" />
-    <copy tname="_line2" />
-  </angle>
+  <angle radius="2" betweenLines="$_line1 $_line2" />
   </graph>
   `}, "*");
     });
@@ -150,10 +135,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(4, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(4, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(4, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(4, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}-3{enter}', { force: true });
@@ -164,10 +152,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(2, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(2, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(2, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(2, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}5{enter}', { force: true });
@@ -178,10 +169,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(0, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(0, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(0, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(0, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}2{enter}', { force: true });
@@ -192,10 +186,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.PI, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(Math.PI, 1E-12);
       })
     })
 
@@ -209,25 +206,13 @@ describe('Angle Tag Tests', function () {
   <mathinput prefill="3"/>
   <mathinput prefill="4"/>
   <copy prop="angle" tname="_angle1" />
+  <p>Angle again: $_angle1</p>
 
   <graph>
-  <line>
-    <through>
-      <point>(1,2)</point>
-      <point>
-        <xs>
-          <copy prop="value" tname="_mathinput1" />
-          <copy prop="value" tname="_mathinput2" />
-        </xs>
-      </point>
-    </through>
-  </line>
-  <line><through>(6,2),(8,4)</through></line>
+  <line through="(1,2) ($_mathinput1, $_mathinput2)" />
+  <line through="(6,2)(8,4)" />
 
-  <angle>
-    <copy tname="_line1" />
-    <copy tname="_line2" />
-  </angle>
+  <angle betweenLines="$_line1 $_line2" />
   </graph>
   `}, "*");
     });
@@ -241,10 +226,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).eq("＿");
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).eq("＿");
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.angle.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
       })
 
       cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}0{enter}', { force: true });
@@ -252,10 +240,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.PI / 2, 1E-6)
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI / 2, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(Math.PI / 2, 1E-12);
       })
 
 
@@ -265,10 +256,13 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).eq("＿");
       })
+      cy.get("#\\/_p1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).eq("＿");
+      })
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.angle.tree);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
       })
     })
 
@@ -283,10 +277,8 @@ describe('Angle Tag Tests', function () {
   <graph>
     <point>(5,0)</point>
     <point>(0,0)</point>
-    <point><xs><math>7cos(1)</math><math>7sin(1)</math></xs></point>
-    <angle radius="$_mathinput1">
-      <through><copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" /></through>
-    </angle>
+    <point x="7cos(1)" y="7sin(1)" />
+    <angle radius="$_mathinput1" through="$_point1 $_point2 $_point3" />
   </graph>
   <copy name="alpha" prop="angle" tname="_angle1" />
   `}, "*");
@@ -304,7 +296,7 @@ describe('Angle Tag Tests', function () {
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(1, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(1, 1E-12);
         expect(components['/_angle1'].stateValues.radius.tree).eq('\uFF3F');
       })
 
@@ -350,16 +342,12 @@ describe('Angle Tag Tests', function () {
   <graph>
     <point>(5,0)</point>
     <point>(0,0)</point>
-    <point><xs>
-      <math>8cos(<copy prop="value" tname="_mathinput1" />)</math>
-      <math>8sin(<copy prop="value" tname="_mathinput1" />)</math>
-    </xs></point>
-    <angle><through>
-      <copy tname="_point1" /><copy tname="_point2" /><copy tname="_point3" />
-    </through></angle>
+    <point x="8cos($_mathinput1)" y="8sin($_mathinput1)" />
+    <angle through="$_point1 $_point2 $_point3" />
   </graph>
   <p><copy name="alpha" prop="angle" tname="_angle1" /></p>
   <p><copy name="alphadeg" prop="degrees" tname="_angle1" /></p>
+  <p>Angle again: $_angle1</p>
   `}, "*");
     });
 
@@ -373,149 +361,193 @@ describe('Angle Tag Tests', function () {
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text).eq("＿")
       })
-      cy.get(angleDegAnchor).should("have.text", "NaN");
-
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text).eq("＿")
+      })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text).eq("＿")
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        assert.isNaN(components['/_angle1'].stateValues.angle.tree);
-        assert.isNaN(components['/_angle1'].stateValues.degrees);
+        expect(components['/_angle1'].stateValues.radians.tree).eq('\uff3f')
+        expect(components['/_angle1'].stateValues.degrees.tree).eq('\uff3f')
       })
 
       cy.get('#\\/_mathinput1 textarea').type('pi/4{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(45, 1E-6)
       })
-
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.PI / 4, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI / 4, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(45, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(Math.PI / 4, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).closeTo(45, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}1{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(1, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(180 / Math.PI, 1E-6)
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).eq('180π')
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(1, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(1, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(180 / Math.PI, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(1, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).eqls(["/", 180, "pi"]);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}pi/3{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI / 3, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(60, 1E-6)
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.PI / 3, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI / 3, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(Math.PI / 3, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).closeTo(60, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}2pi/3{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(2 * Math.PI / 3, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(120, 1E-6)
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(2 * Math.PI / 3, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(2 * Math.PI / 3, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(120, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(2 * Math.PI / 3, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).closeTo(120, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}pi{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(Math.PI, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(180, 1E-6)
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(Math.PI, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(Math.PI, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(180, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(Math.PI, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).closeTo(180, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(4, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(4 * 180 / Math.PI, 1E-6)
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).eq('720π')
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(4, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(4, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(4 * 180 / Math.PI, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(4, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.evaluate_to_constant()).closeTo(4 * 180 / Math.PI, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}3pi/2{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(270, 1E-6)
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(3 * Math.PI / 2, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(3 * Math.PI / 2, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(270, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(3 * Math.PI / 2, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).closeTo(270, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}11pi/6{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(11 * Math.PI / 6, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(330, 1E-6)
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(11 * Math.PI / 6, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(11 * Math.PI / 6, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(330, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(11 * Math.PI / 6, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).closeTo(330, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2pi{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(2 * Math.PI, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(360, 1E-6)
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(2 * Math.PI, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(2 * Math.PI, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(360, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(2 * Math.PI, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.tree).closeTo(360, 1E-12);
       })
 
       cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}2pi+0.00001{enter}', { force: true });
       cy.get(angleAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(Number(text)).closeTo(0.00001, 1E-6)
       })
-      cy.get(angleDegAnchor).invoke('text').then((text) => {
-        expect(Number(text)).closeTo(0.0018 / Math.PI, 1E-6)
+      cy.get(angleDegAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).eq('0.0018π')
       })
+      cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(Number(text)).closeTo(0.00001, 1E-6)
+      })
+      
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        expect(components['/_angle1'].stateValues.angle.tree).closeTo(0.00001, 1E-12);
-        expect(components['/_angle1'].stateValues.degrees).closeTo(0.0018 / Math.PI, 1E-12);
+        expect(components['/_angle1'].stateValues.radians.tree).closeTo(0.00001, 1E-12);
+        expect(components['/_angle1'].stateValues.degrees.evaluate_to_constant()).closeTo(0.0018 / Math.PI, 1E-12);
       })
     })
 
   })
 
-  it('angle from number', () => {
+  it('angle from number sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -530,6 +562,9 @@ describe('Angle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π/2")
+    })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("π")
     })
@@ -542,13 +577,86 @@ describe('Angle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_angle1'].stateValues.angle.tree).eqls(['/', 'pi', 2]);
-      expect(components['/_angle1'].stateValues.degrees).eq(90);
+      expect(components['/_angle1'].stateValues.radians.tree).eqls(['/', 'pi', 2]);
+      expect(components['/_angle1'].stateValues.degrees.tree).eq(90);
     })
 
   })
 
-  it('angle from variable', () => {
+  it('angle from radians number', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <angle radians="pi/2" />
+  <math simplify>2<copy tname="_angle1" /></math>
+  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π/2")
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π")
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π")
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_angle1'].stateValues.radians.tree).eqls(['/', 'pi', 2]);
+      expect(components['/_angle1'].stateValues.degrees.tree).eq(90);
+    })
+
+  })
+
+  it('angle from degrees number', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <angle degrees="90" />
+  <math simplify>2<copy tname="_angle1" /></math>
+  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    // TODO: add this when can simplify ratioss
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq("π/2")
+    // })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π")
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π")
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_angle1'].stateValues.radians.evaluate_to_constant()).closeTo(Math.PI/2, 1E-12);
+      expect(components['/_angle1'].stateValues.degrees.tree).eq(90);
+    })
+
+  })
+
+  it('angle from variable sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -563,6 +671,10 @@ describe('Angle Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("α")
+    })
+
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).eq("2α")
     })
@@ -570,13 +682,49 @@ describe('Angle Tag Tests', function () {
       expect(text).eq("2α")
     })
     cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text).eq("2＿")
+      expect(text).eq("360απ")
     })
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_angle1'].stateValues.angle.tree).eq('alpha');
-      assert.isNaN(components['/_angle1'].stateValues.degrees);
+      expect(components['/_angle1'].stateValues.radians.tree).eq('alpha');
+      expect(components['/_angle1'].stateValues.degrees.tree).eqls(["/", ["*", 180, "alpha"], "pi"]);
+    })
+
+  })
+
+  it('angle from variable radians', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <angle radians="alpha" />
+  <math simplify>2<copy tname="_angle1" /></math>
+  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("α")
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("2α")
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("2α")
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("360απ")
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_angle1'].stateValues.radians.tree).eq('alpha');
+      expect(components['/_angle1'].stateValues.degrees.tree).eqls(["/", ["*", 180, "alpha"], "pi"]);
     })
 
   })
