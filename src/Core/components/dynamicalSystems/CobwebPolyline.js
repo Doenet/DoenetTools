@@ -197,11 +197,9 @@ export default class CobwebPolyline extends Polyline {
     }
 
     stateVariableDefinitions.originalVertices = {
-      essential: true,
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["originalVertexX", "originalVertex"],
-      defaultEntryValue: me.fromAst(0),
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "originalVertexX") {
           // voriginalVertexX1_2 is the 2nd component of the first originalVertex
@@ -252,15 +250,38 @@ export default class CobwebPolyline extends Polyline {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.nOriginalVertices - 1, dependencyValues.nDimensions];
       },
-      returnArrayDependenciesByKey: () => ({}),
-      arrayDefinitionByKey({ arrayKeys }) {
+      returnArrayDependenciesByKey: () => ({
+        globalDependencies: {
+          graphAncestor: {
+            dependencyType: "ancestor",
+            componentType: "graph",
+            variableNames: ["xmin", "xmax", "ymin", "ymax"]
+          }
+        }
+      }),
+      arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
         let originalVertices = {};
 
         for (let arrayKey of arrayKeys) {
-          let jointVarEnding = arrayKey.split(",").map(x => Number(x) + 1).join('_');
+          let arrayIndices = arrayKey.split(",").map(Number)
+          let jointVarEnding = arrayIndices.map(x => x + 1).join('_');
 
           originalVertices[arrayKey] = {
-            variablesToCheck: ["originalVertex" + jointVarEnding]
+            variablesToCheck: ["originalVertex" + jointVarEnding],
+            get defaultValue() {
+              if (globalDependencyValues.graphAncestor) {
+                if (arrayIndices[1] === 0) {
+                  let xmin=globalDependencyValues.graphAncestor.stateValues.xmin;
+                  let xmax=globalDependencyValues.graphAncestor.stateValues.xmax;
+                  return me.fromAst((xmin + xmax) / 2);
+                } else if (arrayIndices[1] === 1) {
+                  let ymin=globalDependencyValues.graphAncestor.stateValues.ymin;
+                  let ymax=globalDependencyValues.graphAncestor.stateValues.ymax;
+                  return me.fromAst((ymin + ymax) / 2);
+                }
+              }
+              return me.fromAst(0);
+            }
           }
         }
 
