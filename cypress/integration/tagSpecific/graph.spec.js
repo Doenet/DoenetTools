@@ -110,5 +110,159 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('changing bounding box', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph><point>(0,0)</point>
+    </graph>
+
+    <p>xmin: <copy prop="xmin" tname="_graph1" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="_graph1" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="_graph1" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="_graph1" assignNames="ymax" /></p>
+
+    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$(_graph1{prop='xmin'})" /></p>
+    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$(_graph1{prop='xmax'})" /></p>
+    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$(_graph1{prop='ymin'})" /></p>
+    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$(_graph1{prop='ymax'})" /></p>
+    
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    function checkLimits(xmin, xmax, ymin, ymax) {
+      cy.get('#\\/xmin').should('have.text', String(xmin));
+      cy.get('#\\/xmax').should('have.text', String(xmax));
+      cy.get('#\\/ymin').should('have.text', String(ymin));
+      cy.get('#\\/ymax').should('have.text', String(ymax));
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/_graph1"].stateValues.xmin).eq(xmin);
+        expect(components["/_graph1"].stateValues.xmax).eq(xmax);
+        expect(components["/_graph1"].stateValues.ymin).eq(ymin);
+        expect(components["/_graph1"].stateValues.ymax).eq(ymax);
+
+      })
+
+    }
+
+
+    let xmin = -10, xmax = 10, ymin = -10, ymax = 10;
+
+    checkLimits(xmin, xmax, ymin, ymax)
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(6)').click().then((_) => {
+      let increment = 0.1 * (ymax - ymin);
+      ymin += increment;
+      ymax += increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(6)').click().then((_) => {
+      let increment = 0.1 * (ymax - ymin);
+      ymin += increment;
+      ymax += increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(5)').click().then((_) => {
+      let increment = 0.1 * (ymax - ymin);
+      ymin -= increment;
+      ymax -= increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(4)').click().then((_) => {
+      let increment = 0.1 * (xmax - xmin);
+      xmin -= increment;
+      xmax -= increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(7)').click().then((_) => {
+      let increment = 0.1 * (xmax - xmin);
+      xmin += increment;
+      xmax += increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(7)').click().then((_) => {
+      let increment = 0.1 * (xmax - xmin);
+      xmin += increment;
+      xmax += increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(3)').click().then((_) => {
+      let meanx = (xmax + xmin) / 2;
+      xmin = meanx + 0.8 * (xmin - meanx);
+      xmax = meanx + 0.8 * (xmax - meanx);
+      let meany = (ymax + ymin) / 2;
+      ymin = meany + 0.8 * (ymin - meany);
+      ymax = meany + 0.8 * (ymax - meany);
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(3)').click().then((_) => {
+      let meanx = (xmax + xmin) / 2;
+      xmin = meanx + 0.8 * (xmin - meanx);
+      xmax = meanx + 0.8 * (xmax - meanx);
+      let meany = (ymax + ymin) / 2;
+      ymin = meany + 0.8 * (ymin - meany);
+      ymax = meany + 0.8 * (ymax - meany);
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(1)').click().then((_) => {
+      let meanx = (xmax + xmin) / 2;
+      xmin = meanx + (xmin - meanx) / 0.8;
+      xmax = meanx + (xmax - meanx) / 0.8;
+      let meany = (ymax + ymin) / 2;
+      ymin = meany + (ymin - meany) / 0.8;
+      ymax = meany + (ymax - meany) / 0.8;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/xminInput textarea').type(`{end}{backspace}{backspace}-8{enter}`, { force: true }).then((_) => {
+      xmin = -8;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/xmaxInput textarea').type(`{end}{backspace}{backspace}12{enter}`, { force: true }).then((_) => {
+      xmax = 12;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/yminInput textarea').type(`{end}{backspace}{backspace}-4{enter}`, { force: true }).then((_) => {
+      ymin = -4;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/ymaxInput textarea').type(`{end}{backspace}{backspace}16{enter}`, { force: true }).then((_) => {
+      ymax = 16;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(5)').click().then((_) => {
+      let increment = 0.1 * (ymax - ymin);
+      ymin -= increment;
+      ymax -= increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+    cy.get('#\\/_graph1_navigationbar > :nth-child(4)').click().then((_) => {
+      let increment = 0.1 * (xmax - xmin);
+      xmin -= increment;
+      xmax -= increment;
+      checkLimits(xmin, xmax, ymin, ymax)
+    })
+
+
+  });
+
 
 });
