@@ -1,5 +1,3 @@
-
-
 module.exports = {
   mount: {
     'src/Tools/accountSettings': '/accountSettings',
@@ -11,7 +9,7 @@ module.exports = {
     'src/Tools/signin': '/signin',
     'src/Tools/signout': '/signout',
     'src/Tools/_framework': '/_framework',
-    'src/Media': { "url": "/media", "static": true, "resolve": false },
+    'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
     'src/Api': '/api',
     'src/Home': '/',
@@ -31,7 +29,6 @@ module.exports = {
     ],
   ],
 
-  
   optimize: {
     // bundle: true,
     // minify: true,
@@ -40,7 +37,7 @@ module.exports = {
   },
   packageOptions: {
     polyfillNode: true,
-    knownEntrypoints: ["crypto-js/sha1"],
+    knownEntrypoints: ['crypto-js/sha1'],
   },
   buildOptions: {
     watch: false,

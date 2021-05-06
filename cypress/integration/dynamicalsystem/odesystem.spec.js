@@ -9,24 +9,25 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <p>a = <mathinput name="a" prefill="1"/></p>
-  <p>initial condition = <mathinput name="ic" prefill="1"/></p>
-  <p>tol = <mathinput name="tol" prefill="1E-6"/></p>
-  <odesystem name="ode">
-  <tolerance><ref prop="value">tol</ref></tolerance>
-  <righthandside simplify><ref prop="value">a</ref>x</righthandside>
-  <initialcondition simplify><ref prop="value">ic</ref></initialcondition>
-  </odesystem>
+    <text>a</text>
+    <p>a = <mathinput name="a" prefill="1"/></p>
+    <p>initial condition = <mathinput name="ic" prefill="1"/></p>
+    <p>tol = <mathinput name="tol" prefill="1E-6"/></p>
+    <odesystem name="ode" tolerance="$tol" initialconditions="$ic">
+    <righthandside simplify>$a x</righthandside>
 
-  <graph>
-  <ref prop="numericalsolution">ode</ref>
-  <point>
-    <x fixed>0</x>
-    <y><ref prop="value">ic</ref></y>
-  </point>
-  </graph>
+    </odesystem>
+
+    <graph>
+    <copy prop="numericalsolution" tname="ode" />
+    <point x='$zeroFixed' y='$ic' />
+    </graph>
+
+    <number fixed hide name="zeroFixed">0</number>
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
@@ -37,7 +38,7 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -47,7 +48,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change initial condition")
-    cy.get('#\\/ic_input').clear().type(`3{enter}`);
+    cy.get('#\\/ic textarea').type(`{end}{backspace}3{enter}`, { force: true });
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=3')
@@ -58,7 +59,7 @@ describe('ODEsystem Tag Tests', function () {
       ic = 3;
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -67,7 +68,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Change parameter")
-    cy.get('#\\/a_input').clear().type(`-2{enter}`);
+    cy.get('#\\/a textarea').type(`{end}{backspace}-2{enter}`, { force: true });
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace('−', '-').trim()).equal('dxdt=-2xx(0)=3')
@@ -78,7 +79,7 @@ describe('ODEsystem Tag Tests', function () {
       a = -2;
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -95,7 +96,7 @@ describe('ODEsystem Tag Tests', function () {
       components['/_point1'].movePoint({ y: ic });
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -109,7 +110,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change tolerance")
-    cy.get('#\\/tol_input').clear().type(`1E-10{enter}`);
+    cy.get('#\\/tol textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-10{enter}`, { force: true });
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=-2xx(0)=-5')
@@ -120,7 +121,7 @@ describe('ODEsystem Tag Tests', function () {
       tol = 1E-10;
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -130,7 +131,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change parameter again")
-    cy.get('#\\/a_input').clear().type(`0.5{enter}`);
+    cy.get('#\\/a textarea').type(`{end}{backspace}{backspace}0.5{enter}`, { force: true });
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=-5')
@@ -141,7 +142,7 @@ describe('ODEsystem Tag Tests', function () {
       a = 0.5;
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       let expectedF = x => ic * Math.exp(a * x);
       for (let x = 0; x <= 5; x += 0.5) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
@@ -150,7 +151,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Change initial condition to zero")
-    cy.get('#\\/ic_input').clear().type(`0{enter}`);
+    cy.get('#\\/ic textarea').type(`{end}{backspace}{backspace}0{enter}`, { force: true });
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.replace(/−/g, '-').trim()).equal('dxdt=0.5xx(0)=0')
@@ -159,7 +160,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       for (let x = 0; x <= 1000; x += 100) {
         expect(solutionF(x)).eq(0);
       }
@@ -172,23 +173,21 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+  <text>a</text>
   <p>tol = <mathinput name="tol" prefill="1E-6"/></p>
   <p>T = <mathinput name="T" prefill="10"/></p>
   <p>maxiter = <mathinput name="maxiter" prefill="1000"/></p>
   <p>chunksize = <mathinput name="chunksize" prefill="10"/></p>
-  <odesystem name="ode" initialcondition="1" righthandside="x">
-    <maxiterations><ref prop="value">maxiter</ref></maxiterations>
-    <tolerance><ref prop="value">tol</ref></tolerance>
-    <chunksize><ref prop="value">chunksize</ref></chunksize>
+  <odesystem name="ode" initialconditions="1" maxiterations="$maxiter" tolerance="$tol" chunksize="$chunksize">
+    <righthandside>x</righthandside>
   </odesystem>
 
-  <p><m>f(<ref prop="value">T</ref>) =
-    <evaluate>
-      <ref prop="numericalsolution">ode</ref><ref prop="value">t</ref>
-    </evaluate>
+  <p><m>f($T) = $$(ode{prop='numericalSolution'})($T)
   </m></p>
-  `}, "*");
+`}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     let tol = 1E-6;
     let expectedF = x => Math.exp(x);
@@ -201,7 +200,7 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       for (let x = 0; x <= 10; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -209,7 +208,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Can't make it to t=20");
-    cy.get('#\\/t_input').clear().type(`20{enter}`);
+    cy.get('#\\/T textarea').type(`{end}{backspace}{backspace}20{enter}`, {force: true});
 
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
@@ -219,13 +218,13 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       assert.isNaN(solutionF(20));
 
     });
 
     cy.log("increase maxiterations");
-    cy.get('#\\/maxiter_input').clear().type(`2000{enter}`);
+    cy.get('#\\/maxiter textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}2000{enter}`, {force: true});
 
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
@@ -235,7 +234,7 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -243,7 +242,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("Can't make it if decrease tolerance");
-    cy.get('#\\/tol_input').clear().type(`1E-8{enter}`);
+    cy.get('#\\/tol textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1E-8{enter}`, {force: true});
 
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.split('=')[1].trim()).eq("NaN");
@@ -253,14 +252,14 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       assert.isNaN(solutionF(20));
 
     });
 
 
     cy.log("increase maxiterations further");
-    cy.get('#\\/maxiter_input').clear().type(`5000{enter}`);
+    cy.get('#\\/maxiter textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}5000{enter}`, {force: true});
 
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
@@ -270,7 +269,7 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -279,7 +278,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("decrease maxiterations back down");
-    cy.get('#\\/maxiter_input').clear().type(`1000{enter}`);
+    cy.get('#\\/maxiter textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}1000{enter}`, {force: true});
 
 
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -290,14 +289,14 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       assert.isNaN(solutionF(20));
 
     });
 
 
     cy.log("decrease chunksize");
-    cy.get('#\\/chunksize_input').clear().type(`1{enter}`);
+    cy.get('#\\/chunksize textarea').type(`{end}{backspace}{backspace}1{enter}`, {force: true});
 
     cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(Number(text.split('=')[1])).closeTo(expectedF(20), tol * expectedF(20));
@@ -307,7 +306,7 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       for (let x = 0; x <= 20; x += 1) {
         expect(solutionF(x)).closeTo(expectedF(x), tol * Math.max(1, Math.abs(expectedF(x))));
       }
@@ -321,21 +320,22 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+  <text>a</text>
   <p>independent variable = <mathinput name="ivar" prefill="t"/></p>
   <p>dependent variable = <mathinput name="dvar" prefill="x"/></p>
   
-  <odesystem name="ode" initialcondition="1">
-  <independentvariable><ref prop="value">ivar</ref></independentvariable>
-  <variables><ref prop="value">dvar</ref></variables>
-  <righthandside><ref prop="value">dvar</ref></righthandside>
+  <odesystem name="ode" initialconditions="1" independentvariable="$ivar" variables="$dvar">
+  <righthandside>$dvar</righthandside>
   </odesystem>
 
   <graph>
-  <ref prop="numericalsolution">ode</ref>
+  <copy prop="numericalsolution" tname="ode"/>
   </graph>
   `}, "*");
     });
 
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+    
     let tol = 1e-6;
     let expectedF = x => Math.exp(x);
 
@@ -347,7 +347,7 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -356,7 +356,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("change independent variable");
-    cy.get('#\\/ivar_input').clear().type(`s{enter}`);
+    cy.get('#\\/ivar textarea').type(`{end}{backspace}s{enter}`, {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxds=xx(0)=1')
@@ -366,7 +366,7 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -375,7 +375,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("erase independent variable");
-    cy.get('#\\/ivar_input').clear().type('{enter}');
+    cy.get('#\\/ivar textarea').type('{end}{backspace}{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxd＿=xx(0)=1')
@@ -384,7 +384,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -392,7 +392,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("restore independent variable");
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
+    cy.get('#\\/ivar textarea').type('{end}{backspace}u{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdu=xx(0)=1')
@@ -401,7 +401,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -410,7 +410,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("invalid independent variable");
-    cy.get('#\\/ivar_input').clear().type('1{enter}');
+    cy.get('#\\/ivar textarea').type('{end}{backspace}1{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxd1=xx(0)=1')
@@ -419,7 +419,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -427,7 +427,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("restore independent variable");
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
+    cy.get('#\\/ivar textarea').type('{end}{backspace}v{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdv=xx(0)=1')
@@ -436,7 +436,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -444,7 +444,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("change dependent variable");
-    cy.get('#\\/dvar_input').clear().type('z{enter}');
+    cy.get('#\\/dvar textarea').type('{end}{backspace}z{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dzdv=zz(0)=1')
@@ -453,7 +453,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -462,7 +462,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("duplicate variable");
-    cy.get('#\\/dvar_input').clear().type('v{enter}');
+    cy.get('#\\/dvar textarea').type('{end}{backspace}v{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dvdv=vv(0)=1')
@@ -471,7 +471,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -480,7 +480,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("different dependent variable");
-    cy.get('#\\/dvar_input').clear().type('v_1{enter}');
+    cy.get('#\\/dvar textarea').type('{end}{backspace}v_1{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dv1dv=v1v1(0)=1')
@@ -489,7 +489,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -498,7 +498,7 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("invalid dependent variable");
-    cy.get('#\\/dvar_input').clear().type('ab{enter}');
+    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}{backspace}ab{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dabdv=abab(0)=1')
@@ -507,7 +507,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         assert.isNaN(solutionF(t));
@@ -515,7 +515,7 @@ describe('ODEsystem Tag Tests', function () {
     });
 
     cy.log("restore dependent variable");
-    cy.get('#\\/dvar_input').clear().type('a{enter}');
+    cy.get('#\\/dvar textarea').type('{end}{backspace}{backspace}a{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dadv=aa(0)=1')
@@ -524,7 +524,7 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionF = ode.state.numericalsolutions[0];
+      let solutionF = ode.stateValues.numericalSolutions[0];
       expect(solutionF(0)).eq(1);
       for (let t = 1; t <= 5; t += 1) {
         expect(solutionF(t)).closeTo(expectedF(t), tol * Math.max(1, Math.abs(expectedF(t))));
@@ -537,29 +537,30 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+  <text>a</text>
   <p>displaydigits = <mathinput name="digits" prefill="10"/></p>
-  
-  <odesystem name="ode">
-  <displaydigits><ref prop="value">digits</ref></displaydigits>
+
+  <odesystem name="ode" displaydigits="$digits" initialconditions="9.87654321987654321">
   <righthandside>0.123456789123456789x</righthandside>
-  <initialcondition>9.87654321987654321</initialcondition>
   </odesystem>
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.1234567891xx(0)=9.87654322')
     })
 
     cy.log('change display digits')
-    cy.get('#\\/digits_input').clear().type('2{enter}');
+    cy.get('#\\/digits textarea').type('{end}{backspace}{backspace}2{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.12xx(0)=9.9')
     })
 
     cy.log('change display digits again')
-    cy.get('#\\/digits_input').clear().type('14{enter}');
+    cy.get('#\\/digits textarea').type('{end}{backspace}14{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=0.12345678912346xx(0)=9.8765432198765')
@@ -572,22 +573,23 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+  <text>a</text>
   <p>initial t = <mathinput name="t0" prefill="0"/></p>
   <p>final t = <mathinput name="tf" prefill="10"/></p>
   
-  <odesystem name="ode" initialcondition="1" righthandside="x">
-  <initialIndependentVariableValue><ref prop="value">t0</ref></initialIndependentVariableValue>
+  <odesystem name="ode" initialconditions="1" initialIndependentVariableValue="$t0">
+    <righthandside>x</righthandside>
   </odesystem>
 
   <p>We started with 
-  <m>x(<ref prop="initialindependentvariablevalue">ode</ref>) = 1</m>.</p>
+  <m>x(<copy prop="initialindependentvariablevalue" tname="ode"/>) = 1</m>.</p>
 
   <p>We end with
-  <m>x(<ref prop="value">tf</ref>) = 
-  <evaluate><ref prop="numericalsolution">ode</ref><ref prop="value">tf</ref></evaluate>
-  </m></p>
+  <m>x($tf) = $$(ode{prop='numericalSolution'})($tf)</m></p>
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
@@ -603,7 +605,7 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.log("Change initial time");
-    cy.get('#\\/t0_input').clear().type('-5{enter}');
+    cy.get('#\\/t0 textarea').type('{end}{backspace}-5{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(−5)=1')
@@ -619,8 +621,8 @@ describe('ODEsystem Tag Tests', function () {
     })
 
     cy.log("Change initial and final time");
-    cy.get('#\\/t0_input').clear().type('11{enter}');
-    cy.get('#\\/tf_input').clear().type('12{enter}');
+    cy.get('#\\/t0 textarea').type('{end}{backspace}{backspace}11{enter}', {force: true});
+    cy.get('#\\/tf textarea').type('{end}{backspace}{backspace}12{enter}', {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(11)=1')
@@ -642,13 +644,16 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+  <text>a</text>
   <p>display initial conditions: <booleaninput name="showic" prefill="true"/></p>  
-  <odesystem name="ode" initialcondition="1" righthandside="x">
-  <hideInitialCondition><not><ref prop="value">showic</ref></not></hideInitialCondition>
+  <odesystem name="ode" initialconditions="1" hideInitialCondition="!$showic">
+    <righthandside>x</righthandside>
   </odesystem>
 
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('dxdt=xx(0)=1')
@@ -672,28 +677,24 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
+  <text>a</text>
   <p>initial condition 1 = <mathinput name="ic1" prefill="1"/></p>
   <p>initial condition 2 = <mathinput name="ic2" prefill="3"/></p>
-  <odesystem name="ode">
+  <odesystem name="ode" initialconditions="$ic1 $ic2">
   <righthandside>-0.2y</righthandside>
   <righthandside>0.1x + 0.3y</righthandside>
-  <initialcondition><ref prop="value">ic1</ref></initialcondition>
-  <initialcondition><ref prop="value">ic2</ref></initialcondition>
   </odesystem>
 
   <graph>
-  <curve>
-    <parmin>0</parmin>
-    <parmax>10</parmax>
-    <ref prop="numericalsolutions">ode</ref>
-  </curve>
-  <point>
-    <x><ref prop="value">ic1</ref></x>
-    <y><ref prop="value">ic2</ref></y>
-  </point>
+    <curve parmin="0" parmax="10">
+      <copy prop="numericalsolutions" tname="ode" />
+    </curve>
+    <point x="$ic1" y="$ic2" />
   </graph>
   `}, "*");
     });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     let tol = 1e-6;
 
@@ -704,8 +705,8 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionFx = ode.state.numericalsolutions[0];
-      let solutionFy = ode.state.numericalsolutions[1];
+      let solutionFx = ode.stateValues.numericalSolutions[0];
+      let solutionFy = ode.stateValues.numericalSolutions[1];
       let expectedFx = t => 8 * Math.exp(0.1 * t) - 7 * Math.exp(0.2 * t);
       let expectedFy = t => -4 * Math.exp(0.1 * t) + 7 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
@@ -717,8 +718,8 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change initial condition")
-    cy.get('#\\/ic1_input').clear().type(`3{enter}`);
-    cy.get('#\\/ic2_input').clear().type(`-1{enter}`);
+    cy.get('#\\/ic1 textarea').type(`{end}{backspace}3{enter}`, {force: true});
+    cy.get('#\\/ic2 textarea').type(`{end}{backspace}-1{enter}`, {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=3y(0)=-1')
@@ -728,8 +729,8 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionFx = ode.state.numericalsolutions[0];
-      let solutionFy = ode.state.numericalsolutions[1];
+      let solutionFx = ode.stateValues.numericalSolutions[0];
+      let solutionFy = ode.stateValues.numericalSolutions[1];
       let expectedFx = t => 4 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
       let expectedFy = t => -2 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
@@ -746,8 +747,8 @@ describe('ODEsystem Tag Tests', function () {
       components['/_point1'].movePoint({ x: -5, y: 2 });
 
       let ode = components['/ode'];
-      let solutionFx = ode.state.numericalsolutions[0];
-      let solutionFy = ode.state.numericalsolutions[1];
+      let solutionFx = ode.stateValues.numericalSolutions[0];
+      let solutionFy = ode.stateValues.numericalSolutions[1];
       let expectedFx = t => -6 * Math.exp(0.1 * t) + 1 * Math.exp(0.2 * t);
       let expectedFy = t => 3 * Math.exp(0.1 * t) - 1 * Math.exp(0.2 * t);
       for (let t = 0; t <= 10; t += 1) {
@@ -763,8 +764,8 @@ describe('ODEsystem Tag Tests', function () {
 
 
     cy.log("Change initial condition to zero")
-    cy.get('#\\/ic1_input').clear().type(`0{enter}`);
-    cy.get('#\\/ic2_input').clear().type(`0{enter}`);
+    cy.get('#\\/ic1 textarea').type(`{end}{backspace}{backspace}0{enter}`, {force: true});
+    cy.get('#\\/ic2 textarea').type(`{end}{backspace}0{enter}`, {force: true});
 
     cy.get('#\\/ode').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('dxdt=-0.2ydydt=0.1x+0.3yx(0)=0y(0)=0')
@@ -774,8 +775,8 @@ describe('ODEsystem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let ode = components['/ode'];
-      let solutionFx = ode.state.numericalsolutions[0];
-      let solutionFy = ode.state.numericalsolutions[1];
+      let solutionFx = ode.stateValues.numericalSolutions[0];
+      let solutionFy = ode.stateValues.numericalSolutions[1];
       for (let t = 0; t <= 10; t += 1) {
         expect(solutionFx(t)).eq(0);
         expect(solutionFy(t)).eq(0);
@@ -785,1912 +786,21 @@ describe('ODEsystem Tag Tests', function () {
 
   });
 
-  it('match variables, two assigned in ode', () => {
 
-    cy.log("assign two ode variables")
+  it('higher dimensional ode', () => {
+
+    cy.log("no variables specified")
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <mathinput name="var1" prefill="u"/>
-  <mathinput name="var2" prefill="v"/>
-  <odesystem>
-  <variables><ref prop="value">var1</ref><ref prop="value">var2</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/var1_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydvdt=4x+5yy(0)=av(0)=b')
-    })
-
-    cy.get('#\\/var2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.log("match first rhs variable")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>b</text>
-  <mathinput name="var1" prefill="u"/>
-  <mathinput name="var2" prefill="v"/>
-  <mathinput name="rvar" prefill="u"/>
-  <odesystem>
-  <variables><ref prop="value">var1</ref><ref prop="value">var2</ref></variables>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dqdt=x+3yu(0)=av(0)=bq(0)=0')
-    })
-
-    cy.get('#\\/var2_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydqdt=x+3yu(0)=aq(0)=b')
-    })
-
-    cy.get('#\\/var1_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=4x+5ydqdt=x+3yw(0)=aq(0)=b')
-    })
-
-
-    cy.log("match second rhs variable")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>c</text>
-  <mathinput name="var1" prefill="u"/>
-  <mathinput name="var2" prefill="v"/>
-  <mathinput name="rvar" prefill="u"/>
-  <odesystem>
-  <variables><ref prop="value">var1</ref><ref prop="value">var2</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-  <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'c')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dqdt=4x+5yu(0)=av(0)=bq(0)=0')
-    })
-
-    cy.get('#\\/var2_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydqdt=4x+5yu(0)=aq(0)=b')
-    })
-
-    cy.get('#\\/var1_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=x+3ydqdt=4x+5yw(0)=aq(0)=b')
-    })
-
-
-    cy.log("match first initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>d</text>
-  <mathinput name="var1" prefill="u"/>
-  <mathinput name="var2" prefill="v"/>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem>
-  <variables><ref prop="value">var1</ref><ref prop="value">var2</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'd')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydqdt=0u(0)=bv(0)=0q(0)=a')
-    })
-
-    cy.get('#\\/var2_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydqdt=4x+5yu(0)=bq(0)=a')
-    })
-
-    cy.get('#\\/var1_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=x+3ydqdt=4x+5yw(0)=bq(0)=a')
-    })
-
-
-    cy.log("match second initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>e</text>
-  <mathinput name="var1" prefill="u"/>
-  <mathinput name="var2" prefill="v"/>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem>
-  <variables><ref prop="value">var1</ref><ref prop="value">var2</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'e')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydqdt=0u(0)=av(0)=0q(0)=b')
-    })
-
-    cy.get('#\\/var2_input').clear().type('q{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydqdt=4x+5yu(0)=aq(0)=b')
-    })
-
-    cy.get('#\\/var1_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=x+3ydqdt=4x+5yw(0)=aq(0)=b')
-    })
-
-
-    cy.log("match first rhs and initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>f</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem variables="u,v">
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'f')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3yu(0)=bv(0)=aw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3yu(0)=av(0)=bw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3yu(0)=bv(0)=0w(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3ydxdt=0u(0)=bv(0)=0w(0)=0x(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=bv(0)=0x(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3ydxdt=0u(0)=bv(0)=0x(0)=a')
-    })
-
-
-    cy.log("match first rhs and second initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>g</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem variables="u,v">
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'g')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3yu(0)=av(0)=bw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3yu(0)=bv(0)=aw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3yu(0)=av(0)=0w(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=0dwdt=x+3ydxdt=0u(0)=av(0)=0w(0)=0x(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=av(0)=0x(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3ydxdt=0u(0)=av(0)=0x(0)=b')
-    })
-
-
-    cy.log("match second rhs and first initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>h</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem variables="u,v">
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'h')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5yu(0)=bv(0)=aw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5yu(0)=av(0)=bw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5yu(0)=bv(0)=0w(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5ydxdt=0u(0)=bv(0)=0w(0)=0x(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3ydxdt=0u(0)=bv(0)=0x(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=bv(0)=0x(0)=a')
-    })
-
-
-    cy.log("match second rhs and initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>i</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem variables="u,v">
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'i')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5yu(0)=av(0)=bw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5yu(0)=bv(0)=aw(0)=0')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5yu(0)=av(0)=0w(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=0dwdt=4x+5ydxdt=0u(0)=av(0)=0w(0)=0x(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3ydxdt=0u(0)=av(0)=0x(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=av(0)=0x(0)=b')
-    })
-
-
-    cy.log("match all variables and initial conditions")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>j</text>
-  <mathinput name="var1" prefill="u"/>
-  <mathinput name="var2" prefill="v"/>
-  <mathinput name="rvar1" prefill="u"/>
-  <mathinput name="rvar2" prefill="v"/>
-  <mathinput name="ivar1" prefill="u"/>
-  <mathinput name="ivar2" prefill="v"/>
-  <odesystem>
-  <variables><ref prop="value">var1</ref><ref prop="value">var2</ref></variables>
-  <righthandside>
-    <variable><ref prop="value">rvar1</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar2</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar1</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar2</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'j')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('v{enter}');
-    cy.get('#\\/rvar2_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('v{enter}');
-    cy.get('#\\/ivar2_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydvdt=x+3yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/var1_input').clear().type('v{enter}');
-    cy.get('#\\/var2_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydudt=4x+5yv(0)=au(0)=b')
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('w{enter}');
-    cy.get('#\\/rvar2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=0dudt=0dwdt=x+3ydxdt=4x+5yv(0)=au(0)=bw(0)=0x(0)=0')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('y{enter}');
-    cy.get('#\\/ivar2_input').clear().type('z{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=0dudt=0dwdt=x+3ydxdt=4x+5ydydt=0dzdt=0v(0)=0u(0)=0w(0)=0x(0)=0y(0)=az(0)=b')
-    })
-
-    cy.get('#\\/var1_input').clear().type('y{enter}');
-    cy.get('#\\/var2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=0dxdt=4x+5ydwdt=x+3ydzdt=0y(0)=ax(0)=0w(0)=0z(0)=b')
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('y{enter}');
-    cy.get('#\\/ivar2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-  });
-
-  it('specify variables, none assigned in ode', () => {
-
-    cy.log("no variables assigned")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-
-    cy.log("specify first rhs variable")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>b</text>
-  <mathinput name="rvar" prefill="u"/>
-  <odesystem>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify second rhs variable")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>c</text>
-  <mathinput name="rvar" prefill="u"/>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'c')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydudt=4x+5yx(0)=au(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-
-    cy.log("specify first initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>d</text>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'd')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify second initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>e</text>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'e')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydudt=4x+5yx(0)=au(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-
-    cy.log("specify both rhs variables")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>f</text>
-  <mathinput name="rvar1" prefill="u"/>
-  <mathinput name="rvar2" prefill="v"/>
-  <odesystem>
-  <righthandside>
-    <variable><ref prop="value">rvar1</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar2</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'f')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify both initial conditions")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>g</text>
-  <mathinput name="ivar1" prefill="u"/>
-  <mathinput name="ivar2" prefill="v"/>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar1</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar2</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'g')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify first rhs and initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>h</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="v"/>
-  <odesystem>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'h')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydxdt=4x+5yv(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('x{enter}');
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify second rhs and first initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>i</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="v"/>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'i')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydudt=4x+5yv(0)=au(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydvdt=4x+5yx(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('x{enter}');
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=by(0)=a')
-    })
-
-
-    cy.log("specify first rhs and second initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>j</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="v"/>
-  <odesystem>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'j')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydxdt=4x+5yv(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('x{enter}');
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=by(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=bx(0)=a')
-    })
-
-
-    cy.log("specify second rhs and initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>k</text>
-  <mathinput name="rvar" prefill="u"/>
-  <mathinput name="ivar" prefill="v"/>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'k')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydudt=4x+5yv(0)=bu(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydvdt=4x+5yx(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('x{enter}');
-    cy.get('#\\/ivar_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-
-    cy.log("specify both rhs variables and first initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>l</text>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem>
-  <righthandside variable="u">x + 3y</righthandside>
-  <righthandside variable="v">4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'l')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0u(0)=bv(0)=0w(0)=a')
-    })
-
-
-    cy.log("specify both rhs variables and second initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>m</text>
-  <mathinput name="ivar" prefill="u"/>
-  <odesystem>
-  <righthandside variable="u">x + 3y</righthandside>
-  <righthandside variable="v">4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'm')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0u(0)=av(0)=0w(0)=b')
-    })
-
-
-    cy.log("specify first rhs variable and both initial conditions")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>n</text>
-  <mathinput name="rvar" prefill="u"/>
-  <odesystem>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition variable="u">a</initialcondition>
-  <initialcondition variable="v">b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'n')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydudt=4x+5yv(0)=bu(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=x+3ydudt=4x+5ydvdt=0w(0)=0u(0)=av(0)=b')
-    })
-
-
-    cy.log("specify second rhs variable and both initial conditions")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>o</text>
-  <mathinput name="rvar" prefill="u"/>
-  <odesystem>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition variable="u">a</initialcondition>
-  <initialcondition variable="v">b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'o')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydudt=4x+5yv(0)=bu(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydwdt=4x+5ydvdt=0u(0)=aw(0)=0v(0)=b')
-    })
-
-
-    cy.log("specify all rhs variables and initial conditions")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>p</text>
-  <mathinput name="ivar1" prefill="u"/>
-  <mathinput name="ivar2" prefill="v"/>
-  <odesystem>
-  <righthandside variable="u">x + 3y</righthandside>
-  <righthandside variable="v">4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar1</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar2</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'p')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0u(0)=0v(0)=bw(0)=a')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0u(0)=bv(0)=0w(0)=a')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0dxdt=0u(0)=0v(0)=0w(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=av(0)=0x(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=0v(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-  });
-
-  it('match variables, one assigned in ode', () => {
-
-    cy.log("assign one ode variable")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <mathinput name="var" prefill="q"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dqdt=x+3ydxdt=4x+5yq(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-
-    cy.log("specify first rhs variable")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>b</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="rvar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=4x+5ydydt=x+3yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydydt=x+3yu(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify second rhs variable")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>c</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="rvar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'c')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=4x+5ydydt=x+3yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydydt=4x+5yu(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydxdt=x+3yu(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify first initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>d</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="ivar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'd')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=by(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydydt=4x+5yu(0)=by(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify second initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>e</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="ivar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'e')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=by(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydydt=4x+5yu(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=bx(0)=a')
-    })
-
-
-    cy.log("specify both rhs variables")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>f</text>
-  <mathinput name="var" prefill="u"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside variable="u">x + 3y</righthandside>
-  <righthandside variable="v">4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'f')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=4x+5ydudt=x+3yv(0)=au(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=0dudt=x+3ydvdt=4x+5yw(0)=au(0)=bv(0)=0')
-    })
-
-
-    cy.log("specify both initial conditions")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>g</text>
-  <mathinput name="var" prefill="u"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition variable="u">a</initialcondition>
-  <initialcondition variable="v">b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'g')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=x+3ydudt=4x+5yv(0)=bu(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=x+3ydudt=4x+5ydvdt=0w(0)=0u(0)=av(0)=b')
-    })
-
-
-    cy.log("specify first rhs variable and initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>h</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="rvar" prefill="x"/>
-  <mathinput name="ivar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'h')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=4x+5ydydt=x+3yx(0)=by(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydydt=x+3yu(0)=by(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydydt=4x+5yu(0)=by(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify first rhs variable and second initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>i</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="rvar" prefill="x"/>
-  <mathinput name="ivar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    x + 3y
-  </righthandside>
-  <righthandside>4x+5y</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-  b
-  <variable><ref prop="value">ivar</ref></variable>
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'i')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=by(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=4x+5ydydt=x+3yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydydt=x+3yu(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydydt=4x+5yu(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydxdt=4x+5yu(0)=bx(0)=a')
-    })
-
-
-    cy.log("specify second rhs variable and first initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>j</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="rvar" prefill="x"/>
-  <mathinput name="ivar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>b</initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'j')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=4x+5ydydt=x+3yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=by(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydydt=4x+5yu(0)=by(0)=a')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydydt=x+3yu(0)=by(0)=a')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydxdt=x+3yu(0)=ax(0)=b')
-    })
-
-
-    cy.log("specify second rhs variable and initial condition")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>k</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="rvar" prefill="x"/>
-  <mathinput name="ivar" prefill="x"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside>x + 3y</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>
-    4x+5y
-  </righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'k')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=4x+5ydydt=x+3yx(0)=by(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=x+3ydxdt=4x+5yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dydt=4x+5ydxdt=x+3yy(0)=bx(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dxdt=x+3ydydt=4x+5yx(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydydt=4x+5yu(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/rvar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydydt=x+3yu(0)=ay(0)=b')
-    })
-
-    cy.get('#\\/ivar_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=4x+5ydxdt=x+3yu(0)=bx(0)=a')
-    })
-
-
-    cy.log("specify all rhs variables and initial conditions")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>l</text>
-  <mathinput name="var" prefill="u"/>
-  <mathinput name="ivar1" prefill="u"/>
-  <mathinput name="ivar2" prefill="v"/>
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
-  <righthandside variable="u">x + 3y</righthandside>
-  <righthandside variable="v">4x+5y</righthandside>
-  <initialcondition>
-    <variable><ref prop="value">ivar1</ref></variable>
-    a
-  </initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar2</ref></variable>
-    b
-  </initialcondition>
-  </odesystem>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'l')  // to wait for page to load
-
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=av(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0u(0)=0v(0)=bw(0)=a')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0u(0)=bv(0)=0w(0)=a')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydwdt=0dxdt=0u(0)=0v(0)=0w(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=av(0)=0x(0)=b')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5ydxdt=0u(0)=0v(0)=ax(0)=b')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('u{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dudt=x+3ydvdt=4x+5yu(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/var_input').clear().type('v{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dvdt=4x+5ydudt=x+3yv(0)=au(0)=b')
-    })
-
-    cy.get('#\\/var_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=0dudt=x+3ydvdt=4x+5yw(0)=0u(0)=bv(0)=a')
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=0dudt=x+3ydvdt=4x+5ydxdt=0w(0)=0u(0)=bv(0)=0x(0)=a')
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('dwdt=0dudt=x+3ydvdt=4x+5ydxdt=0dydt=0w(0)=0u(0)=0v(0)=0x(0)=ay(0)=b')
-    })
-
-  });
-
-  it('specify variables, higher dimensional ode', () => {
-
-    cy.log("no variables assigned")
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <odesystem>
+  <odesystem initialconditions="a b c d e f">
   <righthandside>q</righthandside>
   <righthandside>r</righthandside>
   <righthandside>s</righthandside>
   <righthandside>u</righthandside>
   <righthandside>v</righthandside>
   <righthandside>w</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  <initialcondition>c</initialcondition>
-  <initialcondition>d</initialcondition>
-  <initialcondition>e</initialcondition>
-  <initialcondition>f</initialcondition>
   </odesystem>
   `}, "*");
     });
@@ -2708,7 +818,7 @@ describe('ODEsystem Tag Tests', function () {
       return s;
     }
 
-    let vs = ["x", "y", "z", "x4", "x5", "x6"];
+    let vs = ["x1", "x2", "x3", "x4", "x5", "x6"];
     let rs = ["q", "r", "s", "u", "v", "w"];
     let is = ["a", "b", "c", "d", "e", "f"]
 
@@ -2717,396 +827,93 @@ describe('ODEsystem Tag Tests', function () {
       expect(text.trim()).equal(disp(vs, rs, is))
     })
 
-
-    cy.log("one variable each")
+    cy.log("all variables specified")
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
-  <mathinput name="var" prefill="x"/>
-  <mathinput name="rvar" prefill="x"/>
-  <mathinput name="ivar" prefill="x"/>
-
-  <odesystem>
-  <variables><ref prop="value">var</ref></variables>
+  <odesystem initialconditions="a b c d e f" variables="j k l m n p">
   <righthandside>q</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar</ref></variable>  
-    r
-  </righthandside>
+  <righthandside>r</righthandside>
   <righthandside>s</righthandside>
   <righthandside>u</righthandside>
   <righthandside>v</righthandside>
   <righthandside>w</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar</ref></variable>  
-    c
-  </initialcondition>
-  <initialcondition>d</initialcondition>
-  <initialcondition>e</initialcondition>
-  <initialcondition>f</initialcondition>
   </odesystem>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'b')  // to wait for page to load
 
+    let vs2 = ["j", "k", "l", "m", "n", "p"];
+
     cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "z", "x4", "x5", "x6"];
-      rs = ["r", "q", "s", "u", "v", "w"];
-      is = ["c", "a", "b", "d", "e", "f"]
 
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["y", "x", "z", "x4", "x5", "x6"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "c", "b", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var_input').clear().type('x_4{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x4", "x", "y", "z", "x5", "x6"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "c", "b", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var_input').clear().type('m{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "x", "y", "z", "x4", "x5"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "c", "b", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "y", "x", "z", "x4", "x5"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar_input').clear().type('x_4{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "x4", "x", "y", "z", "x5"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar_input').clear().type('n{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "n", "x", "y", "z", "x4"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "n", "y", "x", "z", "x4"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar_input').clear().type('x_4{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "n", "x4", "x", "y", "z"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar_input').clear().type('p{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "n", "p", "x", "y", "z"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-
-      expect(text.trim()).equal(disp(vs, rs, is))
+      expect(text.trim()).equal(disp(vs2, rs, is))
     })
 
 
-    cy.log("two variables each")
+    cy.log("some variables specified")
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>c</text>
-  <mathinput name="var1" prefill="x"/>
-  <mathinput name="var2" prefill="y"/>
-  <mathinput name="rvar1" prefill="x"/>
-  <mathinput name="rvar2" prefill="y"/>
-  <mathinput name="ivar1" prefill="x"/>
-  <mathinput name="ivar2" prefill="y"/>
-
-  <odesystem>
-  <variables><ref prop="value">var1</ref><ref prop="value">var2</ref></variables>
+  <odesystem initialconditions="a b c d e f" variables="j k l">
   <righthandside>q</righthandside>
   <righthandside>r</righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar1</ref></variable>  
-    s
-  </righthandside>
-  <righthandside>
-    <variable><ref prop="value">rvar2</ref></variable>  
-    u
-  </righthandside>
+  <righthandside>s</righthandside>
+  <righthandside>u</righthandside>
   <righthandside>v</righthandside>
   <righthandside>w</righthandside>
-  <initialcondition>a</initialcondition>
-  <initialcondition>b</initialcondition>
-  <initialcondition>c</initialcondition>
-  <initialcondition>d</initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar1</ref></variable>  
-    e
-  </initialcondition>
-  <initialcondition>
-    <variable><ref prop="value">ivar2</ref></variable>  
-    f
-  </initialcondition>
   </odesystem>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'c')  // to wait for page to load
 
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "z", "x4", "x5", "x6"];
-      rs = ["s", "u", "q", "r", "v", "w"];
-      is = ["e", "f", "a", "b", "c", "d"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
+    let vs3 = ["j", "k", "l", "x4", "x5", "x6"];
 
-    cy.get('#\\/ivar1_input').clear().type('z{enter}');
     cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "x4", "x5", "x6", "z"];
-      rs = ["s", "u", "q", "r", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
 
-    cy.get('#\\/ivar1_input').clear().type('x_4{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "z", "x5", "x6", "x4"];
-      rs = ["s", "u", "q", "r", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar1_input').clear().type('m{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "z", "x4", "x5", "m"];
-      rs = ["s", "u", "q", "r", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar2_input').clear().type('z{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "x4", "z", "x5", "m"];
-      rs = ["s", "q", "r", "u", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar2_input').clear().type('m{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "z", "m", "x4", "x5"];
-      rs = ["s", "q", "r", "u", "v", "w"];
-      is = ["a", "f", "b", "e", "c", "d"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar2_input').clear().type('n{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["x", "y", "z", "n", "x4", "m"];
-      rs = ["s", "q", "r", "u", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var1_input').clear().type('m{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["m", "y", "x", "n", "z", "x4"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["e", "f", "a", "b", "c", "d"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var1_input').clear().type('n{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["n", "y", "z", "x", "x4", "m"];
-      rs = ["u", "q", "r", "s", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var1_input').clear().type('p{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "x", "n", "z", "m"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('x{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "x", "n", "z", "m"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "f", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('n{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "x", "n", "z", "m"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "f", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('p{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "x", "n", "z", "m"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["f", "a", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/ivar2_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "x", "n", "m", "w"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('p{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "x", "n", "m", "w"];
-      rs = ["s", "q", "r", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('y{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "x", "n", "m", "w"];
-      rs = ["q", "s", "r", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('m{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "m", "n", "x", "w"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "e", "c", "d", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "w", "n", "x", "m"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "f", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/rvar1_input').clear().type('z{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "y", "z", "n", "m", "w"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var2_input').clear().type('z{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "z", "x", "n", "m", "w"];
-      rs = ["q", "s", "r", "u", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var2_input').clear().type('n{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "n", "x", "z", "m", "w"];
-      rs = ["q", "u", "r", "s", "v", "w"];
-      is = ["a", "b", "c", "d", "e", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var2_input').clear().type('m{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "m", "z", "n", "x", "w"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "e", "b", "c", "d", "f"]
-      expect(text.trim()).equal(disp(vs, rs, is))
-    })
-
-    cy.get('#\\/var2_input').clear().type('w{enter}');
-    cy.get('#\\/_odesystem1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      vs = ["p", "w", "z", "n", "x", "m"];
-      rs = ["q", "r", "s", "u", "v", "w"];
-      is = ["a", "f", "b", "c", "d", "e"]
-      expect(text.trim()).equal(disp(vs, rs, is))
+      expect(text.trim()).equal(disp(vs3, rs, is))
     })
 
   })
 
-  it('ref righthandside, initial conditions', () => {
+  it('copy righthandside, initial conditions', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <odesystem name="ode">
+  <text>a</text>
+  <odesystem name="ode" initialconditions="c 3">
   <righthandside>a*x*y+z</righthandside>
   <righthandside>x/y</righthandside>
-  <initialcondition>c</initialcondition>
-  <initialcondition>3</initialcondition>
   </odesystem>
 
-  <p>RHS1: <ref name="rhs1a" prop="rhs1">ode</ref></p>
-  <p>RHS2: <ref name="rhs2a" prop="rhs2">ode</ref></p>
-  <p>RHS1: <ref name="rhs1b" prop="rhs">ode</ref></p>
-  <p>Both RHSs: <aslist><ref name="rhssa" prop="rhss">ode</ref></aslist></p>
-  <p>RHS1: <ref name="rhs1c" prop="righthandside1">ode</ref></p>
-  <p>RHS2: <ref name="rhs2b" prop="righthandside2">ode</ref></p>
-  <p>RHS1: <ref name="rhs1d" prop="righthandside">ode</ref></p>
-  <p>Both RHSs: <aslist><ref name="rhssb" prop="righthandsides">ode</ref></aslist></p>
+  <p>RHS1: <copy name="rhs1a" prop="rhs1" tname="ode" /></p>
+  <p>RHS2: <copy name="rhs2a" prop="rhs2" tname="ode" /></p>
+  <p>RHS1: <copy name="rhs1b" prop="rhs" tname="ode" /></p>
+  <p>Both RHSs: <aslist><copy name="rhssa" prop="rhss" tname="ode" /></aslist></p>
+  <p>RHS1: <copy name="rhs1c" prop="righthandside1" tname="ode" /></p>
+  <p>RHS2: <copy name="rhs2b" prop="righthandside2" tname="ode" /></p>
+  <p>RHS1: <copy name="rhs1d" prop="righthandside" tname="ode" /></p>
+  <p>Both RHSs: <aslist><copy name="rhssb" prop="righthandsides" tname="ode" /></aslist></p>
   
-  <p>IC1: <ref name="ic1a" prop="initialcondition1">ode</ref></p>
-  <p>IC2: <ref name="ic2a" prop="initialcondition2">ode</ref></p>
-  <p>IC2: <ref name="ic1b" prop="initialcondition">ode</ref></p>
-  <p>Both ICs: <aslist><ref name="icsa" prop="initialconditions">ode</ref></aslist></p>
+  <p>IC1: <copy name="ic1a" prop="initialcondition1" tname="ode" /></p>
+  <p>IC2: <copy name="ic2a" prop="initialcondition2" tname="ode" /></p>
+  <p>IC1: <copy name="ic1b" prop="initialcondition" tname="ode" /></p>
+  <p>Both ICs: <aslist><copy name="icsa" prop="initialconditions" tname="ode" /></aslist></p>
 
   <p>Swap right hand sides and keep initial conditions</p>
 
-  <odesystem name="odeswap">
-  <ref prop="rhs2">ode</ref>
-  <ref prop="rhs1">ode</ref>
-  <ref prop="initialconditions">ode</ref>
+  <odesystem name="odeswap" initialconditions="$(ode{prop='initialconditions'})">
+    <righthandside><copy prop="rhs2" tname="ode" /></righthandside>
+    <righthandside><copy prop="rhs1" tname="ode" /></righthandside>
   </odesystem>
   `}, "*");
     });
 
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
     cy.get('#\\/_p1 .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('axy+z')
@@ -3162,21 +969,21 @@ describe('ODEsystem Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       let rhs1tree = ['+', ['*', 'a', 'x', 'y'], 'z'];
       let rhs2tree = ['/', 'x', 'y'];
-      expect(components['/rhs1a'].replacements[0].state.value.tree).eqls(rhs1tree);
-      expect(components['/rhs1b'].replacements[0].state.value.tree).eqls(rhs1tree);
-      expect(components['/rhs1c'].replacements[0].state.value.tree).eqls(rhs1tree);
-      expect(components['/rhs1d'].replacements[0].state.value.tree).eqls(rhs1tree);
-      expect(components['/rhs2a'].replacements[0].state.value.tree).eqls(rhs2tree);
-      expect(components['/rhs2b'].replacements[0].state.value.tree).eqls(rhs2tree);
-      expect(components['/rhssa'].replacements[0].state.value.tree).eqls(rhs1tree);
-      expect(components['/rhssa'].replacements[1].state.value.tree).eqls(rhs2tree);
-      expect(components['/rhssb'].replacements[0].state.value.tree).eqls(rhs1tree);
-      expect(components['/rhssb'].replacements[1].state.value.tree).eqls(rhs2tree);
-      expect(components['/ic1a'].replacements[0].state.value.tree).eqls('c');
-      expect(components['/ic1b'].replacements[0].state.value.tree).eqls('c');
-      expect(components['/ic2a'].replacements[0].state.value.tree).eqls(3);
-      expect(components['/icsa'].replacements[0].state.value.tree).eqls('c');
-      expect(components['/icsa'].replacements[1].state.value.tree).eqls(3);
+      expect(components['/rhs1a'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(components['/rhs1b'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(components['/rhs1c'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(components['/rhs1d'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(components['/rhs2a'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
+      expect(components['/rhs2b'].replacements[0].stateValues.value.tree).eqls(rhs2tree);
+      expect(components['/rhssa'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(components['/rhssa'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
+      expect(components['/rhssb'].replacements[0].stateValues.value.tree).eqls(rhs1tree);
+      expect(components['/rhssb'].replacements[1].stateValues.value.tree).eqls(rhs2tree);
+      expect(components['/ic1a'].replacements[0].stateValues.value.tree).eqls('c');
+      expect(components['/ic1b'].replacements[0].stateValues.value.tree).eqls('c');
+      expect(components['/ic2a'].replacements[0].stateValues.value.tree).eqls(3);
+      expect(components['/icsa'].replacements[0].stateValues.value.tree).eqls('c');
+      expect(components['/icsa'].replacements[1].stateValues.value.tree).eqls(3);
 
     });
 

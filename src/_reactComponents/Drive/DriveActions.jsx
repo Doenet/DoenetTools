@@ -401,6 +401,12 @@ export const useCopyItems = () => {
           targetDriveId,
           targetFolderId
         });
+
+        // Specify copy in label when copying within same drive
+        if (item.driveId === targetDriveId) {
+          const newItemLabel = `Copy of ${newItem.label}`
+          newItem.label = newItemLabel;
+        }
       
         // Generate sortOrder for cloned item
         const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
@@ -514,7 +520,9 @@ export const useCopyItems = () => {
     // Clone item
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
+    const newBranchId = nanoid();
     newItem.itemId = newItemId;
+    newItem.branchId = newBranchId;
     
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
@@ -540,11 +548,6 @@ export const useCopyItems = () => {
 
     }
 
-    // Specify copy in label when copying within same drive
-    if (item.driveId === targetDriveId) {
-      const newItemLabel = `Copy of ${newItem.label}`
-      newItem.label = newItemLabel;
-    }   
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
     globalDictionary[newItemId] = newItem;
@@ -915,6 +918,23 @@ export const useRenameItem = () => {
 
 export const useAssignmentCallbacks = () => {
   const [addToast, ToastType] = useToast();
+
+  const makeAssignment = useRecoilCallback(({set})=> 
+  ({driveIdFolderId, itemId, payload})=>{
+    set(folderDictionary(driveIdFolderId),(old)=>{
+      let newObj = JSON.parse(JSON.stringify(old));
+      let newItemObj = newObj.contentsDictionary[itemId];          
+      newItemObj.isAssignment = "1";
+      newItemObj.assignment_title = payload?.assignment_title;      
+      newItemObj.assignmentId = payload?.assignmentId;
+      return newObj;
+    })
+  }
+)
+
+const onmakeAssignmentError = ({errorMessage=null}) => {
+  addToast(`make assignment error: ${errorMessage}`, ToastType.ERROR);
+}
   const publishAssignment = useRecoilCallback(({set})=> 
     ({driveIdFolderId, itemId, payload})=>{
       set(folderDictionary(driveIdFolderId),(old)=>{
@@ -922,7 +942,7 @@ export const useAssignmentCallbacks = () => {
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.assignment_isPublished = "1";
         newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payload?.title;
+        newItemObj.assignment_title = payload?.assignment_title;
         newItemObj.assignmentId = payload?.assignmentId;
         return newObj;
       })
@@ -954,7 +974,7 @@ export const useAssignmentCallbacks = () => {
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payloadAssignment?.title;
+        newItemObj.assignment_title = payloadAssignment?.assignment_title;     
         newItemObj.assignmentId = payloadAssignment?.assignmentId;
         return newObj;
       })
@@ -982,6 +1002,8 @@ export const useAssignmentCallbacks = () => {
   }
 
   return { 
+    makeAssignment,
+    onmakeAssignmentError,
     publishAssignment, 
     onPublishAssignmentError,
     publishContent,

@@ -2,6 +2,10 @@ import React, {createContext} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {useStackId} from "../ToolRoot.js";
 import DragPanel, {handleDirection} from "./Panel.js";
+const Wrapper = styled.div`
+  width: 100%;
+  overflow: hidden auto;
+`;
 export const IsNavContext = createContext(false);
 export default function NavPanel({children, isInitOpen}) {
   const stackId = useStackId();
@@ -12,5 +16,5 @@ export default function NavPanel({children, isInitOpen}) {
     id: `navPanel${stackId}`,
     direction: handleDirection.RIGHT,
     isInitOpen
-  }, children));
+  }, /* @__PURE__ */ React.createElement(Wrapper, null, children)));
 }

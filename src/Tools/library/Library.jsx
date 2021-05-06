@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useEffect, useState, Suspense, useContext } from "react";
+import React, { useEffect, useState, Suspense, useContext, useRef } from "react";
 import { nanoid } from 'nanoid';
 import { 
   faChalkboard,
@@ -16,6 +16,7 @@ import {
 import {
   atom,
   useSetRecoilState,
+  useRecoilState,
   useRecoilValue,
   selector,
   selectorFamily,
@@ -39,6 +40,7 @@ import Drive, {
   encodeParams,
   fetchDriveUsers,
   fetchDrivesQuery,
+  drivePathSyncFamily
 } from "../../_reactComponents/Drive/Drive";
 import { 
   useAddItem,
@@ -87,7 +89,7 @@ const selectedDriveInformation = selector({
   }
 })
 
-const selectedInformation = selector({
+export const selectedInformation = selector({
   key:"selectedInformation",
   get: ({get})=>{
     const globalSelected = get(globalSelectedNodesAtom);
@@ -652,6 +654,7 @@ const ItemInfo = function (){
 function AddCourseDriveButton(props){
   const history = useHistory();
   const [addToast, ToastType] = useToast();
+  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
 
   const createNewDrive = useRecoilCallback(({set})=> 
   async ({label,newDriveId,newCourseId,image,color})=>{
@@ -712,32 +715,30 @@ function AddCourseDriveButton(props){
     addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
   }
 
-  return <Button 
-    value="Create a New Course" 
-    data-cy="createNewCourseButton"
-    callback={()=>{
-      let driveId = null;
-      let newDriveId = nanoid();
-      let newCourseId = nanoid();
-      let label = "Untitled";
-      let image = driveImages[Math.floor(Math.random() * driveImages.length)];
-      let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-      const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
-      result.then((resp)=>{
-        if (resp.data.success){
-          addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
-        }else{
-          onError({errorMessage: resp.data.message});
-        }
-      }).catch((e)=>{
-        onError({errorMessage: e.message});
-      })
-      let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-      let newParams = {...urlParamsObj} 
-      newParams['path'] = `:::`
-      history.push('?'+encodeParams(newParams))
-    }}
-  />
+  return <Button value="Create a New Course" data-cy="createNewCourseButton" callback={()=>{
+    let driveId = null;
+    let newDriveId = nanoid();
+    let newCourseId = nanoid();
+    let label = "Untitled";
+    let image = driveImages[Math.floor(Math.random() * driveImages.length)];
+    let color = driveColors[Math.floor(Math.random() * driveColors.length)];
+    const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
+    result.then((resp)=>{
+      if (resp.data.success){
+        addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
+      }else{
+        onError({errorMessage: resp.data.message});
+      }
+    }).catch((e)=>{
+      onError({errorMessage: e.message});
+    })
+   setDrivePath({
+    driveId:":",
+    parentFolderId:":",
+    itemId:":",
+    type:""
+  })
+  }}/>
 }
 
 function AddMenuPanel(props){
@@ -839,6 +840,58 @@ function AutoSelect(props){
   return null;
 }
 
+function URLPathSync(props){
+
+  const [drivePath,setDrivePath] = useRecoilState(drivePathSyncFamily("main"))
+  const history = useHistory();
+  const init = useRef(true);
+  const sourceOfPathChange = useRef(false);
+
+  useEffect(()=>{
+    if (!sourceOfPathChange.current){
+      let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+      if (urlParamsObj?.path){
+        const  [routePathDriveId,routePathFolderId,pathItemId,type] = urlParamsObj.path.split(":");
+        setDrivePath({driveId:routePathDriveId,parentFolderId:routePathFolderId,itemId:pathItemId,type})
+      }
+    }
+    sourceOfPathChange.current = false;
+    
+  },[props.route, setDrivePath])
+
+
+  useEffect(()=>{
+    let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
+    //Update the URL Parameter if drivePath changes
+    let changed = false;
+    if (urlParamsObj?.path){
+      const  [routePathDriveId,routePathFolderId,pathItemId,type] = urlParamsObj.path.split(":");
+
+      if (routePathDriveId !== drivePath.driveId ||
+        routePathFolderId !== drivePath.parentFolderId ||
+        pathItemId !== drivePath.itemId
+        ){
+          changed = true;
+        }
+    }else{
+      //When first open and no path parameter
+      changed = true;
+    }
+
+    if (changed && !init.current){
+      let newParams = {...urlParamsObj} 
+      newParams['path'] = `${drivePath.driveId}:${drivePath.parentFolderId}:${drivePath.itemId}:${drivePath.type}`
+      history.push('?'+encodeParams(newParams))
+      sourceOfPathChange.current = true;
+
+    }
+    init.current = false;
+    
+  },[drivePath])
+  
+  return null;
+}
+
 export default function Library(props) {
   // console.log("=== 📚 Doenet Library Tool",props);  
 
@@ -847,6 +900,8 @@ export default function Library(props) {
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
+  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
+
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search)
@@ -893,54 +948,67 @@ export default function Library(props) {
   }
 
 
-  function useOutsideDriveSelector() {
-    let newParams = {};
-    newParams["path"] = `:::`;
-    history.push("?" + encodeParams(newParams));
-  }
-
-  function cleardrivecardSelection(){
-    setDrivecardSelection([]);
+  function useOutsideDriveSelector(setDrivePath) { //TODO 
+    // setDrivePath({
+    //   driveId:":",
+    //   parentFolderId:":",
+    //   itemId:":",
+    //   type:""
+    // })
     // let newParams = {};
     // newParams["path"] = `:::`;
     // history.push("?" + encodeParams(newParams));
   }
 
- 
-  // Breadcrumb container
-  let breadcrumbContainer = null;
-  if (routePathDriveId) {
-    breadcrumbContainer = <BreadcrumbContainer />;
+  function cleardrivecardSelection(){
+    setDrivecardSelection([]);
+  
   }
 
-  const driveCardSelection = ({item}) => {
-    let newParams = {};
-    newParams["path"] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    history.push("?" + encodeParams(newParams));
+ 
+  // Breadcrumb container
+  let mainBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main" />;
+  let supportBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="support" />;
+
+  const setDrivecardMainPath = useSetRecoilState(drivePathSyncFamily("main"))
+  const setDrivecardsupportPath = useSetRecoilState(drivePathSyncFamily("support"))
+
+  const mainDriveCardSelection = ({item}) => {
+    setDrivecardMainPath({
+      driveId:item.driveId,
+      parentFolderId:item.driveId,
+      itemId:item.driveId,
+      type:"Drive"
+    })
+  }
+  const supportDriveCardSelection = ({item}) => {
+    setDrivecardsupportPath({
+      driveId:item.driveId,
+      parentFolderId:item.driveId,
+      itemId:item.driveId,
+      type:"Drive"
+    })
   }
 
   return (
     <>
     <GlobalFont/>
+    <URLPathSync route={props.route}/>
     <Tool>
       <navPanel isInitOpen>
-      <div 
-        style={{height:"100vh"}} 
-        onClick={useOutsideDriveSelector}
-        data-cy="navPanel"
-      >
-        <div  style={{paddingBottom:"40px"}}>
-          <Drive types={['content','course']}  foldersOnly={true} />
-        </div>
+      <div style={{height:"100vh"}} data-cy="navPanel" onClick={()=>useOutsideDriveSelector(setDrivePath)} >
+         <div  style={{paddingBottom:"40px"}}>
+        <Drive types={['content','course']}  foldersOnly={true} drivePathSyncKey="main"/>
+      </div>
       </div>
       </navPanel>
 
-      <headerPanel title="Library">
-      </headerPanel>
+      <headerPanel title="Library" />
+  
 
       <mainPanel > 
       <AutoSelect />
-      {breadcrumbContainer}
+      {mainBreadcrumbContainer}
         <div 
         onClick={()=>{
           clearSelections()
@@ -949,10 +1017,13 @@ export default function Library(props) {
         className={routePathDriveId ? 'mainPanelStyle' : ''}
         >
           <Container>
-          <Drive types={['content','course']}  urlClickBehavior="select" 
-        doenetMLDoubleClickCallback={(info)=>{
-          openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
-          }}/>
+          <Drive types={['content','course']}  
+            drivePathSyncKey="main"
+            urlClickBehavior="select" 
+            doenetMLDoubleClickCallback={(info)=>{
+              openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
+            }}
+          />
           </Container>
         
 
@@ -967,20 +1038,45 @@ export default function Library(props) {
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
        <DriveCards
+       drivePathSyncKey="main"
        types={['course']}
        subTypes={['Administrator']}
        routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{driveCardSelection({item})}}
+       driveDoubleClickCallback={({item})=>{mainDriveCardSelection({item})}}
        />
         </div>
         
           
         </mainPanel>
       <supportPanel>
+        {supportBreadcrumbContainer}
       <Container>
 
-      <Drive types={['content','course']}  urlClickBehavior="select" />
+      <Drive 
+        drivePathSyncKey="support"
+        types={['content','course']}  
+        urlClickBehavior="select" 
+        doenetMLDoubleClickCallback={(info)=>{
+          openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
+        }}
+        />
       </Container>
+
+      <div 
+        onClick={
+          cleardrivecardSelection
+        }
+        tabIndex={0}
+        className={routePathDriveId ? '' : 'mainPanelStyle' }
+        >
+       <DriveCards
+       drivePathSyncKey="support"
+       types={['course']}
+       subTypes={['Administrator']}
+       routePathDriveId={routePathDriveId}
+       driveDoubleClickCallback={({item})=>{supportDriveCardSelection({item})}}
+       />
+        </div>
       </supportPanel>
 
       <menuPanel title="Selected" isInitOpen>

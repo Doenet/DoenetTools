@@ -1,6 +1,6 @@
-import { r as react } from './common/index-ecd9f9fe.js';
-import { r as reactDom } from './common/index-adccaeb8.js';
-import './common/_commonjsHelpers-16be0a9e.js';
+import { r as react } from './common/index-678ccbe9.js';
+import { r as reactDom } from './common/index-d53bc1a3.js';
+import './common/_commonjsHelpers-4f955397.js';
 
 let updateQueue = makeQueue();
 const raf = (fn) => schedule(fn, updateQueue);
@@ -2251,7 +2251,8 @@ class Controller {
   _onFrame() {
     const {onStart, onChange, onRest} = this._events;
     const active = this._active.size > 0;
-    if (active && !this._started) {
+    const changed = this._changed.size > 0;
+    if (active && !this._started || changed && !this._started) {
       this._started = true;
       flush(onStart, ([onStart2, result]) => {
         result.value = this.get();
@@ -2259,9 +2260,8 @@ class Controller {
       });
     }
     const idle = !active && this._started;
-    const changed = this._changed.size > 0 && onChange.size;
     const values = changed || idle && onRest.size ? this.get() : null;
-    if (changed) {
+    if (changed && onChange.size) {
       flush(onChange, ([onChange2, result]) => {
         result.value = values;
         onChange2(result, this, this._item);
