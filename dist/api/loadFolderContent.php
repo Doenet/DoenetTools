@@ -15,7 +15,19 @@ $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $init = mysqli_real_escape_string($conn,$_REQUEST["init"]);
 
 $success = TRUE;
+$message = "";
 $results_arr = array();
+
+//note: not currently using $parentId
+if ($driveId == ""){
+  $success = FALSE;
+  $message = 'Internal Error: missing driveId';
+}elseif ($userId == ""){
+  $success = FALSE;
+  $message = "You need to be signed in to learn of drive users";
+}
+
+
 //make sure the user is supposed to have drive read access
 $sql = "
 SELECT 
@@ -90,14 +102,13 @@ if ($init == 'true'){
   dc.sortOrder as sortOrder,
   u.url as url,
   u.description as urlDescription,
-  a.title as assignment_title,
-  a.contentId as contentId,
-  a.isPublished as assignment_isPublished
+  ad.title as assignment_title,
+  ad.contentId as contentId
 FROM drive_content AS dc
 LEFT JOIN url AS u
 ON u.urlId = dc.urlId
-LEFT JOIN assignment AS a
-ON dc.assignmentId = a.assignmentId
+LEFT JOIN assignment_draft AS ad
+ON dc.assignmentId = ad.assignmentId
   WHERE driveId = '$driveId'
   AND isDeleted = 0
   ";
@@ -118,7 +129,6 @@ ON dc.assignmentId = a.assignmentId
     "url"=>$row['url'],
     "urlDescription"=>$row['urlDescription'],
     "assignment_title"=>$row['assignment_title'],
-    "assignment_isPublished"=>$row['assignment_isPublished'],
     "isAssignment"=>$row['isAssignment'],
     "sortOrder"=>$row['sortOrder']
   );
@@ -201,7 +211,8 @@ ON dc.assignmentId = a.assignmentId
 $response_arr = array(
   "results"=>$results_arr,
   "perms"=>$perms,
-  "success"=>$success
+  "success"=>$success,
+  "message"=>$message
   );
 
 // set response code - 200 OK

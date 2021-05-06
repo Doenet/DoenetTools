@@ -19,14 +19,14 @@ export default class LineSegment extends DoenetRenderer {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: this.doenetSvData.draggable !== true,
+      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
       layer: 10 * this.doenetSvData.layer + 7,
       strokeColor: this.doenetSvData.selectedStyle.lineColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
     };
-    if (!this.doenetSvData.draggable) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxSegmentAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
@@ -38,7 +38,7 @@ export default class LineSegment extends DoenetRenderer {
       highlightFillColor: "lightgray",
       layer: 10 * this.doenetSvData.layer + 8
     });
-    if (this.doenetSvData.draggable !== true) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxPointAttributes.visible = false;
     }
     let endpoints = [
@@ -119,6 +119,10 @@ export default class LineSegment extends DoenetRenderer {
       this.lineSegmentJXG.label.needsUpdate = true;
       this.lineSegmentJXG.label.update();
     }
+    this.point1JXG.needsUpdate = true;
+    this.point1JXG.update();
+    this.point2JXG.needsUpdate = true;
+    this.point2JXG.update();
     this.props.board.updateRenderer();
   }
   onDragHandler(i, transient) {

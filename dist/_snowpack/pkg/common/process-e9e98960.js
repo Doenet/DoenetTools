@@ -225,4 +225,4 @@ var process = {
   uptime: uptime
 };
 
-export { process as p };
+export { nextTick as n, process as p };

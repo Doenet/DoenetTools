@@ -1,13 +1,6 @@
-import { g as getDefaultExportFromNamespaceIfNotNamed, c as createCommonjsModule, b as commonjsRequire, a as commonjsGlobal } from './_commonjsHelpers-16be0a9e.js';
+import { c as createCommonjsModule, b as commonjsRequire, a as commonjsGlobal } from './_commonjsHelpers-4f955397.js';
 
-var _polyfillNode_crypto = {};
-
-var _polyfillNode_crypto$1 = /*#__PURE__*/Object.freeze({
-	__proto__: null,
-	'default': _polyfillNode_crypto
-});
-
-var require$$0 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(_polyfillNode_crypto$1);
+var require$$0 = {};
 
 var core = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
@@ -659,7 +652,7 @@ var core = createCommonjsModule(function (module, exports) {
 	     *
 	     * @property {number} blockSize The number of 32-bit words this hasher operates on. Default: 16 (512 bits)
 	     */
-	    var Hasher = C_lib.Hasher = BufferedBlockAlgorithm.extend({
+	    C_lib.Hasher = BufferedBlockAlgorithm.extend({
 	        /**
 	         * Configuration options.
 	         */

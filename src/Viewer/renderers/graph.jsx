@@ -91,6 +91,17 @@ export default class Graph extends DoenetRenderer {
     // this.board.on('up', this.setAllBoardsToHighQualityAndUpdate);
     // this.board.on('down', this.setAllBoardsToStayLowQuality);
 
+    this.board.on('boundingbox', () => {
+      if (!this.settingBoundingBox) {
+        this.previousBoundingbox = this.board.getBoundingBox();
+        let [xmin, ymax, xmax, ymin] = this.previousBoundingbox;
+        this.actions.changeAxisLimits({
+          xmin, xmax, ymin, ymax
+        });
+      }
+    })
+
+
     this.doenetPropsForChildren = { board: this.board };
     this.initializeChildren();
 
@@ -102,7 +113,9 @@ export default class Graph extends DoenetRenderer {
     let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
 
     if (boundingbox.some((v, i) => v !== this.previousBoundingbox[i])) {
+      this.settingBoundingBox = true;
       this.board.setBoundingBox(boundingbox);
+      this.settingBoundingBox = false;
       // seem to need to call this again to get the ticks correct
       this.board.fullUpdate();
 
