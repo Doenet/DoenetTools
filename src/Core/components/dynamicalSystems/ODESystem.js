@@ -33,6 +33,18 @@ export default class ODESystem extends InlineComponent {
       defaultValue: 14,
       public: true,
     };
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displaySmallAsZero",
+      defaultValue: false,
+      public: true,
+    };
 
     attributes.renderMode = {
       createComponentOfType: "text",
@@ -388,6 +400,14 @@ export default class ODESystem extends InlineComponent {
             dependencyType: "stateVariable",
             variableName: "displayDigits"
           },
+          displayDecimals: {
+            dependencyType: "stateVariable",
+            variableName: "displayDecimals"
+          },
+          displaySmallAsZero: {
+            dependencyType: "stateVariable",
+            variableName: "displaySmallAsZero"
+          },
           independentVariable: {
             dependencyType: "stateVariable",
             variableName: "independentVariable"
@@ -408,20 +428,28 @@ export default class ODESystem extends InlineComponent {
             dependencyType: "stateVariable",
             variableName: "equationTag"
           },
-          
+
         }
 
       },
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, usedDefault }) {
 
         let systemDisplay = [];
         let indVar = dependencyValues.independentVariable.toLatex();
-        let digits = dependencyValues.displayDigits;
         for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
           let variable = dependencyValues.variables[dim].toLatex();
-          let rhs = dependencyValues.rhss[dim].round_numbers_to_precision(digits).toLatex();
-          let thisLatex = `\\frac{\\mathrm{d}${variable}}{\\mathrm{d}${indVar}} &=  ${rhs}`
-          if(dependencyValues.number && dim===0) {
+
+          let rhs;
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            rhs = dependencyValues.rhss[dim].round_numbers_to_decimals(dependencyValues.displayDecimals);
+          } else {
+            rhs = dependencyValues.rhss[dim].round_numbers_to_precision(dependencyValues.displayDigits);
+            if (dependencyValues.displaySmallAsZero) {
+              rhs = rhs.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
+            }
+          }
+          let thisLatex = `\\frac{\\mathrm{d}${variable}}{\\mathrm{d}${indVar}} &=  ${rhs.toLatex()}`
+          if (dependencyValues.number && dim === 0) {
             thisLatex += `\\tag{${dependencyValues.equationTag}}`
           } else {
             thisLatex += "\\notag"
@@ -434,8 +462,16 @@ export default class ODESystem extends InlineComponent {
 
           for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
             let variable = dependencyValues.variables[dim].toLatex();
-            let ic = dependencyValues.initialConditions[dim].round_numbers_to_precision(digits).toLatex();
-            systemDisplay.push(`${variable}(${indVarVal0}) &= ${ic}\\notag`)
+            let ic;
+            if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+              ic = dependencyValues.initialConditions[dim].round_numbers_to_decimals(dependencyValues.displayDecimals);
+            } else {
+              ic = dependencyValues.initialConditions[dim].round_numbers_to_precision(dependencyValues.displayDigits);
+              if (dependencyValues.displaySmallAsZero) {
+                ic = ic.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
+              }
+            }
+            systemDisplay.push(`${variable}(${indVarVal0}) &= ${ic.toLatex()}\\notag`)
           }
         }
         let latex = systemDisplay.join('\\\\');
@@ -708,7 +744,7 @@ export default class ODESystem extends InlineComponent {
                     + ") at t = " + workspace.maxPossibleTime
                     + ". Will not calculate solution beyond that time."
                     + " Decrease chunksize, increase maxiterations, or increase tolerance to calculate further.";
-                  console.warn(message);
+                  // console.warn(message);
                   break;
                 }
               }
