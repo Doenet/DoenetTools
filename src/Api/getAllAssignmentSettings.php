@@ -16,7 +16,7 @@ $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 
 $sqlA = "SELECT
 ad.assignmentId AS assignmentId,
-ad.title AS title,
+ad.title AS assignment_title,
 ad.assignedDate AS assignedDate,
 ad.dueDate AS dueDate,
 ad.timeLimit AS timeLimit,
@@ -44,7 +44,7 @@ if ($result->num_rows > 0){
 
   $sql = "SELECT
   ad.assignmentId AS assignmentId,
-  ad.title AS title,
+  ad.title AS assignment_title,
   ad.assignedDate AS assignedDate,
   ad.dueDate AS dueDate,
   ad.timeLimit AS timeLimit,
@@ -79,7 +79,7 @@ if ($result->num_rows > 0){
   if ($result->num_rows > 0){
     while($row = $result->fetch_assoc()){
       $assignment = array(
-          "title" => $row['title'],
+          "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],
           "dueDate" => $row['dueDate'],
           "timeLimit" => $row['timeLimit'],
@@ -186,3 +186,4 @@ http_response_code(200);
 echo json_encode($response_arr);
 
 $conn->close();
+?>

@@ -16,7 +16,12 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
 $label =  mysqli_real_escape_string($conn,$_POST["label"]);
 
+if ($itemId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing itemId";
+}
 
+if ($success){
 
 $sql = "UPDATE drive_content SET
 isAssignment = '0'
@@ -24,6 +29,7 @@ WHERE itemId = '$itemId'
 ";
 
 $result = $conn->query($sql);
+}
 // echo $sql;
 // set response code - 200 OK
 http_response_code(200);

@@ -7,6 +7,7 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -54,10 +55,21 @@ $sqlAssigmentCheck = "SELECT * FROM assignment where assignmentId='$assignmentId
 $resultCheck = $conn->query($sqlAssigmentCheck); 
 $responseAssignment = 0;
 
-if ($resultCheck->num_rows > 0){
-  $responseAssignment = 1;
-    
+$success = TRUE;
+$message = "";
+
+if ($assignmentId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing assignmentId";
 }
+
+if ($success){
+  if ($resultCheck->num_rows > 0){
+    $responseAssignment = 1;
+  }
+  
+
+
 // if assignment is published already update row
 if($responseAssignment === 1)
 {
@@ -83,9 +95,7 @@ WHERE assignmentId = '$assignmentId'
 ";
 
 $result = $conn->query($sql);
-}
-else
-{
+}else{
   $sql="
   INSERT INTO assignment
   (assignmentId,
@@ -131,11 +141,16 @@ else
   
   $result = $conn->query($sql); 
 }
-// echo $sql;
+}
+
+
+
+
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
-echo json_encode($response_arr);
-
+echo json_encode(200);
 $conn->close();
+
+?>

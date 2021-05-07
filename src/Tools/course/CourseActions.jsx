@@ -12,19 +12,30 @@ import { useRecoilCallback } from 'recoil';
 
 import { assignmentDictionary } from '../course/Course';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
-
+const formatDate = (dt) => {
+  const formattedDate = `${
+    dt.getFullYear().toString().padStart(2, '0')}-${
+    (dt.getMonth()+1).toString().padStart(2, '0')}-${
+    dt.getDate().toString().padStart(2, '0')} ${
+    dt.getHours().toString().padStart(2, '0')}:${
+    dt.getMinutes().toString().padStart(2, '0')}:${
+    dt.getSeconds().toString().padStart(2, '0')}`;
+    
+  return formattedDate;
+}
 export const useAssignment = () => {
   const [addToast, ToastType] = useToast();
 
   const addContentAssignment = useRecoilCallback(
     ({ snapshot, set }) => async (props) => {
       let { driveIdcourseIditemIdparentFolderId, assignmentId ,contentId,branchId} = props;
-
+      const dt = new Date();
+      const creationDate = formatDate(dt);
       // assignment creation
       let newAssignmentObj = {
         assignmentId: assignmentId,
         assignment_title: 'Untitled Assignment',
-        assignedDate: '',
+        assignedDate:"" ,
         attemptAggregation: '',
         dueDate: '',
         gradeCategory: '',
@@ -32,14 +43,14 @@ export const useAssignment = () => {
         isAssignment: '1',
         isPublished: '0',
         itemId: driveIdcourseIditemIdparentFolderId.itemId,
-        multipleAttempts: '',
-        numberOfAttemptsAllowed: '',
+        multipleAttempts: '2',
+        numberOfAttemptsAllowed: '2',
         proctorMakesAvailable: '0',
         showCorrectness: '1',
         showFeedback: '1',
         showHints: '1',
         showSolution: '1',
-        timeLimit: '',
+        timeLimit: '10:10',
         totalPointsOrPercent: '',
         assignment_isPublished: '0',
         subType: 'Administrator',
@@ -88,7 +99,9 @@ export const useAssignment = () => {
 
       axios.post('/api/saveAssignmentToDraft.php', payload).then((resp) => {
         console.log(resp.data);
+        return resp.data;
       });
+
     },
   );
 
@@ -104,10 +117,12 @@ export const useAssignment = () => {
         assignmentId: props.assignmentId,
         assignment_isPublished: '1',
         branchId: props.branchId,
-        courseId: props.courseId,
+        courseId: driveIdcourseIditemIdparentFolderId.courseId,
+        contentId:props.contentId
       };
       axios.post('/api/publishAssignment.php', payloadPublish).then((resp) => {
         console.log(resp.data);
+        return resp.data;
       });
     },
   );

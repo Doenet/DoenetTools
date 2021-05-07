@@ -974,7 +974,12 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.isAssignment = "1";
         newItemObj.assignment_title = payloadAssignment?.assignment_title;     
-        newItemObj.assignmentId = payloadAssignment?.assignmentId;
+        newItemObj.assignedDate = payloadAssignment?.assignedDate;
+        newItemObj.dueDate = payloadAssignment?.dueDate;
+        newItemObj.timeLimit = payloadAssignment?.timeLimit;
+        newItemObj.numberOfAttemptsAllowed = payloadAssignment?.numberOfAttemptsAllowed;
+        newItemObj.totalPointsOrPercent = payloadAssignment?.totalPointsOrPercent;
+        newItemObj.gradeCategory = payloadAssignment?.gradeCategory;
         return newObj;
       })
     }
