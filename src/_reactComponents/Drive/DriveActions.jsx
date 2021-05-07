@@ -1,11 +1,11 @@
 /**
  * External dependencies
  */
-import React from 'react';
+// import React from 'react';
 import { nanoid } from 'nanoid';
 import axios from "axios";
 import {
-  useRecoilCallback, useRecoilValue
+  useRecoilCallback, 
 } from 'recoil';
 
 /**

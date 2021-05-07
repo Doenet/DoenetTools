@@ -76,7 +76,7 @@ $contentId = hash('sha256', $dangerousDoenetML);
 
 if ($isDraft){
     $sql = "UPDATE content 
-    SET timestamp=NOW()
+    SET timestamp=NOW(), contentId='$contentId'
     WHERE isDraft='1'
     AND branchId='$branchId'
     ";
