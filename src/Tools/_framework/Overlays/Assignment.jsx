@@ -43,7 +43,7 @@ export default function Assignment({
         doenetML={assignmentDoenetML?.doenetML}
         flags={{
           showCorrectness: true,
-          readOnly: true,
+          readOnly: false,
           solutionDisplayMode: solutionDisplayMode,
           showFeedback: true,
           showHints: true,
