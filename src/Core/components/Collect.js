@@ -20,7 +20,7 @@ export default class Collect extends CompositeComponent {
     let attributes = super.createAttributesObject(args);
 
     attributes.prop = {
-      createPrimitiveOfType: "text",
+      createPrimitiveOfType: "string",
     };
     attributes.maximumNumber = {
       createComponentOfType: "number",

@@ -30,7 +30,8 @@ export default class Sequence extends CompositeComponent {
     }
 
     attributes.type = {
-      createPrimitiveOfType: "text"
+      createPrimitiveOfType: "string",
+      defaultValue: "number"
     }
     attributes.from = {
       createComponentOfType: "_componentWithSelectableType",
@@ -66,10 +67,14 @@ export default class Sequence extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.type) {
-          return { newValues: { type: dependencyValues.type } };
-        } else {
-          return { newValues: { type: "number" } };
+          let type = dependencyValues.type.toLowerCase()
+          if (["math", "number", "letters"].includes(type)) {
+            return { newValues: { type } };
+          } else {
+            console.warn(`Invalid type ${dependencyValues.type} of a sequence.  Defaulting to number.`)
+          }
         }
+        return { newValues: { type: "number" } };
       },
     };
 

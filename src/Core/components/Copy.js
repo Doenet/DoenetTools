@@ -30,10 +30,10 @@ export default class Copy extends CompositeComponent {
     delete attributes.isResponse;
 
     attributes.prop = {
-      createPrimitiveOfType: "text",
+      createPrimitiveOfType: "string",
     };
     attributes.componentType = {
-      createPrimitiveOfType: "text",
+      createPrimitiveOfType: "string",
     };
     attributes.nComponents = {
       createPrimitiveOfType: "number",

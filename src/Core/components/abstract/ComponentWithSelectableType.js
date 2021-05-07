@@ -14,7 +14,7 @@ export class ComponentWithSelectableType extends BaseComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.type = {
-      createPrimitiveOfType: "text"
+      createPrimitiveOfType: "string"
     }
     return attributes;
   }
@@ -146,7 +146,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.type = {
-      createPrimitiveOfType: "text"
+      createPrimitiveOfType: "string"
     }
     return attributes;
   }
@@ -339,7 +339,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.type = {
-      createPrimitiveOfType: "text"
+      createPrimitiveOfType: "string"
     }
     return attributes;
   }
