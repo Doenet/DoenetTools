@@ -7,8 +7,18 @@ describe("Course creation in Library", function () {
     cy.wait(500);
   });
 
-  it('Creating a new course by clicking the create a new course button', function() {
-    cy.get('[data-cy=createNewCourseButton]').click();
+  it('Creating a new course by clicking the create a new course button', { retries: 3 }, function() {
+    cy.wait(2000);
+    // Handle side panels sometimes not opened by default
+    cy.get("body").then(($body) => {
+      if ($body.find("[data-cy=createNewCourseButton]").length) {
+        cy.get('[data-cy=createNewCourseButton]').click();
+       } else {
+        cy.get('[data-cy=panelDragHandle]').click({multiple: true});
+        cy.get('[data-cy=createNewCourseButton]').click();
+       }
+    })
+    
     cy.get(':nth-child(1) > :nth-child(1) > [data-cy=navDriveHeader]').should('exist');
     
     cy.get('[data-cy=navPanel]').within(() => {
