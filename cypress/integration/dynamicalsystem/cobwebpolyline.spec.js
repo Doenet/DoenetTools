@@ -167,7 +167,8 @@ describe('CobwebPolyline Tag Tests', function () {
 
 
       cy.get('#\\/addline').click().then((_) => {
-        components["/graph1/cobweb"].movePolyline({ 2: [2, 1] }, false, { vertex: 2 })
+        // don't move to check that it is at center of graph
+        // components["/graph1/cobweb"].movePolyline({ 2: [2, 1] }, false, { vertex: 2 })
       })
       cy.get('#\\/check_cobweb_submit').click();
       cy.get('#\\/check_cobweb_partial').invoke('text').then((text) => {
@@ -186,8 +187,9 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
+      let xCenter = (-2+5)/2, yCenter = (-2.2+4.5)/2;
       cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
-        expect(text.trim()).equal('(2,1)')
+        expect(text.trim()).equal(`(${xCenter},${yCenter})`)
       })
       cy.get('#\\/psr').find('.mjx-mrow').eq(6).should('not.exist');
 

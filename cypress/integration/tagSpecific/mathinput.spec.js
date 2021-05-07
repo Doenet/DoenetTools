@@ -1342,14 +1342,13 @@ describe('MathInput Tag Tests', function () {
     });
   })
 
-
-
-  it.skip('accurately reduce vector length', () => {
+  it('accurately reduce vector length', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>Enter vector</text>
     <mathinput name="a"/>
+    <copy tname="a" prop="value" assignNames="b" />
     `}, "*");
     });
 
@@ -1357,13 +1356,106 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'Enter vector');
 
-    cy.get('#\\/a_input').should('have.value', '');
+    cy.get('#\\/a textarea').type('(1,2,3){enter}', { force: true });
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,2,3)')
+    })
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,3){enter}', { force: true });
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,3)')
+    })
+  })
 
-    cy.get('#\\/a_input').type('(1,2,3){enter}');
-    cy.get('#\\/a_input').should('have.value', '(1,2,3)');
+  it('function symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>f, g: <mathinput name="a"/></p>
+    <p><copy tname="a" prop="value" assignNames="a2" /></p>
 
-    cy.get('#\\/a_input').clear().type('(2,3){enter}');
-    cy.get('#\\/a_input').should('have.value', '(2,3)');
+    <p>h, q: <mathinput name="b" functionSymbols="h q" /></p>
+    <p><copy tname="b" prop="value" assignNames="b2" /></p>
+    `}, "*");
+    });
+
+    // verify fixed bug where didn't reduce size of a vector
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a textarea').type('f(x){enter}', { force: true });
+    cy.get('#\\/b textarea').type('f(x){enter}', { force: true });
+
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)')
+    })
+    cy.get('#\\/b2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('fx')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'f', 'x']);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'f', 'x']);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 'f', 'x']);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 'f', 'x']);
+    });
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
+
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g(f)')
+    })
+    cy.get('#\\/b2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('gf')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'g', 'f']);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'g', 'f']);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 'g', 'f']);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 'g', 'f']);
+    });
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
+
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hq')
+    })
+    cy.get('#\\/b2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(q)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['*', 'h', 'q']);
+      expect(components['/a2'].stateValues.value.tree).eqls(['*', 'h', 'q']);
+      expect(components['/b'].stateValues.value.tree).eqls(['apply', 'h', 'q']);
+      expect(components['/b2'].stateValues.value.tree).eqls(['apply', 'h', 'q']);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
+
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('qz')
+    })
+    cy.get('#\\/b2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('q(z)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['*', 'q', 'z']);
+      expect(components['/a2'].stateValues.value.tree).eqls(['*', 'q', 'z']);
+      expect(components['/b'].stateValues.value.tree).eqls(['apply', 'q', 'z']);
+      expect(components['/b2'].stateValues.value.tree).eqls(['apply', 'q', 'z']);
+    });
+
 
   })
 

@@ -716,4 +716,55 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('function symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math>f(x)</math></p>
+  <p><math>g(t)</math></p>
+  <p><math>h(z)</math></p>
+  <p><math functionSymbols="g h">f(x)</math></p>
+  <p><math functionSymbols="g h">g(t)</math></p>
+  <p><math functionSymbols="g h">h(z)</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g(t)')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hz')
+    })
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('fx')
+    })
+    cy.get('#\\/_math5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g(t)')
+    })
+    cy.get('#\\/_math6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(z)')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_math1'].stateValues.value.tree).eqls(["apply", "f", "x"]);
+      expect(components['/_math2'].stateValues.value.tree).eqls(["apply", "g", "t"]);
+      expect(components['/_math3'].stateValues.value.tree).eqls(["*", "h", "z"]);
+      expect(components['/_math4'].stateValues.value.tree).eqls(["*", "f", "x"]);
+      expect(components['/_math5'].stateValues.value.tree).eqls(["apply", "g", "t"]);
+      expect(components['/_math6'].stateValues.value.tree).eqls(["apply", "h", "z"]);
+
+    });
+
+
+  });
+
 })

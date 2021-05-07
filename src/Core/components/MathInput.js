@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { convertValueToMathExpression, latexToAst, textToAst } from '../utils/math';
+import { getCustomFromText, getCustomFromLatex, } from '../utils/math';
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -66,6 +66,13 @@ export default class MathInput extends Input {
       forRenderer: true,
       public: true,
     };
+    attributes.functionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "functionSymbols",
+      defaultValue: ["f", "g"],
+      forRenderer: true,
+      public: true,
+    }
     attributes.bindValueTo = {
       createComponentOfType: "math"
     };
@@ -95,6 +102,10 @@ export default class MathInput extends Input {
           dependencyType: "stateVariable",
           variableName: "format"
         },
+        functionSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "functionSymbols"
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.bindValueTo) {
@@ -105,7 +116,8 @@ export default class MathInput extends Input {
                 get defaultValue() {
                   return parseValueIntoMath({
                     inputString: dependencyValues.prefill,
-                    format: dependencyValues.format
+                    format: dependencyValues.format,
+                    functionSymbols: dependencyValues.functionSymbols,
                   })
                 }
               }
@@ -318,7 +330,7 @@ export default class MathInput extends Input {
 }
 
 
-function parseValueIntoMath({ inputString, format }) {
+function parseValueIntoMath({ inputString, format, functionSymbols }) {
 
   if (!inputString) {
     return me.fromAst('\uFF3F');
@@ -326,15 +338,21 @@ function parseValueIntoMath({ inputString, format }) {
 
   let expression;
   if (format === "latex") {
+    let fromLatex = getCustomFromLatex({
+      functionSymbols
+    });
     try {
-      expression = me.fromAst(latexToAst.convert(inputString));
+      expression = fromLatex(inputString);
     } catch (e) {
       console.warn(`Invalid latex for mathInput: ${inputString}`)
       expression = me.fromAst('\uFF3F');
     }
   } else if (format === "text") {
+    let fromText = getCustomFromText({
+      functionSymbols
+    });
     try {
-      expression = me.fromAst(textToAst.convert(inputString));
+      expression = fromText(inputString);
     } catch (e) {
       console.warn(`Invalid text for mathInput: ${inputString}`)
       expression = me.fromAst('\uFF3F');
