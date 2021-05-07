@@ -18,10 +18,21 @@ export var textToAst = new me.converters.textToAstObj({
   appliedFunctionSymbols
 });
 
+export function getCustomFromText({ functionSymbols }) {
+  return x => me.fromAst((new me.converters.textToAstObj({
+    appliedFunctionSymbols, functionSymbols
+  })).convert(x))
+}
+
 export var latexToAst = new me.converters.latexToAstObj({
   appliedFunctionSymbols
 });
 
+export function getCustomFromLatex({ functionSymbols }) {
+  return x => me.fromAst((new me.converters.latexToAstObj({
+    appliedFunctionSymbols, functionSymbols
+  })).convert(x))
+}
 
 export function normalizeMathExpression({ value, simplify, expand = false,
   createVectors = false, createIntervals = false
@@ -268,5 +279,5 @@ export function isValidVariable(expression) {
   }
 
   return validVariable;
-  
+
 }

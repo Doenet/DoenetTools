@@ -172,6 +172,8 @@ export default class Core {
     this.renderedComponentInstructions = {};
     this.componentsWithChangedChildrenToRender = new Set([]);
 
+    this.stateVariableChangeTriggers = {};
+
 
     this._renderComponents = [];
     this._renderComponentsByName = {};
@@ -482,6 +484,7 @@ export default class Core {
       this.expandAllComposites(this.document, true);
 
       this.initializeRenderedComponentInstruction(this.document);
+      this.processStateVariableTriggers();
 
     } else {
       if (parent === undefined) {
@@ -507,6 +510,8 @@ export default class Core {
       Object.assign(deletedComponents, addResults.deletedComponents);
 
       this.updateRendererInstructions({ componentNames: this.componentAndRenderedDescendants(parent) });
+      this.processStateVariableTriggers();
+
     }
 
     this.finishUpdate({
@@ -749,6 +754,32 @@ export default class Core {
     delete this.renderedComponentInstructions[componentName];
 
     return deletedComponentNames;
+  }
+
+  processStateVariableTriggers() {
+
+    for (let componentName in this.stateVariableChangeTriggers) {
+      let component = this._components[componentName];
+      for (let stateVariable in this.stateVariableChangeTriggers[componentName]) {
+        let triggerInstructions = this.stateVariableChangeTriggers[componentName][stateVariable];
+
+        let value = component.state[stateVariable].value;
+
+        if (value !== triggerInstructions.previousValue) {
+          let previousValue = triggerInstructions.previousValue;
+          triggerInstructions.previousValue = value;
+          let action = component.actions[triggerInstructions.action];
+          if (action) {
+            action({
+              stateValues: { [stateVariable]: value },
+              previousValues: { [stateVariable]: previousValue }
+            })
+          }
+        }
+
+      }
+    }
+
   }
 
   expandAllComposites(component, force = false) {
@@ -2345,6 +2376,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "triggerActionOnChange",
       ]
 
       for (let attribute of attributesToCopy) {
@@ -3246,6 +3278,14 @@ export default class Core {
       });
     } else if (stateVarObj.isArray) {
       this.initializeArrayStateVariable({ stateVarObj, component, stateVariable });
+    }
+
+    if (stateVarObj.triggerActionOnChange) {
+      let componentTriggers = this.stateVariableChangeTriggers[component.componentName];
+      if (!componentTriggers) {
+        componentTriggers = this.stateVariableChangeTriggers[component.componentName] = {};
+      }
+      componentTriggers[stateVariable] = { action: stateVarObj.triggerActionOnChange };
     }
 
   }
@@ -6268,6 +6308,8 @@ export default class Core {
       this.updateInfo.deletedComponents[component.componentName] = true;
       delete this.unsatisfiedChildLogic[component.componentName];
 
+      delete this.stateVariableChangeTriggers[component.componentName];
+
     }
 
     for (let componentName in componentsToDelete) {
@@ -7434,6 +7476,8 @@ export default class Core {
       sourceOfUpdate,
       recreatedComponents: this.updateInfo.recreatedComponents
     });
+
+    this.processStateVariableTriggers();
 
     this.finishUpdate();
 
