@@ -148,7 +148,7 @@ export default function ContentPanel({ main, support }) {
     >
       {main}
       {support ? (
-        <DragHandle onMouseDown={onMouseDown} key={`SupportHandle${stackId}`}>
+        <DragHandle onMouseDown={onMouseDown} data-cy="contentPanelDragHandle" key={`SupportHandle${stackId}`}>
           <FontAwesomeIcon icon={faGripLinesVertical} />
         </DragHandle>
       ) : null}

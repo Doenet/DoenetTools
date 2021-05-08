@@ -610,13 +610,9 @@ export const fetchDrivesQuery = atom({
   default: selector({
     key:"fetchDrivesQuery/Default",
     get: async ()=>{
-    const { data } = await axios.get(
-      `/api/loadAvailableDrives.php`
-    );
-    // console.log(">>>data",data)
-    return data
-  },
- 
+      const { data } = await axios.get(`/api/loadAvailableDrives.php`);
+      return data
+    },
   })
 })
 
@@ -726,12 +722,10 @@ export const fetchDrivesSelector = selector({
       //Save to db
       const payload = { params }
       axios.get("/api/updateDrive.php", payload)
-    // .then((resp)=>console.log(">>>updateDrive resp",resp.data))
     }else if (labelTypeDriveIdColorImage.type === "update drive color"){
     //TODO: implement      
 
     }else if (labelTypeDriveIdColorImage.type === "delete drive"){
-      // set(fetchDrivesQuery,newDriveData)
       //Find matching drive and update label
       for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
         if (drive.driveId === labelTypeDriveIdColorImage.newDriveId ){
@@ -744,65 +738,7 @@ export const fetchDrivesSelector = selector({
         //Save to db
         const payload = { params }
         axios.get("/api/updateDrive.php", payload)
-      // .then((resp)=>console.log(">>>updateDrive resp",resp.data))
     }
-  //   else if (labelTypeDriveIdColorImage.type === "make course drive from content drive"){
-  //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
-  //     params['sourceDriveId'] = sourceDriveId;
-  //     //TODO: duplicate items from driveId
-  //     let contentObjs = duplicateFolder({sourceFolderId:sourceDriveId,sourceDriveId,destDriveId:labelTypeDriveIdColorImage.newDriveId});
-  //     // console.log({contentObjs}) //Save these in addBulkItems.php post
-  //     axios.post('/api/addBulkItems.php',{driveId:labelTypeDriveIdColorImage.newDriveId,content:contentObjs})
-  //     // .then(resp=>{console.log(resp.data)})
-  //     newDrive = {
-  //       courseId:null,
-  //       driveId:labelTypeDriveIdColorImage.newDriveId,
-  //       isShared:"0",
-  //       label:labelTypeDriveIdColorImage.label,
-  //       type: "course"
-  //     }
-  //     newDriveData.driveIdsAndLabels.unshift(newDrive)
-  //   set(fetchDrivesQuery,newDriveData)
-  //   const payload = { params }
-  //   axios.get("/api/addDrive.php", payload)
-  // // .then((resp)=>console.log(">>>resp",resp.data))
-  //   }
-    // else if (labelTypeDriveIdColorImage.type === "duplicate content drive"){
-    //     //TODO: duplicate items from driveId
-    //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
-    //     params['sourceDriveId'] = sourceDriveId;
-    //     newDrive = {
-    //       courseId:null,
-    //       driveId,
-    //       isShared:"0",
-    //       label:labelTypeDriveIdColorImage.label,
-    //       type: "content"
-    //     }
-    // }else if (labelTypeDriveIdColorImage.type === "duplicate course drive"){
-    //     //TODO: duplicate items from driveId
-    //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
-    //     params['sourceDriveId'] = sourceDriveId;
-    //     newDrive = {
-    //       courseId:null,
-    //       driveId,
-    //       isShared:"0",
-    //       label:labelTypeDriveIdColorImage.label,
-    //       type: "course"
-    //     }
-    // }else if (labelTypeDriveIdColorImage.type === "make content drive from course drive"){
-    //   //TODO: duplicate items from driveId
-    //     const sourceDriveId = labelTypeDriveIdColorImage.driveId;
-    //     params['sourceDriveId'] = sourceDriveId;
-    //   newDrive = {
-    //     courseId:null,
-    //     driveId,
-    //     isShared:"0",
-    //     label:labelTypeDriveIdColorImage.label,
-    //     type: "content"
-    //   }
-    // }
-    
-    
   }
 })
 
@@ -838,8 +774,8 @@ const folderOpenSelector = selectorFamily({
   }
 })
 
-export let encodeParams = p => 
-Object.entries(p).map(kv => kv.map(encodeURIComponent).join("=")).join("&");
+export let encodeParams = p => Object.entries(p).map(kv => 
+  kv.map(encodeURIComponent).join("=")).join("&");
 
 export const drivePathSyncFamily = atomFamily({
   key:"drivePathSyncFamily",
@@ -852,7 +788,6 @@ export const drivePathSyncFamily = atomFamily({
 })
 
 function Folder(props){
-
   let itemId = props?.folderId;
   if (!itemId){ itemId = props.driveId}
   
@@ -905,7 +840,7 @@ function Folder(props){
   const {sortFolder, invalidateSortCache, onSortFolderError} = useSortFolder();
   const {insertDragShadow, removeDragShadow} = useDragShadowCallbacks();
 
-  //Set only when parentFolderId changes
+  // Set only when parentFolderId changes
   const setInstanceParentId = useSetRecoilState(driveInstanceParentFolderIdAtom(props.driveInstanceId));
   useEffect(() => {
     setInstanceParentId(props.pathItemId);
@@ -949,7 +884,9 @@ function Folder(props){
  
   if (folderInfoObj.state === "loading"){ return null;}
  
-  let openCloseText = isOpen ? <FontAwesomeIcon icon={faChevronDown}/> : <FontAwesomeIcon icon={faChevronRight}/>;
+  let openCloseText = isOpen ? 
+    <span data-cy="folderToggleCloseIcon"><FontAwesomeIcon icon={faChevronDown}/></span> : 
+    <span data-cy="folderToggleOpenIcon"><FontAwesomeIcon icon={faChevronRight}/></span>;
 
   let openCloseButton = <button 
   style={{border: "none", backgroundColor: bgcolor, borderRadius: "5px"}}
@@ -1070,48 +1007,48 @@ function Folder(props){
 
 
   folder = <div
-      data-doenet-driveinstanceid={props.driveInstanceId}
-      tabIndex={0}
-      className="noselect nooutline" 
-      style={{
-        cursor: "pointer",
-        // width: "300px",
-        padding: "8px",
-        border: "0px",
-        borderBottom: "2px solid black", 
-        backgroundColor: bgcolor,
-        // width: widthSize,
-        // boxShadow: borderSide,
-        marginLeft: marginSize,
-        borderLeft: borderSide
-      }}
-      onClick={(e)=>{
-        e.preventDefault(); // Folder
+    data-doenet-driveinstanceid={props.driveInstanceId}
+    data-cy="driveItem"
+    tabIndex={0}
+    className="noselect nooutline" 
+    style={{
+      cursor: "pointer",
+      // width: "300px",
+      padding: "8px",
+      border: "0px",
+      borderBottom: "2px solid black", 
+      backgroundColor: bgcolor,
+      // width: widthSize,
+      // boxShadow: borderSide,
+      marginLeft: marginSize,
+      borderLeft: borderSide
+    }}
+    onClick={(e)=>{
+      e.preventDefault(); // Folder
+      e.stopPropagation();
+      if (props.isNav){
+        clearSelections();
+        //Only select one item
+        setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
+      }else{
+        e.preventDefault();
         e.stopPropagation();
-        if (props.isNav){
-          clearSelections();
-          //Only select one item
-          setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
-        }else{
-          e.preventDefault();
-          e.stopPropagation();
-          if (!e.shiftKey && !e.metaKey){
-            setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
-          }else if (e.shiftKey && !e.metaKey){
-            setSelected({instructionType:"range to item",parentFolderId:props.parentFolderId})
-          }else if (!e.shiftKey && e.metaKey){
-            setSelected({instructionType:"add item",parentFolderId:props.parentFolderId})
-          }
+        if (!e.shiftKey && !e.metaKey){
+          setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
+        }else if (e.shiftKey && !e.metaKey){
+          setSelected({instructionType:"range to item",parentFolderId:props.parentFolderId})
+        }else if (!e.shiftKey && e.metaKey){
+          setSelected({instructionType:"add item",parentFolderId:props.parentFolderId})
         }
-        setSelectedDrive(props.driveId);
-        }}
-        onDoubleClick={(e)=>{
-          e.preventDefault();
-          e.stopPropagation();
-          // toggleOpen();
-          setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
-
-        }}
+      }
+      setSelectedDrive(props.driveId);
+      }}
+      onDoubleClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        // toggleOpen();
+        setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
+      }}
         onBlur={(e) => {
           //Don't clear on navigation changes
           if (!props.isNav){
@@ -1129,16 +1066,20 @@ function Folder(props){
         }}
       >
         <div 
-      className="noselect" 
-      style={{
-        marginLeft: `${props.indentLevel * indentPx}px`,
-        display: 'grid',
-        gridTemplateColumns: '1fr',
-        gridTemplateRows: '1fr',
-        alignContent: 'center'
-      }}><div style={{display: 'inline', margin:'0px'}}>{openCloseButton} <FontAwesomeIcon icon={faFolder}/> {label}</div> </div></div>
-    
-    
+        className="noselect" 
+        style={{
+          marginLeft: `${props.indentLevel * indentPx}px`,
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gridTemplateRows: '1fr',
+          alignContent: 'center'}}>
+        <div style={{display: 'inline', margin:'0px'}}>
+          {openCloseButton}
+          <span data-cy="folderIcon"><FontAwesomeIcon icon={faFolder}/></span>
+          <span data-cy="folderLabel">{label}</span>
+        </div>
+      </div>
+    </div>;
     } else if (props.driveObj && props.isNav){
 
     let driveIcon = <FontAwesomeIcon icon={faBookOpen}/>;
@@ -1150,6 +1091,7 @@ function Folder(props){
     folder = <>
     <div
       data-doenet-driveinstanceid={props.driveInstanceId}
+      data-cy="navDriveHeader"
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -1158,8 +1100,6 @@ function Folder(props){
         border: "0px",
         borderBottom: "2px solid black",
         backgroundColor: bgcolor,
-        // width: widthSize,
-        // marginLeft: `${(props.indentLevel * indentPx)}px`,
         marginLeft: marginSize,
         fontSize: "24px",
         borderLeft: borderSide
@@ -1187,8 +1127,6 @@ function Folder(props){
           border: "0px",
           borderBottom: "2px solid black",
           backgroundColor: bgcolor,
-          // width: widthSize,
-          // marginLeft: `${(props.indentLevel * indentPx)}px`,
           marginLeft: marginSize,
           fontSize: "24px",
           borderLeft: borderSide
@@ -1288,7 +1226,7 @@ function Folder(props){
         switch(item.itemType){
           case "Folder":
           items.push(<Folder 
-            key={`item${itemId}${props.driveInstanceId}`} 
+            key={`item${itemId}${props.driveInstanceId}`}
             driveId={props.driveId} 
             folderId={item.itemId} 
             item={item} 
@@ -1359,10 +1297,10 @@ function Folder(props){
     }
   }
 
-  return <>
-  {folder}
-  {items}
-  </>
+  return <div data-cy="drive">
+    {folder}
+    {items}
+  </div>
 }
 
 const EmptyNode =  React.memo(function Node(props){
@@ -1377,7 +1315,9 @@ const EmptyNode =  React.memo(function Node(props){
 
 const DragShadow =  React.memo(function Node(props){
   const indentPx = 30;
-  return (<div style={{
+  return (<div 
+    data-cy="dragShadow"
+    style={{
     width: "100%",
     height: "33px",
     marginLeft: `${props.indentLevel * indentPx}px`,
@@ -1648,6 +1588,7 @@ const DoenetML = React.memo((props)=>{
 
   let doenetMLJSX = <div
       data-doenet-driveinstanceid={props.driveInstanceId}
+      data-cy="driveItem"
       tabIndex={0}
       className="noselect nooutline" 
       style={{
@@ -1721,7 +1662,10 @@ const DoenetML = React.memo((props)=>{
         gridTemplateRows: '1fr',
         alignContent: 'center'
       }}>
-      <p style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faCode}/> {label} </p> 
+      <p style={{display: 'inline', margin: '0px'}}>
+        <span data-cy="doenetMLIcon"><FontAwesomeIcon icon={faCode}/></span>
+        <span data-cy="doenetMLLabel">{label} </span>
+      </p> 
       {props.numColumns >= 2 ? <span>{date}</span> : null }
       {props.numColumns >= 3 ? <span>{published}</span> : null }
       {props.numColumns >= 4 ? <span>{assigned}</span> : null }
@@ -2205,6 +2149,7 @@ function useUpdateBreadcrumb(props) {
       }}
       >
       <Link 
+        data-cy="breadcrumbDriveColumn"
         style={breadcrumbItemStyle} 
         to={driveDestinationLink}>
         {props.driveLabel}
@@ -2260,7 +2205,6 @@ const DragGhost = ({ id, element, numItems, copyMode=false }) => {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center', 
-    // marginLeft: "-60px"
   }
 
   const copyModeIndicatorCircleContainerStyle = {
@@ -2278,29 +2222,6 @@ const DragGhost = ({ id, element, numItems, copyMode=false }) => {
     justifyContent: 'center',
     alignItems: 'center', 
   }
-
-  // const multipleItemsRearStackStyle = {
-  //   boxShadow: 'rgba(0, 0, 0, 0.30) 5px 5px 3px -2px',
-  //   borderRadius: '4px',
-  //   padding: "0 5px 5px 0px",
-  //   display: 'flex',
-  //   justifyContent: 'flex-start',
-  //   alignItems: 'flex-start',
-  //   zIndex: "1",
-  //   background: "#fff",
-  //   marginLeft: "-60px"
-  // }
-
-  // const multipleItemsFrontStackStyle = {
-  //   borderRadius: '4px',
-  //   boxShadow: 'rgba(0, 0, 0, 0.15) 3px 3px 3px 0px',
-  //   border: '1px solid rgba(0, 0, 0, 0.70)',
-  //   display: 'flex',
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   zIndex: "2",
-  //   marginLeft: "-60px"
-  // }
 
   let dragGhost = <>
     <div
@@ -2337,7 +2258,7 @@ const DragGhost = ({ id, element, numItems, copyMode=false }) => {
     </>;
   }
 
-  dragGhost = <div id={id} style={containerStyle}>
+  dragGhost = <div id={id} data-cy="dragGhost" style={containerStyle}>
     { dragGhost }
   </div>
 
