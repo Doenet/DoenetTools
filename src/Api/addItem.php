@@ -19,6 +19,7 @@ $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 $branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 $sortOrder = mysqli_real_escape_string($conn,$_REQUEST["sortOrder"]);
+$isNewCopy = mysqli_real_escape_string($conn,$_REQUEST["isNewCopy"]);
 
 $success = TRUE;
 $message = "";
@@ -98,12 +99,14 @@ if ($success){
   $result = $conn->query($sql); 
 
   }else if ($type == 'DoenetML'){
-    $emptyContentId = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
-    $fileName = $emptyContentId;
-    //TODO: Config file needed for server
-    $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
-    fwrite($newfile, "");
-    fclose($newfile);
+    if ($isNewCopy != '1'){
+      $emptyContentId = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+      $fileName = $emptyContentId;
+      //TODO: Config file needed for server
+      $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
+      fwrite($newfile, "");
+      fclose($newfile);
+    }
 
     $sql="
     INSERT INTO drive_content
@@ -112,14 +115,16 @@ if ($success){
     ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$branchId','$sortOrder')
     ";
     
-    $result = $conn->query($sql); 
-    $sql="
-    INSERT INTO content
-    (branchId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
-    VALUES
-    ('$branchId','$versionId','$emptyContentId','Draft',NOW(),'1','0','1')
-    ";
-    
+    if ($isNewCopy != '1'){
+      $result = $conn->query($sql); 
+      $sql="
+      INSERT INTO content
+      (branchId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
+      VALUES
+      ('$branchId','$versionId','$emptyContentId','Draft',NOW(),'1','0','1')
+      ";
+    }
+
     $result = $conn->query($sql); 
   }else{
     $success = FALSE;

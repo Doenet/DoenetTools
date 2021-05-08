@@ -109,23 +109,35 @@ if ($isDraft){
 
 
     if($versionId == $row['versionId']){
-        $response_arr = array(
-            "success"=> false,
-            "versionId"=> $versionId
-        );
+      $success = FALSE;
+      $message = "Internal Error: Duplicate VersionId $versionId";
+
     }elseif($isNewCopy == '1'){
       //New Copy!
+
+      //Find previous contentId of draft
+      $sql = "SELECT contentId
+        FROM content
+        WHERE branchId='$previousBranchId'
+        AND isDraft='1'
+      ";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $contentId = $row['contentId']; //Overwrite contentId with draft
+      
+      //Safe the draft for the new content
       $sql = "INSERT INTO content 
         SET branchId='$branchId',
         contentId='$contentId', 
         versionId='$versionId', 
-        title='$title',
+        title='Draft',
         timestamp=NOW(),
-        isDraft='0',
-        isNamed='$isNamed'
+        isDraft='1',
+        isNamed='0'
         ";
     
         $result = $conn->query($sql);
+     
 
     }else{
 

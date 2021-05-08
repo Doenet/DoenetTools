@@ -101,7 +101,6 @@ export const useAddItem = () => {
       const result = axios.get('/api/addItem.php', payload);
 
       result.then(resp => {
-        console.log(">>>", resp)
         if (resp.data.success){
           // Insert item info into destination folder
           set(folderDictionary(driveIdFolderId), newObj)
@@ -386,7 +385,7 @@ export const useCopyItems = () => {
       
       for(let item of items){
         if (!item.driveId || !item.driveInstanceId || !item.itemId) throw "Invalid arguments error"
-        console.log(">>>item",item)
+     
         // Deselect currently selected items
         let selectedItem = {
           driveId: item.driveId,
@@ -432,7 +431,6 @@ export const useCopyItems = () => {
       let promises = [];
       for (let newItemId of Object.keys(globalDictionary)) {
         let newItem = globalDictionary[newItemId];
-        
         const data = { 
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
@@ -442,13 +440,13 @@ export const useCopyItems = () => {
           label: newItem.label,
           type: newItem.itemType,
           sortOrder: newItem.sortOrder,
+          isNewCopy: '1',
          };
 
         // Clone DoenetML
         if (newItem.itemType === "DoenetML") {
           const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
-          newDoenetML['isNewCopy'] = '1';
-          console.log(">>>clone doenetML saveNewVersion.php",newDoenetML)
+          
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
           // Unify new branchId
@@ -522,7 +520,7 @@ export const useCopyItems = () => {
     // Retrieve info of target item from parentFolder
     const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
-   
+
     // Clone item
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
@@ -572,7 +570,9 @@ export const useCopyItems = () => {
       timestamp,
       isDraft: '0',
       isNamed: '1',
+      isNewCopy: '1',
       doenetML: item.doenetML,
+      previousBranchId: item.previousBranchId,
     }
     return newVersion;
   }
