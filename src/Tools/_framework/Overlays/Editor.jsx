@@ -30,23 +30,27 @@ import 'codemirror/theme/xq-light.css';
 // import 'codemirror/theme/base16-light.css';
 
 import './Editor.css';
+import { 
+  itemHistoryAtom, 
+  fileByContentId 
+} from '../../../_sharedRecoil/content';
 
-export const fileByContentId = atomFamily({
-  key:"fileByContentId",
-  default: selectorFamily({
-    key:"fileByContentId/Default",
-    get:(contentId)=> async ()=>{
-      if (!contentId){
-        return "";
-      }
+// export const fileByContentId = atomFamily({
+//   key:"fileByContentId",
+//   default: selectorFamily({
+//     key:"fileByContentId/Default",
+//     get:(contentId)=> async ()=>{
+//       if (!contentId){
+//         return "";
+//       }
     
-    const ls = localStorage.getItem(contentId);
-      if (ls){ return ls}
-      return await axios.get(`/media/${contentId}.doenet`) 
-    }
-  })
+//     const ls = localStorage.getItem(contentId);
+//       if (ls){ return ls}
+//       return await axios.get(`/media/${contentId}.doenet`) 
+//     }
+//   })
   
-})
+// })
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -58,21 +62,21 @@ const viewerDoenetMLAtom = atom({
   default:{updateNumber:0,doenetML:""}
 })
 
-const itemHistoryAtom = atomFamily({
-  key:"itemHistoryAtom",
-  default: selectorFamily({
-    key:"itemHistoryAtom/Default",
-    get:(branchId)=> async ()=>{
-      if (!branchId){
-        return [];
-      }
-      const { data } = await axios.get(
-        `/api/loadVersions.php?branchId=${branchId}`
-      );
-      return data.versions
-    }
-  })
-})
+// const itemHistoryAtom = atomFamily({
+//   key:"itemHistoryAtom",
+//   default: selectorFamily({
+//     key:"itemHistoryAtom/Default",
+//     get:(branchId)=> async ()=>{
+//       if (!branchId){
+//         return [];
+//       }
+//       const { data } = await axios.get(
+//         `/api/loadVersions.php?branchId=${branchId}`
+//       );
+//       return data.versions
+//     }
+//   })
+// })
 
 const getSHAofContent = (doenetML)=>{
   if (doenetML === undefined){

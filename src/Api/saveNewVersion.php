@@ -20,6 +20,8 @@ $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 $isDraft = mysqli_real_escape_string($conn,$_POST["isDraft"]);
 $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
 $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
+$isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
+$previousBranchId = mysqli_real_escape_string($conn,$_POST["previousBranchId"]);
 
 
 $success = TRUE;
@@ -111,6 +113,20 @@ if ($isDraft){
             "success"=> false,
             "versionId"=> $versionId
         );
+    }elseif($isNewCopy == '1'){
+      //New Copy!
+      $sql = "INSERT INTO content 
+        SET branchId='$branchId',
+        contentId='$contentId', 
+        versionId='$versionId', 
+        title='$title',
+        timestamp=NOW(),
+        isDraft='0',
+        isNamed='$isNamed'
+        ";
+    
+        $result = $conn->query($sql);
+
     }else{
 
         saveDoenetML($contentId,$dangerousDoenetML);

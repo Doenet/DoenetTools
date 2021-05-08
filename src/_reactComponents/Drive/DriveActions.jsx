@@ -26,6 +26,10 @@ import {
 } from './Drive';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
 
+import { 
+  itemHistoryAtom 
+} from '../../_sharedRecoil/content';
+
 const dragShadowId = "dragShadow";
 
 const formatDate = (dt) => {
@@ -381,7 +385,7 @@ export const useCopyItems = () => {
       
       for(let item of items){
         if (!item.driveId || !item.driveInstanceId || !item.itemId) throw "Invalid arguments error"
-        
+        console.log(">>>item",item)
         // Deselect currently selected items
         let selectedItem = {
           driveId: item.driveId,
@@ -427,7 +431,7 @@ export const useCopyItems = () => {
       let promises = [];
       for (let newItemId of Object.keys(globalDictionary)) {
         let newItem = globalDictionary[newItemId];
-
+        
         const data = { 
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
@@ -442,6 +446,8 @@ export const useCopyItems = () => {
         // Clone DoenetML
         if (newItem.itemType === "DoenetML") {
           const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
+          newDoenetML['isNewCopy'] = '1';
+          console.log(">>>clone doenetML saveNewVersion.php",newDoenetML)
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
           // Unify new branchId
@@ -515,13 +521,15 @@ export const useCopyItems = () => {
     // Retrieve info of target item from parentFolder
     const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
-
+   
     // Clone item
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
     const newBranchId = nanoid();
     newItem.itemId = newItemId;
     newItem.branchId = newBranchId;
+    newItem.previousBranchId = itemInfo.branchId;
+
     
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
