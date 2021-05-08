@@ -1,17 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 
 export default class UpdateValue extends InlineComponent {
-  constructor(args) {
-    super(args);
-    this.updateValue = this.updateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
-
-    this.actions = {
-      updateValue: this.updateValue
-    };
-
-  }
   static componentType = "updateValue";
 
   static acceptTname = true;
@@ -50,6 +39,17 @@ export default class UpdateValue extends InlineComponent {
       defaultValue: null,
       public: true,
     };
+
+    attributes.triggerWhen = {
+      createComponentOfType: "boolean",
+      createStateVariable: "triggerWhen",
+      defaultValue: false,
+      triggerActionOnChange: "updateValueIfTriggerNewlyTrue"
+    }
+
+    attributes.triggerWithTname = {
+      createPrimitiveOfType: "string"
+    }
 
     return attributes;
   }
@@ -261,6 +261,73 @@ export default class UpdateValue extends InlineComponent {
     };
 
 
+    stateVariableDefinitions.triggerWithTname = {
+      returnDependencies: () => ({
+        triggerWithTname: {
+          dependencyType: "attribute",
+          attributeName: "triggerWithTname"
+        },
+        triggerWhen: {
+          dependencyType: "attribute",
+          attributeName: "triggerWhen"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.triggerWhen) {
+          return { newValues: { triggerWithTname: null } }
+        } else {
+          return { newValues: { triggerWithTname: dependencyValues.triggerWithTname } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.triggerWithFullTname = {
+      chainActionOnActionOfStateVariableTarget: {
+        triggeringAction: "updateValue",
+        triggeredAction: "updateValue"
+      },
+      stateVariablesDeterminingDependencies: ["triggerWithTname"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.triggerWithTname) {
+          return {
+            triggerWithFullTname: {
+              dependencyType: "expandTargetName",
+              tName: stateValues.triggerWithTname
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        return { newValues: { triggerWithFullTname: dependencyValues.triggerWithFullTname } }
+      }
+    }
+
+
+    let originalHiddenReturnDependencies = stateVariableDefinitions.hidden.returnDependencies;
+    let originalHiddenDefinition = stateVariableDefinitions.hidden.definition;
+
+    stateVariableDefinitions.hidden.returnDependencies = function (args) {
+      let dependencies = originalHiddenReturnDependencies(args);
+      dependencies.triggerWhen = {
+        dependencyType: "attributeComponent",
+        attributeName: "triggerWhen"
+      },
+        dependencies.triggerWithTname = {
+          dependencyType: "stateVariable",
+          variableName: "triggerWithTname"
+        }
+      return dependencies;
+    }
+
+    stateVariableDefinitions.hidden.definition = function (args) {
+      if (args.dependencyValues.triggerWhen || args.dependencyValues.triggerWithTname) {
+        return { newValues: { hidden: true } }
+      } else {
+        return originalHiddenDefinition(args);
+      }
+    }
 
     return stateVariableDefinitions;
 
@@ -299,10 +366,30 @@ export default class UpdateValue extends InlineComponent {
             response: this.stateValues.newValue,
             responseText: this.stateValues.newValue.toString(),
           }
-        }
+        },
+        callBack: () => this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+          actionName: "updateValue"
+        })
       });
+
+
     }
 
   }
 
+  updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
+    if (stateValues.triggerWhen && !previousValues.triggerWhen) {
+      this.updateValue();
+    }
+  }
+
+  actions = {
+    updateValue: this.updateValue.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  };
 }

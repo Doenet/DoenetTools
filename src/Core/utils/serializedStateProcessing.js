@@ -1583,7 +1583,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 }
 
 
-function convertComponentTarget({
+export function convertComponentTarget({
   tName,
   oldFullTName,
   namespaceStack,
