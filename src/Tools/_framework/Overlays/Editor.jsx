@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Tool from "../Tool";
-import { useToolControlHelper } from "../ToolRoot";
+// import { useToolControlHelper } from "../ToolRoot";
 import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
@@ -12,12 +12,12 @@ import {
   useRecoilValue, 
   atom, 
   atomFamily,
-  selector,
+  // selector,
   selectorFamily,
   useSetRecoilState,
   useRecoilState,
   useRecoilValueLoadable,
-  useRecoilStateLoadable, 
+  // useRecoilStateLoadable, 
   useRecoilCallback
 } from "recoil";
 import DoenetViewer from '../../../Viewer/DoenetViewer';
@@ -30,20 +30,27 @@ import 'codemirror/theme/xq-light.css';
 // import 'codemirror/theme/base16-light.css';
 
 import './Editor.css';
+import { 
+  itemHistoryAtom, 
+  fileByContentId 
+} from '../../../_sharedRecoil/content';
 
-export const fileByContentId = atomFamily({
-  key:"fileByContentId",
-  default: selectorFamily({
-    key:"fileByContentId/Default",
-    get:(contentId)=> async ()=>{
-      if (!contentId){
-        return "";
-      }
-      return await axios.get(`/media/${contentId}.doenet`) 
-    }
-  })
+// export const fileByContentId = atomFamily({
+//   key:"fileByContentId",
+//   default: selectorFamily({
+//     key:"fileByContentId/Default",
+//     get:(contentId)=> async ()=>{
+//       if (!contentId){
+//         return "";
+//       }
+    
+//     const ls = localStorage.getItem(contentId);
+//       if (ls){ return ls}
+//       return await axios.get(`/media/${contentId}.doenet`) 
+//     }
+//   })
   
-})
+// })
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -55,29 +62,29 @@ const viewerDoenetMLAtom = atom({
   default:{updateNumber:0,doenetML:""}
 })
 
-const itemHistoryAtom = atomFamily({
-  key:"itemHistoryAtom",
-  default: selectorFamily({
-    key:"itemHistoryAtom/Default",
-    get:(branchId)=> async ()=>{
-      // console.log(">>>itemHistoryAtom branchId",branchId)
-      if (!branchId){
-        return [];
-      }
-      const { data } = await axios.get(
-        `/api/loadVersions.php?branchId=${branchId}`
-      );
-      // console.log(">>>data",data)
-      return data.versions
-    }
-  })
-})
+// const itemHistoryAtom = atomFamily({
+//   key:"itemHistoryAtom",
+//   default: selectorFamily({
+//     key:"itemHistoryAtom/Default",
+//     get:(branchId)=> async ()=>{
+//       if (!branchId){
+//         return [];
+//       }
+//       const { data } = await axios.get(
+//         `/api/loadVersions.php?branchId=${branchId}`
+//       );
+//       return data.versions
+//     }
+//   })
+// })
 
 const getSHAofContent = (doenetML)=>{
   if (doenetML === undefined){
     return;
   }
-  let contentId = sha256(JSON.stringify(doenetML)).toString(CryptoJS.enc.Hex);
+  //NOTICE: JSON.stringify CHANGES THE CONTENT SO IT DOESN'T MATCH
+  // let contentId = sha256(JSON.stringify(doenetML)).toString(CryptoJS.enc.Hex);
+  let contentId = sha256(doenetML).toString(CryptoJS.enc.Hex);
   return contentId;
 }
 
@@ -96,7 +103,16 @@ function ReturnToEditingButton(props){
   const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
   const returnToEditing = useRecoilCallback(({snapshot,set})=> async ()=>{
     set(versionHistorySelectedAtom,"")
-    let loadableDoenetML = await snapshot.getPromise(fileByContentId(props.branchId));
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(props.branchId)));
+    let contentId;
+    for (let version of versionHistory){
+      if (version.isDraft === '1'){
+        contentId = version.contentId;
+        break;
+      }
+    }
+ 
+    let loadableDoenetML = await snapshot.getPromise(fileByContentId(contentId));
     const doenetML = loadableDoenetML.data;
     set(editorDoenetMLAtom,doenetML);
     set(viewerDoenetMLAtom,(was)=>{
@@ -161,8 +177,6 @@ function VersionHistoryPanel(props){
 
     let versions = [];
     
-  // console.log(">>> versionHistory",versionHistory)
-  // console.log(">>> versionHistory.getValue()",versionHistory.getValue())
   for (let version of versionHistory.contents){
      
       // let nameItButton = <button>Name Version</button>;
@@ -274,20 +288,25 @@ function TextEditor(props){
       }
 
     }
-    newVersion.contentId = getSHAofContent(doenetML);
+    const contentId = getSHAofContent(doenetML);
+
+    newVersion.contentId = contentId;
     newVersion.timestamp = buildTimestamp();
 
     let oldVersionsReplacement = [...oldVersions];
     oldVersionsReplacement[0] = newVersion;
     set(itemHistoryAtom(props.branchId),oldVersionsReplacement)
-    set(fileByContentId(branchId),{data:doenetML})
+    set(fileByContentId(contentId),{data:doenetML})
+
+    //Save in localStorage
+    localStorage.setItem(contentId,doenetML)
 
     let newDBVersion = {...newVersion,
       doenetML,
       branchId:props.branchId
     }
        axios.post("/api/saveNewVersion.php",newDBVersion)
-        // .then((resp)=>{console.log(">>>resp saveDraft",resp.data)})
+        // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
   });
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
 
@@ -538,7 +557,15 @@ const editorInitAtom = atom({
 export default function Editor({ branchId, title }) {
   // console.log("===Editor!");
 
-  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (contentId)=>{
+  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(branchId)));
+    let contentId;
+    for (let version of versionHistory){
+      if (version.isDraft === '1'){
+        contentId = version.contentId;
+        break;
+      }
+    }
     const response = await snapshot.getPromise(fileByContentId(contentId));
     const doenetML = response.data;
     set(editorDoenetMLAtom,doenetML);

@@ -98,7 +98,8 @@ if ($success){
   $result = $conn->query($sql); 
 
   }else if ($type == 'DoenetML'){
-    $fileName = $branchId;
+    $emptyContentId = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+    $fileName = $emptyContentId;
     //TODO: Config file needed for server
     $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
     fwrite($newfile, "");
@@ -116,7 +117,7 @@ if ($success){
     INSERT INTO content
     (branchId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
     VALUES
-    ('$branchId','$versionId','$branchId','Draft',NOW(),'1','0','1')
+    ('$branchId','$versionId','$emptyContentId','Draft',NOW(),'1','0','1')
     ";
     
     $result = $conn->query($sql); 
