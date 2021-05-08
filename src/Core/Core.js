@@ -35,6 +35,7 @@ export default class Core {
 
     this.requestUpdate = this.requestUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
+    this.triggerChainedActions = this.triggerChainedActions.bind(this); 
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
@@ -112,6 +113,7 @@ export default class Core {
     this.coreFunctions = {
       requestUpdate: this.requestUpdate,
       requestAction: this.requestAction,
+      triggerChainedActions: this.triggerChainedActions,
       requestRecordEvent: this.requestRecordEvent,
       requestAnimationFrame: this.requestAnimationFrame,
       cancelAnimationFrame: this.cancelAnimationFrame,
@@ -173,6 +175,7 @@ export default class Core {
     this.componentsWithChangedChildrenToRender = new Set([]);
 
     this.stateVariableChangeTriggers = {};
+    this.actionsChangedToActions = {};
 
 
     this._renderComponents = [];
@@ -224,6 +227,8 @@ export default class Core {
       serializedComponents,
       initialAdd: true,
     })
+
+    this.updateInfo.componentsTouched = [];
 
     this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
 
@@ -757,6 +762,10 @@ export default class Core {
   }
 
   processStateVariableTriggers() {
+
+    // TODO: can we make this more efficient by only checking components that changed?
+    // componentsTouched is close, but it includes only rendered components
+    // and we could have components with triggers that are not rendered
 
     for (let componentName in this.stateVariableChangeTriggers) {
       let component = this._components[componentName];
@@ -1338,6 +1347,8 @@ export default class Core {
     }
 
     this.dependencies.resolveStateVariablesIfReady({ component: newComponent });
+
+    this.checkForActionChaining({ component: newComponent });
 
     // this.dependencies.collateCountersAndPropagateToAncestors(newComponent);
 
@@ -3288,6 +3299,36 @@ export default class Core {
       componentTriggers[stateVariable] = { action: stateVarObj.triggerActionOnChange };
     }
 
+  }
+
+  checkForActionChaining({ component }) {
+
+    for (let stateVariable in component.state) {
+      let stateVarObj = component.state[stateVariable];
+
+      if (stateVarObj.chainActionOnActionOfStateVariableTarget) {
+        let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTarget;
+        let targetName = stateVarObj.value;
+
+        if (targetName) {
+          let componentActionsChained = this.actionsChangedToActions[targetName];
+          if (!componentActionsChained) {
+            componentActionsChained = this.actionsChangedToActions[targetName] = {};
+          }
+
+          let triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction]
+          if (!triggeringActionsChained) {
+            triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction] = [];
+          }
+
+          triggeringActionsChained.push({
+            componentName: component.componentName,
+            actionName: chainInfo.triggeredAction
+          });
+
+        }
+      }
+    }
   }
 
   initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable,
@@ -7233,6 +7274,18 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
+  triggerChainedActions({ componentName, actionName }) {
+
+    if (this.actionsChangedToActions[componentName]) {
+      if (this.actionsChangedToActions[componentName][actionName]) {
+        for (let chainedActionInstructions of this.actionsChangedToActions[componentName][actionName]) {
+          this.requestAction(chainedActionInstructions);
+        }
+      }
+    }
+  }
+
+
   requestUpdate({ updateInstructions, transient = false, event, callBack }) {
 
     if (this.flags.readOnly) {
@@ -7478,6 +7531,8 @@ export default class Core {
     });
 
     this.processStateVariableTriggers();
+
+    this.updateInfo.componentsTouched = [];
 
     this.finishUpdate();
 

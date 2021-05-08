@@ -285,4 +285,439 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('update based on trigger', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+    <math name="x">x</math>
+    
+    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+
+    cy.get('#\\/trip').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: 4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: 5 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+
+
+    });
+  })
+
+  it('chained updates based on trigger', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+    <math name="x">x</math>
+    <math name="y">y</math>
+    
+    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip"  />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+
+    cy.get('#\\/trip').should('not.exist');
+    cy.get('#\\/quad').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      // since second change is asynchronous, need to use other form so that cypress will wait
+      cy.get('#\\/y').find('.mjx-mrow').should('have.text', '4y')
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: 4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: 5 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      // since second change is asynchronous, need to use other form so that cypress will wait
+      // (keep other form of test to make it clear we aren't actually changing anything)
+      cy.get('#\\/y').find('.mjx-mrow').should('have.text', '16y')
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+
+
+    });
+  })
+
+  it('chained updates based on trigger on same object', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+    <math name="x">x</math>
+    
+    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    <updateValue name="quad" tName="x" newValue="4$x" triggerWithTname="trip"  />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+
+    cy.get('#\\/trip').should('not.exist');
+    cy.get('#\\/quad').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      // since second change is asynchronous, need to use other form so that cypress will wait
+      cy.get('#\\/x').find('.mjx-mrow').should('have.text', '12x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: 4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: 5 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('12x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('36x')
+      });
+      // since second change is asynchronous, need to use other form so that cypress will wait
+      // (keep other form of test to make it clear we aren't actually changing anything)
+      cy.get('#\\/x').find('.mjx-mrow').should('have.text', '144x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('144x')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('144x')
+      });
+
+
+    });
+  })
+
+  it('triggerWhen supercedes chaining', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+    <math name="x">x</math>
+    <math name="y">y</math>
+    
+    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+
+    cy.get('#\\/trip').should('not.exist');
+    cy.get('#\\/quad').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: -4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: -5 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+
+
+    });
+  })
+
+
 });
