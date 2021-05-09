@@ -35,7 +35,7 @@ export default class Core {
 
     this.requestUpdate = this.requestUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
-    this.triggerChainedActions = this.triggerChainedActions.bind(this); 
+    this.triggerChainedActions = this.triggerChainedActions.bind(this);
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
@@ -4849,34 +4849,41 @@ export default class Core {
     }
 
 
-    if (result.makeEssential) {
-      for (let varName of result.makeEssential) {
+    for (let varName in result.makeEssential) {
 
-        if (!(varName in component.state)) {
-          throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} tried to make ${varName} essential, which isn't a state variable.`);
-        }
+      if (!(varName in component.state)) {
+        throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} tried to make ${varName} essential, which isn't a state variable.`);
+      }
 
-        if (!component.state[varName].isResolved) {
-          throw Error(`Attempting to make stateVariable ${varName} of ${component.componentName} essential while it is still unresolved!`)
-        }
+      if (!component.state[varName].isResolved) {
+        throw Error(`Attempting to make stateVariable ${varName} of ${component.componentName} essential while it is still unresolved!`)
+      }
 
-        if (!(varName in receivedValue)) {
-          let matchingArrayEntry;
-          if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
-            for (let arrayEntryName of component.state[varName].arrayEntryNames) {
-              if (arrayEntryName in receivedValue) {
-                matchingArrayEntry = arrayEntryName;
-                break;
-              }
+      if (!(varName in receivedValue)) {
+        let matchingArrayEntry;
+        if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          for (let arrayEntryName of component.state[varName].arrayEntryNames) {
+            if (arrayEntryName in receivedValue) {
+              matchingArrayEntry = arrayEntryName;
+              break;
             }
           }
-          if (!matchingArrayEntry) {
-            throw Error(`Attempting to make stateVariable ${varName} in definition of ${stateVariable} of ${component.componentName} essential, but it's not listed as an additional state variable defined.`)
+        }
+        if (!matchingArrayEntry) {
+          throw Error(`Attempting to make stateVariable ${varName} in definition of ${stateVariable} of ${component.componentName} essential, but it's not listed as an additional state variable defined.`)
+        }
+      }
+
+      if (component.state[varName].isArray && typeof result.makeEssential[varName] === "object") {
+        for (let arrayKey in result.makeEssential[varName]) {
+          if (result.makeEssential[varName][arrayKey]) {
+            component.state[varName].essentialByArrayKey[arrayKey] = true;
           }
         }
-
+      } else if (result.makeEssential[varName]) {
         component.state[varName].essential = true;
       }
+
     }
 
     if (result.makeImmutable) {

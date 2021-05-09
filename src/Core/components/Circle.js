@@ -1493,7 +1493,7 @@ export default class Circle extends Curve {
         // even if values become invalid (such as radius becoming zero)
         return {
           newValues: { throughAngles },
-          makeEssential: ["throughAngles"]
+          makeEssential: { throughAngles: true }
         };
       }
     }
@@ -1555,7 +1555,7 @@ export default class Circle extends Curve {
             },
             // make radius essential in case radius becomes non-numeric
             // and we have to set the radius state variable in the inverse definition
-            makeEssential: ["radius"]
+            makeEssential: { radius: true }
           }
         }
 
@@ -1847,7 +1847,7 @@ export default class Circle extends Curve {
             },
             // make center essential in case center becomes non-numeric
             // and we have to set the center state variable in the inverse definition
-            makeEssential: ["center"]
+            makeEssential: { center: true }
           }
         }
 

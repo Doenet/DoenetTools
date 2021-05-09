@@ -4457,6 +4457,10 @@ class ParentDependency extends Dependency {
       this.originalDownstreamVariableNames = [this.definition.variableName];
     }
 
+    if (this.definition.parentComponentType) {
+      this.parentComponentType = this.definition.parentComponentType;
+    }
+
     this.returnSingleVariableValue = true;
 
     // for parent state variable
@@ -4560,6 +4564,23 @@ class ParentDependency extends Dependency {
         downstreamComponentTypes: []
       }
     }
+
+
+    if (this.parentComponentType &&
+      !this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: parent.componentType,
+        baseComponentType: this.parentComponentType
+      })
+    ) {
+      // parent didn't match specified componentType
+      // so don't include parent
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
 
     let parentDependencies = this.dependencyHandler.updateTriggers.parentDependenciesByParent[this.parentName];
     if (!parentDependencies) {

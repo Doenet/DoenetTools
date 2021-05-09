@@ -15,6 +15,7 @@ import * as DynamicalSystems from './components/dynamicalSystems';
 import * as FeedbackDefinitions from './components/FeedbackDefinitions';
 import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
+import * as SideBySide from './components/SideBySide';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -122,6 +123,7 @@ import SelectByCondition from './components/SelectByCondition';
 
 
 //Extended
+import * as ComponentSize from './components/abstract/ComponentSize';
 import BaseComponent from './components/abstract/BaseComponent';
 import InlineComponent from './components/abstract/InlineComponent';
 import BlockComponent from './components/abstract/BlockComponent';
@@ -134,7 +136,6 @@ import BooleanBaseOperatorOfMath from './components/abstract/BooleanBaseOperator
 import MathBaseOperator from './components/abstract/MathBaseOperator';
 import MathBaseOperatorOneInput from './components/abstract/MathBaseOperatorOneInput';
 import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
-import ComponentSize from './components/abstract/ComponentSize';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import TextFromSingleStringChild from './components/abstract/TextFromSingleStringChild';
 import MathWithVariable from './components/abstract/MathWithVariable';
@@ -239,6 +240,7 @@ const componentTypeArray = [
   SelectByIndex,
   Case,
   SelectByCondition,
+  ...Object.values(SideBySide),
   ...Object.values(ComponentWithSelectableType),
   BaseComponent,
   InlineComponent,
@@ -255,7 +257,7 @@ const componentTypeArray = [
   BooleanBaseOperatorOfMath,
   MathBaseOperator, MathBaseOperatorOneInput,
   FunctionBaseOperator,
-  ComponentSize,
+  ...Object.values(ComponentSize),
   SectioningComponent,
   TextFromSingleStringChild,
   MathWithVariable,
