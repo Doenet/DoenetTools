@@ -17,12 +17,14 @@ export const itemHistoryAtom = atomFamily({
   default: selectorFamily({
     key:"itemHistoryAtom/Default",
     get:(branchId)=> async ()=>{
+      console.log(">>>itemHistoryAtom branchId",branchId)
       if (!branchId){
         return [];
       }
       const { data } = await axios.get(
         `/api/loadVersions.php?branchId=${branchId}`
       );
+      console.log(">>>itemHistoryAtom data",data)
       return data.versions
     }
   })
@@ -37,10 +39,10 @@ export const fileByContentId = atomFamily({
       if (!contentId){
         return "";
       }
-    
-    const ls = localStorage.getItem(contentId);
-      if (ls){ return ls}
-      return await axios.get(`/media/${contentId}.doenet`) 
+      const local = localStorage.getItem(contentId);
+      if (local){ return local}
+
+      return await (await axios.get(`/media/${contentId}.doenet`)).data; 
     }
   })
   
