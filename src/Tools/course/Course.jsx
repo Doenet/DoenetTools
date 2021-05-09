@@ -466,8 +466,7 @@ const DoenetMLInfoPanel = (props) => {
   };
   const handleOnBlur = (e) => {
     let name = e.target.name;
-    let value =
-      e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     const result = saveSettings({
       [name]: value,
       driveIdcourseIditemIdparentFolderId: {
@@ -478,6 +477,7 @@ const DoenetMLInfoPanel = (props) => {
       },
     });
     let payload = {
+      ...aInfo,
       itemId: itemInfo.itemId,
       isAssignment: '1',
       assignmentId: aInfo?.assignmentId,
@@ -611,10 +611,10 @@ const DoenetMLInfoPanel = (props) => {
       <>
         <Button
           value="Make Assignment"
-          callback={() => {
+          callback={async () => {
             let assignmentId = nanoid();
             setShowAForm(true);
-            const result = addContentAssignment({
+            const result = await addContentAssignment({
               driveIdcourseIditemIdparentFolderId: {
                 driveId: itemInfo.driveId,
                 folderId: itemInfo.parentFolderId,
@@ -644,20 +644,23 @@ const DoenetMLInfoPanel = (props) => {
               itemId: itemInfo.itemId,
               payload: payload,
             });
-            result
-              .then((resp) => {
-                if (resp) {
-                  addToast(
-                    `Add new assignment 'Untitled assignment'`,
-                    ToastType.SUCCESS,
-                  );
-                } else {
-                  onAssignmentError({ errorMessage: resp.data.message });
-                }
-              })
-              .catch((e) => {
-                onAssignmentError({ errorMessage: e.message });
-              });
+            try {
+              if(result){
+                addToast(
+                      `Add new assignment 'Untitled assignment'`,
+                      ToastType.SUCCESS,
+                    );
+              }
+              else{
+                // onAssignmentError({ errorMessage: "error making assignment"});
+                onAssignmentError({ errorMessage: resp.message });
+              }
+              
+            } catch (error) {
+              onAssignmentError({ errorMessage: "catch error making assignment catch"});
+
+            }
+           
           }}
         />
       </>
@@ -684,7 +687,7 @@ const DoenetMLInfoPanel = (props) => {
                 onChange={handleChange}
               />
             </div>
-            {/* <div>
+            <div>                   
               <label>Assigned Date:</label>
               <input
                 required
@@ -692,10 +695,10 @@ const DoenetMLInfoPanel = (props) => {
                 name="assignedDate"
                 value={aInfo ? aInfo?.assignedDate : ''}
                 placeholder="0001-01-01 01:01:01 "
-                onBlur={() => handleOnBlur()}
+                onBlur={handleOnBlur}
                 onChange={handleChange}
               />
-            </div> */}
+            </div>
             <div>
               <label>Due date: </label>
               <input
@@ -770,9 +773,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="individualize"
-                value={aInfo ? aInfo?.individualize : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.individualize : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -781,9 +783,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="multipleAttempts"
-                value={aInfo ? aInfo?.multipleAttempts : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.multipleAttempts : false}
+                onChange={handleOnBlur}
               />{' '}
             </div>
             <div>
@@ -792,9 +793,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showSolution"
-                value={aInfo ? aInfo?.showSolution : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showSolution : false}
+                onChange={handleOnBlur}
               />{' '}
             </div>
             <div>
@@ -803,9 +803,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showFeedback"
-                value={aInfo ? aInfo?.showFeedback : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showFeedback : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -814,9 +813,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showHints"
-                value={aInfo ? aInfo?.showHints : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showHints : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -825,9 +823,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showCorrectness"
-                value={aInfo ? aInfo?.showCorrectness : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showCorrectness : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -836,9 +833,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="proctorMakesAvailable"
-                value={aInfo ? aInfo?.proctorMakesAvailable : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.proctorMakesAvailable : false}
+                onChange={handleOnBlur}
               />
             </div>
             <br />

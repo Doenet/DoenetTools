@@ -23,6 +23,17 @@ const formatDate = (dt) => {
     
   return formattedDate;
 }
+const formatFutureDate = (dt) => {
+  const formattedFutureDate = `${
+    dt.getFullYear().toString().padStart(2, '0')}-${
+    (dt.getMonth()+1).toString().padStart(2, '0')}-${
+    (dt.getDate()+7).toString().padStart(2, '0')} ${
+    dt.getHours().toString().padStart(2, '0')}:${
+    dt.getMinutes().toString().padStart(2, '0')}:${
+    dt.getSeconds().toString().padStart(2, '0')}`;
+    
+  return formattedFutureDate;
+}
 export const useAssignment = () => {
   const [addToast, ToastType] = useToast();
 
@@ -31,19 +42,20 @@ export const useAssignment = () => {
       let { driveIdcourseIditemIdparentFolderId, assignmentId ,contentId,branchId} = props;
       const dt = new Date();
       const creationDate = formatDate(dt);
+      const futureDueDate = formatFutureDate(dt);
       // assignment creation
       let newAssignmentObj = {
         assignmentId: assignmentId,
         assignment_title: 'Untitled Assignment',
-        assignedDate:"" ,
-        attemptAggregation: '',
-        dueDate: '',
-        gradeCategory: '',
+        assignedDate: creationDate,
+        attemptAggregation: 'e',
+        dueDate: futureDueDate,
+        gradeCategory: 'l',
         individualize: '0',
         isAssignment: '1',
         isPublished: '0',
         itemId: driveIdcourseIditemIdparentFolderId.itemId,
-        multipleAttempts: '2',
+        multipleAttempts: '0',
         numberOfAttemptsAllowed: '2',
         proctorMakesAvailable: '0',
         showCorrectness: '1',
@@ -51,24 +63,57 @@ export const useAssignment = () => {
         showHints: '1',
         showSolution: '1',
         timeLimit: '10:10',
-        totalPointsOrPercent: '',
+        totalPointsOrPercent: '00.00',
+        assignment_isPublished: '0',
+        subType: 'Administrator',
+      };
+      let newchangedAssignmentObj = {
+        assignmentId: assignmentId,
+        assignment_title: 'Untitled Assignment',
+        assignedDate: creationDate,
+        attemptAggregation: 'e',
+        dueDate: futureDueDate,
+        gradeCategory: 'l',
+        individualize: false,
+        isAssignment: '1',
+        isPublished: '0',
+        itemId: driveIdcourseIditemIdparentFolderId.itemId,
+        multipleAttempts: false,
+        numberOfAttemptsAllowed: '2',
+        proctorMakesAvailable: false,
+        showCorrectness: true,
+        showFeedback: true,
+        showHints: true,
+        showSolution: true,
+        timeLimit: '10:10',
+        totalPointsOrPercent: '00.00',
         assignment_isPublished: '0',
         subType: 'Administrator',
       };
 
       let payload = {
+        ...newAssignmentObj,
         assignmentId: assignmentId,
         itemId: driveIdcourseIditemIdparentFolderId.itemId,
         courseId: driveIdcourseIditemIdparentFolderId.courseId,
         branchId: branchId,
         contentId: contentId,
       };
-      set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), newAssignmentObj);
+      set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), newchangedAssignmentObj);
 
-      axios.post(`/api/makeNewAssignment.php`, payload).then((response) => {
-        console.log(response.data);
-      });
-      return newAssignmentObj;
+      let result = await axios.post(`/api/makeNewAssignment.php`, payload).catch((error) =>{return "Network failed"})
+     try {
+      if(result.data.message === ''){
+        return newAssignmentObj;
+      }
+      else{
+        return result.data;
+      }
+     } catch (error) {
+      return result.data;
+     }
+      
+      return result.data;
     },
   );
 
@@ -86,13 +131,14 @@ export const useAssignment = () => {
       let { driveIdcourseIditemIdparentFolderId, ...value } = props;
 
       const saveInfo = await snapshot.getPromise(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
+
       set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), (old) => {
         return { ...old, ...value };
       });
       let saveAssignmentNew = { ...saveInfo, ...value };
-      set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), saveAssignmentNew);
+      // set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), saveAssignmentNew);
       const payload = {
-        ...saveInfo,
+        ...saveAssignmentNew,
         assignmentId: saveAssignmentNew.assignmentId,
         assignment_isPublished: '0',
       };
