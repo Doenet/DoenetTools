@@ -566,10 +566,14 @@ export default function Editor({ branchId, title }) {
         break;
       }
     }
-    console.log(">>>initDoenetML contentId",contentId)
-    const response = await snapshot.getPromise(fileByContentId(contentId));
+    console.log(">>>editor initDoenetML branchId",branchId)
+    console.log(">>>editor initDoenetML contentId",contentId)
+    let response = await snapshot.getPromise(fileByContentId(contentId));
+    if (typeof response === "object"){
+      response = response.data;
+    }
     const doenetML = response;
-    console.log(">>>initDoenetML doenetML",doenetML)
+    console.log(">>>editor initDoenetML doenetML",doenetML)
 
     set(editorDoenetMLAtom,doenetML);
     const viewerObj = await snapshot.getPromise(viewerDoenetMLAtom);

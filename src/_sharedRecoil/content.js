@@ -36,13 +36,19 @@ export const fileByContentId = atomFamily({
   default: selectorFamily({
     key:"fileByContentId/Default",
     get:(contentId)=> async ()=>{
+      console.log(">>>fileByContentId contentId",contentId)
       if (!contentId){
         return "";
       }
       const local = localStorage.getItem(contentId);
       if (local){ return local}
-
-      return await (await axios.get(`/media/${contentId}.doenet`)).data; 
+      try {
+        const server = await axios.get(`/media/${contentId}.doenet`); 
+        return server.data;
+      } catch (err) {
+        //TODO: Handle 404
+        return "Error Loading";
+      }
     }
   })
   
