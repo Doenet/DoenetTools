@@ -145,12 +145,19 @@ $result = $conn->query($sql);
 
 
 
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
+
 
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
-echo json_encode(200);
-$conn->close();
+echo json_encode($response_arr);
+
+  
+  $conn->close();
 
 ?>

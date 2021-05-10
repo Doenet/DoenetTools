@@ -492,26 +492,25 @@ const DoenetMLInfoPanel = (props) => {
         itemId: itemInfo.itemId,
         payloadAssignment: payload,
       });
-      addToast(`Renamed '${name}' to '${value}'`, ToastType.SUCCESS);
 
     // }
 
-    // result.then((resp) => {
-    //   if (resp.data) {
-    //     addToast(`Renamed assignment title to '${value}'`, ToastType.SUCCESS);
-    //   } else {
-    //     onAssignmentError({errorMessage: resp.data.message});
-    //   }
-    // })
-    // .catch((e) => {
-    //   onAssignmentError({errorMessage: e.message});
-    // });
+    result.then((resp) => {
+      if (resp.data.success) {
+        addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
+      } else {
+        onAssignmentError({errorMessage: resp.data.message});
+      }
+    })
+    .catch((e) => {
+      onAssignmentError({errorMessage: e.message});
+    });
   };
   const handlePublishContent = () => {
     let payload = {
       itemId: itemInfo.itemId,
     };
-    const result = publishContent({
+    publishContent({
       driveIdFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
@@ -519,10 +518,17 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       payload: payload,
     });
-      addToast(`'${itemInfo.label}' Published'`, ToastType.SUCCESS);
 
-    axios.post(`/api/handlePublishContent.php`, payload).then((response) => {
-      console.log(response.data);
+    const result = axios.post(`/api/handlePublishContent.php`, payload)
+    result.then((resp) => {
+      if (resp.data.success) {
+      addToast(`'${itemInfo.label}' Published'`, ToastType.SUCCESS);
+    } else {
+        onAssignmentError({errorMessage: resp.data.message});
+      }
+    })
+    .catch((e) => {
+      onAssignmentError({errorMessage: e.message});
     });
   };
 
@@ -530,9 +536,7 @@ const DoenetMLInfoPanel = (props) => {
     let payload = {
       itemId: itemInfo.itemId,
     };
-    axios.post(`/api/handleMakeContent.php`, payload).then((response) => {
-      console.log(response.data);
-    });
+    
     assignmentToContent({
       driveIdcourseIditemIdparentFolderId: {
         driveId: itemInfo.driveId,
@@ -550,8 +554,18 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       assignedDataSavenew: payload,
     });
-    addToast(`'${itemInfo.assignment_title}' back to '${itemInfo.label}''`, ToastType.SUCCESS);
 
+    const result = axios.post(`/api/handleMakeContent.php`, payload)
+    result.then((resp) => {
+      if (resp.data.success) {
+        addToast(`'${itemInfo.assignment_title}' back to '${itemInfo.label}''`, ToastType.SUCCESS);
+      } else {
+        onAssignmentError({errorMessage: resp.data.message});
+      }
+    })
+    .catch((e) => {
+      onAssignmentError({errorMessage: e.message});
+    });
   };
 
   const loadBackAssignment = () => {
@@ -561,11 +575,6 @@ const DoenetMLInfoPanel = (props) => {
       assignmentId: aInfo?.assignmentId,
       assignment_title: aInfo?.assignment_title,
     };
-    
-    axios.post(`/api/handleBackAssignment.php`, payload).then((response) => {
-      console.log(response.data);
-    });
-
     loadAvailableAssignment({
       ...aInfo,
       driveIdcourseIditemIdparentFolderId: {
@@ -584,8 +593,17 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       payloadAssignment: payload,
     });
-
-    addToast(`'${itemInfo.label}' back to '${itemInfo.assignment_title}'`, ToastType.SUCCESS);
+    const result = axios.post(`/api/handleBackAssignment.php`, payload)
+    result.then((resp) => {
+     if (resp.data.success) {
+      addToast(`'${itemInfo.label}' back to '${itemInfo.assignment_title}'`, ToastType.SUCCESS);
+    } else {
+       onAssignmentError({errorMessage: resp.data.message});
+     }
+   })
+   .catch((e) => {
+     onAssignmentError({errorMessage: e.message});
+   });
 
   };
   const [showAForm, setShowAForm] = useState(false);
@@ -645,22 +663,17 @@ const DoenetMLInfoPanel = (props) => {
               payload: payload,
             });
             try {
-              if(result){
-                addToast(
-                      `Add new assignment 'Untitled assignment'`,
-                      ToastType.SUCCESS,
-                    );
+              if(result.success){
+                addToast(`Add new assignment 'Untitled assignment'`, ToastType.SUCCESS,);
               }
               else{
-                // onAssignmentError({ errorMessage: "error making assignment"});
-                onAssignmentError({ errorMessage: resp.message });
+                onAssignmentError({ errorMessage: result.message });
               }
               
-            } catch (error) {
-              onAssignmentError({ errorMessage: "catch error making assignment catch"});
+            } catch (e) {
+              onAssignmentError({ errorMessage: e});
 
             }
-           
           }}
         />
       </>
@@ -871,18 +884,17 @@ const DoenetMLInfoPanel = (props) => {
                     itemId: itemInfo.itemId,
                     payload: payload,
                   });
-                  addToast(`'${aInfo.assignment_title}' Published'`, ToastType.SUCCESS);
 
                   result.then((resp) => {
-                    if (resp) {
-                      // addToast(`'${aInfo.assignment_title}' Published'`, ToastType.SUCCESS);
+                    if (resp.data.success) {
+                      addToast(`'${aInfo.assignment_title}' Published'`, ToastType.SUCCESS);
                     }
                     else{
-                      // onAssignmentError({errorMessage: resp.message});
+                      onAssignmentError({errorMessage: resp.data.message});
                     }
                   })
                   .catch( e => {
-                    // onAssignmentError({errorMessage: e.message});
+                    onAssignmentError({errorMessage: e.message});
                   })
                 }}
                 type="submit"

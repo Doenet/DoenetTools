@@ -101,19 +101,17 @@ export const useAssignment = () => {
       };
       set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), newchangedAssignmentObj);
 
-      let result = await axios.post(`/api/makeNewAssignment.php`, payload).catch((error) =>{return "Network failed"})
+      let result = await axios.post(`/api/makeNewAssignment.php`, payload).catch((e) =>{return {data:{message:e, success:false}}})
      try {
-      if(result.data.message === ''){
-        return newAssignmentObj;
-      }
+        if(result.data.success){
+          return result.data;
+        }     
       else{
-        return result.data;
+        return  {message:result.data.message, success:false};
       }
-     } catch (error) {
-      return result.data;
+     } catch (e) {
+      return {message:e, success:false};
      }
-      
-      return result.data;
     },
   );
 
@@ -143,11 +141,13 @@ export const useAssignment = () => {
         assignment_isPublished: '0',
       };
 
-      axios.post('/api/saveAssignmentToDraft.php', payload).then((resp) => {
-        console.log(resp.data);
-        return resp.data;
+      const result = axios.post('/api/saveAssignmentToDraft.php', payload)
+      result.then(resp => {
+        if (resp.data.success){
+          return resp.data;
+        }
       });
-
+     return result;
     },
   );
 
@@ -166,10 +166,13 @@ export const useAssignment = () => {
         courseId: driveIdcourseIditemIdparentFolderId.courseId,
         contentId:props.contentId
       };
-      axios.post('/api/publishAssignment.php', payloadPublish).then((resp) => {
-        console.log(resp.data);
-        return resp.data;
+      const result = axios.post('/api/publishAssignment.php', payloadPublish)
+      result.then(resp => {
+        if (resp.data.success){
+          return resp.data;
+        }
       });
+     return result;
     },
   );
 
