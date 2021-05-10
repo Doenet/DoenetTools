@@ -832,7 +832,7 @@ function AutoSelect(props){
   return null;
 }
 
-function URLPathSync(props){
+export function URLPathSync(props){
 
   const [drivePath,setDrivePath] = useRecoilState(drivePathSyncFamily("main"))
   const history = useHistory();
