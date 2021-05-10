@@ -173,7 +173,7 @@ export default class MathInput extends Input {
           // (otherwise, let its essential value change)
           return {
             newValues: { immediateValue: dependencyValues.value },
-            makeEssential: ["immediateValue"]
+            makeEssential: { immediateValue: true }
           };
 
 

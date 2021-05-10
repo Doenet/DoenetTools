@@ -5,15 +5,23 @@ import {
   useRecoilValue,
   useRecoilCallback,
 } from 'recoil';
+import styled from 'styled-components';
 import Toast from './Toast';
 import { useMenuPanelController } from './Panels/MenuPanel';
 import { useSupportDividerController } from './Panels/ContentPanel';
-import Cookies from 'js-cookie';
 import axios from 'axios';
-
-
-//import Toast from './Toast';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
+
+const LoadingFallback = styled.div`
+  background-color: hsl(0, 0%, 99%);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  width: 100vw;
+  height: 100vh;
+`;
 
 const layerStackAtom = atom({
   key: 'layerStackAtom',
@@ -82,17 +90,17 @@ export const useToolControlHelper = () => {
           />,
         ]);
         break;
-        case 'content':
-          setLayers((old) => [
-            ...old,
-            <Content
-              contentId={contentId}
-              branchId={branchId}
-              title={title}
-              key={`ContentLayer${old.length + 1}`}
-            />,
-          ]);
-          break;
+      case 'content':
+        setLayers((old) => [
+          ...old,
+          <Content
+            contentId={contentId}
+            branchId={branchId}
+            title={title}
+            key={`ContentLayer${old.length + 1}`}
+          />,
+        ]);
+        break;
       case 'assignment':
         setLayers((old) => [
           ...old,
@@ -123,7 +131,6 @@ export const useToolControlHelper = () => {
         ]);
         break;
       default:
-        console.error('Unknown Overlay Name');
     }
   };
 
@@ -154,48 +161,41 @@ export const useStackId = () => {
 
 export const ProfileContext = React.createContext({});
 
-
 export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
-  const [_,setRefresh] = useState(0);
+  const [_, setRefresh] = useState(0);
 
-  const profile = JSON.parse(localStorage.getItem("Profile"));
+  const profile = JSON.parse(localStorage.getItem('Profile'));
 
   //Need profile before rendering any tools
-  if (!profile){
-
+  if (!profile) {
     //If doesn't exist then we need to load the profile from the server
     axios
-    .get('/api/loadProfile.php', {params: {}})
-    .then((resp) => {
-      if (resp.data.success === '1') {
-        // console.log(">>>resp.data.profile",resp.data.profile)
-        localStorage.setItem("Profile",JSON.stringify(resp.data.profile));
-        setRefresh(was=>was+1);
-      }
-    })
-    .catch((error) => {
-      //  Error currently does nothing
-    });
+      .get('/api/loadProfile.php', { params: {} })
+      .then((resp) => {
+        if (resp.data.success === '1') {
+          // console.log(">>>resp.data.profile",resp.data.profile)
+          localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
+          setRefresh((was) => was + 1);
+        }
+      })
+      .catch((error) => {
+        //  Error currently does nothing
+      });
 
     return null;
   }
 
-
-
   return (
-    <>
     <ProfileContext.Provider value={profile}>
       {/* <GlobalStyle /> */}
-
-      {tool}
-      <Suspense fallback={<div>loading...</div>}>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+        {tool}
         {overlays.map((layer, idx) =>
           idx == overlays.length - 1 ? layer : null,
         )}
       </Suspense>
       <Toast />
-      </ProfileContext.Provider>
-    </>
+    </ProfileContext.Provider>
   );
 }

@@ -747,7 +747,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   return {
     newValues: { expressionWithCodes },
-    makeEssential: ["expressionWithCodes"]
+    makeEssential: { expressionWithCodes: true }
   };
 
 }
@@ -758,7 +758,7 @@ function calculateMathValue({ dependencyValues } = {}) {
   if (dependencyValues.expressionWithCodes === null) {
     return {
       newValues: { unnormalizedValue: dependencyValues.valueShadow },
-      makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+      makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
     }
   }
 
@@ -775,7 +775,7 @@ function calculateMathValue({ dependencyValues } = {}) {
 
   return {
     newValues: { unnormalizedValue: value },
-    makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+    makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
   };
 }
 

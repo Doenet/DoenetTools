@@ -132,7 +132,7 @@ export default class Copy extends CompositeComponent {
         }
         return {
           newValues: { targetSourcesName, sourcesChildNumber },
-          makeEssential: ["targetSourcesName", "sourcesChildNumber"],
+          makeEssential: { targetSourcesName: true, sourcesChildNumber: true },
         }
       },
     };
@@ -191,7 +191,7 @@ export default class Copy extends CompositeComponent {
         }
         return {
           newValues: { sourceIndex },
-          makeEssential: ["sourceIndex"]
+          makeEssential: { sourceIndex: true },
         }
       },
     };

@@ -367,7 +367,7 @@ export class ConvertSetToList extends MathBaseOperatorOneInput {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: { unordered: true },
-        makeEssential: ["unordered"]
+        makeEssential: { unordered: true }
       })
     }
 
