@@ -970,26 +970,6 @@ export default function Library(props) {
   let mainBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main" />;
   let supportBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="support" />;
 
-  const setDrivecardMainPath = useSetRecoilState(drivePathSyncFamily("main"))
-  const setDrivecardsupportPath = useSetRecoilState(drivePathSyncFamily("support"))
-
-  const mainDriveCardSelection = ({item}) => {
-    setDrivecardMainPath({
-      driveId:item.driveId,
-      parentFolderId:item.driveId,
-      itemId:item.driveId,
-      type:"Drive"
-    })
-  }
-  const supportDriveCardSelection = ({item}) => {
-    setDrivecardsupportPath({
-      driveId:item.driveId,
-      parentFolderId:item.driveId,
-      itemId:item.driveId,
-      type:"Drive"
-    })
-  }
-
   return (
     <>
     <GlobalFont/>
@@ -1041,8 +1021,6 @@ export default function Library(props) {
        drivePathSyncKey="main"
        types={['course']}
        subTypes={['Administrator']}
-       routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{mainDriveCardSelection({item})}}
        />
         </div>
         
@@ -1073,8 +1051,6 @@ export default function Library(props) {
        drivePathSyncKey="support"
        types={['course']}
        subTypes={['Administrator']}
-       routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{supportDriveCardSelection({item})}}
        />
         </div>
       </supportPanel>
