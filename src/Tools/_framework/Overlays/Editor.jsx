@@ -127,6 +127,31 @@ function ReturnToEditingButton(props){
   return <Button callback={()=> returnToEditing() } value="Return to editing" />
 }
 
+function EditorInfoPanel(props){
+  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
+
+  if (versionHistory.state === "loading"){ return null;}
+  if (versionHistory.state === "hasError"){ 
+    console.error(versionHistory.contents)
+    return null;}
+
+  let contentId;
+
+  for (let version of versionHistory.contents){
+    if (version.isDraft === '1'){
+      contentId = version.contentId;
+      break;
+    }
+  }
+
+  const link = `http://doenet.org/content/#/?contentId=${contentId}`
+  // const quoteLink = `'${link}'`
+
+  return <>
+  {/* <p><a href={quoteLink} >Content Tool Link</a></p> */}
+  <p><input type="text" value={link} /></p></>
+}
+
 function VersionHistoryPanel(props){
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
   const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
@@ -605,9 +630,13 @@ export default function Editor({ branchId, title }) {
           <TextEditor  branchId={branchId}/>
       </supportPanel>
 
+      <menuPanel title="Info">
+        <EditorInfoPanel branchId={branchId}/>
+      </menuPanel>
       <menuPanel title="Version history">
         <VersionHistoryPanel branchId={branchId} />
       </menuPanel>
+      
     </Tool>
   );
 }
