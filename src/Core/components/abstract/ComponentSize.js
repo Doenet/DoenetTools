@@ -76,6 +76,10 @@ export class ComponentSize extends BaseComponent {
           dependencyType: "child",
           childLogicName: "atMostOneString",
           variableNames: ["value"]
+        },
+        parentDefaultAbsoluteSize: {
+          dependencyType: "parentStateVariable",
+          variableName: "defaultAbsoluteSize"
         }
       }),
       definition({ dependencyValues }) {
@@ -83,13 +87,15 @@ export class ComponentSize extends BaseComponent {
         // console.log('value dependencyValues')
         // console.log(dependencyValues);
 
+        let defaultIsAbsolute = dependencyValues.parentDefaultAbsoluteSize === undefined ? false : dependencyValues.parentDefaultAbsoluteSize;
+
         if (dependencyValues.stringChild.length === 0) {
           if (dependencyValues.numberChild.length === 0) {
             if (dependencyValues.componentSizeChild.length === 0) {
               return {
                 useEssentialOrDefaultValue: {
                   value: { variablesToCheck: "value", defaultValue: 100 },
-                  isAbsolute: { variablesToCheck: "isAbsolute", defaultValue: false }
+                  isAbsolute: { variablesToCheck: "isAbsolute", defaultValue: defaultIsAbsolute }
                 }
               }
             } else {
@@ -134,7 +140,7 @@ export class ComponentSize extends BaseComponent {
             let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(-?[\d.]+)\s*(.*)$/);
             if (result === null) {
               // console.warn(componentType + " must begin with a number.");
-              return { newValues: { value: null, isAbsolute: true } };
+              return { newValues: { value: null, isAbsolute: defaultIsAbsolute } };
             }
             originalValue = result[1];
             originalUnit = result[2].trim();
@@ -143,7 +149,7 @@ export class ComponentSize extends BaseComponent {
           originalValue = Number(originalValue);
           if (!Number.isFinite(originalValue)) {
             // console.warn(componentType + " must have a number");
-            return { newValues: { value: null, isAbsolute: true } };
+            return { newValues: { value: null, isAbsolute: defaultIsAbsolute } };
           }
 
           if (originalUnit === "") {
@@ -171,7 +177,7 @@ export class ComponentSize extends BaseComponent {
           }
           if (conversionFactor[originalUnit] === undefined) {
             // console.warn(originalUnit + ' is not a defined unit of measure.');
-            return { newValues: { value: originalValue, isAbsolute: true } };
+            return { newValues: { value: originalValue, isAbsolute: defaultIsAbsolute } };
           }
           let value = conversionFactor[originalUnit] * originalValue;
 
