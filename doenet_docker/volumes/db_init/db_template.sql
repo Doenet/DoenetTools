@@ -206,7 +206,6 @@ CREATE TABLE `content` (
 
 LOCK TABLES `content` WRITE;
 /*!40000 ALTER TABLE `content` DISABLE KEYS */;
-INSERT INTO `content` VALUES (1,'ZLHh5s8BWM2azTVFhazIH','0','c0780e403f54c45686c9051a7e831a962a8851d0fe24ca57fa1c05a7ff96576c',NULL,NULL,0,0,0,1),(2,'jqing10J3UkFuaGIGItPd','0','jqing10J3UkFuaGIGItPd','Draft','2021-03-02 19:34:31',1,0,0,1);
 /*!40000 ALTER TABLE `content` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -599,7 +598,7 @@ CREATE TABLE `drive_user` (
 
 LOCK TABLES `drive_user` WRITE;
 /*!40000 ALTER TABLE `drive_user` DISABLE KEYS */;
-INSERT INTO `drive_user` VALUES (12,'devuserid','cIvuqCLVMdDqL3xYGS4K6',1,1,1,1,1,1,1,1,1,1),(13,'devuserid','4wXVEVI_1fM19-IMf3EPQ',1,1,1,1,1,1,1,1,1,1),(14,'devuserid','xrnZI9aZfVOv28uU091vW',1,1,1,1,1,1,1,1,1,1);
+INSERT INTO `drive_user` VALUES (14,'devuserid','xrnZI9aZfVOv28uU091vW',1,1,1,1,1,1,1,1,1,1);
 /*!40000 ALTER TABLE `drive_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -898,7 +897,6 @@ CREATE TABLE `url` (
 
 LOCK TABLES `url` WRITE;
 /*!40000 ALTER TABLE `url` DISABLE KEYS */;
-INSERT INTO `url` VALUES (2,'s3ehEtP5IS3pH8n5O62Q4','Test','www.google.com','ff','2020-01-28 09:22:47',0,0,0,0),(3,'fgoKv18CPPOMhqQlxmuJ1','Doenet','www.google.com1','fsa','2020-01-28 09:23:09',0,0,1,0),(4,'5R10hQo1SyIwrcEa_A_2n','Test','www.google.com','fff','2020-01-28 09:32:06',0,0,0,0),(5,'LTarPpyVJwhfgWfWyDz_A','Test','www.google.com','ffsa','2020-01-28 09:32:35',0,0,0,0),(6,'BsJi_9ZdADaeSJsYPjWUw','Test','www.google.com','das','2020-01-28 09:33:04',0,0,0,0),(7,'3EwbIcH64vHK7TKDAQVpP','Test','https://soundcloud.com/o-nei-ric-tapes/sets/3am-ep-anxious','f','2020-01-28 09:34:29',0,0,0,0),(8,'GS_AkqadR6wlDmBcu1jvN','f','www.google.com1','afs','2020-01-28 09:34:47',0,0,0,0),(9,'gJF8REDcHMxgaVLXTBxIi','Test','fsa','fas','2020-01-28 09:35:47',0,0,0,0),(10,'nllv3bBVgbD2MZdTHI31Z','dsa','fsa','fsa','2020-01-28 09:36:29',0,0,0,0),(11,'jOyA1q4mai479w6MjaIhq','Test','www.google.com','f','2020-01-28 09:37:41',0,0,0,0),(12,'QbwblybNRZgY0o5dMyvVJ','Doenet','doenet.org','ffff','2020-01-28 09:51:18',0,0,0,0),(13,'pZiUefGRj5QHxzeK_P4MV','Doenet','www.google.com','ff','2020-01-28 09:52:10',0,0,0,0),(14,'Q7VeR1fp36v0Rnc8bfUcN','Doenet','fff','fff','2020-01-28 09:53:14',0,0,0,0),(15,'FDwQILDPGV8EmfNO3sPcc','Test','fff','fff','2020-01-28 09:55:41',0,0,0,0),(16,'wlVn3gZpaWCenqKY7cqJ9','Doenet','www.google.com','fsa','2020-01-28 09:55:59',0,0,0,0),(17,'FTZVGn0vENQ8ZrFSaPiUM','Doenet2','www.google.com','dsa','2020-01-28 09:56:15',0,0,0,0),(18,'MSCJKLOaCaaqzjM7U37J0','Doenet3','www.google.com','321','2020-01-28 09:58:49',0,0,0,0),(19,'0cuiOsNqzxr4yFoSvoOq9','Test','fsa','fasfsa','2020-01-28 10:00:29',1,0,0,0),(20,'x46VZmWfvmYnnIj5V0J7b','fsa','fas','fas','2020-01-28 10:00:36',0,0,0,0),(21,'EA-P1_FnRmFpyz8UJTpUB','Doenet2','www.google.com','fs','2020-01-28 10:01:00',1,0,0,0),(22,'Z1kDWLcmJ7nqfAhbHPxNM','dasfas','fsafas','fas','2020-01-28 10:01:07',0,0,0,0);
 /*!40000 ALTER TABLE `url` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -935,7 +933,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com',NULL,'User','Dev','quokka',1,1,1,0,0,0,0),(2,'s1userid','S1','s1@example.com',NULL,'User','Student1','quokka',1,1,0,0,0,0,0),(26,'s2userid','S2','s2@example.com',NULL,'User','Student2','quokka',1,1,0,0,0,0,0),(27,'i1userid','I1','i1@example.com',NULL,'User','Instructor1','quokka',1,1,1,0,0,0,0),(28,'1NkSXq2C3VC0RvlTRPbZa','blueberry jelly filled','char0042@umn.edu',NULL,NULL,NULL,'penguin',0,1,0,0,0,0,0),(29,'3oN5gDY3392zexHopijG6','Cacao tree','VINITHAK@UMN.EDU',NULL,'dev','user','quokka',1,1,1,0,0,0,0);
+INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com',NULL,'User','Dev','quokka',1,1,1,0,0,0,0),(2,'s1userid','S1','s1@example.com',NULL,'User','Student1','quokka',1,1,0,0,0,0,0),(26,'s2userid','S2','s2@example.com',NULL,'User','Student2','quokka',1,1,0,0,0,0,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1251,4 +1249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-07 18:49:23
+-- Dump completed on 2021-05-11 18:07:20
