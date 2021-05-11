@@ -218,7 +218,8 @@ const DriveCardWrapper = (props) => {
    {
      return false;
    }
-  let availableCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
+  let availableCard = drivecardSelectedValue.filter((i)=>
+    i.driveId === cardItem.driveId && i.drivePathSyncKey === drivePathSyncKey);
   return availableCard.length > 0 ? true : false;
  }
 
@@ -238,6 +239,7 @@ const DriveCardWrapper = (props) => {
         className={`list`}
       >
         {driveCardItems.map((item, index) => {
+          item["drivePathSyncKey"] = drivePathSyncKey; //need for selection
           let isSelected = getSelectedCard(item);
           return (
             <div
