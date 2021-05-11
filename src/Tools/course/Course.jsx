@@ -28,6 +28,7 @@ import Drive, {
   folderDictionarySelector,
   clearDriveAndItemSelections,
   encodeParams,
+  drivePathSyncFamily,
 } from '../../_reactComponents/Drive/Drive';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
@@ -38,7 +39,7 @@ import GlobalFont from '../../_utils/GlobalFont';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
 import Toast, { useToast } from '../_framework/Toast';
-import { drivecardSelectedNodesAtom } from '../library/Library';
+import { drivecardSelectedNodesAtom,URLPathSync } from '../library/Library';
 import Enrollment from './Enrollment';
 import { useAssignment } from '../course/CourseActions';
 import { useAssignmentCallbacks } from '../../_reactComponents/Drive/DriveActions';
@@ -133,6 +134,12 @@ export default function Course(props) {
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.route.location.search),
   );
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
+  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
+  const [openEnrollment, setEnrollmentView] = useState(false);
+  const role = useRecoilValue(roleAtom);
+  const  setDrivePath = useSetRecoilState(drivePathSyncFamily("main"));
+
   if (urlParamsObj?.path !== undefined) {
     [
       routePathDriveId,
@@ -158,31 +165,41 @@ export default function Course(props) {
   const history = useHistory();
 
   const DriveCardCallBack = ({ item }) => {
+    // setDrivePath({
+    //   driveId:item.driveId,
+    //   parentFolderId:item.driveId,
+    //   itemId:item.driveId,
+    //   courseId:courseId,
+    //   type:"Drive"
+    // })
     let newParams = {};
     newParams['path'] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
     newParams['courseId'] = `${item.courseId}`;
     history.push('?' + encodeParams(newParams));
   };
-  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
-  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
-  const [openEnrollment, setEnrollmentView] = useState(false);
-  const role = useRecoilValue(roleAtom);
+
 
   function cleardrivecardSelection() {
+    // setDrivePath({
+    //   driveId:"",
+    //   parentFolderId:"",
+    //   itemId:"",
+    //   type:""
+    // })
     setDrivecardSelection([]);
-    // let newParams = {};
-    // newParams["path"] = `:::`;
-    // history.push("?" + encodeParams(newParams));
   }
   function useOutsideDriveSelector() {
+    // setDrivePath({
+    //   driveId:":",
+    //   parentFolderId:":",
+    //   itemId:":",
+    //   type:""
+    // })
     let newParams = {};
     newParams['path'] = `:::`;
     history.push('?' + encodeParams(newParams));
   }
-  let breadcrumbContainer = null;
-  if (routePathDriveId) {
-    breadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main"/>;
-  }
+  let breadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main"/>;
 
   const setEnrollment = (e) => {
     e.preventDefault();
@@ -254,6 +271,7 @@ export default function Course(props) {
 
   return (
     <Tool>
+       <URLPathSync route={props.route}/>
       <headerPanel title="Course" />
       <navPanel isInitOpen>
         <GlobalFont />
@@ -276,7 +294,7 @@ export default function Course(props) {
               onClick={() => {
                 clearSelections();
               }}
-              className={routePathDriveId ? 'mainPanelStyle' : ''}
+              // className={routePathDriveId ? 'mainPanelStyle' : ''}
             >
               <Container>
                 <Drive
@@ -303,7 +321,7 @@ export default function Course(props) {
             <div
               onClick={cleardrivecardSelection}
               tabIndex={0}
-              className={routePathDriveId ? '' : 'mainPanelStyle'}
+              // className={routePathDriveId ? '' : 'mainPanelStyle'}
             >
               {!routePathDriveId && <h2>Admin</h2>}
               <DriveCards
@@ -415,6 +433,7 @@ const DoenetMLInfoPanel = (props) => {
     />
   );
   const { openOverlay } = useToolControlHelper();
+  const [addToast, ToastType] = useToast();
 
   const handleChange = (event) => {
     event.preventDefault();
@@ -447,8 +466,7 @@ const DoenetMLInfoPanel = (props) => {
   };
   const handleOnBlur = (e) => {
     let name = e.target.name;
-    let value =
-      e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     const result = saveSettings({
       [name]: value,
       driveIdcourseIditemIdparentFolderId: {
@@ -459,12 +477,13 @@ const DoenetMLInfoPanel = (props) => {
       },
     });
     let payload = {
+      ...aInfo,
       itemId: itemInfo.itemId,
       isAssignment: '1',
       assignmentId: aInfo?.assignmentId,
       [name]: value,
     };
-    if (name === 'assignment_title') {
+    // if (name === 'assignment_title') {
       updateAssignmentTitle({
         driveIdFolderId: {
           driveId: itemInfo.driveId,
@@ -473,7 +492,19 @@ const DoenetMLInfoPanel = (props) => {
         itemId: itemInfo.itemId,
         payloadAssignment: payload,
       });
-    }
+
+    // }
+
+    result.then((resp) => {
+      if (resp.data.success) {
+        addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
+      } else {
+        onAssignmentError({errorMessage: resp.data.message});
+      }
+    })
+    .catch((e) => {
+      onAssignmentError({errorMessage: e.message});
+    });
   };
   const handlePublishContent = () => {
     let payload = {
@@ -488,8 +519,16 @@ const DoenetMLInfoPanel = (props) => {
       payload: payload,
     });
 
-    axios.post(`/api/handlePublishContent.php`, payload).then((response) => {
-      console.log(response.data);
+    const result = axios.post(`/api/handlePublishContent.php`, payload)
+    result.then((resp) => {
+      if (resp.data.success) {
+      addToast(`'${itemInfo.label}' Published'`, ToastType.SUCCESS);
+    } else {
+        onAssignmentError({errorMessage: resp.data.message});
+      }
+    })
+    .catch((e) => {
+      onAssignmentError({errorMessage: e.message});
     });
   };
 
@@ -497,9 +536,7 @@ const DoenetMLInfoPanel = (props) => {
     let payload = {
       itemId: itemInfo.itemId,
     };
-    axios.post(`/api/handleMakeContent.php`, payload).then((response) => {
-      console.log(response.data);
-    });
+    
     assignmentToContent({
       driveIdcourseIditemIdparentFolderId: {
         driveId: itemInfo.driveId,
@@ -508,9 +545,7 @@ const DoenetMLInfoPanel = (props) => {
         courseId: courseId,
       },
     });
-    // setAssignmentForm((old)=>{   //TODO remove
-    //   return  {...old, [isAssignment]: 0}
-    // })
+   
     convertAssignmentToContent({
       driveIdFolderId: {
         driveId: itemInfo.driveId,
@@ -519,6 +554,18 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       assignedDataSavenew: payload,
     });
+
+    const result = axios.post(`/api/handleMakeContent.php`, payload)
+    result.then((resp) => {
+      if (resp.data.success) {
+        addToast(`'${itemInfo.assignment_title}' back to '${itemInfo.label}''`, ToastType.SUCCESS);
+      } else {
+        onAssignmentError({errorMessage: resp.data.message});
+      }
+    })
+    .catch((e) => {
+      onAssignmentError({errorMessage: e.message});
+    });
   };
 
   const loadBackAssignment = () => {
@@ -526,12 +573,8 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       isAssignment: '1',
       assignmentId: aInfo?.assignmentId,
-      title: aInfo?.assignment_title,
+      assignment_title: aInfo?.assignment_title,
     };
-    axios.post(`/api/handleBackAssignment.php`, payload).then((response) => {
-      console.log(response.data);
-    });
-
     loadAvailableAssignment({
       ...aInfo,
       driveIdcourseIditemIdparentFolderId: {
@@ -550,10 +593,22 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       payloadAssignment: payload,
     });
+    const result = axios.post(`/api/handleBackAssignment.php`, payload)
+    result.then((resp) => {
+     if (resp.data.success) {
+      addToast(`'${itemInfo.label}' back to '${itemInfo.assignment_title}'`, ToastType.SUCCESS);
+    } else {
+       onAssignmentError({errorMessage: resp.data.message});
+     }
+   })
+   .catch((e) => {
+     onAssignmentError({errorMessage: e.message});
+   });
+
   };
   const [showAForm, setShowAForm] = useState(false);
   const role = useRecoilValue(roleAtom);
-  const [addToast, ToastType] = useToast();
+  // const [addToast, ToastType] = useToast();
 
   if (itemInfo?.isPublished === '0') {
     // // Publish content
@@ -574,10 +629,10 @@ const DoenetMLInfoPanel = (props) => {
       <>
         <Button
           value="Make Assignment"
-          callback={() => {
+          callback={async () => {
             let assignmentId = nanoid();
             setShowAForm(true);
-            const result = addContentAssignment({
+            const result = await addContentAssignment({
               driveIdcourseIditemIdparentFolderId: {
                 driveId: itemInfo.driveId,
                 folderId: itemInfo.parentFolderId,
@@ -607,20 +662,18 @@ const DoenetMLInfoPanel = (props) => {
               itemId: itemInfo.itemId,
               payload: payload,
             });
-            result
-              .then((resp) => {
-                if (resp) {
-                  addToast(
-                    `Add new assignment 'Untitled assignment'`,
-                    ToastType.SUCCESS,
-                  );
-                } else {
-                  onAssignmentError({ errorMessage: resp.data.message });
-                }
-              })
-              .catch((e) => {
-                onAssignmentError({ errorMessage: e.message });
-              });
+            try {
+              if(result.success){
+                addToast(`Add new assignment 'Untitled assignment'`, ToastType.SUCCESS,);
+              }
+              else{
+                onAssignmentError({ errorMessage: result.message });
+              }
+              
+            } catch (e) {
+              onAssignmentError({ errorMessage: e});
+
+            }
           }}
         />
       </>
@@ -647,7 +700,7 @@ const DoenetMLInfoPanel = (props) => {
                 onChange={handleChange}
               />
             </div>
-            {/* <div>
+            <div>                   
               <label>Assigned Date:</label>
               <input
                 required
@@ -655,10 +708,10 @@ const DoenetMLInfoPanel = (props) => {
                 name="assignedDate"
                 value={aInfo ? aInfo?.assignedDate : ''}
                 placeholder="0001-01-01 01:01:01 "
-                onBlur={() => handleOnBlur()}
+                onBlur={handleOnBlur}
                 onChange={handleChange}
               />
-            </div> */}
+            </div>
             <div>
               <label>Due date: </label>
               <input
@@ -733,9 +786,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="individualize"
-                value={aInfo ? aInfo?.individualize : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.individualize : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -744,9 +796,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="multipleAttempts"
-                value={aInfo ? aInfo?.multipleAttempts : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.multipleAttempts : false}
+                onChange={handleOnBlur}
               />{' '}
             </div>
             <div>
@@ -755,9 +806,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showSolution"
-                value={aInfo ? aInfo?.showSolution : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showSolution : false}
+                onChange={handleOnBlur}
               />{' '}
             </div>
             <div>
@@ -766,9 +816,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showFeedback"
-                value={aInfo ? aInfo?.showFeedback : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showFeedback : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -777,9 +826,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showHints"
-                value={aInfo ? aInfo?.showHints : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showHints : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -788,9 +836,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="showCorrectness"
-                value={aInfo ? aInfo?.showCorrectness : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.showCorrectness : false}
+                onChange={handleOnBlur}
               />
             </div>
             <div>
@@ -799,9 +846,8 @@ const DoenetMLInfoPanel = (props) => {
                 required
                 type="checkbox"
                 name="proctorMakesAvailable"
-                value={aInfo ? aInfo?.proctorMakesAvailable : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
+                checked={aInfo ? aInfo?.proctorMakesAvailable : false}
+                onChange={handleOnBlur}
               />
             </div>
             <br />
@@ -840,17 +886,16 @@ const DoenetMLInfoPanel = (props) => {
                   });
 
                   result.then((resp) => {
-                    if (resp) {
-                      // addToast(`Add new assignment 'Untitled assignment'`, ToastType.SUCCESS);
-                      // setAssignmentForm(resp) TODO
+                    if (resp.data.success) {
+                      addToast(`'${aInfo.assignment_title}' Published'`, ToastType.SUCCESS);
                     }
-                    // else{
-                    //   onAddAssignmentError({errorMessage: resp.data.message});
-                    // }
-                  });
-                  // .catch( e => {
-                  //   onAddAssignmentError({errorMessage: e.message});
-                  // })
+                    else{
+                      onAssignmentError({errorMessage: resp.data.message});
+                    }
+                  })
+                  .catch( e => {
+                    onAssignmentError({errorMessage: e.message});
+                  })
                 }}
                 type="submit"
               ></Button>
