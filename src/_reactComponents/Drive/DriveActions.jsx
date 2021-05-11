@@ -431,37 +431,31 @@ export const useCopyItems = () => {
       let promises = [];
       for (let newItemId of Object.keys(globalDictionary)) {
         let newItem = globalDictionary[newItemId];
-        console.log(">>>globalDictionary newItem branchId",newItem.branchId)
-
+        
         const addItemsParams = { 
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          // branchId: newItem.branchId,
-          branchId: nanoid(),
-          // versionId: newItem.versionId,
-          versionId: nanoid(),
+          branchId: newItem.branchId,
+          // branchId: nanoid(),
+          versionId: newItem.versionId,
+          // versionId: nanoid(),
           label: newItem.label,
           type: newItem.itemType,
           sortOrder: newItem.sortOrder,
           isNewCopy: '1',
          };
-         console.log(">>>globalDictionary before clone addItemsParams branchId",addItemsParams.branchId)
 
 
         // Clone DoenetML
         if (newItem.itemType === "DoenetML") {
           const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
           
-          console.log(">>>newDoenetML branchId",newDoenetML.branchId)
-          
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
           // Unify new branchId
-          addItemsParams["branchId"] = newDoenetML?.branchId;
+          // addItemsParams["branchId"] = newDoenetML?.branchId;
         }
-
-        console.log(">>>globalDictionary after clone addItemsParams branchId",addItemsParams.branchId)
 
 
         const payload = { 
@@ -531,17 +525,15 @@ export const useCopyItems = () => {
     // Retrieve info of target item from parentFolder
     const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
-    console.log(">>>cloneItem orginal item branchId", itemInfo.branchId)
-    // Clone item
+    
+    // Clone item (Note this should be the source of new ids)
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
-    const newBranchId = nanoid();
     newItem.itemId = newItemId;
-    newItem.branchId = newBranchId;
+    newItem.branchId = nanoid();
+    newItem.versionId = nanoid();
     newItem.previousBranchId = itemInfo.branchId;
    
-    console.log(">>>cloneItem copy item branchId", newItem.branchId)
-    
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
       globalContentIds[newItemId] = [];
@@ -574,11 +566,13 @@ export const useCopyItems = () => {
   }
 
   const cloneDoenetML = ({item, timestamp}) => {
+
     let newVersion = {
       title: item.label,
-      branchId: nanoid(),
+      branchId: item.branchId,
+      // branchId: nanoid(),
       contentId: item.contentId,
-      versionId: nanoid(),
+      versionId: item.versionId,
       timestamp,
       isDraft: '0',
       isNamed: '1',
