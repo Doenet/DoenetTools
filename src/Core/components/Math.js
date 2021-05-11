@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { textToAst, latexToAst, convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
+import { getCustomFromText, getCustomFromLatex, convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -84,6 +84,14 @@ export default class MathComponent extends InlineComponent {
       defaultValue: false,
       public: true,
     };
+
+    attributes.functionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "functionSymbols",
+      defaultValue: ["f", "g"],
+      public: true,
+    }
+
     return attributes;
   }
 
@@ -174,6 +182,10 @@ export default class MathComponent extends InlineComponent {
         createIntervals: {
           dependencyType: "stateVariable",
           variableName: "createIntervals"
+        },
+        functionSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "functionSymbols"
         },
       }),
       definition: calculateExpressionWithCodes,
@@ -704,16 +716,22 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     expressionWithCodes = me.fromAst('\uFF3F'); // long underscore
   } else {
     if (dependencyValues.format === "text") {
+      let fromText = getCustomFromText({
+        functionSymbols: dependencyValues.functionSymbols
+      });
       try {
-        expressionWithCodes = me.fromAst(textToAst.convert(inputString));
+        expressionWithCodes = fromText(inputString);
       } catch (e) {
         expressionWithCodes = me.fromAst('\uFF3F');  // long underscore
         console.log("Invalid value for a math of text format: " + inputString);
       }
     }
     else if (dependencyValues.format === "latex") {
+      let fromLatex = getCustomFromLatex({
+        functionSymbols: dependencyValues.functionSymbols
+      });
       try {
-        expressionWithCodes = me.fromAst(latexToAst.convert(inputString));
+        expressionWithCodes = fromLatex(inputString);
       } catch (e) {
         expressionWithCodes = me.fromAst('\uFF3F');  // long underscore
         console.log("Invalid value for a math of latex format: " + inputString);
@@ -729,7 +747,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   return {
     newValues: { expressionWithCodes },
-    makeEssential: ["expressionWithCodes"]
+    makeEssential: { expressionWithCodes: true }
   };
 
 }
@@ -740,7 +758,7 @@ function calculateMathValue({ dependencyValues } = {}) {
   if (dependencyValues.expressionWithCodes === null) {
     return {
       newValues: { unnormalizedValue: dependencyValues.valueShadow },
-      makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+      makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
     }
   }
 
@@ -757,7 +775,7 @@ function calculateMathValue({ dependencyValues } = {}) {
 
   return {
     newValues: { unnormalizedValue: value },
-    makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+    makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
   };
 }
 

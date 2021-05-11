@@ -393,7 +393,7 @@ const DriveInfoPanel = function(props){
   }
 
   return <>
-  <h2>{dIcon} {panelDriveLabel}</h2>
+  <h2 data-cy="infoPanelItemLabel">{dIcon} {panelDriveLabel}</h2>
   <label>Course Name<input type="text" 
   value={driveLabel} 
   onChange={(e)=>setDriveLabel(e.target.value)} 
@@ -481,9 +481,10 @@ const FolderInfoPanel = function(props){
   }
   
   return <>
-  <h2>{fIcon} {itemInfo.label}</h2>
+  <h2 data-cy="infoPanelItemLabel">{fIcon} {itemInfo.label}</h2>
 
   <label>Folder Label<input type="text" 
+  data-cy="infoPanelItemLabelInput"
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
@@ -496,7 +497,7 @@ const FolderInfoPanel = function(props){
   }}/></label>
   <br />
   <br />
-  <Button value="Delete Folder" callback={()=>{
+  <Button data-cy="deleteFolderButton" value="Delete Folder" callback={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
@@ -548,9 +549,10 @@ const DoenetMLInfoPanel = function(props){
   }
   
   return <>
-  <h2>{dIcon} {itemInfo.label}</h2>
+  <h2 data-cy="infoPanelItemLabel">{dIcon} {itemInfo.label}</h2>
 
   <label>DoenetML Label<input type="text" 
+  data-cy="infoPanelItemLabelInput"
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
@@ -570,7 +572,7 @@ const DoenetMLInfoPanel = function(props){
   }} />
   <br />
   <br />
-  <Button value="Delete DoenetML" callback={()=>{
+  <Button data-cy="deleteDoenetMLButton" value="Delete DoenetML" callback={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
@@ -713,7 +715,7 @@ function AddCourseDriveButton(props){
     addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
   }
 
-  return <Button value="Create a New Course" callback={()=>{
+  return <Button value="Create a New Course" data-cy="createNewCourseButton" callback={()=>{
     let driveId = null;
     let newDriveId = nanoid();
     let newCourseId = nanoid();
@@ -762,42 +764,48 @@ function AddMenuPanel(props){
   <h3>Course</h3>
    {addDrives}
   <h3>Folder</h3>
-  <Button value="Add Folder" callback={()=>{
-    const result = addItem({
-      driveIdFolderId: {driveId: driveId, folderId: folderId},
-      label: "Untitled",
-      itemType: "Folder"
-    });
-    result.then(resp => {
-      if (resp.data.success){
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-      }else{
-        onAddItemError({errorMessage: resp.data.message});
-      }
-    }).catch( e => {
-      onAddItemError({errorMessage: e.message});
-    })
-  }
-  } />
+  <Button 
+    value="Add Folder" 
+    data-cy="addFolderButton"
+    callback={()=>{
+      const result = addItem({
+        driveIdFolderId: {driveId: driveId, folderId: folderId},
+        label: "Untitled",
+        itemType: "Folder"
+      });
+      result.then(resp => {
+        if (resp.data?.success){
+          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        }else{
+          onAddItemError({errorMessage: resp.data});
+        }
+      }).catch( e => {
+        onAddItemError({errorMessage: e.message});
+      })
+    }} 
+  />
 
   <h3>DoenetML</h3>
-  <Button value="Add DoenetML" callback={()=>{
-    const result = addItem({
-      driveIdFolderId: {driveId: driveId, folderId: folderId},
-      label:"Untitled",
-      itemType:"DoenetML"
-    });
-    result.then(resp => {
-      if (resp.data.success){
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-      }else{
-        onAddItemError({errorMessage: resp.data.message});
-      }
-    }).catch( e => {
-      onAddItemError({errorMessage: e.message});
-    })
-  }
-  } />
+  <Button 
+    value="Add DoenetML" 
+    data-cy="addDoenetMLButton"
+    callback={()=>{
+      const result = addItem({
+        driveIdFolderId: {driveId: driveId, folderId: folderId},
+        label:"Untitled",
+        itemType:"DoenetML"
+      });
+      result.then(resp => {
+        if (resp.data.success){
+          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        }else{
+          onAddItemError({errorMessage: resp.data});
+        }
+      }).catch( e => {
+        onAddItemError({errorMessage: e.message});
+      })
+    }} 
+  />
  
   {/* <h3>URL</h3>
   <div>
@@ -915,7 +923,7 @@ export default function Library(props) {
 
   const profile = useContext(ProfileContext)
 
-  if (profile.signedIn === "0"){
+  if (profile.signedIn === "0" && !window.Cypress){
     return (<>
      <GlobalFont/>
     <Tool>
@@ -988,7 +996,7 @@ export default function Library(props) {
     <URLPathSync route={props.route}/>
     <Tool>
       <navPanel isInitOpen>
-      <div style={{height:"100vh"}} onClick={()=>useOutsideDriveSelector(setDrivePath)} >
+      <div style={{height:"100vh"}} data-cy="navPanel" onClick={()=>useOutsideDriveSelector(setDrivePath)} >
          <div  style={{paddingBottom:"40px"}}>
         <Drive types={['content','course']}  foldersOnly={true} drivePathSyncKey="main"/>
       </div>
@@ -1005,6 +1013,7 @@ export default function Library(props) {
         onClick={()=>{
           clearSelections()
         }}
+        data-cy="mainPanel"
         className={routePathDriveId ? 'mainPanelStyle' : ''}
         >
           <Container>
@@ -1024,6 +1033,7 @@ export default function Library(props) {
         onClick={
           cleardrivecardSelection
         }
+        data-cy="mainPanel"
         tabIndex={0}
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >

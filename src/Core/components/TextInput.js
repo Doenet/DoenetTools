@@ -140,7 +140,7 @@ export default class Textinput extends Input {
           // (otherwise, let its essential value change)
           return {
             newValues: { immediateValue: dependencyValues.value },
-            makeEssential: ["immediateValue"]
+            makeEssential: { immediateValue: true }
           };
 
 

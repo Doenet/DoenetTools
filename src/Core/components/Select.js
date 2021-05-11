@@ -284,7 +284,7 @@ export default class Select extends CompositeComponent {
 
         if (!(dependencyValues.numberToSelect >= 1) || dependencyValues.nOptions === 0) {
           return {
-            makeEssential: ["selectedIndices"],
+            makeEssential: { selectedIndices: true },
             newValues: {
               selectedIndices: [],
             },
@@ -307,7 +307,7 @@ export default class Select extends CompositeComponent {
             desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
 
             return {
-              makeEssential: ["selectedIndices"],
+              makeEssential: { selectedIndices: true },
               newValues: {
                 selectedIndices: desiredIndices,
               },
@@ -335,7 +335,7 @@ export default class Select extends CompositeComponent {
             }
           }
           return {
-            makeEssential: ["selectedIndices"],
+            makeEssential: { selectedIndices: true },
             newValues: {
               selectedIndices: variantOptions,
             },
@@ -399,7 +399,7 @@ export default class Select extends CompositeComponent {
 
 
         return {
-          makeEssential: ["selectedIndices"],
+          makeEssential: { selectedIndices: true },
           newValues: {
             selectedIndices,
           },
@@ -463,7 +463,7 @@ export default class Select extends CompositeComponent {
           variableName: "selectedIndices"
         }
       }),
-      definition () {
+      definition() {
         return {
           newValues: { readyToExpandWhenResolved: true }
         }

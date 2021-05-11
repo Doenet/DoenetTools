@@ -35,6 +35,7 @@ export default class Core {
 
     this.requestUpdate = this.requestUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
+    this.triggerChainedActions = this.triggerChainedActions.bind(this);
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
@@ -112,6 +113,7 @@ export default class Core {
     this.coreFunctions = {
       requestUpdate: this.requestUpdate,
       requestAction: this.requestAction,
+      triggerChainedActions: this.triggerChainedActions,
       requestRecordEvent: this.requestRecordEvent,
       requestAnimationFrame: this.requestAnimationFrame,
       cancelAnimationFrame: this.cancelAnimationFrame,
@@ -172,6 +174,9 @@ export default class Core {
     this.renderedComponentInstructions = {};
     this.componentsWithChangedChildrenToRender = new Set([]);
 
+    this.stateVariableChangeTriggers = {};
+    this.actionsChangedToActions = {};
+
 
     this._renderComponents = [];
     this._renderComponentsByName = {};
@@ -222,6 +227,8 @@ export default class Core {
       serializedComponents,
       initialAdd: true,
     })
+
+    this.updateInfo.componentsTouched = [];
 
     this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
 
@@ -482,6 +489,7 @@ export default class Core {
       this.expandAllComposites(this.document, true);
 
       this.initializeRenderedComponentInstruction(this.document);
+      this.processStateVariableTriggers();
 
     } else {
       if (parent === undefined) {
@@ -507,6 +515,8 @@ export default class Core {
       Object.assign(deletedComponents, addResults.deletedComponents);
 
       this.updateRendererInstructions({ componentNames: this.componentAndRenderedDescendants(parent) });
+      this.processStateVariableTriggers();
+
     }
 
     this.finishUpdate({
@@ -749,6 +759,36 @@ export default class Core {
     delete this.renderedComponentInstructions[componentName];
 
     return deletedComponentNames;
+  }
+
+  processStateVariableTriggers() {
+
+    // TODO: can we make this more efficient by only checking components that changed?
+    // componentsTouched is close, but it includes only rendered components
+    // and we could have components with triggers that are not rendered
+
+    for (let componentName in this.stateVariableChangeTriggers) {
+      let component = this._components[componentName];
+      for (let stateVariable in this.stateVariableChangeTriggers[componentName]) {
+        let triggerInstructions = this.stateVariableChangeTriggers[componentName][stateVariable];
+
+        let value = component.state[stateVariable].value;
+
+        if (value !== triggerInstructions.previousValue) {
+          let previousValue = triggerInstructions.previousValue;
+          triggerInstructions.previousValue = value;
+          let action = component.actions[triggerInstructions.action];
+          if (action) {
+            action({
+              stateValues: { [stateVariable]: value },
+              previousValues: { [stateVariable]: previousValue }
+            })
+          }
+        }
+
+      }
+    }
+
   }
 
   expandAllComposites(component, force = false) {
@@ -1307,6 +1347,8 @@ export default class Core {
     }
 
     this.dependencies.resolveStateVariablesIfReady({ component: newComponent });
+
+    this.checkForActionChaining({ component: newComponent });
 
     // this.dependencies.collateCountersAndPropagateToAncestors(newComponent);
 
@@ -2345,6 +2387,7 @@ export default class Core {
         "forRenderer",
         "defaultValue",
         "propagateToProps",
+        "triggerActionOnChange",
       ]
 
       for (let attribute of attributesToCopy) {
@@ -3248,6 +3291,44 @@ export default class Core {
       this.initializeArrayStateVariable({ stateVarObj, component, stateVariable });
     }
 
+    if (stateVarObj.triggerActionOnChange) {
+      let componentTriggers = this.stateVariableChangeTriggers[component.componentName];
+      if (!componentTriggers) {
+        componentTriggers = this.stateVariableChangeTriggers[component.componentName] = {};
+      }
+      componentTriggers[stateVariable] = { action: stateVarObj.triggerActionOnChange };
+    }
+
+  }
+
+  checkForActionChaining({ component }) {
+
+    for (let stateVariable in component.state) {
+      let stateVarObj = component.state[stateVariable];
+
+      if (stateVarObj.chainActionOnActionOfStateVariableTarget) {
+        let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTarget;
+        let targetName = stateVarObj.value;
+
+        if (targetName) {
+          let componentActionsChained = this.actionsChangedToActions[targetName];
+          if (!componentActionsChained) {
+            componentActionsChained = this.actionsChangedToActions[targetName] = {};
+          }
+
+          let triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction]
+          if (!triggeringActionsChained) {
+            triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction] = [];
+          }
+
+          triggeringActionsChained.push({
+            componentName: component.componentName,
+            actionName: chainInfo.triggeredAction
+          });
+
+        }
+      }
+    }
   }
 
   initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable,
@@ -4768,34 +4849,41 @@ export default class Core {
     }
 
 
-    if (result.makeEssential) {
-      for (let varName of result.makeEssential) {
+    for (let varName in result.makeEssential) {
 
-        if (!(varName in component.state)) {
-          throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} tried to make ${varName} essential, which isn't a state variable.`);
-        }
+      if (!(varName in component.state)) {
+        throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} tried to make ${varName} essential, which isn't a state variable.`);
+      }
 
-        if (!component.state[varName].isResolved) {
-          throw Error(`Attempting to make stateVariable ${varName} of ${component.componentName} essential while it is still unresolved!`)
-        }
+      if (!component.state[varName].isResolved) {
+        throw Error(`Attempting to make stateVariable ${varName} of ${component.componentName} essential while it is still unresolved!`)
+      }
 
-        if (!(varName in receivedValue)) {
-          let matchingArrayEntry;
-          if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
-            for (let arrayEntryName of component.state[varName].arrayEntryNames) {
-              if (arrayEntryName in receivedValue) {
-                matchingArrayEntry = arrayEntryName;
-                break;
-              }
+      if (!(varName in receivedValue)) {
+        let matchingArrayEntry;
+        if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          for (let arrayEntryName of component.state[varName].arrayEntryNames) {
+            if (arrayEntryName in receivedValue) {
+              matchingArrayEntry = arrayEntryName;
+              break;
             }
           }
-          if (!matchingArrayEntry) {
-            throw Error(`Attempting to make stateVariable ${varName} in definition of ${stateVariable} of ${component.componentName} essential, but it's not listed as an additional state variable defined.`)
+        }
+        if (!matchingArrayEntry) {
+          throw Error(`Attempting to make stateVariable ${varName} in definition of ${stateVariable} of ${component.componentName} essential, but it's not listed as an additional state variable defined.`)
+        }
+      }
+
+      if (component.state[varName].isArray && typeof result.makeEssential[varName] === "object") {
+        for (let arrayKey in result.makeEssential[varName]) {
+          if (result.makeEssential[varName][arrayKey]) {
+            component.state[varName].essentialByArrayKey[arrayKey] = true;
           }
         }
-
+      } else if (result.makeEssential[varName]) {
         component.state[varName].essential = true;
       }
+
     }
 
     if (result.makeImmutable) {
@@ -6268,6 +6356,8 @@ export default class Core {
       this.updateInfo.deletedComponents[component.componentName] = true;
       delete this.unsatisfiedChildLogic[component.componentName];
 
+      delete this.stateVariableChangeTriggers[component.componentName];
+
     }
 
     for (let componentName in componentsToDelete) {
@@ -7191,6 +7281,18 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
+  triggerChainedActions({ componentName, actionName }) {
+
+    if (this.actionsChangedToActions[componentName]) {
+      if (this.actionsChangedToActions[componentName][actionName]) {
+        for (let chainedActionInstructions of this.actionsChangedToActions[componentName][actionName]) {
+          this.requestAction(chainedActionInstructions);
+        }
+      }
+    }
+  }
+
+
   requestUpdate({ updateInstructions, transient = false, event, callBack }) {
 
     if (this.flags.readOnly) {
@@ -7434,6 +7536,10 @@ export default class Core {
       sourceOfUpdate,
       recreatedComponents: this.updateInfo.recreatedComponents
     });
+
+    this.processStateVariableTriggers();
+
+    this.updateInfo.componentsTouched = [];
 
     this.finishUpdate();
 

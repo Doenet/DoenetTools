@@ -523,7 +523,7 @@ function makeSelection({ dependencyValues }) {
 
   if (dependencyValues.numberToSelect < 1) {
     return {
-      makeEssential: ["selectedValues", "selectedIndices"],
+      makeEssential: { selectedValues: true, selectedIndices: true },
       newValues: {
         selectedValues: [],
         selectedIndices: [],
@@ -609,7 +609,7 @@ function makeSelection({ dependencyValues }) {
       }
 
       return {
-        makeEssential: ["selectedValues", "selectedIndices"],
+        makeEssential: { selectedValues: true, selectedIndices: true },
         newValues: { selectedValues, selectedIndices: desiredIndices }
       }
     }
@@ -712,7 +712,7 @@ function makeSelection({ dependencyValues }) {
   }
 
   return {
-    makeEssential: ["selectedValues", "selectedIndices"],
+    makeEssential: { selectedValues: true, selectedIndices: true },
     newValues: { selectedValues, selectedIndices }
   }
 

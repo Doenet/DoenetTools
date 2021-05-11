@@ -62,7 +62,7 @@ CREATE TABLE `assignment` (
   `isPublished` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `assignmentId` (`assignmentId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=488 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -71,6 +71,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
+INSERT INTO `assignment` VALUES (90,'4P7WK6V4HvxS9fIT8IY4i','kwpKwEwW144tqROdo9dl5','Sj7wQR-L2xFIxmS6QFMKn','Gateway exam practice','9gBr0dW6tFqqA1UyLEBVD','268edfaf6999ea0182e6ac360854c7d739e35eccbb6384dd193b301de845b707','aI8sK4vmEhC5sdeSP3vNW',0,'2019-08-19 13:42:53',NULL,NULL,NULL,3,100,NULL,NULL,'Gateway',1,1,1,1,1,1,0,'',0),(91,'yfP_Pslr-WC1D8g2rEqhF','kwpKwEwW144tqROdo9dl5','Sj7wQR-L2xFIxmS6QFMKn','Gateway exam','9gBr0dW6tFqqA1UyLEBVD','268edfaf6999ea0182e6ac360854c7d739e35eccbb6384dd193b301de845b707','aI8sK4vmEhC5sdeSP3vNW',0,'2019-08-19 13:42:56','2019-09-05 11:45:00','2019-10-11 10:30:00','00:51:00',3,200,NULL,100,'Gateway',1,1,0,0,0,0,1,'<p>The Math 1241 gateway exam is designed to verify that you have master based algebra skills and so are poised to succeed with Math 1241.  The exam is at a slightly higher level than the placement exam that was taken to qualify to take calculus, except without trigonometry. It emphasizes functions, variables, parameters, and inequalities.</p>\n\n<p>The main components of the gateway exam are:</p>\n<ol>\n   <li>Composition of functions</li>\n   <li>Exponentiation</li>\n   <li>Logarithms</li>\n   <li>Linear equations</lI>\n   <li>Quadratic equations and other simple polynomial equations</li>\n   <li>Inequalities</li>\n</ol>\n\n<p>You can practice the problems from the Gateway exam by taking the Gateway exam practice.</p>\n\n<h4>Exam logistics</h4>\n\n<p>The Gateway exam can be taken in Tate Hall B20 on the following Thursdays between 11:15AM and 2:15PM:</p>\n<ul class=\"no_skip\">\n   <li>September 5 (Please, plan to take the exam during the time that you are officially registered)</li>\n   <li>September 12</li>\n   <li>September 19</li>\n   <li>October 10</li>\n</ul>\n<p>Note: you must reach 60% by September 12 and 80% by October 10.</p>\n\n<p>Calculator policy: a scientific calculator is allowed, but no graphing calculator.<br/>\nNo notes, textbook, or other electronic equipment (such as phones) allowed.</p>',0),(481,'VffOCH1I0h_ymB9KQHR24','Sj7wQR-L2xFIxmS6QFMKn','heading_a_id','Assignment 3','ZcfwKa7fkIl9A5kq-0gV_','51c63380e208e36dfc3ba05d15a2bdbd7b417f7efe4ccbcb36c33f30eb0b4235','aI8sK4vmEhC5sdeSP3vNW',0,'2019-08-20 13:42:56','2019-08-21 13:42:56','2019-08-24 13:42:56','00:00:00',0,100,NULL,0,'',1,1,1,1,1,1,0,NULL,0),(482,'iaROshxrgaz63vZ5xFdxE','3oSXu2L31eZBlZKKc4F7X','heading_a_id','Assignment 4','a2branchid','a2contentid','aI8sK4vmEhC5sdeSP3vNW',0,'2019-08-19 13:42:56','2019-08-22 13:42:56','2019-08-23 13:42:56',NULL,3,200,NULL,NULL,NULL,0,0,1,1,1,1,0,NULL,0),(483,'zxVi-pXiUtf3PodIXm45n','Sj7wQR-L2xFIxmS6QFMKn','heading_a_id','Assignment 5','a3branchid','a3contentid','aI8sK4vmEhC5sdeSP3vNW',0,'2019-08-18 13:42:56','2019-08-23 13:42:56','2008-05-10 14:45:00','00:00:13',0,300,NULL,100,'Projects',0,0,1,1,1,1,1,NULL,0),(484,'mBUlzP63SK38l7XrWpyC','qAgAnGbEblNmlebe3sJOh','heading_b_id','Assignment 6','b3branchid','b3contentid','aI8sK4vmEhC5sdeSP3vNW',0,'2019-08-25 13:42:56','2019-08-27 13:42:56','2019-08-29 13:42:56',NULL,3,100,NULL,NULL,NULL,0,0,1,1,1,1,0,NULL,0),(485,'fm3-3BxtVsMA0vqCyAOMA','5RdWCHX3Z-zHGi3-rupzq','heading_b_id','Assignment B2','b2branchid','b2contentid','aI8sK4vmEhC5sdeSP3vNW',0,'2019-08-26 13:42:56','2019-08-28 13:42:56','2019-08-30 13:42:56',NULL,3,200,NULL,NULL,NULL,0,0,1,1,1,1,0,NULL,0),(486,'J5EeoMBiv5f4z4zEUJU-Z','3JDHbhgJ9lq7GLQSG6_fQ',NULL,'cal2 assignment 1','cal2a1branchId','cal2a2contentId','uTMfKhSmcNtLDaK8oJ3U',0,'2019-03-16 09:09:09','2019-03-16 09:09:09','2019-03-17 09:09:09','00:00:10',0,200,NULL,NULL,NULL,0,0,1,1,1,1,0,NULL,0),(487,'ML3g50DgilyeODVZN4X8d','3JDHbhgJ9lq7GLQSG6_fQ',NULL,'cal2 assignment 02','cal2a2branchId','cal2a2contentId','uTMfKhSmcNtLDaK8oJ3U',0,'2019-03-16 09:09:09','2019-03-16 09:09:09','2019-03-17 09:09:09','00:00:09',3,200,NULL,0,'',0,0,1,1,1,1,0,NULL,0);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -205,6 +206,7 @@ CREATE TABLE `content` (
 
 LOCK TABLES `content` WRITE;
 /*!40000 ALTER TABLE `content` DISABLE KEYS */;
+INSERT INTO `content` VALUES (1,'ZLHh5s8BWM2azTVFhazIH','0','c0780e403f54c45686c9051a7e831a962a8851d0fe24ca57fa1c05a7ff96576c',NULL,NULL,0,0,0,1),(2,'jqing10J3UkFuaGIGItPd','0','jqing10J3UkFuaGIGItPd','Draft','2021-03-02 19:34:31',1,0,0,1);
 /*!40000 ALTER TABLE `content` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -269,7 +271,7 @@ CREATE TABLE `content_interactions` (
 
 LOCK TABLES `content_interactions` WRITE;
 /*!40000 ALTER TABLE `content_interactions` DISABLE KEYS */;
-INSERT INTO `content_interactions` VALUES (1,'3oN5gDY3392zexHopijG6','Cherry','','4172bf96fd729403571554f024197d6a0911bc1436e0d4d425c7c4c6fe23ea65','{\"/_answer2\":{\"creditAchieved\":0,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":0,\"submittedResponses\":{\"mergeObject\":true},\"submittedResponsesComponentType\":[],\"creditAchievedDependenciesAtSubmit\":{}}}','{\"index\":0,\"subvariants\":[]}',1,NULL,'2021-01-26 05:06:50'),(2,'3oN5gDY3392zexHopijG6','Pistachio','myassignmentid','c0780e403f54c45686c9051a7e831a962a8851d0fe24ca57fa1c05a7ff96576c','{\"/_answer1\":{\"creditAchieved\":0,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"mergeObject\":true},\"submittedResponsesComponentType\":[\"math\"],\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_r_RaBs5uzR\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":[\"/\",3,\"x\"]}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":false}}','{\"index\":1,\"subvariants\":[]}',1,NULL,'2021-02-09 15:06:54');
+INSERT INTO `content_interactions` VALUES (1,'3oN5gDY3392zexHopijG6','Cherry','','4172bf96fd729403571554f024197d6a0911bc1436e0d4d425c7c4c6fe23ea65','{\"/_answer2\":{\"creditAchieved\":0,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":0,\"submittedResponses\":{\"mergeObject\":true},\"submittedResponsesComponentType\":[],\"creditAchievedDependenciesAtSubmit\":{}}}','{\"index\":0,\"subvariants\":[]}',1,NULL,'2021-01-26 05:06:50'),(2,'temp1','Pistachio','4P7WK6V4HvxS9fIT8IY4i','c0780e403f54c45686c9051a7e831a962a8851d0fe24ca57fa1c05a7ff96576c','{\"/_answer1\":{\"creditAchieved\":0,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"mergeObject\":true},\"submittedResponsesComponentType\":[\"math\"],\"creditAchievedDependenciesAtSubmit\":{\"__mathinput_r_RaBs5uzR\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":[\"/\",3,\"x\"]}}}},\"__award_YT-Z7CzTdu\":{\"awarded\":false}}','{\"index\":1,\"subvariants\":[]}',1,NULL,'2021-02-09 15:06:54');
 /*!40000 ALTER TABLE `content_interactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -379,7 +381,7 @@ CREATE TABLE `course_enrollment` (
 
 LOCK TABLES `course_enrollment` WRITE;
 /*!40000 ALTER TABLE `course_enrollment` DISABLE KEYS */;
-INSERT INTO `course_enrollment` VALUES (128,'experiment1','4VYp5dOrVWGz0OKB2hkLW',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:56',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(129,'experiment1','3oN5gDY3392zexHopijG6',NULL,NULL,NULL,NULL,NULL,'2020-08-04 00:02:56',NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(143,'Fhg532fk9873412s65','si6PoikolUgjVh9awiM8z',' Jack ','man',NULL,'JackMan@gmail.com',245,'2021-01-18 16:09:30','Math ',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(144,'Fhg532fk9873412s65','nnL7dFu_leYG1mBj_mN29','kent','mein',NULL,'kentmein@sdf.com',25,'2021-01-18 16:09:30','Cse',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(145,'Fhg532fk9873412s65','gIT-mG-2vGKySBIY7blLS','betty','kruger',NULL,'bett43@khi.org',543,'2021-01-18 16:09:30','Math ',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(147,'Fhg532fk9873412s65','s1userid','betty','kruger',NULL,'s1@example.com',5433,'2021-01-18 16:09:30','Math ',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL);
+INSERT INTO `course_enrollment` VALUES (1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,1234567,'2019-09-03 20:29:41','15',_binary '\0',NULL,_binary '\0',NULL,'A',NULL),(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,5254243,'2019-09-03 20:29:41','2',_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,60,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,'B',NULL),(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,7,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,'B-',NULL),(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,5,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,119,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,'B+',NULL),(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,852,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,89,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,4786,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,75024,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,9240,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,4522,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,259,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,2,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,4,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,3931,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,7947,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,96895,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,60,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,381,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,5,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,34,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(24,'experiement1','devuserid',NULL,NULL,NULL,NULL,NULL,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL),(25,'experiement2','devuserid',NULL,NULL,NULL,NULL,NULL,NULL,NULL,_binary '\0',NULL,_binary '\0',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `course_enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -516,7 +518,7 @@ CREATE TABLE `drive` (
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -525,6 +527,7 @@ CREATE TABLE `drive` (
 
 LOCK TABLES `drive` WRITE;
 /*!40000 ALTER TABLE `drive` DISABLE KEYS */;
+INSERT INTO `drive` VALUES (14,'xrnZI9aZfVOv28uU091vW','Calculus and Dynamical Systems in Biology','course',0,0,'aI8sK4vmEhC5sdeSP3vNW','picture11.jpg','0000FF');
 /*!40000 ALTER TABLE `drive` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -552,7 +555,7 @@ CREATE TABLE `drive_content` (
   `sortOrder` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `folderId` (`itemId`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -587,7 +590,7 @@ CREATE TABLE `drive_user` (
   `canChangeAllDriveSettings` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`driveId`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -596,6 +599,7 @@ CREATE TABLE `drive_user` (
 
 LOCK TABLES `drive_user` WRITE;
 /*!40000 ALTER TABLE `drive_user` DISABLE KEYS */;
+INSERT INTO `drive_user` VALUES (12,'devuserid','cIvuqCLVMdDqL3xYGS4K6',1,1,1,1,1,1,1,1,1,1),(13,'devuserid','4wXVEVI_1fM19-IMf3EPQ',1,1,1,1,1,1,1,1,1,1),(14,'devuserid','xrnZI9aZfVOv28uU091vW',1,1,1,1,1,1,1,1,1,1);
 /*!40000 ALTER TABLE `drive_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -958,7 +962,7 @@ CREATE TABLE `user_assignment` (
   `creditOverride` float DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
   PRIMARY KEY (`id`),
   UNIQUE KEY `assignment-userId` (`assignmentId`,`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -967,7 +971,7 @@ CREATE TABLE `user_assignment` (
 
 LOCK TABLES `user_assignment` WRITE;
 /*!40000 ALTER TABLE `user_assignment` DISABLE KEYS */;
-INSERT INTO `user_assignment` VALUES (38,'kXhVAtL0zDjJI7p3ZpUOq','ml7jiag7viieInWf5vHoF','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL),(39,'myassignmentid','devuserid','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL),(40,'LF3_ONicEdcWgbuSqgxTa','devuserid','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL),(41,'kXhVAtL0zDjJI7p3ZpUOq','devuserid','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL),(42,'LF3_ONicEdcWgbuSqgxTa','1NkSXq2C3VC0RvlTRPbZa','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.0277778,NULL),(43,'myassignmentid','3oN5gDY3392zexHopijG6','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL),(44,'LF3_ONicEdcWgbuSqgxTa','3oN5gDY3392zexHopijG6','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL);
+INSERT INTO `user_assignment` VALUES (45,'4P7WK6V4HvxS9fIT8IY4i','temp1','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.5,NULL),(46,'4P7WK6V4HvxS9fIT8IY4i','temp2','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.6,NULL),(47,'4P7WK6V4HvxS9fIT8IY4i','temp3','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.8,NULL),(48,'yfP_Pslr-WC1D8g2rEqhF','temp1','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.8,NULL),(49,'yfP_Pslr-WC1D8g2rEqhF','temp2','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.4,NULL),(50,'yfP_Pslr-WC1D8g2rEqhF','temp3','',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0.9,NULL);
 /*!40000 ALTER TABLE `user_assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -993,7 +997,7 @@ CREATE TABLE `user_assignment_attempt` (
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userid-assignmentid-attemptnum` (`userId`,`assignmentId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1002,7 +1006,7 @@ CREATE TABLE `user_assignment_attempt` (
 
 LOCK TABLES `user_assignment_attempt` WRITE;
 /*!40000 ALTER TABLE `user_assignment_attempt` DISABLE KEYS */;
-INSERT INTO `user_assignment_attempt` VALUES (56,'','ml7jiag7viieInWf5vHoF','kXhVAtL0zDjJI7p3ZpUOq',1,NULL,NULL,NULL,NULL,'','2020-10-22 20:42:46',NULL),(57,'','devuserid','myassignmentid',1,NULL,NULL,NULL,NULL,'72eea33140e31a8d0bf915e35931a675ffc7ee356b154a0cc2d3de892e8d0311',NULL,NULL),(58,'','devuserid','myassignmentid',2,0,NULL,NULL,NULL,'ab0031328a3ee98292ff440d0743cffed3752e547bc832bca2d9bcdbc5be0eec',NULL,'2020-11-12 21:55:30'),(59,'','devuserid','myassignmentid',3,0,NULL,NULL,NULL,'',NULL,'2020-11-12 22:15:04'),(60,'','devuserid','LF3_ONicEdcWgbuSqgxTa',1,NULL,NULL,NULL,NULL,'','2020-11-12 22:19:51',NULL),(61,'','devuserid','kXhVAtL0zDjJI7p3ZpUOq',1,NULL,NULL,NULL,NULL,'','2020-11-12 22:20:11',NULL),(62,'','1NkSXq2C3VC0RvlTRPbZa','LF3_ONicEdcWgbuSqgxTa',1,0.0277778,NULL,NULL,NULL,'','2020-11-12 22:21:38','2020-11-12 22:28:44'),(63,'','1NkSXq2C3VC0RvlTRPbZa','myassignmentid',1,0,NULL,NULL,NULL,'399a35d3b01f467079c1174783a95fcea038432387e77a2dbbc49126553d3cbf',NULL,NULL),(64,'','3oN5gDY3392zexHopijG6','myassignmentid',1,NULL,NULL,NULL,NULL,'4e274418899f19ada485996f5140ac4c67d98587cfdf67c834f826d55fb0ddff',NULL,NULL),(65,'','3oN5gDY3392zexHopijG6','myassignmentid',2,NULL,NULL,NULL,NULL,'cccbe5c2d348aa240325454e6de6f44613bd078b5e9cae136e55a1e0ddc5a955',NULL,NULL);
+INSERT INTO `user_assignment_attempt` VALUES (66,'','temp1','4P7WK6V4HvxS9fIT8IY4i',1,0.7,NULL,NULL,NULL,'',NULL,NULL),(67,'','temp2','4P7WK6V4HvxS9fIT8IY4i',1,0.6,NULL,NULL,NULL,'',NULL,NULL),(68,'','temp1','4P7WK6V4HvxS9fIT8IY4i',2,0.8,NULL,NULL,NULL,'',NULL,NULL);
 /*!40000 ALTER TABLE `user_assignment_attempt` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1247,4 +1251,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-03-05 15:58:28
+-- Dump completed on 2021-05-07 18:49:23
