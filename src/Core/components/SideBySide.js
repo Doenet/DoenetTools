@@ -1912,3 +1912,26 @@ export class SbsGroup extends BlockComponent {
     return stateVariableDefinitions;
   }
 }
+
+
+export class Stack extends BlockComponent {
+  static componentType = "stack";
+  static rendererType = "container";
+  static renderChildren = true;
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: 'atLeastOneBlock',
+      componentType: '_block',
+      comparison: 'atLeast',
+      number: 1,
+      setAsBase: true,
+    });
+
+    return childLogic;
+
+  }
+
+}

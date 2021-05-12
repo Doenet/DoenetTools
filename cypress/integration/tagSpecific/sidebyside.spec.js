@@ -4000,6 +4000,40 @@ describe('SideBySide Tag Tests', function () {
 
   })
 
+  it('sideBySide with a stack', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <sideBySide name="sbs" width="49%" margins="0%">
+      <stack>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. </p>
+        <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. </p>
+      </stack>
+      <p>Fringilla ut morbi tincidunt augue interdum velit euismod in. Mattis molestie a iaculis at erat. Pharetra magna ac placerat vestibulum lectus mauris ultrices. Nisl rhoncus mattis rhoncus urna neque viverra justo nec ultrices. Congue quisque egestas diam in arcu cursus euismod quis viverra. Et leo duis ut diam quam nulla porttitor massa. Dolor sit amet consectetur adipiscing elit. Ullamcorper malesuada proin libero nunc consequat interdum varius. Nunc lobortis mattis aliquam faucibus purus. Amet commodo nulla facilisi nullam vehicula. Massa placerat duis ultricies lacus sed turpis.</p>
+    </sideBySide>
+    
+  
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([49, 49]);
+      expect(components["/sbs"].stateValues.widths).eqls([49, 49]);
+      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([0, 0]);
+      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
+      expect(components["/sbs"].stateValues.gapWidth).eq(2);
+      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
+    })
+
+  })
+
 
 })
 
