@@ -38,6 +38,6 @@ export default function sideBySide(props) {
   }
 
 
-  return <div style={{display:"flex",width:"800px"}}>{styledChildren}</div>;
+  return <div style={{display:"flex",maxWidth:"800px"}}>{styledChildren}</div>;
   
 }
