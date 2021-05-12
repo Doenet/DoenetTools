@@ -1341,7 +1341,7 @@ export class SbsGroup extends BlockComponent {
               value: { [arrayKey]: desiredStateVariableValues.specifiedMargins[arrayKey] },
             })
           }
-        } else if (!Number.isFinite(globalDependencyValues.marginsAttr.stateValues.componentSizes[0])) {
+        } else if (!Number.isFinite(globalDependencyValues.marginsAttr.stateValues.componentSize1)) {
 
           if ("0" in desiredStateVariableValues.specifiedMargins) {
             instructions.push({
@@ -1911,4 +1911,27 @@ export class SbsGroup extends BlockComponent {
 
     return stateVariableDefinitions;
   }
+}
+
+
+export class Stack extends BlockComponent {
+  static componentType = "stack";
+  static rendererType = "container";
+  static renderChildren = true;
+
+  static returnChildLogic(args) {
+    let childLogic = super.returnChildLogic(args);
+
+    childLogic.newLeaf({
+      name: 'atLeastOneBlock',
+      componentType: '_block',
+      comparison: 'atLeast',
+      number: 1,
+      setAsBase: true,
+    });
+
+    return childLogic;
+
+  }
+
 }
