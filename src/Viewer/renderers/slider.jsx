@@ -288,7 +288,9 @@ function handlePrevious(e) {
             <StyledSlider width = {`${500}px`} >
             <Spring
                 to={{ x: thumbXPos }}>
-                {props => <StyledThumb style={{left: `${props.x.animation.to - 3}px`}}/>}
+                
+                {(styles) => { return <StyledThumb style={{left: `${thumbXPos - 3}px`}}/>
+            }}
             </Spring>
             {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))}
             </StyledSlider>
