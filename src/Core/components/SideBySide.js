@@ -1341,7 +1341,7 @@ export class SbsGroup extends BlockComponent {
               value: { [arrayKey]: desiredStateVariableValues.specifiedMargins[arrayKey] },
             })
           }
-        } else if (!Number.isFinite(globalDependencyValues.marginsAttr.stateValues.componentSizes[0])) {
+        } else if (!Number.isFinite(globalDependencyValues.marginsAttr.stateValues.componentSize1)) {
 
           if ("0" in desiredStateVariableValues.specifiedMargins) {
             instructions.push({
