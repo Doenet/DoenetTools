@@ -84,7 +84,7 @@ if ($isDraft){
     ";
 
     $result = $conn->query($sql);
-    saveDoenetML($branchId,$dangerousDoenetML);
+    saveDoenetML($contentId,$dangerousDoenetML);
 
 }elseif($isNewTitle == '1'){
         $sql = "
