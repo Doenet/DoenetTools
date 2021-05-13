@@ -194,7 +194,8 @@ export default function ToolRoot({ tool }) {
       }>
         {
           tool}
-        {overlays.map((layer, idx) =>
+        {
+          overlays.map((layer, idx) =>
           idx == overlays.length - 1 ? layer : null,
         )}
       </Suspense>
