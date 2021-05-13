@@ -488,12 +488,18 @@ const FolderInfoPanel = function(props){
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
+      //Only rename if label has changed
     if (e.key === "Enter"){
-      renameItemCallback(label);
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
     }
   }}
   onBlur={()=>{
-    renameItemCallback(label);
+    //Only rename if label has changed
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
   }}/></label>
   <br />
   <br />
@@ -558,11 +564,17 @@ const DoenetMLInfoPanel = function(props){
   onKeyDown={(e)=>{
 
     if (e.key === "Enter"){
-      renameItemCallback(label);
+      //Only rename if label has changed
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
     }
   }}
   onBlur={()=>{
-    renameItemCallback(label);
+      //Only rename if label has changed
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
   }}/></label>
   <br />
   <br />
