@@ -1988,6 +1988,11 @@ export function replacementFromProp({ component, components,
 
   } else {
 
+    if(stateVarObj.hasVariableComponentType) {
+      // evaluate stateVarObj to make sure componentType is calculated and up-to-date
+      stateVarObj.value;
+    }
+
     if (!stateVarObj.componentType) {
       return {
         serializedReplacements: [],

@@ -189,6 +189,15 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: calculateExpressionWithCodes,
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "expressionWithCodes",
+            value: desiredStateVariableValues.expressionWithCodes
+          }]
+        }
+      }
 
     }
 
@@ -1234,8 +1243,8 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
 
 
     instructions.push({
-      setStateVariable: "expressionWithCodes",
-      value: newExpressionWithCodes,
+      setDependency: "expressionWithCodes",
+      desiredValue: newExpressionWithCodes,
     });
 
     for (let ind = 0; ind < stringChildren.length; ind++) {
