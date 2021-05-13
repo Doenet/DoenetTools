@@ -22,7 +22,7 @@ export class ComponentWithSelectableType extends BaseComponent {
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    function addTypeAroundMultipleChildren({ matchedChildren, componentAttributes, parentAttributes }) {
+    function addType({ matchedChildren, componentAttributes, parentAttributes }) {
 
       let type = componentAttributes.type;
       if (!type) {
@@ -35,18 +35,19 @@ export class ComponentWithSelectableType extends BaseComponent {
         type = "number";
       }
 
+      let componentType = type === "letters" ? "text" : type;
+
       return {
         success: true,
         newChildren: [{
-          componentType: type,
+          componentType,
           children: matchedChildren
         }]
       }
     }
 
     sugarInstructions.push({
-      childrenRegex: /..+/,
-      replacementFunction: addTypeAroundMultipleChildren
+      replacementFunction: addType
     });
 
     return sugarInstructions;
@@ -119,10 +120,11 @@ export class ComponentWithSelectableType extends BaseComponent {
         let value;
 
         if (dependencyValues.atMostOneChild.length === 1) {
-          value = convertValueToType(
-            dependencyValues.atMostOneChild[0].stateValues.value,
-            dependencyValues.type
-          );
+          // value = convertValueToType(
+          //   dependencyValues.atMostOneChild[0].stateValues.value,
+          //   dependencyValues.type
+          // );
+          value = dependencyValues.atMostOneChild[0].stateValues.value;
         } else {
           value = null;
         }
@@ -167,21 +169,22 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         type = "number";
       }
 
-      // break any string by white space
+      let componentType = type === "letters" ? "text" : type;
+
+      // break any string by white space and wrap with componentType
       matchedChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
           return [
             ...a,
             ...c.state.value.split(/\s+/)
               .filter(s => s)
-              .map(s => ({ componentType: "string", state: { value: s } }))
+              .map(s => ({ componentType, children: [{ componentType: "string", state: { value: s } }] }))
           ]
         } else {
           return [...a, c]
         }
       }, []);
 
-      // wrap components with type if they aren't that type already
       return {
         success: true,
         newChildren: matchedChildren

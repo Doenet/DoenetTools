@@ -151,6 +151,58 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  // catch bug where componentWithSelectableType wasn't 
+  // converting strings to booleans correctly
+  it('update boolean using string value', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b" />
+    <updateValue name="setTrue" tName="b" newValue="true" type="boolean" label="set true" />
+    <updateValue name="setFalse" tName="b" newValue="false" type="boolean" label="set false" />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', "false");
+
+    cy.get('#\\/setTrue').click();
+    cy.get('#\\/b').should('have.text', "true");
+
+    cy.get('#\\/setTrue').click();
+    cy.get('#\\/b').should('have.text', "true");
+
+    cy.get('#\\/setFalse').click();
+    cy.get('#\\/b').should('have.text', "false");
+
+    cy.get('#\\/setFalse').click();
+    cy.get('#\\/b').should('have.text', "false");
+
+    cy.get('#\\/setTrue').click();
+    cy.get('#\\/b').should('have.text', "true");
+
+  })
+
+  it('update number using string value with operator', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <number name="n" >1</number>
+    <updateValue name="setToSum" tName="n" newValue="1+1" type="number" label="set to 1+1" />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/n').should('have.text', "1");
+
+    cy.get('#\\/setToSum').click();
+    cy.get('#\\/n').should('have.text', "2");
+  })
+
   it('update property', () => {
 
     cy.window().then((win) => {
