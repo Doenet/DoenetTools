@@ -8059,9 +8059,25 @@ export default class Core {
 
     for (let newInstruction of combinedInstructions) {
       if (newInstruction.setStateVariable) {
-        // if (newInstruction.setStateVariable !== stateVariable) {
-        //   throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: specified changing value of ${newInstruction.setStateVariable}, which is not state variable itself.`);
-        // }
+        if (!allStateVariablesAffected.includes(newInstruction.setStateVariable)) {
+          let foundArrayMatch = false;
+          if (stateVarObj.isArrayEntry) {
+            let arrayStateVariables = [stateVarObj.arrayStateVariable];
+            if (stateVarObj.additionalStateVariablesDefined) {
+              for (let vName of stateVarObj.additionalStateVariablesDefined) {
+                let sObj = component.state[vName];
+                if (sObj.isArrayEntry) {
+                  arrayStateVariables.push(sObj.arrayStateVariable)
+                }
+              }
+            }
+            foundArrayMatch = arrayStateVariables.includes(newInstruction.setStateVariable);
+          } 
+          if (!foundArrayMatch) {
+            throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: specified changing value of ${newInstruction.setStateVariable}, which is not a state variable defined with ${stateVariable}.`);
+          }
+        }
+
         // if (!(component.state[stateVariable].essential || newInstruction.allowNonEssential)) {
         //   throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: can't set its value if it is not essential.`);
         // }
