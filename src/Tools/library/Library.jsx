@@ -663,10 +663,10 @@ const ItemInfo = function (){
   
 }
 
-function AddCourseDriveButton(props){
-  const history = useHistory();
+function AddCourseDriveButton(){
+  
   const [addToast, ToastType] = useToast();
-  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
+  // const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
 
   const createNewDrive = useRecoilCallback(({set})=> 
   async ({label,newDriveId,newCourseId,image,color})=>{
@@ -702,25 +702,25 @@ function AddCourseDriveButton(props){
     return result;
   });
 
-  const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
-  async (newDriveId)=>{
-    console.log(">>>deleting newDriveId",newDriveId)
-    //Filter out drive which was just added
-    set(fetchDrivesQuery,(oldDrivesInfo)=>{
-      //Could just unshift the first drive but that could break
-      //this is less brittle
-      let newDrivesInfo = {...oldDrivesInfo}
-      let newDriveIdsAndLabels = [];
-      for (let driveAndLabel of oldDrivesInfo.driveIdsAndLabels){
-        if (driveAndLabel.driveId !== newDriveId){
-          newDriveIdsAndLabels.push(driveAndLabel);
-        }
-      }
-      newDrivesInfo.driveIdsAndLabels = newDriveIdsAndLabels;
-      return newDrivesInfo
-    })
+  // const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
+  // async (newDriveId)=>{
+  //   console.log(">>>deleting newDriveId",newDriveId)
+  //   //Filter out drive which was just added
+  //   set(fetchDrivesQuery,(oldDrivesInfo)=>{
+  //     //Could just unshift the first drive but that could break
+  //     //this is less brittle
+  //     let newDrivesInfo = {...oldDrivesInfo}
+  //     let newDriveIdsAndLabels = [];
+  //     for (let driveAndLabel of oldDrivesInfo.driveIdsAndLabels){
+  //       if (driveAndLabel.driveId !== newDriveId){
+  //         newDriveIdsAndLabels.push(driveAndLabel);
+  //       }
+  //     }
+  //     newDrivesInfo.driveIdsAndLabels = newDriveIdsAndLabels;
+  //     return newDrivesInfo
+  //   })
 
-  });
+  // });
 
 
   function onError({errorMessage}){
@@ -744,12 +744,12 @@ function AddCourseDriveButton(props){
     }).catch((e)=>{
       onError({errorMessage: e.message});
     })
-   setDrivePath({
-    driveId:":",
-    parentFolderId:":",
-    itemId:":",
-    type:""
-  })
+  //  setDrivePath({
+  //   driveId:":",
+  //   parentFolderId:":",
+  //   itemId:":",
+  //   type:""
+  // })
   }}/>
 }
 
@@ -765,16 +765,19 @@ function AddMenuPanel(props){
 
   let addDrives = <>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
-     <AddCourseDriveButton route={props.route} />
+     <AddCourseDriveButton  />
    </Suspense>
    </>
 
-  if (driveId === ""){ return <>{addDrives}</>; }
+  if (driveId === ""){ 
+    return <>
+    <h3>Course</h3>
+  {addDrives}
+  </>; }
 
 
   return <>
-  <h3>Course</h3>
-   {addDrives}
+
   <h3>Folder</h3>
   <Button 
     value="Add Folder" 
