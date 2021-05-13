@@ -337,7 +337,6 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
 export class ComponentListOfListsWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentListOfListsWithSelectableType";
-  static componentTypeSingular = "_componentListWithSelectableType";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -349,7 +348,6 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
 
   static returnSugarInstructions() {
     let sugarInstructions = [];
-    let listClass = this;
 
     let breakIntoListsByParensAndAddType = function ({ matchedChildren, componentAttributes, parentAttributes }) {
 
@@ -377,8 +375,8 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
       return {
         success: true,
         newChildren: results.pieces.map(x => ({
-          componentType: listClass.componentTypeSingular,
-          props: { type },
+          componentType: "_componentListWithSelectableType",
+          attributes: { type },
           children: x,
         }))
       }
@@ -400,7 +398,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
 
     childLogic.newLeaf({
       name: 'atLeastZeroLists',
-      componentType: this.componentTypeSingular,
+      componentType: "_componentListWithSelectableType",
       comparison: 'atLeast',
       number: 0,
       setAsBase: true,

@@ -6,7 +6,7 @@ export default class UpdateValue extends InlineComponent {
   static acceptTname = true;
 
   static get stateVariablesShadowedForReference() {
-    return ["targetedMathName", "newMathValue"]
+    return ["newValue"]
   }
 
   static createAttributesObject(args) {
