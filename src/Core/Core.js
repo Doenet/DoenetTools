@@ -3880,7 +3880,7 @@ export default class Core {
     let entryPrefixes = stateVarObj.entryPrefixes;
 
     if (!entryPrefixes) {
-      entryPrefixes = [stateVariable]
+      entryPrefixes = stateVarObj.entryPrefixes = [stateVariable];
     }
 
 

@@ -357,7 +357,7 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 export function createAttributesFromProps(serializedComponents, componentInfoObjects, flags) {
   for (let component of serializedComponents) {
 
-    let componentClass = componentInfoObjects.standardComponentClasses[component.componentType];
+    let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
     let classAttributes = componentClass.createAttributesObject({ flags });
 
     let attributeLowerCaseMapping = {};
@@ -1083,8 +1083,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             }
           } else if (sugarResults.newAttributes) {
             let newAttributes = sugarResults.newAttributes;
-
-            let attr = Object.keys(newAttributes)[0];
 
             let preSugarIndsFound = [];
 
