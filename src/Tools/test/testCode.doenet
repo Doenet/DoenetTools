@@ -1,1 +1,37 @@
-<p>Use this to test DoenetML</p>
+<slider />
+
+<slider width="1000" showControls/>
+
+
+<slider label="test label" initialNumber="2" showTicks>
+    <number>1</number>
+    <number>2</number>
+    <number>3</number>
+  </slider>
+
+
+
+  <slider showControls initialText="cat">
+    <text>dog</text>
+    <text>cat</text>
+    <text>monkey</text>
+    <text>rabbit</text>
+  </slider>
+
+  <slider name="a" />
+<graph>
+    <point name="b">(3,2)</point>
+ </graph>
+
+<p>test sequence</p>
+<slider label="test label"  showTicks>
+    
+   
+  </slider>
+  <p>end sequence</p>
+
+
+  <graph>
+  <point x="$(source{prop='y'})" y = "$(source{prop='z'})" />
+  </graph>
+
