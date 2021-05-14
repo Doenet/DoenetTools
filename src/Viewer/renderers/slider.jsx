@@ -123,7 +123,7 @@ export default function Slider(props) {
   const [offsetLeft, setOffsetLeft] = useState(0);
   const [startValue, setStartValue] = useState((SVs.sliderType === "text") ? 0 : sorted_points[0]);
   const [endValue, setEndValue] = useState((SVs.sliderType === "text") ? 0 : sorted_points[sorted_points.length - 1]);
-  const [divisionWidth, setDivisionWidth] = useState((SVs.sliderType === "text") ? 500/(SVs.items.length - 1) : 500/(endValue - startValue));
+  const [divisionWidth, setDivisionWidth] = useState((SVs.sliderType === "text") ? SVs.width/(SVs.items.length - 1) : SVs.width/(endValue - startValue));
   const [index, setIndex] = useState(0);
 
 
@@ -285,7 +285,7 @@ function handlePrevious(e) {
             </> : null}
         </div>
         <SubContainer2 onMouseDown = {handleDragEnter} onMouseUp = {handleDragExit} onMouseMove = {handleDragThrough} onMouseLeave = {handleDragExit} >
-            <StyledSlider width = {`${500}px`} data-cy="slider1">
+            <StyledSlider width = {(`${SVs.width}px`)} data-cy="slider1">
             <Spring
                 to={{ x: thumbXPos }}>              
                 {(styles) => { return <StyledThumb style={{left: `${thumbXPos - 3}px`}}
