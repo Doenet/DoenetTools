@@ -204,10 +204,6 @@ export default class Slider extends BaseComponent {
 
     stateVariableDefinitions.preliminaryValue = {
       returnDependencies: () => ({
-        width:{
-          dependencyType: "stateVariable",
-          variableName: "width"
-        },
         sliderType: {
           dependencyType: "stateVariable",
           variableName: "sliderType"
