@@ -172,6 +172,7 @@ CREATE TABLE `drive` (
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `isShared` tinyint(1) DEFAULT '0',
+  `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
   `isDeleted` tinyint(1) DEFAULT '0',
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -203,8 +204,9 @@ CREATE TABLE `drive_content` (
   `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `creationDate` timestamp NULL DEFAULT NULL,
   `isDeleted` int(1) NOT NULL DEFAULT '0',
-  `isReleased` int(1) NOT NULL DEFAULT '0',
-  `isAssigned` int(1) NOT NULL DEFAULT '0',
+  `isReleased` int(1) NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the instructor in course',
+  `isAssigned` int(1) NOT NULL DEFAULT '0' COMMENT 'The content or folder shows to the student',
+  `isPublic` int(1) NOT NULL DEFAULT '0' COMMENT 'The course is available to search for and this content is available',
   `itemType` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `branchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `sortOrder` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -575,4 +577,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-14 21:07:59
+-- Dump completed on 2021-05-14 21:21:39
