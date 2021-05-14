@@ -1151,5 +1151,26 @@ describe('Sequence Tag Tests', function () {
 
   });
 
+  it('number sequence, from and to using strings with operators', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist><sequence from="2-5" to="3+1"/></aslist>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(8);
+      for (let i = 0; i < 8; i++) {
+        expect(children[i].stateValues.value).eq(-3 + i);
+      }
+    })
+  });
+
 });
 

@@ -10,7 +10,9 @@ describe('AnimateFromSequence Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <animateFromSequence name="x" animationMode='increase' animationOn='$b' assignNames='a' animationInterval='100' />
+  <p>value: <number name="a">1</number></p>
+
+  <animateFromSequence name="x" animationMode='increase' animationOn='$b' tName='a' animationInterval='100' />
 
   <booleaninput name="b" />
   
@@ -80,7 +82,9 @@ describe('AnimateFromSequence Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <animateFromSequence name="x" animationMode='increase once' animationOn='$b' assignNames='a' animationInterval='100' />
+  <p>value: <number name="a">1</number></p>
+
+  <animateFromSequence name="x" animationMode='increase once' animationOn='$b' tName='a' animationInterval='100' />
 
   <booleaninput name="b" />
   
@@ -144,7 +148,9 @@ describe('AnimateFromSequence Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <animateFromSequence type="letters" name="x" animationMode='decrease' animationOn='$b' assignNames='a' animationInterval='100' from="e" to="z" step="3" initialSelectedIndex="8" />
+  <p>value: <text name="a">z</text></p>
+
+  <animateFromSequence type="letters" name="x" animationMode='decrease' animationOn='$b' tName='a' animationInterval='100' from="e" to="z" step="3" initialSelectedIndex="8" />
   <booleaninput name="b" />
   
   <p>copy: <copy tname="a" assignNames="a2" /></p>
@@ -213,7 +219,9 @@ describe('AnimateFromSequence Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <animateFromSequence type="letters" name="x" animationMode='decrease once' animationOn='$b' assignNames='a' animationInterval='100' from="e" to="z" step="3" initialSelectedIndex="8" />
+  <p>value: <text name="a">z</text></p>
+
+  <animateFromSequence type="letters" name="x" animationMode='decrease once' animationOn='$b' tName='a' animationInterval='100' from="e" to="z" step="3" initialSelectedIndex="8" />
   <booleaninput name="b" />
   
   <p>copy: <copy tname="a" assignNames="a2" /></p>
@@ -273,7 +281,9 @@ describe('AnimateFromSequence Tag Tests', function () {
         doenetML: `
   <text>a</text>
 
-  <animateFromSequence name="x" animationMode='oscillate' animationOn='$b' assignNames='a' animationInterval='100' from="-1000" to="1000" step="100" exclude="0 200 -200 300 -300 400 -400 700 -700 800 -800" initialSelectedIndex="3" />
+  <p>value: <number name="a">-600</number></p>
+
+  <animateFromSequence name="x" animationMode='oscillate' animationOn='$b' tName='a' animationInterval='100' from="-1000" to="1000" step="100" exclude="0 200 -200 300 -300 400 -400 700 -700 800 -800" initialSelectedIndex="3" />
   <booleaninput name="b" />
   
   <p>copy: <copy tname="a" assignNames="a2" /></p>

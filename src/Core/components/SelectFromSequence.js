@@ -1,9 +1,9 @@
 import Sequence from './Sequence';
 import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
-import { numberToLetters, lettersToNumber } from './Sequence';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { textToAst } from '../utils/math';
+import { calculateSequenceParameters, numberToLetters, lettersToNumber } from '../utils/sequence';
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectFromSequence";
@@ -403,7 +403,10 @@ export default class SelectFromSequence extends Sequence {
       excludes[ind] = exc;
     }
 
-    this.calculateSequenceParameters(sequencePars)
+    // TODO: this presumably does not work anymore since
+    // calculateSequenceParameters returns results rather
+    // than modifying input parameters
+    calculateSequenceParameters(sequencePars)
 
     let nOptions = sequencePars.length;
     let excludeIndices = [];
