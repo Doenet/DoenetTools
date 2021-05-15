@@ -337,6 +337,54 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('chained updates', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="x">x</math>
+    <math name="y">y</math>
+    
+    <updateValue name="trip" tName="x" newValue="3$x" label="update" />
+    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip"  />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+
+    cy.get('#\\/quad').should('not.exist');
+
+    cy.get('#\\/trip').click();
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3x')
+    });
+    // since second change is asynchronous, need to use other form so that cypress will wait
+    cy.get('#\\/y').find('.mjx-mrow').should('have.text', '4y')
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4y')
+    });
+
+    cy.get('#\\/trip').click();
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9x')
+    });
+    // since second change is asynchronous, need to use other form so that cypress will wait
+    // (keep other form of test to make it clear we aren't actually changing anything)
+    cy.get('#\\/y').find('.mjx-mrow').should('have.text', '16y')
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('16y')
+    });
+
+  })
+
   it('update based on trigger', () => {
 
     cy.window().then((win) => {
@@ -767,6 +815,575 @@ describe('UpdateValue Tag Tests', function () {
         expect(text.trim()).equal('16y')
       });
 
+
+    });
+  })
+
+
+  it('update set', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Boolean to swap: <boolean name="b" /></p>
+    <p>Say hello: <text name="hello"></text></p>
+    <p>Count: <number name="n">1</number></p>
+
+    <updateValueSet label="perform updates" >
+      <updateValue tName="b" newValue="not$b" type="boolean" />
+      <updateValue tName="hello" newValue="$hello hello" type="text" />
+      <updateValue tName="n" newValue="$n+1" type="number" />
+
+    </updateValueSet>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', "");
+    cy.get('#\\/n').should('have.text', "1");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "true");
+    cy.get('#\\/hello').should('have.text', " hello");
+    cy.get('#\\/n').should('have.text', "2");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', " hello hello");
+    cy.get('#\\/n').should('have.text', "3");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "true");
+    cy.get('#\\/hello').should('have.text', " hello hello hello");
+    cy.get('#\\/n').should('have.text', "4");
+  })
+
+  it('update set and chain to updatevalue', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Boolean to swap: <boolean name="b" /></p>
+    <p>Say hello: <text name="hello"></text></p>
+    <p>Count: <number name="n">1</number></p>
+
+    <updateValueSet label="perform updates" >
+      <updateValue tName="b" newValue="not$b" type="boolean" />
+      <updateValue tName="hello" newValue="$hello hello" type="text" />
+
+    </updateValueSet>
+
+    <updateValue tName="n" newValue="$n+1" type="number" triggerWithTname="_updatevalueset1" />
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', "");
+    cy.get('#\\/n').should('have.text', "1");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "true");
+    cy.get('#\\/hello').should('have.text', " hello");
+    cy.get('#\\/n').should('have.text', "2");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', " hello hello");
+    cy.get('#\\/n').should('have.text', "3");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "true");
+    cy.get('#\\/hello').should('have.text', " hello hello hello");
+    cy.get('#\\/n').should('have.text', "4");
+  })
+
+  it('update set and chain to updatevalueset', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Boolean to swap: <boolean name="b" /></p>
+    <p>Say hello: <text name="hello"></text></p>
+    <p>Count: <number name="n">1</number></p>
+    <p>Count down: <number name="m">5</number></p>
+
+    <updateValueSet label="perform updates" >
+      <updateValue tName="b" newValue="not$b" type="boolean" />
+      <updateValue tName="hello" newValue="$hello hello" type="text" />
+    </updateValueSet>
+
+    <updateValueSet label="perform updates" triggerWithTname="_updatevalueset1" >
+      <updateValue tName="n" newValue="$n+1" type="number"  />
+      <updateValue tName="m" newValue="$m-1" type="number"  />
+    </updateValueSet>
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', "");
+    cy.get('#\\/n').should('have.text', "1");
+    cy.get('#\\/m').should('have.text', "5");
+    cy.get('#\\/_updatevalueset2').should('not.exist');
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "true");
+    cy.get('#\\/hello').should('have.text', " hello");
+    cy.get('#\\/n').should('have.text', "2");
+    cy.get('#\\/m').should('have.text', "4");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', " hello hello");
+    cy.get('#\\/n').should('have.text', "3");
+    cy.get('#\\/m').should('have.text', "3");
+
+    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/b').should('have.text', "true");
+    cy.get('#\\/hello').should('have.text', " hello hello hello");
+    cy.get('#\\/n').should('have.text', "4");
+    cy.get('#\\/m').should('have.text', "2");
+  })
+
+  it('update set based on trigger', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="P">(-1,2)</point>
+  </graph>
+  <math name="x">x</math>
+  <math name="y">y</math>
+  
+  <updateValueSet triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <updateValue name="trip" tName="x" newValue="3$x" />
+    <updateValue name="quad" tName="y" newValue="4$y" />
+  </updateValueSet>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+
+    cy.get('#\\/trip').should('not.exist');
+    cy.get('#\\/quad').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: 4 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: 5 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+
+
+    });
+  })
+
+  it('triggerWhen supercedes chaining for updatevalueset', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+
+    <p>Boolean to swap: <boolean name="b" /></p>
+    <p>Say hello: <text name="hello"></text></p>
+    <p>Count: <number name="n">1</number></p>
+    <p>Count down: <number name="m">5</number></p>
+
+    <updateValueSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+      <updateValue tName="b" newValue="not$b" type="boolean" />
+      <updateValue tName="hello" newValue="$hello hello" type="text" />
+    </updateValueSet>
+
+    <updateValueSet label="perform updates" triggerWithTname="_updatevalueset1" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" >
+      <updateValue tName="n" newValue="$n+1" type="number"  />
+      <updateValue tName="m" newValue="$m-1" type="number"  />
+    </updateValueSet>
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', "");
+    cy.get('#\\/n').should('have.text', "1");
+    cy.get('#\\/m').should('have.text', "5");
+    cy.get('#\\/_updatevalueset1').should('not.exist');
+    cy.get('#\\/_updatevalueset2').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', "");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "4");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', "");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "4");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "4");
+  
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "4");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: -4 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "3");
+      cy.get('#\\/m').should('have.text', "3");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: -5 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "3");
+      cy.get('#\\/m').should('have.text', "3");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', " hello hello");
+      cy.get('#\\/n').should('have.text', "3");
+      cy.get('#\\/m').should('have.text', "3");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', " hello hello");
+      cy.get('#\\/n').should('have.text', "3");
+      cy.get('#\\/m').should('have.text', "3");
+
+    });
+  })
+
+  it('updatevalueset supercedes triggerWhen for updateValue children', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+
+    <p>Boolean to swap: <boolean name="b" /></p>
+    <p>Say hello: <text name="hello"></text></p>
+    <p>Count: <number name="n">1</number></p>
+
+    <updateValueSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+      <updateValue tName="b" newValue="not$b" type="boolean" />
+      <updateValue tName="hello" newValue="$hello hello" type="text" />
+      <updateValue tName="n" newValue="$n+1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
+    </updateValueSet>
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', "");
+    cy.get('#\\/n').should('have.text', "1");
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', "");
+      cy.get('#\\/n').should('have.text', "1");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', "");
+      cy.get('#\\/n').should('have.text', "1");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+  
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: -4 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: -5 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', " hello hello");
+      cy.get('#\\/n').should('have.text', "3");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', " hello hello");
+      cy.get('#\\/n').should('have.text', "3");
+
+    });
+  })
+
+  it('updatevalueset supercedes chaining for updateValue children', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+
+    <p>Boolean to swap: <boolean name="b" /></p>
+    <p>Say hello: <text name="hello"></text></p>
+    <p>Count: <number name="n">1</number></p>
+    <p>Count down: <number name="m">5</number></p>
+
+    <updateValueSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+      <updateValue tName="b" newValue="not$b" type="boolean" />
+      <updateValue tName="hello" newValue="$hello hello" type="text" />
+      <updateValue tName="n" newValue="$n+1" type="number" triggerWithTname="uv" />
+    </updateValueSet>
+
+    <updateValue name="uv" tName="m" newValue="$m-1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/b').should('have.text', "false");
+    cy.get('#\\/hello').should('have.text', "");
+    cy.get('#\\/n').should('have.text', "1");
+    cy.get('#\\/m').should('have.text', "5");
+    cy.get('#\\/_updatevalueset1').should('not.exist');
+    cy.get('#\\/uv').should('not.exist');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -1, y: -7 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', "");
+      cy.get('#\\/n').should('have.text', "1");
+      cy.get('#\\/m').should('have.text', "4");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 3, y: -4 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', "");
+      cy.get('#\\/n').should('have.text', "1");
+      cy.get('#\\/m').should('have.text', "4");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 1, y: 7 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "4");
+  
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 5, y: 9 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "4");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -3, y: -4 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "3");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -6, y: -5 });
+      cy.get('#\\/b').should('have.text', "true");
+      cy.get('#\\/hello').should('have.text', " hello");
+      cy.get('#\\/n').should('have.text', "2");
+      cy.get('#\\/m').should('have.text', "3");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 4, y: 2 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', " hello hello");
+      cy.get('#\\/n').should('have.text', "3");
+      cy.get('#\\/m').should('have.text', "3");
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: 9, y: 7 });
+      cy.get('#\\/b').should('have.text', "false");
+      cy.get('#\\/hello').should('have.text', " hello hello");
+      cy.get('#\\/n').should('have.text', "3");
+      cy.get('#\\/m').should('have.text', "3");
 
     });
   })
