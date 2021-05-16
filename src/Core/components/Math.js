@@ -23,7 +23,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       validValues: ["text", "latex"]
     };
-    // let simply==="" or simplify="true" be full simplify
+    // let simplify="" or simplify="true" be full simplify
     attributes.simplify = {
       createComponentOfType: "text",
       createStateVariable: "simplify",
@@ -1147,16 +1147,15 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       })
     }
 
-    let simplifiedExpression = desiredExpression.simplify();
     instructions.push({
       setStateVariable: "unnormalizedValue",
-      value: simplifiedExpression,
+      value: desiredExpression,
     });
 
     if (stringChildren.length === 0) {
       instructions.push({
         setDependency: "valueShadow",
-        desiredValue: simplifiedExpression,
+        desiredValue: desiredExpression,
       });
     }
     return {
@@ -1164,6 +1163,18 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       instructions
     }
 
+  }
+
+  if(mathChildren.length === 1 && stringChildren.length === 0) {
+    return {
+      success: true,
+      instructions: [{
+        setDependency: "mathChildren",
+        desiredValue: desiredExpression,
+        childIndex: 0,
+        variableIndex: 0,
+      }]
+    }
   }
 
   // first calculate expression pieces to make sure really can update

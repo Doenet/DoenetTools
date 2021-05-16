@@ -1191,7 +1191,6 @@ describe('MathInput Tag Tests', function () {
     });
   })
 
-
   it('mathinput based on immediate value of mathinput', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1379,8 +1378,6 @@ describe('MathInput Tag Tests', function () {
     `}, "*");
     });
 
-    // verify fixed bug where didn't reduce size of a vector
-
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.get('#\\/a textarea').type('f(x){enter}', { force: true });
@@ -1458,5 +1455,594 @@ describe('MathInput Tag Tests', function () {
 
 
   })
+
+  it('display digits', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
+    <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
+
+    <p>b: <math name="b">10e^(3y)</math></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
+    <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(2x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(2x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10e3y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+    });
+
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}2.047529344518{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000073013048309{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.15x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(345.1538932x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2.047529345e0.000007301304831y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.05e0.0000073y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2.047529345e0.000007301304831y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 345.15, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 2.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(345.14x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6.05e0.0000073y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('6.05e0.0000073y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6.05e0.0000073y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 6.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 6.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 6.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 6.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
+    });
+
+  })
+
+  it('display decimals', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" displayDecimals="2" prefill="sin(2x)"/></p>
+    <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
+
+    <p>b: <math name="b">10e^(3y)</math></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="8" /></p>
+    <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(2x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(2x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10e3y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+    });
+
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}2.047529344518{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000073013048309{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.15x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(345.1538932x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2.047529345e0.000007301304831y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.04752934e0.0000073y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2.047529345e0.000007301304831y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 345.15, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 2.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(345.14x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(345.14x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6.04752934e0.0000073y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('6.04752934e0.0000073y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6.04752934e0.0000073y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 6.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 6.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 6.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 6.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
+    });
+
+  })
+
+  it('display small as zero', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
+    <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
+
+    <p>b: <math name="b">10e^(3y)</math></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
+    <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
+
+    <p>c: <mathinput name="c" displayDigits="5" prefill="sin(2x)" displaySmallAsZero /></p>
+    <p>c2: <copy tname="c" prop="value" assignNames="c2" /></p>
+
+    <p>d: <math name="d">10e^(3y)</math></p>
+    <p>d2: <mathinput name="d2" bindValueTo="$d"  displayDigits="3" displaySmallAsZero /></p>
+    <p>d3: <copy tname="d2" prop="value" assignNames="d3" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(2x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(2x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10e3y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+    cy.get('#\\/c .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(2x)')
+    })
+    cy.get('#\\/c2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(2x)')
+    })
+    cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+    cy.get('#\\/d2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10e3y')
+    })
+    cy.get('#\\/d3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('10e3y')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/c'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/c'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/c2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 2, 'x']]);
+      expect(components['/d'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/d2'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/d2'].stateValues.valueForDisplay.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+      expect(components['/d3'].stateValues.value.tree).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
+    });
+
+    cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}0.000000000000000472946384739473{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}0.0000000000000934720357236{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000000000000073013048309{enter}', { force: true });
+    cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}{backspace}0.000000000000000472946384739473{enter}', { force: true });
+    cy.get('#\\/d2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}0.0000000000000934720357236{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000000000000073013048309{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(4.7295·10−16x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(4.729463847⋅10−16x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9.347203572⋅10−14e7.301304831⋅10−15y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9.35·10−14e7.3·10−15y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9.347203572⋅10−14e7.301304831⋅10−15y')
+    })
+    cy.get('#\\/c .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(0)')
+    })
+    cy.get('#\\/c2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(4.729463847⋅10−16x)')
+    })
+    cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9.347203572⋅10−14e7.301304831⋅10−15y')
+    })
+    cy.get('#\\/d2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9.35·10−14')
+    })
+    cy.get('#\\/d3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9.347203572⋅10−14e7.301304831⋅10−15y')
+    })
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 9.35e-14, ['^', 'e', ['*', 7.3e-15, 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
+      expect(components['/c'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/c'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 0]);
+      expect(components['/c2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/d'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
+      expect(components['/d2'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
+      expect(components['/d2'].stateValues.valueForDisplay.tree).eqls(9.35e-14);
+      expect(components['/d3'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
+    });
+
+    cy.get('#\\/a textarea').type('{home}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}5{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}8{enter}', { force: true });
+    cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}3{enter}', { force: true });
+    cy.get('#\\/d2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(5.7295·10−16x)')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(5.7295⋅10−16x)')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('8.35⋅10−14e7.3⋅10−15y')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('8.35·10−14e7.3·10−15y')
+    })
+    cy.get('#\\/b3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('8.35⋅10−14e7.3⋅10−15y')
+    })
+    cy.get('#\\/c .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('sin(30)')
+    })
+    cy.get('#\\/c2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(30)')
+    })
+    cy.get('#\\/d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6.35⋅10−14')
+    })
+    cy.get('#\\/d2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('6.35·10−14')
+    })
+    cy.get('#\\/d3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('6.35⋅10−14')
+    })
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
+      expect(components['/b'].stateValues.value.tree).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
+      expect(components['/b2'].stateValues.value.tree).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
+      expect(components['/b3'].stateValues.value.tree).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
+      expect(components['/c'].stateValues.value.tree).eqls(['apply', 'sin', 30]);
+      expect(components['/c'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 30]);
+      expect(components['/c2'].stateValues.value.tree).eqls(['apply', 'sin', 30]);
+      expect(components['/d'].stateValues.value.tree).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(components['/d2'].stateValues.value.tree).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(components['/d2'].stateValues.valueForDisplay.tree).eqls(6.35e-14);
+      expect(components['/d3'].stateValues.value.tree).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+    });
+
+  })
+
+  it('display digits, change from downstream', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" displayDigits="5" prefill="3"/></p>
+
+    <p>b: <math name="b">5</math></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
+
+    <graph>
+      <point name="p">($a, $b2)</point>
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eq(3);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eq(3)
+      expect(components['/p'].stateValues.xs[0].tree).eq(3)
+      expect(components['/b'].stateValues.value.tree).eq(5);
+      expect(components['/b2'].stateValues.value.tree).eq(5);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eq(5);
+      expect(components['/p'].stateValues.xs[1].tree).eq(5)
+    });
+
+    cy.get('#\\/a textarea').type('{end}{backspace}2.4295639461593{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{end}{backspace}9.3935596792746{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.4296')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9.393559679')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9.39')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eq(2.4295639461593);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eq(2.4296)
+      expect(components['/p'].stateValues.xs[0].tree).eq(2.4295639461593)
+      expect(components['/b'].stateValues.value.tree).eq(9.3935596792746);
+      expect(components['/b2'].stateValues.value.tree).eq(9.3935596792746);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eq(9.39);
+      expect(components['/p'].stateValues.xs[1].tree).eq(9.3935596792746)
+    });
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/p'].movePoint({ x: 7.936497798143, y: 2.142218345836 });
+
+      // have to add 'have.text' version to get it to wait
+      cy.get('#\\/a .mq-editable-field').should('have.text', '7.9365')
+      cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7.9365')
+      })
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2.142218346')
+      })
+      cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.14')
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/a'].stateValues.value.tree).eq(7.936497798143);
+        expect(components['/a'].stateValues.valueForDisplay.tree).eq(7.9365)
+        expect(components['/p'].stateValues.xs[0].tree).eq(7.936497798143)
+        expect(components['/b'].stateValues.value.tree).eq(2.142218345836);
+        expect(components['/b2'].stateValues.value.tree).eq(2.142218345836);
+        expect(components['/b2'].stateValues.valueForDisplay.tree).eq(2.14);
+        expect(components['/p'].stateValues.xs[1].tree).eq(2.142218345836)
+      });
+
+    })
+
+
+  })
+
+  it('display decimals, change from downstream', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" displayDecimals="4" prefill="3"/></p>
+
+    <p>b: <math name="b">5</math></p>
+    <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDecimals="2" /></p>
+
+    <graph>
+      <point name="p">($a, $b2)</point>
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eq(3);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eq(3)
+      expect(components['/p'].stateValues.xs[0].tree).eq(3)
+      expect(components['/b'].stateValues.value.tree).eq(5);
+      expect(components['/b2'].stateValues.value.tree).eq(5);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eq(5);
+      expect(components['/p'].stateValues.xs[1].tree).eq(5)
+    });
+
+    cy.get('#\\/a textarea').type('{end}{backspace}2.4295639461593{enter}', { force: true });
+    cy.get('#\\/b2 textarea').type('{end}{backspace}9.3935596792746{enter}', { force: true }).blur();
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.4296')
+    })
+    cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9.393559679')
+    })
+    cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('9.39')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eq(2.4295639461593);
+      expect(components['/a'].stateValues.valueForDisplay.tree).eq(2.4296)
+      expect(components['/p'].stateValues.xs[0].tree).eq(2.4295639461593)
+      expect(components['/b'].stateValues.value.tree).eq(9.3935596792746);
+      expect(components['/b2'].stateValues.value.tree).eq(9.3935596792746);
+      expect(components['/b2'].stateValues.valueForDisplay.tree).eq(9.39);
+      expect(components['/p'].stateValues.xs[1].tree).eq(9.3935596792746)
+    });
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/p'].movePoint({ x: 7.936497798143, y: 2.142218345836 });
+
+      // have to add 'have.text' version to get it to wait
+      cy.get('#\\/a .mq-editable-field').should('have.text', '7.9365')
+      cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7.9365')
+      })
+      cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2.142218346')
+      })
+      cy.get('#\\/b2 .mq-editable-field').invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2.14')
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/a'].stateValues.value.tree).eq(7.936497798143);
+        expect(components['/a'].stateValues.valueForDisplay.tree).eq(7.9365)
+        expect(components['/p'].stateValues.xs[0].tree).eq(7.936497798143)
+        expect(components['/b'].stateValues.value.tree).eq(2.142218345836);
+        expect(components['/b2'].stateValues.value.tree).eq(2.142218345836);
+        expect(components['/b2'].stateValues.valueForDisplay.tree).eq(2.14);
+        expect(components['/p'].stateValues.xs[1].tree).eq(2.142218345836)
+      });
+
+    })
+
+
+  })
+
 
 });

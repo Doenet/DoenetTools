@@ -235,7 +235,7 @@ export default class Slider extends BaseComponent {
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
-          succes: true,
+          success: true,
           instructions: [{
             setStateVariable: "preliminaryValue",
             value: desiredStateVariableValues.preliminaryValue

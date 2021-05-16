@@ -43,7 +43,7 @@ export default class MathInput extends DoenetRenderer {
     // };
 
     this.handlePressEnter = this.handlePressEnter.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
+    // this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
@@ -51,16 +51,17 @@ export default class MathInput extends DoenetRenderer {
     // this.handleDragThrough = this.handleDragThrough.bind(this);
     // this.handleDragExit = this.handleDragExit.bind(this);
 
-    this.mathExpression = this.doenetSvData.value;
-    this.latexValue = stripLatex(this.doenetSvData.value.toLatex());
+    this.mathExpression = this.doenetSvData.valueForDisplay;
+    this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
 
     // this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
     // this.inputRef = React.createRef();
     // this.mathInputRef = React.createRef();
 
 
-    this.valueToRevertTo = this.mathExpression;
-    this.latexValueToRevertTo = this.latexValue;
+    this.valueToRevertTo = this.doenetSvData.value;
+    this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
+    // this.latexValueToRevertTo = this.latexValue;
     // this.previewValue = "";
 
     //Remove __ value so it doesn't show
@@ -96,9 +97,18 @@ export default class MathInput extends DoenetRenderer {
   }
 
   updateImmediateValueFromLatex(text) {
+    // update immediateValue to the math expression corresponding to text
+    // if the math expression corresponding to text is different 
+    // from the current math expression
+
+    // to detect changes only due to a different value
+    // (and not to other differences, in particular to representation of scientific notation)
+    // convert the latexValue to a math expression rather than using the current math expression
+    let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
+
     this.latexValue = text;
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
-    if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
+    if (!newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
         mathExpression: newMathExpression
@@ -163,7 +173,9 @@ export default class MathInput extends DoenetRenderer {
 
   handlePressEnter(e) {
     this.valueToRevertTo = this.doenetSvData.immediateValue;
-    this.latexValueToRevertTo = this.latexValue;
+    this.valueForDisplayToRevertTo = this.mathExpression;
+
+    // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
     }
@@ -173,17 +185,17 @@ export default class MathInput extends DoenetRenderer {
     this.forceUpdate();
   }
 
-  handleKeyDown(e) {
-    if (e.key === "Escape") {
-      if (!this.mathExpression.equalsViaSyntax(this.valueToRevertTo)) {
-        this.mathExpression = this.valueToRevertTo;
-        this.actions.updateImmediateValue({
-          mathExpression: this.valueToRevertTo
-        });
-        this.forceUpdate();
-      }
-    }
-  }
+  // handleKeyDown(e) {
+  //   if (e.key === "Escape") {
+  //     if (!this.mathExpression.equalsViaSyntax(this.valueForDisplayToRevertTo)) {
+  //       this.mathExpression = this.valueForDisplayToRevertTo;
+  //       this.actions.updateImmediateValue({
+  //         mathExpression: this.valueToRevertTo
+  //       });
+  //       this.forceUpdate();
+  //     }
+  //   }
+  // }
 
   handleFocus(e) {
     this.focused = true;
@@ -193,11 +205,13 @@ export default class MathInput extends DoenetRenderer {
   handleBlur(e) {
     this.focused = false;
     this.valueToRevertTo = this.doenetSvData.immediateValue;
-    this.latexValueToRevertTo = this.latexValue;
+    this.valueForDisplayToRevertTo = this.mathExpression;
+    // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
     }
     this.forceUpdate();
+
   }
 
   onChangeHandler(e) {
@@ -222,14 +236,19 @@ export default class MathInput extends DoenetRenderer {
       surroundingBorderColor = "#82a5ff";
     }
 
-    if (!this.valueToRevertTo.equalsViaSyntax(this.doenetSvData.value)) {
-      this.mathExpression = this.doenetSvData.value;
+    if (!this.valueForDisplayToRevertTo.equalsViaSyntax(this.doenetSvData.valueForDisplay)) {
+      // The valueForDisplay coming from the mathInput component
+      // is not the same as the renderer's value
+      // so we change the renderer's value to match
+
+      this.mathExpression = this.doenetSvData.valueForDisplay;
       this.latexValue = stripLatex(this.mathExpression.toLatex());
       if (this.latexValue === '\uFF3F') {
         this.latexValue = "";
       }
       this.valueToRevertTo = this.doenetSvData.value;
-      this.latexValueToRevertTo = this.latexValue;
+      this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
+      // this.latexValueToRevertTo = this.latexValue;
 
     }
 

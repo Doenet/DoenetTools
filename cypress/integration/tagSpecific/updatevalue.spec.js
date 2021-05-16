@@ -346,8 +346,8 @@ describe('UpdateValue Tag Tests', function () {
     <math name="x">x</math>
     <math name="y">y</math>
     
-    <updateValue name="trip" tName="x" newValue="3$x" label="update" />
-    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip"  />
+    <updateValue name="trip" tName="x" newValue="3$x" label="update" simplify />
+    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip" simplify />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -396,7 +396,7 @@ describe('UpdateValue Tag Tests', function () {
     </graph>
     <math name="x">x</math>
     
-    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    <updateValue name="trip" tName="x" newValue="3$x" simplify triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -486,8 +486,8 @@ describe('UpdateValue Tag Tests', function () {
     <math name="x">x</math>
     <math name="y">y</math>
     
-    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
-    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip"  />
+    <updateValue name="trip" tName="x" newValue="3$x" simplify triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    <updateValue name="quad" tName="y" newValue="4$y" simplify triggerWithTname="trip"  />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -609,8 +609,8 @@ describe('UpdateValue Tag Tests', function () {
     </graph>
     <math name="x">x</math>
     
-    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
-    <updateValue name="quad" tName="x" newValue="4$x" triggerWithTname="trip"  />
+    <updateValue name="trip" tName="x" newValue="3$x" simplify triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    <updateValue name="quad" tName="x" newValue="4$x" simplify triggerWithTname="trip"  />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -712,8 +712,8 @@ describe('UpdateValue Tag Tests', function () {
     <math name="x">x</math>
     <math name="y">y</math>
     
-    <updateValue name="trip" tName="x" newValue="3$x" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
-    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
+    <updateValue name="trip" tName="x" newValue="3$x" simplify triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
+    <updateValue name="quad" tName="y" newValue="4$y" simplify triggerWithTname="trip" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -965,8 +965,8 @@ describe('UpdateValue Tag Tests', function () {
   <math name="y">y</math>
   
   <updateValueSet triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
-    <updateValue name="trip" tName="x" newValue="3$x" />
-    <updateValue name="quad" tName="y" newValue="4$y" />
+    <updateValue name="trip" tName="x" newValue="3$x" simplify />
+    <updateValue name="quad" tName="y" newValue="4$y" simplify />
   </updateValueSet>
   `}, "*");
     });
