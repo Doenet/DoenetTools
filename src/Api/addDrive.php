@@ -12,7 +12,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
+$isPublic = mysqli_real_escape_string($conn,$_REQUEST["isPublic"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 $image = mysqli_real_escape_string($conn,$_REQUEST["image"]);
@@ -25,9 +25,9 @@ $message = "";
 if ($driveId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing driveId';
-}elseif ($courseId == ""){
+}elseif ($isPublic == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing courseId';
+  $message = 'Internal Error: missing isPublic';
 }elseif ($label == ""){
   $success = FALSE;
   $message = 'Internal Error: missing label';
@@ -55,9 +55,9 @@ if ($type === "new course drive"){
 
 $sql = "
 INSERT INTO drive
-(driveId,label,driveType,isShared,courseId,image,color)
+(driveId,label,driveType,isShared,isPublic,image,color)
 VALUES
-('$driveId','$label','$contentOrCourse','0','$courseId','$image','$color')
+('$driveId','$label','$contentOrCourse','0','$isPublic','$image','$color')
 ";
 
 $result = $conn->query($sql); 
