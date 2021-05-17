@@ -189,7 +189,9 @@ export default function ToolRoot({ tool }) {
   return (
     <ProfileContext.Provider value={profile}>
       {/* <GlobalStyle /> */}
-      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      <Suspense 
+      fallback={
+      <LoadingFallback>loading...</LoadingFallback>}>
         {tool}
         {overlays.map((layer, idx) =>
           idx == overlays.length - 1 ? layer : null,

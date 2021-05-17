@@ -53,7 +53,7 @@ const Background = styled.div`
   background-color: hsl(0, 0%, 99%);
 `;
 
-const DragHandle = styled.div`
+const DragHandles = styled.div`
   flex: 0 0 ${({ $handleSize }) => $handleSize}px;
   display: flex;
   align-items: center;
@@ -163,7 +163,7 @@ export default function DragPanel({
       style={direction.drag[0] === 'x' ? { width: dir } : { height: dir }}
     >
       <Background $vertical={direction.vertical}>{children}</Background>
-      <DragHandle
+      <DragHandles
         data-cy="panelDragHandle"
         $vertical={direction.vertical}
         $rounding={direction.rounding}
@@ -173,7 +173,7 @@ export default function DragPanel({
         <FontAwesomeIcon
           icon={direction.vertical ? faGripLinesVertical : faGripLines}
         />
-      </DragHandle>
+      </DragHandles>
     </Wrapper>
   );
 }
