@@ -309,7 +309,7 @@ export default class VariantControl extends BaseComponent {
         // from shared parameters
 
         // random number in [0, 1)
-        let rand = dependencyValues.selectRng.random();
+        let rand = dependencyValues.selectRng();
         // random integer from 0 to nVariants-1
         let selectedVariantNumber = Math.floor(rand * dependencyValues.nVariantsSpecified);
 

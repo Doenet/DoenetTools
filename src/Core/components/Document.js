@@ -472,7 +472,7 @@ export default class Document extends BaseComponent {
 
       if (variantNumber === undefined) {
         // if variant number wasn't specifed, generate randomly
-        let rand = sharedParameters.selectRng.random();
+        let rand = sharedParameters.selectRng();
         variantNumber = Math.floor(rand * nVariants);
 
       }

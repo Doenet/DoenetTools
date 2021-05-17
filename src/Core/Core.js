@@ -2,7 +2,7 @@ import * as ComponentTypes from './ComponentTypes'
 import readOnlyProxyHandler from './ReadOnlyProxyHandler';
 import ParameterStack from './ParameterStack';
 import Numerics from './Numerics';
-import MersenneTwister from 'mersenne-twister';
+import seedrandom from 'seedrandom';
 import me from 'math-expressions';
 import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
@@ -284,8 +284,8 @@ export default class Core {
       // this.parameterStack.parameters.seed = '47';
       this.parameterStack.parameters.seed = this.parameterStack.parameters.hashStringToInteger(Date.now().toString());
     }
-    this.parameterStack.parameters.selectRng = new MersenneTwister(this.parameterStack.parameters.seed);
-    this.parameterStack.parameters.rngClass = MersenneTwister;
+    this.parameterStack.parameters.selectRng = new seedrandom(this.parameterStack.parameters.seed);
+    this.parameterStack.parameters.rngClass = seedrandom;
   }
 
   expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {

@@ -187,7 +187,7 @@ export default class Choiceinput extends Input {
           // https://stackoverflow.com/a/12646864
           choiceOrder = [...Array(numberChoices).keys()]
           for (let i = numberChoices - 1; i > 0; i--) {
-            const rand = dependencyValues.selectRng.random();
+            const rand = dependencyValues.selectRng();
             const j = Math.floor(rand * (i + 1));
             [choiceOrder[i], choiceOrder[j]] = [choiceOrder[j], choiceOrder[i]];
           }
