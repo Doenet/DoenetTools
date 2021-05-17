@@ -677,7 +677,6 @@ export const fetchDrivesSelector = selector({
     }
     if (labelTypeDriveIdColorImage.type === "new content drive"){
       newDrive = {
-        courseId:null,
         driveId:labelTypeDriveIdColorImage.newDriveId,
         isShared:"0",
         label:labelTypeDriveIdColorImage.label,
@@ -691,7 +690,6 @@ export const fetchDrivesSelector = selector({
   // .then((resp)=>console.log(">>>resp",resp.data))
     }else if (labelTypeDriveIdColorImage.type === "new course drive"){
       newDrive = {
-        courseId:null,
         driveId:labelTypeDriveIdColorImage.newDriveId,
         isShared:"0",
         label:labelTypeDriveIdColorImage.label,

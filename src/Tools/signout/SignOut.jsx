@@ -12,7 +12,7 @@ export default function SignOut() {
     axios
       .get('/api/signOut.php', {params: {}})
       .then((resp) => {
-      console.log(">>>signout resp",resp)
+      // console.log(">>>signout resp",resp)
       setSignOutAttempted(true);
       })
       .catch((error) => {

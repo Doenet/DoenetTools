@@ -658,7 +658,7 @@ const ItemInfo = function (){
         itemInfo={itemInfo}
         />
       }
-   
+   x
     }
   
 }
@@ -669,11 +669,11 @@ function AddCourseDriveButton(){
   // const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
 
   const createNewDrive = useRecoilCallback(({set})=> 
-  async ({label,newDriveId,newCourseId,image,color})=>{
+  async ({label,newDriveId,image,color})=>{
     let newDrive = {
-      courseId:newCourseId,
       driveId:newDriveId,
       isShared:"0",
+      isPublic:"0",
       label,
       type: "course",
       image,
@@ -682,7 +682,7 @@ function AddCourseDriveButton(){
     }
     const payload = { params:{
       driveId:newDriveId,
-      courseId:newCourseId,
+      isPublic:"0",
       label,
       type:"new course drive",
       image,
@@ -730,11 +730,10 @@ function AddCourseDriveButton(){
   return <Button value="Create a New Course" data-cy="createNewCourseButton" callback={()=>{
     let driveId = null;
     let newDriveId = nanoid();
-    let newCourseId = nanoid();
     let label = "Untitled";
     let image = driveImages[Math.floor(Math.random() * driveImages.length)];
     let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-    const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
+    const result = createNewDrive({label,driveId,newDriveId,image,color});
     result.then((resp)=>{
       if (resp.data.success){
         addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
