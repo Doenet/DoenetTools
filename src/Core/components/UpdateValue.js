@@ -1,3 +1,4 @@
+import { normalizeMathExpression } from '../utils/math';
 import InlineComponent from './abstract/InlineComponent';
 
 export class UpdateValue extends InlineComponent {
@@ -50,6 +51,18 @@ export class UpdateValue extends InlineComponent {
     attributes.triggerWithTname = {
       createPrimitiveOfType: "string"
     }
+
+    // for newValue with type==="math"
+    // let simplify="" or simplify="true" be full simplify
+    attributes.simplify = {
+      createComponentOfType: "text",
+      createStateVariable: "simplify",
+      defaultValue: "none",
+      public: true,
+      toLowerCase: true,
+      valueTransformations: { "true": "full" },
+      validValues: ["none", "full", "numbers", "numberspreserveorder"]
+    };
 
     return attributes;
   }
@@ -124,7 +137,6 @@ export class UpdateValue extends InlineComponent {
         return { newValues: { propName: dependencyValues.propName } }
       }
     }
-
 
     stateVariableDefinitions.targetIdentities = {
       stateVariablesDeterminingDependencies: [
@@ -234,28 +246,43 @@ export class UpdateValue extends InlineComponent {
       },
     }
 
-
     stateVariableDefinitions.newValue = {
       returnDependencies: () => ({
-        valueAttr: {
+        newValueAttr: {
           dependencyType: "attributeComponent",
           attributeName: "newValue",
           variableNames: ["value"],
         },
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        simplify: {
+          dependencyType: "stateVariable",
+          variableName: "simplify"
+        }
       }),
       defaultValue: null,
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.valueAttr === null) {
+        if (dependencyValues.newValueAttr === null) {
           return {
             newValues: {
               newValue: null,
             }
           }
         }
+
+        let newValue = dependencyValues.newValueAttr.stateValues.value;
+
+        if (dependencyValues.type === "math") {
+          newValue = normalizeMathExpression({
+            value: newValue,
+            simplify: dependencyValues.simplify
+          })
+        }
+
         return {
-          newValues: {
-            newValue: dependencyValues.valueAttr.stateValues.value,
-          }
+          newValues: { newValue }
         }
       },
     };
