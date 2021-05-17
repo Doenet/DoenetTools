@@ -537,16 +537,11 @@ function DriveRouted(props){
 
   let hideUnpublished = false; //Default to showing unpublished
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
-  const driveInfo = useRecoilValueLoadable(loadDriveInfoQuery(props.driveId))
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   let driveInstanceId = useRef("");
   const path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
   useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label, path: path}); 
 
-  if (driveInfo.state === "loading"){ return null;}
-  if (driveInfo.state === "hasError"){ 
-    console.error(driveInfo.contents)
-    return null;}
 
   if (driveInstanceId.current === ""){ 
     driveInstanceId.current = nanoid();
@@ -575,6 +570,11 @@ function DriveRouted(props){
     heading = <DriveHeader driveInstanceId={props.driveInstanceId} setNumColumns={setNumColumns}/>
   }
    
+  //default to all
+  let viewAccess = props?.viewAccess;
+  if (!viewAccess){
+    viewAccess = 'all';
+  }
 
   return <>
     {heading}
@@ -593,6 +593,7 @@ function DriveRouted(props){
       foldersOnly={props.foldersOnly}
       doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
       numColumns={numColumns}
+      viewAccess={viewAccess}
       drivePathSyncKey={props.drivePathSyncKey}
     />
     <WithDropTarget
@@ -796,7 +797,7 @@ function Folder(props){
 
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
-  const {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
+
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, onDragExit, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
@@ -881,6 +882,20 @@ function Folder(props){
   if (props.isNav && itemId === props.pathItemId) {borderSide = "8px solid #1A5A99";}
  
   if (folderInfoObj.state === "loading"){ return null;}
+  if (folderInfoObj.state === "hasError"){ 
+    console.error(folderInfoObj.contents)
+    return null;}
+    let {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
+    //TODO: Move filter into recoil loadable
+  //Note viewAccess All is not filtered and Folders are always shown
+    if (props.viewAccess === "released"){
+      contentIdsArr = contentIdsArr.filter((id)=>
+      contentsDictionary[id].itemType === 'Folder' ||
+      (contentsDictionary[id].isReleased === '1' || contentsDictionary[id].isAssigned === '1' ));
+    }else if (props.viewAccess === "assigned"){
+      contentIdsArr = contentIdsArr.filter((id)=>
+      contentsDictionary[id].itemType === 'Folder' || contentsDictionary[id].isAssigned === '1' );
+    }
  
   let openCloseText = isOpen ? 
     <span data-cy="folderToggleCloseIcon"><FontAwesomeIcon icon={faChevronDown}/></span> : 
@@ -982,19 +997,19 @@ function Folder(props){
     onDragEnd();
   }
 
-  const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
-    return <button
-    style={{backgroundColor: "#1A5A99",color: "white", border: "none", borderRadius: "12px", height: "24px", margin: "2px"}}
-    tabIndex={-1}
-    onClick={(e)=>{
-      e.preventDefault();
-      e.stopPropagation();
-      sortHandler({sortKey: sortKey});
-    }}
-    onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
-    onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
-    >{ buttonLabel }</button>;
-  }
+  // const sortNodeButtonFactory = ({ buttonLabel, sortKey, sortHandler }) => {
+  //   return <button
+  //   style={{backgroundColor: "#1A5A99",color: "white", border: "none", borderRadius: "12px", height: "24px", margin: "2px"}}
+  //   tabIndex={-1}
+  //   onClick={(e)=>{
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //     sortHandler({sortKey: sortKey});
+  //   }}
+  //   onMouseDown={e=>{ e.preventDefault(); e.stopPropagation(); }}
+  //   onDoubleClick={e=>{ e.preventDefault(); e.stopPropagation(); }}
+  //   >{ buttonLabel }</button>;
+  // }
 
   let label = folderInfo?.label;
 
