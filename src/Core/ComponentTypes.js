@@ -120,6 +120,7 @@ import ConsiderAsResponses from './components/ConsiderAsResponses';
 import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
 import SelectByCondition from './components/SelectByCondition';
+import Lorem from './components/Lorem';
 
 
 //Extended
@@ -161,6 +162,8 @@ const componentTypeArray = [
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
   ...Object.values(UpdateValue),
+  ...Object.values(SideBySide),
+  ...Object.values(ComponentWithSelectableType),
   Document,
   StringComponent,
   Text, TextList,
@@ -240,8 +243,7 @@ const componentTypeArray = [
   SelectByIndex,
   Case,
   SelectByCondition,
-  ...Object.values(SideBySide),
-  ...Object.values(ComponentWithSelectableType),
+  Lorem,
   BaseComponent,
   InlineComponent,
   BlockComponent,

@@ -1889,13 +1889,23 @@ export function processAssignNames({
 
   let processedComponents = [];
 
+  // don't name strings
+  let numStrings = 0;
 
   for (let ind = 0; ind < nComponents; ind++) {
 
-    let indForNames = ind + indOffset;
+    let indForNames = ind + indOffset - numStrings;
+
+    let component = serializedComponents[ind];
+
+    if(component.componentType === "string") {
+      numStrings ++;
+      processedComponents.push(component);
+      continue;
+    }
 
     let name = assignNames[indForNames];
-    let component = serializedComponents[ind];
+
 
     if (!component.doenetAttributes) {
       component.doenetAttributes = {};
