@@ -53,6 +53,7 @@
     "styled-components": "^5.2.3"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.14.2",
     "@snowpack/plugin-dotenv": "^2.1.0",
     "@snowpack/plugin-react-refresh": "^2.4.2",
     "@snowpack/web-test-runner-plugin": "^0.2.0",
@@ -101,8 +102,25 @@
       "jsx-a11y",
       "react-hooks"
     ],
+    "overrides": [
+      {
+        "files": [
+          "./src/Core/**/*.js"
+        ],
+        "parser": "@babel/eslint-parser",
+        "parserOptions": {
+          "sourceType": "module",
+          "requireConfigFile": false,
+          "babelOptions": {
+            "plugins": [
+              "@babel/plugin-syntax-class-properties"
+            ]
+          }
+        }
+      }
+    ],
     "parserOptions": {
-      "ecmaVersion": 11,
+      "ecmaVersion": 2020,
       "sourceType": "module",
       "ecmaFeatures": {
         "jsx": true
