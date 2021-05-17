@@ -743,7 +743,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
       for (let sampnum = 0; sampnum < 100; sampnum++) {
 
         // random number in [0, 1)
-        let rand = rng.random();
+        let rand = rng();
         // random integer from 0 to length-1
         selectedIndex = Math.floor(rand * stateValues.length);
 
@@ -836,7 +836,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
     for (let ind = 0; ind < numberToSelect; ind++) {
 
       // random number in [0, 1)
-      let rand = rng.random();
+      let rand = rng();
       // random integer from 0 to numPossibleValues-1
       let selectedIndex = Math.floor(rand * numPossibleValues);
 
@@ -853,7 +853,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   // https://stackoverflow.com/a/12646864
   let possibleIndices = [...Array(possibleValues.length).keys()];
   for (let i = possibleValues.length - 1; i > 0; i--) {
-    const rand = rng.random();
+    const rand = rng();
     const j = Math.floor(rand * (i + 1));
     [possibleValues[i], possibleValues[j]] = [possibleValues[j], possibleValues[i]];
     [possibleIndices[i], possibleIndices[j]] = [possibleIndices[j], possibleIndices[i]];
