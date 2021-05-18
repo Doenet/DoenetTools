@@ -6,7 +6,7 @@ import useDoenetRender from './useDoenetRenderer';
 
 export default function sideBySide(props) {
   let [name, SVs, _, children] = useDoenetRender(props);
-  console.log(">>>name: ", name, " value: ", SVs);
+  // console.log(">>>name: ", name, " value: ", SVs);
   // console.log(">>>children",children)
 
   if(SVs.hidden){
@@ -14,8 +14,8 @@ export default function sideBySide(props) {
   }
 
   let styledChildren = []
-  const marginRight =  (SVs.margins[0] + SVs.margins[1] + SVs.gapWidth); 
   const marginLeft = SVs.margins[0];
+  const marginRight =  SVs.margins[1];
   
   for (let [i,child] of children.entries()){
     let width = SVs.widths[i];
@@ -32,12 +32,12 @@ export default function sideBySide(props) {
       }} key={child.key}>{child}</span>)
     
     //Gap is only between not at the end
-    if (children.length !== i+1){
+    if (children.length !== i+1 && SVs.gapWidth > 0){
       styledChildren.push(<span style={{width:`${SVs.gapWidth}%`}} key={`gap${child.key}`}></span>)
     }
   }
 
 
-  return <div style={{display:"flex",maxWidth:"800px"}}>{styledChildren}</div>;
+  return <div id={name} style={{display:"flex",maxWidth:"800px"}}><a name={name} />{styledChildren}</div>;
   
 }

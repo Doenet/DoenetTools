@@ -281,3 +281,47 @@ export function isValidVariable(expression) {
   return validVariable;
 
 }
+
+export function mathStateVariableFromNumberStateVariable({
+  numberVariableName = "number", mathVariableName = "math", isPublic = "false" } = {}
+) {
+
+  let mathDef = {
+    returnDependencies: () => ({
+      number: {
+        dependencyType: "stateVariable",
+        variableName: numberVariableName
+      },
+    }),
+    definition: function ({ dependencyValues }) {
+      if (Number.isNaN(dependencyValues.number)) {
+        return { newValues: { [mathVariableName]: me.fromAst('\uff3f') } };
+      } else {
+        return { newValues: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
+      }
+    },
+    inverseDefinition: function ({ desiredStateVariableValues }) {
+
+      let desiredNumber = desiredStateVariableValues[mathVariableName].evaluate_to_constant();
+      if (desiredNumber === null) {
+        desiredNumber = NaN;
+      }
+      return {
+        success: true,
+        instructions: [{
+          setDependency: "number",
+          desiredValue: desiredNumber,
+        }],
+      }
+
+    }
+  }
+
+  if (isPublic) {
+    mathDef.public = true;
+    mathDef.componentType = "math"
+  }
+
+  return mathDef;
+
+}

@@ -11,9 +11,25 @@ export default class Image extends DoenetRenderer {
 
     if (this.doenetSvData.source) {
 
+      let width = null;
+      if (this.doenetSvData.width) {
+        width = this.doenetSvData.width.size;
+        if (!this.doenetSvData.width.isAbsolute) {
+          width += "%"
+        }
+      }
+
+      let height = null;
+      if (this.doenetSvData.height) {
+        height = this.doenetSvData.height.size;
+        if (!this.doenetSvData.height.isAbsolute) {
+          height += "%"
+        }
+      }
+
       return <React.Fragment>
         <a name={this.componentName} />
-        <img id={this.componentName} src={this.doenetSvData.source} width={this.doenetSvData.width} height={this.doenetSvData.height} alt={this.doenetSvData.description}/>
+        <img id={this.componentName} src={this.doenetSvData.source} width={width} height={height} alt={this.doenetSvData.description} />
       </React.Fragment>
 
     }

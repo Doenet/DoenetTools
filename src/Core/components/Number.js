@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { textToAst } from '../utils/math';
+import { mathStateVariableFromNumberStateVariable, textToAst } from '../utils/math';
 
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
@@ -231,38 +231,12 @@ export default class NumberComponent extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.math = {
-      public: true,
-      componentType: "math",
-      returnDependencies: () => ({
-        value: {
-          dependencyType: "stateVariable",
-          variableName: "value"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (Number.isNaN(dependencyValues.value)) {
-          return { newValues: { math: me.fromAst('\uff3f') } };
-        } else {
-          return { newValues: { math: me.fromAst(dependencyValues.value) } };
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+    stateVariableDefinitions.math = mathStateVariableFromNumberStateVariable({
+      numberVariableName: "value",
+      mathVariableName: "math",
+      public: true
+    });
 
-        let desiredNumber = desiredStateVariableValues.math.evaluate_to_constant();
-        if (desiredNumber === null) {
-          desiredNumber = NaN;
-        }
-        return {
-          success: true,
-          instructions: [{
-            setDependency: "value",
-            desiredValue: desiredNumber,
-          }],
-        }
-
-      },
-    }
 
     // Note: don't need canBeModified for number logic, as core will already
     // be able to determine from modifyIndirectly and fixed that it cannot be modified
