@@ -438,30 +438,34 @@ function DoenetViewerUpdateButton(){
 
 function NameCurrentVersionControl(props){
   const saveVersion = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
-    // const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
-    // const timestamp = buildTimestamp();
-    // const contentId = getSHAofContent(doenetML);
-    // const versionId = nanoid();
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    const timestamp = buildTimestamp();
+    const contentId = getSHAofContent(doenetML);
+    const versionId = nanoid();
 
-    // let newVersion = {
-    //   title:"Named",
-    //   versionId,
-    //   timestamp,
-    //   isDraft:'0',
-    //   isNamed:'1',
-    //   contentId
-    // }
-    // let newDBVersion = {...newVersion,
-    //   doenetML,
-    //   branchId
-    // }
+    let newVersion = {
+      title:"Named",
+      versionId,
+      timestamp,
+      isReleased:'0',
+      isDraft:'0',
+      isNamed:'1',
+      contentId
+    }
+    let newDBVersion = {...newVersion,
+      doenetML,
+      branchId
+    }
 
-    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    let newVersions = {...oldVersions};
+    newVersions.named = [newVersion,...oldVersions.named];
 
-    // set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
-    // set(fileByContentId(contentId),{data:doenetML});
-    // axios.post("/api/saveNewVersion.php",newDBVersion)
-    //   // .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
+    set(itemHistoryAtom(branchId),newVersions)
+    set(fileByContentId(contentId),{data:doenetML});
+    
+    axios.post("/api/saveNewVersion.php",newDBVersion)
+      //  .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
     
     
   })
