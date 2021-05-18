@@ -237,7 +237,6 @@ function TextEditor(props){
   const [selectedVersionId,setSelectedVersionId]  = useRecoilState(versionHistorySelectedAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
-    console.log(">>>saveDraft!!!")
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
 
@@ -261,34 +260,37 @@ function TextEditor(props){
       branchId:props.branchId
     }
        axios.post("/api/saveNewVersion.php",newDBVersion)
-        .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
+        // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
   });
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
     console.log(">>>autoSave")
-    // const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
-    // const contentId = getSHAofContent(doenetML);
-    // const timestamp = buildTimestamp();
-    // const versionId = nanoid();
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    const contentId = getSHAofContent(doenetML);
+    const timestamp = buildTimestamp();
+    const versionId = nanoid();
 
-    // let newVersion = {
-    //   contentId,
-    //   versionId,
-    //   timestamp,
-    //   isDraft:'0',
-    //   isNamed:'0',
-    //   title:'Autosave'
-    // }
-    // let newDBVersion = {...newVersion,
-    //   doenetML,
-    //   branchId:props.branchId
-    // }
+    let newVersion = {
+      contentId,
+      versionId,
+      timestamp,
+      isDraft:'0',
+      isNamed:'0',
+      isReleased:'0',
+      title:'Autosave'
+    }
+    let newDBVersion = {...newVersion,
+      doenetML,
+      branchId:props.branchId
+    }
 
-    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
-    
-    //   set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
-    //   set(fileByContentId(newVersion.contentId),{data:doenetML});
-    //   axios.post("/api/saveNewVersion.php",newDBVersion)
-    //   //  .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
+    let newVersions = {...oldVersions}
+    newVersions.autoSaves = [newVersion,...oldVersions.autoSaves]
+      set(itemHistoryAtom(props.branchId),newVersions)
+      set(fileByContentId(newVersion.contentId),{data:doenetML});
+  
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+        // .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
   
   });
 
@@ -408,7 +410,7 @@ function TextEditor(props){
         autosavetimeout.current = setTimeout(function(){
           autoSave();
           autosavetimeout.current = null;
-        },60000) //1 minute
+      },60000) //1 minute
       }
     }
   }}
