@@ -409,8 +409,7 @@ function TextEditor(props){
       // theme: 'base16-light',
       theme: 'xq-light',
       lineNumbers: true,
-      //hot take
-      indentUnit : 4,
+      indentUnit : 2,
       smartIndent : true,
       matchTags : true,
       // autoCloseTags: true,
@@ -554,7 +553,6 @@ function DoenetViewerPanel(){
 
   let attemptNumber = 1;
   let requestedVariant = { index: attemptNumber }
-  let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
   
   return <DoenetViewer
