@@ -51,7 +51,10 @@ import {
   fileByContentId 
 } from '../../_sharedRecoil/content';
 
-import { versionHistorySelectedAtom} from '../_framework/Overlays/Editor'
+const versionHistoryReleasedSelectedAtom = atom({
+  key:"versionHistoryReleasedSelectedAtom",
+  default:""
+})
 export const roleAtom = atom({
   key: 'roleAtom',
   default: 'Instructor',
@@ -175,10 +178,6 @@ export default function Course(props) {
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId] = urlParamsObj.path.split(':');
   }
-  // let courseId = '';
-  // if (urlParamsObj?.courseId !== undefined) {
-  //   courseId = urlParamsObj?.courseId;
-  // }
 
   //Select +Add menuPanel if no course selected on startup
   useEffect(() => {
@@ -239,7 +238,7 @@ export default function Course(props) {
     urlClickBehavior = 'select';
   }
   let responsiveControls = '';
-  if (role === 'Instructor' && routePathDriveId) {
+  if (routePathDriveId) {
     responsiveControls = (
       <Button
         value={openEnrollment ? 'Close Enrollment' : 'Open Enrollment'}
@@ -356,9 +355,6 @@ export default function Course(props) {
                 types={['course']}
                 drivePathSyncKey="main"
                 subTypes={['Administrator']}
-                // driveDoubleClickCallback={({ item }) => {
-                //   DriveCardCallBack({ item });
-                // }}
               />
              
               {!routePathDriveId && <h2>Student</h2>}
@@ -369,24 +365,23 @@ export default function Course(props) {
                 types={['course']}
                 drivePathSyncKey="main"
                 subTypes={['Student']}
-                driveDoubleClickCallback={({ item }) => {
-                  DriveCardCallBack({ item });
-                }}
               />
             </div>
           </>
         )}
       </mainPanel>
       {routePathDriveId && (
-        <menuPanel isInitOpen title="Selected">
-          <ItemInfoPanel route={props.route} />
+        <menuPanel isInitOpen title="Assigned">
+                  <VersionInfo route={props.route}/>
+
+          {/* <ItemInfoPanel route={props.route} /> */}
           <br />
           {/* <MaterialsInfo
            itemType={itemType} pathItemId={pathItemId} routePathDriveId={routePathDriveId} routePathFolderId={routePathFolderId} /> */}
         </menuPanel>
       )}
-      <menuPanel title="version history">
-        <VersionInfo route={props.route}/>
+      <menuPanel title="Info">
+        {/* <VersionInfo route={props.route}/> */}
       </menuPanel>
     </Tool>
     </>
@@ -421,17 +416,6 @@ const DoenetMLInfoPanel = (props) => {
     onConvertAssignmentToContentError,
   } = useAssignmentCallbacks();
 
-  // const returnToEditing = useRecoilCallback(({snapshot,set})=> async ()=>{
-  //   const versionHistory = await snapshot.getPromise((itemHistoryAtom(itemInfo.branchId)));
-  //   console.log(">>>versionHistory",versionHistory);
-  //   let contentId2;
-  //   for (let version of versionHistory){
-  //     if (version.isDraft === '1'){
-  //       contentId2 = version.contentId;
-  //       break;
-  //     }
-  //   }
-  // })
   
   const itemInfo = props.contentInfo;
   console.log(">>> itemInfo",itemInfo);
@@ -991,15 +975,12 @@ const FolderInfoPanel = () => {
 const VersionHistoryInfoPanel = (props) => {
   console.log(">>>VersionHistoryInfoPanel" ,props );
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.contentInfo.branchId))
-  // const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom); //TODO
-
-
+  const selectedVersionId  = useRecoilValue(versionHistoryReleasedSelectedAtom); 
 
   const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
-    // set(versionHistorySelectedAtom,version.versionId) //TODO
+    set(versionHistoryReleasedSelectedAtom,version.versionId) 
     let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
     const doenetML = loadableDoenetML.data;
-    set(editorDoenetMLAtom,doenetML);
     set(viewerDoenetMLAtom,(was)=>{
       let newObj = {...was}
       newObj.doenetML = doenetML;
@@ -1007,8 +988,6 @@ const VersionHistoryInfoPanel = (props) => {
       return newObj});
   })
   
-
-
 
   if (versionHistory.state === "loading"){ return null;}
   if (versionHistory.state === "hasError"){ 
@@ -1018,24 +997,19 @@ const VersionHistoryInfoPanel = (props) => {
     let versions = [];
     console.log(">>>versionHistory.contents",versionHistory.contents);
   for (let version of versionHistory.contents){
-     
-
-      let titleStyle = {}
       let titleText = version.title;
-   
       let versionStyle = {};
-
+      let makeAssignmentforReleasedButton = null;
       if (selectedVersionId === version.versionId){
         versionStyle = {backgroundColor:"#b8d2ea"}
-        
-        titleStyle = {border: "1px solid black", padding: "1px"}
-
+        makeAssignmentforReleasedButton = <>
+        <Button  
+      value="Make assignment"
+      callback={()=>{console.log("make assignment clicked")}}/>
+        </>
       }
-      let title = <div><b 
-     
-      style={titleStyle}>{titleText}</b></div>
 
-
+      let title = <div><b>{titleText}</b></div>
       let jsx = (<React.Fragment key={`history${version.versionId}`}>
       <div 
       onClick={()=>{
@@ -1047,27 +1021,28 @@ const VersionHistoryInfoPanel = (props) => {
     >
       {title}
       <div>{version.timestamp}</div>
-      </div>
+         </div>
+         {makeAssignmentforReleasedButton}
       </React.Fragment>)
 
-      //Put draft at the top //TODO need draft or only released
-        if (version.isDraft === "1"){ 
-          versions.unshift(jsx)
-        }else if(version.isReleased === "1"){ 
+    //TODO do we need draft or only released or latest released
+        if (version.isNamed === "1" || version.isDraft === "1"){ 
           versions.push(jsx)
         }
+        // if(version.named.isReleased === '1'){
+        //   versions.push(jsx)
+        // }
 
   }
 
   
   return <>
-  <div style={{backgroundColor:"lightblue"}}>
+  <CollapseSection title="released versions">
   {versions}
-  </div>
-  <Button 
-    value="Make assignment"
-    callback={()=>{console.log("make assignment clicked")}}/>
-  </>};
+  </CollapseSection>
+ 
+  </>
+  };
 
 const ItemInfoPanel = (props) => {
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
@@ -1108,17 +1083,6 @@ const ItemInfoPanel = (props) => {
 };
 const VersionInfo = (props) => {
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
-  const returnToVersionHistory = useRecoilCallback(({snapshot,set})=> async ()=>{
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(contentInfoLoad.contents.itemInfo.branchId)));
-    console.log(">>>versionHistory",versionHistory);
-    let contentId;
-    for (let version of versionHistory){
-      if (version.isDraft === '1'){
-        contentId = version.contentId;
-        break;
-      }
-    }
-  })
   if (contentInfoLoad.state === 'loading') {
     return null;
   }
