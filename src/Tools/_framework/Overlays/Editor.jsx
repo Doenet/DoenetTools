@@ -35,22 +35,8 @@ import {
   fileByContentId 
 } from '../../../_sharedRecoil/content';
 
-// export const fileByContentId = atomFamily({
-//   key:"fileByContentId",
-//   default: selectorFamily({
-//     key:"fileByContentId/Default",
-//     get:(contentId)=> async ()=>{
-//       if (!contentId){
-//         return "";
-//       }
-    
-//     const ls = localStorage.getItem(contentId);
-//       if (ls){ return ls}
-//       return await axios.get(`/media/${contentId}.doenet`) 
-//     }
-//   })
-  
-// })
+import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
+
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -61,22 +47,6 @@ const viewerDoenetMLAtom = atom({
   key:"viewerDoenetMLAtom",
   default:{updateNumber:0,doenetML:""}
 })
-
-// const itemHistoryAtom = atomFamily({
-//   key:"itemHistoryAtom",
-//   default: selectorFamily({
-//     key:"itemHistoryAtom/Default",
-//     get:(branchId)=> async ()=>{
-//       if (!branchId){
-//         return [];
-//       }
-//       const { data } = await axios.get(
-//         `/api/loadVersions.php?branchId=${branchId}`
-//       );
-//       return data.versions
-//     }
-//   })
-// })
 
 const getSHAofContent = (doenetML)=>{
   if (doenetML === undefined){
@@ -102,24 +72,18 @@ const getSHAofContent = (doenetML)=>{
 function ReturnToEditingButton(props){
   const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
   const returnToEditing = useRecoilCallback(({snapshot,set})=> async ()=>{
-    set(versionHistorySelectedAtom,"")
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(props.branchId)));
-    let contentId;
-    for (let version of versionHistory){
-      if (version.isDraft === '1'){
-        contentId = version.contentId;
-        break;
-      }
-    }
+    // set(versionHistorySelectedAtom,"")
+    // const versionHistory = await snapshot.getPromise((itemHistoryAtom(props.branchId)));
+    // const contentId = versionHistory.draft.contentId;
  
-    let loadableDoenetML = await snapshot.getPromise(fileByContentId(contentId));
-    const doenetML = loadableDoenetML.data;
-    set(editorDoenetMLAtom,doenetML);
-    set(viewerDoenetMLAtom,(was)=>{
-      let newObj = {...was}
-      newObj.doenetML = doenetML;
-      newObj.updateNumber = was.updateNumber+1;
-      return newObj});
+    // let loadableDoenetML = await snapshot.getPromise(fileByContentId(contentId));
+    // const doenetML = loadableDoenetML.data;
+    // set(editorDoenetMLAtom,doenetML);
+    // set(viewerDoenetMLAtom,(was)=>{
+    //   let newObj = {...was}
+    //   newObj.doenetML = doenetML;
+    //   newObj.updateNumber = was.updateNumber+1;
+    //   return newObj});
   })
 
   if (selectedVersionId === ""){ return null; }
@@ -134,15 +98,7 @@ function EditorInfoPanel(props){
   if (versionHistory.state === "hasError"){ 
     console.error(versionHistory.contents)
     return null;}
-
-  let contentId;
-
-  for (let version of versionHistory.contents){
-    if (version.isDraft === '1'){
-      contentId = version.contentId;
-      break;
-    }
-  }
+  const contentId = versionHistory.contents.draft.contentId;
 
   const link = `http://doenet.org/content/#/?contentId=${contentId}`
   // const quoteLink = `'${link}'`
@@ -157,131 +113,111 @@ function VersionHistoryPanel(props){
   const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
   const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
-  const saveNamedVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
-    set(itemHistoryAtom(branchId),(was)=>{
-      let newHistory = [...was]
-      let newVersion;
-      for (const [i,version] of was.entries()){
-        if (versionId === version.versionId){
-          newVersion = {...version}
-          newVersion.title = newTitle;
-          newHistory.splice(i,1,newVersion)
-        }
-      }
-      let newDBVersion = {...newVersion,
-        isNewTitle:'1',
-        branchId
-      }
-         axios.post("/api/saveNewVersion.php",newDBVersion)
-          // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
-      return newHistory;
-    })
+  // const saveNamedVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
+  //   set(itemHistoryAtom(branchId),(was)=>{
+  //     let newHistory = [...was]
+  //     let newVersion;
+  //     for (const [i,version] of was.entries()){
+  //       if (versionId === version.versionId){
+  //         newVersion = {...version}
+  //         newVersion.title = newTitle;
+  //         newHistory.splice(i,1,newVersion)
+  //       }
+  //     }
+  //     let newDBVersion = {...newVersion,
+  //       isNewTitle:'1',
+  //       branchId
+  //     }
+  //        axios.post("/api/saveNewVersion.php",newDBVersion)
+  //         // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
+  //     return newHistory;
+  //   })
 
-  });
+  // });
 
-  const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
-    set(versionHistorySelectedAtom,version.versionId)
-    let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
-    const doenetML = loadableDoenetML.data;
-    set(editorDoenetMLAtom,doenetML);
-    set(viewerDoenetMLAtom,(was)=>{
-      let newObj = {...was}
-      newObj.doenetML = doenetML;
-      newObj.updateNumber = was.updateNumber+1;
-      return newObj});
-  })
+  // const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
+  //   set(versionHistorySelectedAtom,version.versionId)
+  //   let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
+  //   const doenetML = loadableDoenetML.data;
+  //   set(editorDoenetMLAtom,doenetML);
+  //   set(viewerDoenetMLAtom,(was)=>{
+  //     let newObj = {...was}
+  //     newObj.doenetML = doenetML;
+  //     newObj.updateNumber = was.updateNumber+1;
+  //     return newObj});
+  // })
   
 
 
-  const [editingTitleText,setEditingTitleText] = useState("")
+  // const [editingTitleText,setEditingTitleText] = useState("")
 
   if (versionHistory.state === "loading"){ return null;}
   if (versionHistory.state === "hasError"){ 
     console.error(versionHistory.contents)
     return null;}
 
-    let versions = [];
+    let namedVersions = [];
     
-  for (let version of versionHistory.contents){
-     
-      // let nameItButton = <button>Name Version</button>;
-
-      let titleText = version.title;
-      let titleStyle = {}
-
-      if (version.isDraft === "1"){ 
-        titleText = "Current Version";
-      }
-
-      let drawer = null;
-      let versionStyle = {};
-
-      if (selectedVersionId === version.versionId){
-        versionStyle = {backgroundColor:"#b8d2ea"}
-        titleStyle = {border: "1px solid black", padding: "1px"}
-        drawer = <>
-        {/* <div>{nameItButton}</div> */}
-        <div><Button value="Make a copy" /></div>
-        <div><Button value="Delete Version" /></div>
-        <div><Button value="Use as Current Version" /></div>
-        </>
-        if (version.isDraft === "1"){ 
-          drawer = <>
-          <div><Button value="Make a copy" /></div>
-          </>
-        }
-      }
-      let title = <div><b 
-      onClick={()=>{
-        if (selectedVersionId === version.versionId){
-          setEditingVersionId(version.versionId);
-          setEditingTitleText(titleText);
-        }
-      }} 
-      style={titleStyle}>{titleText}</b></div>
-
-      if (editingVersionId === version.versionId){
-        title = <div><input 
-        autoFocus
-        onBlur={()=>{
-          setEditingVersionId("");
-          saveNamedVersion(props.branchId,version.versionId,editingTitleText);
-        }}
-        onKeyDown={(e)=>{if (e.key === 'Enter'){
-          setEditingVersionId("");
-          saveNamedVersion(props.branchId,version.versionId,editingTitleText);
-        }}}
-        onChange={(e)=>{setEditingTitleText(e.target.value)}}
-        value = {editingTitleText}
-      type="text" /></div>
-      }
-
-      let jsx = (<React.Fragment key={`history${version.versionId}`}>
-      <div 
-      onClick={()=>{
-        if (version.versionId !== selectedVersionId){
-          versionHistorySelected(version);
-        }
-      }}
-    style={versionStyle}
-    >
-      {title}
-      <div>{version.timestamp}</div>
-      </div>
-      {/* {drawer} */}
-      </React.Fragment>)
-
-      //Put draft at the top
-        if (version.isDraft === "1"){ 
-          versions.unshift(jsx)
-        }else{
-          versions.push(jsx)
-        }
-
+  for (let version of versionHistory.contents.named){
+    // console.log(">>>named",version)
+    let releaseButton = <div><button onClick={(e)=>console.log(">>>Release "+version.versionId)} >Release</button></div>
+    let releasedIcon = '';
+    if (version.isReleased === '1'){
+      releaseButton = <div><button onClick={(e)=>console.log(">>>Retract "+version.versionId)} >Retract</button></div>
+      releasedIcon = '•';
+    }
+    let namedTitle = `${releasedIcon} ${version.title}`
+    namedVersions.push(<CollapseSection
+      title={namedTitle}
+      collapsed={true}
+      widthCSS='200px'
+      >
+       <div><button onClick={(e)=>console.log(">>>View "+version.versionId)} >View</button></div> 
+       <div><button onClick={(e)=>console.log(">>>Set As Current "+version.versionId)} >Set As Current</button></div> 
+        {releaseButton}
+      </CollapseSection>)
   }
 
+  let namedVersionsTitle = `${namedVersions.length} Named Versions`
+    if (namedVersions.length === 1){
+      namedVersionsTitle = '1 Named Version';
+    }
+
+  const namedSection = <CollapseSection
+  title={namedVersionsTitle}
+  collapsed={false}
+  >{namedVersions}</CollapseSection>
+
+  let saveSection = []
+  for (let version of versionHistory.contents.autoSaves){
+    saveSection.push(<CollapseSection
+      title={version.timestamp}
+      collapsed={true}
+      widthCSS='200px'
+      >buttons here</CollapseSection>)
+  }
+
+    let autoSaveTitle = `${saveSection.length} Auto Saves`
+    if (saveSection.length === 1){
+      autoSaveTitle = '1 Auto Save';
+    }
+    let autoSaves = <CollapseSection
+    title={autoSaveTitle}
+    collapsed={true}
+    >
+    {saveSection}
+    </CollapseSection>
+     
   return <>
-  {versions}
+  <CollapseSection
+    title="Current Version"
+    collapsed={true}
+    >
+      buttons
+    </CollapseSection>
+
+  {namedSection}
+  {autoSaves}
   </>
 }
 
@@ -301,25 +237,19 @@ function TextEditor(props){
   const [selectedVersionId,setSelectedVersionId]  = useRecoilState(versionHistorySelectedAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+    console.log(">>>saveDraft!!!")
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
 
-    //Find Draft
-    let newVersion;
-    for (const [i,version] of oldVersions.entries()){
-      if (version.isDraft === '1'){
-        newVersion = {...version};
-        break;
-      }
-
-    }
+    let newVersion = {...oldVersions.draft};
+  
     const contentId = getSHAofContent(doenetML);
 
     newVersion.contentId = contentId;
     newVersion.timestamp = buildTimestamp();
 
-    let oldVersionsReplacement = [...oldVersions];
-    oldVersionsReplacement[0] = newVersion;
+    let oldVersionsReplacement = {...oldVersions};
+    oldVersionsReplacement.draft = newVersion;
     set(itemHistoryAtom(props.branchId),oldVersionsReplacement)
     set(fileByContentId(contentId),{data:doenetML})
 
@@ -331,34 +261,34 @@ function TextEditor(props){
       branchId:props.branchId
     }
        axios.post("/api/saveNewVersion.php",newDBVersion)
-        // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
+        .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
   });
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
+    console.log(">>>autoSave")
+    // const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    // const contentId = getSHAofContent(doenetML);
+    // const timestamp = buildTimestamp();
+    // const versionId = nanoid();
 
-    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
-    const contentId = getSHAofContent(doenetML);
-    const timestamp = buildTimestamp();
-    const versionId = nanoid();
+    // let newVersion = {
+    //   contentId,
+    //   versionId,
+    //   timestamp,
+    //   isDraft:'0',
+    //   isNamed:'0',
+    //   title:'Autosave'
+    // }
+    // let newDBVersion = {...newVersion,
+    //   doenetML,
+    //   branchId:props.branchId
+    // }
 
-    let newVersion = {
-      contentId,
-      versionId,
-      timestamp,
-      isDraft:'0',
-      isNamed:'0',
-      title:'Autosave'
-    }
-    let newDBVersion = {...newVersion,
-      doenetML,
-      branchId:props.branchId
-    }
-
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
+    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
     
-      set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
-      set(fileByContentId(newVersion.contentId),{data:doenetML});
-      axios.post("/api/saveNewVersion.php",newDBVersion)
-      //  .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
+    //   set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
+    //   set(fileByContentId(newVersion.contentId),{data:doenetML});
+    //   axios.post("/api/saveNewVersion.php",newDBVersion)
+    //   //  .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
   
   });
 
@@ -506,30 +436,30 @@ function DoenetViewerUpdateButton(){
 
 function NameCurrentVersionControl(props){
   const saveVersion = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
-    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
-    const timestamp = buildTimestamp();
-    const contentId = getSHAofContent(doenetML);
-    const versionId = nanoid();
+    // const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    // const timestamp = buildTimestamp();
+    // const contentId = getSHAofContent(doenetML);
+    // const versionId = nanoid();
 
-    let newVersion = {
-      title:"Named",
-      versionId,
-      timestamp,
-      isDraft:'0',
-      isNamed:'1',
-      contentId
-    }
-    let newDBVersion = {...newVersion,
-      doenetML,
-      branchId
-    }
+    // let newVersion = {
+    //   title:"Named",
+    //   versionId,
+    //   timestamp,
+    //   isDraft:'0',
+    //   isNamed:'1',
+    //   contentId
+    // }
+    // let newDBVersion = {...newVersion,
+    //   doenetML,
+    //   branchId
+    // }
 
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
 
-    set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
-    set(fileByContentId(contentId),{data:doenetML});
-    axios.post("/api/saveNewVersion.php",newDBVersion)
-      // .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
+    // set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
+    // set(fileByContentId(contentId),{data:doenetML});
+    // axios.post("/api/saveNewVersion.php",newDBVersion)
+    //   // .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
     
     
   })
@@ -584,13 +514,8 @@ export default function Editor({ branchId, title }) {
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(branchId)));
-    let contentId;
-    for (let version of versionHistory){
-      if (version.isDraft === '1'){
-        contentId = version.contentId;
-        break;
-      }
-    }
+    const contentId = versionHistory.draft.contentId;
+    
     let response = await snapshot.getPromise(fileByContentId(contentId));
     if (typeof response === "object"){
       response = response.data;
