@@ -108,32 +108,65 @@ function EditorInfoPanel(props){
   <p><input type="text" value={link} /></p></>
 }
 
+//Required props:
+//branchId
+//versionId
+//title --Original Title
+function RenameVersionControl(props){
+  let [textFieldFlag,setTextFieldFlag] = useState(false);
+  let [currentTitle,setCurrentTitle] = useState(props.title);
+
+  const renameVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
+    // console.log(">>>",{branchId,versionId,newTitle})
+      set(itemHistoryAtom(branchId),(was)=>{
+        let newHistory = {...was}
+        newHistory.named = [...was.named];
+        let newVersion;
+        for (const [i,version] of newHistory.named.entries()){
+          if (versionId === version.versionId){
+            newVersion = {...version}
+            newVersion.title = newTitle;
+            newHistory.named.splice(i,1,newVersion)
+          }
+        }
+        let newDBVersion = {...newVersion,
+          isNewTitle:'1',
+          branchId
+        }
+           axios.post("/api/saveNewVersion.php",newDBVersion)
+            // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
+        return newHistory;
+      })
+  
+    });
+
+    function renameIfChanged(){
+      setTextFieldFlag(false)
+      if (props.title !== currentTitle){
+        renameVersion(props.branchId,props.versionId,currentTitle);
+      }
+    }
+
+    if (!textFieldFlag){
+      return <button onClick={()=>setTextFieldFlag(true)}>Rename</button>
+    }
+  return <input type='text' autoFocus value={currentTitle} 
+  onChange={(e)=>{setCurrentTitle(e.target.value)}}
+  onKeyDown={(e)=>{
+    if (e.key === 'Enter'){
+    renameIfChanged();
+  }}}
+  onBlur={()=>{
+    renameIfChanged();
+  }}
+  />
+
+}
+
 function VersionHistoryPanel(props){
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
   const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
   const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
-
-  // const saveNamedVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
-  //   set(itemHistoryAtom(branchId),(was)=>{
-  //     let newHistory = [...was]
-  //     let newVersion;
-  //     for (const [i,version] of was.entries()){
-  //       if (versionId === version.versionId){
-  //         newVersion = {...version}
-  //         newVersion.title = newTitle;
-  //         newHistory.splice(i,1,newVersion)
-  //       }
-  //     }
-  //     let newDBVersion = {...newVersion,
-  //       isNewTitle:'1',
-  //       branchId
-  //     }
-  //        axios.post("/api/saveNewVersion.php",newDBVersion)
-  //         // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
-  //     return newHistory;
-  //   })
-
-  // });
 
   // const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
   //   set(versionHistorySelectedAtom,version.versionId)
@@ -172,6 +205,7 @@ function VersionHistoryPanel(props){
       collapsed={true}
       widthCSS='200px'
       >
+        <div><RenameVersionControl branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
        <div><button onClick={(e)=>console.log(">>>View "+version.versionId)} >View</button></div> 
        <div><button onClick={(e)=>console.log(">>>Set As Current "+version.versionId)} >Set As Current</button></div> 
         {releaseButton}
@@ -263,7 +297,6 @@ function TextEditor(props){
         // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
   });
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
-    console.log(">>>autoSave")
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
     const timestamp = buildTimestamp();
