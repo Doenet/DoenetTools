@@ -95,7 +95,6 @@ export const useAssignment = () => {
         ...newAssignmentObj,
         assignmentId: assignmentId,
         itemId: driveIdcourseIditemIdparentFolderId.itemId,
-        courseId: driveIdcourseIditemIdparentFolderId.courseId,
         branchId: branchId,
         contentId: contentId,
       };
@@ -163,7 +162,6 @@ export const useAssignment = () => {
         assignmentId: props.assignmentId,
         assignment_isPublished: '1',
         branchId: props.branchId,
-        courseId: driveIdcourseIditemIdparentFolderId.courseId,
         contentId:props.contentId
       };
       const result = axios.post('/api/publishAssignment.php', payloadPublish)
