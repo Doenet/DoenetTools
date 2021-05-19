@@ -16,6 +16,8 @@ export default function sideBySide(props) {
   let styledChildren = []
   const marginLeft = SVs.margins[0];
   const marginRight =  SVs.margins[1];
+
+  const nCols = children.length;
   
   for (let [i,child] of children.entries()){
     let width = SVs.widths[i];
@@ -23,18 +25,25 @@ export default function sideBySide(props) {
     // console.log(">>>width",width)
     // console.log(">>>marginRight",marginRight)
     // console.log(">>>gap",SVs.gapWidth)
+
+    let thisMarginLeft = marginLeft;
+    let thisMarginRight = marginRight;
+
+    if(i > 0) {
+      thisMarginLeft += SVs.gapWidth/2;
+    }
+    if(i < nCols-1) {
+      thisMarginRight += SVs.gapWidth/2;
+    }
+
     styledChildren.push(<span 
       style={{
-        marginLeft:`${marginLeft}%`,
-        marginRight:`${marginRight}%`,
+        marginLeft:`${thisMarginLeft}%`,
+        marginRight:`${thisMarginRight}%`,
         width:`${width}%`,
         
       }} key={child.key}>{child}</span>)
     
-    //Gap is only between not at the end
-    if (children.length !== i+1 && SVs.gapWidth > 0){
-      styledChildren.push(<span style={{width:`${SVs.gapWidth}%`}} key={`gap${child.key}`}></span>)
-    }
   }
 
 
