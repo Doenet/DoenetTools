@@ -115,7 +115,6 @@ import Feedback from './components/Feedback';
 import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
-import Div from './components/Div';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
 import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
@@ -238,7 +237,6 @@ const componentTypeArray = [
   Container,
   CollaborateGroups,
   CollaborateGroupSetup,
-  Div,
   ConsiderAsResponses,
   SelectByIndex,
   Case,

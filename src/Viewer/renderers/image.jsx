@@ -14,7 +14,9 @@ export default class Image extends DoenetRenderer {
       let width = null;
       if (this.doenetSvData.width) {
         width = this.doenetSvData.width.size;
-        if (!this.doenetSvData.width.isAbsolute) {
+        if (this.doenetSvData.width.isAbsolute) {
+          width += "px"
+        } else {
           width += "%"
         }
       }
@@ -22,7 +24,9 @@ export default class Image extends DoenetRenderer {
       let height = null;
       if (this.doenetSvData.height) {
         height = this.doenetSvData.height.size;
-        if (!this.doenetSvData.height.isAbsolute) {
+        if (this.doenetSvData.height.isAbsolute) {
+          height += "px"
+        } else {
           height += "%"
         }
       }
