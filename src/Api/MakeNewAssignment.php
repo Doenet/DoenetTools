@@ -107,11 +107,11 @@ if ($success){
     '$gradeCategory',
     '$individualize',
     '$multipleAttempts',
-    '$showSolution,
+    '$showSolution',
     '$showFeedback',
     '$showHints',
     '$showCorrectness',
-    '$roctorMakesAvailable')
+    '$proctorMakesAvailable')
     ";
 
 $result = $conn->query($sql); 
