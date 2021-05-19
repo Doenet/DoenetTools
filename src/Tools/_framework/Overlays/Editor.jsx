@@ -209,6 +209,39 @@ function VersionHistoryPanel(props){
   const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
   const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
+  const toggleReleaseNamed = useRecoilCallback(({snapshot,set})=> async (branchId,versionId)=>{
+    set(itemHistoryAtom(branchId),(was)=>{
+      let newHistory = {...was}
+      newHistory.named = [...was.named];
+      let newVersion;
+      for (const [i,version] of newHistory.named.entries()){
+        if (versionId === version.versionId){
+          newVersion = {...version}
+
+          if (version.isReleased === '0'){
+            //release
+            newVersion.isReleased = '1';
+            newHistory.named.splice(i,1,newVersion)
+          break;
+          }else{
+            //retract
+            newVersion.isReleased = '0';
+            newHistory.named.splice(i,1,newVersion)
+          break;
+          }
+        }
+      }
+      let newDBVersion = {...newVersion,
+        isNewToggleRelease:'1',
+        branchId
+      }
+      // console.log(">>>newDBVersion",newDBVersion);
+         axios.post("/api/saveNewVersion.php",newDBVersion)
+          // .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
+      return newHistory;
+    })
+})
+
   // const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
   //   set(versionHistorySelectedAtom,version.versionId)
   //   let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
@@ -234,10 +267,10 @@ function VersionHistoryPanel(props){
     
   for (let version of versionHistory.contents.named){
     // console.log(">>>named",version)
-    let releaseButton = <div><button onClick={(e)=>console.log(">>>Release "+version.versionId)} >Release</button></div>
+    let releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId)} >Release</button></div>
     let releasedIcon = '';
     if (version.isReleased === '1'){
-      releaseButton = <div><button onClick={(e)=>console.log(">>>Retract "+version.versionId)} >Retract</button></div>
+      releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId)} >Retract</button></div>
       releasedIcon = '•';
     }
     let namedTitle = `${releasedIcon} ${version.title}`

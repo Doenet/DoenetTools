@@ -19,8 +19,10 @@ $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 $isDraft = mysqli_real_escape_string($conn,$_POST["isDraft"]);
 $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
+$isReleased = mysqli_real_escape_string($conn,$_POST["isReleased"]);
 $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
 $isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
+$isNewToggleRelease = mysqli_real_escape_string($conn,$_POST["isNewToggleRelease"]);
 $previousBranchId = mysqli_real_escape_string($conn,$_POST["previousBranchId"]);
 
 
@@ -39,6 +41,9 @@ if ($title == ""){
   }elseif ($isDraft == ""){
     $success = FALSE;
     $message = 'Internal Error: missing isDraft';
+  }elseif ($isReleased == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing isReleased';
 }elseif ($isNamed == ""){
     $success = FALSE;
     $message = 'Internal Error: missing isNamed';
@@ -94,6 +99,15 @@ if ($isDraft){
         AND versionId='$versionId'
         ";
         $result = $conn->query($sql);
+}elseif($isNewToggleRelease == '1'){
+  $sql = "
+  UPDATE content
+  SET isReleased='$isReleased'
+  WHERE branchId='$branchId'
+  AND versionId='$versionId'
+  ";
+  $result = $conn->query($sql);
+  //TODO: update drive_content isReleased if necessary
     
 }else{
 
