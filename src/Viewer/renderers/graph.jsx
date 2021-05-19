@@ -1,5 +1,6 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
+import { sizeToCSS } from './utils/css';
 
 export default class Graph extends DoenetRenderer {
 
@@ -195,8 +196,8 @@ export default class Graph extends DoenetRenderer {
   render() {
 
     const divStyle = {
-      width: this.doenetSvData.width,
-      height: this.doenetSvData.height,
+      width: sizeToCSS(this.doenetSvData.width),
+      height: sizeToCSS(this.doenetSvData.height),
     }
 
     if (this.doenetSvData.hidden) {

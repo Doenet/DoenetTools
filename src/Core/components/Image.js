@@ -8,8 +8,6 @@ export default class Image extends BlockComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      // stateVariableComponentType: "text",
-      // componentStateVariableForAttributeValue: "text",
       defaultValue: null,
       public: true,
       forRenderer: true
@@ -17,8 +15,6 @@ export default class Image extends BlockComponent {
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      // stateVariableComponentType: "text",
-      // componentStateVariableForAttributeValue: "text",
       defaultValue: null,
       public: true,
       forRenderer: true
