@@ -1,0 +1,98 @@
+@top Document { misc (Element misc)+ }
+
+entity {
+  Text |
+  EntityReference |
+  CharacterReference |
+  Cdata |
+  Element |
+  comment |
+  MismatchedCloseTag |
+  incompleteStartCloseTag
+}
+
+Element {
+  OpenTag entity* CloseTag |
+  SelfClosingTag
+}
+
+OpenTag[closedBy=CloseTag] {
+  startTag space* TagName space* (Attribute space*)* endTag
+}
+
+SelfClosingTag {
+  startTag space* TagName space* (Attribute space*)* selfCloseEndTag
+}
+
+CloseTag[openedBy=OpenTag] {
+  startCloseTag space* TagName space* endTag
+}
+
+MismatchedCloseTag {
+  mismatchedStartCloseTag space* TagName space* endTag
+}
+
+Attribute {
+  AttributeName space* is space* AttributeValue
+}
+
+misc {
+  (comment | space )*
+}
+
+AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference)* "\"" }
+
+comment { "<!--" commentContent* "-->" }
+
+
+Cdata { cdataStart cdataContent* "]]>" }
+
+@context elementContext from "./tokens.js"
+
+@external tokens startTag from "./tokens.js" {
+  startTag
+  startCloseTag
+  mismatchedStartCloseTag
+  incompleteStartCloseTag
+}
+
+@external tokens commentContent from "./tokens.js" { commentContent }
+@external tokens cdataContent from "./tokens.js" { cdataContent }
+
+@tokens {
+  endTag { ">" }
+
+  selfCloseEndTag { "/>" }
+
+  nameStart {
+    ":" | std.asciiLetter | "_" |
+    $[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D] |
+    $[\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}]
+  }
+
+  nameChar {
+    nameStart | "-" | "." | std.digit | $[\u00B7\u0300-\u036F\u203F-\u2040]
+  }
+
+  identifier { nameStart nameChar* }
+
+  TagName { identifier }
+
+  AttributeName { identifier }
+
+  attributeContent { !["&]+ }
+
+  is { "=" }
+
+  EntityReference { "&" ![#; ]+ ";" }
+
+  CharacterReference { "&#" ![; ]+ ";" }
+
+  Text { ![<&]+ }
+
+  cdataStart { "<![" ("cdata" | "CDATA") "[" }
+
+  space { (" " | "\t" | "\r" | "\n")+ }
+}
+
+@detectDelim
