@@ -36,7 +36,17 @@ import {
 } from '../../../_sharedRecoil/content';
 
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faExternalLinkAlt
+ } from '@fortawesome/free-solid-svg-icons';
 
+ import { 
+  faClipboard
+ } from '@fortawesome/free-regular-svg-icons';
+
+import { useToast } from '../../_framework/Toast';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -92,20 +102,104 @@ function ReturnToEditingButton(props){
 }
 
 function EditorInfoPanel(props){
-  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
+  const [addToast, ToastType] = useToast();
 
-  if (versionHistory.state === "loading"){ return null;}
-  if (versionHistory.state === "hasError"){ 
-    console.error(versionHistory.contents)
-    return null;}
-  const contentId = versionHistory.contents.draft.contentId;
+  const link = `http://${window.location.host}/content/#/?branchId=${props.branchId}`
 
-  const link = `http://doenet.org/content/#/?contentId=${contentId}`
-  // const quoteLink = `'${link}'`
+  return <div style={{margin:"6px"}}>
+  <div>DonetML Name (soon)</div>
+  <div>Load time (soon) </div>
+  <div>Most recent release 
+  
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <button onClick={()=>{
+    
+  }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
+  </CopyToClipboard>
 
-  return <>
-  {/* <p><a href={quoteLink} >Content Tool Link</a></p> */}
-  <p><input type="text" value={link} /></p></>
+  <button onClick={
+    ()=>window.open(link, '_blank')
+  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button>
+  </div>
+  
+</div>
+}
+
+//Required props:
+//branchId
+//versionId
+//title --Original Title
+function RenameVersionControl(props){
+  let [textFieldFlag,setTextFieldFlag] = useState(false);
+  let [currentTitle,setCurrentTitle] = useState(props.title);
+
+  const renameVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
+    // console.log(">>>",{branchId,versionId,newTitle})
+      set(itemHistoryAtom(branchId),(was)=>{
+        let newHistory = {...was}
+        newHistory.named = [...was.named];
+        let newVersion;
+        for (const [i,version] of newHistory.named.entries()){
+          if (versionId === version.versionId){
+            newVersion = {...version}
+            newVersion.title = newTitle;
+            newHistory.named.splice(i,1,newVersion)
+          }
+        }
+        let newDBVersion = {...newVersion,
+          isNewTitle:'1',
+          branchId
+        }
+           axios.post("/api/saveNewVersion.php",newDBVersion)
+            // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
+        return newHistory;
+      })
+  
+    });
+
+    function renameIfChanged(){
+      setTextFieldFlag(false)
+      if (props.title !== currentTitle){
+        renameVersion(props.branchId,props.versionId,currentTitle);
+      }
+    }
+
+    if (!textFieldFlag){
+      return <button onClick={()=>setTextFieldFlag(true)}>Rename</button>
+    }
+  return <input type='text' autoFocus value={currentTitle} 
+  onChange={(e)=>{setCurrentTitle(e.target.value)}}
+  onKeyDown={(e)=>{
+    if (e.key === 'Enter'){
+    renameIfChanged();
+  }}}
+  onBlur={()=>{
+    renameIfChanged();
+  }}
+  />
+
+}
+
+function ClipboardLinkButtons(props){
+  const [addToast, ToastType] = useToast();
+
+  if (!props.contentId){
+    console.error("Component only handles contentId at this point")
+    return null;
+  }
+  
+
+  const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
+  return <div>This content 
+  
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
+  </CopyToClipboard>
+
+  <button onClick={
+    ()=>window.open(link, '_blank')
+  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button>
+  </div>
 }
 
 function VersionHistoryPanel(props){
@@ -113,27 +207,38 @@ function VersionHistoryPanel(props){
   const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
   const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
-  // const saveNamedVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
-  //   set(itemHistoryAtom(branchId),(was)=>{
-  //     let newHistory = [...was]
-  //     let newVersion;
-  //     for (const [i,version] of was.entries()){
-  //       if (versionId === version.versionId){
-  //         newVersion = {...version}
-  //         newVersion.title = newTitle;
-  //         newHistory.splice(i,1,newVersion)
-  //       }
-  //     }
-  //     let newDBVersion = {...newVersion,
-  //       isNewTitle:'1',
-  //       branchId
-  //     }
-  //        axios.post("/api/saveNewVersion.php",newDBVersion)
-  //         // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
-  //     return newHistory;
-  //   })
+  const toggleReleaseNamed = useRecoilCallback(({snapshot,set})=> async (branchId,versionId)=>{
+    set(itemHistoryAtom(branchId),(was)=>{
+      let newHistory = {...was}
+      newHistory.named = [...was.named];
+      let newVersion;
+      for (const [i,version] of newHistory.named.entries()){
+        if (versionId === version.versionId){
+          newVersion = {...version}
 
-  // });
+          if (version.isReleased === '0'){
+            //release
+            newVersion.isReleased = '1';
+            newHistory.named.splice(i,1,newVersion)
+          break;
+          }else{
+            //retract
+            newVersion.isReleased = '0';
+            newHistory.named.splice(i,1,newVersion)
+          break;
+          }
+        }
+      }
+      let newDBVersion = {...newVersion,
+        isNewToggleRelease:'1',
+        branchId
+      }
+      // console.log(">>>newDBVersion",newDBVersion);
+         axios.post("/api/saveNewVersion.php",newDBVersion)
+          // .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
+      return newHistory;
+    })
+})
 
   // const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
   //   set(versionHistorySelectedAtom,version.versionId)
@@ -160,10 +265,10 @@ function VersionHistoryPanel(props){
     
   for (let version of versionHistory.contents.named){
     // console.log(">>>named",version)
-    let releaseButton = <div><button onClick={(e)=>console.log(">>>Release "+version.versionId)} >Release</button></div>
+    let releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId)} >Release</button></div>
     let releasedIcon = '';
     if (version.isReleased === '1'){
-      releaseButton = <div><button onClick={(e)=>console.log(">>>Retract "+version.versionId)} >Retract</button></div>
+      releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId)} >Retract</button></div>
       releasedIcon = '•';
     }
     let namedTitle = `${releasedIcon} ${version.title}`
@@ -172,6 +277,8 @@ function VersionHistoryPanel(props){
       collapsed={true}
       widthCSS='200px'
       >
+        <ClipboardLinkButtons contentId={version.contentId} />
+        <div><RenameVersionControl branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
        <div><button onClick={(e)=>console.log(">>>View "+version.versionId)} >View</button></div> 
        <div><button onClick={(e)=>console.log(">>>Set As Current "+version.versionId)} >Set As Current</button></div> 
         {releaseButton}
@@ -264,31 +371,33 @@ function TextEditor(props){
         .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
   });
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
-    console.log(">>>autoSave")
-    // const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
-    // const contentId = getSHAofContent(doenetML);
-    // const timestamp = buildTimestamp();
-    // const versionId = nanoid();
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    const contentId = getSHAofContent(doenetML);
+    const timestamp = buildTimestamp();
+    const versionId = nanoid();
 
-    // let newVersion = {
-    //   contentId,
-    //   versionId,
-    //   timestamp,
-    //   isDraft:'0',
-    //   isNamed:'0',
-    //   title:'Autosave'
-    // }
-    // let newDBVersion = {...newVersion,
-    //   doenetML,
-    //   branchId:props.branchId
-    // }
+    let newVersion = {
+      contentId,
+      versionId,
+      timestamp,
+      isDraft:'0',
+      isNamed:'0',
+      isReleased:'0',
+      title:'Autosave'
+    }
+    let newDBVersion = {...newVersion,
+      doenetML,
+      branchId:props.branchId
+    }
 
-    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
-    
-    //   set(itemHistoryAtom(props.branchId),[...oldVersions,newVersion])
-    //   set(fileByContentId(newVersion.contentId),{data:doenetML});
-    //   axios.post("/api/saveNewVersion.php",newDBVersion)
-    //   //  .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
+    let newVersions = {...oldVersions}
+    newVersions.autoSaves = [newVersion,...oldVersions.autoSaves]
+      set(itemHistoryAtom(props.branchId),newVersions)
+      set(fileByContentId(newVersion.contentId),{data:doenetML});
+  
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+        // .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
   
   });
 
@@ -339,9 +448,8 @@ function TextEditor(props){
       // theme: 'base16-light',
       theme: 'xq-light',
       lineNumbers: true,
-      //hot take
-      indentUnit : 4,
-      smartIndent : true,
+      indentUnit : 2,
+      // smartIndent : true,
       matchTags : true,
       // autoCloseTags: true,
       matchBrackets: true,
@@ -357,7 +465,34 @@ function TextEditor(props){
           cm.replaceSelection("\n")
           setTimeout( () => cm.execCommand("indentAuto"), 1);
         },
-        "Ctrl-Space" : "autocomplete"
+        "Ctrl-Space" : "autocomplete",
+        "Cmd-/" : (cm) => {
+          let selections = cm.getSelections();
+          if(selections[0] == ""){
+            let line = cm.getCursor().line;
+            let content = cm.getLine(line) 
+            if(content.substring(0,4) === "<!--"){
+              content = content.substring(5,content.length-3) + "\n"
+            } else {
+              content = "<!-- "+ content + " -->\n";
+            }
+            cm.replaceRange(content,{line : line, ch: 0}, {line: line + 1, ch: 0});
+            // This set cursor doesn't seem to work...
+            setTimeout(cm.setCursor(line,Math.max(content.length-1,0)),1);
+            return;
+          }
+          // Might be non-obvious behavior. Should it comment/uncomment all of the selections?
+          // Shouldn't come up too often.
+          selections = selections.map((s) => s.substring(0,4) !== "<!--" ? "<!-- " + s + " -->": s.substring(5,s.length-3))
+          // let selectionsPos = cm.listSelections().map(({anchor,head}) => {return {anchor : anchor, head : {line : head.line, ch: head.ch + "<!--  -->".length}}}) ;
+          // console.log(">>pos",selectionsPos);
+          //the around option here is supposed to keep the replacing text selected, but it doesn't work.
+          //Not a huge issue,but needs to be fixed at some point
+          cm.replaceSelections(selections,"around");
+          //neither does setting it manaully... 
+          // cm.setSelection(selectionsPos[0].anchor,selectionsPos[0].head)
+
+        }
       }
   }
 
@@ -408,7 +543,7 @@ function TextEditor(props){
         autosavetimeout.current = setTimeout(function(){
           autoSave();
           autosavetimeout.current = null;
-        },60000) //1 minute
+      },60000) //1 minute
       }
     }
   }}
@@ -436,30 +571,34 @@ function DoenetViewerUpdateButton(){
 
 function NameCurrentVersionControl(props){
   const saveVersion = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
-    // const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
-    // const timestamp = buildTimestamp();
-    // const contentId = getSHAofContent(doenetML);
-    // const versionId = nanoid();
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    const timestamp = buildTimestamp();
+    const contentId = getSHAofContent(doenetML);
+    const versionId = nanoid();
 
-    // let newVersion = {
-    //   title:"Named",
-    //   versionId,
-    //   timestamp,
-    //   isDraft:'0',
-    //   isNamed:'1',
-    //   contentId
-    // }
-    // let newDBVersion = {...newVersion,
-    //   doenetML,
-    //   branchId
-    // }
+    let newVersion = {
+      title:"Named",
+      versionId,
+      timestamp,
+      isReleased:'0',
+      isDraft:'0',
+      isNamed:'1',
+      contentId
+    }
+    let newDBVersion = {...newVersion,
+      doenetML,
+      branchId
+    }
 
-    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    let newVersions = {...oldVersions};
+    newVersions.named = [newVersion,...oldVersions.named];
 
-    // set(itemHistoryAtom(branchId),[...oldVersions,newVersion])
-    // set(fileByContentId(contentId),{data:doenetML});
-    // axios.post("/api/saveNewVersion.php",newDBVersion)
-    //   // .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
+    set(itemHistoryAtom(branchId),newVersions)
+    set(fileByContentId(contentId),{data:doenetML});
+    
+    axios.post("/api/saveNewVersion.php",newDBVersion)
+      //  .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
     
     
   })
@@ -484,7 +623,6 @@ function DoenetViewerPanel(){
 
   let attemptNumber = 1;
   let requestedVariant = { index: attemptNumber }
-  let assignmentId = "myassignmentid";
   let solutionDisplayMode = "button";
   
   return <DoenetViewer

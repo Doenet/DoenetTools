@@ -10,6 +10,6 @@ export default class Text extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
-    return <><a name={this.componentName} /><span id={this.componentName}>{this.doenetSvData.value}</span></>
+    return <><a name={this.componentName} /><span id={this.componentName}>{this.doenetSvData.text}</span></>
   }
 }

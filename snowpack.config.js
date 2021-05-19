@@ -20,6 +20,7 @@ module.exports = {
     'src/Tools/_framework': '/_framework',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
+    'src/Parser': '/parser',
     'src/Api': '/api',
     'src/Home': '/',
     'src/Viewer': '/viewer',

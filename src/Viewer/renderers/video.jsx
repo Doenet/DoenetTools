@@ -23,10 +23,30 @@ export default class Video extends DoenetRenderer {
 
       let cName = cssesc(this.componentName);
 
+      let width = null;
+      if (this.doenetSvData.width) {
+        width = this.doenetSvData.width.size;
+        if (this.doenetSvData.width.isAbsolute) {
+          width += "px"
+        } else {
+          width += "%"
+        }
+      }
+
+      let height = null;
+      if (this.doenetSvData.height) {
+        height = this.doenetSvData.height.size;
+        if (this.doenetSvData.height.isAbsolute) {
+          height += "px"
+        } else {
+          height += "%"
+        }
+      }
+
       this.player = new window.YT.Player(cName, {
         videoId: this.doenetSvData.youtube,
-        width: this.doenetSvData.width,
-        height: this.doenetSvData.height,
+        width,
+        height,
         playerVars: {
           autoplay: 0,
           controls: 1,
@@ -69,9 +89,29 @@ export default class Video extends DoenetRenderer {
         console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
       }
       if (type) {
+
+      let width = null;
+      if (this.doenetSvData.width) {
+        width = this.doenetSvData.width.size;
+        if (this.doenetSvData.width.isAbsolute) {
+          width += "px"
+        } else {
+          width += "%"
+        }
+      }
+
+      let height = null;
+      if (this.doenetSvData.height) {
+        height = this.doenetSvData.height.size;
+        if (this.doenetSvData.height.isAbsolute) {
+          height += "px"
+        } else {
+          height += "%"
+        }
+      }
         return <React.Fragment>
           <a name={this.componentName} />
-          <video className="video" id={this.componentName} style={{ objectFit: "fill" }} controls={true} width={this.doenetSvData.width} height={this.doenetSvData.height}>
+          <video className="video" id={this.componentName} style={{ objectFit: "fill" }} controls={true} width={width} height={height}>
             <source src={this.doenetSvData.source} type={type} />
           Your browser does not support the &lt;video&gt; tag.
         </video>
