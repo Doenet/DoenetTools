@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import cssesc from 'cssesc';
 
 function cesc(s) {
@@ -12,9 +11,7 @@ function cesc(s) {
 describe('Lorem Tag Tests', function () {
 
   beforeEach(() => {
-
     cy.visit('/test')
-
   })
 
 

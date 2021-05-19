@@ -2201,7 +2201,10 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
+        if (stateVarDef.componentType === undefined) {
+          stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        }
       }
 
 
@@ -2210,9 +2213,12 @@ export default class Core {
         throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attribute} of componentType ${componentClass.componentType}.`)
       }
 
-      let stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
+      let stateVariableForAttributeValue = attributeSpecification.componentStateVariableForAttributeValue;
       if (stateVariableForAttributeValue === undefined) {
-        stateVariableForAttributeValue = "value";
+        stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
+        if (stateVariableForAttributeValue === undefined) {
+          stateVariableForAttributeValue = "value";
+        }
       }
 
       if (attribute in ancestorProps) {
@@ -8072,7 +8078,7 @@ export default class Core {
               }
             }
             foundArrayMatch = arrayStateVariables.includes(newInstruction.setStateVariable);
-          } 
+          }
           if (!foundArrayMatch) {
             throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: specified changing value of ${newInstruction.setStateVariable}, which is not a state variable defined with ${stateVariable}.`);
           }

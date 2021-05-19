@@ -24,7 +24,6 @@ export default class IntComma extends Text {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
-      forRenderer: true,
       returnDependencies: () => ({
         originalValue: {
           dependencyType: "stateVariable",
@@ -43,6 +42,21 @@ export default class IntComma extends Text {
 
         return { newValues: { value } }
       }
+    }
+
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { text: dependencyValues.value }
+      })
     }
 
     return stateVariableDefinitions;

@@ -12,11 +12,27 @@ export default class Embed extends DoenetRenderer {
 
       let cName = cssesc(this.componentName);
 
+      let width = null;
+      if (this.doenetSvData.width) {
+        width = this.doenetSvData.width.size;
+        if (!this.doenetSvData.width.isAbsolute) {
+          width += "%"
+        }
+      }
+
+      let height = null;
+      if (this.doenetSvData.height) {
+        height = this.doenetSvData.height.size;
+        if (!this.doenetSvData.height.isAbsolute) {
+          height += "%"
+        }
+      }
+
       window.MathJax.Hub.Register.StartupHook("End", function () {
         let parameters = {
           id: cName,
-          width: doenetSvData.width,
-          height: doenetSvData.height,
+          width,
+          height,
           showResetIcon: false,
           enableLabelDrags: false,
           useBrowserForJS: true,
@@ -55,15 +71,31 @@ export default class Embed extends DoenetRenderer {
       return null;
     }
 
+    let width = null;
+    if (this.doenetSvData.width) {
+      width = this.doenetSvData.width.size;
+      if (!this.doenetSvData.width.isAbsolute) {
+        width += "%"
+      }
+    }
+
+    let height = null;
+    if (this.doenetSvData.height) {
+      height = this.doenetSvData.height.size;
+      if (!this.doenetSvData.height.isAbsolute) {
+        height += "%"
+      }
+    }
+
     if (this.doenetSvData.geogebra) {
       return <div className="geogebra" id={this.componentName}>
         <a name={this.componentName} />
-        <iframe scrolling="no" title="" src={`https://www.geogebra.org/material/iframe/id/${this.doenetSvData.geogebra}/width/${this.doenetSvData.width}/height/${this.doenetSvData.height}/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false`} width={this.doenetSvData.width} height={this.doenetSvData.height} style={{ border: "0px" }}> </iframe>
+        <iframe scrolling="no" title="" src={`https://www.geogebra.org/material/iframe/id/${this.doenetSvData.geogebra}/width/${width}/height/${height}/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false`} width={width} height={height} style={{ border: "0px" }}> </iframe>
       </div>
     } else if (this.doenetSvData.encodedGeogebraContent) {
       return <div className="javascriptapplet" id={cssesc(this.componentName)}>
         <div className="geogebrawebapplet" id={"container_" + cssesc(this.componentName)}
-          style={{ minWidth: this.doenetSvData.width, minHeight: this.doenetSvData.height }} />
+          style={{ minWidth: width, minHeight: height }} />
       </div>
 
     }
