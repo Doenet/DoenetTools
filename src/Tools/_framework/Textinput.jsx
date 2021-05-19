@@ -132,7 +132,7 @@ export default function Textinput(props) {
 
   useEffect(() => {
     if (value) {
-      console.log(">>> non-empty value: ", value);
+      //console.log(">>> non-empty value: ", value);
       setLabelStyle(labelStyles.notEmpty);
       //setUpdate(update);
     }
@@ -147,11 +147,11 @@ export default function Textinput(props) {
   function handleFocus(e) {
     setInputStyle(inputStyles.active);
     setLabelStyle(labelStyles.active);
-    console.log(">>> focus");
+    //console.log(">>> focus");
   }
 
   function handleBlur(e) {
-    console.log(">>> blur");
+    // blur");
     setInputStyle(inputStyles.inactive);
     if (!value) {
       setLabelStyle(labelStyles.inactive);

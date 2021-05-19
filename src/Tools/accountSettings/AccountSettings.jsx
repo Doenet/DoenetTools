@@ -163,7 +163,7 @@ export default function DoenetProfile(props) {
         }
         set(getProfileQuerry,  data)
         await axios.post(url, data);
-        console.log(">>> ", newProfile);
+        //console.log(">>> ", newProfile);
       }
     )
 
