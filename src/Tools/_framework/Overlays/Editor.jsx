@@ -410,7 +410,7 @@ function TextEditor(props){
       theme: 'xq-light',
       lineNumbers: true,
       indentUnit : 2,
-      smartIndent : true,
+      // smartIndent : true,
       matchTags : true,
       // autoCloseTags: true,
       matchBrackets: true,
@@ -426,7 +426,12 @@ function TextEditor(props){
           cm.replaceSelection("\n")
           setTimeout( () => cm.execCommand("indentAuto"), 1);
         },
-        "Ctrl-Space" : "autocomplete"
+        "Ctrl-Space" : "autocomplete",
+        "Ctrl-/" : (cm) => {
+          let sel = cm.getSelection();
+          sel = "<!-- " + sel + " -->";
+          cm.replaceSelection(sel,"around");
+        }
       }
   }
 

@@ -26,7 +26,7 @@ export function parse(inText) {
 export function parseAndCompile(inText){
     function compileElement(cursor){
         if(cursor.name != "Element"){
-            console.error(">>> Doesn't really make sense to call this on a non-element, right?",node);
+            console.error(">>> Doesn't really make sense to call this on a non-element, right?",cursor);
             throw Error("compileElement() called on a non-Element");
         }
 
