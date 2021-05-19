@@ -193,9 +193,7 @@ function ClipboardLinkButtons(props){
   return <div>This content 
   
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
-  <button onClick={()=>{
-    
-  }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
+  <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
   </CopyToClipboard>
 
   <button onClick={
