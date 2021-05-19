@@ -1,13 +1,103 @@
 import BaseComponent from './BaseComponent';
+import InlineComponent from './InlineComponent';
+import { mathStateVariableFromNumberStateVariable } from '../../utils/math';
 
-export class ComponentSize extends BaseComponent {
+const unitConversions = {
+  '': 1,
+  'px': 1,
+  'pixel': 1,
+  'pixels': 1,
+  '%': 1,
+  'em': 100,
+  'in': 96,
+  'inch': 96,
+  'inches': 96,
+  'pt': 1.333333333333,
+  'mm': 3.7795296,
+  'millimeter': 3.7795296,
+  'millimeters': 3.7795296,
+  'cm': 37.795296,
+  'centimeter': 37.795296,
+  'centimeters': 37.795296,
+}
+
+export class ComponentSize extends InlineComponent {
   static componentType = "_componentSize";
-  static rendererType = "number";
+  static rendererType = "text";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value", "isAbsolute"] };
+  // used when creating new component via adapter or copy prop
+  static primaryStateVariableForDefinition = "componentSize";
+  static stateVariableForAttributeValue = "componentSize";
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let addNumberAroundMultipleComponents = function ({ matchedChildren }) {
+
+      // if last child is a string, extract unit if it exists
+      let lastChild = matchedChildren[matchedChildren.length - 1];
+      if (lastChild.componentType === "string") {
+        let lastWordRe = /([a-zA-z]+|%)$/;
+        let lastString = lastChild.state.value.trim();
+        let match = lastString.match(lastWordRe);
+
+        if (match) {
+          let unit = match[1];
+
+          if (unit in unitConversions) {
+
+            let rest = lastString.slice(0, match.index);
+
+            let childrenForNumber = matchedChildren.slice(0, matchedChildren.length - 1);
+            if (rest.length > 0) {
+              childrenForNumber.push({
+                componentType: "string",
+                state: { value: rest }
+              })
+            }
+
+
+            let newChildren = [{
+              componentType: "number",
+              children: childrenForNumber
+            },
+            {
+              componentType: "string",
+              state: { value: unit }
+            }]
+
+            return {
+              success: true,
+              newChildren,
+            }
+          }
+        }
+
+      }
+
+      // if no unit, wrap all children with number
+      return {
+        success: true,
+        newChildren: [{
+          componentType: "number",
+          children: matchedChildren
+        }]
+      }
+
+    }
+
+
+    // add math around multiple children
+    // math will be adapted to a number
+    sugarInstructions.push({
+      childrenRegex: /..+/,
+      replacementFunction: addNumberAroundMultipleComponents
+    });
+
+    return sugarInstructions;
+
+  }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
@@ -36,7 +126,7 @@ export class ComponentSize extends BaseComponent {
 
     let atMostOneComponentSize = childLogic.newLeaf({
       name: "atMostOneComponentSize",
-      componentType: '_componentsize',
+      componentType: '_componentSize',
       comparison: 'atMost',
       number: 1,
     });
@@ -55,17 +145,14 @@ export class ComponentSize extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    // let componentType = this.componentType;
-
-    stateVariableDefinitions.value = {
+    stateVariableDefinitions.componentSize = {
       public: true,
-      componentType: "number",
-      additionalStateVariablesDefined: ["isAbsolute"],
+      componentType: "_componentSize",
       returnDependencies: () => ({
         componentSizeChild: {
           dependencyType: "child",
           childLogicName: "atMostOneComponentSize",
-          variableNames: ["value", "isAbsolute"]
+          variableNames: ["componentSize"]
         },
         numberChild: {
           dependencyType: "child",
@@ -94,15 +181,22 @@ export class ComponentSize extends BaseComponent {
             if (dependencyValues.componentSizeChild.length === 0) {
               return {
                 useEssentialOrDefaultValue: {
-                  value: { variablesToCheck: "value", defaultValue: 100 },
-                  isAbsolute: { variablesToCheck: "isAbsolute", defaultValue: defaultIsAbsolute }
+                  componentSize: {
+                    variablesToCheck: "componentSize",
+                    defaultValue: {
+                      size: 100,
+                      isAbsolute: defaultIsAbsolute
+                    }
+                  },
                 }
               }
             } else {
               //only componentSize child
 
               return {
-                newValues: dependencyValues.componentSizeChild[0].stateValues
+                newValues: {
+                  componentSize: dependencyValues.componentSizeChild[0].stateValues.componentSize
+                }
               }
             }
           } else {
@@ -110,20 +204,22 @@ export class ComponentSize extends BaseComponent {
 
             return {
               newValues: {
-                value: dependencyValues.numberChild[0].stateValues.value,
-                isAbsolute: true
+                componentSize: {
+                  size: dependencyValues.numberChild[0].stateValues.value,
+                  isAbsolute: true,
+                }
               }
             }
           }
         } else {
           //string child
 
-          let originalValue, originalUnit;
+          let originalSize, originalUnit;
 
           if (dependencyValues.numberChild.length === 1) {
             //string and number child
 
-            originalValue = dependencyValues.numberChild[0].stateValues.value;
+            originalSize = dependencyValues.numberChild[0].stateValues.value;
             originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
           } else {
             //only string child
@@ -140,52 +236,40 @@ export class ComponentSize extends BaseComponent {
             let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(-?[\d.]+)\s*(.*)$/);
             if (result === null) {
               // console.warn(componentType + " must begin with a number.");
-              return { newValues: { value: null, isAbsolute: defaultIsAbsolute } };
+              return { newValues: { componentSize: null } };
             }
-            originalValue = result[1];
+            originalSize = result[1];
             originalUnit = result[2].trim();
           }
 
-          originalValue = Number(originalValue);
-          if (!Number.isFinite(originalValue)) {
+          originalSize = Number(originalSize);
+          if (!Number.isFinite(originalSize)) {
             // console.warn(componentType + " must have a number");
-            return { newValues: { value: null, isAbsolute: defaultIsAbsolute } };
-          }
-
-          if (originalUnit === "") {
-            return { newValues: { value: originalValue, isAbsolute: true } };
+            return { newValues: { componentSize: null } };
           }
 
           let isAbsolute = !(originalUnit === '%' || originalUnit === 'em');
 
-          let conversionFactor = {
-            'px': 1,
-            'pixel': 1,
-            'pixels': 1,
-            '%': 1,
-            'em': 100,
-            'in': 96,
-            'inch': 96,
-            'inches': 96,
-            'pt': 1.333333333333,
-            'mm': 3.7795296,
-            'millimeter': 3.7795296,
-            'millimeters': 3.7795296,
-            'cm': 37.795296,
-            'centimeter': 37.795296,
-            'centimeters': 37.795296,
-          }
-          if (conversionFactor[originalUnit] === undefined) {
+
+
+          let factor = unitConversions[originalUnit];
+          if (factor === undefined) {
             // console.warn(originalUnit + ' is not a defined unit of measure.');
-            return { newValues: { value: originalValue, isAbsolute: defaultIsAbsolute } };
+            factor = 1;
           }
-          let value = conversionFactor[originalUnit] * originalValue;
+
+          let size = factor * originalSize;
 
           // console.log(`value: ${value}, isAbsolute: ${isAbsolute}`);
 
           return {
-            newValues: { value, isAbsolute }
-          }
+            newValues: {
+              componentSize: {
+                size,
+                isAbsolute
+              }
+            }
+          };
 
         }
 
@@ -198,8 +282,8 @@ export class ComponentSize extends BaseComponent {
               return {
                 success: true,
                 instructions: [{
-                  setStateVariable: "value",
-                  value: desiredStateVariableValues.value
+                  setStateVariable: "componentSize",
+                  value: desiredStateVariableValues.componentSize
                 }]
               }
             } else {
@@ -209,7 +293,7 @@ export class ComponentSize extends BaseComponent {
                 success: true,
                 instructions: [{
                   setDependency: "componentSizeChild",
-                  desiredValue: desiredStateVariableValues.value,
+                  desiredValue: desiredStateVariableValues.componentSize,
                   childIndex: 0,
                   variableIndex: 0
                 }]
@@ -218,11 +302,16 @@ export class ComponentSize extends BaseComponent {
           } else {
             //only number child
 
+            if (!desiredStateVariableValues.componentSize.isAbsolute) {
+              // if have only a number child, then we must have an absolute size
+              return { success: false }
+            }
+
             return {
               success: true,
               instructions: [{
                 setDependency: "numberChild",
-                desiredValue: desiredStateVariableValues.value,
+                desiredValue: desiredStateVariableValues.componentSize.size,
                 childIndex: 0,
                 variableIndex: 0
               }]
@@ -234,28 +323,32 @@ export class ComponentSize extends BaseComponent {
           if (dependencyValues.numberChild.length === 1) {
             //string and number child
 
+            // this is the only case where we use the original unit specified by the string
+            // (since the number could be defined in this context)
+
+
+            let originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
+            let originalIsAbsolute = !(originalUnit === '%' || originalUnit === 'em');
+
+            if (desiredStateVariableValues.componentSize.isAbsolute !== originalIsAbsolute) {
+              // we don't allow changing isAbsolute
+              return { success: false }
+            }
+
+            let factor = unitConversions[originalUnit];
+            if (factor === undefined) {
+              factor = 1;
+            }
+
+            let desiredSize = desiredStateVariableValues.componentSize.size / factor;
+
             let instructions = [{
               setDependency: "numberChild",
-              desiredValue: desiredStateVariableValues.value,
+              desiredValue: desiredSize,
               childIndex: 0,
               variableIndex: 0
             }];
 
-            if (stateValues.isAbsolute) {
-              instructions.push({
-                setDependency: "stringChild",
-                desiredValue: "px",
-                childIndex: 0,
-                variableIndex: 0
-              })
-            } else {
-              instructions.push({
-                setDependency: "stringChild",
-                desiredValue: "%",
-                childIndex: 0,
-                variableIndex: 0
-              })
-            }
 
             return {
               success: true,
@@ -265,27 +358,21 @@ export class ComponentSize extends BaseComponent {
           } else {
             //only string child
 
-            if (stateValues.isAbsolute) {
-
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "stringChild",
-                  desiredValue: desiredStateVariableValues.value + "px",
-                  childIndex: 0,
-                  variableIndex: 0
-                }]
-              }
+            let desiredString = desiredStateVariableValues.componentSize.size;
+            if (desiredStateVariableValues.componentSize.isAbsolute) {
+              desiredString += "px";
             } else {
-              return {
-                success: true,
-                instructions: [{
-                  setDependency: "stringChild",
-                  desiredValue: desiredStateVariableValues.value + "%",
-                  childIndex: 0,
-                  variableIndex: 0
-                }]
-              }
+              desiredString += "%";
+            }
+
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "stringChild",
+                desiredValue: desiredString,
+                childIndex: 0,
+                variableIndex: 0
+              }]
             }
           }
 
@@ -294,22 +381,99 @@ export class ComponentSize extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.valueForDisplay = {
-      forRenderer: true,
+    stateVariableDefinitions.number = {
+      public: true,
+      componentType: "number",
       returnDependencies: () => ({
-        value: {
+        componentSize: {
           dependencyType: "stateVariable",
-          variableName: "value"
+          variableName: "componentSize"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { valueForDisplay: dependencyValues.value }
-      })
+      definition({ dependencyValues }) {
+        let number = null;
+
+        if (dependencyValues.componentSize) {
+          number = dependencyValues.componentSize.size;
+        }
+
+        return { newValues: { number } }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (!dependencyValues.componentSize) {
+          return { success: false };
+        }
+        let desiredComponentSize = {
+          size: desiredStateVariableValues.number,
+          isAbsolute: dependencyValues.componentSize.isAbsolute
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "componentSize",
+            desiredValue: desiredComponentSize
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.math = mathStateVariableFromNumberStateVariable({
+      numberVariableName: "number",
+      mathVariableName: "math",
+      public: true
+    });
+
+    stateVariableDefinitions.isAbsolute = {
+      public: true,
+      componentType: "boolean",
+      returnDependencies: () => ({
+        componentSize: {
+          dependencyType: "stateVariable",
+          variableName: "componentSize"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let isAbsolute = null;
+
+        if (dependencyValues.componentSize) {
+          isAbsolute = dependencyValues.componentSize.isAbsolute;
+        }
+
+        return { newValues: { isAbsolute } }
+      },
+    }
+
+    stateVariableDefinitions.text = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        componentSize: {
+          dependencyType: "stateVariable",
+          variableName: "componentSize"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let text = "";
+
+        if (dependencyValues.componentSize) {
+          text = dependencyValues.componentSize.size;
+          if (dependencyValues.componentSize.isAbsolute) {
+            text += "px";
+          } else {
+            text += "%";
+          }
+        }
+
+        return {
+          newValues: { text }
+        }
+      }
     }
 
     return stateVariableDefinitions;
   }
 
+  static adapters = ["number", "math"];
 
 }
 
@@ -322,58 +486,77 @@ export class ComponentSizeList extends BaseComponent {
   // use the componentSizes state variable to populate that attribute
   static stateVariableForAttributeValue = "componentSizes";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
-
-    attributes.unordered = {
-      createComponentOfType: "boolean",
-      createStateVariable: "unordered",
-      defaultValue: false,
-      public: true,
-    };
-
-    attributes.maximumNumber = {
-      createComponentOfType: "number",
-      createStateVariable: "maximumNumber",
-      defaultValue: null,
-      public: true,
-    };
-
-    return attributes;
-  }
-
-
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringsIntoComponentSizesBySpaces = function ({ matchedChildren }) {
+    let breakIntoComponentSizesByEmbeddedSpaces = function ({ matchedChildren }) {
 
-      // break any string by white space and wrap pieces with componentSize
+      // break components into pieces by any spaces in a string
+      // and wrap pieces with componentSize
 
-      let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
-          return [
-            ...a,
-            ...c.state.value.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
-                componentType: "_componentSize",
-                children: [{ componentType: "string", state: { value: s } }]
-              }))
-          ]
-        } else {
-          return [...a, c]
+      let newChildren = [];
+      let piece = [];
+
+      let createNewChildFromPiece = function () {
+        if (piece.length > 0) {
+          newChildren.push({
+            componentType: "_componentSize",
+            children: piece
+          })
+          piece = [];
         }
-      }, []);
+      }
+
+      for (let child of matchedChildren) {
+        if (child.componentType === "string") {
+          let strParts = child.state.value.split(/\s+/);
+
+          if (strParts[0].length === 0) {
+            // string begins with a space
+            // so if piece contains anything, it is a new child
+
+            createNewChildFromPiece();
+
+            strParts = strParts.slice(1);
+
+          }
+
+
+          for (let [i, s] of strParts.entries()) {
+            if (s.length > 0) {
+              piece.push({
+                componentType: "string",
+                state: { value: s }
+              });
+              if (i < strParts.length - 1) {
+                // if not last part, it means there was a space
+                // after this part
+                createNewChildFromPiece();
+              }
+            } else {
+              // if have empty string (could only occur at end)
+              // then means ended with a space
+              createNewChildFromPiece();
+            }
+          }
+
+
+        } else {
+          // not a string, so add to piece
+          piece.push(child);
+        }
+      }
+
+      createNewChildFromPiece();
 
       return {
         success: true,
-        newChildren: newChildren,
+        newChildren,
       }
     }
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoComponentSizesBySpaces
+      replacementFunction: breakIntoComponentSizesByEmbeddedSpaces
     });
 
     return sugarInstructions;
@@ -427,10 +610,6 @@ export class ComponentSizeList extends BaseComponent {
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
-          maximumNumber: {
-            dependencyType: "stateVariable",
-            variableName: "maximumNumber",
-          },
           componentSizeListChildren: {
             dependencyType: "child",
             childLogicName: "atLeastZeroComponentSizeLists",
@@ -452,7 +631,7 @@ export class ComponentSizeList extends BaseComponent {
         for (let [childInd, child] of dependencyValues.componentSizeAndComponentSizeListChildren.entries()) {
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
-            baseComponentType: "componentSizeList"
+            baseComponentType: "_componentSizeList"
           })) {
             let componentSizeListChild = dependencyValues.componentSizeListChildren[nComponentSizeLists];
             nComponentSizeLists++;
@@ -467,12 +646,6 @@ export class ComponentSizeList extends BaseComponent {
           }
         }
 
-        let maxNum = dependencyValues.maximumNumber;
-        if (maxNum !== null && nComponents > maxNum) {
-          nComponents = maxNum;
-          childIndexByArrayKey = childIndexByArrayKey.slice(0, maxNum);
-        }
-
         return {
           newValues: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
@@ -481,15 +654,8 @@ export class ComponentSizeList extends BaseComponent {
     }
 
     stateVariableDefinitions.componentSizes = {
-      additionalStateVariablesDefined: [{
-        variableName: "areAbsolute",
-        public: true,
-        isArray: true,
-        componentType: "boolean",
-        entryPrefixes: ["isAbsolute"]
-      }],
       public: true,
-      componentType: "number",
+      componentType: "_componentSize",
       isArray: true,
       entryPrefixes: ["componentSize"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
@@ -523,7 +689,7 @@ export class ComponentSizeList extends BaseComponent {
             componentSizeAndComponentSizeListChildren: {
               dependencyType: "child",
               childLogicName: "componentSizeAndComponentSizeLists",
-              variableNames: ["value", "componentSize" + componentSizeIndex, "isAbsolute", "isAbsolute" + componentSizeIndex],
+              variableNames: ["componentSize", "componentSize" + componentSizeIndex],
               variablesOptional: true,
               childIndices,
             },
@@ -534,34 +700,33 @@ export class ComponentSizeList extends BaseComponent {
 
       },
       arrayDefinitionByKey({
-        globalDependencyValues, dependencyValuesByKey, arrayKeys,
+        globalDependencyValues, dependencyValuesByKey, arrayKeys, componentInfoObjects
       }) {
 
         let componentSizes = {};
-        let areAbsolute = {};
 
         for (let arrayKey of arrayKeys) {
           let child = dependencyValuesByKey[arrayKey].componentSizeAndComponentSizeListChildren[0];
 
           if (child) {
-            if (child.stateValues.value !== undefined) {
-              componentSizes[arrayKey] = child.stateValues.value;
-              areAbsolute[arrayKey] = child.stateValues.isAbsolute;
-            } else {
+            if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "_componentSizeList"
+            })) {
               let componentSizeIndex = globalDependencyValues.childIndexByArrayKey[arrayKey][1] + 1;
               componentSizes[arrayKey] = child.stateValues["componentSize" + componentSizeIndex];
-              areAbsolute[arrayKey] = child.stateValues["isAbsolute" + componentSizeIndex];
+            } else {
+              componentSizes[arrayKey] = child.stateValues.componentSize;
             }
-
           }
 
         }
 
-        return { newValues: { componentSizes, areAbsolute } }
+        return { newValues: { componentSizes } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
-        dependencyValuesByKey, dependencyNamesByKey, arraySize
+        dependencyValuesByKey, dependencyNamesByKey, arraySize, componentInfoObjects
       }) {
 
         let instructions = [];
@@ -575,15 +740,10 @@ export class ComponentSizeList extends BaseComponent {
           let child = dependencyValuesByKey[arrayKey].componentSizeAndComponentSizeListChildren[0];
 
           if (child) {
-            if (child.stateValues.value !== undefined) {
-              instructions.push({
-                setDependency: dependencyNamesByKey[arrayKey].componentSizeAndComponentSizeListChildren,
-                desiredValue: desiredStateVariableValues.componentSizes[arrayKey],
-                childIndex: 0,
-                variableIndex: 0,
-              });
-
-            } else {
+            if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "_componentSizeList"
+            })) {
               instructions.push({
                 setDependency: dependencyNamesByKey[arrayKey].componentSizeAndComponentSizeListChildren,
                 desiredValue: desiredStateVariableValues.componentSizes[arrayKey],
@@ -591,6 +751,13 @@ export class ComponentSizeList extends BaseComponent {
                 variableIndex: 1,
               });
 
+            } else {
+              instructions.push({
+                setDependency: dependencyNamesByKey[arrayKey].componentSizeAndComponentSizeListChildren,
+                desiredValue: desiredStateVariableValues.componentSizes[arrayKey],
+                childIndex: 0,
+                variableIndex: 0,
+              });
             }
           }
         }
@@ -614,46 +781,6 @@ export class ComponentSizeList extends BaseComponent {
       targetVariableName: "componentSizes"
     };
 
-
-
-    // stateVariableDefinitions.childrenToRender = {
-    //   returnDependencies: () => ({
-    //     componentSizeAndComponentSizeListChildren: {
-    //       dependencyType: "child",
-    //       childLogicName: "componentSizeAndComponentSizeLists",
-    //       variableNames: ["childrenToRender"],
-    //       variablesOptional: true,
-    //     },
-    //     maximumNumber: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "maximumNumber",
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues, componentInfoObjects }) {
-
-    //     let childrenToRender = [];
-
-    //     for (let child of dependencyValues.componentSizeAndComponentSizeListChildren) {
-    //       if (componentInfoObjects.isInheritedComponentType({
-    //         inheritedComponentType: child.componentType,
-    //         baseComponentType: "componentSizeList"
-    //       })) {
-    //         childrenToRender.push(...child.stateValues.childrenToRender);
-    //       } else {
-    //         childrenToRender.push(child.componentName);
-    //       }
-    //     }
-
-    //     let maxNum = dependencyValues.maximumNumber;
-    //     if (maxNum !== null && childrenToRender.length > maxNum) {
-    //       maxNum = Math.max(0, Math.floor(maxNum));
-    //       childrenToRender = childrenToRender.slice(0, maxNum)
-    //     }
-
-    //     return { newValues: { childrenToRender } }
-
-    //   }
-    // }
 
     return stateVariableDefinitions;
   }

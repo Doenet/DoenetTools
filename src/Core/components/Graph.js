@@ -37,14 +37,16 @@ export default class Graph extends BlockComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      defaultValue: 300,
+      defaultValue: { size: 300, isAbsolute: true },
       public: true,
+      forRenderer: true,
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      defaultValue: 300,
+      defaultValue: { size: 300, isAbsolute: true },
       public: true,
+      forRenderer: true,
     };
     attributes.displayXAxis = {
       createComponentOfType: "boolean",
@@ -143,32 +145,6 @@ export default class Graph extends BlockComponent {
         }
       },
     };
-
-    stateVariableDefinitions.numericalWidth = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        width: {
-          dependencyType: "stateVariable",
-          variableName: "width"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { numericalWidth: parseInt(dependencyValues.width) }
-      })
-    }
-
-    stateVariableDefinitions.numericalHeight = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        height: {
-          dependencyType: "stateVariable",
-          variableName: "height"
-        }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: { numericalHeight: parseInt(dependencyValues.height) }
-      })
-    }
 
     return stateVariableDefinitions;
   }

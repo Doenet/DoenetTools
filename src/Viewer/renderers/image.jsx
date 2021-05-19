@@ -1,5 +1,6 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
+import { sizeToCSS } from './utils/css';
 
 export default class Image extends DoenetRenderer {
 
@@ -13,7 +14,7 @@ export default class Image extends DoenetRenderer {
 
       return <React.Fragment>
         <a name={this.componentName} />
-        <img id={this.componentName} src={this.doenetSvData.source} width={this.doenetSvData.width} height={this.doenetSvData.height} alt={this.doenetSvData.description}/>
+        <img id={this.componentName} src={this.doenetSvData.source} width={sizeToCSS(this.doenetSvData.width)} height={sizeToCSS(this.doenetSvData.height)} alt={this.doenetSvData.description} />
       </React.Fragment>
 
     }

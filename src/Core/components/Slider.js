@@ -18,14 +18,14 @@ export default class Slider extends BaseComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      defaultValue: 300,
+      defaultValue: { size: 300, isAbsolute: true },
       public: true,
       forRenderer: true
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      defaultValue: 300,
+      defaultValue: { size: 100, isAbsolute: true },
       public: true,
       forRenderer: true
     };

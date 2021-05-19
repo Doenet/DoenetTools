@@ -1,4 +1,12 @@
-import me from 'math-expressions';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
 
 describe('SideBySide Tag Tests', function () {
 
@@ -7,13 +15,406 @@ describe('SideBySide Tag Tests', function () {
 
   })
 
+
+  let checkSingleColumnSbs = function ({
+    specifiedWidth, specifiedMargins = [undefined, undefined], specifiedValign,
+    sbsWidth,
+    sbsName = "/sbs",
+    isSbsGroup = false
+  }) {
+
+    let actualWidth = specifiedWidth;
+    let actualLeftMargin = specifiedMargins[0];
+    let actualRightMargin = specifiedMargins[1];
+
+    if (actualWidth === undefined) {
+      if (actualLeftMargin === undefined) {
+        if (actualRightMargin === undefined) {
+          actualWidth = 100;
+          actualLeftMargin = actualRightMargin = 0;
+        } else {
+          actualLeftMargin = 0;
+          actualWidth = Math.max(0, 100 - actualRightMargin);
+        }
+      } else {
+        if (actualRightMargin === undefined) {
+          actualRightMargin = 0;
+          actualWidth = Math.max(0, 100 - actualLeftMargin);
+        } else {
+          actualWidth = Math.max(0, 100 - actualLeftMargin - actualRightMargin);
+        }
+      }
+    } else {
+      if (actualLeftMargin === undefined) {
+        if (actualRightMargin === undefined) {
+          actualLeftMargin = actualRightMargin = Math.max(0, (100 - actualWidth) / 2);
+        } else {
+          actualLeftMargin = Math.max(0, 100 - actualWidth - actualRightMargin);
+        }
+      } else {
+        if (actualRightMargin === undefined) {
+          actualRightMargin = Math.max(0, 100 - actualWidth - actualLeftMargin);
+        }
+      }
+    }
+
+    let originalTotal = actualWidth + actualLeftMargin + actualRightMargin;
+
+    if (originalTotal > 100) {
+      // rescale to 100
+      let rescale = 100 / originalTotal;
+      actualWidth *= rescale;
+      actualLeftMargin *= rescale;
+      actualRightMargin *= rescale;
+    } else if (originalTotal < 100) {
+      // add to right margin
+      actualRightMargin += 100 - originalTotal;
+    }
+
+    let valign = specifiedValign ? specifiedValign : "top";
+
+    if (!isSbsGroup) {
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
+        expect(Number(width)).closeTo(sbsWidth * actualWidth / 100, 0.1)
+      })
+
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
+        expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
+      });
+
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
+        expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
+      });
+    }
+
+    let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
+    let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components[sbsName].stateValues.widths.length).eq(1);
+      expect(components[sbsName].stateValues[specifiedWidthName]).eqls([specifiedWidth]);
+      expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidth, 1E-5);
+      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
+      expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
+      expect(components[sbsName].stateValues.valigns).eqls([valign]);
+    })
+
+  }
+
+
+  let checkTwoColumnSbs = function ({
+    specifiedWidths = [undefined, undefined],
+    specifiedMargins = [undefined, undefined],
+    specifiedValigns = [undefined, undefined],
+    sbsWidth,
+    sbsName = "/sbs",
+    isSbsGroup = false
+  }) {
+
+    let actualWidth1 = specifiedWidths[0];
+    let actualWidth2 = specifiedWidths[1];
+    let actualLeftMargin = specifiedMargins[0];
+    let actualRightMargin = specifiedMargins[1];
+    let actualGap = 0;
+
+    if (actualWidth1 === undefined) {
+      if (actualWidth2 === undefined) {
+        if (actualLeftMargin === undefined) {
+          if (actualRightMargin === undefined) {
+            actualWidth1 = actualWidth2 = 50;
+            actualLeftMargin = actualRightMargin = 0;
+          } else {
+            actualWidth1 = actualWidth2 = Math.max(0, (100 - 2 * actualRightMargin) / 2);
+            actualLeftMargin = 0;
+          }
+        } else {
+          if (actualRightMargin === undefined) {
+            actualWidth1 = actualWidth2 = Math.max(0, (100 - 2 * actualLeftMargin) / 2);
+            actualRightMargin = 0;
+          } else {
+            actualWidth1 = actualWidth2 = Math.max(0, (100 - 2 * (actualLeftMargin + actualRightMargin)) / 2);
+          }
+        }
+      } else {
+        if (actualLeftMargin === undefined) {
+          if (actualRightMargin === undefined) {
+            actualWidth1 = Math.max(0, 100 - actualWidth2);
+            actualLeftMargin = actualRightMargin = 0;
+          } else {
+            actualWidth1 = Math.max(0, 100 - actualWidth2 - 2 * actualRightMargin);
+            actualLeftMargin = 0;
+          }
+        } else {
+          if (actualRightMargin === undefined) {
+            actualWidth1 = Math.max(0, 100 - actualWidth2 - 2 * actualLeftMargin);
+            actualRightMargin = 0;
+          } else {
+            actualWidth1 = Math.max(0, 100 - actualWidth2 - 2 * (actualLeftMargin + actualRightMargin));
+          }
+        }
+      }
+    } else {
+      if (actualWidth2 === undefined) {
+        if (actualLeftMargin === undefined) {
+          if (actualRightMargin === undefined) {
+            actualWidth2 = Math.max(0, 100 - actualWidth1);
+            actualLeftMargin = actualRightMargin = 0;
+          } else {
+            actualWidth2 = Math.max(0, 100 - actualWidth1 - 2 * actualRightMargin);
+            actualLeftMargin = 0;
+          }
+        } else {
+          if (actualRightMargin === undefined) {
+            actualWidth2 = Math.max(0, 100 - actualWidth1 - 2 * actualLeftMargin);
+            actualRightMargin = 0;
+          } else {
+            actualWidth2 = Math.max(0, 100 - actualWidth1 - 2 * (actualLeftMargin + actualRightMargin));
+          }
+        }
+      } else {
+        if (actualLeftMargin === undefined) {
+          if (actualRightMargin === undefined) {
+            actualLeftMargin = actualRightMargin = Math.max(0, (100 - actualWidth1 - actualWidth2) / 4);
+          } else {
+            actualLeftMargin = Math.max(0, (100 - actualWidth1 - actualWidth2 - 2 * actualRightMargin) / 2);
+          }
+        } else {
+          if (actualRightMargin === undefined) {
+            actualRightMargin = Math.max(0, (100 - actualWidth1 - actualWidth2 - 2 * actualLeftMargin) / 2);
+          }
+        }
+      }
+    }
+
+    let originalTotal = actualWidth1 + actualWidth2 + 2 * (actualLeftMargin + actualRightMargin);
+
+    if (originalTotal > 100) {
+      // rescale to 100
+      let rescale = 100 / originalTotal;
+      actualWidth1 *= rescale;
+      actualWidth2 *= rescale;
+      actualLeftMargin *= rescale;
+      actualRightMargin *= rescale;
+    } else if (originalTotal < 100) {
+      // add to gap
+      actualGap = 100 - originalTotal;
+    }
+
+    let valigns = [
+      specifiedValigns[0] ? specifiedValigns[0] : "top",
+      specifiedValigns[1] ? specifiedValigns[1] : "top",
+    ]
+
+    if (!isSbsGroup) {
+
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
+        expect(Number(width)).closeTo(sbsWidth * actualWidth1 / 100, 0.1)
+      })
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
+        expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
+      });
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
+        expect(parseFloat(margin)).closeTo(sbsWidth * (actualRightMargin + actualGap / 2) / 100, 0.1)
+      });
+
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('width').then(width => {
+        expect(Number(width)).closeTo(sbsWidth * actualWidth2 / 100, 0.1)
+      })
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-left').then(margin => {
+        expect(parseFloat(margin)).closeTo(sbsWidth * (actualLeftMargin + actualGap / 2) / 100, 0.1)
+      });
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-right').then(margin => {
+        expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
+      });
+    }
+
+    let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
+    let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
+      expect(components[sbsName].stateValues.widths.length).eq(2);
+      expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidth1, 1E-5);
+      expect(components[sbsName].stateValues.widths[1]).closeTo(actualWidth2, 1E-5);
+      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
+      expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
+      expect(components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
+      expect(components[sbsName].stateValues.valigns).eqls(valigns);
+
+    })
+
+  }
+
+
+  let checkFourColumnSbs = function ({
+    specifiedWidths = [undefined, undefined, undefined, undefined],
+    specifiedMargins = [undefined, undefined],
+    specifiedValigns = [undefined, undefined, undefined, undefined],
+    sbsWidth,
+    sbsName = "/sbs",
+    isSbsGroup = false
+  }) {
+
+    let totalWidthSpecified = 0;
+    let nWidthsUndefined = 0;
+
+    for (let ind = 0; ind < 4; ind++) {
+      let width = specifiedWidths[ind];
+      if (width === undefined) {
+        nWidthsUndefined++;
+      } else {
+        totalWidthSpecified += width;
+      }
+    }
+
+    let totalMarginSpecified = 0;
+    let nMarginsUndefined = 0;
+
+    for (let ind = 0; ind < 2; ind++) {
+      let margin = specifiedMargins[ind];
+      if (margin === undefined) {
+        nMarginsUndefined++;
+      } else {
+        totalMarginSpecified += margin;
+      }
+    }
+    totalMarginSpecified *= 4;
+
+    let actualWidths = [...specifiedWidths];
+    let actualMargins = [...specifiedMargins];
+    let actualGap = 0;
+
+
+    if (totalWidthSpecified + totalMarginSpecified >= 100) {
+      // we are already over 100%
+      // anything undefined becomes width 0
+      // everything else is normalized to add up to 100
+
+      let normalization = 100 / (totalWidthSpecified + totalMarginSpecified);
+      for (let ind = 0; ind < 4; ind++) {
+        if (actualWidths[ind] === undefined) {
+          actualWidths[ind] = 0;
+        } else {
+          actualWidths[ind] *= normalization;
+        }
+      }
+      for (let ind = 0; ind < 2; ind++) {
+        if (actualMargins[ind] === undefined) {
+          actualMargins[ind] = 0;
+        } else {
+          actualMargins[ind] *= normalization;
+        }
+      }
+
+    } else {
+      // since we are under 100%, we try the following to get to 100%
+      // 1. if there are any undefined widths,
+      //    define them to be the same value that makes the total 100%
+      //    and make any undefined margins be zero
+      // 2. else, if there are any undefined margins,
+      //    define them to be the same value that makes the total 100%
+      // 3. else set gapWidth to make the total 100%
+
+      if (nWidthsUndefined > 0) {
+
+        let newWidth = (100 - (totalWidthSpecified + totalMarginSpecified)) / nWidthsUndefined;
+        for (let ind = 0; ind < 4; ind++) {
+          if (actualWidths[ind] === undefined) {
+            actualWidths[ind] = newWidth;
+          }
+        }
+
+        for (let ind = 0; ind < 2; ind++) {
+          let margin = actualMargins[ind];
+          if (margin === undefined) {
+            actualMargins[ind] = 0;
+          }
+        }
+
+      } else if (nMarginsUndefined > 0) {
+        let newMargin = (100 - (totalWidthSpecified + totalMarginSpecified)) / (nMarginsUndefined * 4);
+        for (let ind = 0; ind < 2; ind++) {
+          if (actualMargins[ind] === undefined) {
+            actualMargins[ind] = newMargin;
+          }
+        }
+      } else {
+        actualGap = (100 - (totalWidthSpecified + totalMarginSpecified)) / 3;
+      }
+
+    }
+
+    let actualLeftMargin = actualMargins[0];
+    let actualRightMargin = actualMargins[1];
+
+
+    let valigns = specifiedValigns.map(x => x ? x : "top");
+
+    if (!isSbsGroup) {
+
+      for (let col = 0; col < 4; col++) {
+
+        let thisLeftMargin = actualLeftMargin;
+        let thisRightMargin = actualRightMargin;
+
+        if (col > 0) {
+          thisLeftMargin += actualGap / 2;
+        }
+        if (col < 3) {
+          thisRightMargin += actualGap / 2;
+        }
+
+        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('width').then(width => {
+          expect(Number(width)).closeTo(sbsWidth * actualWidths[col] / 100, 0.1)
+        })
+
+        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-left').then(margin => {
+          expect(parseFloat(margin)).closeTo(sbsWidth * thisLeftMargin / 100, 0.1)
+        });
+
+        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-right').then(margin => {
+          expect(parseFloat(margin)).closeTo(sbsWidth * thisRightMargin / 100, 0.1)
+        });
+      }
+    }
+
+    let specifiedWidthName = isSbsGroup ? "specifiedWidths" : "allWidthsSpecified";
+    let specifiedMarginName = isSbsGroup ? "specifiedMargins" : "allMarginsSpecified";
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components[sbsName].stateValues[specifiedWidthName]).eqls(specifiedWidths);
+      expect(components[sbsName].stateValues.widths.length).eq(4);
+      expect(components[sbsName].stateValues.widths[0]).closeTo(actualWidths[0], 1E-5);
+      expect(components[sbsName].stateValues.widths[1]).closeTo(actualWidths[1], 1E-5);
+      expect(components[sbsName].stateValues.widths[2]).closeTo(actualWidths[2], 1E-5);
+      expect(components[sbsName].stateValues.widths[3]).closeTo(actualWidths[3], 1E-5);
+      expect(components[sbsName].stateValues[specifiedMarginName]).eqls(specifiedMargins);
+      expect(components[sbsName].stateValues.margins.length).eq(2)
+      expect(components[sbsName].stateValues.margins[0]).closeTo(actualLeftMargin, 1E-5);
+      expect(components[sbsName].stateValues.margins[1]).closeTo(actualRightMargin, 1E-5);
+      expect(components[sbsName].stateValues.gapWidth).closeTo(actualGap, 1E-5);
+      expect(components[sbsName].stateValues.valigns).eqls(valigns);
+
+    })
+
+  }
+
+
+
   it('sideBySide with no arguments, one panel, change margins first', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs">
-    <p>Hello</p>
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Width: 
@@ -29,201 +430,151 @@ describe('SideBySide Tag Tests', function () {
     <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
     </p>
 
-
     `}, "*");
     });
 
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([100]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
+
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkSingleColumnSbs({
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`change left margin first, unspecified width adjusts`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change right margin, unspecified width adjusts`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedMargins: [10, 20],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change width to be smaller, add extra to right margin`)
+      //  Note: add to right margin since with one panel, there is not gapWidth to set
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [10, 20],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change width to be larger, rescale to 100%`)
+      // Note: this rescaling ignores the extra width added to the right margin,
+      // as it was an indirect consequence of changing the width.
+      // Computations assume the right margin is at the origin 20% specified
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 95,
+        specifiedMargins: [10, 20],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`shrink margins to make specified values add back to 100%`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 95,
+        specifiedMargins: [3, 2],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`shrink right margin to 1, gets recreated to make 100%`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 95,
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increase left margin to make specified total be 100%`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 95,
+        specifiedMargins: [4, 1],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change totals to keep at 100%`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [15, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increasing right margin rescales`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [15, 30],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increasing left margin rescales`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [50, 30],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`shrink width to get specified back to 100%`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+
+      checkSingleColumnSbs({
+        specifiedWidth: 20,
+        specifiedMargins: [50, 30],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change valign`)
+      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 20,
+        specifiedMargins: [50, 30],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid valign ignored`)
+      cy.get("#\\/v1_input").clear().type("invalid{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 20,
+        specifiedMargins: [50, 30],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-
-    cy.log(`change left margin first, unspecified width adjusts`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([90]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 0]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
-    cy.log(`change right margin, unspecified width adjusts`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([70]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`change width to be smaller, add extra to right margin`)
-    //  Note: add to right margin since with one panel, there is not gapWidth to set
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs"].stateValues.widths).eqls([60]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 30]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
-    cy.log(`change width to be larger, rescale to 100%`)
-    // Note: this rescaling ignores the extra width added to the right margin,
-    // as it was an indirect consequence of changing the width.
-    // Computations assume the right margin is at the origin 20% specified
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 95 + 10 + 20;
-      let newWidth = 95 / originalTotal * 100;
-      let newMargin1 = 10 / originalTotal * 100;
-      let newMargin2 = 20 / originalTotal * 100;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([95]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
-    cy.log(`shrink margins to make specified values add back to 100%`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([95]);
-      expect(components["/sbs"].stateValues.widths).eqls([95]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([3, 2]);
-      expect(components["/sbs"].stateValues.margins).eqls([3, 2]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`shrink right margin to 1, gets recreated to make 100%`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([95]);
-      expect(components["/sbs"].stateValues.widths).eqls([95]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([3, 2]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`increase left margin to make specified total be 100%`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([95]);
-      expect(components["/sbs"].stateValues.widths).eqls([95]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([4, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([4, 1]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`change totals to keep at 100%`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([15, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([15, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
-    cy.log(`increasing right margin rescales`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 80 + 15 + 30;
-      let newWidth = 80 / originalTotal * 100;
-      let newMargin1 = 15 / originalTotal * 100;
-      let newMargin2 = 30 / originalTotal * 100;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([15, 30]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
-    cy.log(`increasing left margin rescales`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 80 + 50 + 30;
-      let newWidth = 80 / originalTotal * 100;
-      let newMargin1 = 50 / originalTotal * 100;
-      let newMargin2 = 30 / originalTotal * 100;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([50, 30]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`shrink width to get specified back to 100%`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20]);
-      expect(components["/sbs"].stateValues.widths).eqls([20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([50, 30]);
-      expect(components["/sbs"].stateValues.margins).eqls([50, 30]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
-    cy.log(`change valign`)
-    cy.get("#\\/v1_input").clear().type("bottom{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20]);
-      expect(components["/sbs"].stateValues.widths).eqls([20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([50, 30]);
-      expect(components["/sbs"].stateValues.margins).eqls([50, 30]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
-    cy.log(`invalid valign ignored`)
-    cy.get("#\\/v1_input").clear().type("invalid{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20]);
-      expect(components["/sbs"].stateValues.widths).eqls([20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([50, 30]);
-      expect(components["/sbs"].stateValues.margins).eqls([50, 30]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
 
   })
 
@@ -233,7 +584,7 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs">
-    <p>Hello</p>
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Width: 
@@ -256,86 +607,77 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([100]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkSingleColumnSbs({
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined]);
+        expect(components["/sbs"].stateValues.widths).eqls([100]);
+        expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
+        expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
+        expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
+      })
+
+
+      cy.log(`change width first, unspecified margins adjusts`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}70{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change width larger than 100%, scaled back to 100%`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}170{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 170,
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change width smaller again`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}60{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change right margin, unspecified left margin adjusts`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [undefined, 10],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change right margin so total is larger than 100%, rescales`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [undefined, 60],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change left margin to be large, rescaling adjusts`)
+      //  Note: add to right margin since with one panel, there is not gapWidth to set
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}120{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [120, 60],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-
-    cy.log(`change width first, unspecified margins adjusts`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}70{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([70]);
-      expect(components["/sbs"].stateValues.widths).eqls([70]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([15, 15]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`change width larger than 100%, scaled back to 100%`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}170{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([170]);
-      expect(components["/sbs"].stateValues.widths).eqls([100]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`change width smaller again`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}60{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs"].stateValues.widths).eqls([60]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([20, 20]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`change right margin, unspecified left margin adjusts`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs"].stateValues.widths).eqls([60]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([30, 10]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
-    cy.log(`change right margin so total is larger than 100%, rescales`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs"].stateValues.widths).eqls([50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, 60]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 50]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-    cy.log(`change left margin to be large, rescaling adjusts`)
-    //  Note: add to right margin since with one panel, there is not gapWidth to set
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}120{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs"].stateValues.widths).eqls([25]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([120, 60]);
-      expect(components["/sbs"].stateValues.margins).eqls([50, 25]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top"]);
-    })
-
-
   })
 
   it('sideBySide with singular relative arguments, one panel', () => {
@@ -344,7 +686,7 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" width="80%" margins="10%" valign="middle">
-    <p>Hello</p>
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Width: 
@@ -365,73 +707,74 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [10, 10],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`change left margin, specified margins stay symmetric, get rescaling`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [40, 40],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change right margin, specified margins stay symmetric, extra added to right`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [5, 5],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`symmetry regained by increasing width`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [5, 5],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change valign`)
+      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+
+
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [5, 5],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`ignore invalid valign`)
+      cy.get("#\\/v1_input").clear().type("green{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [5, 5],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
     })
-
-
-    cy.log(`change left margin, specified margins stay symmetric, get rescaling`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([40, 40]);
-      expect(components["/sbs"].stateValues.margins).eqls([25, 25]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-    cy.log(`change right margin, specified margins stay symmetric, extra added to right`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 15]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-    cy.log(`symmetry regained by increasing width`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([90]);
-      expect(components["/sbs"].stateValues.widths).eqls([90]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-
-    cy.log(`change valign`)
-    cy.get("#\\/v1_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([90]);
-      expect(components["/sbs"].stateValues.widths).eqls([90]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
-    cy.log(`ignore invalid valign`)
-    cy.get("#\\/v1_input").clear().type("green{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([90]);
-      expect(components["/sbs"].stateValues.widths).eqls([90]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
 
   })
 
@@ -441,7 +784,7 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" widths="80%" margins="15% 5%" valigns="middle">
-    <p>Hello</p>
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Width: 
@@ -462,77 +805,72 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([15, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([15, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [15, 5],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`decrease left margin, space added to right margin`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [10, 5],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increase right margin, get rescaling`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [10, 35],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`decrease width to return to 100%`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 55,
+        specifiedMargins: [10, 35],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change valign`)
+      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 55,
+        specifiedMargins: [10, 35],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`ignore invalid valign`)
+      cy.get("#\\/v1_input").clear().type("green{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 55,
+        specifiedMargins: [10, 35],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-
-    cy.log(`decrease left margin, space added to right margin`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-    cy.log(`increase right margin, get rescaling`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 80 + 10 + 35;
-      let newWidth = 80 / originalTotal * 100;
-      let newMargin1 = 10 / originalTotal * 100;
-      let newMargin2 = 35 * 100 / originalTotal;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 35]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-    cy.log(`decrease width to return to 100%`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([55]);
-      expect(components["/sbs"].stateValues.widths).eqls([55]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 35]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 35]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-
-    cy.log(`change valign`)
-    cy.get("#\\/v1_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([55]);
-      expect(components["/sbs"].stateValues.widths).eqls([55]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 35]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 35]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
-    cy.log(`ignore invalid valign`)
-    cy.get("#\\/v1_input").clear().type("green{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([55]);
-      expect(components["/sbs"].stateValues.widths).eqls([55]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 35]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 35]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
 
   })
 
@@ -542,7 +880,7 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" width="80%" margins="auto" valign="middle">
-    <p>Hello</p>
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Width: 
@@ -563,72 +901,70 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+      cy.log(`change left margin, specified margins stay symmetric, get rescaling`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [40, 40],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change right margin, specified margins stay symmetric, extra added to right`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 80,
+        specifiedMargins: [5, 5],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`symmetry regained by increasing width`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [5, 5],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change valign`)
+      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [5, 5],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`ignore invalid valign`)
+      cy.get("#\\/v1_input").clear().type("green{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [5, 5],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-    cy.log(`change left margin, specified margins stay symmetric, get rescaling`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([40, 40]);
-      expect(components["/sbs"].stateValues.margins).eqls([25, 25]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-    cy.log(`change right margin, specified margins stay symmetric, extra added to right`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80]);
-      expect(components["/sbs"].stateValues.widths).eqls([80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 15]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-    cy.log(`symmetry regained by increasing width`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([90]);
-      expect(components["/sbs"].stateValues.widths).eqls([90]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle"]);
-    })
-
-
-    cy.log(`change valign`)
-    cy.get("#\\/v1_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([90]);
-      expect(components["/sbs"].stateValues.widths).eqls([90]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
-    cy.log(`ignore invalid valign`)
-    cy.get("#\\/v1_input").clear().type("green{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([90]);
-      expect(components["/sbs"].stateValues.widths).eqls([90]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom"]);
-    })
-
 
   })
 
@@ -638,8 +974,8 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs">
-    <p>Hello</p>
-    <p>Bye</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -662,264 +998,183 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([50, 50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
+
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`change left margin first, unspecified widths adjust`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change right margin, unspecified widths adjust`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedMargins: [10, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first width to be smaller, add extra to second width`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, undefined],
+        specifiedMargins: [10, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first width to be larger, second width shrinks to zero, rescale to 100%`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [95, undefined],
+        specifiedMargins: [10, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first width to be smaller again`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, undefined],
+        specifiedMargins: [10, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second width to be smaller, extra added to gap`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 50],
+        specifiedMargins: [10, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second width to be larger, rescaled to 100%`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 85],
+        specifiedMargins: [10, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`shrink margins to make specified values add back to 100%`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}1.5{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 85],
+        specifiedMargins: [1.5, 1],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`shrink right margin to 0.5, extra added to gap`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}0.5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 85],
+        specifiedMargins: [1.5, 0.5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increase left margin to make specified total be 100%`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}2{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 85],
+        specifiedMargins: [2, 0.5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change totals to keep at 100%`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}50{enter}", { force: true });
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 50],
+        specifiedMargins: [4, 6],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`increasing right margin rescales`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}18.5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 50],
+        specifiedMargins: [4, 18.5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`increasing left margin rescales`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}21.5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 50],
+        specifiedMargins: [21.5, 18.5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`shrink widths to get specified below 100%`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5{enter}", { force: true });
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [5, 10],
+        specifiedMargins: [21.5, 18.5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first valign`)
+      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [5, 10],
+        specifiedMargins: [21.5, 18.5],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second valign`)
+      cy.get("#\\/v2_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [5, 10],
+        specifiedMargins: [21.5, 18.5],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid valign ignored`)
+      cy.get("#\\/v2_input").clear().type("invalid{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [5, 10],
+        specifiedMargins: [21.5, 18.5],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-
-    cy.log(`change left margin first, unspecified widths adjust`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([40, 40]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-
-    cy.log(`change right margin, unspecified widths adjust`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([35, 35]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`change first width to be smaller, add extra to second width`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`change first width to be larger, second width shrinks to zero, rescale to 100%`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}95{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 95 + (10 + 5) * 2;
-      let newWidth = 95 / originalTotal * 100;
-      let newMargin1 = 10 / originalTotal * 100;
-      let newMargin2 = 5 / originalTotal * 100;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([95, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth, 0]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-
-    cy.log(`change first width to be smaller again`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 60]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`change second width to be smaller, extra added to gap`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 50]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(10);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-
-    cy.log(`change second width to be larger, rescaled to 100%`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 10 + 85 + (10 + 5) * 2;
-      let newWidth1 = 10 / originalTotal * 100;
-      let newWidth2 = 85 / originalTotal * 100;
-      let newMargin1 = 10 / originalTotal * 100;
-      let newMargin2 = 5 / originalTotal * 100;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 85]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth1, newWidth2]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-
-
-    cy.log(`shrink margins to make specified values add back to 100%`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}1.5{enter}", { force: true });
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}1{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 85]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 85]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([1.5, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([1.5, 1]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`shrink right margin to 0.5, extra added to gap`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}0.5{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 85]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 85]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([1.5, 0.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([1.5, 0.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(1);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`increase left margin to make specified total be 100%`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}2{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 85]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 85]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 0.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 0.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`change totals to keep at 100%`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}50{enter}", { force: true });
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4{enter}", { force: true });
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}6{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 50]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([4, 6]);
-      expect(components["/sbs"].stateValues.margins).eqls([4, 6]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-
-    cy.log(`increasing right margin rescales`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}18.5{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 30 + 50 + (4 + 18.5) * 2;
-      let newWidth1 = 30 / originalTotal * 100;
-      let newWidth2 = 50 / originalTotal * 100;
-      let newMargin1 = 4 / originalTotal * 100;
-      let newMargin2 = 18.5 * 100 / originalTotal;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 50]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth1, newWidth2]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([4, 18.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-
-    cy.log(`increasing left margin rescales`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}21.5{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 30 + 50 + (21.5 + 18.5) * 2;
-      let newWidth1 = 30 / originalTotal * 100;
-      let newWidth2 = 50 / originalTotal * 100;
-      let newMargin1 = 21.5 * 100 / originalTotal;
-      let newMargin2 = 18.5 * 100 / originalTotal;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 50]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth1, newWidth2]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`shrink widths to get specified below 100%`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}5{enter}", { force: true });
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-
-    cy.log(`change first valign`)
-    cy.get("#\\/v1_input").clear().type("bottom{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change second valign`)
-    cy.get("#\\/v2_input").clear().type("middle{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom", "middle"]);
-    })
-
-    cy.log(`invalid valign ignored`)
-    cy.get("#\\/v2_input").clear().type("invalid{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([21.5, 18.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom", "middle"]);
-    })
-
 
   })
 
@@ -929,8 +1184,8 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs">
-    <p>Hello</p>
-    <p>Bye</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -953,109 +1208,79 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([50, 50]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
 
 
-    cy.log(`change second width past 100%, unspecified first width shrinks to zero, rescales`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}130{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, 130]);
-      expect(components["/sbs"].stateValues.widths).eqls([0, 100]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`change second width past 100%, unspecified first width shrinks to zero, rescales`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}130{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [undefined, 130],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second width, unspecified first width adjusts`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [undefined, 10],
+        sbsWidth, sbsName: "/sbs"
+      })
 
 
-    cy.log(`change second width, unspecified first width adjusts`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([90, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`change first width, unspecified margins adjust`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}30{enter}", { force: true });
 
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        sbsWidth, sbsName: "/sbs"
+      })
 
-    cy.log(`change first width, unspecified margins adjust`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}30{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([15, 15]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`change right margin, unspecified left margin adjusts`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
 
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        specifiedMargins: [undefined, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
 
-    cy.log(`change right margin, unspecified left margin adjusts`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([25, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`increase second width so total is past 100%, rescaling`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
 
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 85],
+        specifiedMargins: [undefined, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
 
-    cy.log(`increase second width so total is past 100%, rescaling`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}85{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 30 + 85 + (0 + 5) * 2;
-      let newWidth1 = 30 / originalTotal * 100;
-      let newWidth2 = 85 / originalTotal * 100;
-      let newMargin1 = 0 / originalTotal * 100;
-      let newMargin2 = 5 / originalTotal * 100;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 85]);
-      expect(components["/sbs"].stateValues.widths).eqls([newWidth1, newWidth2]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`decrease second width`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
-    cy.log(`decrease second width`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([20, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 20],
+        specifiedMargins: [undefined, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
 
-    cy.log(`specify first margin to be smaller, remainder in gap`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(20);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
+      cy.log(`specify first margin to be smaller, remainder in gap`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 20],
+        specifiedMargins: [10, 5],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
 
   })
@@ -1066,8 +1291,8 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" width="20%" margins="10%" valign="middle">
-    <p>Hello</p>
-    <p>Bye</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -1090,120 +1315,101 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(20);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+      cy.log(`change first width, second matches`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second width, first matches, rescaling`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [80, 80],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`shrink width, rest in gap`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increase left margin, right margin matches`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [20, 20],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increase right margin, left margin matches, rescaling`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first valign`)
+      cy.get("#\\/v1_input").clear().type("top{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second valign`)
+      cy.get("#\\/v2_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid valign ignored`)
+      cy.get("#\\/v1_input").clear().type("invalid{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-    cy.log(`change first width, second matches`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle"]);
-    })
-
-    cy.log(`change second width, first matches, rescaling`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([80, 80]);
-      expect(components["/sbs"].stateValues.widths).eqls([40, 40]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle"]);
-    })
-
-    cy.log(`shrink width, rest in gap`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(40);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle"]);
-    })
-
-
-    cy.log(`increase left margin, right margin matches`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([20, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([20, 20]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle"]);
-    })
-
-
-    cy.log(`increase right margin, left margin matches, rescaling`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([45, 45]);
-      expect(components["/sbs"].stateValues.margins).eqls([45 / 2, 45 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle"]);
-    })
-
-
-    cy.log(`change first valign`)
-    cy.get("#\\/v1_input").clear().type("top{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([45, 45]);
-      expect(components["/sbs"].stateValues.margins).eqls([45 / 2, 45 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`change second valign`)
-    cy.get("#\\/v2_input").clear().type("bottom{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([45, 45]);
-      expect(components["/sbs"].stateValues.margins).eqls([45 / 2, 45 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom", "bottom"]);
-    })
-
-    cy.log(`invalid valign ignored`)
-    cy.get("#\\/v1_input").clear().type("invalid{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([45, 45]);
-      expect(components["/sbs"].stateValues.margins).eqls([45 / 2, 45 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom", "bottom"]);
-    })
-
 
   })
 
@@ -1213,8 +1419,8 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" widths="20% 10%" margins="10% 20%" valigns="middle bottom">
-    <p>Hello</p>
-    <p>Bye</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -1237,120 +1443,103 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(10);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "bottom"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 10],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+      cy.log(`change first width`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second width, rescaling`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}110{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 110],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`shrink second width`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`decrease right margin`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [10, 5],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`increase left margin, rescaling`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}77.5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [77.5, 5],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first valign`)
+      cy.get("#\\/v1_input").clear().type("top{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [77.5, 5],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second valign`)
+      cy.get("#\\/v2_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [77.5, 5],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid valign ignored`)
+      cy.get("#\\/v2_input").clear().type("invalid{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [77.5, 5],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-    cy.log(`change first width`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "bottom"]);
-    })
-
-    cy.log(`change second width, rescaling`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}110{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 110]);
-      expect(components["/sbs"].stateValues.widths).eqls([15, 55]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "bottom"]);
-    })
-
-
-    cy.log(`shrink second width`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "bottom"]);
-    })
-
-
-    cy.log(`decrease right margin`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(35);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "bottom"]);
-    })
-
-
-    cy.log(`increase left margin, rescaling`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}77.5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.widths).eqls([15, 2.5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([77.5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([77.5 / 2, 2.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "bottom"]);
-    })
-
-
-    cy.log(`change first valign`)
-    cy.get("#\\/v1_input").clear().type("top{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.widths).eqls([15, 2.5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([77.5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([77.5 / 2, 2.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "bottom"]);
-    })
-
-    cy.log(`change second valign`)
-    cy.get("#\\/v2_input").clear().type("middle{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.widths).eqls([15, 2.5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([77.5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([77.5 / 2, 2.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "middle"]);
-    })
-
-    cy.log(`invalid valign ignored`)
-    cy.get("#\\/v2_input").clear().type("invalid{enter}");
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 5]);
-      expect(components["/sbs"].stateValues.widths).eqls([15, 2.5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([77.5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([77.5 / 2, 2.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "middle"]);
-    })
-
 
   })
 
@@ -1360,8 +1549,8 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" widths="20%" margins="auto" valigns="middle">
-    <p>Hello</p>
-    <p>Bye</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -1384,144 +1573,128 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 80]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, undefined],
+        specifiedMargins: [undefined, undefined],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`change first width, unspecified second width adjusts`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        specifiedMargins: [undefined, undefined],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change right margin, left is symmetric, unspecified second width adjusts`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change second width, rest in gap`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change first width, rescaling`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}140{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [140, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`shrink first width`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`decrease right margin, left matches`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 20],
+        specifiedMargins: [5, 5],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increase left margin, right matches, rescaling`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}42.5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 20],
+        specifiedMargins: [42.5, 42.5],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change first valign`)
+      cy.get("#\\/v1_input").clear().type("top{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 20],
+        specifiedMargins: [42.5, 42.5],
+        specifiedValigns: ["top", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second valign`)
+      cy.get("#\\/v2_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 20],
+        specifiedMargins: [42.5, 42.5],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`invalid valign ignored`)
+      cy.get("#\\/v2_input").clear().type("invalid{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 20],
+        specifiedMargins: [42.5, 42.5],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-
-    cy.log(`change first width, unspecified second width adjusts`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 70]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`change right margin, left is symmetric, unspecified second width adjusts`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change second width, rest in gap`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([30, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([30, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(10);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change first width, rescaling`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}140{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([140, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([70, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`shrink first width`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(30);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-
-    cy.log(`decrease right margin, left matches`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(50);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`increase left margin, right matches, rescaling`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}42.5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([42.5, 42.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([42.5 / 2, 42.5 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`change first valign`)
-    cy.get("#\\/v1_input").clear().type("top{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([42.5, 42.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([42.5 / 2, 42.5 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
-    })
-
-    cy.log(`change second valign`)
-    cy.get("#\\/v2_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([42.5, 42.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([42.5 / 2, 42.5 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "bottom"]);
-    })
-
-    cy.log(`invalid valign ignored`)
-    cy.get("#\\/v2_input").clear().type("invalid{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([42.5, 42.5]);
-      expect(components["/sbs"].stateValues.margins).eqls([42.5 / 2, 42.5 / 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "bottom"]);
-    })
-
 
   })
 
@@ -1531,10 +1704,10 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs">
-    <p>Hello</p>
-    <p>Bye</p>
-    <p>Never</p>
-    <p>Always</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -1561,226 +1734,181 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined, undefined, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([25, 25, 25, 25]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkFourColumnSbs({
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`change left margin first, unspecified widths adjust`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedMargins: [2, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change right margin, unspecified widths adjust`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 3rd width to be smaller, add extra to other widths`)
+      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}14{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [undefined, undefined, 14, undefined],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 3rd width to be larger, others widths shrinks to zero, rescale to 100%`)
+      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}180{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [undefined, undefined, 180, undefined],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 3rd width to be smaller again`)
+      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [undefined, undefined, 11, undefined],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 2nd width to be smaller`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [undefined, 15, 11, undefined],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 1st width to be smaller`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 15, 11, undefined],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 4th width to be smaller, remainder added to gap`)
+      cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}19{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 15, 11, 19],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 2nd width to be larger, rescaled to 100%`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 55, 11, 19],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`shrink width 2 to make specified values add back to 100%`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 30, 11, 19],
+        specifiedMargins: [2, 3],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`shrink right margin, extra added to gap`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 30, 11, 19],
+        specifiedMargins: [2, 1],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change fourth valign`)
+      cy.get("#\\/v4_input").clear().type("bottom{enter}");
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 30, 11, 19],
+        specifiedMargins: [2, 1],
+        specifiedValigns: [undefined, undefined, undefined, "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change second valign`)
+      cy.get("#\\/v2_input").clear().type("middle{enter}");
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 30, 11, 19],
+        specifiedMargins: [2, 1],
+        specifiedValigns: [undefined, "middle", undefined, "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change first valign`)
+      cy.get("#\\/v1_input").clear().type("middle{enter}");
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 30, 11, 19],
+        specifiedMargins: [2, 1],
+        specifiedValigns: ["middle", "middle", undefined, "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change third valign`)
+      cy.get("#\\/v3_input").clear().type("bottom{enter}");
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 30, 11, 19],
+        specifiedMargins: [2, 1],
+        specifiedValigns: ["middle", "middle", "bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`invalid valign ignored`)
+      cy.get("#\\/v3_input").clear().type("invalid{enter}");
+
+      checkFourColumnSbs({
+        specifiedWidths: [20, 30, 11, 19],
+        specifiedMargins: [2, 1],
+        specifiedValigns: ["middle", "middle", "bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
     })
-
-
-    cy.log(`change left margin first, unspecified widths adjust`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined, undefined, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([23, 23, 23, 23]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, undefined]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-
-
-    cy.log(`change right margin, unspecified widths adjust`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined, undefined, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 20, 20, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-    cy.log(`change 3rd width to be smaller, add extra to other widths`)
-    cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}14{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined, 14, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([22, 22, 14, 22]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-    cy.log(`change 3rd width to be larger, others widths shrinks to zero, rescale to 100%`)
-    cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}180{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined, 180, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([0, 0, 90, 0]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([1, 1.5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-    cy.log(`change 3rd width to be smaller again`)
-    cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, undefined, 11, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([23, 23, 11, 23]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-    cy.log(`change 2nd width to be smaller`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([undefined, 15, 11, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([27, 15, 11, 27]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-
-    cy.log(`change 1st width to be smaller`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 15, 11, undefined]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 15, 11, 34]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-    cy.log(`change 4th width to be smaller, remainder added to gap`)
-    cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}19{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 15, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 15, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-
-    cy.log(`change 2nd width to be larger, rescaled to 100%`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}55{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 20 + 55 + 11 + 19 + (2 + 3) * 4;
-      let newWidth1 = 20 * 100 / originalTotal;
-      let newWidth2 = 55 * 100 / originalTotal;
-      let newWidth3 = 11 * 100 / originalTotal;
-      let newWidth4 = 19 * 100 / originalTotal;
-      let newMargin1 = 2 * 100 / originalTotal;
-      let newMargin2 = 3 * 100 / originalTotal;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 55, 11, 19]);
-      expect(components["/sbs"].stateValues.widths.map(x => me.math.round(x, 10))).eqls([newWidth1, newWidth2, newWidth3, newWidth4]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins.map(x => me.math.round(x, 10))).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-
-
-    cy.log(`shrink width 2 to make specified values add back to 100%`)
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 3]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-
-    cy.log(`shrink right margin, extra added to gap`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(8 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "top"]);
-    })
-
-
-    cy.log(`change fourth valign`)
-    cy.get("#\\/v4_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(8 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top", "top", "bottom"]);
-    })
-
-    cy.log(`change second valign`)
-    cy.get("#\\/v2_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(8 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "middle", "top", "bottom"]);
-    })
-
-    cy.log(`change first valign`)
-    cy.get("#\\/v1_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(8 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle", "top", "bottom"]);
-    })
-
-    cy.log(`change third valign`)
-    cy.get("#\\/v3_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(8 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle", "bottom", "bottom"]);
-    })
-
-
-    cy.log(`invalid valign ignored`)
-    cy.get("#\\/v3_input").clear().type("invalid{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.widths).eqls([20, 30, 11, 19]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 1]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(8 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle", "bottom", "bottom"]);
-    })
-
 
   })
 
@@ -1790,10 +1918,10 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" width="15%" margins="5%" valign="middle">
-    <p>Hello</p>
-    <p>Bye</p>
-    <p>Never</p>
-    <p>Always</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -1820,67 +1948,64 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([15, 15, 15, 15]);
-      expect(components["/sbs"].stateValues.widths).eqls([15, 15, 15, 15]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle", "middle", "middle"]);
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkFourColumnSbs({
+        specifiedWidths: [15, 15, 15, 15],
+        specifiedMargins: [5, 5],
+        specifiedValigns: ["middle", "middle", "middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`change 4th width, rest match, remainder added to gap`)
+      cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [10, 10, 10, 10],
+        specifiedMargins: [5, 5],
+        specifiedValigns: ["middle", "middle", "middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change right margin, rescaled`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [10, 10, 10, 10],
+        specifiedMargins: [20, 20],
+        specifiedValigns: ["middle", "middle", "middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`shrink left margin`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [10, 10, 10, 10],
+        specifiedMargins: [2, 2],
+        specifiedValigns: ["middle", "middle", "middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change fourth valign`)
+      cy.get("#\\/v4_input").clear().type("bottom{enter}");
+
+      checkFourColumnSbs({
+        specifiedWidths: [10, 10, 10, 10],
+        specifiedMargins: [2, 2],
+        specifiedValigns: ["bottom", "bottom", "bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-
-    cy.log(`change 4th width, rest match, remainder added to gap`)
-    cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10, 10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 10, 10, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 5]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(20 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle", "middle", "middle"]);
-    })
-
-
-    cy.log(`change right margin, rescaled`)
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10, 10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 5, 5, 5]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([20, 20]);
-      expect(components["/sbs"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle", "middle", "middle"]);
-    })
-
-    cy.log(`shrink left margin`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}2{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10, 10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 10, 10, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 2]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 2]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(44 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "middle", "middle", "middle"]);
-    })
-
-    cy.log(`change fourth valign`)
-    cy.get("#\\/v4_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([10, 10, 10, 10]);
-      expect(components["/sbs"].stateValues.widths).eqls([10, 10, 10, 10]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([2, 2]);
-      expect(components["/sbs"].stateValues.margins).eqls([2, 2]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(44 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["bottom", "bottom", "bottom", "bottom"]);
-    })
-
 
   })
 
@@ -1890,10 +2015,10 @@ describe('SideBySide Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <sideBySide name="sbs" widths="5% 10% 15% 20%" margins="5% 2%" valigns="middle">
-    <p>Hello</p>
-    <p>Bye</p>
-    <p>Never</p>
-    <p>Always</p>
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
     </sideBySide>
 
     <p>Widths: 
@@ -1920,92 +2045,83 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([5, 10, 15, 20]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10, 15, 20]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 2]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 2]);
-      expect(components["/sbs"].stateValues.gapWidth).closeTo(22 / 3, 1E-12);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top", "top", "top"]);
+
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkFourColumnSbs({
+        specifiedWidths: [5, 10, 15, 20],
+        specifiedMargins: [5, 2],
+        specifiedValigns: ["middle", undefined, undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+
+      cy.log(`change 4th width, remainder added to gap`)
+      cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [5, 10, 15, 9],
+        specifiedMargins: [5, 2],
+        specifiedValigns: ["middle", undefined, undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change 1st width, rescaled`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}63{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [63, 10, 15, 9],
+        specifiedMargins: [5, 2],
+        specifiedValigns: ["middle", undefined, undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change more widths, remainder added to gap`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+      cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}13{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [3, 8, 13, 9],
+        specifiedMargins: [5, 2],
+        specifiedValigns: ["middle", undefined, undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change margins`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+
+      checkFourColumnSbs({
+        specifiedWidths: [3, 8, 13, 9],
+        specifiedMargins: [7, 6],
+        specifiedValigns: ["middle", undefined, undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change valigns`)
+      cy.get("#\\/v1_input").clear().type("top{enter}");
+      cy.get("#\\/v2_input").clear().type("middle{enter}");
+      cy.get("#\\/v3_input").clear().type("bottom{enter}");
+      cy.get("#\\/v4_input").clear().type("middle{enter}");
+
+      checkFourColumnSbs({
+        specifiedWidths: [3, 8, 13, 9],
+        specifiedMargins: [7, 6],
+        specifiedValigns: ["top", "middle", "bottom", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
     })
-
-
-    cy.log(`change 4th width, remainder added to gap`)
-    cy.get("#\\/w4 textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([5, 10, 15, 9]);
-      expect(components["/sbs"].stateValues.widths).eqls([5, 10, 15, 9]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 2]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(11);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top", "top", "top"]);
-    })
-
-    cy.log(`change 1st width, rescaled`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}63{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotal = 63 + 10 + 15 + 9 + (5 + 2) * 4;
-      let newWidth1 = 63 * 100 / originalTotal;
-      let newWidth2 = 10 * 100 / originalTotal;
-      let newWidth3 = 15 * 100 / originalTotal;
-      let newWidth4 = 9 * 100 / originalTotal;
-      let newMargin1 = 5 * 100 / originalTotal;
-      let newMargin2 = 2 * 100 / originalTotal;
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([63, 10, 15, 9]);
-      expect(components["/sbs"].stateValues.widths.map(x => me.math.round(x, 10))).eqls([newWidth1, newWidth2, newWidth3, newWidth4]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 2]);
-      expect(components["/sbs"].stateValues.margins.map(x => me.math.round(x, 10))).eqls([newMargin1, newMargin2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top", "top", "top"]);
-    })
-
-    cy.log(`change more widths, remainder added to gap`)
-    cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}3{enter}", { force: true });
-    cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
-    cy.get("#\\/w3 textarea").type("{end}{backspace}{backspace}13{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([3, 8, 13, 9]);
-      expect(components["/sbs"].stateValues.widths).eqls([3, 8, 13, 9]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([5, 2]);
-      expect(components["/sbs"].stateValues.margins).eqls([5, 2]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(13);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top", "top", "top"]);
-    })
-
-
-    cy.log(`change margins`)
-    cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
-    cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([3, 8, 13, 9]);
-      expect(components["/sbs"].stateValues.widths).eqls([3, 8, 13, 9]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([7, 6]);
-      expect(components["/sbs"].stateValues.margins).eqls([7, 6]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["middle", "top", "top", "top"]);
-    })
-
-    cy.log(`change valigns`)
-    cy.get("#\\/v1_input").clear().type("top{enter}");
-    cy.get("#\\/v2_input").clear().type("middle{enter}");
-    cy.get("#\\/v3_input").clear().type("bottom{enter}");
-    cy.get("#\\/v4_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([3, 8, 13, 9]);
-      expect(components["/sbs"].stateValues.widths).eqls([3, 8, 13, 9]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([7, 6]);
-      expect(components["/sbs"].stateValues.margins).eqls([7, 6]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "middle", "bottom", "middle"]);
-    })
-
 
   })
 
@@ -2016,10 +2132,10 @@ describe('SideBySide Tag Tests', function () {
     <text>a</text>
     <sbsgroup name="sbsg">
       <sideBySide name="sbs1">
-        <p>Hello</p>
+        <lorem generateParagraphs="1" />
       </sideBySide>
       <sideBySide name="sbs2">
-        <p>Never</p>
+        <lorem generateParagraphs="1" />
       </sideBySide>
     </sbsgroup>
     
@@ -2070,383 +2186,394 @@ describe('SideBySide Tag Tests', function () {
     // Note: including essentialWidths and essentialMargins
     // just so can keep track of which sbs will still be affected by the spsGroup
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([100]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([100]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.widths).eqls([100]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+
+    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+
+      checkSingleColumnSbs({
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`change left margin of sbs1, unspecified width of sbs1 adjusts`)
-    cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([100]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([90]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 0]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.widths).eqls([100]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.log(`change left margin of sbs1, unspecified width of sbs1 adjusts`)
+      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
 
-    cy.log(`change width of sbsg, unspecified margin(s) adjust`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}70{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([70]);
-      expect(components["/sbsg"].stateValues.widths).eqls([70]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([15, 15]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([70]);
-      expect(components["/sbs1"].stateValues.widths).eqls([70]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 20]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([70]);
-      expect(components["/sbs2"].stateValues.widths).eqls([70]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([15, 15]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      checkSingleColumnSbs({
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change width of sbsg, unspecified margin(s) adjust`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}70{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        sbsWidth, sbsName: "/sbs2"
+      })
 
 
-    cy.log(`change right margin of sbs2, unspecified margin adjusts`)
-    cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([70]);
-      expect(components["/sbsg"].stateValues.widths).eqls([70]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([15, 15]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([70]);
-      expect(components["/sbs1"].stateValues.widths).eqls([70]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 20]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([70]);
-      expect(components["/sbs2"].stateValues.widths).eqls([70]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([5, 25]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`change left margin of sbsg, affects only sbs2`)
-    cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([70]);
-      expect(components["/sbsg"].stateValues.widths).eqls([70]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([4, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([4, 26]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([70]);
-      expect(components["/sbs1"].stateValues.widths).eqls([70]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 20]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([70]);
-      expect(components["/sbs2"].stateValues.widths).eqls([70]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([4, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([4, 26]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.log(`change right margin of sbs2, unspecified margin adjusts`)
+      cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        specifiedMargins: [undefined, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
 
 
-    cy.log(`change sbgg width to be smaller, adds to unspecified or right margins`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([60]);
-      expect(components["/sbsg"].stateValues.widths).eqls([60]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([4, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([4, 36]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs1"].stateValues.widths).eqls([60]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 30]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs2"].stateValues.widths).eqls([60]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([4, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([4, 36]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.log(`change left margin of sbsg, affects only sbs2`)
+      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        specifiedMargins: [4, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 70,
+        specifiedMargins: [4, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
 
 
-    cy.log(`change sbs1 width to be smaller, adds to unspecified right margin`)
-    cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([60]);
-      expect(components["/sbsg"].stateValues.widths).eqls([60]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([4, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([4, 36]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs2"].stateValues.widths).eqls([60]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([4, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([4, 36]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.log(`change sbsg width to be smaller, adds to unspecified or right margins`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}60{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [4, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [4, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
 
 
-    cy.log(`increase sbsg left margin, cause rescaling just in sbs2`)
-    cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([60]);
-      expect(components["/sbsg"].stateValues.widths).eqls([60]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([20, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([20, 20]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
+      cy.log(`change sbs1 width to be smaller, adds to unspecified right margin`)
+      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
 
-      let originalTotal2 = 60 + 20 + 25;
-      let newWidth12 = 60 * 100 / originalTotal2;
-      let newMargin12 = 20 * 100 / originalTotal2;
-      let newMargin22 = 25 * 100 / originalTotal2;
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([60]);
-      expect(components["/sbs2"].stateValues.widths[0]).closeTo(newWidth12, 1E-12);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.margins[0]).closeTo(newMargin12, 1E-12)
-      expect(components["/sbs2"].stateValues.margins[1]).closeTo(newMargin22, 1E-12)
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [4, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [4, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
 
 
+      cy.log(`increase sbsg left margin, cause rescaling just in sbs2`)
+      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
 
-    cy.log(`increase sbsg width, causing rescaling in sbsg and a second in sbs2`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotalg = 90 + 20 + 0;
-      let newWidth1g = 90 * 100 / originalTotalg;
-      let newMargin1g = 20 * 100 / originalTotalg;
-      let newMargin2g = 0 * 100 / originalTotalg;
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([90]);
-      expect(components["/sbsg"].stateValues.widths[0]).closeTo(newWidth1g, 1E-12);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([20, undefined]);
-      expect(components["/sbsg"].stateValues.margins[0]).closeTo(newMargin1g, 1E-12)
-      expect(components["/sbsg"].stateValues.margins[1]).eq(newMargin2g);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [20, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 60,
+        specifiedMargins: [20, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
 
-      let originalTotal2 = 90 + 20 + 25;
-      let newWidth12 = 90 * 100 / originalTotal2;
-      let newMargin12 = 20 * 100 / originalTotal2;
-      let newMargin22 = 25 * 100 / originalTotal2;
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([90]);
-      expect(components["/sbs2"].stateValues.widths[0]).closeTo(newWidth12, 1E-12);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.margins[0]).closeTo(newMargin12, 1E-12)
-      expect(components["/sbs2"].stateValues.margins[1]).closeTo(newMargin22, 1E-12)
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
 
 
-    cy.log(`shrink sbsg width to remove rescaling`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}40{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([20, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+
+      cy.log(`increase sbsg width, causing rescaling in sbsg and a second in sbs2`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}90{enter}", { force: true });
+
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [20, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 90,
+        specifiedMargins: [20, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
 
 
-    cy.log(`change valign of sbs1`)
-    cy.get("#\\/v11_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([20, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.log(`shrink sbsg width to remove rescaling`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}40{enter}", { force: true });
 
-    cy.log(`change valign of sbsg`)
-    cy.get("#\\/v1g_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([20, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle"]);
-    })
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
 
-    cy.log(`change valign of sbs2`)
-    cy.get("#\\/v12_input").clear().type("top{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([20, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
-    })
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
 
 
-    cy.log(`valign of sbsg ignores invalid`)
-    cy.get("#\\/v1g_input").clear().type("banana{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([20, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([50]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 40]);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.margins).eqls([20, 40]);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top"]);
+      cy.log(`change valign of sbs1`)
+      cy.get("#\\/v11_input").clear().type("bottom{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, 25],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
+
+      cy.log(`change valign of sbsg`)
+      cy.get("#\\/v1g_input").clear().type("middle{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, undefined],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, 25],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
+
+      cy.log(`change valign of sbs2`)
+      cy.get("#\\/v12_input").clear().type("top{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, undefined],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, 25],
+        specifiedValign: "top",
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
+
+
+      cy.log(`valign of sbsg ignores invalid`)
+      cy.get("#\\/v1g_input").clear().type("banana{enter}");
+
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, undefined],
+        specifiedValign: "middle",
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 50,
+        specifiedMargins: [10, undefined],
+        specifiedValign: "bottom",
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkSingleColumnSbs({
+        specifiedWidth: 40,
+        specifiedMargins: [20, 25],
+        specifiedValign: "top",
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([50]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([10, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, 25]);
+      })
     })
 
   })
@@ -2458,12 +2585,12 @@ describe('SideBySide Tag Tests', function () {
     <text>a</text>
     <sbsgroup name="sbsg">
       <sideBySide name="sbs1">
-        <p>Hello</p>
-        <p>Bye</p>
+        <lorem generateParagraphs="1" />
+        <lorem generateParagraphs="1" />
       </sideBySide>
       <sideBySide name="sbs2">
-        <p>Never</p>
-        <p>Always</p>
+        <lorem generateParagraphs="1" />
+        <lorem generateParagraphs="1" />
       </sideBySide>
     </sbsgroup>
     
@@ -2520,461 +2647,423 @@ describe('SideBySide Tag Tests', function () {
     // Note: including essentialWidths and essentialMargins
     // just so can keep track of which sbs will still be affected by the spsGroup
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([50, 50]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([50, 50]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.widths).eqls([50, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+
+    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`change width1 of sbsg`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40, 60]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([40, undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([40, 60]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, undefined]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 60]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`change width1 of sbsg`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}40{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`override width1 of sbs1`)
-    cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40, 60]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 70]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, undefined]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 60]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`override width1 of sbs1`)
+      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`override width2 of sbs2`)
-    cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40, 60]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 70]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([2.5, 2.5]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`override width2 of sbs2`)
+      cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}50{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 50],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`change left margin of sbs1`)
-    cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40, 60]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([undefined, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 60]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 0]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([2.5, 2.5]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`change left margin of sbs1`)
+      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        specifiedMargins: [5, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 50],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`change left margin of sbsg`)
-    cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40, 54]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, undefined]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 0]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 60]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 0]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, undefined]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 2]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`change left margin of sbsg`)
+      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        specifiedMargins: [3, undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        specifiedMargins: [5, undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 50],
+        specifiedMargins: [3, undefined],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, undefined]);
+      })
 
 
+      cy.log(`change right margin of sbsg`)
+      cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
 
-    cy.log(`change right margin of sbsg`)
-    cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}1{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, undefined]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40, 52]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 58]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(2);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, undefined],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        specifiedMargins: [5, 1],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 50],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`change second width of sbsg`)
-    cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, 45]);
-      expect(components["/sbsg"].stateValues.widths).eqls([40, 45]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(7);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 45]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 45]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(13);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(2);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`change second width of sbsg`)
+      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
 
-    cy.log(`increase second width of sbsg to cause rescaling`)
-    cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}65{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotalg = 40 + 65 + 2*(3 + 1);
-      let newWidth1g = 40 * 100 / originalTotalg;
-      let newWidth2g = 65 * 100 / originalTotalg;
-      let newMargin1g = 3 * 100 / originalTotalg;
-      let newMargin2g = 1 * 100 / originalTotalg;
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, 65]);
-      expect(components["/sbsg"].stateValues.widths[0]).closeTo(newWidth1g, 1E-12);
-      expect(components["/sbsg"].stateValues.widths[1]).closeTo(newWidth2g, 1E-12);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins[0]).closeTo(newMargin1g, 1E-12);
-      expect(components["/sbsg"].stateValues.margins[1]).closeTo(newMargin2g, 1E-12);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      let originalTotal1 = 30 + 65 + 2*(5 + 1);
-      let newWidth11 = 30 * 100 / originalTotal1;
-      let newWidth21 = 65 * 100 / originalTotal1;
-      let newMargin11 = 5 * 100 / originalTotal1;
-      let newMargin21 = 1 * 100 / originalTotal1;
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 65]);
-      expect(components["/sbs1"].stateValues.widths[0]).closeTo(newWidth11, 1E-12);
-      expect(components["/sbs1"].stateValues.widths[1]).closeTo(newWidth21, 1E-12);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins[0]).closeTo(newMargin11, 1E-12);
-      expect(components["/sbs1"].stateValues.margins[1]).closeTo(newMargin21, 1E-12);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(2);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 45],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 45],
+        specifiedMargins: [5, 1],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 50],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`decrease second width of sbs1 to drop below 100%`)
-    cy.get("#\\/w21 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}55{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let originalTotalg = 40 + 65 + 2*(3 + 1);
-      let newWidth1g = 40 * 100 / originalTotalg;
-      let newWidth2g = 65 * 100 / originalTotalg;
-      let newMargin1g = 3 * 100 / originalTotalg;
-      let newMargin2g = 1 * 100 / originalTotalg;
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([40, 65]);
-      expect(components["/sbsg"].stateValues.widths[0]).closeTo(newWidth1g, 1E-12);
-      expect(components["/sbsg"].stateValues.widths[1]).closeTo(newWidth2g, 1E-12);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins[0]).closeTo(newMargin1g, 1E-12);
-      expect(components["/sbsg"].stateValues.margins[1]).closeTo(newMargin2g, 1E-12);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(0);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(3);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([40, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(2);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`increase second width of sbsg to cause rescaling`)
+      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}65{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 65],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 65],
+        specifiedMargins: [5, 1],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 50],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`decrease first width of sbsg to drop below 100%`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}25{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.widths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(2);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(3);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(17);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["top", "top"]);
-    })
+      cy.log(`decrease second width of sbs1 to drop below 100%`)
+      cy.get("#\\/w21 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}55{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 65],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 55],
+        specifiedMargins: [5, 1],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 50],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
 
-    cy.log(`change first valign of sbsg`)
-    cy.get("#\\/v1g_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.widths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(2);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(3);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(17);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
+      cy.log(`decrease first width of sbsg to drop below 100%`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}25{enter}", { force: true });
 
-    cy.log(`change first valign of sbs2`)
-    cy.get("#\\/v12_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.widths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(2);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(3);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(17);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 65],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 55],
+        specifiedMargins: [5, 1],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 50],
+        specifiedMargins: [3, 1],
+        sbsWidth, sbsName: "/sbs2"
+      })
 
-    cy.log(`change second valign of sbs1`)
-    cy.get("#\\/v21_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.widths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(2);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(3);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(17);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
 
-    cy.log(`change second valign of sbsg`)
-    cy.get("#\\/v2g_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.widths).eqls([25, 65]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(2);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "bottom"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 55]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 1]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(3);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.widths).eqls([25, 50]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.margins).eqls([3, 1]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(17);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "bottom"]);
+
+      cy.log(`change first valign of sbsg`)
+      cy.get("#\\/v1g_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 65],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 55],
+        specifiedMargins: [5, 1],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 50],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change first valign of sbs2`)
+      cy.get("#\\/v12_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 65],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 55],
+        specifiedMargins: [5, 1],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 50],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change second valign of sbs1`)
+      cy.get("#\\/v21_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 65],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 55],
+        specifiedMargins: [5, 1],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 50],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change second valign of sbsg`)
+      cy.get("#\\/v2g_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 65],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 55],
+        specifiedMargins: [5, 1],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 50],
+        specifiedMargins: [3, 1],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([30, 55]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([5, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 50]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
     })
 
   })
-
 
   it('sbsGroup with singular arguments, sidebysides with plural or no arguments, two panels', () => {
     cy.window().then((win) => {
@@ -2983,12 +3072,12 @@ describe('SideBySide Tag Tests', function () {
     <text>a</text>
     <sbsgroup name="sbsg" width="25%" margins="10%" valign="middle">
       <sideBySide name="sbs1" widths="40% 20%" valigns="top">
-        <p>Hello</p>
-        <p>Bye</p>
+        <lorem generateParagraphs="1" />
+        <lorem generateParagraphs="1" />
       </sideBySide>
       <sideBySide name="sbs2" margins="15% 5%" valigns="bottom top">
-        <p>Never</p>
-        <p>Always</p>
+        <lorem generateParagraphs="1" />
+        <lorem generateParagraphs="1" />
       </sideBySide>
     </sbsgroup>
     
@@ -3042,436 +3131,472 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([25, 25]);
-      expect(components["/sbsg"].stateValues.widths).eqls([25, 25]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(10);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([25, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([25, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.margins).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(10);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
+
+    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 25],
+        specifiedMargins: [15, 5],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width1 of sbsg`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [15, 5],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width2 of sbs2`)
+      cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 15],
+        specifiedMargins: [15, 5],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width2 of sbsg`)
+      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [40, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [15, 5],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width1 of sbs1`)
+      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [15, 5],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change margins of sbs2`)
+      cy.get("#\\/m12 textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
+      cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change right margin of sbsg`)
+      cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change right margin of sbs1`)
+      cy.get("#\\/m21 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [8, 7],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change left margin of sbsg`)
+      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [9, 9],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [9, 7],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change left margin of sbs1`)
+      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [9, 9],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change valign1 of sbsg`)
+      cy.get("#\\/v1g_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [9, 9],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change valign2 of sbs1`)
+      cy.get("#\\/v21_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [9, 9],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change valign2 of sbsg`)
+      cy.get("#\\/v2g_input").clear().type("top{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [9, 9],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change valign1 of sbs1`)
+      cy.get("#\\/v11_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [9, 9],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change valigns of sbs2`)
+      cy.get("#\\/v12_input").clear().type("middle{enter}");
+      cy.get("#\\/v22_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 12],
+        specifiedMargins: [9, 9],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 20],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [12, 15],
+        specifiedMargins: [22, 11],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
     })
-
-
-    cy.log(`change width1 of sbsg`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 20]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(20);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([20, 20]);
-      expect(components["/sbs2"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.margins).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(20);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-
-    cy.log(`change width2 of sbs2`)
-    cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 20]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(20);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([20, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([20, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.margins).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(25);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-
-    cy.log(`change width2 of sbsg`)
-    cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(36);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([40, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.margins).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(33);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-
-    cy.log(`change width1 of sbs1`)
-    cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(36);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.margins).eqls([15, 5]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(33);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-
-    cy.log(`change margins of sbs2`)
-    cy.get("#\\/m12 textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
-    cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(36);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([10, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(5);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change right margin of sbsg`)
-    cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([8, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(44);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs1"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(13);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change right margin of sbs1`)
-    cy.get("#\\/m21 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([8, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(44);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([8, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([8, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(15);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change left margin of sbsg`)
-    cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(40);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([9, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([9, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(13);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change left margin of sbs1`)
-    cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(40);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(19);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-
-    cy.log(`change valign1 of sbsg`)
-    cy.get("#\\/v1g_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(40);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "bottom"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(19);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "bottom"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-
-    cy.log(`change valign2 of sbs1`)
-    cy.get("#\\/v21_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(40);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "bottom"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(19);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change valign2 of sbsg`)
-    cy.get("#\\/v2g_input").clear().type("top{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(40);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(19);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change valign1 of sbs1`)
-    cy.get("#\\/v11_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(40);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(19);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-    cy.log(`change valigns of sbs2`)
-    cy.get("#\\/v12_input").clear().type("middle{enter}");
-    cy.get("#\\/v22_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([12, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 9]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(40);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(19);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["bottom", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 15]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([12, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.margins).eqls([22, 11]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(7);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "bottom"]);
-    })
-
 
   })
 
@@ -3482,12 +3607,12 @@ describe('SideBySide Tag Tests', function () {
     <text>a</text>
     <sbsgroup name="sbsg" widths="25% 15%" margins="5% 10%" valigns="middle top">
       <sideBySide name="sbs1" width="20%" valign="top">
-        <p>Hello</p>
-        <p>Bye</p>
+        <lorem generateParagraphs="1" />
+        <lorem generateParagraphs="1" />
       </sideBySide>
       <sideBySide name="sbs2" margins="8%">
-        <p>Never</p>
-        <p>Always</p>
+        <lorem generateParagraphs="1" />
+        <lorem generateParagraphs="1" />
       </sideBySide>
     </sbsgroup>
     
@@ -3541,462 +3666,567 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([25, 15]);
-      expect(components["/sbsg"].stateValues.widths).eqls([25, 15]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(30);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(30);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([25, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([25, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(28);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
+
+    cy.get('#\\/sbs1').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 15],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 15],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbsg"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.absoluteMeasurements).eq(false);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width1 of sbsg`)
+      cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 15],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 15],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width2 of sbs2`)
+      cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 15],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width2 of sbsg`)
+      cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width1 of sbs1`)
+      cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [35, 35],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width2 of sbs1`)
+      cy.get("#\\/w21 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change width1 of sbs2`)
+      cy.get("#\\/w12 textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [5, 10],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change right margin of sbsg`)
+      cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [5, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [5, 8],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change right margin of sbs1`)
+      cy.get("#\\/m21 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [5, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [5, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change left margin of sbsg`)
+      cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [9, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change left margin of sbs1`)
+      cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [8, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change right margin of sbs2`)
+      cy.get("#\\/m22 textarea").type("{end}{backspace}{backspace}3{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [3, 3],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change left margin of sbs2`)
+      cy.get("#\\/m12 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change valign1 of sbsg`)
+      cy.get("#\\/v1g_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change valign2 of sbs1`)
+      cy.get("#\\/v21_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["bottom", "top"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change valign2 of sbsg`)
+      cy.get("#\\/v2g_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+
+      cy.log(`change valign1 of sbs1`)
+      cy.get("#\\/v11_input").clear().type("top{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
+      cy.log(`change valigns of sbs2`)
+      cy.get("#\\/v12_input").clear().type("middle{enter}");
+      cy.get("#\\/v22_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 12],
+        specifiedMargins: [9, 8],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbsg", isSbsGroup: true
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [6, 7],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs1"
+      })
+      checkTwoColumnSbs({
+        specifiedWidths: [22, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs2"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
+        expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
+        expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
+        expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
+      })
+
     })
-
-
-    cy.log(`change width1 of sbsg`)
-    cy.get("#\\/w1g textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 15]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 15]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(35);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(30);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([20, 15]);
-      expect(components["/sbs2"].stateValues.widths).eqls([20, 15]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(33);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`change width2 of sbs2`)
-    cy.get("#\\/w22 textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 15]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 15]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(35);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(30);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(23);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`change width2 of sbsg`)
-    cy.get("#\\/w2g textarea").type("{end}{backspace}{backspace}12{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(38);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.widths).eqls([20, 20]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(30);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(23);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`change width1 of sbs1`)
-    cy.get("#\\/w11 textarea").type("{end}{backspace}{backspace}35{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(38);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([35, 35]);
-      expect(components["/sbs1"].stateValues.widths).eqls([35, 35]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(0);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(23);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change width2 of sbs1`)
-    cy.get("#\\/w21 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(38);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(10);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([undefined, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([20, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(23);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change width1 of sbs2`)
-    cy.get("#\\/w12 textarea").type("{end}{backspace}{backspace}22{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(38);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 10]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(10);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change right margin of sbsg`)
-    cy.get("#\\/m2g textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(42);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 8]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 8]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(14);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change right margin of sbs1`)
-    cy.get("#\\/m21 textarea").type("{end}{backspace}{backspace}7{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([5, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([5, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(42);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([5, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([5, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(16);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change left margin of sbsg`)
-    cy.get("#\\/m1g textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(34);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([undefined, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([9, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([9, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(8);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-    cy.log(`change left margin of sbs1`)
-    cy.get("#\\/m11 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(34);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["middle", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(14);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "top"]);
-    })
-
-
-    cy.log(`change valign1 of sbsg`)
-    cy.get("#\\/v1g_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(34);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(14);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"]);
-    })
-
-
-    cy.log(`change valign2 of sbs1`)
-    cy.get("#\\/v21_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(34);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "top"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(14);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "top"])
-    })
-
-    cy.log(`change valign2 of sbsg`)
-    cy.get("#\\/v2g_input").clear().type("middle{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(34);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(14);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["middle", "middle"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "middle"])
-    })
-
-    cy.log(`change valign1 of sbs1`)
-    cy.get("#\\/v11_input").clear().type("top{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(34);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(14);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["bottom", "middle"])
-    })
-
-    cy.log(`change valigns of sbs2`)
-    cy.get("#\\/v12_input").clear().type("middle{enter}");
-    cy.get("#\\/v22_input").clear().type("bottom{enter}");
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbsg"].stateValues.specifiedWidths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.widths).eqls([20, 12]);
-      expect(components["/sbsg"].stateValues.specifiedMargins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.margins).eqls([9, 8]);
-      expect(components["/sbsg"].stateValues.gapWidth).eq(34);
-      expect(components["/sbsg"].stateValues.valigns).eqls(["bottom", "middle"]);
-      expect(components["/sbs1"].stateValues.essentialWidths).eqls([undefined, undefined]);
-      expect(components["/sbs1"].stateValues.allWidthsSpecified).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.widths).eqls([30, 30]);
-      expect(components["/sbs1"].stateValues.essentialMargins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.allMarginsSpecified).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.margins).eqls([6, 7]);
-      expect(components["/sbs1"].stateValues.gapWidth).eq(14);
-      expect(components["/sbs1"].stateValues.valigns).eqls(["top", "top"]);
-      expect(components["/sbs2"].stateValues.essentialWidths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.allWidthsSpecified).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.widths).eqls([22, 25]);
-      expect(components["/sbs2"].stateValues.essentialMargins).eqls([undefined, undefined]);
-      expect(components["/sbs2"].stateValues.allMarginsSpecified).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.margins).eqls([8, 8]);
-      expect(components["/sbs2"].stateValues.gapWidth).eq(21);
-      expect(components["/sbs2"].stateValues.valigns).eqls(["middle", "bottom"])
-    })
-
 
   })
 
@@ -4021,15 +4251,495 @@ describe('SideBySide Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [49, 49],
+        specifiedMargins: [0, 0],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+    })
+
+  })
+
+  it('sideBySide with singular relative arguments from inputs, two panels', () => {
     cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
-      expect(components["/sbs"].stateValues.allWidthsSpecified).eqls([49, 49]);
-      expect(components["/sbs"].stateValues.widths).eqls([49, 49]);
-      expect(components["/sbs"].stateValues.allMarginsSpecified).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.margins).eqls([0, 0]);
-      expect(components["/sbs"].stateValues.gapWidth).eq(2);
-      expect(components["/sbs"].stateValues.valigns).eqls(["top", "top"]);
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>Width: <mathinput name="w" prefill="20" /></p>
+    <p>Margin: <mathinput name="m" prefill="10" /></p>
+    <p>Valign: <textinput name="v" prefill="middle" /></p>
+
+    <sideBySide name="sbs" width="$(w)%" margins="$(m)%" valign="$v">
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    </sideBySide>
+
+    <p>Widths: 
+    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
+    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    </p>
+
+    <p>Margins: 
+    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
+    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    </p>
+
+    <p>Valigns: 
+    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
+    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    </p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 20],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+      cy.log(`change first width, second matches`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 30],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second width, first matches, rescaling`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}80{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [80, 80],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change defining width`)
+      cy.get("#\\/w textarea").type("{end}{backspace}{backspace}25{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [25, 25],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid defining width treated as undefined`)
+      cy.get("#\\/w textarea").type("{end}{backspace}{backspace}x{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [undefined, undefined],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`reset width by changing second width`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [10, 10],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`decrease defining margin`)
+      cy.get("#\\/m textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [5, 5],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid defining margin treated as undefined`)
+      cy.get("#\\/m textarea").type("{end}{backspace}{backspace}none{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [undefined, undefined],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`reset from left margin, right margin matches`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [15, 15],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`increase right margin, left margin matches, rescaling`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}45{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first valign`)
+      cy.get("#\\/v1_input").clear().type("top{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["top", "top"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change defining valign`)
+      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change second valign`)
+      cy.get("#\\/v2_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["middle", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid defining valign becomes top`)
+      cy.get("#\\/v_input").clear().type("invalid{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: [undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`reset from first valign`)
+      cy.get("#\\/v1_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [10, 10],
+        specifiedMargins: [45, 45],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+    })
+
+  })
+
+  it('sideBySide with plural relative arguments from inputs, two panels', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Defining widths: 
+    <mathinput name="dw1" prefill="20" />
+    <mathinput name="dw2" prefill="10" />
+    </p>
+    <p>Defining margins: 
+    <mathinput name="dm1" prefill="10" />
+    <mathinput name="dm2" prefill="20" />
+    </p>
+    <p>Defining valigns: 
+    <textinput name="dv1" prefill="middle" />
+    <textinput name="dv2" prefill="bottom" />
+    </p>
+
+    <sideBySide name="sbs" widths="$(dw1)% $(dw2)%" margins="$(dm1)% $(dm2)%" valigns="$dv1 $dv2">
+    <lorem generateParagraphs="1" />
+    <lorem generateParagraphs="1" />
+    </sideBySide>
+
+    <p>Widths: 
+    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
+    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    </p>
+
+    <p>Margins: 
+    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
+    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    </p>
+
+    <p>Valigns: 
+    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
+    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    </p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/sbs').invoke('width').then(sbsWidth => {
+
+      checkTwoColumnSbs({
+        specifiedWidths: [20, 10],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/sbs"].stateValues.absoluteMeasurements).eq(false);
+      })
+
+      cy.log(`change first width`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 10],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second defining width, rescaling`)
+      cy.get("#\\/dw2 textarea").type("{end}{backspace}{backspace}110{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 110],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`make second defining width be invalid, treated as undefined`)
+      cy.get("#\\/dw2 textarea").type("{end}{backspace}{backspace}{backspace}hello{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, undefined],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`make first defining width be invalid, treated as undefined`)
+      cy.get("#\\/dw1 textarea").type("{end}{backspace}{backspace}{backspace}bye{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [undefined, undefined],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`reset second width`)
+      cy.get("#\\/w2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [undefined, 5],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`reset first width`)
+      cy.get("#\\/w1 textarea").type("{end}{backspace}{backspace}30{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [10, 20],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`decrease right margin`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [10, 5],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`increase left defining margin, rescaling`)
+      cy.get("#\\/dm1 textarea").type("{end}{backspace}{backspace}77.5{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [77.5, 5],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`decrease left margin`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}7{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [7, 5],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`invalid left defining margin, treated as undefined`)
+      cy.get("#\\/dm1 textarea").type("{end}{backspace}{backspace}hello{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [undefined, 5],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid right defining margin, treated as undefined`)
+      cy.get("#\\/dm2 textarea").type("{end}{backspace}{backspace}bye{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [undefined, undefined],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`reset left margin`)
+      cy.get("#\\/m1 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}12{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, undefined],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`reset right margin`)
+      cy.get("#\\/m2 textarea").type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}8{enter}", { force: true });
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`change first valign`)
+      cy.get("#\\/v1_input").clear().type("top{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["top", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second valign`)
+      cy.get("#\\/v2_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["top", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change first defining valign`)
+      cy.get("#\\/dv1_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["bottom", "middle"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`change second defining valign`)
+      cy.get("#\\/dv2_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["bottom", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid second defining valign treated as undefined`)
+      cy.get("#\\/dv2_input").clear().type("banana{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["bottom", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`invalid first defining valign treated as undefined`)
+      cy.get("#\\/dv1_input").clear().type("apple{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: [undefined, undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
+      cy.log(`reset first valign`)
+      cy.get("#\\/v1_input").clear().type("middle{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["middle", undefined],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+      cy.log(`reset second valign`)
+      cy.get("#\\/v2_input").clear().type("bottom{enter}");
+
+      checkTwoColumnSbs({
+        specifiedWidths: [30, 5],
+        specifiedMargins: [12, 8],
+        specifiedValigns: ["middle", "bottom"],
+        sbsWidth, sbsName: "/sbs"
+      })
+
+
     })
 
   })

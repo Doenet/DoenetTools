@@ -2,160 +2,347 @@
 describe('Component Size Tag Tests', function () {
 
   beforeEach(() => {
-
     cy.visit('/test')
+  })
+
+  it('width of image from string', () => {
+
+    let widthStrings = [
+      "350", "350 px", "350px", "350 pixel", "  350  pixels ",
+      "65%", "65 %", "  65   %",
+      "10in", "10 inches", "10 inch",
+      "100mm", "100millimeters", "100 millimeter",
+      "10cm", "10centimeters", "10 centimeter",
+      "100pt"
+    ]
+    let isAbsolutes = [
+      true, true, true, true, true,
+      false, false, false,
+      true, true, true,
+      true, true, true,
+      true, true, true,
+      true,
+    ]
+    let sizes = [
+      350, 350, 350, 350, 350,
+      65, 65, 65,
+      960, 960, 960,
+      377.95296, 377.95296, 377.95296,
+      377.95296, 377.95296, 377.95296,
+      133.3333333333
+    ]
+
+    for (let [ind, widthString] of widthStrings.entries()) {
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+    <document name="doc">
+    <p><text>${ind}</text></p>
+    <image name="ae" width="${widthString}" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
+    <p>width: <copy prop="width" tname="ae" assignNames="w" /></p>
+    <p>width as adapted number: <number name="wNum"><copy prop="width" tname="ae" /></number></p>
+    <p>width as adapted math: <math name="wMath"><copy prop="width" tname="ae" /></math></p>
+    <p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" tname="ae" /></extract></p>
+    <p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" tname="ae" /></extract></p>
+    </document>
+    `}, "*");
+      });
+
+
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+
+      cy.get('#\\/doc').invoke('width').then(docWidth => {
+        let expectedWidthPixels = sizes[ind];
+        if (!isAbsolutes[ind]) {
+          expectedWidthPixels *= docWidth / 100;
+        }
+
+        cy.get('#\\/ae').invoke('width').then(width => {
+          expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
+        })
+
+      })
+
+      let thisWidth = sizes[ind];
+      let thisUnit;
+      if (isAbsolutes[ind]) {
+        thisUnit = "px"
+      } else {
+        thisUnit = "%";
+      }
+
+      cy.get('#\\/w').invoke('text').then(text => {
+        expect(parseFloat(text)).closeTo(thisWidth, 1E-6);
+        expect(text.slice(text.length - thisUnit.length)).eq(thisUnit)
+      })
+      cy.get('#\\/wNum').invoke('text').then(text => {
+        expect(Number(text)).closeTo(thisWidth, 1E-6);
+      })
+      cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(Number(text)).closeTo(thisWidth, 1E-6);
+      })
+      cy.get('#\\/wExtract').invoke('text').then(text => {
+        expect(Number(text)).closeTo(thisWidth, 1E-6);
+      })
+
+      cy.get('#\\/absExtract').should('have.text', isAbsolutes[ind].toString());
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/ae'].stateValues.width.size).closeTo(sizes[ind], 1E-6)
+        expect(components['/ae'].stateValues.width.isAbsolute).eq(isAbsolutes[ind])
+
+      })
+
+    }
+
 
   })
 
-
-  it('width', () => {
+  it('changing absolute width of image', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <width>1</width>
-  <width>1 px</width>
-  <width>10 pixel</width>
-  <width>  100 pixels  </width>
-  <width>
-  10%
-  </width>
-  <width>10 em   </width>
-  <width>1 in</width>
-  <width>10inch</width>
-  <width>  10inches</width>
-  <width>100    pt  </width>
-  <width>1mm</width>  
-  <width>  100    millimeter</width>
-  <width>10millimeters</width>
-  <width>100    cm</width>
-  <width>   1centimeter</width>
-  <width>100 centimeters   </width>
+
+<p><mathinput name="wPrescribed" prefill="500" /></p>
+<image name="ae" width="$wPrescribed px" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
+
+<p>width: <copy prop="width" tname="ae" assignNames="w" /></p>
+<p>width as adapted number: <number name="wNum"><copy prop="width" tname="ae" /></number></p>
+<p>width as adapted math: <math name="wMath"><copy prop="width" tname="ae" /></math></p>
+<p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" tname="ae" /></extract></p>
+<p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" tname="ae" /></extract></p>
+<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae{prop='width'})" /></p>
   `}, "*");
     });
 
-    cy.log('test display of first values');
-    cy.get('#\\/_width1').should('have.text', '1');
-    cy.get('#\\/_width2').should('have.text', '1');
-    cy.get('#\\/_width3').should('have.text', '10');
-    cy.get('#\\/_width4').should('have.text', '100');
-    cy.get('#\\/_width5').should('have.text', '10');
-    cy.get('#\\/_width6').should('have.text', '1000');
-    cy.get('#\\/_width7').should('have.text', '96');
-    cy.get('#\\/_width8').should('have.text', '960');
-    cy.get('#\\/_width9').should('have.text', '960');
 
-    cy.log('Test internal values are set to the correct values')
+    cy.get('#\\/ae').should('have.css', 'width', '500px')
+
+    cy.get('#\\/w').should('have.text', '500px');
+    cy.get('#\\/wNum').should('have.text', '500');
+    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('500');
+    })
+    cy.get('#\\/wExtract').should('have.text', '500');
+    cy.get('#\\/absExtract').should('have.text', "true");
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_width1'].stateValues.value).eq(1);
-      expect(components['/_width1'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width2'].stateValues.value).eq(1);
-      expect(components['/_width2'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width3'].stateValues.value).eq(10);
-      expect(components['/_width3'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width4'].stateValues.value).eq(100);
-      expect(components['/_width4'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width5'].stateValues.value).eq(10);
-      expect(components['/_width5'].stateValues.isAbsolute).eq(false);
-      expect(components['/_width6'].stateValues.value).eq(1000);
-      expect(components['/_width6'].stateValues.isAbsolute).eq(false);
-      expect(components['/_width7'].stateValues.value).eq(96);
-      expect(components['/_width7'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width8'].stateValues.value).eq(960);
-      expect(components['/_width8'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width9'].stateValues.value).eq(960);
-      expect(components['/_width9'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width10'].stateValues.value).closeTo(100 * 1.333333333333, 1E-9);
-      expect(components['/_width10'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width11'].stateValues.value).closeTo(1 * 3.7795296, 1E-9);
-      expect(components['/_width11'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width12'].stateValues.value).closeTo(100 * 3.7795296, 1E-9);
-      expect(components['/_width12'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width13'].stateValues.value).closeTo(10 * 3.7795296, 1E-9);
-      expect(components['/_width13'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width14'].stateValues.value).closeTo(100 * 37.795296, 1E-9);
-      expect(components['/_width14'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width15'].stateValues.value).closeTo(1 * 37.795296, 1E-9);
-      expect(components['/_width15'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width16'].stateValues.value).closeTo(100 * 37.795296, 1E-9);
-      expect(components['/_width16'].stateValues.isAbsolute).eq(true);
+      expect(components['/ae'].stateValues.width.size).closeTo(500, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    })
 
+    cy.log(`changed prescribed width`)
+    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}312{enter}", { force: true });
+
+    cy.get('#\\/ae').should('have.css', 'width', '312px')
+
+    cy.get('#\\/w').should('have.text', '312px');
+    cy.get('#\\/wNum').should('have.text', '312');
+    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('312');
+    })
+    cy.get('#\\/wExtract').should('have.text', '312');
+    cy.get('#\\/absExtract').should('have.text', "true");
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(312, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+    })
+
+
+    cy.log(`changed width from inverse direction`)
+    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}{backspace}476{enter}", { force: true });
+
+    cy.get('#\\/ae').should('have.css', 'width', '476px')
+
+    cy.get('#\\/w').should('have.text', '476px');
+    cy.get('#\\/wNum').should('have.text', '476');
+    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('476');
+    })
+    cy.get('#\\/wExtract').should('have.text', '476');
+    cy.get('#\\/absExtract').should('have.text', "true");
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(476, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
     })
 
   })
 
-  it('width2', () => {
+  it('changing relative width of image', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
-  <width><number>1</number></width>
-  <width><number>1</number> px</width>
-  <width><number>10</number> pixel</width>
-  <width>  <number>100</number> pixels  </width>
-  <width>
-  <number>10</number>%
-  </width>
-  <width><number>10</number> em   </width>
-  <width><number>1</number> in</width>
-  <width><number>10</number>inch</width>
-  <width>  <number>10</number>inches</width>
-  <width><number>100</number>    pt  </width>
-  <width><number>1</number>mm</width>  
-  <width>  <number>100</number>    millimeter</width>
-  <width><number>10</number>millimeters</width>
-  <width><number>100</number>    cm</width>
-  <width>   <number>1</number>centimeter</width>
-  <width><number>100</number> centimeters   </width>
+<document name="doc">
+<p><mathinput name="wPrescribed" prefill="50" /></p>
+<image name="ae" width="$wPrescribed %" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
+
+<p>width: <copy prop="width" tname="ae" assignNames="w" /></p>
+<p>width as adapted number: <number name="wNum"><copy prop="width" tname="ae" /></number></p>
+<p>width as adapted math: <math name="wMath"><copy prop="width" tname="ae" /></math></p>
+<p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" tname="ae" /></extract></p>
+<p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" tname="ae" /></extract></p>
+<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae{prop='width'})" /></p>
+</document>
   `}, "*");
     });
 
-    cy.log('test display of first values');
-    cy.get('#\\/_width1').should('have.text', '1');
-    cy.get('#\\/_width2').should('have.text', '1');
-    cy.get('#\\/_width3').should('have.text', '10');
-    cy.get('#\\/_width4').should('have.text', '100');
-    cy.get('#\\/_width5').should('have.text', '10');
-    cy.get('#\\/_width6').should('have.text', '1000');
-    cy.get('#\\/_width7').should('have.text', '96');
-    cy.get('#\\/_width8').should('have.text', '960');
-    cy.get('#\\/_width9').should('have.text', '960');
 
-    cy.log('Test internal values are set to the correct values')
+    cy.get('#\\/doc').invoke('width').then(docWidth => {
+      let expectedWidthPixels = 50 * docWidth / 100;
+      cy.get('#\\/ae').invoke('width').then(width => {
+        expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
+      })
+    })
+
+    cy.get('#\\/w').should('have.text', '50%');
+    cy.get('#\\/wNum').should('have.text', '50');
+    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('50');
+    })
+    cy.get('#\\/wExtract').should('have.text', '50');
+    cy.get('#\\/absExtract').should('have.text', "false");
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_width1'].stateValues.value).eq(1);
-      expect(components['/_width1'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width2'].stateValues.value).eq(1);
-      expect(components['/_width2'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width3'].stateValues.value).eq(10);
-      expect(components['/_width3'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width4'].stateValues.value).eq(100);
-      expect(components['/_width4'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width5'].stateValues.value).eq(10);
-      expect(components['/_width5'].stateValues.isAbsolute).eq(false);
-      expect(components['/_width6'].stateValues.value).eq(1000);
-      expect(components['/_width6'].stateValues.isAbsolute).eq(false);
-      expect(components['/_width7'].stateValues.value).eq(96);
-      expect(components['/_width7'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width8'].stateValues.value).eq(960);
-      expect(components['/_width8'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width9'].stateValues.value).eq(960);
-      expect(components['/_width9'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width10'].stateValues.value).closeTo(100 * 1.333333333333, 1E-9);
-      expect(components['/_width10'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width11'].stateValues.value).closeTo(1 * 3.7795296, 1E-9);
-      expect(components['/_width11'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width12'].stateValues.value).closeTo(100 * 3.7795296, 1E-9);
-      expect(components['/_width12'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width13'].stateValues.value).closeTo(10 * 3.7795296, 1E-9);
-      expect(components['/_width13'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width14'].stateValues.value).closeTo(100 * 37.795296, 1E-9);
-      expect(components['/_width14'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width15'].stateValues.value).closeTo(1 * 37.795296, 1E-9);
-      expect(components['/_width15'].stateValues.isAbsolute).eq(true);
-      expect(components['/_width16'].stateValues.value).closeTo(100 * 37.795296, 1E-9);
-      expect(components['/_width16'].stateValues.isAbsolute).eq(true);
+      expect(components['/ae'].stateValues.width.size).closeTo(50, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    })
 
+    cy.log(`changed prescribed width`)
+    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}31{enter}", { force: true });
+
+    cy.get('#\\/doc').invoke('width').then(docWidth => {
+      let expectedWidthPixels = 31 * docWidth / 100;
+      cy.get('#\\/ae').invoke('width').then(width => {
+        expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
+      })
+    })
+
+    cy.get('#\\/w').should('have.text', '31%');
+    cy.get('#\\/wNum').should('have.text', '31');
+    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('31');
+    })
+    cy.get('#\\/wExtract').should('have.text', '31');
+    cy.get('#\\/absExtract').should('have.text', "false");
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(31, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    })
+
+
+    cy.log(`changed width from inverse direction`)
+    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}76{enter}", { force: true });
+
+    cy.get('#\\/doc').invoke('width').then(docWidth => {
+      let expectedWidthPixels = 76 * docWidth / 100;
+      cy.get('#\\/ae').invoke('width').then(width => {
+        expect(Number(width)).closeTo(expectedWidthPixels, 0.1)
+      })
+    })
+
+    cy.get('#\\/w').should('have.text', '76%');
+    cy.get('#\\/wNum').should('have.text', '76');
+    cy.get('#\\/wMath').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('76');
+    })
+    cy.get('#\\/wExtract').should('have.text', '76');
+    cy.get('#\\/absExtract').should('have.text', "false");
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(76, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(false)
+    })
+
+  })
+
+  it('height of image depends on width', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+<p><mathinput name="wPrescribed" prefill="500" /></p>
+<image name="ae" width="$wPrescribed px" height="$(ae{prop='width'})/2" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
+
+<p>width: <copy prop="width" tname="ae" assignNames="w" /></p>
+<p>height: <copy prop="height" tname="ae" assignNames="h" /></p>
+<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae{prop='width'})" /></p>
+<p>Change height 2: <mathinput name="h2" bindValueTo="$(ae{prop='height'})" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/ae').should('have.css', 'width', '500px')
+    cy.get('#\\/ae').should('have.css', 'height', '250px')
+
+    cy.get('#\\/w').should('have.text', '500px');
+    cy.get('#\\/h').should('have.text', '250px');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(500, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(components['/ae'].stateValues.height.size).closeTo(250, 1E-6)
+      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    })
+
+    cy.log(`changed prescribed width`)
+    cy.get('#\\/wPrescribed textarea').type("{end}{backspace}{backspace}{backspace}312{enter}", { force: true });
+
+    cy.get('#\\/ae').should('have.css', 'width', '312px')
+    cy.get('#\\/ae').should('have.css', 'height', '156px')
+
+    cy.get('#\\/w').should('have.text', '312px');
+    cy.get('#\\/h').should('have.text', '156px');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(312, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(components['/ae'].stateValues.height.size).closeTo(156, 1E-6)
+      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    })
+
+    cy.log(`changed width from inverse direction`)
+    cy.get('#\\/w2 textarea').type("{end}{backspace}{backspace}{backspace}476{enter}", { force: true });
+
+    cy.get('#\\/ae').should('have.css', 'width', '476px')
+    cy.get('#\\/ae').should('have.css', 'height', '238px')
+
+    cy.get('#\\/w').should('have.text', '476px');
+    cy.get('#\\/h').should('have.text', '238px');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(476, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(components['/ae'].stateValues.height.size).closeTo(238, 1E-6)
+      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
+    })
+
+    cy.log(`changed height from inverse direction`)
+    cy.get('#\\/h2 textarea').type("{end}{backspace}{backspace}{backspace}321{enter}", { force: true });
+
+    cy.get('#\\/ae').should('have.css', 'width', '642px')
+    cy.get('#\\/ae').should('have.css', 'height', '321px')
+
+    cy.get('#\\/w').should('have.text', '642px');
+    cy.get('#\\/h').should('have.text', '321px');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ae'].stateValues.width.size).closeTo(642, 1E-6)
+      expect(components['/ae'].stateValues.width.isAbsolute).eq(true)
+      expect(components['/ae'].stateValues.height.size).closeTo(321, 1E-6)
+      expect(components['/ae'].stateValues.height.isAbsolute).eq(true)
     })
 
   })

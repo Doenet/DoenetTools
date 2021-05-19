@@ -1011,7 +1011,10 @@ export default function Library(props) {
         className={routePathDriveId ? 'mainPanelStyle' : ''}
         >
           <Container>
-          <Drive types={['content','course']}  
+          <Drive 
+            types={['content','course']}  
+            // viewAccess="assigned"
+            // viewAccess="released"
             drivePathSyncKey="main"
             urlClickBehavior="select" 
             doenetMLDoubleClickCallback={(info)=>{
@@ -1047,6 +1050,9 @@ export default function Library(props) {
       <Drive 
         drivePathSyncKey="support"
         types={['content','course']}  
+        // viewAccess="released"
+        // viewAccess="assigned"
+
         urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{
           openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
