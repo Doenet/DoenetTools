@@ -56,11 +56,11 @@
   }
   
   input:checked + .switch-visual {
-    background-color: #2196F3;
+    background-color: #1A5A99;
   }
   
   input:focus + .switch-visual {
-    box-shadow: 0 0 1px #2196F3;
+    box-shadow: 0 0 1px #1A5A99;
   }
   
   input:checked + .switch-visual:before {
