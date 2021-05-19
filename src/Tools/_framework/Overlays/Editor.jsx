@@ -180,6 +180,30 @@ function RenameVersionControl(props){
 
 }
 
+function ClipboardLinkButtons(props){
+  const [addToast, ToastType] = useToast();
+
+  if (!props.contentId){
+    console.error("Component only handles contentId at this point")
+    return null;
+  }
+  
+
+  const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
+  return <div>This content 
+  
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <button onClick={()=>{
+    
+  }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
+  </CopyToClipboard>
+
+  <button onClick={
+    ()=>window.open(link, '_blank')
+  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button>
+  </div>
+}
+
 function VersionHistoryPanel(props){
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
   const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
@@ -222,6 +246,7 @@ function VersionHistoryPanel(props){
       collapsed={true}
       widthCSS='200px'
       >
+        <ClipboardLinkButtons contentId={version.contentId} />
         <div><RenameVersionControl branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
        <div><button onClick={(e)=>console.log(">>>View "+version.versionId)} >View</button></div> 
        <div><button onClick={(e)=>console.log(">>>Set As Current "+version.versionId)} >Set As Current</button></div> 
@@ -409,8 +434,7 @@ function TextEditor(props){
           setTimeout( () => cm.execCommand("indentAuto"), 1);
         },
         "Ctrl-Space" : "autocomplete",
-        "Ctrl-/" : (cm) => {
-          console.log(">>>HERE!!!")
+        "Cmd-/" : (cm) => {
           let selections = cm.getSelections();
           if(selections[0] == ""){
             let line = cm.getCursor().line;
