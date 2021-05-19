@@ -36,7 +36,17 @@ import {
 } from '../../../_sharedRecoil/content';
 
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faExternalLinkAlt
+ } from '@fortawesome/free-solid-svg-icons';
 
+ import { 
+  faClipboard
+ } from '@fortawesome/free-regular-svg-icons';
+
+import { useToast } from '../../_framework/Toast';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -92,20 +102,27 @@ function ReturnToEditingButton(props){
 }
 
 function EditorInfoPanel(props){
-  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
+  const [addToast, ToastType] = useToast();
 
-  if (versionHistory.state === "loading"){ return null;}
-  if (versionHistory.state === "hasError"){ 
-    console.error(versionHistory.contents)
-    return null;}
-  const contentId = versionHistory.contents.draft.contentId;
+  const link = `http://${window.location.host}/content/#/?branchId=${props.branchId}`
 
-  const link = `http://doenet.org/content/#/?contentId=${contentId}`
-  // const quoteLink = `'${link}'`
+  return <div style={{margin:"6px"}}>
+  <div>DonetML Name (soon)</div>
+  <div>Load time (soon) </div>
+  <div>Most recent release 
+  
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <button onClick={()=>{
+    
+  }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
+  </CopyToClipboard>
 
-  return <>
-  {/* <p><a href={quoteLink} >Content Tool Link</a></p> */}
-  <p><input type="text" value={link} /></p></>
+  <button onClick={
+    ()=>window.open(link, '_blank')
+  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button>
+  </div>
+  
+</div>
 }
 
 //Required props:
@@ -393,6 +410,7 @@ function TextEditor(props){
         },
         "Ctrl-Space" : "autocomplete",
         "Ctrl-/" : (cm) => {
+          console.log(">>>HERE!!!")
           let selections = cm.getSelections();
           if(selections[0] == ""){
             let line = cm.getCursor().line;
