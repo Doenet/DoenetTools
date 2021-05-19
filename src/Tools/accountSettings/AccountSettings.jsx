@@ -1,26 +1,25 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 import {
-    atom,
-    RecoilRoot,
-    useSetRecoilState,
-    useRecoilState,
-    useRecoilValue,
-    selector,
-    atomFamily,
-    selectorFamily,
-    useRecoilValueLoadable,
-    useRecoilStateLoadable,
-  } from "recoil";
-import styled from "styled-components";
+  atom,
+  RecoilRoot,
+  useSetRecoilState,
+  useRecoilState,
+  useRecoilValue,
+  selector,
+  atomFamily,
+  selectorFamily,
+  useRecoilValueLoadable,
+  useRecoilStateLoadable,
+} from 'recoil';
+import styled from 'styled-components';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
 
-
-import "../_framework/doenet.css";
-import Textinput from "../_framework/Textinput";
-import Switch from "../_framework/Switch";
+import '../_framework/doenet.css';
+import Textinput from '../_framework/Textinput';
+import Switch from '../_framework/Switch';
 import Cookies from 'js-cookie';
-import axios from "axios";
+import axios from 'axios';
 
 let SectionHeader = styled.h2`
   margin-top: 2em;
@@ -29,7 +28,7 @@ let SectionHeader = styled.h2`
 
 let ProfilePicture = styled.button`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url("/media/profile_pictures/${props => props.pic}.jpg");
+    url('/media/profile_pictures/${(props) => props.pic}.jpg');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -42,189 +41,185 @@ let ProfilePicture = styled.button`
   align-items: center;
   margin-left: 100px;
   border-radius: 50%;
-  border-style:none;
+  border-style: none;
   user-select: none;
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-      url("/media/profile_pictures/${props => props.pic}.jpg");
+      url('/media/profile_pictures/${(props) => props.pic}.jpg');
     color: rgba(255, 255, 255, 1);
   }
 `;
 
 const getProfileQuerry = atom({
-  key: "getProfileQuerry",
+  key: 'getProfileQuerry',
   default: selector({
-      key: "getProfileQuerry/Default",
-      get: async () => {
-          try{
-              const { data } = await axios.get('/api/loadProfile.php')
-              return data.profile
-          }catch(error){
-              console.log("Error loading user profile", error.message);                
-              return {}
-          }
+    key: 'getProfileQuerry/Default',
+    get: async () => {
+      try {
+        const { data } = await axios.get('/api/loadProfile.php');
+        return data.profile;
+      } catch (error) {
+        console.log('Error loading user profile', error.message);
+        return {};
       }
-  })
-})
+    },
+  }),
+});
 
 const getProfile = selector({
   key: 'getProfile',
-  get: ({get}) => {
-      let data = get(getProfileQuerry)
-      return data;   
+  get: ({ get }) => {
+    let data = get(getProfileQuerry);
+    return data;
   },
-  set: ({set, get}, newProfile)=>{
+  set: ({ set, get }, newProfile) => {
     //console.log("New Value: ", newValue);
-    const url = '/api/saveProfile.php'
-    console.log(">>> ", newProfile)
+    const url = '/api/saveProfile.php';
+    console.log('>>> ', newProfile);
     const data = {
-      ...newProfile
-    }
-    set(getProfileQuerry,  data)
-    axios.post(url, data)
-  }
-})
+      ...newProfile,
+    };
+    set(getProfileQuerry, data);
+    axios.post(url, data);
+  },
+});
 
 const boolToString = (bool) => {
-  if(bool){
-    return "1"
-  }else{
-    return "0"
+  if (bool) {
+    return '1';
+  } else {
+    return '0';
   }
-}
+};
 
 export default function DoenetProfile(props) {
+  let [profile, setProfile] = useRecoilStateLoadable(getProfile);
 
-    let [profile, setProfile] = useRecoilStateLoadable(getProfile);
+  if (profile.state == 'hasValue') {
+    console.log(profile.contents);
+    // let data = {...profile.contents.profile}
+    // data.firstName = 'DevMod'
+    // setProfile(data)
+  }
+  return (
+    <Tool>
+      <headerPanel title="Account Settings" />
+      {profile.state == 'hasValue' ? (
+        <mainPanel>
+          <div style={{ margin: 'auto', width: '70%' }}>
+            <div style={{ margin: 'auto', width: 'fit-content' }}>
+              <ProfilePicture
+                pic={profile.contents.profilePicture}
+                //onClick={e => changeModalVisibility(e, "visible")}
+                name="changeProfilePicture"
+                id="changeProfilePicture"
+              ></ProfilePicture>
+              <Textinput
+                style={{ width: '300px' }}
+                id="screen name"
+                label="Screen Name"
+                value={profile.contents.screenName}
+                onChange={(e) => {
+                  let data = { ...profile.contents };
+                  data.screenName = e.target.value;
+                  setProfile(data);
+                }}
+              ></Textinput>
+              <Textinput
+                style={{ width: '300px' }}
+                id="firstName"
+                label="First Name"
+                value={profile.contents.firstName}
+                onChange={(e) => {
+                  let data = { ...profile.contents };
+                  data.firstName = e.target.value;
+                  setProfile(data);
+                }}
+              >
+                {/* {profile.firstName} */}
+              </Textinput>
+              <Textinput
+                style={{ width: '300px' }}
+                id="lastName"
+                label="Last Name"
+                value={profile.contents.lastName}
+                onChange={(e) => {
+                  let data = { ...profile.contents };
+                  data.lastName = e.target.value;
+                  setProfile(data);
+                }}
+              >
+                {/* {profile.lastName} */}
+              </Textinput>
+            </div>
 
-    if(profile.state == 'hasValue'){
-      console.log(profile.contents);
-      // let data = {...profile.contents.profile}
-      // data.firstName = 'DevMod'
-      // setProfile(data)
-    }
-    return (
-        <Tool>
-            <headerPanel title="Account Settings" />
-            {profile.state == 'hasValue' ? 
-            <mainPanel>
-              <div style = {{margin: "auto", width: "70%"}}>
-                <div style = {{margin: "auto", width: "fit-content"}}>
-                  <ProfilePicture
-                      pic={profile.contents.profilePicture}
-                      //onClick={e => changeModalVisibility(e, "visible")}
-                      name="changeProfilePicture"
-                      id="changeProfilePicture"
-                  >
-                  </ProfilePicture>
-                  <Textinput
-                      style={{ width: '300px' }}
-                      id="screen name"
-                      label="Screen Name"
-                      value = {profile.contents.screenName}
-                      onChange={e => {
-                        let data = {...profile.contents}
-                        data.screenName = e.target.value
-                        setProfile(data)
-                      }}
-                  ></Textinput>
-                  <Textinput
-                    style={{ width: '300px' }}
-                    id="firstName"
-                    label="First Name"
-                    value = {profile.contents.firstName}
-                    onChange={e => {
-                      let data = {...profile.contents}
-                      data.firstName = e.target.value
-                      setProfile(data)
-                    }}
-                  >
-                    {/* {profile.firstName} */}
-                  </Textinput>
-                  <Textinput
-                    style={{ width: '300px' }}
-                    id="lastName"
-                    label="Last Name"
-                    value = {profile.contents.lastName}
-                    onChange={e => {
-                      let data = {...profile.contents}
-                      data.lastName = e.target.value
-                      setProfile(data)
-                    }}
-                  >
-                    {/* {profile.lastName} */}
-                  </Textinput>
-                </div>
+            <p>Email Address: {profile.contents.email}</p>
 
-                <p>Email Address: {profile.contents.email}</p>
+            <Switch
+              id="trackingConsent"
+              onChange={(e) => {
+                let data = { ...profile.contents };
+                data.trackingConsent = boolToString(e.target.checked);
+                setProfile(data);
+              }}
+              checked={profile.contents.trackingConsent}
+            ></Switch>
+            <p>I consent to the use of tracking technologies.</p>
 
-                <Switch
-                  id="trackingConsent"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.trackingConsent = boolToString(e.target.checked)
-                    setProfile(data)
-                  }}
-                  checked={profile.contents.trackingConsent}
-                >
-                </Switch>
-                <p>I consent to the use of tracking technologies.</p>
+            <p>
+              "I consent to the tracking of my progress and my activity on
+              educational websites which participate in Doenet; my data will be
+              used to provide my instructor with my grades on course
+              assignments, and anonymous data may be provided to content authors
+              to improve the educational effectiveness."
+              <br />
+              <br />
+              <em>
+                Revoking your consent may impact your ability to recieve credit
+                for coursework.
+              </em>
+            </p>
 
-                <p>
-                  "I consent to the tracking of my progress and my activity on
-                  educational websites which participate in Doenet; my data will be
-                  used to provide my instructor with my grades on course assignments,
-                  and anonymous data may be provided to content authors to improve the
-                  educational effectiveness."
-                  <br />
-                  <br />
-                  <em>
-                    Revoking your consent may impact your ability to recieve credit
-                    for coursework.
-                  </em>
-                </p>
-
-                <SectionHeader>Your Roles</SectionHeader>
-                <Switch
-                  id="student"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.roleStudent= boolToString(e.target.checked)
-                    setProfile(data)
-                  }} // updates immediately
-                  checked={profile.contents.roleStudent}
-                >
-                </Switch>
-                <p>Student</p>
-                <Switch
-                  id="instructor"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.roleInstructor= boolToString(e.target.checked)
-                    setProfile(data)
-                  }} // updates immediately
-                  checked={profile.contents.roleInstructor}
-                >
-                </Switch>
-                <p>Instructor</p>
-                <Switch
-                  id="course_designer"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.roleCourseDesigner= boolToString(e.target.checked)
-                    setProfile(data)
-                  }}
-                  checked={profile.contents.roleCourseDesigner}
-                >
-                </Switch>
-                <p>Course Designer</p>
-              </div>
-          </mainPanel> : <p>Loading...</p>
-          }
-        </Tool>
-    )
+            <SectionHeader>Your Roles</SectionHeader>
+            <Switch
+              id="student"
+              onChange={(e) => {
+                let data = { ...profile.contents };
+                data.roleStudent = boolToString(e.target.checked);
+                setProfile(data);
+              }} // updates immediately
+              checked={profile.contents.roleStudent}
+            ></Switch>
+            <p>Student</p>
+            <Switch
+              id="instructor"
+              onChange={(e) => {
+                let data = { ...profile.contents };
+                data.roleInstructor = boolToString(e.target.checked);
+                setProfile(data);
+              }} // updates immediately
+              checked={profile.contents.roleInstructor}
+            ></Switch>
+            <p>Instructor</p>
+            <Switch
+              id="course_designer"
+              onChange={(e) => {
+                let data = { ...profile.contents };
+                data.roleCourseDesigner = boolToString(e.target.checked);
+                setProfile(data);
+              }}
+              checked={profile.contents.roleCourseDesigner}
+            ></Switch>
+            <p>Course Designer</p>
+          </div>
+        </mainPanel>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </Tool>
+  );
 }
-
 
 // import React, { useState, useRef } from "react";
 // import {
@@ -243,13 +238,11 @@ export default function DoenetProfile(props) {
 // import Tool from '../_framework/Tool';
 // import { useToolControlHelper } from '../_framework/ToolRoot';
 
-
 // import "../_framework/doenet.css";
 // import Textinput from "../_framework/Textinput";
 // import Switch from "../_framework/Switch";
 // import Cookies from 'js-cookie';
 // import axios from "axios";
-
 
 // /*
 //  * SECTION
@@ -265,7 +258,6 @@ export default function DoenetProfile(props) {
 //   // min-width: 1500px;
 //   margin: auto;
 // `;
-
 
 // let ProfilePicture = styled.button`
 //   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
@@ -374,19 +366,17 @@ export default function DoenetProfile(props) {
 //   margin-bottom: 2em;
 // `;
 
-
 // export default function DoenetProfile(props) {
 
 //   const [modal, setModal] = useState("hidden");
 //   const [saveTimerRunning, setSaveTimerRunning] = useState(false);
-
 
 //   let changeModalVisibility = (e, vis) => {
 //     if (e.target == e.currentTarget) setModal(vis);
 //   };
 
 //   const jwt = Cookies.get();
-  
+
 //   const trackingCookie = Cookies.get('TrackingConsent');
 //   const deviceNameCookie = Cookies.get('Device');
 //   const stayCookie = Cookies.get('Stay');
@@ -420,7 +410,7 @@ export default function DoenetProfile(props) {
 //               Cookies.set('TrackingConsent', e.target.checked, { path: "/" })
 //               setTracking(e.target.checked);
 //             }
-              
+
 //             } // updates immediately
 //             checked={tracking}
 //           >
@@ -441,7 +431,7 @@ export default function DoenetProfile(props) {
 //           </p>
 //         </SpanAll>
 //         </mainPanel>
-        
+
 //       </Tool>
 //     )
 
@@ -450,7 +440,7 @@ export default function DoenetProfile(props) {
 //   //Load profile from database if only email and nine code
 //   if (Object.keys(profile).length < 1) {
 
-//     //Need to load profile from database 
+//     //Need to load profile from database
 //     //Ask Server for data which matches email address
 //     const phpUrl = '/api/loadProfile.php';
 //     const data = {}
@@ -482,7 +472,6 @@ export default function DoenetProfile(props) {
 
 //         })
 
-    
 //   }
 
 //   function updateMyProfile(field, value, immediate = false) {
@@ -493,9 +482,9 @@ export default function DoenetProfile(props) {
 //     }
 //     if (!saveTimerRunning) {
 //       setSaveTimerRunning(true);
-//       setTimeout(function () { 
+//       setTimeout(function () {
 //         setSaveTimerRunning(false);
-//         saveProfileToDB() 
+//         saveProfileToDB()
 //       }, 1000)
 //     }
 //   }
@@ -509,7 +498,7 @@ export default function DoenetProfile(props) {
 //     let toolAccess = [];
 
 //         for (let [key,val] of Object.entries(profile)){
-        
+
 //         if (roleToToolAccess[key] && (Number(val) + 0) === 1){
 //         toolAccess.push(...roleToToolAccess[key]);
 //       }
@@ -628,8 +617,6 @@ export default function DoenetProfile(props) {
 
 //       Email Address: {profile.email}
 
-
-
 //           <SectionHeader>Tracking</SectionHeader>
 //           <StyledSwitch
 //             id="trackingConsent"
@@ -657,8 +644,6 @@ export default function DoenetProfile(props) {
 //               for coursework.
 //             </em>
 //           </p>
-
-
 
 //           <SectionHeader>Your Roles</SectionHeader>
 //           <StyledSwitch
@@ -721,13 +706,10 @@ export default function DoenetProfile(props) {
 //           <h4>{"You have access to:"}</h4>
 //           {toolAccess}
 
-
 //           {/* <SectionHeader>Invites</SectionHeader> */}
 //         </div>
 //       </mainPanel>
 //     </Tool>
 //   );
-
-
 
 // }
