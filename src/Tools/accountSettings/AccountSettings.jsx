@@ -10,6 +10,7 @@ import {
     selectorFamily,
     useRecoilValueLoadable,
     useRecoilStateLoadable,
+    useRecoilCallback,
   } from "recoil";
 import styled from "styled-components";
 import Tool from '../_framework/Tool';
@@ -51,6 +52,43 @@ let ProfilePicture = styled.button`
   }
 `;
 
+const PictureBox = styled.button`
+  width: 40px;
+  height: 40px;
+  background-image: url("/media/profile_pictures/${(props) => props.pic}.jpg");
+  background-size: contain;
+  margin: 3px;
+  border: none;
+  border-radius: 3px;
+`;
+
+const DropDown = styled.div`
+  text-align: right;
+  width: 150px;
+  z-index: 2;
+  position: absolute;
+  margin-right: 100px;
+`;
+
+const ListContainer = styled.ul`
+  /* max-width: 80px; */
+  padding: 4px;
+  list-style-type: none;
+  /* border: 1px solid #505050; */
+  border-radius: 3px;
+  box-shadow: 3px 3px 7px #888888;
+  background: #ffffff;
+  margin: 0 auto;
+  text-align: left;
+`;
+
+const ListItem = styled.li`
+  display: inline-block;
+  vertical-align: top;
+`;
+
+const PROFILE_PICTURES = ['anonymous', 'bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle'];
+
 const getProfileQuerry = atom({
   key: "getProfileQuerry",
   default: selector({
@@ -67,22 +105,44 @@ const getProfileQuerry = atom({
   })
 })
 
+const PictureSelector = (props) => {
+  //let [selectedPic, setSelectedPic] = useState();
+
+  var list = props.list.map((item, i) => (
+    <ListItem key={i}>
+      <PictureBox
+        value={item}
+        pic={item}
+        onClick={(e) => {
+          props.callBack(e.target.value);
+        }}
+      />
+    </ListItem>
+  ));
+
+  return (
+    <DropDown onBlur = {props.onblur}>
+      <ListContainer>{list}</ListContainer>
+    </DropDown>
+  );
+}
+
 const getProfile = selector({
   key: 'getProfile',
   get: ({get}) => {
       let data = get(getProfileQuerry)
       return data;   
   },
-  set: ({set, get}, newProfile)=>{
-    //console.log("New Value: ", newValue);
-    const url = '/api/saveProfile.php'
-    console.log(">>> ", newProfile)
-    const data = {
-      ...newProfile
-    }
-    set(getProfileQuerry,  data)
-    axios.post(url, data)
-  }
+  // set: ({set, get}, newProfile)=>{
+  //   //console.log("New Value: ", newValue);
+  //   const url = '/api/saveProfile.php'
+  //   //console.log(">>> ", newProfile)
+  //   const data = {
+  //     ...newProfile
+  //   }
+  //   set(getProfileQuerry,  data)
+  //   axios.post(url, data)
+  // }
 })
 
 const boolToString = (bool) => {
@@ -95,37 +155,70 @@ const boolToString = (bool) => {
 
 export default function DoenetProfile(props) {
 
-    let [profile, setProfile] = useRecoilStateLoadable(getProfile);
+    const setProfile = useRecoilCallback(
+      ({set}) => async (newProfile) => {
+        const url = '/api/saveProfile.php'
+        const data = {
+          ...newProfile
+        }
+        set(getProfileQuerry,  data)
+        await axios.post(url, data);
+        console.log(">>> ", newProfile);
+      }
+    )
 
-    if(profile.state == 'hasValue'){
-      console.log(profile.contents);
-      // let data = {...profile.contents.profile}
-      // data.firstName = 'DevMod'
-      // setProfile(data)
-    }
+    //let [profile, setProfile] = useRecoilStateLoadable(getProfile);
+    let profile = useRecoilValueLoadable(getProfile);
+
+    let [expand, setExpand] = useState(false);
+
+    // if(profile.state == 'hasValue'){
+    //   console.log(profile.contents);
+    //   let data = {...profile.contents.profile}
+    //   data.firstName = 'DevMod'
+    //   setProfile(data)
+    // }
     return (
         <Tool>
             <headerPanel title="Account Settings" />
             {profile.state == 'hasValue' ? 
             <mainPanel>
               <div style = {{margin: "auto", width: "70%"}}>
-                <div style = {{margin: "auto", width: "fit-content"}}>
+                <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
                   <ProfilePicture
                       pic={profile.contents.profilePicture}
-                      //onClick={e => changeModalVisibility(e, "visible")}
+                      onClick={e => {
+                        setExpand(!expand)
+                      }}
                       name="changeProfilePicture"
                       id="changeProfilePicture"
                   >
                   </ProfilePicture>
+                  {expand? <div style = {{}}><PictureSelector onblur = {e => {
+                    setExpand(false)
+                  }} list = {PROFILE_PICTURES} 
+                    callBack = {(newPicture) => {
+                      let data = {...profile.contents}
+                      data.profilePicture = newPicture
+                      setProfile(data)
+                  }}/></div> : null}
                   <Textinput
                       style={{ width: '300px' }}
                       id="screen name"
                       label="Screen Name"
                       value = {profile.contents.screenName}
-                      onChange={e => {
+                      onChange = {e => {}}
+                      onBlur = {e => {
                         let data = {...profile.contents}
                         data.screenName = e.target.value
                         setProfile(data)
+                      }}
+                      onKeyDown = {e => {
+                        if(e.key === 'Enter'){
+                          let data = {...profile.contents}
+                          data.screenName = e.target.value
+                          setProfile(data)
+                        }
                       }}
                   ></Textinput>
                   <Textinput
@@ -133,10 +226,18 @@ export default function DoenetProfile(props) {
                     id="firstName"
                     label="First Name"
                     value = {profile.contents.firstName}
-                    onChange={e => {
+                    onChange = {e => {}}
+                    onBlur={e => {
                       let data = {...profile.contents}
                       data.firstName = e.target.value
                       setProfile(data)
+                    }}
+                    onKeyDown = {e => {
+                      if(e.key === 'Enter'){
+                        let data = {...profile.contents}
+                        data.screenName = e.target.value
+                        setProfile(data)
+                      }
                     }}
                   >
                     {/* {profile.firstName} */}
@@ -146,10 +247,18 @@ export default function DoenetProfile(props) {
                     id="lastName"
                     label="Last Name"
                     value = {profile.contents.lastName}
-                    onChange={e => {
+                    onChange = {e => {}}
+                    onBlur={e => {
                       let data = {...profile.contents}
                       data.lastName = e.target.value
                       setProfile(data)
+                    }}
+                    onKeyDown = {e => {
+                      if(e.key === 'Enter'){
+                        let data = {...profile.contents}
+                        data.screenName = e.target.value
+                        setProfile(data)
+                      }
                     }}
                   >
                     {/* {profile.lastName} */}

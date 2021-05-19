@@ -11,15 +11,16 @@ the value prop overrides the children, the children will be ignored if there is 
 Note: you can pass any additional properties if you wish, these props will be passed to the div that contains the input and label elements.
 */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSpring, animated } from "react-spring";
 import styled from "styled-components";
+import { doenetComponentForegroundActive } from './temp/theme'
 
 // PARAMETERS
-const LABELCOLOR = "#555";
+const LABELCOLOR = "#1a5a99";
 const FONTFAMILY = "sans-serif";
 const BACKGROUNDCOLOR = "#eee";
-const FOCUSBACKGROUNDCOLOR = "#BDF3FF";
+const FOCUSBACKGROUNDCOLOR = "#1a5a99";
 
 function randomAlphaString(len) {
   let c = "abcdefghijklmnopqrstuvwxyz";
@@ -33,7 +34,6 @@ function randomAlphaString(len) {
 const labelStyles = {
   baseline: {
     fontFamily: FONTFAMILY,
-    color: LABELCOLOR,
     position: "absolute",
     top: "0.75em",
     fontSize: "1em",
@@ -48,22 +48,26 @@ const labelStyles = {
     }
   },
   empty: {
+    color: LABELCOLOR,
     position: "absolute",
     top: "0.75em",
     fontSize: "1em"
   },
   inactive: {
+    color: LABELCOLOR,
     position: "absolute",
     top: "0.75em",
     fontSize: "1em"
   },
   notEmpty: {
+    color: LABELCOLOR,
     top: "0.3em",
     fontSize: "0.7em"
   },
   active: {
+    color: "#eee",
     top: "0.3em",
-    fontSize: "0.7em"
+    fontSize: "0.7em",
   }
 };
 
@@ -78,9 +82,11 @@ const inputStyles = {
     width: "calc(100% - 1em)"
   },
   inactive: {
+    color: "#000",
     backgroundColor: BACKGROUNDCOLOR
   },
   active: {
+    color: "#eee",
     backgroundColor: FOCUSBACKGROUNDCOLOR
   }
 };
@@ -122,9 +128,15 @@ export default function Textinput(props) {
 
   // Section: spring animations
   const [labelStyle, setLabelStyle] = useSpring(() => labelStyles.baseline);
-  if (value) {
-    setLabelStyle(labelStyles.notEmpty);
-  }
+  //const [update, setUpdate] = useState(0);
+
+  useEffect(() => {
+    if (value) {
+      console.log(">>> non-empty value: ", value);
+      setLabelStyle(labelStyles.notEmpty);
+      //setUpdate(update);
+    }
+  }, []);
 
   // allow specifying resize property for textarea
   let inputStylesWithResize = { ...inputStyles, baseline: { ...inputStyles.baseline, resize: props.resize || (area ? "both" : "none") }}
@@ -135,12 +147,16 @@ export default function Textinput(props) {
   function handleFocus(e) {
     setInputStyle(inputStyles.active);
     setLabelStyle(labelStyles.active);
+    console.log(">>> focus");
   }
 
   function handleBlur(e) {
+    console.log(">>> blur");
     setInputStyle(inputStyles.inactive);
     if (!value) {
       setLabelStyle(labelStyles.inactive);
+    }else{
+      setLabelStyle(labelStyles.notEmpty);
     }
   }
 
