@@ -37,10 +37,11 @@ $response_arr = array(
   a.showHints AS showHints,
   a.showCorrectness AS showCorrectness,
   a.proctorMakesAvailable AS proctorMakesAvailable,
-  c.isReleased As isReleased
+  a.contentId As contentId,
+  dc.isAssigned As isAssigned
   FROM assignment AS a
-  LEFT JOIN content AS c
-  ON a.contentId = c.contentId
+  LEFT JOIN drive_content AS dc
+  ON a.driveId = dc.driveId
   WHERE a.branchId = '$branchId'
   ";
   
@@ -65,8 +66,10 @@ $response_arr = array(
           "showHints" => $row['showHints'] == '1' ? true : false,
           "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
-          "isReleased" => $row['isReleased'],
-          // "isAssigned" => $row['isAssigned'],  
+          "isAssigned" => $row['isAssigned'],  
+          "contentId" => $row['contentId'],
+          "branchId" => $row['branchId'],
+          "driveId" => $row['driveId']
   
   );
       array_push($assignment_arr,$assignment);
