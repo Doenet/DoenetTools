@@ -726,10 +726,7 @@ describe('Map Tag Tests', function () {
     <math name="a">x</math>
     <copy name="mapcopy" tname="_map1" />
 
-    <updatevalue label="double">
-      <mathtarget><copy tname="length" /></mathtarget>
-      <newmathvalue>2<copy tname="length" /></newmathvalue>
-    </updatevalue>
+    <updatevalue label="double" tName="length" newValue="2$length" />
     `}, "*");
     });
 

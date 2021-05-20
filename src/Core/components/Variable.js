@@ -1,12 +1,9 @@
+import { isValidVariable } from '../utils/math';
 import MathComponent from './Math';
 
 export default class Variable extends MathComponent {
   static componentType = "variable";
   static rendererType = "math";
-
-  // TODO: how to add this feature?
-  static additionalStateVariablesForProperties = ["validVariable"];
-
 
   static returnStateVariableDefinitions() {
 
@@ -21,22 +18,8 @@ export default class Variable extends MathComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        // to be a valid variable, tree must be either
-        // - a string other than long underscore, or
-        // - a string with a subscript that is a string or a number
-        let tree = dependencyValues.value.tree;
-        let validVariable = true;
-        if (typeof tree === "string") {
-          if (tree === '\uFF3F') {  // long underscore
-            validVariable = false;
-          }
-        } else if (!Array.isArray(tree) ||
-          tree[0] !== '_' ||
-          (typeof tree[1] !== "string") ||
-          ((typeof tree[2] !== "string" && typeof tree[2] !== "number"))
-        ) {
-          validVariable = false;
-        }
+        let validVariable = isValidVariable(dependencyValues.value);
+
         if (!validVariable) {
           console.warn("Invalid value of a " + this.componentType);
         }

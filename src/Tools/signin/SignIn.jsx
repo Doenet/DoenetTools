@@ -75,6 +75,20 @@ export default function SignIn() {
 
   // ** *** *** *** *** **
 
+  // Handle automatically sign in when running Cypress tests
+  if (window.Cypress) {
+    let emailaddress = 'devuser@example.com';
+    let deviceName = 'Cacao tree';
+    let cookieSettingsObj = { path: '/', expires: 24000, sameSite: 'strict' };
+    Cookies.set('Device', deviceName, cookieSettingsObj);
+    Cookies.set('Stay', 1, cookieSettingsObj);
+    location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(
+      emailaddress,
+    )}&nineCode=${encodeURIComponent(
+      '123456789',
+    )}&deviceName=${deviceName}&newAccount=${'0'}&stay=${'1'}`;
+  }
+
   if (signInStage === 'check code') {
     //Ask Server for data which matches email address
 

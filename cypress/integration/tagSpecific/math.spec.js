@@ -716,4 +716,123 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('dynamic rounding', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>Number: <math name="n">35203423.02352343201</math></p>
+      <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
+      <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
+      <p><copy tname="n" displayDigits='$ndigits' assignNames="na" /></p>
+      <p><copy tname="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+    ` }, "*");
+    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.02')
+    })
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35200000')
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.024')
+    })
+
+    cy.log('higher precision')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}12{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.0235')
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.02352')
+    })
+
+    cy.log('invalid precision means no rounding')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+
+    cy.log('low precision')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('40000000')
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423')
+    })
+
+    cy.log('negative precision, no rounding for displayDigits')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203000')
+    })
+
+  })
+
+
+  it('function symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math>f(x)</math></p>
+  <p><math>g(t)</math></p>
+  <p><math>h(z)</math></p>
+  <p><math functionSymbols="g h">f(x)</math></p>
+  <p><math functionSymbols="g h">g(t)</math></p>
+  <p><math functionSymbols="g h">h(z)</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g(t)')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hz')
+    })
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('fx')
+    })
+    cy.get('#\\/_math5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g(t)')
+    })
+    cy.get('#\\/_math6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('h(z)')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_math1'].stateValues.value.tree).eqls(["apply", "f", "x"]);
+      expect(components['/_math2'].stateValues.value.tree).eqls(["apply", "g", "t"]);
+      expect(components['/_math3'].stateValues.value.tree).eqls(["*", "h", "z"]);
+      expect(components['/_math4'].stateValues.value.tree).eqls(["*", "f", "x"]);
+      expect(components['/_math5'].stateValues.value.tree).eqls(["apply", "g", "t"]);
+      expect(components['/_math6'].stateValues.value.tree).eqls(["apply", "h", "z"]);
+
+    });
+
+
+  });
+
 })

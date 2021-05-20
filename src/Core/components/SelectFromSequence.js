@@ -1,9 +1,9 @@
 import Sequence from './Sequence';
 import me from 'math-expressions';
 import { enumerateSelectionCombinations } from '../utils/enumeration';
-import { numberToLetters, lettersToNumber } from './Sequence';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { textToAst } from '../utils/math';
+import { calculateSequenceParameters, numberToLetters, lettersToNumber } from '../utils/sequence';
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectFromSequence";
@@ -403,7 +403,10 @@ export default class SelectFromSequence extends Sequence {
       excludes[ind] = exc;
     }
 
-    this.calculateSequenceParameters(sequencePars)
+    // TODO: this presumably does not work anymore since
+    // calculateSequenceParameters returns results rather
+    // than modifying input parameters
+    calculateSequenceParameters(sequencePars)
 
     let nOptions = sequencePars.length;
     let excludeIndices = [];
@@ -523,7 +526,7 @@ function makeSelection({ dependencyValues }) {
 
   if (dependencyValues.numberToSelect < 1) {
     return {
-      makeEssential: ["selectedValues", "selectedIndices"],
+      makeEssential: { selectedValues: true, selectedIndices: true },
       newValues: {
         selectedValues: [],
         selectedIndices: [],
@@ -609,7 +612,7 @@ function makeSelection({ dependencyValues }) {
       }
 
       return {
-        makeEssential: ["selectedValues", "selectedIndices"],
+        makeEssential: { selectedValues: true, selectedIndices: true },
         newValues: { selectedValues, selectedIndices: desiredIndices }
       }
     }
@@ -712,7 +715,7 @@ function makeSelection({ dependencyValues }) {
   }
 
   return {
-    makeEssential: ["selectedValues", "selectedIndices"],
+    makeEssential: { selectedValues: true, selectedIndices: true },
     newValues: { selectedValues, selectedIndices }
   }
 
@@ -740,7 +743,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
       for (let sampnum = 0; sampnum < 100; sampnum++) {
 
         // random number in [0, 1)
-        let rand = rng.random();
+        let rand = rng();
         // random integer from 0 to length-1
         selectedIndex = Math.floor(rand * stateValues.length);
 
@@ -833,7 +836,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
     for (let ind = 0; ind < numberToSelect; ind++) {
 
       // random number in [0, 1)
-      let rand = rng.random();
+      let rand = rng();
       // random integer from 0 to numPossibleValues-1
       let selectedIndex = Math.floor(rand * numPossibleValues);
 
@@ -850,7 +853,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   // https://stackoverflow.com/a/12646864
   let possibleIndices = [...Array(possibleValues.length).keys()];
   for (let i = possibleValues.length - 1; i > 0; i--) {
-    const rand = rng.random();
+    const rand = rng();
     const j = Math.floor(rand * (i + 1));
     [possibleValues[i], possibleValues[j]] = [possibleValues[j], possibleValues[i]];
     [possibleIndices[i], possibleIndices[j]] = [possibleIndices[j], possibleIndices[i]];

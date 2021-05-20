@@ -9,18 +9,19 @@ import {
 import { useMenuPanelController } from "../../Tools/_framework/Panels/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../../Tools/library/Library";
 import {
-  atom,
+  // atom,
   useSetRecoilState,
-  useRecoilValue,
+  useRecoilValue,useRecoilState,
   useRecoilValueLoadable,
 } from "recoil";
 import { 
-  fetchDrivesSelector,
+  fetchDrivesSelector,drivePathSyncFamily
 } from "./Drive";
 
 
 const DriveCards = (props) => {
-  const {routePathDriveId, driveDoubleClickCallback, isOneDriveSelect, subTypes,types} = props;
+
+  const { driveDoubleClickCallback, isOneDriveSelect, subTypes,types,drivePathSyncKey} = props;
 
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let driveInfo = [];
@@ -29,14 +30,15 @@ const DriveCards = (props) => {
   }
    // Drive cards component
    let drivecardComponent = null;
-   if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
+   if (driveInfo && driveInfo.length > 0) {
      drivecardComponent = <DriveCardWrapper 
      driveDoubleClickCallback={driveDoubleClickCallback} 
      subTypes={subTypes}
      types={types}
+     drivePathSyncKey={drivePathSyncKey}
      isOneDriveSelect = {isOneDriveSelect}
      driveInfo={driveInfo}/>;
-   } else if (driveInfo.length === 0 && routePathDriveId === "") {
+   } else if (driveInfo.length === 0) {
      if(isOneDriveSelect){
       drivecardComponent = (
         <h2>You have no courses.</h2>
@@ -56,13 +58,13 @@ const DriveCards = (props) => {
 };
 
 const DriveCardWrapper = (props) => {
-  const { driveDoubleClickCallback , isOneDriveSelect, subTypes ,driveInfo, types} = props;
+  const { driveDoubleClickCallback , isOneDriveSelect, subTypes ,driveInfo, drivePathSyncKey, types} = props;
  
-  const history = useHistory();
-  let encodeParams = (p) =>
-    Object.entries(p)
-      .map((kv) => kv.map(encodeURIComponent).join("="))
-      .join("&");
+  const [drivecardSelectedValue,setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom)
+  const setOpenMenuPanel = useMenuPanelController();
+  const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
+
+
   let driveCardItems =[];
   let heights = [];
   const [width, setWidth] = useState(0);
@@ -75,24 +77,24 @@ const DriveCardWrapper = (props) => {
     else{return 1;}
   }
   const columns = getColumns(width);
-    heights = new Array(columns).fill(0);
+  heights = new Array(columns).fill(0);
   let showCards = [];
-         if(types[0] === 'course'){
-          if(subTypes.length > 1)
-          {
-            showCards = driveInfo;
-          }
-          else
-          {
-            for(let i = 0;i< driveInfo.length;i++)
-            {
-                if(driveInfo[i].subType === subTypes[0])
-                {
-                  showCards.push(driveInfo[i]);
-                }
-            }            
-          } 
-         }
+  if(types[0] === 'course'){
+  if(subTypes.length > 1)
+  {
+    showCards = driveInfo;
+  }
+  else
+  {
+    for(let i = 0;i< driveInfo.length;i++)
+    {
+        if(driveInfo[i].subType === subTypes[0])
+        {
+          showCards.push(driveInfo[i]);
+        }
+    }            
+  } 
+  }
          
   driveCardItems = showCards.map((child, i) => {
     const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
@@ -100,20 +102,31 @@ const DriveCardWrapper = (props) => {
     return { ...child, xy, width: (width / columns), height: 250};
   });
 
- 
-  const [on, toggle] = useState(false);  
-  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
-  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
-  const setOpenMenuPanel = useMenuPanelController();
 
+  if(driveCardPath.driveId !== ""){
+    return null;
+  }
+ 
+  function setRecoilDrivePath(driveId){
+    setDrivecardPath({
+      driveId,
+      parentFolderId:driveId,
+      itemId:driveId,
+      type:"Drive"
+    })
+  }
+
+ 
 
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
-      let newParams = {};
-      newParams[
-        "path"
-      ] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-      history.push("?" + encodeParams(newParams));
+      setDrivecardPath({
+        driveId:item.driveId,
+        parentFolderId:item.driveId,
+        itemId:item.driveId,
+        type:"Drive"
+      })
+      // setRecoilDrivePath(item.driveId)
     }
   };
 
@@ -122,13 +135,7 @@ const DriveCardWrapper = (props) => {
       setDrivecardSelection([item]);
     }
   };
-  const handleKeyBlur = ( e , item) =>{
-    if(e.type === "blur"){
-      setDrivecardSelection([]);
 
-    }
-  }
-  
   
   // Drive selection 
   const drivecardselection = (e,item) =>{
@@ -205,14 +212,17 @@ const DriveCardWrapper = (props) => {
 
 
  }
+
  const getSelectedCard = (cardItem) => {
    if(drivecardSelectedValue.length == 0)
    {
      return false;
    }
-  let avalibleCard = drivecardSelectedValue.filter((i)=>i.driveId === cardItem.driveId);
-  return avalibleCard.length > 0 ? true : false;
+  let availableCard = drivecardSelectedValue.filter((i)=>
+    i.driveId === cardItem.driveId && i.drivePathSyncKey === drivePathSyncKey);
+  return availableCard.length > 0 ? true : false;
  }
+
   return (
     <div className="drivecardContainer">
          <Measure
@@ -229,11 +239,12 @@ const DriveCardWrapper = (props) => {
         className={`list`}
       >
         {driveCardItems.map((item, index) => {
-          let selectedCard = getSelectedCard(item);
+          item["drivePathSyncKey"] = drivePathSyncKey; //need for selection
+          let isSelected = getSelectedCard(item);
           return (
             <div
               key={index}
-              className={`adiv ${selectedCard ? "borderselection" : ""}`}
+              className={`adiv ${isSelected ? "borderselection" : ""}`}
               style={{
                 width:250,
                 height: 250,
@@ -256,17 +267,17 @@ const DriveCardWrapper = (props) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setDrivecardSelection([]);
-                  if (driveDoubleClickCallback) {
-                    driveDoubleClickCallback({ item });
-                  }
+                  setRecoilDrivePath(item.driveId)
+                  // if (driveDoubleClickCallback) {
+                  //   driveDoubleClickCallback({ item });
+                  // }
                 }}
               >
                   <DriveCard
-                    driveId={item.driveId}
                     image={item.image}
                     color={item.color}
                     label={item.label}
-                    selectedCard={selectedCard}
+                    isSelected={isSelected}
                   />
               </div>
             </div>

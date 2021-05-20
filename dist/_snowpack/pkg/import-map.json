@@ -1,5 +1,8 @@
 {
   "imports": {
+    "@blueprintjs/core/lib/css/blueprint.css": "./@blueprintjs/core/lib/css/blueprint.css",
+    "@blueprintjs/datetime": "./@blueprintjs/datetime.js",
+    "@blueprintjs/datetime/lib/css/blueprint-datetime.css": "./@blueprintjs/datetime/lib/css/blueprint-datetime.css",
     "@fortawesome/free-regular-svg-icons": "./@fortawesome/free-regular-svg-icons.js",
     "@fortawesome/free-solid-svg-icons": "./@fortawesome/free-solid-svg-icons.js",
     "@fortawesome/react-fontawesome": "./@fortawesome/react-fontawesome.js",
@@ -11,6 +14,7 @@
     "crypto-js": "./crypto-js.js",
     "crypto-js/sha256": "./crypto-js/sha256.js",
     "cssesc": "./cssesc.js",
+    "csv-parse": "./csv-parse.js",
     "js-cookie": "./js-cookie.js",
     "lodash/cloneDeep": "./lodash/cloneDeep.js",
     "math-expressions": "./math-expressions.js",
@@ -18,6 +22,7 @@
     "react": "./react.js",
     "react-codemirror2": "./react-codemirror2.js",
     "react-dom": "./react-dom.js",
+    "react-dropzone": "./react-dropzone.js",
     "react-mathquill": "./react-mathquill.js",
     "react-measure": "./react-measure.js",
     "react-router-dom": "./react-router-dom.js",

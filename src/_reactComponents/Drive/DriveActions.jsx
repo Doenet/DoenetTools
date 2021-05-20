@@ -1,11 +1,11 @@
 /**
  * External dependencies
  */
-import React from 'react';
+// import React from 'react';
 import { nanoid } from 'nanoid';
 import axios from "axios";
 import {
-  useRecoilCallback, useRecoilValue
+  useRecoilCallback, 
 } from 'recoil';
 
 /**
@@ -381,7 +381,7 @@ export const useCopyItems = () => {
       
       for(let item of items){
         if (!item.driveId || !item.driveInstanceId || !item.itemId) throw "Invalid arguments error"
-        
+     
         // Deselect currently selected items
         let selectedItem = {
           driveId: item.driveId,
@@ -400,6 +400,12 @@ export const useCopyItems = () => {
           targetDriveId,
           targetFolderId
         });
+
+        // Specify copy in label when copying within same drive
+        if (item.driveId === targetDriveId) {
+          const newItemLabel = `Copy of ${newItem.label}`
+          newItem.label = newItemLabel;
+        }
       
         // Generate sortOrder for cloned item
         const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter(itemId => itemId !== dragShadowId);
@@ -421,29 +427,35 @@ export const useCopyItems = () => {
       let promises = [];
       for (let newItemId of Object.keys(globalDictionary)) {
         let newItem = globalDictionary[newItemId];
-
-        const data = { 
+        
+        const addItemsParams = { 
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          branchId: "",
-          versionId: nanoid(),
+          branchId: newItem.branchId,
+          // branchId: nanoid(),
+          versionId: newItem.versionId,
+          // versionId: nanoid(),
           label: newItem.label,
           type: newItem.itemType,
           sortOrder: newItem.sortOrder,
+          isNewCopy: '1',
          };
+
 
         // Clone DoenetML
         if (newItem.itemType === "DoenetML") {
           const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
+          
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
           // Unify new branchId
-          data["branchId"] = newDoenetML?.branchId;
+          // addItemsParams["branchId"] = newDoenetML?.branchId;
         }
 
+
         const payload = { 
-          params: data 
+          params: addItemsParams 
         };
 
         const result = axios.get('/api/addItem.php', payload);
@@ -509,12 +521,15 @@ export const useCopyItems = () => {
     // Retrieve info of target item from parentFolder
     const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
-
-    // Clone item
+    
+    // Clone item (Note this should be the source of new ids)
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
     newItem.itemId = newItemId;
-    
+    newItem.branchId = nanoid();
+    newItem.versionId = nanoid();
+    newItem.previousBranchId = itemInfo.branchId;
+   
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
       globalContentIds[newItemId] = [];
@@ -539,11 +554,6 @@ export const useCopyItems = () => {
 
     }
 
-    // Specify copy in label when copying within same drive
-    if (item.driveId === targetDriveId) {
-      const newItemLabel = `Copy of ${newItem.label}`
-      newItem.label = newItemLabel;
-    }   
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
     globalDictionary[newItemId] = newItem;
@@ -552,15 +562,19 @@ export const useCopyItems = () => {
   }
 
   const cloneDoenetML = ({item, timestamp}) => {
+
     let newVersion = {
       title: item.label,
-      branchId: nanoid(),
+      branchId: item.branchId,
+      // branchId: nanoid(),
       contentId: item.contentId,
-      versionId: nanoid(),
+      versionId: item.versionId,
       timestamp,
       isDraft: '0',
       isNamed: '1',
+      isNewCopy: '1',
       doenetML: item.doenetML,
+      previousBranchId: item.previousBranchId,
     }
     return newVersion;
   }
@@ -914,6 +928,23 @@ export const useRenameItem = () => {
 
 export const useAssignmentCallbacks = () => {
   const [addToast, ToastType] = useToast();
+
+  const makeAssignment = useRecoilCallback(({set})=> 
+  ({driveIdFolderId, itemId, payload})=>{
+    set(folderDictionary(driveIdFolderId),(old)=>{
+      let newObj = JSON.parse(JSON.stringify(old));
+      let newItemObj = newObj.contentsDictionary[itemId];          
+      newItemObj.isAssignment = "1";
+      newItemObj.assignment_title = payload?.assignment_title;      
+      newItemObj.assignmentId = payload?.assignmentId;
+      return newObj;
+    })
+  }
+)
+
+const onmakeAssignmentError = ({errorMessage=null}) => {
+  addToast(`make assignment error: ${errorMessage}`, ToastType.ERROR);
+}
   const publishAssignment = useRecoilCallback(({set})=> 
     ({driveIdFolderId, itemId, payload})=>{
       set(folderDictionary(driveIdFolderId),(old)=>{
@@ -921,7 +952,7 @@ export const useAssignmentCallbacks = () => {
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.assignment_isPublished = "1";
         newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payload?.title;
+        newItemObj.assignment_title = payload?.assignment_title;
         newItemObj.assignmentId = payload?.assignmentId;
         return newObj;
       })
@@ -953,8 +984,13 @@ export const useAssignmentCallbacks = () => {
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payloadAssignment?.title;
-        newItemObj.assignmentId = payloadAssignment?.assignmentId;
+        newItemObj.assignment_title = payloadAssignment?.assignment_title;     
+        newItemObj.assignedDate = payloadAssignment?.assignedDate;
+        newItemObj.dueDate = payloadAssignment?.dueDate;
+        newItemObj.timeLimit = payloadAssignment?.timeLimit;
+        newItemObj.numberOfAttemptsAllowed = payloadAssignment?.numberOfAttemptsAllowed;
+        newItemObj.totalPointsOrPercent = payloadAssignment?.totalPointsOrPercent;
+        newItemObj.gradeCategory = payloadAssignment?.gradeCategory;
         return newObj;
       })
     }
@@ -981,6 +1017,8 @@ export const useAssignmentCallbacks = () => {
   }
 
   return { 
+    makeAssignment,
+    onmakeAssignmentError,
     publishAssignment, 
     onPublishAssignmentError,
     publishContent,

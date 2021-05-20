@@ -3,123 +3,128 @@ import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
 import testCodeDoenetML from './testCode.doenet';
 import core from '../../Core/Core';
 
-function Test(){
-console.log("===Test")
+function Test() {
+  console.log("===Test")
 
   // const [doenetML,setDoenetML] = useState("");
   let doenetML = useRef("");
- 
+
   //New DoenetViewer when code changes
-  useEffect(()=>{
+  useEffect(() => {
     doenetML.current = testCodeDoenetML;
-    setUpdateNumber((was)=>was+1)
-  },[testCodeDoenetML]);
+    setUpdateNumber((was) => was + 1)
+  }, [testCodeDoenetML]);
 
 
-  const [attemptNumber,setAttemptNumber] = useState(1);
-  const [controlsVisible,setControlsVisible] = useState(false);
-  const [showCorrectness,setShowCorrectness] = useState(true);
-  const [readOnly,setReadOnly] = useState(false);
-  const [showFeedback,setShowFeedback] = useState(true);
-  const [showHints,setShowHints] = useState(true);
-  const [ignoreDatabase,setIgnoreDatabase] = useState(true);
-  const [bundledCore,setBundledCore] = useState(false);
+  const [attemptNumber, setAttemptNumber] = useState(1);
+  const [controlsVisible, setControlsVisible] = useState(false);
+  const [showCorrectness, setShowCorrectness] = useState(true);
+  const [readOnly, setReadOnly] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(true);
+  const [showHints, setShowHints] = useState(true);
+  const [ignoreDatabase, setIgnoreDatabase] = useState(true);
+  const [bundledCore, setBundledCore] = useState(false);
   const solutionDisplayMode = "button";
-  let requestedVariant = useRef({ index: 0 });
 
-  const [updateNumber,setUpdateNumber] = useState(1);
+  // let requestedVariant = useRef({ index: 0 });
+  // requestedVariant is undefined by default so that viewer
+  // will use attemptNumber for variant
+  // unless get a message (from cypress) to select a particular variant
+  let requestedVariant = useRef(undefined);
+
+  const [updateNumber, setUpdateNumber] = useState(1);
 
   //For Cypress Test Use
-  window.onmessage = (e)=>{
+  window.onmessage = (e) => {
     if (e.data.doenetML !== undefined) {
       doenetML.current = e.data.doenetML;
       //Only if defined
-      if (e.data.requestedVariant){
+      if (e.data.requestedVariant) {
         requestedVariant.current = e.data.requestedVariant;
       }
-      setUpdateNumber((was)=>was+1)
+      setUpdateNumber((was) => was + 1)
     }
   };
 
 
-  if (doenetML === ""){
+  if (doenetML === "") {
     return null;
   }
   let controls = null;
   let buttonText = 'show';
-  if (controlsVisible){
+  if (controlsVisible) {
     buttonText = 'hide';
     controls = <div>
       <div>
         <label>Attempt Number: {attemptNumber} <button onClick={
           () => {
-            setAttemptNumber(was=>was+1)
-            setUpdateNumber(was=>was+1)
+            setAttemptNumber(was => was + 1)
+            setUpdateNumber(was => was + 1)
           }
-          }>New Attempt</button></label>
+        }>New Attempt</button></label>
       </div>
-  
+
       <div>
         <label> <input type='checkbox' checked={showCorrectness} onChange={
           () => {
-            setShowCorrectness(was=>!was)
-            setUpdateNumber((was)=>was+1)
+            setShowCorrectness(was => !was)
+            setUpdateNumber((was) => was + 1)
 
           }
-          } />Show Correctness</label>
+        } />Show Correctness</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={readOnly} onChange={
           () => {
-            setReadOnly(was=>!was)
-            setUpdateNumber((was)=>was+1)
+            setReadOnly(was => !was)
+            setUpdateNumber((was) => was + 1)
           }
-          } />Read Only</label>
+        } />Read Only</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={showFeedback} onChange={
           () => {
-            setShowFeedback(was=>!was)
-            setUpdateNumber((was)=>was+1)
+            setShowFeedback(was => !was)
+            setUpdateNumber((was) => was + 1)
           }
-          } />Show Feedback</label>
+        } />Show Feedback</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={showHints} onChange={
           () => {
-            setShowHints(was=>!was)
-            setUpdateNumber((was)=>was+1)
+            setShowHints(was => !was)
+            setUpdateNumber((was) => was + 1)
           }
-          } />Show Hints</label>
+        } />Show Hints</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={ignoreDatabase} onChange={
           () => {
-            setIgnoreDatabase(was=>!was)
-            setUpdateNumber((was)=>was+1)
+            setIgnoreDatabase(was => !was)
+            setUpdateNumber((was) => was + 1)
           }
-          } />Ignore Database</label>
+        } />Ignore Database</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={bundledCore} onChange={
           () => {
-            setBundledCore(was=>!was)
-            setUpdateNumber((was)=>was+1)
+            setBundledCore(was => !was)
+            setUpdateNumber((was) => was + 1)
           }
-          } />Bundled Core</label>
+        } />Bundled Core</label>
       </div>
     </div>
   }
-  
+
   let coreProp = core;
-  if (bundledCore){
+  if (bundledCore) {
     coreProp = null;
   }
 
   return (
     <>
-         <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={()=>setControlsVisible(was=>!was)}>{buttonText} controls</button>
-        Test Viewer and Core 
+      <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
+        Test Viewer and Core
            </h3>
         {controls}
       </div>
@@ -137,7 +142,7 @@ console.log("===Test")
         attemptNumber={attemptNumber}
         ignoreDatabase={ignoreDatabase}
         requestedVariant={requestedVariant.current}
-        core={coreProp} 
+        core={coreProp}
       // collaborate={true}
       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
       // functionsSuppliedByChild = {this.functionsSuppliedByChild}

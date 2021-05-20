@@ -1,354 +1,643 @@
-import Sequence from './Sequence';
+import BaseComponent from './abstract/BaseComponent';
+import { returnSequenceValues, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions, returnStandardSequenceStateVariablesShadowedForReference } from '../utils/sequence';
 import me from 'math-expressions';
 
-export default class AnimateFromSequence extends Sequence {
+export default class AnimateFromSequence extends BaseComponent {
+  constructor(args) {
+    super(args);
+    this.advanceAnimation = this.advanceAnimation.bind(this);
+  }
   static componentType = "animateFromSequence";
+  static rendererType = undefined;
+
+  static acceptTname = true;
+
+  static get stateVariablesShadowedForReference() {
+    return returnStandardSequenceStateVariablesShadowedForReference();
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    attributes.animationOn = {default: false};
-    attributes.animationMode = {default: "increase"};
-    attributes.animationInterval = {default: 1000};
-    attributes.initialSelectedIndex = {default: 0};
+
+    let sequenceAttributes = returnStandardSequenceAttributes();
+    Object.assign(attributes, sequenceAttributes);
+
+    attributes.prop = {
+      createPrimitiveOfType: "string",
+    };
+
+    attributes.componentIndex = {
+      createComponentOfType: "number",
+      createStateVariable: "componentIndex",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.animationOn = {
+      createComponentOfType: "boolean",
+      createStateVariable: "animationOn",
+      defaultValue: false,
+      public: true,
+      triggerActionOnChange: "startStopAnimation"
+    };
+
+    attributes.animationMode = {
+      createComponentOfType: "text",
+      createStateVariable: "animationMode",
+      defaultValue: "increase",
+      validValues: ["increase", "decrease", "increase once", "decrease once", "oscillate"],
+      toLowerCase: true,
+      public: true,
+    };
+
+    attributes.animationInterval = {
+      createComponentOfType: "number",
+      createStateVariable: "animationInterval",
+      defaultValue: 1000,
+      public: true,
+    };
+
+    attributes.initialSelectedIndex = {
+      createComponentOfType: "number",
+      createStateVariable: "initialSelectedIndex",
+      defaultValue: 1,
+      public: true,
+    };
+
     return attributes;
   }
 
-  updateState(args={}) {
-    super.updateState(args);
 
-    if(args.init) {
-      this.makePublicStateVariable({
-        variableName: "selectedIndex",
-        componentType: "number",
-      });
-      this.makePublicStateVariable({
-        variableName: "value", 
-        componentType: this.state.type,
-      });
-      this.makePublicStateVariable({
-        variableName: "currentAnimationDirection",
-        componentType: "text",
-      });
+  static returnStateVariableDefinitions() {
 
-      this.advanceAnimation = this.advanceAnimation.bind(this);
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let sequenceDefs = returnStandardSequenceStateVariableDefinitions();
+    Object.assign(stateVariableDefinitions, sequenceDefs);
+
+    stateVariableDefinitions.possibleValues = {
+      additionalStateVariablesDefined: ["numberValues"],
+      returnDependencies: () => ({
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        length: {
+          dependencyType: "stateVariable",
+          variableName: "length"
+        },
+        from: {
+          dependencyType: "stateVariable",
+          variableName: "from"
+        },
+        step: {
+          dependencyType: "stateVariable",
+          variableName: "step"
+        },
+        exclude: {
+          dependencyType: "stateVariable",
+          variableName: "exclude"
+        },
+        lowercase: {
+          dependencyType: "stateVariable",
+          variableName: "lowercase"
+        },
+
+      }),
+      definition({ dependencyValues }) {
+
+        let possibleValues = returnSequenceValues(dependencyValues);
+
+        return {
+          newValues: {
+            possibleValues,
+            numberValues: possibleValues.length
+          }
+        }
+
+      }
     }
 
-    if(!this.childLogicSatisfied || Object.keys(this.unresolvedState).length > 0) {
-      return;
+    stateVariableDefinitions.selectedIndex = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        numberValues: {
+          dependencyType: "stateVariable",
+          variableName: "numberValues"
+        },
+        initialSelectedIndex: {
+          dependencyType: "stateVariable",
+          variableName: "initialSelectedIndex"
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          useEssentialOrDefaultValue: {
+            selectedIndex: {
+              variablesToCheck: ["selectedIndex"],
+              get defaultValue() {
+                return Math.min(
+                  dependencyValues.numberValues,
+                  Math.max(1, dependencyValues.initialSelectedIndex)
+                );
+              }
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "selectedIndex",
+            value: me.math.mod(desiredStateVariableValues.selectedIndex - 1, dependencyValues.numberValues) + 1
+          }]
+        }
+      }
     }
 
-    // if a variable changed, recreate possible values
-    if(this.currentTracker.trackChanges.checkIfVariableChanged(this)) {
+    stateVariableDefinitions.value = {
+      public: true,
+      hasVariableComponentType: true,
+      returnDependencies: () => ({
+        possibleValues: {
+          dependencyType: "stateVariable",
+          variableName: "possibleValues"
+        },
+        selectedIndex: {
+          dependencyType: "stateVariable",
+          variableName: "selectedIndex"
+        },
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: { value: dependencyValues.possibleValues[dependencyValues.selectedIndex - 1] },
+          setComponentType: { value: dependencyValues.type },
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+        // if number, can find closest value
+        if (dependencyValues.type === "number") {
+          let desiredValue = desiredStateVariableValues.value;
+          if (desiredValue instanceof me.class) {
+            desiredValue = desiredValue.evaluate_to_constant();
+          }
+          if (!Number.isFinite(desiredValue)) {
+            return { success: false }
+          }
 
-      this.state.possibleValues = [];
-
-      for(let ind=0; ind < this.state.count; ind++) {
-        let componentValue = this.state.from;
-        if(ind > 0) {
-          if(this.state.type === "math") {
-            componentValue = componentValue.add(this.state.step.multiply(me.fromAst(ind))).expand().simplify();
+          // use binary search
+          // find largest index where possibleValue is 
+          // larger (or smaller if step is negative) than desiredValue
+          let start = -1, end = dependencyValues.possibleValues.length - 1;
+          while (start < end - 1) {
+            let mid = Math.floor((start + end) / 2); // mid point
+            if (stateValues.step * (dependencyValues.possibleValues[mid] - desiredValue) > 0) {
+              end = mid;
+            } else {
+              start = mid;
+            }
+          }
+          let closestInd = end;
+          if (start !== -1) {
+            if (Math.abs(desiredValue - dependencyValues.possibleValues[start])
+              < Math.abs(desiredValue - dependencyValues.possibleValues[end])) {
+              closestInd = start;
+            }
+          }
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "selectedIndex",
+              desiredValue: closestInd + 1,
+            }]
+          }
+        } else {
+          // if not number, just try to find in sequence
+          let desiredValue = stateVariablesToUpdate.value;
+          let index = dependencyValues.possibleValues.indexOf(desiredValue);
+          if (index === -1) {
+            return { success: false };
           } else {
-            componentValue += this.state.step*ind;
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "selectedIndex",
+                desiredValue: index + 1,
+              }]
+            }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.currentAnimationDirection = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        animationMode: {
+          dependencyType: "stateVariable",
+          variableName: "animationMode"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          useEssentialOrDefaultValue: {
+            currentAnimationDirection: {
+              variablesToCheck: ["currentAnimationDirection"],
+              get defaultValue() {
+                if (dependencyValues.animationMode.substring(0, 8) === "decrease") {
+                  return "decrease"
+                } else {
+                  return "increase"
+                }
+              }
+            }
+          }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let newDirection = desiredStateVariableValues.currentAnimationDirection.toLowerCase();
+        if (!["increase", "decrease"].includes(newDirection)) {
+          newDirection = "increase"
+        }
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "currentAnimationDirection",
+            value: newDirection
+          }]
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.tName = {
+      returnDependencies: () => ({
+        tName: {
+          dependencyType: "doenetAttribute",
+          attributeName: "tName"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { tName: dependencyValues.tName }
+      })
+    }
+
+    stateVariableDefinitions.targetComponent = {
+      returnDependencies() {
+        return {
+          targetComponent: {
+            dependencyType: "targetComponent",
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        let targetComponent = null;
+        if (dependencyValues.targetComponent) {
+          targetComponent = dependencyValues.targetComponent
+        }
+
+        return {
+          newValues: { targetComponent }
+        }
+      },
+    };
+
+    stateVariableDefinitions.propName = {
+      returnDependencies: () => ({
+        propName: {
+          dependencyType: "attribute",
+          attributeName: "prop"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { propName: dependencyValues.propName } }
+      }
+    }
+
+
+    stateVariableDefinitions.targetIdentities = {
+      stateVariablesDeterminingDependencies: [
+        "targetComponent", "componentIndex",
+      ],
+      returnDependencies: function ({ stateValues, componentInfoObjects }) {
+
+        let dependencies = {};
+
+        if (stateValues.targetComponent !== null) {
+
+          if (componentInfoObjects.isCompositeComponent({
+            componentType: stateValues.targetComponent.componentType,
+            includeNonStandard: false
+          })) {
+            dependencies.targets = {
+              dependencyType: "replacement",
+              compositeName: stateValues.targetComponent.componentName,
+              recursive: true,
+              componentIndex: stateValues.componentIndex,
+            }
+          } else if (stateValues.componentIndex === null || stateValues.componentIndex === 1) {
+            // if we don't have a composite, componentIndex can only match if it is 1
+            dependencies.targets = {
+              dependencyType: "stateVariable",
+              variableName: "targetComponent"
+            }
+          }
+
+
+        }
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        let targetIdentities = null;
+        if (dependencyValues.targets) {
+          targetIdentities = dependencyValues.targets;
+          if (!Array.isArray(targetIdentities)) {
+            targetIdentities = [targetIdentities];
+          }
+        }
+        return { newValues: { targetIdentities } };
+      },
+    }
+
+    stateVariableDefinitions.targets = {
+      stateVariablesDeterminingDependencies: [
+        "targetIdentities", "propName"
+      ],
+      returnDependencies: function ({ stateValues }) {
+
+        let dependencies = {
+          targetIdentities: {
+            dependencyType: "stateVariable",
+            variableName: "targetIdentities"
+          },
+        }
+
+        if (stateValues.targetIdentities !== null) {
+
+          for (let [ind, source] of stateValues.targetIdentities.entries()) {
+
+            let thisTarget;
+
+            if (stateValues.propName) {
+              thisTarget = {
+                dependencyType: "stateVariable",
+                componentName: source.componentName,
+                variableName: stateValues.propName,
+                returnAsComponentObject: true,
+                variablesOptional: true,
+                propIndex: stateValues.propIndex,
+                caseInsensitiveVariableMatch: true,
+                publicStateVariablesOnly: true,
+                useMappedVariableNames: true,
+              }
+
+            } else {
+              thisTarget = {
+                dependencyType: "componentIdentity",
+                componentName: source.componentName
+              }
+            }
+
+            dependencies["target" + ind] = thisTarget;
+          }
+
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+        let targets = null;
+
+        if (dependencyValues.targetIdentities !== null) {
+          targets = [];
+
+          for (let ind in dependencyValues.targetIdentities) {
+            if (dependencyValues["target" + ind]) {
+              targets.push(dependencyValues["target" + ind]);
+            }
           }
         }
 
-        if(this.state.type === "math") {
-          if(this.state.exclude.some(x => x.equals(componentValue))) {
-            continue;
-          }
-        }else {
-          if(this.state.exclude.includes(componentValue)) {
-            continue;
-          }
-        }
-
-        if(this.state.type === "letters") {
-          componentValue = this.constructor.numberToLetters(componentValue, this.state.lowercase);
-        }
-
-        this.state.possibleValues.push(componentValue);
-
-      }
-
-      this.state.numberValues = this.state.possibleValues.length;
+        return { newValues: { targets } };
+      },
     }
 
-    if(this.state.selectedIndex === undefined) {
-      this.state.selectedIndex = Math.min(
-        this.state.numberValues-1,
-        Math.max(0, this.state.initialselectedindex)
-      );
-      this._state.selectedIndex.essential = true;
-    }else {
-      this.state.selectedIndex = me.math.mod(this.state.selectedIndex, this.state.numberValues);
-    }
+    return stateVariableDefinitions;
+  }
 
-    this.state.value = this.state.possibleValues[this.state.selectedIndex];
+  startStopAnimation({ stateValues, previousValues }) {
 
-    this.state.animationMode = this.state.animationMode.toLowerCase();
+    let updateInstructions = [];
 
-    if(this.state.animationMode === "oscillate")  {
-      if(this.state.currentAnimationDirection === undefined) {
-        this.state.currentAnimationDirection = "increase"
-      }
-    }else if(this.state.animationMode.substring(0,8) == "decrease") {
-      this.state.currentAnimationDirection = "decrease";
-      if(this.state.animationMode !== "decrease once") {
-        this.state.animationMode = "decrease";
-      }
-    }else {
-      this.state.currentAnimationDirection = "increase";
-      if(this.state.animationMode !== "increase once") {
-        this.state.animationMode = "increase";
-      }
-    }
-    this._state.currentAnimationDirection.essential = true;
-    
-    if(this.state.animationOn) {
-      if(!this.state.animationPreviouslyOn) {
-        if(this.state.currentAnimationDirection === "increase") {
-          if(this.state.selectedIndex === this.state.numberValues-1) {
+    if (stateValues.animationOn) {
+      if (!previousValues.animationOn) {
+        let newDirection = this.stateValues.currentAnimationDirection;
+        let startIndex = this.stateValues.selectedIndex;
+        if (this.stateValues.currentAnimationDirection === "increase") {
+          if (this.stateValues.selectedIndex === this.stateValues.numberValues) {
             // started animation in increasing direction
             // but are at largest value
-            if(this.state.animationMode === "increase once") {
+            if (this.stateValues.animationMode === "increase once") {
               // if won't reset automatically,
               // manually reset to beginning before starting
-              this.state.selectedIndex = 0;
-              this.state.value = this.state.possibleValues[this.state.selectedIndex];
-            } else if(this.state.animationMode === "oscillate") {
+              startIndex = 1;
+              updateInstructions.push({
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "selectedIndex",
+                value: startIndex,
+              })
+            } else if (this.stateValues.animationMode === "oscillate") {
               // change direction if oscillating
-              this.state.currentAnimationDirection = "decrease"
+              newDirection = "decrease";
+              updateInstructions.push({
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "currentAnimationDirection",
+                value: newDirection,
+              })
             }
           }
-        }else if(this.state.currentAnimationDirection === "decrease") {
-          if(this.state.selectedIndex === 0) {
+        } else if (this.stateValues.currentAnimationDirection === "decrease") {
+          if (this.stateValues.selectedIndex === 1) {
             // started animation in decreasing direction
             // but are at smallest value
-            if(this.state.animationMode === "decrease once") {
+            if (this.stateValues.animationMode === "decrease once") {
               // if won't reset automatically,
               // manually reset to end before starting
-              this.state.selectedIndex = this.state.numberValues-1;
-              this.state.value = this.state.possibleValues[this.state.selectedIndex];
-            } else if(this.state.animationMode === "oscillate") {
+              startIndex = this.stateValues.numberValues;
+              updateInstructions.push({
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "selectedIndex",
+                value: startIndex,
+              })
+            } else if (this.stateValues.animationMode === "oscillate") {
               // change direction if oscillating
-              this.state.currentAnimationDirection = "inccrease"
+              newDirection = "increase";
+              updateInstructions.push({
+                updateType: "updateValue",
+                componentName: this.componentName,
+                stateVariable: "currentAnimationDirection",
+                value: newDirection,
+              })
             }
           }
         }
 
-        this.state.animationID = this.coreFunctions.requestAnimationFrame(
-          this.advanceAnimation, this.state.animationInterval
+        let additionalInstructions = this.getUpdateInstructionsToSetTargetsToValue(
+          this.stateValues.possibleValues[me.math.mod(startIndex - 1, this.stateValues.numberValues)]
         )
-        this.state.animationPreviouslyOn = true;
+        updateInstructions.push(...additionalInstructions);
+
+        this.coreFunctions.requestUpdate({
+          updateInstructions,
+          event: {
+            verb: "played",
+            object: {
+              componentName: this.componentName,
+              componentType: this.componentType,
+            },
+            context: {
+              startIndex,
+              animationDirection: newDirection,
+              animationMode: this.stateValues.animationMode
+            }
+          }
+        })
+
+        this.animationID = this.coreFunctions.requestAnimationFrame(
+          this.advanceAnimation, this.stateValues.animationInterval
+        )
       }
-    }else {
-      if(this.state.animationPreviouslyOn) {
+    } else {
+      if (previousValues.animationOn) {
         // cancel any animation in progress
-        this.coreFunctions.cancelAnimationFrame(this.state.animationID);
+        this.coreFunctions.cancelAnimationFrame(this.animationID);
+        this.coreFunctions.requestRecordEvent({
+          verb: "paused",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          context: {
+            endIndex: this.stateValues.selectedIndex,
+          }
+        })
       }
-      this.state.animationPreviouslyOn = false;
     }
 
   }
+
+
+  actions = {
+    startStopAnimation: this.startStopAnimation.bind(this)
+  };
+
 
   advanceAnimation() {
 
     let newSelectedIndex;
     let continueAnimation = true;
     let newDirection;
-    if(this.state.currentAnimationDirection === "decrease") {
-      newSelectedIndex = this.state.selectedIndex - 1;
-      if(newSelectedIndex <= 0) {
-        if(this.state.animationMode === "decrease once") {
+    if (this.stateValues.currentAnimationDirection === "decrease") {
+      newSelectedIndex = this.stateValues.selectedIndex - 1;
+      if (newSelectedIndex <= 1) {
+        if (this.stateValues.animationMode === "decrease once") {
           continueAnimation = false;
-        }else if(this.state.animationMode === "oscillate") {
+        } else if (this.stateValues.animationMode === "oscillate") {
           newDirection = "increase";
         }
       }
-    }else {
-      newSelectedIndex = this.state.selectedIndex + 1;
-      if(newSelectedIndex >= this.state.numberValues -1) {
-        if(this.state.animationMode === "increase once") {
+    } else {
+      newSelectedIndex = this.stateValues.selectedIndex + 1;
+      if (newSelectedIndex >= this.stateValues.numberValues) {
+        if (this.stateValues.animationMode === "increase once") {
           continueAnimation = false;
-        }else if(this.state.animationMode === "oscillate") {
+        } else if (this.stateValues.animationMode === "oscillate") {
           newDirection = "decrease";
         }
       }
     }
-    let variableUpdates = {
-      selectedIndex: {changes: newSelectedIndex},
+
+    let updateInstructions = [{
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable: "selectedIndex",
+      value: newSelectedIndex,
+    }]
+
+    let additionalInstructions = this.getUpdateInstructionsToSetTargetsToValue(
+      this.stateValues.possibleValues[me.math.mod(newSelectedIndex - 1, this.stateValues.numberValues)]
+    )
+    updateInstructions.push(...additionalInstructions);
+
+    if (!continueAnimation) {
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "animationOn",
+        value: false,
+      })
     }
-    if(!continueAnimation) {
-      variableUpdates.animationOn = {changes: false};
-    }
-    if(newDirection !== undefined) {
-      variableUpdates.currentAnimationDirection = {changes: newDirection};
+    if (newDirection) {
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "currentAnimationDirection",
+        value: newDirection,
+      })
     }
 
     this.coreFunctions.requestUpdate({
-      updateType: "updateValue",
-      updateInstructions: [{
-        componentName: this.componentName,
-        variableUpdates: variableUpdates
-      }]
+      updateInstructions,
     });
 
-    if(continueAnimation) {
-      this.state.animationID = this.coreFunctions.requestAnimationFrame(
-        this.advanceAnimation, this.state.animationInterval
+    if (continueAnimation) {
+      this.animationID = this.coreFunctions.requestAnimationFrame(
+        this.advanceAnimation, this.stateValues.animationInterval
       )
     }
   }
 
-  static createSerializedReplacements(component) {
+  getUpdateInstructionsToSetTargetsToValue(value) {
 
-    let replacements = [];
-
-    if(component.state.value !== undefined) {
-      replacements.push({
-        componentType: component.state.type,
-        state: {value: component.state.value, hide: component.state.hide}
-      });
+    if (this.stateValues.targets == null) {
+      return [];
     }
 
-    return replacements;
-  }
+    let updateInstructions = [];
 
-  static calculateReplacementChanges({component}) {
-
-    let replacementChanges = [];
-
-    if(component.state.value === undefined) {
-      if(component.replacements[0] !== undefined){
-        // delete all replacements
-        let replacementInstruction = {
-          changeType: "delete",
-          changeTopLevelReplacements: true,
-          firstReplacementInd: 0,
-          numberReplacementsToDelete: component.replacements.length,
+    for (let target of this.stateValues.targets) {
+      let stateVariable = "value";
+      if (target.stateValues) {
+        stateVariable = Object.keys(target.stateValues)[0];
+        if (stateVariable === undefined) {
+          console.warn(`Cannot animate prop="${this.stateValues.propName}" of ${this.stateValues.tName} as could not find prop ${this.stateValues.propName} on a component of type ${target.componentType}`)
+          continue;
         }
-
-        replacementChanges.push(replacementInstruction);
       }
-      return replacementChanges;
+
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: target.componentName,
+        stateVariable,
+        value,
+      })
+
     }
 
-    if(component.replacements[0] === undefined ||
-      component.state.type !== component.replacements[0].componentType) {
-      // recreate replacements
-      let replacementInstruction = {
-        changeType: "add",
-        changeTopLevelReplacements: true,
-        firstReplacementInd: 0,
-        numberReplacementsToReplace: component.replacements.length,
-        serializedReplacements: component.constructor.createSerializedReplacements(component),
-      };
-      replacementChanges.push(replacementInstruction);
-      return replacementChanges;
-    }
-
-    let replacementInstruction = {
-      changeType: "updateStateVariables",
-      component: component.replacements[0],
-      stateChanges: {value: component.state.value}
-    }
-    replacementChanges.push(replacementInstruction);
-
-    return replacementChanges;
+    return updateInstructions;
 
   }
-
-
-  allowDownstreamUpdates(status) {
-    return status.initialChange || this.state.modifyIndirectly;
-  }
-
-  get variablesUpdatableDownstream() {
-    return ["value", "selectedIndex", "animationOn", "currentAnimationDirection"];
-  }
-
-
-  calculateDownstreamChanges({stateVariablesToUpdate, stateVariableChangesToSave,
-    dependenciesToUpdate}) {
-
-    let newStateVariables = {};
-
-    if("selectedIndex" in stateVariablesToUpdate) {
-      newStateVariables.selectedIndex = stateVariablesToUpdate.selectedIndex;
-    }
-    if("animationOn" in stateVariablesToUpdate) {
-      newStateVariables.animationOn = stateVariablesToUpdate.animationOn;
-    }
-    if("currentAnimationDirection" in stateVariablesToUpdate) {
-      newStateVariables.currentAnimationDirection = stateVariablesToUpdate.currentAnimationDirection;
-    }
-    if("value" in stateVariablesToUpdate) {
-      // if number, can find closest value
-      if(this.state.type === "number") {
-        let desiredValue = stateVariablesToUpdate.value.changes;
-        if(!(typeof desiredValue === "number")) {
-          desiredValue = desiredValue.evaluate_to_constant();
-        }
-        if(!(typeof desiredValue === "number")) {
-          return false;
-        }
-
-        // use binary search
-        // find largest index where possibleValue is 
-        // larger (or smaller if step is negative) than desiredValue
-        let step = this.state.step
-        let start=-1, end = this.state.possibleValues.length-1;
-        while(start < end-1) {
-          let mid = Math.floor((start+end)/2); // mid point
-          if(step*(this.state.possibleValues[mid] - desiredValue) > 0) {
-            end=mid;
-          }else {
-            start=mid;
-          }
-        }
-        let closestInd = end;
-        if(start !== -1) {
-          if(Math.abs(desiredValue - this.state.possibleValues[start])
-            < Math.abs(desiredValue - this.state.possibleValues[end])) {
-            closestInd = start;
-          }
-        }
-        newStateVariables.selectedIndex = {changes: closestInd};
-      }else  {
-        // if not number, just try to find in sequence
-        let desiredValue = stateVariablesToUpdate.value;
-        let index = this.state.possibleValues.indexOf(desiredValue);
-        if(index === -1) {
-          return false;
-        }
-        newStateVariables.selectedIndex = {changes: index};
-      }
-    }
-
-    this.updatePropertySources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    })
-
-    let shadowedResult = this.updateShadowSources({
-      newStateVariables: newStateVariables,
-      dependenciesToUpdate: dependenciesToUpdate,
-    });
-    let shadowedStateVariables = shadowedResult.shadowedStateVariables;
-    let isReplacement = shadowedResult.isReplacement;
-
-    // add stateVariable to stateVariableChangesToSave if is essential
-    // and no shadow sources were updated
-    for(let varname in newStateVariables) {
-      if(this._state[varname].essential === true &&
-          !shadowedStateVariables.has(varname) && !isReplacement) {
-        stateVariableChangesToSave[varname] = newStateVariables[varname];
-      }
-    }
-
-    return true;
-
-  }
-
 
 }

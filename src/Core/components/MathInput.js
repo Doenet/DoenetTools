@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { convertValueToMathExpression, latexToAst, textToAst } from '../utils/math';
+import { getCustomFromText, getCustomFromLatex, roundForDisplay, } from '../utils/math';
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -66,6 +66,31 @@ export default class MathInput extends Input {
       forRenderer: true,
       public: true,
     };
+    attributes.functionSymbols = {
+      createComponentOfType: "textList",
+      createStateVariable: "functionSymbols",
+      defaultValue: ["f", "g"],
+      forRenderer: true,
+      public: true,
+    }
+    attributes.displayDigits = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displaySmallAsZero",
+      defaultValue: false,
+      public: true,
+    };
     attributes.bindValueTo = {
       createComponentOfType: "math"
     };
@@ -85,7 +110,7 @@ export default class MathInput extends Input {
         bindValueTo: {
           dependencyType: "attributeComponent",
           attributeName: "bindValueTo",
-          variableNames: ["value", "valueForDisplay"],
+          variableNames: ["value"],
         },
         prefill: {
           dependencyType: "stateVariable",
@@ -94,6 +119,10 @@ export default class MathInput extends Input {
         format: {
           dependencyType: "stateVariable",
           variableName: "format"
+        },
+        functionSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "functionSymbols"
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -105,7 +134,8 @@ export default class MathInput extends Input {
                 get defaultValue() {
                   return parseValueIntoMath({
                     inputString: dependencyValues.prefill,
-                    format: dependencyValues.format
+                    format: dependencyValues.format,
+                    functionSymbols: dependencyValues.functionSymbols,
                   })
                 }
               }
@@ -113,7 +143,7 @@ export default class MathInput extends Input {
           }
         }
 
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.valueForDisplay } };
+        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -155,13 +185,14 @@ export default class MathInput extends Input {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
         // console.log(changes);
+        // console.log(dependencyValues.value.toString())
 
         if (changes.value) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
             newValues: { immediateValue: dependencyValues.value },
-            makeEssential: ["immediateValue"]
+            makeEssential: { immediateValue: true }
           };
 
 
@@ -201,17 +232,52 @@ export default class MathInput extends Input {
       }
     }
 
-    stateVariableDefinitions.text = {
-      public: true,
-      componentType: "text",
+    stateVariableDefinitions.valueForDisplay = {
+      forRenderer: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
           variableName: "value"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        // round any decimal numbers to the significant digits
+        // determined by displaydigits or displaydecimals
+        let rounded = roundForDisplay({
+          value: dependencyValues.value,
+          dependencyValues, usedDefault
+        });
+
+        return {
+          newValues: { valueForDisplay: rounded }
+        }
+      }
+    }
+
+
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        valueForDisplay: {
+          dependencyType: "stateVariable",
+          variableName: "valueForDisplay"
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value.toString() } }
+        return { newValues: { text: dependencyValues.valueForDisplay.toString() } }
       }
     }
 
@@ -219,30 +285,6 @@ export default class MathInput extends Input {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { componentType: "math" } })
     }
-
-
-    // stateVariableDefinitions.submittedValue = {
-    //   defaultValue: me.fromAst('\uFF3F'),
-    //   public: true,
-    //   componentType: "math",
-    //   returnDependencies: () => ({}),
-    //   definition: () => ({
-    //     useEssentialOrDefaultValue: {
-    //       submittedValue: {
-    //         variablesToCheck: ["submittedValue"]
-    //       }
-    //     }
-    //   }),
-    //   inverseDefinition: function ({ desiredStateVariableValues }) {
-    //     return {
-    //       success: true,
-    //       instructions: [{
-    //         setStateVariable: "submittedValue",
-    //         value: desiredStateVariableValues.submittedValue
-    //       }]
-    //     };
-    //   }
-    // }
 
 
     return stateVariableDefinitions;
@@ -318,7 +360,7 @@ export default class MathInput extends Input {
 }
 
 
-function parseValueIntoMath({ inputString, format }) {
+function parseValueIntoMath({ inputString, format, functionSymbols }) {
 
   if (!inputString) {
     return me.fromAst('\uFF3F');
@@ -326,15 +368,21 @@ function parseValueIntoMath({ inputString, format }) {
 
   let expression;
   if (format === "latex") {
+    let fromLatex = getCustomFromLatex({
+      functionSymbols
+    });
     try {
-      expression = me.fromAst(latexToAst.convert(inputString));
+      expression = fromLatex(inputString);
     } catch (e) {
       console.warn(`Invalid latex for mathInput: ${inputString}`)
       expression = me.fromAst('\uFF3F');
     }
   } else if (format === "text") {
+    let fromText = getCustomFromText({
+      functionSymbols
+    });
     try {
-      expression = me.fromAst(textToAst.convert(inputString));
+      expression = fromText(inputString);
     } catch (e) {
       console.warn(`Invalid text for mathInput: ${inputString}`)
       expression = me.fromAst('\uFF3F');

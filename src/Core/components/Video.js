@@ -9,14 +9,14 @@ export default class Video extends BlockComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      defaultValue: 500,
+      defaultValue: null,
       public: true,
       forRenderer: true,
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      defaultValue: 500,
+      defaultValue: null,
       public: true,
       forRenderer: true,
     };

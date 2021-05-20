@@ -357,7 +357,7 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 export function createAttributesFromProps(serializedComponents, componentInfoObjects, flags) {
   for (let component of serializedComponents) {
 
-    let componentClass = componentInfoObjects.standardComponentClasses[component.componentType];
+    let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
     let classAttributes = componentClass.createAttributesObject({ flags });
 
     let attributeLowerCaseMapping = {};
@@ -657,9 +657,51 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
       }
     }
+
+    if (component.componentType === "award" && component.children) {
+      let targetsAreResponses = component.attributes.targetsAreResponses;
+      if (targetsAreResponses) {
+        let targetNames = targetsAreResponses.split(/\s+/).filter(s => s);
+        for (let tName of targetNames) {
+          addResponsesToDescendantsWithTname(component.children, tName);
+        }
+
+      }
+
+    }
+
   }
 
   return serializedComponents;
+
+}
+
+function addResponsesToDescendantsWithTname(components, tName) {
+
+  for (let component of components) {
+    let propsOrDAttrs = component.props;
+    if(!propsOrDAttrs) {
+      propsOrDAttrs = component.doenetAttributes;
+    }
+    if (propsOrDAttrs) {
+      for (let prop in propsOrDAttrs) {
+        if (prop.toLowerCase() === "tname" && propsOrDAttrs[prop] === tName) {
+          if(!component.attributes) {
+            component.attributes = {};
+          }
+          let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
+          if (!foundIsResponse) {
+            component.attributes.isResponse = true;
+          }
+        }
+      }
+
+    }
+
+    if (component.children) {
+      addResponsesToDescendantsWithTname(component.children, tName)
+    }
+  }
 
 }
 
@@ -859,14 +901,18 @@ function createEvaluateIfFindMatchedClosingParens({
     let evaluateComponent = {
       componentType: "evaluate",
       doenetAttributes: { createdFromMacro: true },
-      children: [
-        ...componentsFromMacro,
-        {
-          componentType: "input",
+      attributes: {
+        function: {
+          componentType: "function",
+          doenetAttributes: {createdFromMacro: true},
+          children: componentsFromMacro
+        },
+        input: {
+          componentType: "mathList",
           doenetAttributes: { createdFromMacro: true },
           children: inputArray
         }
-      ]
+      }
     }
 
 
@@ -1037,8 +1083,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             }
           } else if (sugarResults.newAttributes) {
             let newAttributes = sugarResults.newAttributes;
-
-            let attr = Object.keys(newAttributes)[0];
 
             let preSugarIndsFound = [];
 
@@ -1537,7 +1581,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 }
 
 
-function convertComponentTarget({
+export function convertComponentTarget({
   tName,
   oldFullTName,
   namespaceStack,
@@ -1845,13 +1889,23 @@ export function processAssignNames({
 
   let processedComponents = [];
 
+  // don't name strings
+  let numStrings = 0;
 
   for (let ind = 0; ind < nComponents; ind++) {
 
-    let indForNames = ind + indOffset;
+    let indForNames = ind + indOffset - numStrings;
+
+    let component = serializedComponents[ind];
+
+    if(component.componentType === "string") {
+      numStrings ++;
+      processedComponents.push(component);
+      continue;
+    }
 
     let name = assignNames[indForNames];
-    let component = serializedComponents[ind];
+
 
     if (!component.doenetAttributes) {
       component.doenetAttributes = {};

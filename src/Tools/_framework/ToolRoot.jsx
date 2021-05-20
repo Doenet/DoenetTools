@@ -5,14 +5,23 @@ import {
   useRecoilValue,
   useRecoilCallback,
 } from 'recoil';
+import styled from 'styled-components';
 import Toast from './Toast';
 import { useMenuPanelController } from './Panels/MenuPanel';
 import { useSupportDividerController } from './Panels/ContentPanel';
-import Cookies from 'js-cookie';
 import axios from 'axios';
-
-//import Toast from './Toast';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
+
+const LoadingFallback = styled.div`
+  background-color: hsl(0, 0%, 99%);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  width: 100vw;
+  height: 100vh;
+`;
 
 const layerStackAtom = atom({
   key: 'layerStackAtom',
@@ -24,6 +33,7 @@ export const useToolControlHelper = () => {
   const activateMenuPanel = useMenuPanelController();
   const activateSupportPanel = useSupportDividerController();
   const [
+    Content,
     Assignment,
     Editor,
     Image,
@@ -31,6 +41,7 @@ export const useToolControlHelper = () => {
     GradebookAssignmentView,
     GradebookAttemptView,
   ] = useRef([
+    lazy(() => import('./Overlays/Content')),
     lazy(() => import('./Overlays/Assignment')),
     lazy(() => import('./Overlays/Editor')),
     lazy(() => import('./Overlays/Image')),
@@ -79,13 +90,26 @@ export const useToolControlHelper = () => {
           />,
         ]);
         break;
+      case 'content':
+        setLayers((old) => [
+          ...old,
+          <Content
+            contentId={contentId}
+            branchId={branchId}
+            title={title}
+            key={`ContentLayer${old.length + 1}`}
+          />,
+        ]);
+        break;
       case 'assignment':
         setLayers((old) => [
           ...old,
           <Assignment
             branchId={branchId}
+            title={title}
             assignmentId={assignmentId}
             courseId={courseId}
+            contentId={contentId}
             key={`AssignmentLayer${old.length + 1}`}
           />,
         ]);
@@ -107,7 +131,6 @@ export const useToolControlHelper = () => {
         ]);
         break;
       default:
-        console.error('Unknown Overlay Name');
     }
   };
 
@@ -150,7 +173,6 @@ export default function ToolRoot({ tool }) {
     axios
       .get('/api/loadProfile.php', { params: {} })
       .then((resp) => {
-        console.log(resp);
         if (resp.data.success === '1') {
           // console.log(">>>resp.data.profile",resp.data.profile)
           localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
@@ -158,7 +180,6 @@ export default function ToolRoot({ tool }) {
         }
       })
       .catch((error) => {
-        console.log(error);
         //  Error currently does nothing
       });
 
@@ -166,18 +187,6 @@ export default function ToolRoot({ tool }) {
   }
 
   return (
-    <>
-      <ProfileContext.Provider value={profile}>
-        {/* <GlobalStyle /> */}
-
-        {tool}
-        <Suspense fallback={<div>loading...</div>}>
-          {overlays.map((layer, idx) =>
-            idx == overlays.length - 1 ? layer : null,
-          )}
-        </Suspense>
-        <Toast />
-      </ProfileContext.Provider>
-    </>
+          idx == overlays.length - 1 ? layer : null,
   );
 }

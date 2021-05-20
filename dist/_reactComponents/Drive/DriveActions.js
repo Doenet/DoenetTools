@@ -292,6 +292,10 @@ export const useCopyItems = () => {
         targetDriveId,
         targetFolderId
       });
+      if (item.driveId === targetDriveId) {
+        const newItemLabel = `Copy of ${newItem.label}`;
+        newItem.label = newItemLabel;
+      }
       const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter((itemId) => itemId !== dragShadowId);
       newSortOrder = getLexicographicOrder({
         index: insertIndex,
@@ -310,7 +314,7 @@ export const useCopyItems = () => {
         driveId: targetDriveId,
         parentFolderId: newItem.parentFolderId,
         itemId: newItemId,
-        branchId: "",
+        branchId: newItem.branchId,
         versionId: nanoid(),
         label: newItem.label,
         type: newItem.itemType,
@@ -372,7 +376,9 @@ export const useCopyItems = () => {
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
     const newItem = {...itemInfo};
     const newItemId = nanoid();
+    const newBranchId = nanoid();
     newItem.itemId = newItemId;
+    newItem.branchId = newBranchId;
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot2.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
       globalContentIds[newItemId] = [];
@@ -394,10 +400,6 @@ export const useCopyItems = () => {
         const newSubItemId = result.newItemId;
         globalContentIds[newItemId].push(newSubItemId);
       }
-    }
-    if (item.driveId === targetDriveId) {
-      const newItemLabel = `Copy of ${newItem.label}`;
-      newItem.label = newItemLabel;
     }
     newItem.parentFolderId = targetFolderId;
     newItem.creationDate = creationTimestamp;
@@ -684,13 +686,26 @@ export const useRenameItem = () => {
 };
 export const useAssignmentCallbacks = () => {
   const [addToast, ToastType] = useToast();
+  const makeAssignment = useRecoilCallback(({set}) => ({driveIdFolderId, itemId, payload}) => {
+    set(folderDictionary(driveIdFolderId), (old) => {
+      let newObj = JSON.parse(JSON.stringify(old));
+      let newItemObj = newObj.contentsDictionary[itemId];
+      newItemObj.isAssignment = "1";
+      newItemObj.assignment_title = payload?.assignment_title;
+      newItemObj.assignmentId = payload?.assignmentId;
+      return newObj;
+    });
+  });
+  const onmakeAssignmentError = ({errorMessage = null}) => {
+    addToast(`make assignment error: ${errorMessage}`, ToastType.ERROR);
+  };
   const publishAssignment = useRecoilCallback(({set}) => ({driveIdFolderId, itemId, payload}) => {
     set(folderDictionary(driveIdFolderId), (old) => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
       newItemObj.assignment_isPublished = "1";
       newItemObj.isAssignment = "1";
-      newItemObj.assignment_title = payload?.title;
+      newItemObj.assignment_title = payload?.assignment_title;
       newItemObj.assignmentId = payload?.assignmentId;
       return newObj;
     });
@@ -714,7 +729,7 @@ export const useAssignmentCallbacks = () => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
       newItemObj.isAssignment = "1";
-      newItemObj.assignment_title = payloadAssignment?.title;
+      newItemObj.assignment_title = payloadAssignment?.assignment_title;
       newItemObj.assignmentId = payloadAssignment?.assignmentId;
       return newObj;
     });
@@ -734,6 +749,8 @@ export const useAssignmentCallbacks = () => {
     addToast(`Convert assignment error: ${errorMessage}`, ToastType.ERROR);
   };
   return {
+    makeAssignment,
+    onmakeAssignmentError,
     publishAssignment,
     onPublishAssignmentError,
     publishContent,

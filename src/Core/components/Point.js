@@ -1,6 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { convertValueToMathExpression, mergeVectorsForInverseDefinition } from '../utils/math';
+import { convertValueToMathExpression, mergeVectorsForInverseDefinition, roundForDisplay } from '../utils/math';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { deepClone } from '../utils/deepFunctions';
 
@@ -43,6 +43,20 @@ export default class Point extends GraphicalComponent {
     };
     attributes.coords = {
       createComponentOfType: "coords",
+    };
+
+    attributes.displayDigits = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
     };
 
     return attributes;
@@ -717,7 +731,6 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.coords = {
       public: true,
       componentType: "coords",
-      forRenderer: true,
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
@@ -785,6 +798,35 @@ export default class Point extends GraphicalComponent {
 
       }
 
+    }
+
+    stateVariableDefinitions.coordsForDisplay = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        coords: {
+          dependencyType: "stateVariable",
+          variableName: "coords"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        // for display via latex and text, round any decimal numbers to the significant digits
+        // determined by displaydigits or displaydecimals
+        let coordsForDisplay = roundForDisplay({
+          value: dependencyValues.coords,
+          dependencyValues, usedDefault
+        });
+
+        return { newValues: { coordsForDisplay } }
+
+      }
     }
 
     // currently value is used by answer to get variable for response

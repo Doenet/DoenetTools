@@ -18,10 +18,21 @@ export var textToAst = new me.converters.textToAstObj({
   appliedFunctionSymbols
 });
 
+export function getCustomFromText({ functionSymbols }) {
+  return x => me.fromAst((new me.converters.textToAstObj({
+    appliedFunctionSymbols, functionSymbols
+  })).convert(x))
+}
+
 export var latexToAst = new me.converters.latexToAstObj({
   appliedFunctionSymbols
 });
 
+export function getCustomFromLatex({ functionSymbols }) {
+  return x => me.fromAst((new me.converters.latexToAstObj({
+    appliedFunctionSymbols, functionSymbols
+  })).convert(x))
+}
 
 export function normalizeMathExpression({ value, simplify, expand = false,
   createVectors = false, createIntervals = false
@@ -241,10 +252,101 @@ export function substituteUnicodeInLatexString(latexString) {
     ['\u03C9', '\\omega '], // 'ω'
   ]
 
-  for(let sub of substitutions) {
+  for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1])
   }
 
   return latexString;
+
+}
+
+export function isValidVariable(expression) {
+  // to be a valid variable, tree must be either
+  // - a string other than long underscore, or
+  // - a string with a subscript that is a string or a number
+  let tree = expression.tree;
+  let validVariable = true;
+  if (typeof tree === "string") {
+    if (tree === '\uFF3F') {  // long underscore
+      validVariable = false;
+    }
+  } else if (!Array.isArray(tree) ||
+    tree[0] !== '_' ||
+    (typeof tree[1] !== "string") ||
+    ((typeof tree[2] !== "string" && typeof tree[2] !== "number"))
+  ) {
+    validVariable = false;
+  }
+
+  return validVariable;
+
+}
+
+export function mathStateVariableFromNumberStateVariable({
+  numberVariableName = "number", mathVariableName = "math", isPublic = "false" } = {}
+) {
+
+  let mathDef = {
+    returnDependencies: () => ({
+      number: {
+        dependencyType: "stateVariable",
+        variableName: numberVariableName
+      },
+    }),
+    definition: function ({ dependencyValues }) {
+      if (Number.isNaN(dependencyValues.number)) {
+        return { newValues: { [mathVariableName]: me.fromAst('\uff3f') } };
+      } else {
+        return { newValues: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
+      }
+    },
+    inverseDefinition: function ({ desiredStateVariableValues }) {
+
+      let desiredNumber = desiredStateVariableValues[mathVariableName].evaluate_to_constant();
+      if (desiredNumber === null) {
+        desiredNumber = NaN;
+      }
+      return {
+        success: true,
+        instructions: [{
+          setDependency: "number",
+          desiredValue: desiredNumber,
+        }],
+      }
+
+    }
+  }
+
+  if (isPublic) {
+    mathDef.public = true;
+    mathDef.componentType = "math"
+  }
+
+  return mathDef;
+
+}
+
+export function roundForDisplay({ value, dependencyValues, usedDefault }) {
+  let rounded;
+
+  if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+    if (Number.isFinite(dependencyValues.displayDecimals)) {
+      rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
+    } else {
+      rounded = value;
+    }
+  } else {
+    if (dependencyValues.displayDigits >= 1) {
+      rounded = me.round_numbers_to_precision(value, dependencyValues.displayDigits);
+    } else {
+      rounded = value;
+    }
+    if (dependencyValues.displaySmallAsZero) {
+      rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: true });
+    }
+
+  }
+
+  return rounded;
 
 }

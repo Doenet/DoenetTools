@@ -271,7 +271,7 @@ export default class VariantControl extends BaseComponent {
                 selectedVariantNumber += dependencyValues.nVariantsSpecified;
               }
               return {
-                makeEssential: ["selectedVariantNumber"],
+                makeEssential: { selectedVariantNumber: true },
                 newValues: { selectedVariantNumber }
               }
             }
@@ -286,7 +286,7 @@ export default class VariantControl extends BaseComponent {
               let desiredNumber = lowerCaseVariants.indexOf(dependencyValues.variantsObject.desiredVariant.toLowerCase());
               if (desiredNumber !== -1) {
                 return {
-                  makeEssential: ["selectedVariantNumber"],
+                  makeEssential: { selectedVariantNumber: true },
                   newValues: { selectedVariantNumber: desiredNumber }
                 }
               }
@@ -299,7 +299,7 @@ export default class VariantControl extends BaseComponent {
               % dependencyValues.nVariantsSpecified
             );
             return {
-              makeEssential: ["selectedVariantNumber"],
+              makeEssential: { selectedVariantNumber: true },
               newValues: { selectedVariantNumber }
             }
           }
@@ -309,13 +309,13 @@ export default class VariantControl extends BaseComponent {
         // from shared parameters
 
         // random number in [0, 1)
-        let rand = dependencyValues.selectRng.random();
+        let rand = dependencyValues.selectRng();
         // random integer from 0 to nVariants-1
         let selectedVariantNumber = Math.floor(rand * dependencyValues.nVariantsSpecified);
 
 
         return {
-          makeEssential: ["selectedVariantNumber"],
+          makeEssential: { selectedVariantNumber: true },
           newValues: { selectedVariantNumber }
         }
 

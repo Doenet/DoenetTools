@@ -18,14 +18,14 @@ export default class Slider extends BaseComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      defaultValue: 300,
+      defaultValue: { size: 300, isAbsolute: true },
       public: true,
       forRenderer: true
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      defaultValue: 300,
+      defaultValue: { size: 100, isAbsolute: true },
       public: true,
       forRenderer: true
     };
@@ -232,6 +232,15 @@ export default class Slider extends BaseComponent {
             }
           }
         }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "preliminaryValue",
+            value: desiredStateVariableValues.preliminaryValue
+          }]
+        }
       }
     }
 
@@ -257,16 +266,32 @@ export default class Slider extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let value = findClosestValidValue(dependencyValues);
+        let index = findIndexOfClosestValidValue(dependencyValues);
 
         //The text value might not match so choose the first item
-        let index = 0;
-
-        if (value !== undefined) {
-          index = dependencyValues.valueToIndex[value];
+        if (index === undefined) {
+          index = 0;
         }
 
         return { newValues: { index } }
+
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+
+
+        let desiredValue = dependencyValues.items[desiredStateVariableValues.index];
+
+        if (desiredValue === undefined) {
+          return { success: false };
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "preliminaryValue",
+            desiredValue
+          }]
+        }
 
       }
 
@@ -377,7 +402,7 @@ export default class Slider extends BaseComponent {
           }],
           transient
         });
-      } else { 
+      } else {
         this.coreFunctions.requestUpdate({
           updateInstructions: [{
             updateType: "updateValue",
@@ -402,17 +427,16 @@ export default class Slider extends BaseComponent {
   }
 
 
-
 }
 
-function findClosestValidValue({ preliminaryValue, valueToIndex, sliderType, items }) {
+function findIndexOfClosestValidValue({ preliminaryValue, valueToIndex, sliderType, items }) {
 
   let value = preliminaryValue;
 
   // first check if value is actually a known value
   let matchedIndex = valueToIndex[value];
   if (matchedIndex !== undefined) {
-    return value;
+    return matchedIndex;
   }
 
   // for text, we don't have a way to find the closest value
@@ -437,28 +461,28 @@ function findClosestValidValue({ preliminaryValue, valueToIndex, sliderType, ite
       return findNextLargerIndex(minIndex, midIndex);
     }
   };
+
   let closeIndex = findNextLargerIndex();
-  if (closeIndex === 0) {
-    value = items[0];
-  }
-  else {
+  if (closeIndex !== 0) {
     let leftValue = items[closeIndex - 1];
     let rightValue = items[closeIndex];
     let leftDist = Math.abs(value - leftValue);
     let rightDist = Math.abs(value - rightValue);
     if (leftDist < rightDist) {
-      value = leftValue;
-    }
-    else {
-      value = rightValue;
+      closeIndex--;
     }
   }
-  return value;
+  return closeIndex;
 }
 
 function invertSliderValue({ desiredStateVariableValues, stateValues }) {
 
-  let newValue = findClosestValidValue({
+  // console.log(`invert slider value`)
+  // console.log(desiredStateVariableValues)
+  // console.log(stateValues);
+
+
+  let newIndex = findIndexOfClosestValidValue({
     preliminaryValue: desiredStateVariableValues.value,
     valueToIndex: stateValues.valueToIndex,
     sliderType: stateValues.sliderType,
@@ -466,21 +490,15 @@ function invertSliderValue({ desiredStateVariableValues, stateValues }) {
   });
 
   //Text value given by another component didn't match so can't update
-  if (newValue === undefined) {
+  if (newIndex === undefined) {
     return { success: false };
   } else {
     return {
       success: true,
-      instructions: [
-        {
-          setStateVariable: "value",
-          value: newValue
-        },
-        {
-          setStateVariable: "preliminaryValue",
-          value: newValue
-        },
-      ]
+      instructions: [{
+        setDependency: "index",
+        desiredValue: newIndex
+      }]
     }
   }
 

@@ -1,41 +1,41 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {parse,parseAndCompile,showCursor} from '../../Parser/parser.js';
 
 // import axios from 'axios';
 
-const Test = () => {
-  return <div>test</div>
-  // return (
-  //   <div
-  //     style={{
-  //       display: 'grid',
-  //       grid:
-  //         '"nav header menu" auto "nav extra menu" 1fr "nav footer menu" auto / auto 1fr auto',
-  //       height: '85vh',
-  //       gap: '4px',
-  //     }}
-  //   >
-  //     <DragPanel
-  //       direction={handleDirection.DOWN}
-  //       gridArea={'header'}
-  //       panelSize={60}
-  //     >
-  //       Test teawteateateatateatea
-  //     </DragPanel>
-  //     <DragPanel direction={handleDirection.RIGHT} gridArea={'nav'} isInitOpen>
-  //       Test teawteateateatateatea
-  //     </DragPanel>
-  //     <DragPanel direction={handleDirection.LEFT} gridArea={'menu'}>
-  //       Test teawteateateatateatea
-  //     </DragPanel>
-  //     <DragPanel direction={handleDirection.UP} gridArea={'footer'}>
-  //       Test teawteateateatateatea
-  //     </DragPanel>
-  //     <div style={{ gridArea: 'extra', backgroundColor: 'red' }} />
-  //   </div>
-  // );
-};
-ReactDOM.render(<Test />, document.getElementById('root'));
+// const Test = () => {
+//   return (
+//     <div
+//       style={{
+//         display: 'grid',
+//         grid:
+//           '"nav header menu" auto "nav extra menu" 1fr "nav footer menu" auto / auto 1fr auto',
+//         height: '85vh',
+//         gap: '4px',
+//       }}
+//     >
+//       <DragPanel
+//         direction={handleDirection.DOWN}
+//         gridArea={'header'}
+//         panelSize={60}
+//       >
+//         Test teawteateateatateatea
+//       </DragPanel>
+//       <DragPanel direction={handleDirection.RIGHT} gridArea={'nav'} isInitOpen>
+//         Test teawteateateatateatea
+//       </DragPanel>
+//       <DragPanel direction={handleDirection.LEFT} gridArea={'menu'}>
+//         Test teawteateateatateatea
+//       </DragPanel>
+//       <DragPanel direction={handleDirection.UP} gridArea={'footer'}>
+//         Test teawteateateatateatea
+//       </DragPanel>
+//       <div style={{ gridArea: 'extra', backgroundColor: 'red' }} />
+//     </div>
+//   );
+// };
+// ReactDOM.render(<Test />, document.getElementById('root'));
 
 // function DynamicLoad(props) {
 
@@ -84,11 +84,33 @@ ReactDOM.render(<Test />, document.getElementById('root'));
   // <DynamicLoad />,
 
 
-
 ReactDOM.render(
   <p>temp</p>,
   document.getElementById('root'),
 );
+
+
+const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
+
+// const doenetMl = `
+//   <p> this is a test string 
+//     <div id="divtastic" parsed="true"> with a div <a href ="https://www.youtube.com/watch?v=dQw4w9WgXcQ"> cool link </a></div>
+//   </p>  
+//   <test passed="true" />`
+
+
+let t = parse(doenetMl);
+console.log(t);
+// console.log(t.node.getChildren());
+console.log(showCursor(t));
+
+let o = parseAndCompile(doenetMl);
+console.log(o)
+
+// while(t.next()){
+//   console.log(">>>node type",t.type)
+//   console.log(">>>node bounds", t.from,t.to)
+// }
 
 // Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
 // Learn more: https://www.snowpack.dev/concepts/hot-module-replacement

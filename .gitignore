@@ -26,7 +26,7 @@ yarn-error.log*
 package-lock.json
 
 .vscode
-src/defaultCode.doenet
+# src/Tools/test/testCode.doenet
 #ignore the distribution
 # dist/index.html
 # dist/main.js
@@ -45,7 +45,6 @@ docker\ alp/
 #Docker mysql db
 doenet_docker/volumes/db/*
 
-package-lock.json
 .eslintrc.js
 
 src/API/vendor

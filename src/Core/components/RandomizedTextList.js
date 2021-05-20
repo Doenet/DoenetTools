@@ -191,12 +191,12 @@ export default class TextList extends InlineComponent {
         // first shuffle the array
         // https://stackoverflow.com/a/12646864
         for (let i = childrenToRender.length - 1; i > 0; i--) {
-          const rand = dependencyValues.selectRng.random();
+          const rand = dependencyValues.selectRng();
           const j = Math.floor(rand * (i + 1));
           [childrenToRender[i], childrenToRender[j]] = [childrenToRender[j], childrenToRender[i]];
         }
 
-        let numChildren = Math.ceil(dependencyValues.selectRng.random() * childrenToRender.length);
+        let numChildren = Math.ceil(dependencyValues.selectRng() * childrenToRender.length);
         console.log(`numChildren: ${numChildren}`)
         childrenToRender = childrenToRender.slice(0, numChildren)
 

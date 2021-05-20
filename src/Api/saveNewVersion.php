@@ -19,7 +19,11 @@ $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 $isDraft = mysqli_real_escape_string($conn,$_POST["isDraft"]);
 $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
+$isReleased = mysqli_real_escape_string($conn,$_POST["isReleased"]);
 $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
+$isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
+$isNewToggleRelease = mysqli_real_escape_string($conn,$_POST["isNewToggleRelease"]);
+$previousBranchId = mysqli_real_escape_string($conn,$_POST["previousBranchId"]);
 
 
 $success = TRUE;
@@ -37,6 +41,9 @@ if ($title == ""){
   }elseif ($isDraft == ""){
     $success = FALSE;
     $message = 'Internal Error: missing isDraft';
+  }elseif ($isReleased == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing isReleased';
 }elseif ($isNamed == ""){
     $success = FALSE;
     $message = 'Internal Error: missing isNamed';
@@ -76,13 +83,13 @@ $contentId = hash('sha256', $dangerousDoenetML);
 
 if ($isDraft){
     $sql = "UPDATE content 
-    SET timestamp=NOW()
+    SET timestamp=NOW(), contentId='$contentId'
     WHERE isDraft='1'
     AND branchId='$branchId'
     ";
 
     $result = $conn->query($sql);
-    saveDoenetML($branchId,$dangerousDoenetML);
+    saveDoenetML($contentId,$dangerousDoenetML);
 
 }elseif($isNewTitle == '1'){
         $sql = "
@@ -92,6 +99,15 @@ if ($isDraft){
         AND versionId='$versionId'
         ";
         $result = $conn->query($sql);
+}elseif($isNewToggleRelease == '1'){
+  $sql = "
+  UPDATE content
+  SET isReleased='$isReleased'
+  WHERE branchId='$branchId'
+  AND versionId='$versionId'
+  ";
+  $result = $conn->query($sql);
+  //TODO: update drive_content isReleased if necessary
     
 }else{
 
@@ -107,10 +123,36 @@ if ($isDraft){
 
 
     if($versionId == $row['versionId']){
-        $response_arr = array(
-            "success"=> false,
-            "versionId"=> $versionId
-        );
+      $success = FALSE;
+      $message = "Internal Error: Duplicate VersionId $versionId";
+
+    }elseif($isNewCopy == '1'){
+      //New Copy!
+
+      //Find previous contentId of draft
+      $sql = "SELECT contentId
+        FROM content
+        WHERE branchId='$previousBranchId'
+        AND isDraft='1'
+      ";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $contentId = $row['contentId']; //Overwrite contentId with draft
+      
+      //Safe the draft for the new content
+      $sql = "INSERT INTO content 
+        SET branchId='$branchId',
+        contentId='$contentId', 
+        versionId='$versionId', 
+        title='Draft',
+        timestamp=NOW(),
+        isDraft='1',
+        isNamed='0'
+        ";
+    
+        $result = $conn->query($sql);
+     
+
     }else{
 
         saveDoenetML($contentId,$dangerousDoenetML);

@@ -234,7 +234,7 @@ class UserProfile extends Component {
               {
                 id: 'Account',
                 label: 'Account Settings',
-                link: '/accountsettings/',
+                link: '/accountSettings/',
               }
             )
           break;
