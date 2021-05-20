@@ -21,7 +21,7 @@ export default class BooleanOperatorOneInput extends BooleanComponent {
     // create new version of value that applies operator
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({
         value: {

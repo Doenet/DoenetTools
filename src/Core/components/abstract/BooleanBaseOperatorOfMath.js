@@ -32,7 +32,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({
         mathChildren: {

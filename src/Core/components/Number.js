@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { mathStateVariableFromNumberStateVariable, textToAst } from '../utils/math';
+import { mathStateVariableFromNumberStateVariable, roundForDisplay, textToAst } from '../utils/math';
 
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
@@ -23,6 +23,12 @@ export default class NumberComponent extends InlineComponent {
       defaultValue: false,
       public: true,
     }
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
     attributes.renderAsMath = {
       createComponentOfType: "boolean",
       createStateVariable: "renderAsMath",
@@ -199,16 +205,23 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
       }),
-      definition: function ({ dependencyValues }) {//value, displayDigits, displaySmallAsZero, simplify, expand }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits
-        let rounded = me.round_numbers_to_precision(dependencyValues.value, dependencyValues.displayDigits).tree;
-        if (dependencyValues.displaySmallAsZero) {
-          if (Math.abs(rounded) < 1E-14) {
-            rounded = 0;
-          }
+        let rounded = roundForDisplay({
+          value: dependencyValues.value,
+          dependencyValues, usedDefault
+        });
+
+        if (rounded instanceof me.class) {
+          rounded = rounded.tree;
         }
+
         return {
           newValues: {
             valueForDisplay: rounded

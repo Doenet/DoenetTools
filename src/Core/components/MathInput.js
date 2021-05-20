@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { getCustomFromText, getCustomFromLatex, } from '../utils/math';
+import { getCustomFromText, getCustomFromLatex, roundForDisplay, } from '../utils/math';
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -255,16 +255,11 @@ export default class MathInput extends Input {
       definition: function ({ dependencyValues, usedDefault }) {
         // round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
-        let rounded;
+        let rounded = roundForDisplay({
+          value: dependencyValues.value,
+          dependencyValues, usedDefault
+        });
 
-        if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-          rounded = dependencyValues.value.round_numbers_to_decimals(dependencyValues.displayDecimals);
-        } else {
-          rounded = dependencyValues.value.round_numbers_to_precision(dependencyValues.displayDigits);
-          if (dependencyValues.displaySmallAsZero) {
-            rounded = rounded.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
-          }
-        }
         return {
           newValues: { valueForDisplay: rounded }
         }

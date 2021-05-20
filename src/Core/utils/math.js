@@ -325,3 +325,28 @@ export function mathStateVariableFromNumberStateVariable({
   return mathDef;
 
 }
+
+export function roundForDisplay({ value, dependencyValues, usedDefault }) {
+  let rounded;
+
+  if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+    if (Number.isFinite(dependencyValues.displayDecimals)) {
+      rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
+    } else {
+      rounded = value;
+    }
+  } else {
+    if (dependencyValues.displayDigits >= 1) {
+      rounded = me.round_numbers_to_precision(value, dependencyValues.displayDigits);
+    } else {
+      rounded = value;
+    }
+    if (dependencyValues.displaySmallAsZero) {
+      rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: true });
+    }
+
+  }
+
+  return rounded;
+
+}
