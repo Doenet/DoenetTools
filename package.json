@@ -114,7 +114,7 @@
       {
         "files": [
           "./src/Core/**/*.js",
-          "./src/Viewer/DoenetViewer.jsx"
+          "./src/Viewer/**/*.jsx"
         ],
         "parser": "@babel/eslint-parser",
         "parserOptions": {
