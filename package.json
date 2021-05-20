@@ -19,28 +19,28 @@
     "build:ci": "snowpack build --out dist_local --no-watch"
   },
   "dependencies": {
-    "@blueprintjs/core": "^3.39.0",
-    "@blueprintjs/datetime": "^3.20.5",
+    "@blueprintjs/core": "^3.44.3",
+    "@blueprintjs/datetime": "^3.23.3",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@handsontable/react": "^5.0.0",
     "axios": "^0.21.1",
-    "codemirror": "^5.60.0",
-    "compromise": "^13.10.6",
+    "codemirror": "^5.61.1",
+    "compromise": "^13.11.2",
     "compromise-numbers": "^1.2.0",
     "crypto-js": "^4.0.0",
     "cssesc": "^3.0.0",
     "csv-parse": "^4.15.3",
-    "handsontable": "^8.3.2",
+    "handsontable": "^8.4.0",
     "js-cookie": "^2.2.1",
     "lezer": "^0.13.4",
     "lezer-generator": "^0.13.3",
     "lezer-xml": "^0.13.4",
     "lorem-ipsum": "^2.0.3",
     "math-expressions": "^2.0.0-alpha26",
-    "nanoid": "^3.1.22",
+    "nanoid": "^3.1.23",
     "react": "^16.14.0",
     "react-codemirror2": "^7.2.1",
     "react-copy-to-clipboard": "^5.0.3",
@@ -58,26 +58,28 @@
     "react-visibility-sensor": "^5.1.1",
     "recoil": "^0.2.0",
     "seedrandom": "^3.0.5",
-    "styled-components": "^5.2.3"
+    "styled-components": "^5.3.0"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.14.3",
+    "@babel/plugin-syntax-class-properties": "^7.12.13",
     "@snowpack/plugin-dotenv": "^2.1.0",
     "@snowpack/plugin-react-refresh": "^2.4.2",
     "@snowpack/web-test-runner-plugin": "^0.2.0",
-    "@testing-library/react": "^11.2.6",
+    "@testing-library/react": "^11.2.7",
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
-    "cypress": "^7.2.0",
+    "cypress": "^7.3.0",
     "esbuild": "^0.12.1",
-    "eslint": "^7.24.0",
+    "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.2.0",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.23.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy": "^1.18.1",
-    "prettier": "^2.0.5",
-    "snowpack": "^3.0.13",
+    "prettier": "^2.3.0",
+    "snowpack": "^3.4.0",
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {
@@ -108,6 +110,24 @@
       "import",
       "jsx-a11y",
       "react-hooks"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "./src/Core/**/*.js",
+          "./src/Viewer/**/*.jsx"
+        ],
+        "parser": "@babel/eslint-parser",
+        "parserOptions": {
+          "sourceType": "module",
+          "requireConfigFile": false,
+          "babelOptions": {
+            "plugins": [
+              "@babel/plugin-syntax-class-properties"
+            ]
+          }
+        }
+      }
     ],
     "parserOptions": {
       "ecmaVersion": 11,
