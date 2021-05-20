@@ -235,7 +235,7 @@ export default function DoenetProfile(props) {
                     onKeyDown = {e => {
                       if(e.key === 'Enter'){
                         let data = {...profile.contents}
-                        data.screenName = e.target.value
+                        data.firstName = e.target.value
                         setProfile(data)
                       }
                     }}
@@ -256,7 +256,7 @@ export default function DoenetProfile(props) {
                     onKeyDown = {e => {
                       if(e.key === 'Enter'){
                         let data = {...profile.contents}
-                        data.screenName = e.target.value
+                        data.lastName = e.target.value
                         setProfile(data)
                       }
                     }}
