@@ -46,36 +46,50 @@ import { useAssignmentCallbacks } from '../../_reactComponents/Drive/DriveAction
 import { selectedInformation } from '../library/Library';
 // import {assignmentDictionary} from "../_framework/Overlays/Content"
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection';
+import { 
+  itemHistoryAtom, 
+  fileByContentId 
+} from '../../_sharedRecoil/content';
 
+const versionHistoryReleasedSelectedAtom = atom({
+  key:"versionHistoryReleasedSelectedAtom",
+  default:""
+})
+const viewerDoenetMLAtom = atom({
+  key: "viewerDoenetMLAtom",
+  default: {updateNumber: 0, doenetML: ""}
+});
 export const roleAtom = atom({
   key: 'roleAtom',
   default: 'Instructor',
 });
 const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
-  get: (assignmentId) => async ({ get, set }) => {
+  get: (branchId) => async ({ get, set }) => {
     const { data } = await axios.get(
-      `/api/getAllAssignmentSettings.php?assignmentId=${assignmentId}`,
+      `/api/getAllAssignmentSettings.php?branchId=${branchId}`,
     );
     return data;
   },
+  
 });
-export const assignmentDictionary = atomFamily({
+export const assignmentDictionary = atomFamily({            //TODO
   key: 'assignmentDictionary',
   default: selectorFamily({
     key: 'assignmentDictionary/Default',
-    get: (driveIdcourseIditemIdparentFolderId) => async (
+    get: (driveIditemIdbranchIdparentFolderId) => async (
       { get },
       instructions,
     ) => {
       let folderInfoQueryKey = {
-        driveId: driveIdcourseIditemIdparentFolderId.driveId,
-        folderId: driveIdcourseIditemIdparentFolderId.folderId,
+        driveId: driveIditemIdbranchIdparentFolderId.driveId,
+        folderId: driveIditemIdbranchIdparentFolderId.folderId,
       };
       let folderInfo = get(folderDictionarySelector(folderInfoQueryKey));
+      console.log(">>>folderInfo",folderInfo);
       const itemObj =
         folderInfo?.contentsDictionary?.[
-          driveIdcourseIditemIdparentFolderId.itemId
+          driveIditemIdbranchIdparentFolderId.itemId
         ];
       let itemIdassignmentId = itemObj?.assignmentId
         ? itemObj.assignmentId
@@ -92,8 +106,8 @@ export const assignmentDictionary = atomFamily({
 let assignmentDictionarySelector = selectorFamily({
   //recoilvalue(assignmentDictionaryNewSelector(assignmentId))
   key: 'assignmentDictionaryNewSelector',
-  get: (driveIdcourseIditemIdparentFolderId) => ({ get }) => {
-    return get(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
+  get: (driveIditemIdbranchIdparentFolderId) => ({ get }) => {
+    return get(assignmentDictionary(driveIditemIdbranchIdparentFolderId));
   },
 });
 
@@ -112,10 +126,27 @@ function Container(props) {
   );
 }
 
+
+
 function AutoSelect(props) {
   const { activateMenuPanel } = useToolControlHelper();
 
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
+  
+  if(contentInfoLoad.state === "hasValue"){
+    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.branchId))
+
+    if (versionHistory.state === "loading"){ return null;}
+    if (versionHistory.state === "hasError"){ 
+      console.error(versionHistory.contents)
+      return null;}
+      if (versionHistory.state === "hasValue"){ 
+        const contentId = versionHistory.contents.named.contentId;
+  
+       }
+  }
+
+  
   if (contentInfoLoad?.contents?.number > 0) {
     activateMenuPanel(0);
   } else {
@@ -124,7 +155,10 @@ function AutoSelect(props) {
   return null;
 }
 
+
+
 export default function Course(props) {
+  console.log(">>props",props);
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
   const [toast, toastType] = useToast();
   let routePathDriveId = '';
@@ -151,10 +185,6 @@ export default function Course(props) {
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId] = urlParamsObj.path.split(':');
   }
-  let courseId = '';
-  if (urlParamsObj?.courseId !== undefined) {
-    courseId = urlParamsObj?.courseId;
-  }
 
   //Select +Add menuPanel if no course selected on startup
   useEffect(() => {
@@ -165,17 +195,16 @@ export default function Course(props) {
   const history = useHistory();
 
   const DriveCardCallBack = ({ item }) => {
-    // setDrivePath({
-    //   driveId:item.driveId,
-    //   parentFolderId:item.driveId,
-    //   itemId:item.driveId,
-    //   courseId:courseId,
-    //   type:"Drive"
-    // })
-    let newParams = {};
-    newParams['path'] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
-    newParams['courseId'] = `${item.courseId}`;
-    history.push('?' + encodeParams(newParams));
+    setDrivePath({
+      driveId:item.driveId,
+      parentFolderId:item.driveId,
+      itemId:item.driveId,
+      type:"Drive"
+    })
+    // let newParams = {};
+    // newParams['path'] = `${item.driveId}:${item.driveId}:${item.driveId}:Drive`;
+    // // newParams['courseId'] = `${item.courseId}`;
+    // history.push('?' + encodeParams(newParams));
   };
 
 
@@ -189,12 +218,12 @@ export default function Course(props) {
     setDrivecardSelection([]);
   }
   function useOutsideDriveSelector() {
-    // setDrivePath({
-    //   driveId:":",
-    //   parentFolderId:":",
-    //   itemId:":",
-    //   type:""
-    // })
+    setDrivePath({
+      driveId:":",
+      parentFolderId:":",
+      itemId:":",
+      type:""
+    })
     let newParams = {};
     newParams['path'] = `:::`;
     history.push('?' + encodeParams(newParams));
@@ -206,7 +235,7 @@ export default function Course(props) {
     setEnrollmentView(!openEnrollment);
   };
 
-  const enrollCourseId = { courseId: courseId };
+  const enrollDriveId = { driveId: routePathDriveId };
   let hideUnpublished = true;
   if (role === 'Instructor') {
     hideUnpublished = false;
@@ -216,7 +245,7 @@ export default function Course(props) {
     urlClickBehavior = 'select';
   }
   let responsiveControls = '';
-  if (role === 'Instructor' && routePathDriveId) {
+  if (routePathDriveId) {
     responsiveControls = (
       <Button
         value={openEnrollment ? 'Close Enrollment' : 'Open Enrollment'}
@@ -224,6 +253,13 @@ export default function Course(props) {
       ></Button>
     );
   }
+  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
+
+  if (versionHistory.state === "loading"){ return null;}
+  if (versionHistory.state === "hasError"){ 
+    console.error(versionHistory.contents)
+    return null;}
+  const contentId = versionHistory.contents.named.contentId;
 
   const profile = useContext(ProfileContext);
   if (profile.signedIn === '0') {
@@ -270,11 +306,12 @@ export default function Course(props) {
   }
 
   return (
+    <>
+   <URLPathSync route={props.route}/> 
+   <GlobalFont />
     <Tool>
-       <URLPathSync route={props.route}/>
       <headerPanel title="Course" />
       <navPanel isInitOpen>
-        <GlobalFont />
         <div
           style={{ marginBottom: '40px', height: '100vh' }}
           onClick={useOutsideDriveSelector}
@@ -286,7 +323,7 @@ export default function Course(props) {
       <mainPanel responsiveControls={responsiveControls}>
         <AutoSelect />
         {openEnrollment ? (
-          <Enrollment selectedCourse={enrollCourseId} />
+          <Enrollment selectedCourse={enrollDriveId} />
         ) : (
           <>
             {breadcrumbContainer}
@@ -298,21 +335,16 @@ export default function Course(props) {
             >
               <Container>
                 <Drive
+                 viewAccess="released"
+                //  viewAccess="assigned"
                   driveId={routePathDriveId}
                   hideUnpublished={hideUnpublished}
                   subTypes={['Administrator']}
                   // types={['content','course']}
                   urlClickBehavior="select"
                   drivePathSyncKey="main"
-                  doenetMLDoubleClickCallback={(info) => {
-                    let isAssignment =
-                      info.item.isAssignment === '0' ? 'content' : 'assignment';
-                    openOverlay({
-                      type: isAssignment,
-                      branchId: info.item.branchId,
-                      contentId: info.item.contentId,
-                      assignmentId: info.item.assignmentId,
-                    });
+                  doenetMLDoubleClickCallback={(info)=>{
+                    openOverlay({type:"content",branchId: info.item.branchId,contentId: contentId,title: info.item.label});
                   }}
                 />
               </Container>
@@ -330,47 +362,44 @@ export default function Course(props) {
                 types={['course']}
                 drivePathSyncKey="main"
                 subTypes={['Administrator']}
-                driveDoubleClickCallback={({ item }) => {
-                  DriveCardCallBack({ item });
-                }}
               />
+             
               {!routePathDriveId && <h2>Student</h2>}
               <DriveCards
+              isOneDriveSelect={true}
                 routePathDriveId={routePathDriveId}
                 isOneDriveSelect={true}
                 types={['course']}
                 drivePathSyncKey="main"
                 subTypes={['Student']}
-                driveDoubleClickCallback={({ item }) => {
-                  DriveCardCallBack({ item });
-                }}
               />
             </div>
           </>
         )}
       </mainPanel>
       {routePathDriveId && (
-        <menuPanel isInitOpen title="Selected">
-          <ItemInfo route={props.route} />
+        <menuPanel isInitOpen title="Assigned">
+                  <VersionInfo route={props.route}/>
+
+          {/* <ItemInfoPanel route={props.route} /> */}
           <br />
           {/* <MaterialsInfo
-           itemType={itemType} courseId={courseId} pathItemId={pathItemId} routePathDriveId={routePathDriveId} routePathFolderId={routePathFolderId} /> */}
+           itemType={itemType} pathItemId={pathItemId} routePathDriveId={routePathDriveId} routePathFolderId={routePathFolderId} /> */}
         </menuPanel>
       )}
-      <menuPanel title="+add"></menuPanel>
+      <menuPanel title="Info">
+          <ItemInfoPanel route={props.route} />
+          </menuPanel>
     </Tool>
+    </>
   );
 }
 
 const DoenetMLInfoPanel = (props) => {
+  console.log(">>> DoenetMLInfoPanel",props);
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.props.route.location.search),
   );
-
-  let courseId = '';
-  if (urlParamsObj?.courseId !== undefined) {
-    courseId = urlParamsObj?.courseId;
-  }
 
   const {
     addContentAssignment,
@@ -394,13 +423,14 @@ const DoenetMLInfoPanel = (props) => {
     onConvertAssignmentToContentError,
   } = useAssignmentCallbacks();
 
+  
   const itemInfo = props.contentInfo;
+  console.log(">>> itemInfo",itemInfo);
   const assignmentInfoSettings = useRecoilValueLoadable(
     assignmentDictionarySelector({
       driveId: itemInfo.driveId,
       folderId: itemInfo.parentFolderId,
       itemId: itemInfo.itemId,
-      courseId: courseId,
     }),
   );
 
@@ -432,9 +462,9 @@ const DoenetMLInfoPanel = (props) => {
       }}
     />
   );
+
   const { openOverlay } = useToolControlHelper();
   const [addToast, ToastType] = useToast();
-
   const handleChange = (event) => {
     event.preventDefault();
     let name = event.target.name;
@@ -445,11 +475,10 @@ const DoenetMLInfoPanel = (props) => {
 
     const result = changeSettings({
       [name]: value,
-      driveIdcourseIditemIdparentFolderId: {
+      driveIditemIdbranchIdparentFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
-        courseId: courseId,
       },
     });
     result
@@ -469,11 +498,10 @@ const DoenetMLInfoPanel = (props) => {
     let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     const result = saveSettings({
       [name]: value,
-      driveIdcourseIditemIdparentFolderId: {
+      driveIditemIdbranchIdparentFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
-        courseId: courseId,
       },
     });
     let payload = {
@@ -482,6 +510,8 @@ const DoenetMLInfoPanel = (props) => {
       isAssignment: '1',
       assignmentId: aInfo?.assignmentId,
       [name]: value,
+      branchId:itemInfo.branchId,
+      contentId:itemInfo.contentId
     };
     // if (name === 'assignment_title') {
       updateAssignmentTitle({
@@ -491,6 +521,9 @@ const DoenetMLInfoPanel = (props) => {
         },
         itemId: itemInfo.itemId,
         payloadAssignment: payload,
+        branchId:itemInfo.branchId,
+        contentId:itemInfo.contentId
+
       });
 
     // }
@@ -538,11 +571,10 @@ const DoenetMLInfoPanel = (props) => {
     };
     
     assignmentToContent({
-      driveIdcourseIditemIdparentFolderId: {
+      driveIditemIdbranchIdparentFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
-        courseId: courseId,
       },
     });
    
@@ -571,17 +603,17 @@ const DoenetMLInfoPanel = (props) => {
   const loadBackAssignment = () => {
     let payload = {
       itemId: itemInfo.itemId,
+      branchId:itemInfo.branchId,
       isAssignment: '1',
       assignmentId: aInfo?.assignmentId,
       assignment_title: aInfo?.assignment_title,
     };
     loadAvailableAssignment({
       ...aInfo,
-      driveIdcourseIditemIdparentFolderId: {
+      driveIditemIdbranchIdparentFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
-        courseId: courseId,
       },
     });
 
@@ -623,35 +655,32 @@ const DoenetMLInfoPanel = (props) => {
     );
   }
 
-  if (itemInfo?.isAssignment === '0' && itemInfo.assignmentId === null) {
+  if (itemInfo?.isAssignment === '0') {
     // // Make assignment
     makeAssignmentButton = (
       <>
         <Button
           value="Make Assignment"
           callback={async () => {
-            let assignmentId = nanoid();
             setShowAForm(true);
             const result = await addContentAssignment({
-              driveIdcourseIditemIdparentFolderId: {
+              driveIditemIdbranchIdparentFolderId: {
                 driveId: itemInfo.driveId,
                 folderId: itemInfo.parentFolderId,
                 itemId: itemInfo.itemId,
-                courseId: courseId,
               },
               branchId: itemInfo.branchId,
               contentId: itemInfo.contentId
                 ? itemInfo.contentId
                 : itemInfo.branchId,
-              assignmentId: assignmentId,
             });
             let payload = {
               ...aInfo,
               itemId: itemInfo.itemId,
               assignment_title: 'Untitled Assignment',
-              assignmentId: assignmentId,
               isAssignment: '1',
               branchId: itemInfo.branchId,
+              contentId: itemInfo.contentId,
             };
 
             makeAssignment({
@@ -681,9 +710,7 @@ const DoenetMLInfoPanel = (props) => {
   }
   // // View Assignment Form
   if (
-    itemInfo.isAssignment === '1' &&
-    (itemInfo.assignmentId || aInfo?.assignmentId)
-  ) {
+    itemInfo.isAssigned === '1') {
     assignmentForm = (
       <>
         {
@@ -857,23 +884,19 @@ const DoenetMLInfoPanel = (props) => {
                 switch_value="publish changes"
                 callback={() => {
                   const result = publishContentAssignment({
-                    driveIdcourseIditemIdparentFolderId: {
+                    driveIditemIdbranchIdparentFolderId: {
                       driveId: itemInfo.driveId,
                       folderId: itemInfo.parentFolderId,
                       itemId: itemInfo.itemId,
-                      courseId: courseId,
                     },
                     branchId: itemInfo.branchId,
                     contentId: itemInfo.contentId
                       ? itemInfo.contentId
                       : itemInfo.branchId,
-                    assignmentId: assignmentId,
                   });
                   const payload = {
                     ...aInfo,
-                    assignmentId: assignmentId,
                     assignment_isPublished: '1',
-                    courseId: courseId,
                     branchId: itemInfo.branchId,
                   };
                   publishAssignment({
@@ -905,8 +928,8 @@ const DoenetMLInfoPanel = (props) => {
       </>
     );
   }
-  // // Make Assignment Title update(Load back available assignment) //TODO add assignmentId from ainfo
-  if (itemInfo.isAssignment === '0' && aInfo?.assignmentId) {
+  // // Make Assignment Title update(Load back available assignment) 
+  if (itemInfo.isAssignment === '0') {
     loadAssignmentButton = (
       <>
         <Button value="load Assignment" callback={loadBackAssignment} />
@@ -926,7 +949,6 @@ const DoenetMLInfoPanel = (props) => {
               type: 'assignment',
               branchId: itemInfo?.branchId,
               contentId: itemInfo?.contentId,
-              assignmentId: itemInfo?.assignmentId,
             });
           }}
         />
@@ -936,6 +958,7 @@ const DoenetMLInfoPanel = (props) => {
 
   return (
     <>
+    <p>test</p>
       {makeAssignmentButton}
       <br />
       {publishContentButton}
@@ -948,15 +971,167 @@ const DoenetMLInfoPanel = (props) => {
       <br />
       {assignmentForm}
       <br />
-      {/* {unPublishContentButton} */}
     </>
   );
 };
 const FolderInfoPanel = () => {
   return <h1>Folder Info</h1>;
 };
+const VersionHistoryInfoPanel = (props) => {
+  console.log(">>>VersionHistoryInfoPanel" ,props );
+  const itemInfo = props.contentInfo;
+  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(itemInfo.branchId))
+  const selectedVersionId  = useRecoilValue(versionHistoryReleasedSelectedAtom); 
+  const {
+    addContentAssignment,
+    changeSettings,
+    saveSettings,
+    assignmentToContent,
+    loadAvailableAssignment,
+    publishContentAssignment,
+    onAssignmentError,
+  } = useAssignment();
+  const {
+    makeAssignment,
+    onmakeAssignmentError,
+    publishAssignment,
+    onPublishAssignmentError,
+    publishContent,
+    onPublishContentError,
+    updateAssignmentTitle,
+    onUpdateAssignmentTitleError,
+    convertAssignmentToContent,
+    onConvertAssignmentToContentError,
+  } = useAssignmentCallbacks();
+  const [addToast, ToastType] = useToast();
+ const [checkIsAssigned,setIsAssigned] = useState(false);
+  const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
+    set(versionHistoryReleasedSelectedAtom,version.versionId) 
+    let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
+    const doenetML = loadableDoenetML.data;
+    set(viewerDoenetMLAtom,(was)=>{
+      let newObj = {...was}
+      newObj.doenetML = doenetML;
+      newObj.updateNumber = was.updateNumber+1;
+      return newObj});
+  })
+  
+let aInfo = '';
+  const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(itemInfo.branchId));
+  if (assignmentInfoSettings?.state === 'hasValue') {
+    console.log(">>>assignmentInfoSettings",assignmentInfoSettings);
+  aInfo = assignmentInfoSettings?.contents
+  }
+  const showMakeAssignmentButton = (contentId) =>{
+    console.log(">>>contentID", contentId);
+    let test = aInfo.assignments.filter((item)=> item.contentId === contentId)
+    console.log(">>> showMakeAssignmentButton",test);
+    return test;
+  }
 
-const ItemInfo = (props) => {
+  if (versionHistory.state === "loading"){ return null;}
+  if (versionHistory.state === "hasError"){ 
+    console.error(versionHistory.contents.named)
+    return null;}
+
+    let versions = [];
+    if(versionHistory.state === "hasValue"){
+      for (let version of versionHistory.contents.named){
+        let titleText = version.title;
+        let versionStyle = {};
+        let makeAssignmentforReleasedButton = null;
+
+        if (selectedVersionId === version.versionId && showMakeAssignmentButton(version.contentId) ){
+          versionStyle = {backgroundColor:"#b8d2ea"}
+         
+         makeAssignmentforReleasedButton = <>
+         <Button
+          value="Make Assignment"
+          callback={async () => {
+            // setShowAForm(true);
+            setIsAssigned(true);
+            const result = await addContentAssignment({
+              driveIditemIdbranchIdparentFolderId: {
+                driveId: itemInfo.driveId,
+                folderId: itemInfo.parentFolderId,
+                itemId: itemInfo.itemId,
+              },
+              branchId: itemInfo.branchId,
+              contentId: version?.contentId,
+            });
+            let payload = {
+              // ...aInfo,
+              itemId: itemInfo.itemId,
+              assignment_title: 'Untitled Assignment',
+              isAssignment: '1',
+              branchId: itemInfo.branchId,
+              contentId: versionHistory?.contents?.named?.contentId,
+              driveId:itemInfo.driveId
+            };
+
+            makeAssignment({
+              driveIdFolderId: {
+                driveId: itemInfo.driveId,
+                folderId: itemInfo.parentFolderId,
+              },
+              itemId: itemInfo.itemId,
+              payload: payload,
+            });
+            try {
+              if(result.success){
+                addToast(`Add new assignment 'Untitled assignment'`, ToastType.SUCCESS,);
+              }
+              else{
+                onAssignmentError({ errorMessage: result.message });
+              }
+              
+            } catch (e) {
+              onAssignmentError({ errorMessage: e});
+
+            }
+          }}
+        />
+          </>
+        }
+  
+        let title = <div><b>{titleText}</b></div>
+        let jsx = (<React.Fragment key={`history${version.versionId}`}>
+        <div 
+        onClick={()=>{
+          if (version.versionId !== selectedVersionId){
+            versionHistorySelected(version);
+          }
+        }}
+      style={versionStyle}
+      >
+        {title}
+        <div>{version.timestamp}</div>
+           </div>
+           {makeAssignmentforReleasedButton}
+        </React.Fragment>)
+        console.log(">>>version",version);
+      //TODO do we need draft or only released or latest released
+          if (version.isReleased === "1" ){ 
+            versions.push(jsx)
+          }
+          // if(version.named.isReleased === '1'){
+          //   versions.push(jsx)
+          // }
+  
+    }
+    }
+ 
+
+  
+  return <>
+  <CollapseSection title="released versions">
+  {versions}
+  </CollapseSection>
+ 
+  </>
+  };
+
+const ItemInfoPanel = (props) => {
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   if (contentInfoLoad.state === 'loading') {
     return null;
@@ -987,6 +1162,36 @@ const ItemInfo = (props) => {
         <FolderInfoPanel
           key={`FolderInfoPanel${contentInfo.itemId}`}
           contentInfo={contentInfo}
+        />
+      );
+    }
+  }
+  return null;
+};
+const VersionInfo = (props) => {
+  const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
+  if (contentInfoLoad.state === 'loading') {
+    return null;
+  }
+  if (contentInfoLoad.state === 'hasError') {
+    console.error(contentInfoLoad.contents);
+    return null;
+  }
+  let contentInfo = contentInfoLoad?.contents?.itemInfo;
+
+  if (contentInfoLoad.contents?.number > 1) {
+    return (
+      <>
+        <h1>{contentInfoLoad.contents.number} Content Selected</h1>
+      </>
+    );
+  } else if (contentInfoLoad.contents?.number === 1) {
+    if (contentInfo?.itemType === 'DoenetML') {
+      return (
+        <VersionHistoryInfoPanel
+          key={`VersionHistoryInfoPanel${contentInfo.itemId}`}
+          contentInfo={contentInfo}
+          props={props}
         />
       );
     }

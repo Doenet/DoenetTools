@@ -344,6 +344,7 @@ function TextEditor(props){
   const [selectedVersionId,setSelectedVersionId]  = useRecoilState(versionHistorySelectedAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+    console.log(">>>saveDraft!!!")
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
 
@@ -367,7 +368,7 @@ function TextEditor(props){
       branchId:props.branchId
     }
        axios.post("/api/saveNewVersion.php",newDBVersion)
-        // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
+        .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
   });
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
