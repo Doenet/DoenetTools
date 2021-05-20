@@ -15,7 +15,8 @@
     "reset_db": "docker exec -i doenet_docker_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "lint": "prettier --check \"src/**/*.{js,jsx}\"",
-    "start:ci": "docker-compose -f doenet_docker/docker-compose.yml up -d"
+    "start:ci": "docker-compose -f doenet_docker/docker-compose.yml up -d",
+    "build:ci": "snowpack build --out dist_local --no-watch"
   },
   "dependencies": {
     "@blueprintjs/core": "^3.39.0",
