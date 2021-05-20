@@ -1,5 +1,6 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
+import { sizeToCSS } from './utils/css';
 
 export default class Graph extends DoenetRenderer {
 
@@ -106,9 +107,28 @@ export default class Graph extends DoenetRenderer {
     this.initializeChildren();
 
     this.previousBoundingbox = boundingbox;
+
+    this.previousDimensions = {
+      width: parseFloat(sizeToCSS(this.doenetSvData.width)),
+      height: parseFloat(sizeToCSS(this.doenetSvData.height)),
+    }
+
   }
 
   update() {
+
+    let currentDimensions = {
+      width: parseFloat(sizeToCSS(this.doenetSvData.width)),
+      height: parseFloat(sizeToCSS(this.doenetSvData.height)),
+    }
+
+    if ((currentDimensions.width !== this.previousDimensions.width ||
+      currentDimensions.height !== this.previousDimensions.height)
+      && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)
+    ) {
+      this.board.resizeContainer(currentDimensions.width, currentDimensions.height);
+      this.previousDimensions = currentDimensions;
+    }
 
     let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
 
@@ -195,8 +215,8 @@ export default class Graph extends DoenetRenderer {
   render() {
 
     const divStyle = {
-      width: this.doenetSvData.numericalWidth,
-      height: this.doenetSvData.numericalHeight,
+      width: sizeToCSS(this.doenetSvData.width),
+      height: sizeToCSS(this.doenetSvData.height),
     }
 
     if (this.doenetSvData.hidden) {

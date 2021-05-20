@@ -5,6 +5,7 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 import cssesc from 'cssesc';
+import { sizeToCSS } from './utils/css';
 
 export default class Video extends DoenetRenderer {
 
@@ -25,8 +26,8 @@ export default class Video extends DoenetRenderer {
 
       this.player = new window.YT.Player(cName, {
         videoId: this.doenetSvData.youtube,
-        width: this.doenetSvData.width,
-        height: this.doenetSvData.height,
+        width: sizeToCSS(this.doenetSvData.width),
+        height: sizeToCSS(this.doenetSvData.height),
         playerVars: {
           autoplay: 0,
           controls: 1,
@@ -69,9 +70,10 @@ export default class Video extends DoenetRenderer {
         console.warn("Haven't implemented video for any extension other than .ogg, .webm, .mp4");
       }
       if (type) {
+
         return <React.Fragment>
           <a name={this.componentName} />
-          <video className="video" id={this.componentName} style={{ objectFit: "fill" }} controls={true} width={this.doenetSvData.width} height={this.doenetSvData.height}>
+          <video className="video" id={this.componentName} style={{ objectFit: "fill" }} controls={true} width={sizeToCSS(this.doenetSvData.width)} height={sizeToCSS(this.doenetSvData.height)}>
             <source src={this.doenetSvData.source} type={type} />
           Your browser does not support the &lt;video&gt; tag.
         </video>

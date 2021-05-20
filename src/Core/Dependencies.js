@@ -1,6 +1,7 @@
 import readOnlyProxyHandler from "./ReadOnlyProxyHandler";
 import { deepClone, deepCompare } from "./utils/deepFunctions";
 import { ancestorsIncludingComposites, gatherDescendants } from "./utils/descendants";
+import { convertComponentTarget } from "./utils/serializedStateProcessing";
 
 const dependencyTypeArray = [];
 
@@ -4456,6 +4457,10 @@ class ParentDependency extends Dependency {
       this.originalDownstreamVariableNames = [this.definition.variableName];
     }
 
+    if (this.definition.parentComponentType) {
+      this.parentComponentType = this.definition.parentComponentType;
+    }
+
     this.returnSingleVariableValue = true;
 
     // for parent state variable
@@ -4559,6 +4564,23 @@ class ParentDependency extends Dependency {
         downstreamComponentTypes: []
       }
     }
+
+
+    if (this.parentComponentType &&
+      !this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: parent.componentType,
+        baseComponentType: this.parentComponentType
+      })
+    ) {
+      // parent didn't match specified componentType
+      // so don't include parent
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
 
     let parentDependencies = this.dependencyHandler.updateTriggers.parentDependenciesByParent[this.parentName];
     if (!parentDependencies) {
@@ -5694,6 +5716,52 @@ class TargetComponentDependency extends Dependency {
 }
 
 dependencyTypeArray.push(TargetComponentDependency);
+
+
+
+class ExpandTargetNameDependency extends Dependency {
+  static dependencyType = "expandTargetName";
+
+  setUpParameters() {
+
+    this.parentName = this.upstreamComponentName;
+
+    this.tName = this.definition.tName;
+
+  }
+
+  getValue() {
+
+    let parent = this.dependencyHandler._components[this.parentName];
+    let parentCreatesNewNamespace = parent.attributes.newNamespace;
+
+    let namespaceStack = this.parentName.split('/').map(x => ({ namespace: x }))
+
+    if (!parentCreatesNewNamespace) {
+      namespaceStack = namespaceStack.slice(0, namespaceStack.length - 1)
+    }
+
+    let fullTname;
+
+    try {
+      fullTname = convertComponentTarget({
+        tName: this.tName,
+        namespaceStack,
+      })
+    } catch (e) {
+      fullTname = null;
+    }
+
+    return {
+      value: fullTname,
+      changes: {}
+    }
+  }
+
+
+}
+
+dependencyTypeArray.push(ExpandTargetNameDependency);
 
 
 class ValueDependency extends Dependency {

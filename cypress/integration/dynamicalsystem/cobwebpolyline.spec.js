@@ -28,8 +28,8 @@ describe('CobwebPolyline Tag Tests', function () {
   </answer>
   </p>
 
-  <updateValue label="Add line" name="addline" mathTarget="$nPoints" newMathValue="$nPoints+1" />
-  <updateValue label="Delete line" name="deleteline" hide="$nPoints=1" mathTarget='$nPoints' newMathValue="$nPoints-1" />
+  <updateValue label="Add line" name="addline" tName="nPoints" newValue="$nPoints+1" />
+  <updateValue label="Delete line" name="deleteline" hide="$nPoints=1" tName='nPoints' newValue="$nPoints-1" />
   
   <graph xmin="-2" xmax="5" ymin="-2.2" ymax="4.5" width="500px" height="300px" name="graph1" xlabel="x_n" ylabel="x_{n+1}" newnamespace="true">
     <cobwebpolyline name="cobweb" stylenumber="4" attractThreshold="0.2" nPoints="$(../nPoints)" function="$(../f)" initialPoint="$(../P1)" nIterationsRequired='3' />

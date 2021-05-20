@@ -12,52 +12,106 @@ import { useRecoilCallback } from 'recoil';
 
 import { assignmentDictionary } from '../course/Course';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
-
+const formatDate = (dt) => {
+  const formattedDate = `${
+    dt.getFullYear().toString().padStart(2, '0')}-${
+    (dt.getMonth()+1).toString().padStart(2, '0')}-${
+    dt.getDate().toString().padStart(2, '0')} ${
+    dt.getHours().toString().padStart(2, '0')}:${
+    dt.getMinutes().toString().padStart(2, '0')}:${
+    dt.getSeconds().toString().padStart(2, '0')}`;
+    
+  return formattedDate;
+}
+const formatFutureDate = (dt) => {
+  const formattedFutureDate = `${
+    dt.getFullYear().toString().padStart(2, '0')}-${
+    (dt.getMonth()+1).toString().padStart(2, '0')}-${
+    (dt.getDate()+7).toString().padStart(2, '0')} ${
+    dt.getHours().toString().padStart(2, '0')}:${
+    dt.getMinutes().toString().padStart(2, '0')}:${
+    dt.getSeconds().toString().padStart(2, '0')}`;
+    
+  return formattedFutureDate;
+}
 export const useAssignment = () => {
   const [addToast, ToastType] = useToast();
 
   const addContentAssignment = useRecoilCallback(
     ({ snapshot, set }) => async (props) => {
       let { driveIdcourseIditemIdparentFolderId, assignmentId ,contentId,branchId} = props;
-
+      const dt = new Date();
+      const creationDate = formatDate(dt);
+      const futureDueDate = formatFutureDate(dt);
       // assignment creation
       let newAssignmentObj = {
         assignmentId: assignmentId,
         assignment_title: 'Untitled Assignment',
-        assignedDate: '',
-        attemptAggregation: '',
-        dueDate: '',
-        gradeCategory: '',
+        assignedDate: creationDate,
+        attemptAggregation: 'e',
+        dueDate: futureDueDate,
+        gradeCategory: 'l',
         individualize: '0',
         isAssignment: '1',
         isPublished: '0',
         itemId: driveIdcourseIditemIdparentFolderId.itemId,
-        multipleAttempts: '',
-        numberOfAttemptsAllowed: '',
+        multipleAttempts: '0',
+        numberOfAttemptsAllowed: '2',
         proctorMakesAvailable: '0',
         showCorrectness: '1',
         showFeedback: '1',
         showHints: '1',
         showSolution: '1',
-        timeLimit: '',
-        totalPointsOrPercent: '',
+        timeLimit: '10:10',
+        totalPointsOrPercent: '00.00',
+        assignment_isPublished: '0',
+        subType: 'Administrator',
+      };
+      let newchangedAssignmentObj = {
+        assignmentId: assignmentId,
+        assignment_title: 'Untitled Assignment',
+        assignedDate: creationDate,
+        attemptAggregation: 'e',
+        dueDate: futureDueDate,
+        gradeCategory: 'l',
+        individualize: false,
+        isAssignment: '1',
+        isPublished: '0',
+        itemId: driveIdcourseIditemIdparentFolderId.itemId,
+        multipleAttempts: false,
+        numberOfAttemptsAllowed: '2',
+        proctorMakesAvailable: false,
+        showCorrectness: true,
+        showFeedback: true,
+        showHints: true,
+        showSolution: true,
+        timeLimit: '10:10',
+        totalPointsOrPercent: '00.00',
         assignment_isPublished: '0',
         subType: 'Administrator',
       };
 
       let payload = {
+        ...newAssignmentObj,
         assignmentId: assignmentId,
         itemId: driveIdcourseIditemIdparentFolderId.itemId,
         courseId: driveIdcourseIditemIdparentFolderId.courseId,
         branchId: branchId,
         contentId: contentId,
       };
-      set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), newAssignmentObj);
+      set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), newchangedAssignmentObj);
 
-      axios.post(`/api/makeNewAssignment.php`, payload).then((response) => {
-        console.log(response.data);
-      });
-      return newAssignmentObj;
+      let result = await axios.post(`/api/makeNewAssignment.php`, payload).catch((e) =>{return {data:{message:e, success:false}}})
+     try {
+        if(result.data.success){
+          return result.data;
+        }     
+      else{
+        return  {message:result.data.message, success:false};
+      }
+     } catch (e) {
+      return {message:e, success:false};
+     }
     },
   );
 
@@ -75,20 +129,25 @@ export const useAssignment = () => {
       let { driveIdcourseIditemIdparentFolderId, ...value } = props;
 
       const saveInfo = await snapshot.getPromise(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
+
       set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), (old) => {
         return { ...old, ...value };
       });
       let saveAssignmentNew = { ...saveInfo, ...value };
-      set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), saveAssignmentNew);
+      // set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), saveAssignmentNew);
       const payload = {
-        ...saveInfo,
+        ...saveAssignmentNew,
         assignmentId: saveAssignmentNew.assignmentId,
         assignment_isPublished: '0',
       };
 
-      axios.post('/api/saveAssignmentToDraft.php', payload).then((resp) => {
-        console.log(resp.data);
+      const result = axios.post('/api/saveAssignmentToDraft.php', payload)
+      result.then(resp => {
+        if (resp.data.success){
+          return resp.data;
+        }
       });
+     return result;
     },
   );
 
@@ -104,11 +163,16 @@ export const useAssignment = () => {
         assignmentId: props.assignmentId,
         assignment_isPublished: '1',
         branchId: props.branchId,
-        courseId: props.courseId,
+        courseId: driveIdcourseIditemIdparentFolderId.courseId,
+        contentId:props.contentId
       };
-      axios.post('/api/publishAssignment.php', payloadPublish).then((resp) => {
-        console.log(resp.data);
+      const result = axios.post('/api/publishAssignment.php', payloadPublish)
+      result.then(resp => {
+        if (resp.data.success){
+          return resp.data;
+        }
       });
+     return result;
     },
   );
 

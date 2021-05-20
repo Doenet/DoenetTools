@@ -44,7 +44,6 @@ export default class Pluralize extends Text {
     stateVariableDefinitions.value = {
       public: true,
       componentType: "text",
-      forRenderer: true,
       returnDependencies: () => ({
         valuePrePluralize: {
           dependencyType: "stateVariable",
@@ -181,6 +180,20 @@ export default class Pluralize extends Text {
 
     }
 
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { text: dependencyValues.value }
+      })
+    }
 
     return stateVariableDefinitions;
   }

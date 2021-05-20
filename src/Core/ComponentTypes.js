@@ -15,6 +15,8 @@ import * as DynamicalSystems from './components/dynamicalSystems';
 import * as FeedbackDefinitions from './components/FeedbackDefinitions';
 import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
+import * as SideBySide from './components/SideBySide';
+import * as UpdateValue from './components/UpdateValue';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -78,7 +80,6 @@ import AttractTo from './components/AttractTo';
 import ConstraintUnion from './components/ConstraintUnion';
 import TransformConstraintIntoAttractor from './components/TransformConstraintIntoAttractor';
 import Intersection from './components/Intersection';
-import UpdateValue from './components/UpdateValue';
 import Panel from './components/Panel';
 import ConstrainToAngles from './components/ConstrainToAngles';
 import AttractToAngles from './components/AttractToAngles';
@@ -114,14 +115,15 @@ import Feedback from './components/Feedback';
 import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
-import Div from './components/Div';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
 import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
 import SelectByCondition from './components/SelectByCondition';
+import Lorem from './components/Lorem';
 
 
 //Extended
+import * as ComponentSize from './components/abstract/ComponentSize';
 import BaseComponent from './components/abstract/BaseComponent';
 import InlineComponent from './components/abstract/InlineComponent';
 import BlockComponent from './components/abstract/BlockComponent';
@@ -134,10 +136,8 @@ import BooleanBaseOperatorOfMath from './components/abstract/BooleanBaseOperator
 import MathBaseOperator from './components/abstract/MathBaseOperator';
 import MathBaseOperatorOneInput from './components/abstract/MathBaseOperatorOneInput';
 import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
-import ComponentSize from './components/abstract/ComponentSize';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import TextFromSingleStringChild from './components/abstract/TextFromSingleStringChild';
-import MathWithVariable from './components/abstract/MathWithVariable';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
 
@@ -159,6 +159,9 @@ const componentTypeArray = [
   ...Object.values(DynamicalSystems),
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
+  ...Object.values(UpdateValue),
+  ...Object.values(SideBySide),
+  ...Object.values(ComponentWithSelectableType),
   Document,
   StringComponent,
   Text, TextList,
@@ -210,7 +213,6 @@ const componentTypeArray = [
   ConstraintUnion,
   TransformConstraintIntoAttractor,
   Intersection,
-  UpdateValue,
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
@@ -234,12 +236,11 @@ const componentTypeArray = [
   Container,
   CollaborateGroups,
   CollaborateGroupSetup,
-  Div,
   ConsiderAsResponses,
   SelectByIndex,
   Case,
   SelectByCondition,
-  ...Object.values(ComponentWithSelectableType),
+  Lorem,
   BaseComponent,
   InlineComponent,
   BlockComponent,
@@ -255,10 +256,9 @@ const componentTypeArray = [
   BooleanBaseOperatorOfMath,
   MathBaseOperator, MathBaseOperatorOneInput,
   FunctionBaseOperator,
-  ComponentSize,
+  ...Object.values(ComponentSize),
   SectioningComponent,
   TextFromSingleStringChild,
-  MathWithVariable,
   InlineRenderInlineChildren,
   TextOrInline,
 ];

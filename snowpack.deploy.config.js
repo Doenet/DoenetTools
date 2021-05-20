@@ -15,6 +15,7 @@ module.exports = {
     'src/Home': '/',
     'src/Viewer': '/viewer',
     'src/_reactComponents': '/_reactComponents',
+    'src/_sharedRecoil': '/_sharedRecoil',
     'src/_utils': '/_utils',
     'src/Api_temp': '/api',
   },

@@ -393,7 +393,7 @@ const DriveInfoPanel = function(props){
   }
 
   return <>
-  <h2>{dIcon} {panelDriveLabel}</h2>
+  <h2 data-cy="infoPanelItemLabel">{dIcon} {panelDriveLabel}</h2>
   <label>Course Name<input type="text" 
   value={driveLabel} 
   onChange={(e)=>setDriveLabel(e.target.value)} 
@@ -481,22 +481,29 @@ const FolderInfoPanel = function(props){
   }
   
   return <>
-  <h2>{fIcon} {itemInfo.label}</h2>
+  <h2 data-cy="infoPanelItemLabel">{fIcon} {itemInfo.label}</h2>
 
   <label>Folder Label<input type="text" 
+  data-cy="infoPanelItemLabelInput"
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
+      //Only rename if label has changed
     if (e.key === "Enter"){
-      renameItemCallback(label);
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
     }
   }}
   onBlur={()=>{
-    renameItemCallback(label);
+    //Only rename if label has changed
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
   }}/></label>
   <br />
   <br />
-  <Button value="Delete Folder" callback={()=>{
+  <Button data-cy="deleteFolderButton" value="Delete Folder" callback={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
@@ -548,19 +555,26 @@ const DoenetMLInfoPanel = function(props){
   }
   
   return <>
-  <h2>{dIcon} {itemInfo.label}</h2>
+  <h2 data-cy="infoPanelItemLabel">{dIcon} {itemInfo.label}</h2>
 
   <label>DoenetML Label<input type="text" 
+  data-cy="infoPanelItemLabelInput"
   value={label} 
   onChange={(e)=>setLabel(e.target.value)} 
   onKeyDown={(e)=>{
 
     if (e.key === "Enter"){
-      renameItemCallback(label);
+      //Only rename if label has changed
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
     }
   }}
   onBlur={()=>{
-    renameItemCallback(label);
+      //Only rename if label has changed
+      if (itemInfo.label !== label){
+        renameItemCallback(label);
+      }
   }}/></label>
   <br />
   <br />
@@ -570,7 +584,7 @@ const DoenetMLInfoPanel = function(props){
   }} />
   <br />
   <br />
-  <Button value="Delete DoenetML" callback={()=>{
+  <Button data-cy="deleteDoenetMLButton" value="Delete DoenetML" callback={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
@@ -644,22 +658,22 @@ const ItemInfo = function (){
         itemInfo={itemInfo}
         />
       }
-   
+   x
     }
   
 }
 
-function AddCourseDriveButton(props){
-  const history = useHistory();
+function AddCourseDriveButton(){
+  
   const [addToast, ToastType] = useToast();
-  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
+  // const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
 
   const createNewDrive = useRecoilCallback(({set})=> 
-  async ({label,newDriveId,newCourseId,image,color})=>{
+  async ({label,newDriveId,image,color})=>{
     let newDrive = {
-      courseId:newCourseId,
       driveId:newDriveId,
       isShared:"0",
+      isPublic:"0",
       label,
       type: "course",
       image,
@@ -668,7 +682,7 @@ function AddCourseDriveButton(props){
     }
     const payload = { params:{
       driveId:newDriveId,
-      courseId:newCourseId,
+      isPublic:"0",
       label,
       type:"new course drive",
       image,
@@ -688,39 +702,38 @@ function AddCourseDriveButton(props){
     return result;
   });
 
-  const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
-  async (newDriveId)=>{
-    console.log(">>>deleting newDriveId",newDriveId)
-    //Filter out drive which was just added
-    set(fetchDrivesQuery,(oldDrivesInfo)=>{
-      //Could just unshift the first drive but that could break
-      //this is less brittle
-      let newDrivesInfo = {...oldDrivesInfo}
-      let newDriveIdsAndLabels = [];
-      for (let driveAndLabel of oldDrivesInfo.driveIdsAndLabels){
-        if (driveAndLabel.driveId !== newDriveId){
-          newDriveIdsAndLabels.push(driveAndLabel);
-        }
-      }
-      newDrivesInfo.driveIdsAndLabels = newDriveIdsAndLabels;
-      return newDrivesInfo
-    })
+  // const deleteNewDrive = useRecoilCallback(({snapshot,set})=> 
+  // async (newDriveId)=>{
+  //   console.log(">>>deleting newDriveId",newDriveId)
+  //   //Filter out drive which was just added
+  //   set(fetchDrivesQuery,(oldDrivesInfo)=>{
+  //     //Could just unshift the first drive but that could break
+  //     //this is less brittle
+  //     let newDrivesInfo = {...oldDrivesInfo}
+  //     let newDriveIdsAndLabels = [];
+  //     for (let driveAndLabel of oldDrivesInfo.driveIdsAndLabels){
+  //       if (driveAndLabel.driveId !== newDriveId){
+  //         newDriveIdsAndLabels.push(driveAndLabel);
+  //       }
+  //     }
+  //     newDrivesInfo.driveIdsAndLabels = newDriveIdsAndLabels;
+  //     return newDrivesInfo
+  //   })
 
-  });
+  // });
 
 
   function onError({errorMessage}){
     addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
   }
 
-  return <Button value="Create a New Course" callback={()=>{
+  return <Button value="Create a New Course" data-cy="createNewCourseButton" callback={()=>{
     let driveId = null;
     let newDriveId = nanoid();
-    let newCourseId = nanoid();
     let label = "Untitled";
     let image = driveImages[Math.floor(Math.random() * driveImages.length)];
     let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-    const result = createNewDrive({label,driveId,newDriveId,newCourseId,image,color});
+    const result = createNewDrive({label,driveId,newDriveId,image,color});
     result.then((resp)=>{
       if (resp.data.success){
         addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
@@ -730,12 +743,12 @@ function AddCourseDriveButton(props){
     }).catch((e)=>{
       onError({errorMessage: e.message});
     })
-   setDrivePath({
-    driveId:":",
-    parentFolderId:":",
-    itemId:":",
-    type:""
-  })
+  //  setDrivePath({
+  //   driveId:":",
+  //   parentFolderId:":",
+  //   itemId:":",
+  //   type:""
+  // })
   }}/>
 }
 
@@ -751,53 +764,62 @@ function AddMenuPanel(props){
 
   let addDrives = <>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
-     <AddCourseDriveButton route={props.route} />
+     <AddCourseDriveButton  />
    </Suspense>
    </>
 
-  if (driveId === ""){ return <>{addDrives}</>; }
+  if (driveId === ""){ 
+    return <>
+    <h3>Course</h3>
+  {addDrives}
+  </>; }
 
 
   return <>
-  <h3>Course</h3>
-   {addDrives}
+
   <h3>Folder</h3>
-  <Button value="Add Folder" callback={()=>{
-    const result = addItem({
-      driveIdFolderId: {driveId: driveId, folderId: folderId},
-      label: "Untitled",
-      itemType: "Folder"
-    });
-    result.then(resp => {
-      if (resp.data.success){
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-      }else{
-        onAddItemError({errorMessage: resp.data.message});
-      }
-    }).catch( e => {
-      onAddItemError({errorMessage: e.message});
-    })
-  }
-  } />
+  <Button 
+    value="Add Folder" 
+    data-cy="addFolderButton"
+    callback={()=>{
+      const result = addItem({
+        driveIdFolderId: {driveId: driveId, folderId: folderId},
+        label: "Untitled",
+        itemType: "Folder"
+      });
+      result.then(resp => {
+        if (resp.data?.success){
+          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        }else{
+          onAddItemError({errorMessage: resp.data});
+        }
+      }).catch( e => {
+        onAddItemError({errorMessage: e.message});
+      })
+    }} 
+  />
 
   <h3>DoenetML</h3>
-  <Button value="Add DoenetML" callback={()=>{
-    const result = addItem({
-      driveIdFolderId: {driveId: driveId, folderId: folderId},
-      label:"Untitled",
-      itemType:"DoenetML"
-    });
-    result.then(resp => {
-      if (resp.data.success){
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-      }else{
-        onAddItemError({errorMessage: resp.data.message});
-      }
-    }).catch( e => {
-      onAddItemError({errorMessage: e.message});
-    })
-  }
-  } />
+  <Button 
+    value="Add DoenetML" 
+    data-cy="addDoenetMLButton"
+    callback={()=>{
+      const result = addItem({
+        driveIdFolderId: {driveId: driveId, folderId: folderId},
+        label:"Untitled",
+        itemType:"DoenetML"
+      });
+      result.then(resp => {
+        if (resp.data.success){
+          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        }else{
+          onAddItemError({errorMessage: resp.data});
+        }
+      }).catch( e => {
+        onAddItemError({errorMessage: e.message});
+      })
+    }} 
+  />
  
   {/* <h3>URL</h3>
   <div>
@@ -832,7 +854,7 @@ function AutoSelect(props){
   return null;
 }
 
-function URLPathSync(props){
+export function URLPathSync(props){
 
   const [drivePath,setDrivePath] = useRecoilState(drivePathSyncFamily("main"))
   const history = useHistory();
@@ -915,7 +937,7 @@ export default function Library(props) {
 
   const profile = useContext(ProfileContext)
 
-  if (profile.signedIn === "0"){
+  if (profile.signedIn === "0" && !window.Cypress){
     return (<>
      <GlobalFont/>
     <Tool>
@@ -962,33 +984,13 @@ export default function Library(props) {
   let mainBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="main" />;
   let supportBreadcrumbContainer = <BreadcrumbContainer drivePathSyncKey="support" />;
 
-  const setDrivecardMainPath = useSetRecoilState(drivePathSyncFamily("main"))
-  const setDrivecardsupportPath = useSetRecoilState(drivePathSyncFamily("support"))
-
-  const mainDriveCardSelection = ({item}) => {
-    setDrivecardMainPath({
-      driveId:item.driveId,
-      parentFolderId:item.driveId,
-      itemId:item.driveId,
-      type:"Drive"
-    })
-  }
-  const supportDriveCardSelection = ({item}) => {
-    setDrivecardsupportPath({
-      driveId:item.driveId,
-      parentFolderId:item.driveId,
-      itemId:item.driveId,
-      type:"Drive"
-    })
-  }
-
   return (
     <>
     <GlobalFont/>
     <URLPathSync route={props.route}/>
     <Tool>
       <navPanel isInitOpen>
-      <div style={{height:"100vh"}} onClick={()=>useOutsideDriveSelector(setDrivePath)} >
+      <div style={{height:"100vh"}} data-cy="navPanel" onClick={()=>useOutsideDriveSelector(setDrivePath)} >
          <div  style={{paddingBottom:"40px"}}>
         <Drive types={['content','course']}  foldersOnly={true} drivePathSyncKey="main"/>
       </div>
@@ -1005,10 +1007,14 @@ export default function Library(props) {
         onClick={()=>{
           clearSelections()
         }}
+        data-cy="mainPanel"
         className={routePathDriveId ? 'mainPanelStyle' : ''}
         >
           <Container>
-          <Drive types={['content','course']}  
+          <Drive 
+            types={['content','course']}  
+            // viewAccess="assigned"
+            // viewAccess="released"
             drivePathSyncKey="main"
             urlClickBehavior="select" 
             doenetMLDoubleClickCallback={(info)=>{
@@ -1024,6 +1030,7 @@ export default function Library(props) {
         onClick={
           cleardrivecardSelection
         }
+        data-cy="mainPanel"
         tabIndex={0}
         className={routePathDriveId ? '' : 'mainPanelStyle' }
         >
@@ -1031,8 +1038,6 @@ export default function Library(props) {
        drivePathSyncKey="main"
        types={['course']}
        subTypes={['Administrator']}
-       routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{mainDriveCardSelection({item})}}
        />
         </div>
         
@@ -1045,6 +1050,9 @@ export default function Library(props) {
       <Drive 
         drivePathSyncKey="support"
         types={['content','course']}  
+        // viewAccess="released"
+        // viewAccess="assigned"
+
         urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{
           openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
@@ -1063,8 +1071,6 @@ export default function Library(props) {
        drivePathSyncKey="support"
        types={['course']}
        subTypes={['Administrator']}
-       routePathDriveId={routePathDriveId}
-       driveDoubleClickCallback={({item})=>{supportDriveCardSelection({item})}}
        />
         </div>
       </supportPanel>

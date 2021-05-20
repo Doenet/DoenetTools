@@ -48,11 +48,12 @@ SELECT
  c.title AS title,
  c.timestamp AS timestamp,
  c.isDraft AS isDraft,
- c.isNamed AS isNamed
-FROM content AS c
+ c.isNamed AS isNamed,
+ c.isReleased AS isReleased
+ FROM content AS c
 WHERE removedFlag = 0
 AND branchId = '$branchId'
-ORDER BY isDraft DESC,c.timestamp DESC
+ORDER BY isDraft DESC, isNamed DESC, c.timestamp DESC
 ";
 
 $result = $conn->query($sql); 
@@ -66,7 +67,8 @@ if ($result->num_rows > 0){
                 "versionId"=>$row['versionId'],
                 "timestamp"=>$row['timestamp'],
                 "isDraft"=>$row['isDraft'],
-                "isNamed"=>$row['isNamed']
+                "isNamed"=>$row['isNamed'],
+                "isReleased"=>$row['isReleased']
         );
         array_push($versions_arr,$version);
     }

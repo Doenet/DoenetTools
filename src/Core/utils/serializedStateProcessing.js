@@ -357,7 +357,7 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 export function createAttributesFromProps(serializedComponents, componentInfoObjects, flags) {
   for (let component of serializedComponents) {
 
-    let componentClass = componentInfoObjects.standardComponentClasses[component.componentType];
+    let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
     let classAttributes = componentClass.createAttributesObject({ flags });
 
     let attributeLowerCaseMapping = {};
@@ -1084,8 +1084,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
           } else if (sugarResults.newAttributes) {
             let newAttributes = sugarResults.newAttributes;
 
-            let attr = Object.keys(newAttributes)[0];
-
             let preSugarIndsFound = [];
 
             for (let attr in newAttributes) {
@@ -1583,7 +1581,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 }
 
 
-function convertComponentTarget({
+export function convertComponentTarget({
   tName,
   oldFullTName,
   namespaceStack,
@@ -1891,13 +1889,23 @@ export function processAssignNames({
 
   let processedComponents = [];
 
+  // don't name strings
+  let numStrings = 0;
 
   for (let ind = 0; ind < nComponents; ind++) {
 
-    let indForNames = ind + indOffset;
+    let indForNames = ind + indOffset - numStrings;
+
+    let component = serializedComponents[ind];
+
+    if(component.componentType === "string") {
+      numStrings ++;
+      processedComponents.push(component);
+      continue;
+    }
 
     let name = assignNames[indForNames];
-    let component = serializedComponents[ind];
+
 
     if (!component.doenetAttributes) {
       component.doenetAttributes = {};

@@ -137,30 +137,6 @@ export default class BooleanInput extends Input {
     }
 
 
-    stateVariableDefinitions.submittedValue = {
-      defaultValue: null,
-      public: true,
-      componentType: "boolean",
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: {
-          submittedValue: {
-            variablesToCheck: ["submittedValue"]
-          }
-        }
-      }),
-      inverseDefinition: function ({ desiredStateVariableValues }) {
-        return {
-          success: true,
-          instructions: [{
-            setStateVariable: "submittedValue",
-            value: desiredStateVariableValues.submittedValue
-          }]
-        };
-      }
-    }
-
-
     return stateVariableDefinitions;
 
   }

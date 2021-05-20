@@ -1,11 +1,11 @@
 /**
  * External dependencies
  */
-import React from 'react';
+// import React from 'react';
 import { nanoid } from 'nanoid';
 import axios from "axios";
 import {
-  useRecoilCallback, useRecoilValue
+  useRecoilCallback, 
 } from 'recoil';
 
 /**
@@ -381,7 +381,7 @@ export const useCopyItems = () => {
       
       for(let item of items){
         if (!item.driveId || !item.driveInstanceId || !item.itemId) throw "Invalid arguments error"
-        
+     
         // Deselect currently selected items
         let selectedItem = {
           driveId: item.driveId,
@@ -427,29 +427,35 @@ export const useCopyItems = () => {
       let promises = [];
       for (let newItemId of Object.keys(globalDictionary)) {
         let newItem = globalDictionary[newItemId];
-
-        const data = { 
+        
+        const addItemsParams = { 
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
           branchId: newItem.branchId,
-          versionId: nanoid(),
+          // branchId: nanoid(),
+          versionId: newItem.versionId,
+          // versionId: nanoid(),
           label: newItem.label,
           type: newItem.itemType,
           sortOrder: newItem.sortOrder,
+          isNewCopy: '1',
          };
+
 
         // Clone DoenetML
         if (newItem.itemType === "DoenetML") {
           const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
+          
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
           // Unify new branchId
-          data["branchId"] = newDoenetML?.branchId;
+          // addItemsParams["branchId"] = newDoenetML?.branchId;
         }
 
+
         const payload = { 
-          params: data 
+          params: addItemsParams 
         };
 
         const result = axios.get('/api/addItem.php', payload);
@@ -515,14 +521,15 @@ export const useCopyItems = () => {
     // Retrieve info of target item from parentFolder
     const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
-
-    // Clone item
+    
+    // Clone item (Note this should be the source of new ids)
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
-    const newBranchId = nanoid();
     newItem.itemId = newItemId;
-    newItem.branchId = newBranchId;
-    
+    newItem.branchId = nanoid();
+    newItem.versionId = nanoid();
+    newItem.previousBranchId = itemInfo.branchId;
+   
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
       globalContentIds[newItemId] = [];
@@ -555,15 +562,19 @@ export const useCopyItems = () => {
   }
 
   const cloneDoenetML = ({item, timestamp}) => {
+
     let newVersion = {
       title: item.label,
-      branchId: nanoid(),
+      branchId: item.branchId,
+      // branchId: nanoid(),
       contentId: item.contentId,
-      versionId: nanoid(),
+      versionId: item.versionId,
       timestamp,
       isDraft: '0',
       isNamed: '1',
+      isNewCopy: '1',
       doenetML: item.doenetML,
+      previousBranchId: item.previousBranchId,
     }
     return newVersion;
   }
@@ -974,7 +985,12 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.isAssignment = "1";
         newItemObj.assignment_title = payloadAssignment?.assignment_title;     
-        newItemObj.assignmentId = payloadAssignment?.assignmentId;
+        newItemObj.assignedDate = payloadAssignment?.assignedDate;
+        newItemObj.dueDate = payloadAssignment?.dueDate;
+        newItemObj.timeLimit = payloadAssignment?.timeLimit;
+        newItemObj.numberOfAttemptsAllowed = payloadAssignment?.numberOfAttemptsAllowed;
+        newItemObj.totalPointsOrPercent = payloadAssignment?.totalPointsOrPercent;
+        newItemObj.gradeCategory = payloadAssignment?.gradeCategory;
         return newObj;
       })
     }

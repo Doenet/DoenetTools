@@ -164,6 +164,7 @@ export default function DragPanel({
     >
       <Background $vertical={direction.vertical}>{children}</Background>
       <DragHandle
+        data-cy="panelDragHandle"
         $vertical={direction.vertical}
         $rounding={direction.rounding}
         $handleSize={handleSize}

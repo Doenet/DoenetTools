@@ -76,7 +76,6 @@ describe('Number Tag Tests', function () {
     })
   })
 
-
   it(`number becomes non-numeric through inverse`, () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -91,18 +90,18 @@ describe('Number Tag Tests', function () {
 
     cy.get('#\\/n').should('have.text', '5');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}x{enter}', {force:true})
+    cy.get('#\\/_mathinput1 textarea').type('{end}x{enter}', { force: true })
     cy.get('#\\/n').should('have.text', 'NaN');
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}9{enter}', {force:true})
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}9{enter}', { force: true })
     cy.get('#\\/n').should('have.text', '9');
 
   })
 
-
   it('number in math', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetML: `
+      win.postMessage({
+        doenetML: `
       <text>a</text>
       <math>x+<number>3</number></math>
       ` }, "*");
@@ -125,7 +124,8 @@ describe('Number Tag Tests', function () {
 
   it('math in number', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetML: `
+      win.postMessage({
+        doenetML: `
       <text>a</text>
       <number><math>5+<math>3</math></math></number>
       ` }, "*");
@@ -145,10 +145,10 @@ describe('Number Tag Tests', function () {
     })
   });
 
-
   it('number converts to decimals', () => {
     cy.window().then((win) => {
-      win.postMessage({ doenetML: `
+      win.postMessage({
+        doenetML: `
       <text>a</text>
       <number>log(0.5/0.3)</number>, 
       <math><copy tname="_number1" /></math>
@@ -174,5 +174,110 @@ describe('Number Tag Tests', function () {
     })
   });
 
+  it('rounding', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <number name="n1">234234823.34235235324</number>
+      <number name="n2">5.4285023408250342</number>
+      <number name="n3">0.000000000000005023481340324</number>
+      <copy tname="n1" displayDigits='3' assignNames="n1a" />
+      <copy tname="n1" displayDecimals='3' assignNames="n1b" />
+      <copy tname="n1" displayDigits='3' displaySmallAsZero assignNames="n1c" />
+      <copy tname="n2" displayDigits='3' assignNames="n2a" />
+      <copy tname="n2" displayDecimals='3' assignNames="n2b" />
+      <copy tname="n2" displayDigits='3' displaySmallAsZero assignNames="n2c" />
+      <copy tname="n3" displayDigits='3' assignNames="n3a" />
+      <copy tname="n3" displayDecimals='3' assignNames="n3b" />
+      <copy tname="n3" displayDigits='3' displaySmallAsZero assignNames="n3c" />
+    ` }, "*");
+    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n1').should('have.text', '234234823.3')
+    cy.get('#\\/n1a').should('have.text', '234000000')
+    cy.get('#\\/n1b').should('have.text', '234234823.342')
+    cy.get('#\\/n1c').should('have.text', '234000000')
+
+    cy.get('#\\/n2').should('have.text', '5.428502341')
+    cy.get('#\\/n2a').should('have.text', '5.43')
+    cy.get('#\\/n2b').should('have.text', '5.429')
+    cy.get('#\\/n2c').should('have.text', '5.43')
+
+    cy.get('#\\/n3').should('have.text', '5.02348134e-15')
+    cy.get('#\\/n3a').should('have.text', '5.02e-15')
+    cy.get('#\\/n3b').should('have.text', '0')
+    cy.get('#\\/n3c').should('have.text', '0')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/n1'].stateValues.value).eq(234234823.34235235324);
+      expect(components['/n1a'].stateValues.value).eq(234234823.34235235324);
+      expect(components['/n1b'].stateValues.value).eq(234234823.34235235324);
+      expect(components['/n1c'].stateValues.value).eq(234234823.34235235324);
+      expect(components['/n2'].stateValues.value).eq(5.4285023408250342);
+      expect(components['/n2a'].stateValues.value).eq(5.4285023408250342);
+      expect(components['/n2b'].stateValues.value).eq(5.4285023408250342);
+      expect(components['/n2c'].stateValues.value).eq(5.4285023408250342);
+      expect(components['/n3'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(components['/n3a'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(components['/n3b'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(components['/n3c'].stateValues.value).eq(0.000000000000005023481340324);
+    })
+  })
+
+  it('dynamic rounding', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>Number: <number name="n">35203423.02352343201</number></p>
+      <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
+      <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
+      <p><copy tname="n" displayDigits='$ndigits' assignNames="na" /></p>
+      <p><copy tname="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+    ` }, "*");
+    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '35203423.02')
+    cy.get('#\\/na').should('have.text', '35200000')
+    cy.get('#\\/nb').should('have.text', '35203423.024')
+
+    cy.log('higher precision')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}12{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/na').should('have.text', '35203423.0235')
+    cy.get('#\\/nb').should('have.text', '35203423.02352')
+
+    cy.log('invalid precision means no rounding')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
+    cy.get('#\\/na').invoke('text').then(text => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+    cy.get('#\\/nb').invoke('text').then(text => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+
+    cy.log('low precision')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/na').should('have.text', '40000000')
+    cy.get('#\\/nb').should('have.text', '35203423')
+
+
+    cy.log('negative precision, no rounding for displayDigits')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get('#\\/na').invoke('text').then(text => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+    cy.get('#\\/nb').should('have.text', '35203000')
+
+  })
 
 });

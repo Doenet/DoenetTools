@@ -3,6 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import styled from "styled-components";
 import {Spring} from 'react-spring';
 import useDoenetRender from './useDoenetRenderer';
+import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 
 const SliderContainer = styled.div`
     width: fit-content;
@@ -157,8 +158,8 @@ export default function Slider(props) {
             <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
                 {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
                 {SVs.showControls? <>
-                <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled>Next</button>
-                <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled>Prev</button>
+                <Button value="Next" style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled />
+                <Button value="Prev" style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled />
                 </> : null}
             </div>
             <SubContainer2>
@@ -276,19 +277,22 @@ function handlePrevious(e) {
 }
   
   return (
-    <SliderContainer  ref = {containerRef} labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false}>
+    <SliderContainer  ref = {containerRef} labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} >
         <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
             {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
+            {/* TODO */}
             {SVs.showControls? <>
-            <button style = {{float: "right", userSelect: "none"}} onClick = {handleNext}>Next</button>
-            <button style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious}>Prev</button>
+            <Button value="Next" style = {{float: "right", userSelect: "none"}} onClick = {handleNext} data-cy="nextbutton" />
+            <Button value="Prev" style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} data-cy="prevbutton" />  
             </> : null}
         </div>
-        <SubContainer2 onMouseDown = {handleDragEnter} onMouseUp = {handleDragExit} onMouseMove = {handleDragThrough} onMouseLeave = {handleDragExit}>
-            <StyledSlider width = {`${500}px`} >
+        <SubContainer2 onMouseDown = {handleDragEnter} onMouseUp = {handleDragExit} onMouseMove = {handleDragThrough} onMouseLeave = {handleDragExit} >
+            <StyledSlider width = {(`${500}px`)} data-cy="slider1">
             <Spring
-                to={{ x: thumbXPos }}>
-                {props => <StyledThumb style={{left: `${props.x - 3}px`}}/>}
+                to={{ x: thumbXPos }}>              
+                {(styles) => { return <StyledThumb style={{left: `${thumbXPos - 3}px`}}
+                data-cy="slider1-handle"/>
+            }}
             </Spring>
             {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))}
             </StyledSlider>

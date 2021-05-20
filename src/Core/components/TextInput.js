@@ -140,7 +140,7 @@ export default class Textinput extends Input {
           // (otherwise, let its essential value change)
           return {
             newValues: { immediateValue: dependencyValues.value },
-            makeEssential: ["immediateValue"]
+            makeEssential: { immediateValue: true }
           };
 
 
@@ -199,30 +199,6 @@ export default class Textinput extends Input {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { componentType: "text" } })
     }
-
-
-    // stateVariableDefinitions.submittedValue = {
-    //   defaultValue: '\uFF3F',
-    //   public: true,
-    //   componentType: "text",
-    //   returnDependencies: () => ({}),
-    //   definition: () => ({
-    //     useEssentialOrDefaultValue: {
-    //       submittedValue: {
-    //         variablesToCheck: ["submittedValue"]
-    //       }
-    //     }
-    //   }),
-    //   inverseDefinition: function ({ desiredStateVariableValues }) {
-    //     return {
-    //       success: true,
-    //       instructions: [{
-    //         setStateVariable: "submittedValue",
-    //         value: desiredStateVariableValues.submittedValue
-    //       }]
-    //     };
-    //   }
-    // }
 
 
     return stateVariableDefinitions;

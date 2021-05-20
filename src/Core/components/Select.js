@@ -284,7 +284,7 @@ export default class Select extends CompositeComponent {
 
         if (!(dependencyValues.numberToSelect >= 1) || dependencyValues.nOptions === 0) {
           return {
-            makeEssential: ["selectedIndices"],
+            makeEssential: { selectedIndices: true },
             newValues: {
               selectedIndices: [],
             },
@@ -307,7 +307,7 @@ export default class Select extends CompositeComponent {
             desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
 
             return {
-              makeEssential: ["selectedIndices"],
+              makeEssential: { selectedIndices: true },
               newValues: {
                 selectedIndices: desiredIndices,
               },
@@ -329,13 +329,13 @@ export default class Select extends CompositeComponent {
             // first shuffle the array of indices
             // https://stackoverflow.com/a/12646864
             for (let i = dependencyValues.numberToSelect - 1; i > 0; i--) {
-              const rand = dependencyValues.selectRng.random();
+              const rand = dependencyValues.selectRng();
               const j = Math.floor(rand * (i + 1));
               [variantOptions[i], variantOptions[j]] = [variantOptions[j], variantOptions[i]];
             }
           }
           return {
-            makeEssential: ["selectedIndices"],
+            makeEssential: { selectedIndices: true },
             newValues: {
               selectedIndices: variantOptions,
             },
@@ -369,7 +369,7 @@ export default class Select extends CompositeComponent {
         for (let ind = 0; ind < dependencyValues.numberToSelect; ind++) {
 
           // random number in [0, 1)
-          let rand = dependencyValues.selectRng.random();
+          let rand = dependencyValues.selectRng();
 
           // find largest index where cumulativeWeight is larger than rand
           // using binary search
@@ -399,7 +399,7 @@ export default class Select extends CompositeComponent {
 
 
         return {
-          makeEssential: ["selectedIndices"],
+          makeEssential: { selectedIndices: true },
           newValues: {
             selectedIndices,
           },
@@ -463,7 +463,7 @@ export default class Select extends CompositeComponent {
           variableName: "selectedIndices"
         }
       }),
-      definition () {
+      definition() {
         return {
           newValues: { readyToExpandWhenResolved: true }
         }

@@ -158,8 +158,10 @@ export class ClampNumber extends MathBaseOperatorOneInput {
 
 
 function clamp({ value, lowerValue, upperValue }) {
-  let numericValue = value.evaluate_to_constant();
-
+  let numericValue = value;
+  if (numericValue instanceof me.class) {
+    numericValue = numericValue.evaluate_to_constant();
+  }
   if (!Number.isFinite(numericValue)) {
     return me.fromAst(NaN);
   }
@@ -254,8 +256,11 @@ export class WrapNumberPeriodic extends MathBaseOperatorOneInput {
 
 
 function makePeriodic({ value, lowerValue, upperValue }) {
-  let numericValue = value.evaluate_to_constant();
-
+  let numericValue = value;
+  if (numericValue instanceof me.class) {
+    numericValue = numericValue.evaluate_to_constant();
+  }
+  
   if (!Number.isFinite(numericValue)) {
     return me.fromAst(NaN);
   }
@@ -367,7 +372,7 @@ export class ConvertSetToList extends MathBaseOperatorOneInput {
       returnDependencies: () => ({}),
       definition: () => ({
         newValues: { unordered: true },
-        makeEssential: ["unordered"]
+        makeEssential: { unordered: true }
       })
     }
 

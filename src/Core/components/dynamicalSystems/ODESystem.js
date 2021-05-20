@@ -1,6 +1,6 @@
 import InlineComponent from '../abstract/InlineComponent';
 import me from 'math-expressions';
-import { returnNVariables, convertValueToMathExpression } from '../../utils/math';
+import { returnNVariables, roundForDisplay } from '../../utils/math';
 
 export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
@@ -439,15 +439,11 @@ export default class ODESystem extends InlineComponent {
         for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
           let variable = dependencyValues.variables[dim].toLatex();
 
-          let rhs;
-          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-            rhs = dependencyValues.rhss[dim].round_numbers_to_decimals(dependencyValues.displayDecimals);
-          } else {
-            rhs = dependencyValues.rhss[dim].round_numbers_to_precision(dependencyValues.displayDigits);
-            if (dependencyValues.displaySmallAsZero) {
-              rhs = rhs.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
-            }
-          }
+          let rhs = roundForDisplay({
+            value: dependencyValues.rhss[dim],
+            dependencyValues, usedDefault
+          });
+
           let thisLatex = `\\frac{\\mathrm{d}${variable}}{\\mathrm{d}${indVar}} &=  ${rhs.toLatex()}`
           if (dependencyValues.number && dim === 0) {
             thisLatex += `\\tag{${dependencyValues.equationTag}}`
@@ -462,15 +458,11 @@ export default class ODESystem extends InlineComponent {
 
           for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
             let variable = dependencyValues.variables[dim].toLatex();
-            let ic;
-            if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-              ic = dependencyValues.initialConditions[dim].round_numbers_to_decimals(dependencyValues.displayDecimals);
-            } else {
-              ic = dependencyValues.initialConditions[dim].round_numbers_to_precision(dependencyValues.displayDigits);
-              if (dependencyValues.displaySmallAsZero) {
-                ic = ic.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
-              }
-            }
+            let ic = roundForDisplay({
+              value: dependencyValues.initialConditions[dim],
+              dependencyValues, usedDefault
+            });
+
             systemDisplay.push(`${variable}(${indVarVal0}) &= ${ic.toLatex()}\\notag`)
           }
         }

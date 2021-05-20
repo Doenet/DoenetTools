@@ -1,8 +1,8 @@
-import Sequence, { numberToLetters } from './Sequence';
+import BaseComponent from './abstract/BaseComponent';
+import { returnSequenceValues, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions, returnStandardSequenceStateVariablesShadowedForReference } from '../utils/sequence';
 import me from 'math-expressions';
-import { processAssignNames } from '../utils/serializedStateProcessing';
 
-export default class AnimateFromSequence extends Sequence {
+export default class AnimateFromSequence extends BaseComponent {
   constructor(args) {
     super(args);
     this.advanceAnimation = this.advanceAnimation.bind(this);
@@ -10,9 +10,28 @@ export default class AnimateFromSequence extends Sequence {
   static componentType = "animateFromSequence";
   static rendererType = undefined;
 
+  static acceptTname = true;
+
+  static get stateVariablesShadowedForReference() {
+    return returnStandardSequenceStateVariablesShadowedForReference();
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+
+    let sequenceAttributes = returnStandardSequenceAttributes();
+    Object.assign(attributes, sequenceAttributes);
+
+    attributes.prop = {
+      createPrimitiveOfType: "string",
+    };
+
+    attributes.componentIndex = {
+      createComponentOfType: "number",
+      createStateVariable: "componentIndex",
+      defaultValue: null,
+      public: true,
+    };
 
     attributes.animationOn = {
       createComponentOfType: "boolean",
@@ -53,6 +72,9 @@ export default class AnimateFromSequence extends Sequence {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let sequenceDefs = returnStandardSequenceStateVariableDefinitions();
+    Object.assign(stateVariableDefinitions, sequenceDefs);
+
     stateVariableDefinitions.possibleValues = {
       additionalStateVariablesDefined: ["numberValues"],
       returnDependencies: () => ({
@@ -76,10 +98,6 @@ export default class AnimateFromSequence extends Sequence {
           dependencyType: "stateVariable",
           variableName: "exclude"
         },
-        length: {
-          dependencyType: "stateVariable",
-          variableName: "length"
-        },
         lowercase: {
           dependencyType: "stateVariable",
           variableName: "lowercase"
@@ -87,35 +105,8 @@ export default class AnimateFromSequence extends Sequence {
 
       }),
       definition({ dependencyValues }) {
-        let possibleValues = [];
 
-        for (let ind = 0; ind < dependencyValues.length; ind++) {
-          let value = dependencyValues.from;
-          if (ind > 0) {
-            if (dependencyValues.type === "math") {
-              value = value.add(dependencyValues.step.multiply(me.fromAst(ind))).expand().simplify();
-            } else {
-              value += dependencyValues.step * ind;
-            }
-          }
-
-          if (dependencyValues.type === "math") {
-            if (dependencyValues.exclude.some(x => x && x.equals(value))) {
-              continue;
-            }
-          } else {
-            if (dependencyValues.exclude.includes(value)) {
-              continue;
-            }
-          }
-
-          if (dependencyValues.type === "letters") {
-            value = numberToLetters(value, dependencyValues.lowercase);
-          }
-
-          possibleValues.push(value);
-
-        }
+        let possibleValues = returnSequenceValues(dependencyValues);
 
         return {
           newValues: {
@@ -189,7 +180,6 @@ export default class AnimateFromSequence extends Sequence {
           setComponentType: { value: dependencyValues.type },
         }
       },
-      markStale: () => ({ updateReplacements: true }),
       inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
         // if number, can find closest value
         if (dependencyValues.type === "number") {
@@ -287,6 +277,160 @@ export default class AnimateFromSequence extends Sequence {
     }
 
 
+    stateVariableDefinitions.tName = {
+      returnDependencies: () => ({
+        tName: {
+          dependencyType: "doenetAttribute",
+          attributeName: "tName"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { tName: dependencyValues.tName }
+      })
+    }
+
+    stateVariableDefinitions.targetComponent = {
+      returnDependencies() {
+        return {
+          targetComponent: {
+            dependencyType: "targetComponent",
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+
+        let targetComponent = null;
+        if (dependencyValues.targetComponent) {
+          targetComponent = dependencyValues.targetComponent
+        }
+
+        return {
+          newValues: { targetComponent }
+        }
+      },
+    };
+
+    stateVariableDefinitions.propName = {
+      returnDependencies: () => ({
+        propName: {
+          dependencyType: "attribute",
+          attributeName: "prop"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { propName: dependencyValues.propName } }
+      }
+    }
+
+
+    stateVariableDefinitions.targetIdentities = {
+      stateVariablesDeterminingDependencies: [
+        "targetComponent", "componentIndex",
+      ],
+      returnDependencies: function ({ stateValues, componentInfoObjects }) {
+
+        let dependencies = {};
+
+        if (stateValues.targetComponent !== null) {
+
+          if (componentInfoObjects.isCompositeComponent({
+            componentType: stateValues.targetComponent.componentType,
+            includeNonStandard: false
+          })) {
+            dependencies.targets = {
+              dependencyType: "replacement",
+              compositeName: stateValues.targetComponent.componentName,
+              recursive: true,
+              componentIndex: stateValues.componentIndex,
+            }
+          } else if (stateValues.componentIndex === null || stateValues.componentIndex === 1) {
+            // if we don't have a composite, componentIndex can only match if it is 1
+            dependencies.targets = {
+              dependencyType: "stateVariable",
+              variableName: "targetComponent"
+            }
+          }
+
+
+        }
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+        let targetIdentities = null;
+        if (dependencyValues.targets) {
+          targetIdentities = dependencyValues.targets;
+          if (!Array.isArray(targetIdentities)) {
+            targetIdentities = [targetIdentities];
+          }
+        }
+        return { newValues: { targetIdentities } };
+      },
+    }
+
+    stateVariableDefinitions.targets = {
+      stateVariablesDeterminingDependencies: [
+        "targetIdentities", "propName"
+      ],
+      returnDependencies: function ({ stateValues }) {
+
+        let dependencies = {
+          targetIdentities: {
+            dependencyType: "stateVariable",
+            variableName: "targetIdentities"
+          },
+        }
+
+        if (stateValues.targetIdentities !== null) {
+
+          for (let [ind, source] of stateValues.targetIdentities.entries()) {
+
+            let thisTarget;
+
+            if (stateValues.propName) {
+              thisTarget = {
+                dependencyType: "stateVariable",
+                componentName: source.componentName,
+                variableName: stateValues.propName,
+                returnAsComponentObject: true,
+                variablesOptional: true,
+                propIndex: stateValues.propIndex,
+                caseInsensitiveVariableMatch: true,
+                publicStateVariablesOnly: true,
+                useMappedVariableNames: true,
+              }
+
+            } else {
+              thisTarget = {
+                dependencyType: "componentIdentity",
+                componentName: source.componentName
+              }
+            }
+
+            dependencies["target" + ind] = thisTarget;
+          }
+
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+        let targets = null;
+
+        if (dependencyValues.targetIdentities !== null) {
+          targets = [];
+
+          for (let ind in dependencyValues.targetIdentities) {
+            if (dependencyValues["target" + ind]) {
+              targets.push(dependencyValues["target" + ind]);
+            }
+          }
+        }
+
+        return { newValues: { targets } };
+      },
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -349,6 +493,11 @@ export default class AnimateFromSequence extends Sequence {
             }
           }
         }
+
+        let additionalInstructions = this.getUpdateInstructionsToSetTargetsToValue(
+          this.stateValues.possibleValues[me.math.mod(startIndex - 1, this.stateValues.numberValues)]
+        )
+        updateInstructions.push(...additionalInstructions);
 
         this.coreFunctions.requestUpdate({
           updateInstructions,
@@ -427,6 +576,11 @@ export default class AnimateFromSequence extends Sequence {
       value: newSelectedIndex,
     }]
 
+    let additionalInstructions = this.getUpdateInstructionsToSetTargetsToValue(
+      this.stateValues.possibleValues[me.math.mod(newSelectedIndex - 1, this.stateValues.numberValues)]
+    )
+    updateInstructions.push(...additionalInstructions);
+
     if (!continueAnimation) {
       updateInstructions.push({
         updateType: "updateValue",
@@ -455,41 +609,34 @@ export default class AnimateFromSequence extends Sequence {
     }
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  getUpdateInstructionsToSetTargetsToValue(value) {
 
-    let componentType = component.stateValues.type;
-    if (componentType === "letters") {
-      componentType = "text";
+    if (this.stateValues.targets == null) {
+      return [];
     }
 
-    let replacements = [{
-      componentType,
-      state: { value: component.stateValues.value, }
-    }];
+    let updateInstructions = [];
 
-    let processResult = processAssignNames({
-      assignNames: component.doenetAttributes.assignNames,
-      serializedComponents: replacements,
-      parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
-      componentInfoObjects,
-    });
+    for (let target of this.stateValues.targets) {
+      let stateVariable = "value";
+      if (target.stateValues) {
+        stateVariable = Object.keys(target.stateValues)[0];
+        if (stateVariable === undefined) {
+          console.warn(`Cannot animate prop="${this.stateValues.propName}" of ${this.stateValues.tName} as could not find prop ${this.stateValues.propName} on a component of type ${target.componentType}`)
+          continue;
+        }
+      }
 
-    return { replacements: processResult.serializedComponents };
-  }
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: target.componentName,
+        stateVariable,
+        value,
+      })
 
-  static calculateReplacementChanges({ component, componentInfoObjects }) {
-
-    let replacementChanges = [];
-
-    let replacementInstruction = {
-      changeType: "updateStateVariables",
-      component: component.replacements[0],
-      stateChanges: { value: component.stateValues.value }
     }
-    replacementChanges.push(replacementInstruction);
 
-    return replacementChanges;
+    return updateInstructions;
 
   }
 

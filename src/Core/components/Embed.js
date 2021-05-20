@@ -8,14 +8,14 @@ export default class Embed extends BlockComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      defaultValue: 500,
+      defaultValue: { size: 500, isAbsolute: true },
       public: true,
       forRenderer: true
     };
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      defaultValue: 500,
+      defaultValue: { size: 500, isAbsolute: true },
       public: true,
       forRenderer: true
     };

@@ -2,7 +2,7 @@ import * as ComponentTypes from './ComponentTypes'
 import readOnlyProxyHandler from './ReadOnlyProxyHandler';
 import ParameterStack from './ParameterStack';
 import Numerics from './Numerics';
-import MersenneTwister from 'mersenne-twister';
+import { prng_alea } from 'esm-seedrandom';
 import me from 'math-expressions';
 import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
@@ -35,6 +35,7 @@ export default class Core {
 
     this.requestUpdate = this.requestUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
+    this.triggerChainedActions = this.triggerChainedActions.bind(this);
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
     this._requestAnimationFrame = this._requestAnimationFrame.bind(this);
@@ -112,6 +113,7 @@ export default class Core {
     this.coreFunctions = {
       requestUpdate: this.requestUpdate,
       requestAction: this.requestAction,
+      triggerChainedActions: this.triggerChainedActions,
       requestRecordEvent: this.requestRecordEvent,
       requestAnimationFrame: this.requestAnimationFrame,
       cancelAnimationFrame: this.cancelAnimationFrame,
@@ -173,6 +175,7 @@ export default class Core {
     this.componentsWithChangedChildrenToRender = new Set([]);
 
     this.stateVariableChangeTriggers = {};
+    this.actionsChangedToActions = {};
 
 
     this._renderComponents = [];
@@ -224,6 +227,8 @@ export default class Core {
       serializedComponents,
       initialAdd: true,
     })
+
+    this.updateInfo.componentsTouched = [];
 
     this.rendererTypesInDocument = this.document.allPotentialRendererTypes;
 
@@ -279,8 +284,8 @@ export default class Core {
       // this.parameterStack.parameters.seed = '47';
       this.parameterStack.parameters.seed = this.parameterStack.parameters.hashStringToInteger(Date.now().toString());
     }
-    this.parameterStack.parameters.selectRng = new MersenneTwister(this.parameterStack.parameters.seed);
-    this.parameterStack.parameters.rngClass = MersenneTwister;
+    this.parameterStack.parameters.selectRng = new prng_alea(this.parameterStack.parameters.seed);
+    this.parameterStack.parameters.rngClass = prng_alea;
   }
 
   expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {
@@ -757,6 +762,10 @@ export default class Core {
   }
 
   processStateVariableTriggers() {
+
+    // TODO: can we make this more efficient by only checking components that changed?
+    // componentsTouched is close, but it includes only rendered components
+    // and we could have components with triggers that are not rendered
 
     for (let componentName in this.stateVariableChangeTriggers) {
       let component = this._components[componentName];
@@ -1338,6 +1347,8 @@ export default class Core {
     }
 
     this.dependencies.resolveStateVariablesIfReady({ component: newComponent });
+
+    this.checkForActionChaining({ component: newComponent });
 
     // this.dependencies.collateCountersAndPropagateToAncestors(newComponent);
 
@@ -2190,7 +2201,10 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
+        if (stateVarDef.componentType === undefined) {
+          stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        }
       }
 
 
@@ -2199,9 +2213,12 @@ export default class Core {
         throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attribute} of componentType ${componentClass.componentType}.`)
       }
 
-      let stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
+      let stateVariableForAttributeValue = attributeSpecification.componentStateVariableForAttributeValue;
       if (stateVariableForAttributeValue === undefined) {
-        stateVariableForAttributeValue = "value";
+        stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
+        if (stateVariableForAttributeValue === undefined) {
+          stateVariableForAttributeValue = "value";
+        }
       }
 
       if (attribute in ancestorProps) {
@@ -3290,6 +3307,36 @@ export default class Core {
 
   }
 
+  checkForActionChaining({ component }) {
+
+    for (let stateVariable in component.state) {
+      let stateVarObj = component.state[stateVariable];
+
+      if (stateVarObj.chainActionOnActionOfStateVariableTarget) {
+        let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTarget;
+        let targetName = stateVarObj.value;
+
+        if (targetName) {
+          let componentActionsChained = this.actionsChangedToActions[targetName];
+          if (!componentActionsChained) {
+            componentActionsChained = this.actionsChangedToActions[targetName] = {};
+          }
+
+          let triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction]
+          if (!triggeringActionsChained) {
+            triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction] = [];
+          }
+
+          triggeringActionsChained.push({
+            componentName: component.componentName,
+            actionName: chainInfo.triggeredAction
+          });
+
+        }
+      }
+    }
+  }
+
   initializeArrayEntryStateVariable({ stateVarObj, arrayStateVariable,
     arrayEntryPrefix, component, stateVariable }) {
     // This function used for initializing array entry variables
@@ -3839,7 +3886,7 @@ export default class Core {
     let entryPrefixes = stateVarObj.entryPrefixes;
 
     if (!entryPrefixes) {
-      entryPrefixes = [stateVariable]
+      entryPrefixes = stateVarObj.entryPrefixes = [stateVariable];
     }
 
 
@@ -4808,34 +4855,41 @@ export default class Core {
     }
 
 
-    if (result.makeEssential) {
-      for (let varName of result.makeEssential) {
+    for (let varName in result.makeEssential) {
 
-        if (!(varName in component.state)) {
-          throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} tried to make ${varName} essential, which isn't a state variable.`);
-        }
+      if (!(varName in component.state)) {
+        throw Error(`Definition of state variable ${stateVariable} of ${component.componentName} tried to make ${varName} essential, which isn't a state variable.`);
+      }
 
-        if (!component.state[varName].isResolved) {
-          throw Error(`Attempting to make stateVariable ${varName} of ${component.componentName} essential while it is still unresolved!`)
-        }
+      if (!component.state[varName].isResolved) {
+        throw Error(`Attempting to make stateVariable ${varName} of ${component.componentName} essential while it is still unresolved!`)
+      }
 
-        if (!(varName in receivedValue)) {
-          let matchingArrayEntry;
-          if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
-            for (let arrayEntryName of component.state[varName].arrayEntryNames) {
-              if (arrayEntryName in receivedValue) {
-                matchingArrayEntry = arrayEntryName;
-                break;
-              }
+      if (!(varName in receivedValue)) {
+        let matchingArrayEntry;
+        if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
+          for (let arrayEntryName of component.state[varName].arrayEntryNames) {
+            if (arrayEntryName in receivedValue) {
+              matchingArrayEntry = arrayEntryName;
+              break;
             }
           }
-          if (!matchingArrayEntry) {
-            throw Error(`Attempting to make stateVariable ${varName} in definition of ${stateVariable} of ${component.componentName} essential, but it's not listed as an additional state variable defined.`)
+        }
+        if (!matchingArrayEntry) {
+          throw Error(`Attempting to make stateVariable ${varName} in definition of ${stateVariable} of ${component.componentName} essential, but it's not listed as an additional state variable defined.`)
+        }
+      }
+
+      if (component.state[varName].isArray && typeof result.makeEssential[varName] === "object") {
+        for (let arrayKey in result.makeEssential[varName]) {
+          if (result.makeEssential[varName][arrayKey]) {
+            component.state[varName].essentialByArrayKey[arrayKey] = true;
           }
         }
-
+      } else if (result.makeEssential[varName]) {
         component.state[varName].essential = true;
       }
+
     }
 
     if (result.makeImmutable) {
@@ -7233,6 +7287,18 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
+  triggerChainedActions({ componentName, actionName }) {
+
+    if (this.actionsChangedToActions[componentName]) {
+      if (this.actionsChangedToActions[componentName][actionName]) {
+        for (let chainedActionInstructions of this.actionsChangedToActions[componentName][actionName]) {
+          this.requestAction(chainedActionInstructions);
+        }
+      }
+    }
+  }
+
+
   requestUpdate({ updateInstructions, transient = false, event, callBack }) {
 
     if (this.flags.readOnly) {
@@ -7478,6 +7544,8 @@ export default class Core {
     });
 
     this.processStateVariableTriggers();
+
+    this.updateInfo.componentsTouched = [];
 
     this.finishUpdate();
 
@@ -7997,9 +8065,25 @@ export default class Core {
 
     for (let newInstruction of combinedInstructions) {
       if (newInstruction.setStateVariable) {
-        // if (newInstruction.setStateVariable !== stateVariable) {
-        //   throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: specified changing value of ${newInstruction.setStateVariable}, which is not state variable itself.`);
-        // }
+        if (!allStateVariablesAffected.includes(newInstruction.setStateVariable)) {
+          let foundArrayMatch = false;
+          if (stateVarObj.isArrayEntry) {
+            let arrayStateVariables = [stateVarObj.arrayStateVariable];
+            if (stateVarObj.additionalStateVariablesDefined) {
+              for (let vName of stateVarObj.additionalStateVariablesDefined) {
+                let sObj = component.state[vName];
+                if (sObj.isArrayEntry) {
+                  arrayStateVariables.push(sObj.arrayStateVariable)
+                }
+              }
+            }
+            foundArrayMatch = arrayStateVariables.includes(newInstruction.setStateVariable);
+          }
+          if (!foundArrayMatch) {
+            throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: specified changing value of ${newInstruction.setStateVariable}, which is not a state variable defined with ${stateVariable}.`);
+          }
+        }
+
         // if (!(component.state[stateVariable].essential || newInstruction.allowNonEssential)) {
         //   throw Error(`Invalid inverse definition of ${stateVariable} of ${component.componentName}: can't set its value if it is not essential.`);
         // }

@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getCustomFromText, getCustomFromLatex, convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
+import { getCustomFromText, getCustomFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -23,7 +23,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       validValues: ["text", "latex"]
     };
-    // let simply==="" or simplify="true" be full simplify
+    // let simplify="" or simplify="true" be full simplify
     attributes.simplify = {
       createComponentOfType: "text",
       createStateVariable: "simplify",
@@ -189,6 +189,15 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: calculateExpressionWithCodes,
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "expressionWithCodes",
+            value: desiredStateVariableValues.expressionWithCodes
+          }]
+        }
+      }
 
     }
 
@@ -371,16 +380,11 @@ export default class MathComponent extends InlineComponent {
       definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
-        let rounded;
+        let rounded = roundForDisplay({
+          value: dependencyValues.value,
+          dependencyValues, usedDefault
+        });
 
-        if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-          rounded = dependencyValues.value.round_numbers_to_decimals(dependencyValues.displayDecimals);
-        } else {
-          rounded = dependencyValues.value.round_numbers_to_precision(dependencyValues.displayDigits);
-          if (dependencyValues.displaySmallAsZero) {
-            rounded = rounded.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
-          }
-        }
         return {
           newValues: {
             valueForDisplay: normalizeMathExpression({
@@ -747,7 +751,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   return {
     newValues: { expressionWithCodes },
-    makeEssential: ["expressionWithCodes"]
+    makeEssential: { expressionWithCodes: true }
   };
 
 }
@@ -758,7 +762,7 @@ function calculateMathValue({ dependencyValues } = {}) {
   if (dependencyValues.expressionWithCodes === null) {
     return {
       newValues: { unnormalizedValue: dependencyValues.valueShadow },
-      makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+      makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
     }
   }
 
@@ -775,7 +779,7 @@ function calculateMathValue({ dependencyValues } = {}) {
 
   return {
     newValues: { unnormalizedValue: value },
-    makeEssential: ["unnormalizedValue"]  // make essential since inverseDef sets it
+    makeEssential: { unnormalizedValue: true }  // make essential since inverseDef sets it
   };
 }
 
@@ -1138,16 +1142,15 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       })
     }
 
-    let simplifiedExpression = desiredExpression.simplify();
     instructions.push({
       setStateVariable: "unnormalizedValue",
-      value: simplifiedExpression,
+      value: desiredExpression,
     });
 
     if (stringChildren.length === 0) {
       instructions.push({
         setDependency: "valueShadow",
-        desiredValue: simplifiedExpression,
+        desiredValue: desiredExpression,
       });
     }
     return {
@@ -1155,6 +1158,18 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
       instructions
     }
 
+  }
+
+  if (mathChildren.length === 1 && stringChildren.length === 0) {
+    return {
+      success: true,
+      instructions: [{
+        setDependency: "mathChildren",
+        desiredValue: desiredExpression,
+        childIndex: 0,
+        variableIndex: 0,
+      }]
+    }
   }
 
   // first calculate expression pieces to make sure really can update
@@ -1234,8 +1249,8 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
 
 
     instructions.push({
-      setStateVariable: "expressionWithCodes",
-      value: newExpressionWithCodes,
+      setDependency: "expressionWithCodes",
+      desiredValue: newExpressionWithCodes,
     });
 
     for (let ind = 0; ind < stringChildren.length; ind++) {

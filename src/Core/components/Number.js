@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { textToAst } from '../utils/math';
+import { mathStateVariableFromNumberStateVariable, roundForDisplay, textToAst } from '../utils/math';
 
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
@@ -23,6 +23,12 @@ export default class NumberComponent extends InlineComponent {
       defaultValue: false,
       public: true,
     }
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
     attributes.renderAsMath = {
       createComponentOfType: "boolean",
       createStateVariable: "renderAsMath",
@@ -199,16 +205,23 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
       }),
-      definition: function ({ dependencyValues }) {//value, displayDigits, displaySmallAsZero, simplify, expand }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits
-        let rounded = me.round_numbers_to_precision(dependencyValues.value, dependencyValues.displayDigits).tree;
-        if (dependencyValues.displaySmallAsZero) {
-          if (Math.abs(rounded) < 1E-14) {
-            rounded = 0;
-          }
+        let rounded = roundForDisplay({
+          value: dependencyValues.value,
+          dependencyValues, usedDefault
+        });
+
+        if (rounded instanceof me.class) {
+          rounded = rounded.tree;
         }
+
         return {
           newValues: {
             valueForDisplay: rounded
@@ -231,38 +244,12 @@ export default class NumberComponent extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.math = {
-      public: true,
-      componentType: "math",
-      returnDependencies: () => ({
-        value: {
-          dependencyType: "stateVariable",
-          variableName: "value"
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (Number.isNaN(dependencyValues.value)) {
-          return { newValues: { math: me.fromAst('\uff3f') } };
-        } else {
-          return { newValues: { math: me.fromAst(dependencyValues.value) } };
-        }
-      },
-      inverseDefinition: function ({ desiredStateVariableValues }) {
+    stateVariableDefinitions.math = mathStateVariableFromNumberStateVariable({
+      numberVariableName: "value",
+      mathVariableName: "math",
+      public: true
+    });
 
-        let desiredNumber = desiredStateVariableValues.math.evaluate_to_constant();
-        if (desiredNumber === null) {
-          desiredNumber = NaN;
-        }
-        return {
-          success: true,
-          instructions: [{
-            setDependency: "value",
-            desiredValue: desiredNumber,
-          }],
-        }
-
-      },
-    }
 
     // Note: don't need canBeModified for number logic, as core will already
     // be able to determine from modifyIndirectly and fixed that it cannot be modified

@@ -16,7 +16,7 @@ $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 
 $sqlA = "SELECT
 ad.assignmentId AS assignmentId,
-ad.title AS title,
+ad.title AS assignment_title,
 ad.assignedDate AS assignedDate,
 ad.dueDate AS dueDate,
 ad.timeLimit AS timeLimit,
@@ -44,7 +44,7 @@ if ($result->num_rows > 0){
 
   $sql = "SELECT
   ad.assignmentId AS assignmentId,
-  ad.title AS title,
+  ad.title AS assignment_title,
   ad.assignedDate AS assignedDate,
   ad.dueDate AS dueDate,
   ad.timeLimit AS timeLimit,
@@ -79,7 +79,7 @@ if ($result->num_rows > 0){
   if ($result->num_rows > 0){
     while($row = $result->fetch_assoc()){
       $assignment = array(
-          "title" => $row['title'],
+          "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],
           "dueDate" => $row['dueDate'],
           "timeLimit" => $row['timeLimit'],
@@ -87,13 +87,13 @@ if ($result->num_rows > 0){
           "attemptAggregation" => $row['attemptAggregation'],
           "totalPointsOrPercent" => $row['totalPointsOrPercent'],
           "gradeCategory" => $row['gradeCategory'],
-          "individualize" => $row['individualize'],
-          "multipleAttempts" => $row['multipleAttempts'],
-          "showSolution" => $row['showSolution'],
-          "showFeedback" => $row['showFeedback'],
-          "showHints" => $row['showHints'],
-          "showCorrectness" => $row['showCorrectness'],
-          "proctorMakesAvailable" => $row['proctorMakesAvailable'],
+          "individualize" => $row['individualize'] == '1' ? true : false,
+          "multipleAttempts" => $row['multipleAttempts']  == '1' ? true : false,
+          "showSolution" => $row['showSolution'] == '1' ? true : false,
+          "showFeedback" => $row['showFeedback'] == '1' ? true : false,
+          "showHints" => $row['showHints'] == '1' ? true : false,
+          "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
+          "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "isPublished" => $row['isPublished'],
           "isAssignment" => $row['isAssignment'],  
           "assignmentId" => $row['assignmentId'],
@@ -153,13 +153,13 @@ else{
           "attemptAggregation" => $row['attemptAggregation'],
           "totalPointsOrPercent" => $row['totalPointsOrPercent'],
           "gradeCategory" => $row['gradeCategory'],
-          "individualize" => $row['individualize'],
-          "multipleAttempts" => $row['multipleAttempts'],
-          "showSolution" => $row['showSolution'],
-          "showFeedback" => $row['showFeedback'],
-          "showHints" => $row['showHints'],
-          "showCorrectness" => $row['showCorrectness'],
-          "proctorMakesAvailable" => $row['proctorMakesAvailable'],
+          "individualize" => $row['individualize'] == '1' ? true : false,
+          "multipleAttempts" => $row['multipleAttempts']  == '1' ? true : false,
+          "showSolution" => $row['showSolution'] == '1' ? true : false,
+          "showFeedback" => $row['showFeedback'] == '1' ? true : false,
+          "showHints" => $row['showHints'] == '1' ? true : false,
+          "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
+          "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "isPublished" => $row['isPublished'],
           "isAssignment" => $row['isAssignment'],  
           "assignmentId" => $row['assignmentId'],
@@ -186,3 +186,4 @@ http_response_code(200);
 echo json_encode($response_arr);
 
 $conn->close();
+?>

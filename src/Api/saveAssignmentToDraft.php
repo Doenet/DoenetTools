@@ -32,24 +32,40 @@ $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 if ($gradeCategory == ''){ $gradeCategory = 'e';}
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 if ($individualize == ''){ $individualize = '0';}
+else if ($individualize){ $individualize = '1';}
 $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 if ($multipleAttempts == ''){ $multipleAttempts = '0';}
+else if ($multipleAttempts){ $multipleAttempts = '1';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 if ($showSolution == ''){ $showSolution = '0';}
+else if ($showSolution){ $showSolution = '1';}
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 if ($showFeedback == ''){ $showFeedback = '0';}
+else if ($showFeedback){ $showFeedback = '1';}
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 if ($showHints == ''){ $showHints = '0';}
+else if ($showHints){ $showHints = '1';}
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 if ($showCorrectness == ''){ $showCorrectness = '0';}
+else if ($showCorrectness){ $showCorrectness = '1';}
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
+else if ($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
 $submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
 $courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
 $role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
+$success = TRUE;
+$message = "";
+
+
+if ($assignmentId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing assignmentId";
+}
+if ($success){
 
 $sql = "UPDATE assignment_draft SET
 title = '$title',
@@ -71,12 +87,22 @@ WHERE assignmentId = '$assignmentId'
 ";
 
 $result = $conn->query($sql);
-
+}
 // echo $sql;
+// set response code - 200 OK
+
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
+
+
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
 
-$conn->close();
+  
+  $conn->close();
+?>

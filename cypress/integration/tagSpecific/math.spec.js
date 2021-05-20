@@ -716,6 +716,74 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('dynamic rounding', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>Number: <math name="n">35203423.02352343201</math></p>
+      <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
+      <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
+      <p><copy tname="n" displayDigits='$ndigits' assignNames="na" /></p>
+      <p><copy tname="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+    ` }, "*");
+    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.02')
+    })
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35200000')
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.024')
+    })
+
+    cy.log('higher precision')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}12{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.0235')
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423.02352')
+    })
+
+    cy.log('invalid precision means no rounding')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+
+    cy.log('low precision')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('40000000')
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203423')
+    })
+
+    cy.log('negative precision, no rounding for displayDigits')
+    cy.get('#\\/ndigits textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get('#\\/ndecimals textarea').type("{end}{backspace}-3{enter}", { force: true });
+    cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+    })
+    cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('35203000')
+    })
+
+  })
+
+
   it('function symbols', () => {
     cy.window().then((win) => {
       win.postMessage({

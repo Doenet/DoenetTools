@@ -30,10 +30,10 @@ export default class Copy extends CompositeComponent {
     delete attributes.isResponse;
 
     attributes.prop = {
-      createPrimitiveOfType: "text",
+      createPrimitiveOfType: "string",
     };
     attributes.componentType = {
-      createPrimitiveOfType: "text",
+      createPrimitiveOfType: "string",
     };
     attributes.nComponents = {
       createPrimitiveOfType: "number",
@@ -132,7 +132,7 @@ export default class Copy extends CompositeComponent {
         }
         return {
           newValues: { targetSourcesName, sourcesChildNumber },
-          makeEssential: ["targetSourcesName", "sourcesChildNumber"],
+          makeEssential: { targetSourcesName: true, sourcesChildNumber: true },
         }
       },
     };
@@ -191,7 +191,7 @@ export default class Copy extends CompositeComponent {
         }
         return {
           newValues: { sourceIndex },
-          makeEssential: ["sourceIndex"]
+          makeEssential: { sourceIndex: true },
         }
       },
     };
@@ -1987,6 +1987,11 @@ export function replacementFromProp({ component, components,
 
 
   } else {
+
+    if(stateVarObj.hasVariableComponentType) {
+      // evaluate stateVarObj to make sure componentType is calculated and up-to-date
+      stateVarObj.value;
+    }
 
     if (!stateVarObj.componentType) {
       return {

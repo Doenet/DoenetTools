@@ -23,7 +23,7 @@ const ToolContainer = styled(animated.div)`
   box-sizing: border-box;
 `;
 
-const LoadingFiller = styled.div`
+const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
   border-radius: 4px;
   display: flex;
@@ -175,19 +175,19 @@ export default function Tool({ children }) {
 
   return (
     <ToolContainer $isOverlay={stackId > 0}>
-      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         {panels.navPanel}
       </Suspense>
-      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         {panels.headerPanel}
       </Suspense>
-      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
       </Suspense>
-      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         {panels.menuPanel}
       </Suspense>
-      <Suspense fallback={<LoadingFiller>loading...</LoadingFiller>}>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         {panels.footerPanel}
       </Suspense>
       {/* <ReactQueryDevtools /> */}

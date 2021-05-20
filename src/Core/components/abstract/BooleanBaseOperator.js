@@ -33,7 +33,7 @@ export default class BooleanOperator extends BooleanComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({
         booleanChildren: {
