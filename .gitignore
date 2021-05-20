@@ -46,5 +46,4 @@ docker\ alp/
 #Docker mysql db
 doenet_docker/volumes/db/*
 
-package-lock.json
 .eslintrc.js
