@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getCustomFromText, getCustomFromLatex, convertValueToMathExpression, normalizeMathExpression } from '../utils/math';
+import { getCustomFromText, getCustomFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -380,16 +380,11 @@ export default class MathComponent extends InlineComponent {
       definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits or displaydecimals
-        let rounded;
+        let rounded = roundForDisplay({
+          value: dependencyValues.value,
+          dependencyValues, usedDefault
+        });
 
-        if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-          rounded = dependencyValues.value.round_numbers_to_decimals(dependencyValues.displayDecimals);
-        } else {
-          rounded = dependencyValues.value.round_numbers_to_precision(dependencyValues.displayDigits);
-          if (dependencyValues.displaySmallAsZero) {
-            rounded = rounded.evaluate_numbers({ skip_ordering: true, set_small_zero: true });
-          }
-        }
         return {
           newValues: {
             valueForDisplay: normalizeMathExpression({
@@ -1165,7 +1160,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
 
   }
 
-  if(mathChildren.length === 1 && stringChildren.length === 0) {
+  if (mathChildren.length === 1 && stringChildren.length === 0) {
     return {
       success: true,
       instructions: [{
