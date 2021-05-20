@@ -87,6 +87,7 @@ jobs:
           install: false
           start: npm run start:ci
           wait-on: 'http://localhost'
+          wait-on-timeout: 160
           browser: ${{matrix.browser}}
           headless: true
         env:
