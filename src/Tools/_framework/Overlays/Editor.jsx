@@ -68,8 +68,8 @@ const getSHAofContent = (doenetML)=>{
   return contentId;
 }
 
-  const versionHistorySelectedAtom = atom({
-    key:"versionHistorySelectedAtom",
+  const versionHistoryActiveAtom = atom({
+    key:"versionHistoryActiveAtom",
     default:""
   })
 
@@ -80,25 +80,24 @@ const getSHAofContent = (doenetML)=>{
   })
   
 function ReturnToEditingButton(props){
-  const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
-  const returnToEditing = useRecoilCallback(({snapshot,set})=> async ()=>{
-    // set(versionHistorySelectedAtom,"")
-    // const versionHistory = await snapshot.getPromise((itemHistoryAtom(props.branchId)));
-    // const contentId = versionHistory.draft.contentId;
+  const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
+  const returnToEditing = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+    set(versionHistoryActiveAtom,"")
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(branchId)));
+    const contentId = versionHistory.draft.contentId;
  
-    // let loadableDoenetML = await snapshot.getPromise(fileByContentId(contentId));
-    // const doenetML = loadableDoenetML.data;
-    // set(editorDoenetMLAtom,doenetML);
-    // set(viewerDoenetMLAtom,(was)=>{
-    //   let newObj = {...was}
-    //   newObj.doenetML = doenetML;
-    //   newObj.updateNumber = was.updateNumber+1;
-    //   return newObj});
+    let doenetML = await snapshot.getPromise(fileByContentId(contentId));
+    set(editorDoenetMLAtom,doenetML);
+    set(viewerDoenetMLAtom,(was)=>{
+      let newObj = {...was}
+      newObj.doenetML = doenetML;
+      newObj.updateNumber = was.updateNumber+1;
+      return newObj});
   })
 
-  if (selectedVersionId === ""){ return null; }
+  if (activeVersionId === ""){ return null; }
 
-  return <Button callback={()=> returnToEditing() } value="Return to editing" />
+  return <Button callback={()=> returnToEditing(props.branchId) } value="Return to current version" />
 }
 
 function EditorInfoPanel(props){
@@ -204,10 +203,10 @@ function ClipboardLinkButtons(props){
 
 function VersionHistoryPanel(props){
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
-  const selectedVersionId  = useRecoilValue(versionHistorySelectedAtom);
-  const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
+  // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
+  // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
-  const toggleReleaseNamed = useRecoilCallback(({snapshot,set})=> async (branchId,versionId)=>{
+  const toggleReleaseNamed = useRecoilCallback(({set})=> async (branchId,versionId)=>{
     set(itemHistoryAtom(branchId),(was)=>{
       let newHistory = {...was}
       newHistory.named = [...was.named];
@@ -240,17 +239,17 @@ function VersionHistoryPanel(props){
     })
 })
 
-  // const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
-  //   set(versionHistorySelectedAtom,version.versionId)
-  //   let loadableDoenetML = await snapshot.getPromise(fileByContentId(version.contentId));
-  //   const doenetML = loadableDoenetML.data;
-  //   set(editorDoenetMLAtom,doenetML);
-  //   set(viewerDoenetMLAtom,(was)=>{
-  //     let newObj = {...was}
-  //     newObj.doenetML = doenetML;
-  //     newObj.updateNumber = was.updateNumber+1;
-  //     return newObj});
-  // })
+  const versionHistoryActive = useRecoilCallback(({snapshot,set})=> async (version)=>{
+    set(versionHistoryActiveAtom,version.versionId)
+    let doenetML = await snapshot.getPromise(fileByContentId(version.contentId));
+    // const doenetML = loadableDoenetML.data;
+    set(editorDoenetMLAtom,doenetML);
+    set(viewerDoenetMLAtom,(was)=>{
+      let newObj = {...was}
+      newObj.doenetML = doenetML;
+      newObj.updateNumber = was.updateNumber+1;
+      return newObj});
+  })
   
 
 
@@ -279,7 +278,7 @@ function VersionHistoryPanel(props){
       >
         <ClipboardLinkButtons contentId={version.contentId} />
         <div><RenameVersionControl branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
-       <div><button onClick={(e)=>console.log(">>>View "+version.versionId)} >View</button></div> 
+       <div><button onClick={(e)=>versionHistoryActive(version)} >View</button></div> 
        <div><button onClick={(e)=>console.log(">>>Set As Current "+version.versionId)} >Set As Current</button></div> 
         {releaseButton}
       </CollapseSection>)
@@ -341,7 +340,7 @@ function buildTimestamp(){
 
 function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
-  const [selectedVersionId,setSelectedVersionId]  = useRecoilState(versionHistorySelectedAtom);
+  const [activeVersionId,setactiveVersionId]  = useRecoilState(versionHistoryActiveAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
@@ -421,11 +420,11 @@ function TextEditor(props){
   useEffect(() => {
     return () => {
       clearSaveTimeouts();
-      setSelectedVersionId("");
+      setactiveVersionId("");
     };
   },[]);
 
-  if (selectedVersionId !== ""){
+  if (activeVersionId !== ""){
     //Read Only without timers
     clearSaveTimeouts()
     if (editorRef.current){
@@ -530,7 +529,7 @@ function TextEditor(props){
   value={textValue}
   options={options}
   onBeforeChange={(editor, data, value) => {
-    if (selectedVersionId === "") { //No timers when active version history
+    if (activeVersionId === "") { //No timers when active version history
       setEditorDoenetML(value);
       if (timeout.current === null){
         timeout.current = setTimeout(function(){
@@ -557,8 +556,8 @@ function TextEditor(props){
 function DoenetViewerUpdateButton(){
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
   const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
-  const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
-  if (selectedVersionId !== "") {return null;}
+  const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
+  if (activeVersionId !== "") {return null;}
 
   return <Button value="Update" callback={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
@@ -601,8 +600,8 @@ function NameCurrentVersionControl(props){
     
     
   })
-  const selectedVersionId = useRecoilValue(versionHistorySelectedAtom);
-  if (selectedVersionId !== "") {return null;}
+  const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
+  if (activeVersionId !== "") {return null;}
 
   return <Button value="Save Version" callback={()=>saveVersion(props.branchId)} />
 }
