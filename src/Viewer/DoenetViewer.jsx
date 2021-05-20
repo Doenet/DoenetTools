@@ -67,9 +67,11 @@ class DoenetViewerChild extends Component {
 
     this.assignmentId = props.assignmentId;
 
+    // TODO: should we be giving viewer both attemptNumber and requestedVariant?
+    // for now, attemptNumber is used for requestedVariant if not specified
     this.requestedVariant = props.requestedVariant;
     if (this.requestedVariant === undefined) {
-      this.requestedVariant = { index: 0 };
+      this.requestedVariant = { index: this.attemptNumber - 1 };
     }
 
     this.documentRenderer = <>Loading...</>
@@ -100,7 +102,7 @@ class DoenetViewerChild extends Component {
 
     this.loadState(this.createCore);
   }
-  
+
 
   createCore({ stateVariables, variant }) {
 
@@ -109,7 +111,7 @@ class DoenetViewerChild extends Component {
       this.cumulativeStateVariableChanges = null;
       variant = null;
     } else {
-    this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedComponentsReviver)
+      this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedComponentsReviver)
     }
 
     // if loaded variant from database,
@@ -126,7 +128,7 @@ class DoenetViewerChild extends Component {
     // should verify hash
 
 
-    if (this.props.core){
+    if (this.props.core) {
       this.core = new this.props.core({
         coreReadyCallback: this.coreReady,
         coreUpdatedCallback: this.update,
@@ -140,7 +142,7 @@ class DoenetViewerChild extends Component {
         flags: this.props.flags,
         requestedVariant: this.requestedVariant,
       });
-    }else{
+    } else {
       this.core = new Core({
         coreReadyCallback: this.coreReady,
         coreUpdatedCallback: this.update,
@@ -155,7 +157,7 @@ class DoenetViewerChild extends Component {
         requestedVariant: this.requestedVariant,
       });
     }
-    
+
 
 
     // this.databaseItemsToReload = props.databaseItemsToReload;
@@ -165,7 +167,7 @@ class DoenetViewerChild extends Component {
 
   coreReady() {
 
-    this.resultingVariant = this.core.document.state.selectedVariantInfo.value;
+    this.generatedVariant = this.core.document.state.selectedVariantInfo.value;
 
     if (this.cumulativeStateVariableChanges) {
       // continue to try setting the state variables to cummulativeStateVariableChanges
@@ -174,8 +176,8 @@ class DoenetViewerChild extends Component {
       let nFailures = Infinity;
       while (nFailures > 0) {
         let result = this.core.executeUpdateStateVariables({
-        newStateVariableValues: this.cumulativeStateVariableChanges
-      })
+          newStateVariableValues: this.cumulativeStateVariableChanges
+        })
         if (!(result.nFailures && result.nFailures < nFailures)) {
           break;
         }
@@ -196,20 +198,20 @@ class DoenetViewerChild extends Component {
 
     //TODO: Handle if number of items changed. Handle if weights changed
 
-    if (this.assignmentId && !this.props.ignoreDatabase){
-      const payload = { 
-        weights: this.core.scoredItemWeights, 
-        contentId:this.contentId, 
+    if (this.assignmentId && !this.props.ignoreDatabase) {
+      const payload = {
+        weights: this.core.scoredItemWeights,
+        contentId: this.contentId,
         assignmentId: this.assignmentId,
         attemptNumber: this.attemptNumber
       }
-      console.log(">>>this.assignmentId",this.assignmentId)
-      console.log(">>>this.props.ignoreDatabase",this.props.ignoreDatabase)
-      console.log("core ready payload:",payload)
+      console.log(">>>this.assignmentId", this.assignmentId)
+      console.log(">>>this.props.ignoreDatabase", this.props.ignoreDatabase)
+      console.log("core ready payload:", payload)
       axios.post('/api/saveAssignmentWeights.php', payload)
         .then(resp => {
-          console.log('saveAssignmentWeights-->>',resp.data);
-      
+          console.log('saveAssignmentWeights-->>', resp.data);
+
         });
     }
 
@@ -241,10 +243,10 @@ class DoenetViewerChild extends Component {
 
       this.forceUpdate();
     });
-    
+
     //Let viewer know we are ready
-    if (this.props.onCoreReady){
-      this.props.onCoreReady(); 
+    if (this.props.onCoreReady) {
+      this.props.onCoreReady();
     }
   }
 
@@ -278,7 +280,7 @@ class DoenetViewerChild extends Component {
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
 
 
-    let variantString = JSON.stringify(this.resultingVariant, serializedComponentsReplacer);
+    let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
 
     // save to database
     // check the cookie to see if allowed to record
@@ -346,7 +348,7 @@ class DoenetViewerChild extends Component {
 
     axios.get(phpUrl, payload)
       .then(resp => {
-        console.log("load ci",resp.data)
+        console.log("load ci", resp.data)
         if (callback) {
           callback({
             stateVariables: resp.data.stateVariables,
@@ -388,23 +390,23 @@ class DoenetViewerChild extends Component {
     itemNumber,
     itemCreditAchieved,
     callBack,
-  }){
+  }) {
     // console.log('CALLED!',
     //   itemNumber,
     //   itemCreditAchieved
     // )
     //
-    if (this.assignmentId){
-      const payload = { 
+    if (this.assignmentId) {
+      const payload = {
         assignmentId: this.assignmentId,
         attemptNumber: this.attemptNumber,
-        credit:itemCreditAchieved,
+        credit: itemCreditAchieved,
         itemNumber,
       }
       axios.post('/api/saveCreditForItem.php', payload)
         .then(resp => {
           // console.log('saveCreditForItem-->>>',resp.data);
-      
+
         });
     }
 
@@ -448,7 +450,7 @@ class DoenetViewerChild extends Component {
       assignmentId: this.assignmentId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
-      variant: JSON.stringify(this.resultingVariant, serializedComponentsReplacer),
+      variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
       verb: event.verb,
       object: JSON.stringify(event.object, serializedComponentsReplacer),
       result: JSON.stringify(event.result, serializedComponentsReplacer),
@@ -473,16 +475,17 @@ class DoenetViewerChild extends Component {
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       hasError: false,
-      errorMsg: "" };
+      errorMsg: ""
+    };
   }
 
   static getDerivedStateFromError(error) {
-    return { 
+    return {
       hasError: true,
       errorMsg: error.toString()
-     };
+    };
   }
 
   render() {
@@ -490,11 +493,11 @@ class ErrorBoundary extends React.Component {
       return <b>{this.state.errorMsg}</b>;
     }
 
-    return this.props.children; 
+    return this.props.children;
   }
 }
 
-function DoenetViewer(props){
+function DoenetViewer(props) {
   return <ErrorBoundary><DoenetViewerChild {...props} /></ErrorBoundary>
 }
 
