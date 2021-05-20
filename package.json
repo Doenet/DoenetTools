@@ -1,9 +1,10 @@
 {
   "scripts": {
     "start": "snowpack dev",
+    "start:ci": "docker-compose up -d",
     "build": "snowpack build",
     "build:clean": "snowpack build --clean --reload",
-    "build:deploy": "snowpack build --clean",
+    "build:deploy": "snowpack build --clean --config snowpack.deploy.config.js",
     "build:docker": "docker-compose build",
     "build:core": "node package.core.js",
     "test": "cypress open",

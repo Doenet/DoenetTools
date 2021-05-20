@@ -1,6 +1,6 @@
 FROM composer as composer
 WORKDIR /build
-COPY composer.json .
+COPY ./doenet_docker/php/composer.json .
 RUN composer install --ignore-platform-reqs
 
 FROM php:5.4-fpm
@@ -24,5 +24,6 @@ RUN rm -rf /var/lib/apt/lists/* &&\
 RUN docker-php-ext-install mysqli
 
 WORKDIR /usr/local/apache2/htdocs/api/
-COPY --from=composer /build/vendor vendor
+COPY ./src/Api .
+COPY --from=composer /build/vendor ./vendor
 EXPOSE 9000

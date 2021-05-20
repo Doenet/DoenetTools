@@ -1,0 +1,8 @@
+./.git/
+./node_modeules/
+./.snowpack/
+./dist_local/
+./dist/
+./cypress/
+./cypress_php/
+./.devcontainer/

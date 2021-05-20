@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   dev:
-    build: ./doenet_docker/snowpack
+    image: lyanthropos/doenet_test:snowpack-dev
     ports:
       - 80:80
     volumes:
@@ -11,10 +11,9 @@ services:
       - node_modules:/home/node/workspace/node_modules
     networks:
       - dev_net
-    command: tail -f /dev/null
 
   apache:
-    build: './doenet_docker/apache'
+    image: lyanthropos/doenet_test:apache-dev
     volumes:
       - ./src/api:/usr/local/apache2/htdocs/api
       - ./src/media:/usr/local/apache2/htdocs/media
@@ -26,7 +25,7 @@ services:
     restart: always
 
   php:
-    build: './doenet_docker/php'
+    image: lyanthropos/doenet_test:php-dev
     volumes:
       - ./src/api:/usr/local/apache2/htdocs/api
       - vendor:/usr/local/apache2/htdocs/api/vendor
@@ -35,7 +34,7 @@ services:
     restart: always
 
   mysql:
-    build: './doenet_docker/mysql'
+    image: lyanthropos/doenet_test:mysql-dev
     ports:
       - 3306:3306
     volumes:

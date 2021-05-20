@@ -1,8 +1,4 @@
 const proxy = require('http2-proxy');
-// const proxy = httpProxy.createServer({ target: 'http://0.0.0.0:80' });
-// proxy.on('proxyReq', function (proxyReq, req, res, options) {
-//   proxyReq.setHeader('Host', 'localhost');
-// });
 
 module.exports = {
   alias: {
@@ -40,7 +36,8 @@ module.exports = {
     [
       'snowpack-plugin-raw-file-loader',
       {
-        exts: ['.doenet', '.txt'], // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
+        // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
+        exts: ['.doenet', '.txt'],
       },
     ],
   ],
@@ -70,6 +67,7 @@ module.exports = {
     knownEntrypoints: ['crypto-js/sha1'],
   },
   devOptions: {
+    output: 'stream',
     port: 80,
     hmrPort: 80,
     openUrl: '/exampleTool',
@@ -77,6 +75,5 @@ module.exports = {
   buildOptions: {
     out: 'dist',
     clean: false,
-    // minify: true
   },
 };

@@ -150,7 +150,7 @@ export default function ToolRoot({ tool }) {
     axios
       .get('/api/loadProfile.php', { params: {} })
       .then((resp) => {
-        console.log(resp)
+        console.log(resp);
         if (resp.data.success === '1') {
           // console.log(">>>resp.data.profile",resp.data.profile)
           localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
@@ -158,7 +158,7 @@ export default function ToolRoot({ tool }) {
         }
       })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         //  Error currently does nothing
       });
 

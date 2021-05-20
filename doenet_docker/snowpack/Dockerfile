@@ -16,3 +16,9 @@ RUN echo \
 RUN apt-get update && \
     apt-get -y install docker-ce docker-ce-cli containerd.io
 
+WORKDIR /home/node/workspace
+COPY package-lock.json package.json ./
+RUN npm ci
+COPY snowpack.config.js .
+
+CMD ["npm", "start"]
