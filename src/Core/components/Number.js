@@ -23,6 +23,12 @@ export default class NumberComponent extends InlineComponent {
       defaultValue: false,
       public: true,
     }
+    attributes.displayDecimals = {
+      createComponentOfType: "number",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
     attributes.renderAsMath = {
       createComponentOfType: "boolean",
       createStateVariable: "renderAsMath",
@@ -199,14 +205,24 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
       }),
-      definition: function ({ dependencyValues }) {//value, displayDigits, displaySmallAsZero, simplify, expand }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         // for display via latex and text, round any decimal numbers to the significant digits
         // determined by displaydigits
-        let rounded = me.round_numbers_to_precision(dependencyValues.value, dependencyValues.displayDigits).tree;
-        if (dependencyValues.displaySmallAsZero) {
-          if (Math.abs(rounded) < 1E-14) {
-            rounded = 0;
+        let rounded;
+
+        if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+          rounded = me.round_numbers_to_decimals(dependencyValues.value, dependencyValues.displayDecimals).tree;
+        } else {
+          rounded = me.round_numbers_to_precision(dependencyValues.value, dependencyValues.displayDigits).tree;
+          if (dependencyValues.displaySmallAsZero) {
+            if (Math.abs(rounded) < 1E-14) {
+              rounded = 0;
+            }
           }
         }
         return {
