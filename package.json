@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "cd doenet_docker && docker-compose up -d && cd ..  && snowpack build --config snowpack.config.js",
+    "start:new": "cd doenet_docker && docker compose up -d && cd ..  && snowpack build --config snowpack.config.js",
     "docker:build": "cd doenet_docker && docker-compose build",
     "dev": "snowpack dev --config snowpack.config.js",
     "hot": "snowpack dev --config snowpack.config.js",
@@ -65,7 +66,7 @@
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
     "cypress": "^7.2.0",
-    "esbuild": "^0.9.7",
+    "esbuild": "^0.12.1",
     "eslint": "^7.24.0",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",
