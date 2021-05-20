@@ -115,7 +115,7 @@
       {
         "files": [
           "./src/Core/**/*.js",
-          "./src/Viewer/**/*.jsx"
+          "./src/Viewer/**/*.{jsx,js}"
         ],
         "parser": "@babel/eslint-parser",
         "parserOptions": {
