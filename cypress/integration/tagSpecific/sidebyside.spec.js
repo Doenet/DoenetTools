@@ -213,42 +213,20 @@ describe('SideBySide Tag Tests', function () {
       cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
         expect(Number(width)).closeTo(sbsWidth * actualWidth1 / 100, 0.1)
       })
-
       cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
       });
-
       cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
-        expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
+        expect(parseFloat(margin)).closeTo(sbsWidth * (actualRightMargin + actualGap / 2) / 100, 0.1)
       });
 
-      let rightInd = 2;
-
-      if (actualGap > 0) {
-        rightInd = 3;
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('width').then(width => {
-          expect(Number(width)).closeTo(sbsWidth * actualGap / 100, 0.1)
-        })
-
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-left').then(margin => {
-          expect(parseFloat(margin)).eq(0);
-        });
-
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-right').then(margin => {
-          expect(parseFloat(margin)).eq(0);
-        });
-      }
-
-
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${rightInd})`).invoke('width').then(width => {
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('width').then(width => {
         expect(Number(width)).closeTo(sbsWidth * actualWidth2 / 100, 0.1)
       })
-
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${rightInd})`).invoke('css', 'margin-left').then(margin => {
-        expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-left').then(margin => {
+        expect(parseFloat(margin)).closeTo(sbsWidth * (actualLeftMargin + actualGap / 2) / 100, 0.1)
       });
-
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${rightInd})`).invoke('css', 'margin-right').then(margin => {
+      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(2)`).invoke('css', 'margin-right').then(margin => {
         expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
       });
     }
@@ -380,50 +358,28 @@ describe('SideBySide Tag Tests', function () {
 
     if (!isSbsGroup) {
 
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('width').then(width => {
-        expect(Number(width)).closeTo(sbsWidth * actualWidths[0] / 100, 0.1)
-      })
+      for (let col = 0; col < 4; col++) {
 
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-left').then(margin => {
-        expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
-      });
+        let thisLeftMargin = actualLeftMargin;
+        let thisRightMargin = actualRightMargin;
 
-      cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(1)`).invoke('css', 'margin-right').then(margin => {
-        expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
-      });
-
-      let spanNum = 1;
-
-      for (let col = 1; col < 4; col++) {
-        spanNum++;
-
-        if (actualGap > 0) {
-          cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${spanNum})`).invoke('width').then(width => {
-            expect(Number(width)).closeTo(sbsWidth * actualGap / 100, 0.1)
-          })
-
-          cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${spanNum})`).invoke('css', 'margin-left').then(margin => {
-            expect(parseFloat(margin)).eq(0);
-          });
-
-          cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${spanNum})`).invoke('css', 'margin-right').then(margin => {
-            expect(parseFloat(margin)).eq(0);
-          });
-
-          spanNum++;
+        if (col > 0) {
+          thisLeftMargin += actualGap / 2;
+        }
+        if (col < 3) {
+          thisRightMargin += actualGap / 2;
         }
 
-
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${spanNum})`).invoke('width').then(width => {
+        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('width').then(width => {
           expect(Number(width)).closeTo(sbsWidth * actualWidths[col] / 100, 0.1)
         })
 
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${spanNum})`).invoke('css', 'margin-left').then(margin => {
-          expect(parseFloat(margin)).closeTo(sbsWidth * actualLeftMargin / 100, 0.1)
+        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-left').then(margin => {
+          expect(parseFloat(margin)).closeTo(sbsWidth * thisLeftMargin / 100, 0.1)
         });
 
-        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${spanNum})`).invoke('css', 'margin-right').then(margin => {
-          expect(parseFloat(margin)).closeTo(sbsWidth * actualRightMargin / 100, 0.1)
+        cy.get(`${cesc('#' + sbsName)} > span:nth-of-type(${col + 1})`).invoke('css', 'margin-right').then(margin => {
+          expect(parseFloat(margin)).closeTo(sbsWidth * thisRightMargin / 100, 0.1)
         });
       }
     }
@@ -4660,7 +4616,7 @@ describe('SideBySide Tag Tests', function () {
         sbsWidth, sbsName: "/sbs"
       })
 
-      
+
       cy.log(`invalid left defining margin, treated as undefined`)
       cy.get("#\\/dm1 textarea").type("{end}{backspace}{backspace}hello{enter}", { force: true });
 
@@ -4670,7 +4626,7 @@ describe('SideBySide Tag Tests', function () {
         specifiedValigns: ["middle", "bottom"],
         sbsWidth, sbsName: "/sbs"
       })
-     
+
       cy.log(`invalid right defining margin, treated as undefined`)
       cy.get("#\\/dm2 textarea").type("{end}{backspace}{backspace}bye{enter}", { force: true });
 

@@ -5,6 +5,7 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 import cssesc from 'cssesc';
+import { sizeToCSS } from './utils/css';
 
 export default class Video extends DoenetRenderer {
   constructor(props) {
@@ -19,30 +20,10 @@ export default class Video extends DoenetRenderer {
     if (this.doenetSvData.youtube) {
       let cName = cssesc(this.componentName);
 
-      let width = null;
-      if (this.doenetSvData.width) {
-        width = this.doenetSvData.width.size;
-        if (this.doenetSvData.width.isAbsolute) {
-          width += 'px';
-        } else {
-          width += '%';
-        }
-      }
-
-      let height = null;
-      if (this.doenetSvData.height) {
-        height = this.doenetSvData.height.size;
-        if (this.doenetSvData.height.isAbsolute) {
-          height += 'px';
-        } else {
-          height += '%';
-        }
-      }
-
       this.player = new window.YT.Player(cName, {
         videoId: this.doenetSvData.youtube,
-        width,
-        height,
+        width: sizeToCSS(this.doenetSvData.width),
+        height: sizeToCSS(this.doenetSvData.height),
         playerVars: {
           autoplay: 0,
           controls: 1,
@@ -90,41 +71,14 @@ export default class Video extends DoenetRenderer {
         );
       }
       if (type) {
-        let width = null;
-        if (this.doenetSvData.width) {
-          width = this.doenetSvData.width.size;
-          if (this.doenetSvData.width.isAbsolute) {
-            width += 'px';
-          } else {
-            width += '%';
-          }
-        }
 
-        let height = null;
-        if (this.doenetSvData.height) {
-          height = this.doenetSvData.height.size;
-          if (this.doenetSvData.height.isAbsolute) {
-            height += 'px';
-          } else {
-            height += '%';
-          }
-        }
-        return (
-          <React.Fragment>
-            <a name={this.componentName} />
-            <video
-              className="video"
-              id={this.componentName}
-              style={{ objectFit: 'fill' }}
-              controls={true}
-              width={width}
-              height={height}
-            >
-              <source src={this.doenetSvData.source} type={type} />
-              Your browser does not support the &lt;video&gt; tag.
-            </video>
-          </React.Fragment>
-        );
+        return <React.Fragment>
+          <a name={this.componentName} />
+          <video className="video" id={this.componentName} style={{ objectFit: "fill" }} controls={true} width={sizeToCSS(this.doenetSvData.width)} height={sizeToCSS(this.doenetSvData.height)}>
+            <source src={this.doenetSvData.source} type={type} />
+          Your browser does not support the &lt;video&gt; tag.
+        </video>
+        </React.Fragment>
       } else {
         return null;
       }

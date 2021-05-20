@@ -24,9 +24,7 @@ import {
 } from './Drive';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
 
-import { itemHistoryAtom } from '../../_sharedRecoil/content';
-
-const dragShadowId = 'dragShadow';
+const dragShadowId = "dragShadow";
 
 const formatDate = (dt) => {
   const formattedDate = `${dt.getFullYear().toString().padStart(2, '0')}-${(

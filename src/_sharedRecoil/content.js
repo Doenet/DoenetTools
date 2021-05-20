@@ -17,13 +17,29 @@ export const itemHistoryAtom = atomFamily({
   default: selectorFamily({
     key:"itemHistoryAtom/Default",
     get:(branchId)=> async ()=>{
+      let draft = {};
+      let named = [];
+      let autoSaves = [];
       if (!branchId){
-        return [];
+        return {draft,named,autoSaves};
       }
       const { data } = await axios.get(
         `/api/loadVersions.php?branchId=${branchId}`
       );
-      return data.versions
+        
+      draft = data.versions[0];
+      for (let version of data.versions){
+        if (version.isDraft === '1'){
+          continue;
+        }
+        if (version.isNamed === '1'){
+          named.push(version);
+          continue;
+        }
+        autoSaves.push(version);
+      }
+      return {draft,named,autoSaves};
+
     }
   })
 })

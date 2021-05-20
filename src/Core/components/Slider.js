@@ -18,9 +18,6 @@ export default class Slider extends BaseComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
-      // stateVariableComponentType: "text",
-      // componentStateVariableForAttributeValue: "text",
-      // defaultValue: "300px",
       defaultValue: { size: 300, isAbsolute: true },
       public: true,
       forRenderer: true
@@ -28,9 +25,6 @@ export default class Slider extends BaseComponent {
     attributes.height = {
       createComponentOfType: "_componentSize",
       createStateVariable: "height",
-      // stateVariableComponentType: "text",
-      // componentStateVariableForAttributeValue: "text",
-      // defaultValue: "100px",
       defaultValue: { size: 100, isAbsolute: true },
       public: true,
       forRenderer: true

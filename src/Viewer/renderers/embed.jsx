@@ -1,6 +1,7 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 import cssesc from 'cssesc';
+import { sizeToCSS } from './utils/css';
 
 export default class Embed extends DoenetRenderer {
   componentDidMount() {
@@ -9,27 +10,11 @@ export default class Embed extends DoenetRenderer {
 
       let cName = cssesc(this.componentName);
 
-      let width = null;
-      if (this.doenetSvData.width) {
-        width = this.doenetSvData.width.size;
-        if (!this.doenetSvData.width.isAbsolute) {
-          width += '%';
-        }
-      }
-
-      let height = null;
-      if (this.doenetSvData.height) {
-        height = this.doenetSvData.height.size;
-        if (!this.doenetSvData.height.isAbsolute) {
-          height += '%';
-        }
-      }
-
-      window.MathJax.Hub.Register.StartupHook('End', function () {
+      window.MathJax.Hub.Register.StartupHook("End", function () {
         let parameters = {
           id: cName,
-          width,
-          height,
+          width: sizeToCSS(this.doenetSvData.width),
+          height: sizeToCSS(this.doenetSvData.height),
           showResetIcon: false,
           enableLabelDrags: false,
           useBrowserForJS: true,
@@ -67,21 +52,8 @@ export default class Embed extends DoenetRenderer {
       return null;
     }
 
-    let width = null;
-    if (this.doenetSvData.width) {
-      width = this.doenetSvData.width.size;
-      if (!this.doenetSvData.width.isAbsolute) {
-        width += '%';
-      }
-    }
-
-    let height = null;
-    if (this.doenetSvData.height) {
-      height = this.doenetSvData.height.size;
-      if (!this.doenetSvData.height.isAbsolute) {
-        height += '%';
-      }
-    }
+    let width = sizeToCSS(this.doenetSvData.width);
+    let height = sizeToCSS(this.doenetSvData.height);
 
     if (this.doenetSvData.geogebra) {
       return (

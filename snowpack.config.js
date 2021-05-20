@@ -21,7 +21,7 @@ module.exports = {
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
     'src/Parser': '/parser',
-    'src/API': '/api',
+    'src/Api': '/api',
     'src/Home': '/',
     'src/Viewer': '/viewer',
     'src/_reactComponents': '/_reactComponents',
