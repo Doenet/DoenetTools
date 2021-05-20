@@ -2,7 +2,7 @@ import * as ComponentTypes from './ComponentTypes'
 import readOnlyProxyHandler from './ReadOnlyProxyHandler';
 import ParameterStack from './ParameterStack';
 import Numerics from './Numerics';
-import seedrandom from 'seedrandom';
+import { prng_alea } from 'esm-seedrandom';
 import me from 'math-expressions';
 import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
@@ -284,8 +284,8 @@ export default class Core {
       // this.parameterStack.parameters.seed = '47';
       this.parameterStack.parameters.seed = this.parameterStack.parameters.hashStringToInteger(Date.now().toString());
     }
-    this.parameterStack.parameters.selectRng = new seedrandom(this.parameterStack.parameters.seed);
-    this.parameterStack.parameters.rngClass = seedrandom;
+    this.parameterStack.parameters.selectRng = new prng_alea(this.parameterStack.parameters.seed);
+    this.parameterStack.parameters.rngClass = prng_alea;
   }
 
   expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {
