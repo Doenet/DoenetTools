@@ -11,18 +11,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.repository }}
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - name: Prettify
         uses: creyD/prettier_action@v3.3
         with:
           prettier_options: --write ./src/**/*.{jsx,json}
-          only_changed: True
+          only_changed: true
+          dry: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   lint:
-    needs: prettier
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,7 +36,6 @@ jobs:
       - name: Lint
         run: npx eslint "./src/**/*.{jsx,js}"
   install:
-    needs: prettier
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
