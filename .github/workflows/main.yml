@@ -1,27 +1,23 @@
 name: Doenet CI
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 jobs:
   prettier:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
       - name: Prettify
         uses: creyD/prettier_action@v3.3
         with:
-          prettier_options: --write ./src/**/*.{jsx,json}
-          only_changed: True
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          prettier_options: --write ./src/**/*.{jsx,json,php}
+          prettier_plugins: '@prettier/plugin-php'
+          dry: true
+
   lint:
-    needs: prettier
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,18 +26,16 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node_version: '14'
-    
+
       - name: Deps install
         run: npm install
       - name: Lint
         run: npx eslint "./src/**/*.{jsx,js}"
   install:
-    needs: prettier
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-    
       - name: Create cache
         uses: actions/cache@v2
         id: npm-and-build-cache
@@ -53,10 +47,9 @@ jobs:
           key: ${{ runner.os }}-node_modules-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-build-
-      - name: Install cypress 
+      - name: Install cypress
         uses: cypress-io/github-action@v2
         with:
-          # Disable running of tests within install job
           runTests: false
           build: npm run build:ci
   ui-tests:
@@ -87,7 +80,7 @@ jobs:
           install: false
           start: npm run start:ci
           wait-on: 'http://localhost'
-          wait-on-timeout: 160
+          wait-on-timeout: 180
           browser: ${{matrix.browser}}
           headless: true
         env:
