@@ -21,4 +21,8 @@ COPY package-lock.json package.json ./
 RUN npm ci
 COPY snowpack.config.js .
 
+RUN rm -rf /var/lib/apt/lists/* &&\
+    apt-get -y autoremove && \
+    apt-get clean
+
 CMD ["npm", "start"]
