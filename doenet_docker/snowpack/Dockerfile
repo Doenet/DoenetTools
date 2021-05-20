@@ -17,12 +17,10 @@ RUN apt-get update && \
     apt-get -y install docker-ce docker-ce-cli containerd.io
 
 WORKDIR /home/node/workspace
-COPY package-lock.json package.json ./
-RUN npm ci
-COPY snowpack.config.js .
+COPY package-lock.json package.json snowpack.config.js ./
 
 RUN rm -rf /var/lib/apt/lists/* &&\
     apt-get -y autoremove && \
     apt-get clean
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:dev"]
