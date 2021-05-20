@@ -13,11 +13,14 @@ export default class Embed extends DoenetRenderer {
 
       let cName = cssesc(this.componentName);
 
+      let width = sizeToCSS(this.doenetSvData.width);
+      let height = sizeToCSS(this.doenetSvData.height);
+
       window.MathJax.Hub.Register.StartupHook("End", function () {
         let parameters = {
           id: cName,
-          width: sizeToCSS(this.doenetSvData.width),
-          height: sizeToCSS(this.doenetSvData.height),
+          width,
+          height,
           showResetIcon: false,
           enableLabelDrags: false,
           useBrowserForJS: true,

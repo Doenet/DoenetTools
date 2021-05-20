@@ -1,6 +1,6 @@
 import InlineComponent from '../abstract/InlineComponent';
 import me from 'math-expressions';
-import { returnNVariables, convertValueToMathExpression } from '../../utils/math';
+import { returnNVariables, roundForDisplay } from '../../utils/math';
 
 export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";

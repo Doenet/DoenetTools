@@ -138,7 +138,6 @@ import MathBaseOperatorOneInput from './components/abstract/MathBaseOperatorOneI
 import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import TextFromSingleStringChild from './components/abstract/TextFromSingleStringChild';
-import MathWithVariable from './components/abstract/MathWithVariable';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
 
@@ -260,7 +259,6 @@ const componentTypeArray = [
   ...Object.values(ComponentSize),
   SectioningComponent,
   TextFromSingleStringChild,
-  MathWithVariable,
   InlineRenderInlineChildren,
   TextOrInline,
 ];

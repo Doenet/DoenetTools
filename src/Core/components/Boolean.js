@@ -3,7 +3,16 @@ import me from 'math-expressions';
 import { evaluateLogic, splitSymbolsIfMath } from '../utils/booleanLogic';
 import { appliedFunctionSymbols } from '../utils/math';
 
-var textToAstUnsplit = new me.converters.textToAstObj({ splitSymbols: false, appliedFunctionSymbols });
+
+const appliedFunctionSymbolsWithBooleanOperators = [
+  ...appliedFunctionSymbols,
+  "isnumber", "isinteger"
+]
+
+var textToAstUnsplit = new me.converters.textToAstObj({
+  splitSymbols: false,
+  appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators
+});
 
 export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";
