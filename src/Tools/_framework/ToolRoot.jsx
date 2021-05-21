@@ -163,7 +163,7 @@ export const ProfileContext = React.createContext({});
 
 export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
-  const [_, setRefresh] = useState(0);
+  const [, setRefresh] = useState(0);
 
   const profile = JSON.parse(localStorage.getItem('Profile'));
 
@@ -180,7 +180,7 @@ export default function ToolRoot({ tool }) {
         }
       })
       .catch((error) => {
-        //  Error currently does nothing
+        throw new Error(`Error occured while loading profile: ${error}`);
       });
 
     return null;
@@ -191,7 +191,7 @@ export default function ToolRoot({ tool }) {
       {/* <GlobalStyle /> */}
 
       {tool}
-      <Suspense fallback={<div>loading...</div>}>
+      <Suspense fallback={<LoadingFallback>Loading...</LoadingFallback>}>
         {overlays.map((layer, idx) =>
           idx == overlays.length - 1 ? layer : null,
         )}
