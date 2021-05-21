@@ -13,7 +13,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
-$itemId = mysqli_real_escape_string($conn,$_POST["itemId"]);
+$versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 
 //make assignment 
 $title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
@@ -119,8 +119,10 @@ $result = $conn->query($sql);
   // echo $sql;
 $sqlnew="UPDATE drive_content SET isAssigned=1 WHERE branchId='$branchId';";
 //  echo $sqlnew;
-$result = $conn->query($sqlnew); 
+$result = $conn->query($sqlnew);
 
+$sql ="UPDATE content SET isAssigned=1 WHERE contentId='$contentId' AND versionId='$versionId';";
+$result = $conn->query($sql); 
 
 $response_arr = array(
   "success"=>$success,
