@@ -1558,10 +1558,10 @@ const DoenetML = React.memo((props)=>{
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99";}
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
   if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
-  if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
+  if (props.item.isAssigned == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
   let label = props.item?.label;
-  if (props.item?.assignment_isPublished === "1" || props.item?.isAssignment === "1"){
+  if ( props.item?.isAssigned == "1"){
     label = props.item?.assignment_title;
   }
 
@@ -1748,7 +1748,7 @@ const Url = React.memo((props)=>{
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"}
   if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
   if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
-  if (props.item.isAssignment == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
+  if (props.item.isAssigned == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
 
   useEffect(() => {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
