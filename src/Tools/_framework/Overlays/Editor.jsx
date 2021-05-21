@@ -46,7 +46,7 @@ import {
  } from '@fortawesome/free-regular-svg-icons';
 
 import { useToast } from '../../_framework/Toast';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+// import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -111,11 +111,11 @@ function EditorInfoPanel(props){
   <div>Load time (soon) </div>
   <div>Most recent release 
   
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  {/* <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
   <button onClick={()=>{
     
   }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
-  </CopyToClipboard>
+  </CopyToClipboard> */}
 
   <button onClick={
     ()=>window.open(link, '_blank')
@@ -192,9 +192,9 @@ function ClipboardLinkButtons(props){
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div>This content 
   
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  {/* <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
   <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
-  </CopyToClipboard>
+  </CopyToClipboard> */}
 
   <button onClick={
     ()=>window.open(link, '_blank')
