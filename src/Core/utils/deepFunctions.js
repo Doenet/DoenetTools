@@ -4,27 +4,27 @@ import me from 'math-expressions';
 
 // from https://stackoverflow.com/a/40293777
 export function deepClone(obj, BaseComponent, hash) {
-  
+
   // Do not try to clone primitives or functions
   if (Object(obj) !== obj || obj instanceof Function) return obj;
 
   // Do not try to clone Doenet components
   if (BaseComponent !== undefined && obj instanceof BaseComponent) return obj;
 
-  if(obj instanceof me.class) {
+  if (obj instanceof me.class) {
     return obj.copy();
   }
 
-  if(hash === undefined) {
+  if (hash === undefined) {
     hash = new WeakMap();
   }
 
-  if(Array.isArray(obj)) {
-    return [... obj.map(x => deepClone(x, BaseComponent, hash))]
+  if (Array.isArray(obj)) {
+    return [...obj.map(x => deepClone(x, BaseComponent, hash))]
   }
 
   // seem to get empty object a lot, so short circuit it
-  if(obj.constructor === Object && Object.entries(obj).length === 0) {
+  if (obj.constructor === Object && Object.entries(obj).length === 0) {
     return {};
   }
 
@@ -75,6 +75,9 @@ export function deepCompare(a, b, BaseComponent) {
 
     // if math-expressions, equal if exact same syntax tree
     if (x instanceof me.class && y instanceof me.class) {
+      if (Number.isNaN(x.tree) && Number.isNaN(y.tree)) {
+        return true;
+      }
       return x.equalsViaSyntax(y);
     }
 
@@ -148,7 +151,7 @@ export function deepCompare(a, b, BaseComponent) {
           break;
 
         default:
-          if (x[p] !== y[p]) {
+          if (x[p] !== y[p] && !(Number.isNaN(x[p]) && Number.isNaN(y[p]))) {
             return false;
           }
           break;

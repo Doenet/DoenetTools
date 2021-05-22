@@ -2,7 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent';
 import { enumerateSelectionCombinations, enumerateCombinations } from '../utils/enumeration';
 import { getVariantsForDescendants } from '../utils/variants';
 import { deepClone } from '../utils/deepFunctions';
-import { processAssignNames } from '../utils/serializedStateProcessing';
+import { gatherVariantComponents, processAssignNames } from '../utils/serializedStateProcessing';
 import me from 'math-expressions';
 import { textToAst } from '../utils/math';
 
@@ -184,7 +184,6 @@ export default class Select extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        console.log(dependencyValues)
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
@@ -476,7 +475,7 @@ export default class Select extends CompositeComponent {
 
   static createSerializedReplacements({ component, components, componentInfoObjects }) {
 
-    console.log(`create serialized replacements for ${component.componentName}`);
+    // console.log(`create serialized replacements for ${component.componentName}`);
 
     let replacements = [];
 
@@ -485,12 +484,9 @@ export default class Select extends CompositeComponent {
 
       let selectedChildName = component.stateValues.optionChildren[selectedIndex].componentName;
 
-      // use state, not stateValues, as read only proxy messes up internal
-      // links between descendant variant components and the components themselves
-
       let selectedChild = components[selectedChildName];
 
-      let serializedGrandchildren = deepClone(selectedChild.state.serializedChildren.value);
+      let serializedGrandchildren = deepClone(selectedChild.stateValues.serializedChildren);
       let serializedChild = {
         componentType: "option",
         state: { rendered: true },
@@ -503,32 +499,21 @@ export default class Select extends CompositeComponent {
         serializedChild.attributes = { newNamespace: true }
       }
 
-      if (selectedChild.variants) {
-        serializedChild.variants = deepClone(selectedChild.variants);
-      }
 
       replacements.push(serializedChild);
     }
+
+    let descendantVariantComponents = gatherVariantComponents({
+      serializedComponents: replacements,
+      componentInfoObjects
+    });
 
     // if subvariants were specified, add those the corresponding descendants
     if (component.variants && component.variants.desiredVariant !== undefined) {
 
       let desiredVariant = component.variants.desiredVariant;
-      if (desiredVariant !== undefined && desiredVariant.subvariants !== undefined &&
-        component.variants.descendantVariantComponents !== undefined) {
+      if (desiredVariant !== undefined && desiredVariant.subvariants !== undefined) {
 
-        // collect descendantVariantComponents that would be in select
-        // if it just had the selected indicies
-        let descendantVariantComponents = [];
-        for (let r of replacements) {
-          if (r.variants !== undefined) {
-            if (r.variants.isVariantComponent) {
-              descendantVariantComponents.push(r)
-            } else if (r.variants.descendantVariantComponents) {
-              descendantVariantComponents.push(...r.variants.descendantVariantComponents);
-            }
-          }
-        }
         for (let ind in desiredVariant.subvariants) {
           let subvariant = desiredVariant.subvariants[ind];
           let variantComponent = descendantVariantComponents[ind];

@@ -4,7 +4,7 @@ export default class VariantControl extends BaseComponent {
   static componentType = "variantControl";
   static rendererType = undefined;
 
-  static createsVariants = true;
+  // static createsVariants = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
