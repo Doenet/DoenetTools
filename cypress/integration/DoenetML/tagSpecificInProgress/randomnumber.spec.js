@@ -1,13 +1,12 @@
 import me from 'math-expressions';
 
-describe('GenerateRandomNumbers Tag Tests', function () {
+describe('RandomNumber Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/test')
-
   })
 
-  it('no parameters, generate single random number from 1 to 10', () => {
+  it.skip('no parameters, generate random number from 1 to 10', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -15,7 +14,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers/>
+        <randomnumber/>
       </template>
       <sources><sequence>1,30</sequence></sources>
     </map>
@@ -39,10 +38,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let generatedNumbers = [];
       for (let ind = 0; ind < 30; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(1);
-
-        let num = randomReplacements[0].state.number;
+        let num = map1Replacements[ind].state.number;
         expect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(num)).eq(true);
         generatedNumbers.push(num);
       }
@@ -65,7 +61,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate single random number from 1 to 6', () => {
+  it.skip('generate random number from 1 to 6', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -73,7 +69,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers>6</generaterandomnumbers>
+        <randomnumber>6</randomnumber>
       </template>
       <sources><sequence>1,30</sequence></sources>
     </map>
@@ -89,7 +85,6 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components['/_map1'].replacements;
@@ -98,10 +93,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let generatedNumbers = [];
       for (let ind = 0; ind < 30; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(1);
-
-        let num = randomReplacements[0].state.number;
+        let num = map1Replacements[ind].state.number;
         expect([1, 2, 3, 4, 5, 6].includes(num)).eq(true);
         generatedNumbers.push(num);
       }
@@ -124,7 +116,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate single random number from -3 to 5', () => {
+  it.skip('generate random number from -3 to 5', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -132,7 +124,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers>-3,5</generaterandomnumbers>
+        <randomnumber>-3,5</randomnumber>
       </template>
       <sources><sequence>1,30</sequence></sources>
     </map>
@@ -148,7 +140,6 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components['/_map1'].replacements;
@@ -157,10 +148,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let generatedNumbers = [];
       for (let ind = 0; ind < 30; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(1);
-
-        let num = randomReplacements[0].state.number;
+        let num = map1Replacements[ind].state.number;
         expect([-3, -2, -1, 0, 1, 2, 3, 4, 5].includes(num)).eq(true);
         generatedNumbers.push(num);
       }
@@ -183,7 +171,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate single random number from -3 to 5, excluding 0', () => {
+  it.skip('generate random number from -3 to 5, excluding 0', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -191,7 +179,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers exclude="0">-3,5</generaterandomnumbers>
+        <randomnumber exclude="0">-3,5</randomnumber>
       </template>
       <sources><sequence>1,30</sequence></sources>
     </map>
@@ -207,7 +195,6 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components['/_map1'].replacements;
@@ -216,10 +203,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let generatedNumbers = [];
       for (let ind = 0; ind < 30; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(1);
-
-        let num = randomReplacements[0].state.number;
+        let num = map1Replacements[ind].state.number;
         expect([-3, -2, -1, 1, 2, 3, 4, 5].includes(num)).eq(true);
         generatedNumbers.push(num);
       }
@@ -242,7 +226,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate single odd random number from -3 to 5', () => {
+  it.skip('generate odd random number from -3 to 5', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -250,7 +234,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers step="2">-3,5</generaterandomnumbers>
+        <randomnumber step="2">-3,5</randomnumber>
       </template>
       <sources><sequence>1,30</sequence></sources>
     </map>
@@ -266,7 +250,6 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components['/_map1'].replacements;
@@ -275,10 +258,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let generatedNumbers = [];
       for (let ind = 0; ind < 30; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(1);
-
-        let num = randomReplacements[0].state.number;
+        let num = map1Replacements[ind].state.number;
         expect([-3, -1, 1, 3, 5].includes(num)).eq(true);
         generatedNumbers.push(num);
       }
@@ -301,7 +281,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate two even random numbers from -4 to 4, excluding 0', () => {
+  it.skip('generate continuous random number, no parameters, between 0 and 1', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -309,9 +289,9 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers step="2" exclude="0" numberOfSamples="2">-4,4</generaterandomnumbers>
+        <randomnumber type="uniform"/>
       </template>
-      <sources><sequence>1,30</sequence></sources>
+      <sources><sequence>1,50</sequence></sources>
     </map>
     </aslist></p>
 
@@ -325,86 +305,18 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components['/_map1'].replacements;
-      expect(map1Replacements.length).eq(30);
+      expect(map1Replacements.length).eq(50);
 
       let generatedNumbers = [];
-      for (let ind = 0; ind < 30; ind++) {
+      for (let ind = 0; ind < 50; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(2);
-
-        let num1 = randomReplacements[0].state.number;
-        let num2 = randomReplacements[1].state.number;
-        expect([-4, -2, 2, 4].includes(num1)).eq(true);
-        expect([-4, -2, 2, 4].includes(num2)).eq(true);
-        expect(num1).not.eq(num2);
-        generatedNumbers.push(num1);
-        generatedNumbers.push(num2);
-      }
-
-      let ref1Replacements = components['/_ref1'].replacements;
-      for (let ind = 0; ind < 60; ind++) {
-
-        let num = ref1Replacements[ind].state.number;
-        expect(num).eq(generatedNumbers[ind]);
-      }
-
-      let newP = components['/_ref2'].replacements[0];
-      let newAsListChildren = newP.activeChildren[0].activeChildren;
-
-      for (let ind = 0; ind < 60; ind++) {
-        let num = newAsListChildren[ind].state.number;
-        expect(num).eq(generatedNumbers[ind]);
-      }
-
-    })
-  });
-
-  it('generate five even random numbers with replacement from -4 to 4, excluding 0', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <p><aslist>
-    <map>
-      <template>
-        <generaterandomnumbers step="2" exclude="0" numberOfSamples="5" withReplacement>-4,4</generaterandomnumbers>
-      </template>
-      <sources><sequence>1,10</sequence></sources>
-    </map>
-    </aslist></p>
-
-    <p><aslist>
-      <ref>_map1</ref>
-    </aslist></p>
-
-    <ref>_p1</ref>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let map1Replacements = components['/_map1'].replacements;
-      expect(map1Replacements.length).eq(10);
-
-      let generatedNumbers = [];
-      for (let ind = 0; ind < 10; ind++) {
-
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(5);
-
-        for (let i = 0; i < 5; i++) {
-          let num = randomReplacements[i].state.number;
-          expect([-4, -2, 2, 4].includes(num)).eq(true);
-          generatedNumbers.push(num);
-        }
+        let num = map1Replacements[ind].state.number;
+        expect(num).at.least(0);
+        expect(num).at.most(1);
+        generatedNumbers.push(num);
       }
 
       let ref1Replacements = components['/_ref1'].replacements;
@@ -425,7 +337,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate five continuous random numbers, no parameters, between 0 and 1', () => {
+  it.skip('generate continuous random number, between 0 and 5', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -433,9 +345,9 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers type="uniform" numberOfSamples="5" />
+        <randomnumber type="uniform">5</randomnumber>
       </template>
-      <sources><sequence>1,10</sequence></sources>
+      <sources><sequence>1,50</sequence></sources>
     </map>
     </aslist></p>
 
@@ -449,24 +361,18 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components['/_map1'].replacements;
-      expect(map1Replacements.length).eq(10);
+      expect(map1Replacements.length).eq(50);
 
       let generatedNumbers = [];
-      for (let ind = 0; ind < 10; ind++) {
+      for (let ind = 0; ind < 50; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(5);
-
-        for (let i = 0; i < 5; i++) {
-          let num = randomReplacements[i].state.number;
-          expect(num).at.least(0);
-          expect(num).at.most(1);
-          generatedNumbers.push(num);
-        }
+        let num = map1Replacements[ind].state.number;
+        expect(num).at.least(0);
+        expect(num).at.most(5);
+        generatedNumbers.push(num);
       }
 
       let ref1Replacements = components['/_ref1'].replacements;
@@ -487,7 +393,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate ten continuous random numbers, between -3 and -2', () => {
+  it.skip('generate continuous random number, between -13 and -7', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -495,9 +401,9 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers type="uniform" numberOfSamples="10">-3,-2</generaterandomnumbers>
+        <randomnumber type="uniform">-13,-7</randomnumber>
       </template>
-      <sources><sequence>1,5</sequence></sources>
+      <sources><sequence>1,50</sequence></sources>
     </map>
     </aslist></p>
 
@@ -511,24 +417,18 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let map1Replacements = components['/_map1'].replacements;
-      expect(map1Replacements.length).eq(5);
+      expect(map1Replacements.length).eq(50);
 
       let generatedNumbers = [];
-      for (let ind = 0; ind < 5; ind++) {
+      for (let ind = 0; ind < 50; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(10);
-
-        for (let i = 0; i < 10; i++) {
-          let num = randomReplacements[i].state.number;
-          expect(num).at.least(-3);
-          expect(num).at.most(-2);
-          generatedNumbers.push(num);
-        }
+        let num = map1Replacements[ind].state.number;
+        expect(num).at.least(-13);
+        expect(num).at.most(-7);
+        generatedNumbers.push(num);
       }
 
       let ref1Replacements = components['/_ref1'].replacements;
@@ -549,7 +449,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate twenty continuous standard normals, no parameters', () => {
+  it.skip('generate standard normal random number, no parameters', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -557,9 +457,9 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers type="gaussian" numberOfSamples="20"/>
+        <randomnumber type="gaussian"/>
       </template>
-      <sources><sequence>1,5</sequence></sources>
+      <sources><sequence>1,100</sequence></sources>
     </map>
     </aslist></p>
 
@@ -573,35 +473,28 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-
+      let map1Replacements = components['/_map1'].replacements;
       let nSamples = 100;
       let expectedMean = 0;
       let expectedVariance = 1;
       let expectedStd = Math.sqrt(expectedVariance);
 
-      let map1Replacements = components['/_map1'].replacements;
-      expect(map1Replacements.length).eq(5);
+      expect(map1Replacements.length).eq(nSamples);
 
       let mean = 0;
       let variance = 0;
       let generatedNumbers = [];
-      for (let ind = 0; ind < 5; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(20);
+        let num = map1Replacements[ind].state.number;
+        expect(num).at.least(expectedMean - 6 * expectedStd)
+        expect(num).at.most(expectedMean + 6 * expectedStd)
 
-        for (let i = 0; i < 20; i++) {
-          let num = randomReplacements[i].state.number;
-          expect(num).at.least(expectedMean - 6 * expectedStd)
-          expect(num).at.most(expectedMean + 6 * expectedStd)
-
-          mean += num;
-          variance += num * num;
-          generatedNumbers.push(num);
-        }
+        mean += num;
+        variance += num * num;
+        generatedNumbers.push(num);
       }
 
       mean /= nSamples;
@@ -613,9 +506,8 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       expect(variance).at.least(expectedVariance / 2);
       expect(variance).at.most(2 * expectedVariance);
 
-
       let ref1Replacements = components['/_ref1'].replacements;
-      for (let ind = 0; ind < 100; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
 
         let num = ref1Replacements[ind].state.number;
         expect(num).eq(generatedNumbers[ind]);
@@ -624,7 +516,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let newP = components['/_ref2'].replacements[0];
       let newAsListChildren = newP.activeChildren[0].activeChildren;
 
-      for (let ind = 0; ind < 100; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
         let num = newAsListChildren[ind].state.number;
         expect(num).eq(generatedNumbers[ind]);
       }
@@ -632,7 +524,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate twenty continuous standard normals, mean 100, standard deviation 10', () => {
+  it.skip('generate normal random number, mean 100, standard deviation 10', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -640,9 +532,9 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers type="gaussian" mean="100" standardDeviation="10" numberOfSamples="20"/>
+        <randomnumber type="gaussian" mean="100" standardDeviation="10"/>
       </template>
-      <sources><sequence>1,5</sequence></sources>
+      <sources><sequence>1,100</sequence></sources>
     </map>
     </aslist></p>
 
@@ -656,35 +548,28 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-
+      let map1Replacements = components['/_map1'].replacements;
       let nSamples = 100;
       let expectedMean = 100;
       let expectedVariance = 100;
       let expectedStd = Math.sqrt(expectedVariance);
 
-      let map1Replacements = components['/_map1'].replacements;
-      expect(map1Replacements.length).eq(5);
+      expect(map1Replacements.length).eq(nSamples);
 
       let mean = 0;
       let variance = 0;
       let generatedNumbers = [];
-      for (let ind = 0; ind < 5; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(20);
+        let num = map1Replacements[ind].state.number;
+        expect(num).at.least(expectedMean - 6 * expectedStd)
+        expect(num).at.most(expectedMean + 6 * expectedStd)
 
-        for (let i = 0; i < 20; i++) {
-          let num = randomReplacements[i].state.number;
-          expect(num).at.least(expectedMean - 6 * expectedStd)
-          expect(num).at.most(expectedMean + 6 * expectedStd)
-
-          mean += num;
-          variance += num * num;
-          generatedNumbers.push(num);
-        }
+        mean += num;
+        variance += num * num;
+        generatedNumbers.push(num);
       }
 
       mean /= nSamples;
@@ -696,9 +581,8 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       expect(variance).at.least(expectedVariance / 2);
       expect(variance).at.most(2 * expectedVariance);
 
-
       let ref1Replacements = components['/_ref1'].replacements;
-      for (let ind = 0; ind < 100; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
 
         let num = ref1Replacements[ind].state.number;
         expect(num).eq(generatedNumbers[ind]);
@@ -707,7 +591,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let newP = components['/_ref2'].replacements[0];
       let newAsListChildren = newP.activeChildren[0].activeChildren;
 
-      for (let ind = 0; ind < 100; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
         let num = newAsListChildren[ind].state.number;
         expect(num).eq(generatedNumbers[ind]);
       }
@@ -715,7 +599,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it('generate twenty continuous standard normals, mean -3, variance 0.01', () => {
+  it.skip('generate normal random number, mean -3, variance 0.01', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -723,9 +607,9 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p><aslist>
     <map>
       <template>
-        <generaterandomnumbers type="gaussian" mean="-3" variance="0.01" numberOfSamples="20"/>
+        <randomnumber type="gaussian" mean="-3" variance="0.01"/>
       </template>
-      <sources><sequence>1,5</sequence></sources>
+      <sources><sequence>1,100</sequence></sources>
     </map>
     </aslist></p>
 
@@ -739,35 +623,28 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-
+      let map1Replacements = components['/_map1'].replacements;
       let nSamples = 100;
       let expectedMean = -3;
       let expectedVariance = 0.01;
       let expectedStd = Math.sqrt(expectedVariance);
 
-      let map1Replacements = components['/_map1'].replacements;
-      expect(map1Replacements.length).eq(5);
+      expect(map1Replacements.length).eq(nSamples);
 
       let mean = 0;
       let variance = 0;
       let generatedNumbers = [];
-      for (let ind = 0; ind < 5; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
 
-        let randomReplacements = map1Replacements[ind].replacements;
-        expect(randomReplacements.length).eq(20);
+        let num = map1Replacements[ind].state.number;
+        expect(num).at.least(expectedMean - 6 * expectedStd)
+        expect(num).at.most(expectedMean + 6 * expectedStd)
 
-        for (let i = 0; i < 20; i++) {
-          let num = randomReplacements[i].state.number;
-          expect(num).at.least(expectedMean - 6 * expectedStd)
-          expect(num).at.most(expectedMean + 6 * expectedStd)
-
-          mean += num;
-          variance += num * num;
-          generatedNumbers.push(num);
-        }
+        mean += num;
+        variance += num * num;
+        generatedNumbers.push(num);
       }
 
       mean /= nSamples;
@@ -779,9 +656,8 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       expect(variance).at.least(expectedVariance / 2);
       expect(variance).at.most(2 * expectedVariance);
 
-
       let ref1Replacements = components['/_ref1'].replacements;
-      for (let ind = 0; ind < 100; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
 
         let num = ref1Replacements[ind].state.number;
         expect(num).eq(generatedNumbers[ind]);
@@ -790,7 +666,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
       let newP = components['/_ref2'].replacements[0];
       let newAsListChildren = newP.activeChildren[0].activeChildren;
 
-      for (let ind = 0; ind < 100; ind++) {
+      for (let ind = 0; ind < nSamples; ind++) {
         let num = newAsListChildren[ind].state.number;
         expect(num).eq(generatedNumbers[ind]);
       }
@@ -798,14 +674,14 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it("refs don't resample", () => {
+  it.skip("refs don't resample", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p><aslist>
-    <generaterandomNumbers name="sample1">100</generaterandomNumbers>
-    <generaterandomNumbers name="sample2">100</generaterandomNumbers>
+    <randomNumber name="sample1">1000</randomNumber>
+    <randomNumber name="sample2">1000</randomNumber>
     </aslist></p>
 
     <p><aslist>
@@ -826,13 +702,12 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let num1 = components['/sample1'].replacements[0].state.number;
-      let num2 = components['/sample2'].replacements[0].state.number;
-      expect(Number.isInteger(num1) && num1 >= 1 && num1 <= 100).eq(true);
-      expect(Number.isInteger(num2) && num2 >= 1 && num2 <= 100).eq(true);
+      let num1 = components['/sample1'].state.number;
+      let num2 = components['/sample2'].state.number;
+      expect(Number.isInteger(num1) && num1 >= 1 && num1 <= 1000).eq(true);
+      expect(Number.isInteger(num2) && num2 >= 1 && num2 <= 1000).eq(true);
       expect(components['/noresample1'].replacements[0].state.number).eq(num1);
       expect(components['/noresample2'].replacements[0].state.number).eq(num2);
       expect(components['/noreresample1'].replacements[0].state.number).eq(num1);
@@ -851,80 +726,61 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     })
   });
 
-  it("random number does change dynamically", () => {
+  it.skip("random number does change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <mathinput prefill="20" name="numberofsamples"/>
-    <mathinput prefill="10" name="maxnum"/>
+    <mathinput prefill="100" name="maxnum"/>
     <p><aslist>
-    <generaterandomnumbers name="sample1" withReplacement>
-      <count><ref prop="value">maxnum</ref></count>
-      <numberofsamples><ref prop="value">numberofsamples</ref></numberofsamples>
-    </generaterandomnumbers>
+    <randomnumber type="uniform" name="sample1">
+      <to><ref prop="value">maxnum</ref></to>
+    </randomnumber>
     </aslist></p>
 
-    <mathinput prefill="10" name="numberofsamples2"/>
-    <mathinput prefill="4" name="maxnum2"/>
+    <mathinput prefill="20" name="maxnum2"/>
     <p><aslist>
-    <generaterandomnumbers name="sample2" withReplacement>
-      <count><ref prop="value">maxnum2</ref></count>
-      <numberofsamples><ref prop="value">numberofsamples2</ref></numberofsamples>
-    </generaterandomnumbers>
+    <randomnumber type="uniform" name="sample2">
+      <to><ref prop="value">maxnum2</ref></to>
+    </randomnumber>
     </aslist></p>
     `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-
-    let sample1numbers, sample2numbers;
+    let num1, num2;
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let sample1replacements = components['/sample1'].replacements;
-      let sample2replacements = components['/sample2'].replacements;
-      expect(sample1replacements.length).eq(20);
-      expect(sample2replacements.length).eq(10);
-      sample1numbers = sample1replacements.map(x => x.state.number);
-      sample2numbers = sample2replacements.map(x => x.state.number);
-
-      for (let num of sample1numbers) {
-        expect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(num)).eq(true);
-      }
-      for (let num of sample2numbers) {
-        expect([1, 2, 3, 4].includes(num)).eq(true);
-      }
+      num1 = components['/sample1'].state.number;
+      num2 = components['/sample2'].state.number;
+      expect(num1).at.least(0);
+      expect(num1).at.most(100);
+      expect(num2).at.least(0);
+      expect(num2).at.most(20);
 
     });
 
     cy.log("Get new samples when change mathinputs");
-    cy.get('#\\/numberofsamples_input').clear().type(`15{enter}`);
-    cy.get('#\\/maxnum_input').clear().type(`6{enter}`);
-    cy.get('#\\/numberofsamples2_input').clear().type(`7{enter}`);
-    cy.get('#\\/maxnum2_input').clear().type(`9{enter}`);
+    cy.get('#\\/maxnum_input').clear().type(`10{enter}`);
+    cy.get('#\\/maxnum2_input').clear().type(`200{enter}`);
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let sample1replacements = components['/sample1'].replacements;
-      let sample2replacements = components['/sample2'].replacements;
-      expect(sample1replacements.length).eq(15);
-      expect(sample2replacements.length).eq(7);
-      sample1numbers = sample1replacements.map(x => x.state.number);
-      sample2numbers = sample2replacements.map(x => x.state.number);
-
-      for (let num of sample1numbers) {
-        expect([1, 2, 3, 4, 5, 6].includes(num)).eq(true);
-      }
-      for (let num of sample2numbers) {
-        expect([1, 2, 3, 4, 5, 6, 7, 8, 9].includes(num)).eq(true);
-      }
+      let newNum1 = components['/sample1'].state.number;
+      let newNum2 = components['/sample2'].state.number;
+      expect(newNum1).not.eq(num1);
+      expect(newNum2).not.eq(num2);
+      expect(newNum1).at.least(0);
+      expect(newNum1).at.most(10);
+      expect(newNum2).at.least(0);
+      expect(newNum2).at.most(200);
 
     });
   });
 
-  it("random number does resample in dynamic map", () => {
+  it.skip("random number does resample in dynamic map", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -933,7 +789,7 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     <p name="p1"><aslist>
     <map assignnamespaces="a,b,c,d,e,f">
       <template>
-        <generaterandomnumbers assignnames="n">1000000000</generaterandomnumbers>
+        <randomnumber name="n">1000000000</randomnumber>
       </template>
       <sources>
       <sequence>
@@ -957,7 +813,6 @@ describe('GenerateRandomNumbers Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
-
 
     let samplednumbers = [];
 
@@ -1234,639 +1089,5 @@ describe('GenerateRandomNumbers Tag Tests', function () {
 
   });
 
-  it('generate single number, assign name', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <p><generaterandomNumbers from="3" step="7" count="3" assignnames="u"/></p>
-    <p><generaterandomNumbers from="3" step="7" count="3" assignnames="v"/></p>
-    <p><generaterandomNumbers from="3" step="7" count="3" assignnames="w"/></p>
-    <p><ref name="u2">u</ref></p>
-    <p><ref name="v2">v</ref></p>
-    <p><ref name="w2">w</ref></p>
-    `}, "*");
-    });
-
-    let options = [3, 10, 17];
-
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/u'];
-      let u2 = components['/u2'].replacements[0];
-
-      expect(options.includes(u.state.number)).eq(true);
-      expect(u.state.number).eq(u2.state.number);
-
-      let v = components['/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(options.includes(v.state.number)).eq(true);
-      expect(v.state.number).eq(v2.state.number);
-
-      let w = components['/w'];
-      let w2 = components['/w2'].replacements[0];
-      expect(options.includes(w.state.number)).eq(true);
-      expect(w.state.number).eq(w2.state.number);
-
-    })
-
-  });
-
-  it('generate multiple random numbers, assign names', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <p>Number of samples: <mathinput name="n" prefill="6"/> </p>
-    <p><aslist>
-      <generaterandomNumbers name="s" from="3" step="7" count="13" assignnames="u,v,w" withReplacement >
-        <numberofsamples><ref prop="value">n</ref></numberofsamples>
-      </generaterandomnumbers>
-    </aslist></p>
-    <p><ref name="u2">u</ref></p>
-    <p><ref name="v2">v</ref></p>
-    <p><ref name="w2">w</ref></p>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
-
-
-    let options = [3];
-    for (let i = 0; i < 12; i++) {
-      options.push(options[i] + 7);
-    }
-
-    let results = [];
-
-    for (let ind = 0; ind < 6; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[2]);
-    })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1]);
-      expect(v2.state.number).eq(results[1]);
-
-      let w = components['/w'];
-      let w2 = components['/w2'].replacements[0];
-      expect(w.state.number).eq(results[2]);
-      expect(w2.state.number).eq(results[2]);
-
-      let s = components['/s'];
-      expect(s.replacements.length).eq(6);
-      for (let ind = 0; ind < 6; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-    cy.log("Increase number of samples");
-    cy.get('#\\/n_input').clear().type(`10{enter}`);
-
-    for (let ind = 0; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[2]);
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1]);
-      expect(v2.state.number).eq(results[1]);
-
-      let w = components['/w'];
-      let w2 = components['/w2'].replacements[0];
-      expect(w.state.number).eq(results[2]);
-      expect(w2.state.number).eq(results[2]);
-
-      let s = components['/s'];
-      expect(s.replacements.length).eq(10);
-      for (let ind = 0; ind < 10; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-
-    cy.log("decrease number of samples");
-    cy.get('#\\/n_input').clear().type(`1{enter}`);
-
-
-    for (let ind = 0; ind < 1; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    for (let ind = 1; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").should('not.have.text')
-    cy.get("#\\/_p5").should('not.have.text')
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      expect(components['/v'].inactive).eq(true);
-      expect(components['/v2'].replacements.length).eq(0);
-
-      expect(components['/w'].inactive).eq(true);
-      expect(components['/w2'].replacements.length).eq(0);
-
-
-      let s = components['/s'];
-      expect(s.replacements.length - s.replacementsToWithhold).eq(1);
-      for (let ind = 0; ind < 1; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-
-    cy.log("increase number of samples to 4");
-    cy.get('#\\/n_input').clear().type(`4{enter}`);
-
-
-    for (let ind = 0; ind < 4; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    for (let ind = 4; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[2]);
-    })
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1]);
-      expect(v2.state.number).eq(results[1]);
-
-      let w = components['/w'];
-      let w2 = components['/w2'].replacements[0];
-      expect(w.state.number).eq(results[2]);
-      expect(w2.state.number).eq(results[2]);
-
-      let s = components['/s'];
-      expect(s.replacements.length).eq(4);
-      for (let ind = 0; ind < 4; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-
-    cy.log("decrease number of samples to zero");
-    cy.get('#\\/n_input').clear().type(`0{enter}`);
-
-
-    for (let ind = 0; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-    cy.get("#\\/_p3").should('not.have.text')
-    cy.get("#\\/_p4").should('not.have.text')
-    cy.get("#\\/_p5").should('not.have.text')
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/u'];
-      let u2 = components['/u2'].replacements[0];
-
-      expect(components['/u'].inactive).eq(true);
-      expect(components['/u2'].replacements.length).eq(0);
-
-      expect(components['/v'].inactive).eq(true);
-      expect(components['/v2'].replacements.length).eq(0);
-
-      expect(components['/w'].inactive).eq(true);
-      expect(components['/w2'].replacements.length).eq(0);
-
-
-      let s = components['/s'];
-      expect(s.replacements.length - s.replacementsToWithhold).eq(0);
-    })
-
-
-
-    cy.log("increase number of samples to 2");
-    cy.get('#\\/n_input').clear().type(`2{enter}`);
-
-
-    for (let ind = 0; ind < 2; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    for (let ind = 2; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").should('not.have.text')
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1])
-      expect(v2.state.number).eq(results[1]);
-
-      expect(components['/w'].inactive).eq(true);
-      expect(components['/w2'].replacements.length).eq(0);
-
-      let s = components['/s'];
-      expect(s.replacements.length - s.replacementsToWithhold).eq(2);
-      for (let ind = 0; ind < 2; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-  });
-
-  it('generate multiple random numbers, assign names, new namespace', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <text>a</text>
-    <p>Number of samples: <mathinput name="n" prefill="6"/> </p>
-    <p><aslist>
-      <generaterandomNumbers name="s" newnamespace from="3" step="7" count="13" assignnames="u,v,w" withReplacement >
-        <numberofsamples><ref prop="value">../n</ref></numberofsamples>
-      </generaterandomnumbers>
-    </aslist></p>
-    <p><ref name="u2">s/u</ref></p>
-    <p><ref name="v2">s/v</ref></p>
-    <p><ref name="w2">s/w</ref></p>
-    `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
-
-
-    let options = [3];
-    for (let i = 0; i < 12; i++) {
-      options.push(options[i] + 7);
-    }
-
-    let results = [];
-
-    for (let ind = 0; ind < 6; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[2]);
-    })
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/s/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/s/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1]);
-      expect(v2.state.number).eq(results[1]);
-
-      let w = components['/s/w'];
-      let w2 = components['/w2'].replacements[0];
-      expect(w.state.number).eq(results[2]);
-      expect(w2.state.number).eq(results[2]);
-
-      let s = components['/s'];
-      expect(s.replacements.length).eq(6);
-      for (let ind = 0; ind < 6; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-    cy.log("Increase number of samples");
-    cy.get('#\\/n_input').clear().type(`10{enter}`);
-
-    for (let ind = 0; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[2]);
-    })
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/s/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/s/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1]);
-      expect(v2.state.number).eq(results[1]);
-
-      let w = components['/s/w'];
-      let w2 = components['/w2'].replacements[0];
-      expect(w.state.number).eq(results[2]);
-      expect(w2.state.number).eq(results[2]);
-
-      let s = components['/s'];
-      expect(s.replacements.length).eq(10);
-      for (let ind = 0; ind < 10; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-
-    cy.log("decrease number of samples");
-    cy.get('#\\/n_input').clear().type(`1{enter}`);
-
-
-    for (let ind = 0; ind < 1; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    for (let ind = 1; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").should('not.have.text')
-    cy.get("#\\/_p5").should('not.have.text')
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/s/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      expect(components['/s/v'].inactive).eq(true);
-      expect(components['/v2'].replacements.length).eq(0);
-
-      expect(components['/s/w'].inactive).eq(true);
-      expect(components['/w2'].replacements.length).eq(0);
-
-
-      let s = components['/s'];
-      expect(s.replacements.length - s.replacementsToWithhold).eq(1);
-      for (let ind = 0; ind < 1; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-
-    cy.log("increase number of samples to 4");
-    cy.get('#\\/n_input').clear().type(`4{enter}`);
-
-
-    for (let ind = 0; ind < 4; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    for (let ind = 4; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[2]);
-    })
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/s/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/s/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1]);
-      expect(v2.state.number).eq(results[1]);
-
-      let w = components['/s/w'];
-      let w2 = components['/w2'].replacements[0];
-      expect(w.state.number).eq(results[2]);
-      expect(w2.state.number).eq(results[2]);
-
-      let s = components['/s'];
-      expect(s.replacements.length).eq(4);
-      for (let ind = 0; ind < 4; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-
-    cy.log("decrease number of samples to zero");
-    cy.get('#\\/n_input').clear().type(`0{enter}`);
-
-
-    for (let ind = 0; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-    cy.get("#\\/_p3").should('not.have.text')
-    cy.get("#\\/_p4").should('not.have.text')
-    cy.get("#\\/_p5").should('not.have.text')
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      expect(components['/s/u'].inactive).eq(true);
-      expect(components['/u2'].replacements.length).eq(0);
-
-      expect(components['/s/v'].inactive).eq(true);
-      expect(components['/v2'].replacements.length).eq(0);
-
-      expect(components['/s/w'].inactive).eq(true);
-      expect(components['/w2'].replacements.length).eq(0);
-
-
-      let s = components['/s'];
-      expect(s.replacements.length - s.replacementsToWithhold).eq(0);
-    })
-
-
-
-    cy.log("increase number of samples to 2");
-    cy.get('#\\/n_input').clear().type(`2{enter}`);
-
-
-    for (let ind = 0; ind < 2; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-        results[ind] = Number(text);
-        expect(options.includes(Number(text))).eq(true);
-      })
-    }
-    for (let ind = 2; ind < 10; ind++) {
-      cy.get("#\\/_p2 > :nth-child(" + (2*ind + 4) + ")").should('not.have.text');
-    }
-
-
-    cy.get("#\\/_p3").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[0]);
-    })
-    cy.get("#\\/_p4").find('.mjx-mrow').eq(0).invoke("text").then(text => {
-      expect(Number(text)).eq(results[1]);
-    })
-    cy.get("#\\/_p5").should('not.have.text')
-
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let u = components['/s/u'];
-      let u2 = components['/u2'].replacements[0];
-      expect(u.state.number).eq(results[0])
-      expect(u2.state.number).eq(results[0]);
-
-      let v = components['/s/v'];
-      let v2 = components['/v2'].replacements[0];
-      expect(v.state.number).eq(results[1])
-      expect(v2.state.number).eq(results[1]);
-
-      expect(components['/s/w'].inactive).eq(true);
-      expect(components['/w2'].replacements.length).eq(0);
-
-      let s = components['/s'];
-      expect(s.replacements.length - s.replacementsToWithhold).eq(2);
-      for (let ind = 0; ind < 2; ind++) {
-        let r = s.replacements[ind];
-        expect(r.state.number).eq(results[ind]);
-      }
-    })
-
-  });
 
 })

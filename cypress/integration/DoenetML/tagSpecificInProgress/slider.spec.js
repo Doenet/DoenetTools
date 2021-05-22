@@ -7,7 +7,7 @@ describe('Slider Tag Tests', function () {
   })
 
 
-  it('move default two number slider', () => {
+  it.skip('move default two number slider', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

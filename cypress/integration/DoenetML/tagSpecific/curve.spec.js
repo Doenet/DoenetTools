@@ -299,7 +299,8 @@ describe('Curve Tag Tests', function () {
 
   });
 
-  it('extrapolate', () => {
+  // TODO: determine how extrapolation should work
+  it.skip('extrapolate', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

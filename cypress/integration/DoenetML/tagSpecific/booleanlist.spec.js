@@ -5,7 +5,8 @@ describe('BooleanList Tag Tests', function () {
 
   })
 
-  it('booleanlist within booleanlists', () => {
+  // TODO: deal with hidden children of a booleanlist
+  it.skip('booleanlist within booleanlists', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
