@@ -399,8 +399,8 @@ describe('Specifying subvariants tests', function () {
         </p></option>
         <option><p>Selected number: 
           <select>
-            <selectfromsequence from="1000" to="2000" />
-            <selectfromsequence from="-1000" to="-400" />
+            <option><selectfromsequence from="1000" to="2000" /></option>
+            <option><selectfromsequence from="-1000" to="-400" /></option>
           </select>
         </p></option>
         <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
@@ -441,25 +441,25 @@ describe('Specifying subvariants tests', function () {
         <text>${ind1}</text>
         <text>${ind2}</text>
         <variantControl nvariants="100"/>
-    
-        <select assignnames="p">
-          <p>Favorite color:
+
+        <select assignnames="(p)">
+          <option><p>Favorite color:
             <select>
-              <text>red</text>
-              <text>orange</text>
-              <text>green</text>
-              <text>white</text>
-              <text>chartreuse</text>
+              <option><text>red</text></option>
+              <option><text>orange</text></option>
+              <option><text>green</text></option>
+              <option><text>white</text></option>
+              <option><text>chartreuse</text></option>
             </select>
-          </p>
-          <p>Selected number: 
+          </p></option>
+          <option><p>Selected number: 
             <select>
-              <selectfromsequence from="1000" to="2000" />
-              <selectfromsequence from="-1000" to="-400" />
+              <option><selectfromsequence from="1000" to="2000" /></option>
+              <option><selectfromsequence from="-1000" to="-400" /></option>
             </select>
-          </p>
-          <p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p>
-          <p>Variable: <select>u v w x z y</select></p>
+          </p></option>
+          <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+          <option><p>Variable: <select>u v w x z y</select></p></option>
         </select>
         `,
             requestedVariant: {
@@ -505,24 +505,24 @@ describe('Specifying subvariants tests', function () {
       <text>${ind}</text>
       <variantControl nvariants="100"/>
   
-      <select assignnames="p">
-        <p>Favorite color:
+      <select assignnames="(p)">
+        <option><p>Favorite color:
           <select>
-            <text>red</text>
-            <text>orange</text>
-            <text>green</text>
-            <text>white</text>
-            <text>chartreuse</text>
+            <option><text>red</text></option>
+            <option><text>orange</text></option>
+            <option><text>green</text></option>
+            <option><text>white</text></option>
+            <option><text>chartreuse</text></option>
           </select>
-        </p>
-        <p>Selected number: 
+        </p></option>
+        <option><p>Selected number: 
           <select>
-            <selectfromsequence from="1000" to="2000" />
-            <selectfromsequence from="-1000" to="-400" />
+            <option><selectfromsequence from="1000" to="2000" /></option>
+            <option><selectfromsequence from="-1000" to="-400" /></option>
           </select>
-        </p>
-        <p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p>
-        <p>Variable: <select>u v w x z y</select></p>
+        </p></option>
+        <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+        <option><p>Variable: <select>u v w x z y</select></p></option>
       </select>
       `,
           requestedVariant: {

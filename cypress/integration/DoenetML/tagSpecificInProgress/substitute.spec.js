@@ -5,7 +5,7 @@ beforeEach(() => {
 
   })
 
-  it('substitute with one string sugared to math',() => {
+  it.skip('substitute with one string sugared to math',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
       <substitute>
@@ -25,7 +25,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with pattern and replaces sugared to math',() => {
+  it.skip('substitute with pattern and replaces sugared to math',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
       <substitute>
@@ -47,7 +47,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with math pattern and replaces',() => {
+  it.skip('substitute with math pattern and replaces',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
       <substitute>
@@ -69,7 +69,7 @@ beforeEach(() => {
     })
   });
 
-  it('change simplify, substitute with one string sugared to math',() => {
+  it.skip('change simplify, substitute with one string sugared to math',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <textinput name="simplify" />
     <p>
@@ -117,7 +117,7 @@ beforeEach(() => {
 
   });
 
-  it('change simplify, substitute with with pattern and replaces sugared to math, ',() => {
+  it.skip('change simplify, substitute with with pattern and replaces sugared to math, ',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <textinput name="simplify"/>
     <p>
@@ -167,7 +167,7 @@ beforeEach(() => {
 
   });
 
-  it('change simplify, substitute with with math pattern and replaces',() => {
+  it.skip('change simplify, substitute with with math pattern and replaces',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <textinput name="simplify"/>
     <p>
@@ -217,7 +217,7 @@ beforeEach(() => {
 
   });
 
-  it('substitute with math, global',() => {
+  it.skip('substitute with math, global',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
       <substitute>
@@ -240,7 +240,7 @@ beforeEach(() => {
     })
   });
 
-  it('change pattern and replaces in math',() => {
+  it.skip('change pattern and replaces in math',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <mathinput name="pattern" prefill="x^2+alpha"/>
     <mathinput name="var1" prefill="x"/>
@@ -357,7 +357,7 @@ beforeEach(() => {
 
   });
 
-  it('substitute with one string sugared to text',() => {
+  it.skip('substitute with one string sugared to text',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
       <substitute type="text">
@@ -379,7 +379,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with pattern and replaces sugared to text',() => {
+  it.skip('substitute with pattern and replaces sugared to text',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute type="text">
@@ -403,7 +403,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with text pattern and sugared replaces',() => {
+  it.skip('substitute with text pattern and sugared replaces',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute>
@@ -427,7 +427,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with text pattern and replaces',() => {
+  it.skip('substitute with text pattern and replaces',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute>
@@ -453,7 +453,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with text, including spaces',() => {
+  it.skip('substitute with text, including spaces',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute>
@@ -480,7 +480,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with text, case sensitive',() => {
+  it.skip('substitute with text, case sensitive',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute casesensitive>
@@ -506,7 +506,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with text, match whole word',() => {
+  it.skip('substitute with text, match whole word',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute matchwholeword>
@@ -532,7 +532,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with text, match whole word with spaces',() => {
+  it.skip('substitute with text, match whole word with spaces',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute matchwholeword>
@@ -558,7 +558,7 @@ beforeEach(() => {
     })
   });
 
-  it('substitute with text, global',() => {
+  it.skip('substitute with text, global',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <p>
     <substitute>
@@ -581,7 +581,7 @@ beforeEach(() => {
     })
   });
 
-  it('change pattern and replaces in text',() => {
+  it.skip('change pattern and replaces in text',() => {
     cy.window().then((win) => { win.postMessage({doenetML: `
     <textinput name="pattern" prefill="Big banana BerAtes brown bErry."/>
     <textinput name="var1" prefill="berateS"/>

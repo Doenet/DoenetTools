@@ -716,7 +716,8 @@ describe('MathList Tag Tests', function () {
     })
   })
 
-  it('mathlist with maximum number', () => {
+  // TODO: address maximum number in rendered children of mathlist
+  it.skip('mathlist with maximum number', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1209,7 +1210,8 @@ describe('MathList Tag Tests', function () {
 
   })
 
-  it('mathlist within mathlists, ignore child hide', () => {
+  // TODO: deal with hidden children of a mathlist
+  it.skip('mathlist within mathlists, ignore child hide', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

@@ -165,6 +165,7 @@ describe('ref Tag Tests', function () {
   })
 
 
+  // TODO: do we allow one to use a component/copy inside a uri?
   it('referencing refs', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -173,9 +174,9 @@ describe('ref Tag Tests', function () {
   <p>Repeat url: <copy tname="_ref1" />.</p>
   <p>The link address is: <copy prop="uri" tname="_ref1" />.</p>
   <p>The text linked is: <copy prop="linktext" tname="_ref1" />.</p>
-  <p>Recreate from pieces: <ref uri="$uri" >
+  <!--<p>Recreate from pieces: <ref uri="$uri" >
      <copy prop="linktext" tname="_ref1" /></ref>.</p>
-  <text name="uri" hide><copy prop="uri" tname="_ref1" /></text>
+  <text name="uri" hide><copy prop="uri" tname="_ref1" /></text>-->
   `}, "*");
     });
 
@@ -196,10 +197,10 @@ describe('ref Tag Tests', function () {
 
     cy.get('#\\/_p4').should('have.text', 'The text linked is: Doenet.')
 
-    cy.get('#\\/_p5').should('have.text', 'Recreate from pieces: Doenet.')
+    // cy.get('#\\/_p5').should('have.text', 'Recreate from pieces: Doenet.')
 
-    cy.get('#\\/_ref2').should('have.text', 'Doenet').invoke('attr', 'href')
-      .then((href) => expect(href).eq("http://doenet.org"));
+    // cy.get('#\\/_ref2').should('have.text', 'Doenet').invoke('attr', 'href')
+    //   .then((href) => expect(href).eq("http://doenet.org"));
 
   })
 

@@ -5,7 +5,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
 
   })
 
-  it('match given discrete infinite set', () => {
+  it.skip('match given discrete infinite set', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -208,7 +208,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
 
   });
 
-  it('match reffed discrete infinite sets', () => {
+  it.skip('match reffed discrete infinite sets', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -579,7 +579,7 @@ describe('DiscreteInfiniteSet Tag Tests', function () {
   });
   
 
-  it('partial credit with discrete infinite set', () => {
+  it.skip('partial credit with discrete infinite set', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
