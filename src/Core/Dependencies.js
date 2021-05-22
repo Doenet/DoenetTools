@@ -2841,7 +2841,7 @@ class Dependency {
 
     for (let [componentInd, componentName] of this.downstreamComponentNames.entries()) {
 
-      let depComponent = this.dependencyHandler.components[componentName];
+      let depComponent = this.dependencyHandler._components[componentName];
 
       if (depComponent) {
 
@@ -2871,7 +2871,7 @@ class Dependency {
 
             if (!this.variablesOptional || mappedVarName in depComponent.state) {
               if (!depComponent.state[mappedVarName].deferred) {
-                componentObj.stateValues[nameForOutput] = depComponent.stateValues[mappedVarName];
+                componentObj.stateValues[nameForOutput] = depComponent.state[mappedVarName].value;
                 if (this.valuesChanged[componentInd][mappedVarName].changed) {
                   if (!changes.valuesChanged) {
                     changes.valuesChanged = {};

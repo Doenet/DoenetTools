@@ -410,6 +410,7 @@ export default class Document extends BaseComponent {
 
 
   static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
+    descendantVariantComponents,
     allComponentClasses }) {
 
     // console.log("****Variant for document*****")
@@ -429,9 +430,9 @@ export default class Document extends BaseComponent {
 
       let nVariants = 100;
 
-      if (serializedComponent.variants.uniqueVariants) {
-        nVariants = serializedComponent.variants.numberOfVariants;
-      }
+      // if (serializedComponent.variants.uniqueVariants) {
+      //   nVariants = serializedComponent.variants.numberOfVariants;
+      // }
 
       sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(numberToLowercaseLetters);
 
@@ -488,14 +489,6 @@ export default class Document extends BaseComponent {
       sharedParameters.selectRng = new sharedParameters.rngClass(convertedSeed);
 
 
-      // save parameters to serializedComponent
-      // so can return to where left off on next pass
-      serializedComponent.variants.generatedSelectParameters = {
-        selectRng: sharedParameters.selectRng,
-        variant: sharedParameters.variant,
-        allPossibleVariants: sharedParameters.allPossibleVariants,
-      };
-
     } else {
       // get parameters from variant control child
       sharedParameters.variant = variantControlChild.state.selectedVariant.value;
@@ -513,29 +506,27 @@ export default class Document extends BaseComponent {
       desiredVariant = {};
     }
 
-    // if subvariants aren't defined but we have uniqueVariants specified
-    // then calculate variant information for the descendant variant component
-    if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-      let variantInfo = this.getUniqueVariant({
-        serializedComponent: serializedComponent,
-        variantNumber: sharedParameters.variantNumber,
-        allComponentClasses: allComponentClasses,
-      })
-      if (variantInfo.success) {
-        Object.assign(desiredVariant, variantInfo.desiredVariant);
-      }
-    }
+    // // if subvariants aren't defined but we have uniqueVariants specified
+    // // then calculate variant information for the descendant variant component
+    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
+    //   let variantInfo = this.getUniqueVariant({
+    //     serializedComponent: serializedComponent,
+    //     variantNumber: sharedParameters.variantNumber,
+    //     allComponentClasses: allComponentClasses,
+    //   })
+    //   if (variantInfo.success) {
+    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
+    //   }
+    // }
 
-    if (desiredVariant.subvariants !== undefined) {
-      if (serializedComponent.variants.descendantVariantComponents !== undefined) {
-        for (let ind in desiredVariant.subvariants) {
-          let subvariant = desiredVariant.subvariants[ind];
-          let variantComponent = serializedComponent.variants.descendantVariantComponents[ind];
-          if (variantComponent === undefined) {
-            break;
-          }
-          variantComponent.variants.desiredVariant = subvariant;
+    if (desiredVariant.subvariants && descendantVariantComponents) {
+      for (let ind in desiredVariant.subvariants) {
+        let subvariant = desiredVariant.subvariants[ind];
+        let variantComponent = descendantVariantComponents[ind];
+        if (variantComponent === undefined) {
+          break;
         }
+        variantComponent.variants.desiredVariant = subvariant;
       }
     }
 

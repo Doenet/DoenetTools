@@ -209,7 +209,12 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    this.setUpVariants(serializedComponents);
+    if (this.requestedVariant !== undefined) {
+      this.parameterStack.parameters.variant = this.requestedVariant;
+    }
+    serializedComponents[0].variants = {
+      desiredVariant: this.parameterStack.parameters.variant
+    }
 
     //Make these variables available for cypress
     window.state = {
@@ -247,22 +252,6 @@ export default class Core {
     } else {
       setTimeout(() => this.coreReadyCallback(), 0)
     }
-
-  }
-
-  setUpVariants(serializedComponents) {
-
-    let variantComponents = serializeFunctions.gatherVariantComponents({
-      serializedComponents,
-      componentTypesCreatingVariants: this.componentTypesCreatingVariants,
-      allComponentClasses: this.allComponentClasses,
-    });
-
-    if (this.requestedVariant !== undefined) {
-      this.parameterStack.parameters.variant = this.requestedVariant;
-    }
-
-    variantComponents[0].variants.desiredVariant = this.parameterStack.parameters.variant;
 
   }
 
@@ -1098,15 +1087,24 @@ export default class Core {
 
       if (setUpVariant) {
 
+        let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
+          serializedComponents: serializedChildren,
+          componentInfoObjects: this.componentInfoObjects,
+        });
+
         if (variantControlInd !== undefined) {
           // if have desired variant value or index
           // add that information to variantControl child
           let desiredVariant = serializedComponent.variants.desiredVariant;
           if (desiredVariant !== undefined) {
             if (desiredVariant.index !== undefined) {
-              variantControlChild.variants.desiredVariantNumber = desiredVariant.index;
+              variantControlChild.variants = {
+                desiredVariantNumber: desiredVariant.index
+              }
             } else if (desiredVariant.value !== undefined) {
-              variantControlChild.variants.desiredVariant = desiredVariant.value;
+              variantControlChild.variants = {
+                desiredVariant: desiredVariant.value
+              }
             }
           }
 
@@ -1132,6 +1130,7 @@ export default class Core {
           sharedParameters,
           definingChildrenSoFar: definingChildren,
           allComponentClasses: this.allComponentClasses,
+          descendantVariantComponents
         });
 
         let indicesToCreate = [...serializedChildren.keys()].filter(v => v !== variantControlInd);

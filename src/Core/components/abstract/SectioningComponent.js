@@ -689,6 +689,7 @@ export default class SectioningComponent extends BlockComponent {
 
   static setUpVariant({
     serializedComponent, sharedParameters, definingChildrenSoFar,
+    descendantVariantComponents,
     allComponentClasses
   }) {
     let variantcontrolChild;
@@ -714,24 +715,23 @@ export default class SectioningComponent extends BlockComponent {
       desiredVariant = {};
     }
 
-    // if subvariants aren't defined but we have uniqueVariants specified
-    // then calculate variant information for the descendant variant component
-    if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-      let variantInfo = this.getUniqueVariant({
-        serializedComponent: serializedComponent,
-        variantNumber: sharedParameters.variantNumber,
-        allComponentClasses: allComponentClasses,
-      })
-      if (variantInfo.success) {
-        Object.assign(desiredVariant, variantInfo.desiredVariant);
-      }
-    }
+    // // if subvariants aren't defined but we have uniqueVariants specified
+    // // then calculate variant information for the descendant variant component
+    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
+    //   let variantInfo = this.getUniqueVariant({
+    //     serializedComponent: serializedComponent,
+    //     variantNumber: sharedParameters.variantNumber,
+    //     allComponentClasses: allComponentClasses,
+    //   })
+    //   if (variantInfo.success) {
+    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
+    //   }
+    // }
 
-    if (desiredVariant !== undefined && desiredVariant.subvariants !== undefined &&
-      serializedComponent.variants.descendantVariantComponents !== undefined) {
+    if (desiredVariant.subvariants && descendantVariantComponents) {
       for (let ind in desiredVariant.subvariants) {
         let subvariant = desiredVariant.subvariants[ind];
-        let variantComponent = serializedComponent.variants.descendantVariantComponents[ind];
+        let variantComponent = descendantVariantComponents[ind];
         if (variantComponent === undefined) {
           break;
         }
