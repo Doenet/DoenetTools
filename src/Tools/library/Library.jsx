@@ -1019,6 +1019,8 @@ export default function Library(props) {
           <Container>
           <Drive 
             types={['content','course']}  
+            columns={['Due Date','Released','Assigned','Public']}
+            // columns={['Released','Public']}
             // viewAccess="assigned"
             // viewAccess="released"
             drivePathSyncKey="main"
@@ -1063,6 +1065,8 @@ export default function Library(props) {
       <Drive 
         drivePathSyncKey="support"
         types={['content','course']}  
+        // columns={['Due Date','Released','Assigned','Public']}
+            // columns={['Released','Public']}
         // viewAccess="released"
         // viewAccess="assigned"
 
