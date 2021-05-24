@@ -45,7 +45,7 @@ export default class Embed extends DoenetRenderer {
           allowUpscale: false
         };
         let applet = new window.GGBApplet(parameters, true);
-        applet.setHTML5Codebase('/geogebra/HTML5/5.0/web/', 'true');
+        applet.setHTML5Codebase('/media/geogebra/HTML5/5.0/web/', 'true');
         applet.inject("container_" + cName, 'preferhtml5');
       });
 
