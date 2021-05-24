@@ -12,6 +12,10 @@ import { useRecoilCallback } from 'recoil';
 
 import { assignmentDictionary } from '../course/Course';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
+import { 
+  itemHistoryAtom, 
+} from '../../_sharedRecoil/content';
+
 const formatDate = (dt) => {
   const formattedDate = `${
     dt.getFullYear().toString().padStart(2, '0')}-${
@@ -39,7 +43,7 @@ export const useAssignment = () => {
 
   const addContentAssignment = useRecoilCallback(
     ({ snapshot, set }) => async (props) => {
-      let { driveIditemIdbranchIdparentFolderId ,contentId,versionId,branchId} = props;
+      let { driveIditemIdbranchIdparentFolderId ,contentId,versionId,branchId } = props;
       const dt = new Date();
       const creationDate = formatDate(dt);
       const futureDueDate = formatFutureDate(dt);
@@ -116,6 +120,42 @@ export const useAssignment = () => {
     },
   );
 
+  const updateVersionHistory = useRecoilCallback(({snapshot,set})=> async (branchId,versionId)=>{
+    // console.log(">>>",{branchId,versionId,newTitle})
+      set(itemHistoryAtom(branchId),(was)=>{
+        let newHistory = {...was}
+        newHistory.named = [...was.named];
+        let newVersion;
+        for (const [i,version] of newHistory.named.entries()){
+          if (versionId === version.versionId){
+            newVersion = {...version}
+            newVersion.isAssigned = 1;
+            newHistory.named.splice(i,1,newVersion)
+          }
+        }
+        
+        return newHistory;
+      })
+  
+    });
+    const updatePrevVersionHistory = useRecoilCallback(({snapshot,set})=> async (branchId,versionId)=>{
+      // console.log(">>>",{branchId,versionId,newTitle})
+        set(itemHistoryAtom(branchId),(was)=>{
+          let newHistory = {...was}
+          newHistory.named = [...was.named];
+          let newVersion;
+          for (const [i,version] of newHistory.named.entries()){
+            if (versionId === version.versionId){
+              newVersion = {...version}
+              newVersion.isAssigned = 0;
+              newHistory.named.splice(i,1,newVersion)
+            }
+          }
+          
+          return newHistory;
+        })
+    
+      });
   const changeSettings = useRecoilCallback(
     ({ snapshot, set }) => async (props) => {
       let { driveIditemIdbranchIdparentFolderId, ...value } = props;
@@ -205,6 +245,8 @@ export const useAssignment = () => {
   };
   return {
     addContentAssignment,
+    updateVersionHistory,
+    updatePrevVersionHistory,
     changeSettings,
     saveSettings,
     publishContentAssignment,
