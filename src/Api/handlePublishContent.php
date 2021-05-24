@@ -24,7 +24,7 @@ if ($itemId == ""){
 if ($success){
 
 $sql = "UPDATE drive_content SET
-isPublished = '1'
+isReleased = '1'
 WHERE itemId = '$itemId'
 ";
 

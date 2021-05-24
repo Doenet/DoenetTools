@@ -14,21 +14,34 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 
 
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
+$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
+$versionId =  mysqli_real_escape_string($conn,$_POST["versionId"]);
+$branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
 $label =  mysqli_real_escape_string($conn,$_POST["label"]);
 
 $success = TRUE;
 $message = "";
 
-if ($itemId == ""){
+if ($contentId == ""){
   $success = FALSE;
-  $message = "Internal Error: missing itemId";
+  $message = "Internal Error: missing contentId";
+}else if($versionId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing versionId";
 }
 
 if ($success){
 
 $sql = "UPDATE drive_content SET
-isAssignment = '0'
-WHERE itemId = '$itemId'
+isAssigned = '0'
+WHERE branchId = '$branchId'
+";
+
+$result = $conn->query($sql);
+
+$sql = "UPDATE content SET
+isAssigned = '0'
+WHERE contentId = '$contentId' AND versionId = '$versionId'
 ";
 
 $result = $conn->query($sql);
