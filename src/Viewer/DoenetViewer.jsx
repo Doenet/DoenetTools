@@ -167,7 +167,7 @@ class DoenetViewerChild extends Component {
 
   coreReady() {
 
-    this.generatedVariant = this.core.document.state.selectedVariantInfo.value;
+    this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
 
     if (this.cumulativeStateVariableChanges) {
       // continue to try setting the state variables to cummulativeStateVariableChanges

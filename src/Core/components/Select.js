@@ -126,13 +126,13 @@ export default class Select extends CompositeComponent {
 
     stateVariableDefinitions.currentVariantName = {
       returnDependencies: ({ sharedParameters }) => ({
-        variant: {
+        variantName: {
           dependencyType: "value",
-          value: sharedParameters.variant,
+          value: sharedParameters.variantName,
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { currentVariantName: dependencyValues.variant }
+        newValues: { currentVariantName: dependencyValues.variantName }
       })
     }
 
@@ -187,8 +187,8 @@ export default class Select extends CompositeComponent {
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
-          for (let variant of optionChild.stateValues.selectForVariants) {
-            let variantLower = variant.toLowerCase();
+          for (let variantName of optionChild.stateValues.selectForVariants) {
+            let variantLower = variantName.toLowerCase();
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];
             }
@@ -196,10 +196,10 @@ export default class Select extends CompositeComponent {
           }
         }
 
-        for (let variant in availableVariants) {
-          if (availableVariants[variant].length !== dependencyValues.numberToSelect) {
-            throw Error("Invalid variant for select.  Variant " + variant + " appears in "
-              + availableVariants[variant].length + " options but number to select is "
+        for (let variantName in availableVariants) {
+          if (availableVariants[variantName].length !== dependencyValues.numberToSelect) {
+            throw Error("Invalid variant name for select.  Variant name " + variantName + " appears in "
+              + availableVariants[variantName].length + " options but number to select is "
               + numberToSelect);
           }
         }
@@ -207,14 +207,14 @@ export default class Select extends CompositeComponent {
         if (Object.keys(availableVariants).length > 0) {
           // if have at least one variant specified,
           // then require that all possible variants have a variant specified
-          for (let variant of dependencyValues.allPossibleVariants) {
-            if (!(variant in availableVariants)) {
-              throw Error("Some variants are specified for select but no options are specified for possible variant: " + variant)
+          for (let variantName of dependencyValues.allPossibleVariants) {
+            if (!(variantName in availableVariants)) {
+              throw Error("Some variants are specified for select but no options are specified for possible variant name: " + variantName)
             }
           }
-          for (let variant in availableVariants) {
-            if (!(dependencyValues.allPossibleVariants.includes(variant))) {
-              throw Error("Variant " + variant + " that is specified for select is not a possible variant.");
+          for (let variantName in availableVariants) {
+            if (!(dependencyValues.allPossibleVariants.includes(variantName))) {
+              throw Error("Variant name " + variantName + " that is specified for select is not a possible variant name.");
             }
           }
         }
@@ -412,7 +412,7 @@ export default class Select extends CompositeComponent {
       definition: () => ({ newValues: { isVariantComponent: true } })
     }
 
-    stateVariableDefinitions.selectedVariantInfo = {
+    stateVariableDefinitions.generatedVariantInfo = {
       returnDependencies: ({ componentInfoObjects }) => ({
         selectedIndices: {
           dependencyType: "stateVariable",
@@ -423,7 +423,7 @@ export default class Select extends CompositeComponent {
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
-            "selectedVariantInfo",
+            "generatedVariantInfo",
           ],
           useReplacementsForComposites: true,
           recurseToMatchedChildren: false,
@@ -435,21 +435,21 @@ export default class Select extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
 
-        let selectedVariantInfo = {
+        let generatedVariantInfo = {
           indices: dependencyValues.selectedIndices
         };
 
-        let subvariants = selectedVariantInfo.subvariants = [];
+        let subvariants = generatedVariantInfo.subvariants = [];
 
         for (let descendant of dependencyValues.variantDescendants) {
           if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.selectedVariantInfo)
-          } else if (descendant.stateValues.selectedVariantInfo) {
-            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
 
         }
-        return { newValues: { selectedVariantInfo } }
+        return { newValues: { generatedVariantInfo } }
 
       }
     }
@@ -695,7 +695,7 @@ export default class Select extends CompositeComponent {
     }
   }
 
-  static getUniqueVariant({ serializedComponent, variantNumber, allComponentClasses }) {
+  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
 
     if (serializedComponent.variants === undefined) {
       return { succes: false }
@@ -705,7 +705,7 @@ export default class Select extends CompositeComponent {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantNumber) || variantNumber < 0 || variantNumber >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
       return { success: false }
     }
 
@@ -719,7 +719,7 @@ export default class Select extends CompositeComponent {
     let combinations = enumerateSelectionCombinations({
       numberOfIndices: numberToSelect,
       numberOfOptions: numberOfChildren,
-      maxNumber: variantNumber + 1,
+      maxNumber: variantIndex + 1,
       withReplacement: withReplacement,
     })
 
@@ -746,9 +746,9 @@ export default class Select extends CompositeComponent {
     let combinationsLeft = [...Array(numberOfCombinations).keys()];
     let possibilitiesUsed = 0;
     let nCombinationsLeft = combinationsLeft.length;
-    let combinationIndexSelected, variantNumberOfSelected;
+    let combinationIndexSelected, variantIndexOfSelected;
 
-    let variantNumberLeft = variantNumber;
+    let variantIndexLeft = variantIndex;
 
     while (nCombinationsLeft > 0) {
 
@@ -759,14 +759,14 @@ export default class Select extends CompositeComponent {
 
       let chunksize = minNumPos - possibilitiesUsed;
 
-      if (variantNumberLeft < chunksize * nCombinationsLeft) {
+      if (variantIndexLeft < chunksize * nCombinationsLeft) {
         // won't exhaust the possibilities for any combination
-        combinationIndexSelected = combinationsLeft[variantNumberLeft % nCombinationsLeft];
-        variantNumberOfSelected = possibilitiesUsed + Math.floor(variantNumberLeft / nCombinationsLeft);
+        combinationIndexSelected = combinationsLeft[variantIndexLeft % nCombinationsLeft];
+        variantIndexOfSelected = possibilitiesUsed + Math.floor(variantIndexLeft / nCombinationsLeft);
         break;
       } else {
         possibilitiesUsed += chunksize;
-        variantNumberLeft -= chunksize * nCombinationsLeft;
+        variantIndexLeft -= chunksize * nCombinationsLeft;
         combinationsLeft = combinationsLeft.filter(
           ind => combinationsAvailable[ind].numberOfPossibilities > possibilitiesUsed
         );
@@ -777,15 +777,15 @@ export default class Select extends CompositeComponent {
     }
 
     // console.log("combinationIndexSelected: " + combinationIndexSelected)
-    // console.log("variantNumberOfSelected: " + variantNumberOfSelected)
+    // console.log("variantIndexOfSelected: " + variantIndexOfSelected)
 
     let selectedCombination = combinations[combinationIndexSelected];
     // console.log("selectedCombination: " + selectedCombination)
 
     let indicesForEachChild = enumerateCombinations({
       numberOfOptionsByIndex: selectedCombination.map(x => numberOfVariantsByChild[x]),
-      maxNumber: variantNumberOfSelected + 1,
-    })[variantNumberOfSelected];
+      maxNumber: variantIndexOfSelected + 1,
+    })[variantIndexOfSelected];
 
     // console.log("indicesForEachChild: " + indicesForEachChild)
 
@@ -804,7 +804,7 @@ export default class Select extends CompositeComponent {
           let compClass = allComponentClasses[child.componentType];
           let result = compClass.getUniqueVariant({
             serializedComponent: child,
-            variantNumber: indicesForEachChild[ind],
+            variantIndex: indicesForEachChild[ind],
             allComponentClasses: allComponentClasses,
           });
           if (!result.success) {
@@ -813,7 +813,7 @@ export default class Select extends CompositeComponent {
           subvariants.push(result.desiredVariant);
         } else {
           let result = getVariantsForDescendants({
-            variantNumber: indicesForEachChild[ind],
+            variantIndex: indicesForEachChild[ind],
             serializedComponent: child,
             allComponentClasses: allComponentClasses
           })

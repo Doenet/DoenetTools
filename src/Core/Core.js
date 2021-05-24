@@ -13,7 +13,6 @@ import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
-import { ancestorsIncludingComposites } from './utils/descendants';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -128,7 +127,8 @@ export default class Core {
     // console.time('serialize doenetML');
 
     this.parameterStack = new ParameterStack(parameters);
-    this.setUpRng();
+
+    this.parameterStack.parameters.rngClass = prng_alea;
 
     let contentId = Hex.stringify(sha256(doenetML));
     this.expandDoenetMLsToFullSerializedComponents({
@@ -253,28 +253,6 @@ export default class Core {
       setTimeout(() => this.coreReadyCallback(), 0)
     }
 
-  }
-
-  setUpRng() {
-
-    // from https://stackoverflow.com/a/7616484
-    this.parameterStack.parameters.hashStringToInteger = function (s) {
-      var hash = 0, i, chr;
-      if (s.length === 0)
-        return hash;
-      for (i = 0; i < s.length; i++) {
-        chr = s.charCodeAt(i);
-        hash = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-      }
-      return hash;
-    };
-    if (this.parameterStack.parameters.seed === undefined) {
-      // this.parameterStack.parameters.seed = '47';
-      this.parameterStack.parameters.seed = this.parameterStack.parameters.hashStringToInteger(Date.now().toString());
-    }
-    this.parameterStack.parameters.selectRng = new prng_alea(this.parameterStack.parameters.seed);
-    this.parameterStack.parameters.rngClass = prng_alea;
   }
 
   expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {
@@ -1093,17 +1071,17 @@ export default class Core {
         });
 
         if (variantControlInd !== undefined) {
-          // if have desired variant value or index
+          // if have desired variant name or index
           // add that information to variantControl child
           let desiredVariant = serializedComponent.variants.desiredVariant;
           if (desiredVariant !== undefined) {
             if (desiredVariant.index !== undefined) {
               variantControlChild.variants = {
-                desiredVariantNumber: desiredVariant.index
+                desiredVariantIndex: desiredVariant.index
               }
-            } else if (desiredVariant.value !== undefined) {
+            } else if (desiredVariant.name !== undefined) {
               variantControlChild.variants = {
-                desiredVariant: desiredVariant.value
+                desiredVariantName: desiredVariant.name
               }
             }
           }

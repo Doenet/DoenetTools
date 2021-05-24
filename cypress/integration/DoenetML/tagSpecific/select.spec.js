@@ -1497,8 +1497,8 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let variant = components['/x'].sharedParameters.variant;
-      let expectedx = variant.substring(0, 1);
+      let variantName = components['/x'].sharedParameters.variantName;
+      let expectedx = variantName.substring(0, 1);
 
       let x = components['/x'].stateValues.value.tree;
 
@@ -1557,8 +1557,8 @@ describe('Select Tag Tests', function () {
         eggplant: ["c", "c", "e"]
       }
 
-      let variant = components['/x'].sharedParameters.variant;
-      let variantVars = variantMap[variant];
+      let variantName = components['/x'].sharedParameters.variantName;
+      let variantVars = variantMap[variantName];
 
       let x = components['/x'].stateValues.value.tree;
 

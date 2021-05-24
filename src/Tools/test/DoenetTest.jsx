@@ -4,7 +4,7 @@ import testCodeDoenetML from './testCode.doenet';
 import core from '../../Core/Core';
 
 function Test() {
-  console.log("===Test")
+  // console.log("===Test")
 
   // const [doenetML,setDoenetML] = useState("");
   let doenetML = useRef("");

@@ -1,3 +1,5 @@
+import { numberToLetters } from "../../../../src/Core/utils/sequence";
+
 describe('Specifying subvariants tests', function () {
 
   beforeEach(() => {
@@ -30,6 +32,15 @@ describe('Specifying subvariants tests', function () {
 
         let components = Object.assign({}, win.state.components);
         expect(components['/x'].stateValues.value).eq(values[ind]);
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: [ind],
+            subvariants: []
+          }]
+        })
       })
 
     }
@@ -68,6 +79,15 @@ describe('Specifying subvariants tests', function () {
           let components = Object.assign({}, win.state.components);
           expect(components['/x'].stateValues.value).eq(values[ind1]);
           expect(components['/y'].stateValues.value).eq(values[ind2]);
+          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+            index: 0,
+            name: 'a',
+            subvariantsSpecified: true,
+            subvariants: [{
+              indices: [ind1, ind2],
+              subvariants: []
+            }]
+          })
         })
       }
 
@@ -103,6 +123,14 @@ describe('Specifying subvariants tests', function () {
 
         let components = Object.assign({}, win.state.components);
         expect(components['/n'].stateValues.value).eq(values[ind]);
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: [ind],
+          }]
+        })
       })
 
     }
@@ -139,6 +167,14 @@ describe('Specifying subvariants tests', function () {
           let components = Object.assign({}, win.state.components);
           expect(components['/x'].stateValues.value).eq(values[ind1]);
           expect(components['/y'].stateValues.value).eq(values[ind2]);
+          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+            index: 0,
+            name: 'a',
+            subvariantsSpecified: true,
+            subvariants: [{
+              indices: [ind1, ind2],
+            }]
+          })
         })
       }
     }
@@ -146,7 +182,10 @@ describe('Specifying subvariants tests', function () {
 
   it('specify indices of selects, ignores variant names', () => {
 
-    let directions = ["north", "south", "east", "west"]
+    let directions = ["north", "south", "east", "west"];
+    let directionIndByVariantName = {
+      a: [0], b: [1], c: [2], d: [3]
+    }
     let directionsByVariantName = {
       a: directions[0],
       b: directions[1],
@@ -193,7 +232,7 @@ describe('Specifying subvariants tests', function () {
       </aslist></p>
     `,
           requestedVariant: {
-            value: variant
+            name: variant
           }
         }, "*");
       })
@@ -206,7 +245,20 @@ describe('Specifying subvariants tests', function () {
         expect(components['/direction'].stateValues.value).eq(directionsByVariantName[variant]);
 
         let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
+        let sideOrder = sidesSelected.map(x => sides.indexOf(x))
         expect(sidesSelected.sort()).eqls(sidesByVariantName[variant]);
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: ind,
+          name: numberToLetters(ind + 1, true),
+          subvariantsSpecified: false,
+          subvariants: [{
+            indices: directionIndByVariantName[variant],
+            subvariants: []
+          }, {
+            indices: sideOrder,
+            subvariants: []
+          }]
+        })
       })
     }
 
@@ -241,7 +293,7 @@ describe('Specifying subvariants tests', function () {
       </aslist></p>
     `,
           requestedVariant: {
-            value: variant,
+            name: variant,
             subvariants: [{
               indices: [directionInd]
             }]
@@ -257,7 +309,20 @@ describe('Specifying subvariants tests', function () {
         expect(components['/direction'].stateValues.value).eq(direction);
 
         let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
+        let sideOrder = sidesSelected.map(x => sides.indexOf(x))
         expect(sidesSelected.sort()).eqls(sidesByVariantName[variant]);
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: ind % 4,
+          name: numberToLetters((ind % 4) + 1, true),
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: [directionInd],
+            subvariants: []
+          }, {
+            indices: sideOrder,
+            subvariants: []
+          }]
+        })
       })
     }
 
@@ -293,7 +358,7 @@ describe('Specifying subvariants tests', function () {
       </aslist></p>
     `,
           requestedVariant: {
-            value: variant,
+            name: variant,
             subvariants: [{
             }, {
               indices: sideInds
@@ -311,6 +376,18 @@ describe('Specifying subvariants tests', function () {
 
         let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         expect(sidesSelected).eqls(sidesChosen);
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: ind % 4,
+          name: numberToLetters((ind % 4) + 1, true),
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: directionIndByVariantName[variant],
+            subvariants: []
+          }, {
+            indices: sideInds,
+            subvariants: []
+          }]
+        })
       })
     }
 
@@ -362,6 +439,19 @@ describe('Specifying subvariants tests', function () {
 
         let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         expect(sidesSelected).eqls(sidesChosen);
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: [directionInd],
+            subvariants: []
+          }, {
+            indices: sideInds,
+            subvariants: []
+          }]
+        })
       })
     }
 
@@ -378,9 +468,10 @@ describe('Specifying subvariants tests', function () {
 
     let colorsByInd = ["red", "orange", "green", "white", "chartreuse"];
     let lettersByInd = ["c", "d", "e", "f", "g"];
+    let lettersByInd2 = ["u", "v", "w", "x", "z", "y"];
 
     cy.log("Select options from first group")
-    for (let ind = 0; ind < 5; ind++) {
+    for (let ind = 0; ind < 10; ind++) {
       cy.window().then((win) => {
         win.postMessage({
           doenetML: `
@@ -427,14 +518,27 @@ describe('Specifying subvariants tests', function () {
         let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
         expect(variantInd).eq(0);
 
-        expect(p.activeChildren[1].stateValues.value).eq(colorsByInd[ind])
+        expect(p.activeChildren[1].stateValues.value).eq(colorsByInd[ind % 5])
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: [0],
+            subvariants: [{
+              indices: [ind % 5],
+              subvariants: []
+            }]
+          }]
+        })
       });
 
     }
 
     cy.log("Select options from second group")
-    for (let ind1 = 0; ind1 < 2; ind1++) {
-      for (let ind2 = 0; ind2 < 400; ind2 += 100) {
+    for (let ind1 = 0; ind1 < 4; ind1++) {
+      for (let ind2 = 0; ind2 < 2000; ind2 += 300) {
         cy.window().then((win) => {
           win.postMessage({
             doenetML: `
@@ -488,17 +592,35 @@ describe('Specifying subvariants tests', function () {
 
           let num = p.activeChildren[1].stateValues.value;
 
-          if (ind1 === 0) {
-            expect(num).eq(1000 + ind2);
+          let effectiveInd2;
+          if (ind1 % 2 === 0) {
+            effectiveInd2 = ind2 % 1001
+            expect(num).eq(1000 + effectiveInd2);
           } else {
-            expect(num).eq(-1000 + ind2);
+            effectiveInd2 = ind2 % 601
+            expect(num).eq(-1000 + effectiveInd2);
           }
+
+          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+            index: 0,
+            name: 'a',
+            subvariantsSpecified: true,
+            subvariants: [{
+              indices: [1],
+              subvariants: [{
+                indices: [ind1 % 2],
+                subvariants: [{
+                  indices: [effectiveInd2],
+                }]
+              }]
+            }]
+          })
         });
       }
     }
 
     cy.log("Select options from third group")
-    for (let ind = 0; ind < 5; ind++) {
+    for (let ind = 0; ind < 10; ind++) {
       cy.window().then((win) => {
         win.postMessage({
           doenetML: `
@@ -545,7 +667,86 @@ describe('Specifying subvariants tests', function () {
         let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
         expect(variantInd).eq(2);
 
-        expect(p.activeChildren[1].stateValues.value).eq(lettersByInd[ind])
+        expect(p.activeChildren[1].stateValues.value).eq(lettersByInd[ind % 5])
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: [2],
+            subvariants: [{
+              indices: [ind % 5],
+            }]
+          }]
+        })
+      });
+
+    }
+
+
+    cy.log("Select options from fourth group")
+    for (let ind = 0; ind < 12; ind++) {
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <variantControl nvariants="100"/>
+  
+      <select assignnames="(p)">
+        <option><p>Favorite color:
+          <select>
+            <option><text>red</text></option>
+            <option><text>orange</text></option>
+            <option><text>green</text></option>
+            <option><text>white</text></option>
+            <option><text>chartreuse</text></option>
+          </select>
+        </p></option>
+        <option><p>Selected number: 
+          <select>
+            <option><selectfromsequence from="1000" to="2000" /></option>
+            <option><selectfromsequence from="-1000" to="-400" /></option>
+          </select>
+        </p></option>
+        <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+        <option><p>Variable: <select>u v w x z y</select></p></option>
+      </select>
+      `,
+          requestedVariant: {
+            subvariants: [{
+              indices: [3],
+              subvariants: [{
+                indices: [ind]
+              }]
+            }]
+          }
+        }, "*");
+      });
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        let p = components['/p'];
+
+        let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+        expect(variantInd).eq(3);
+
+        expect(p.activeChildren[1].stateValues.value.tree).eq(lettersByInd2[ind % 6])
+
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          subvariantsSpecified: true,
+          subvariants: [{
+            indices: [3],
+            subvariants: [{
+              indices: [ind % 6],
+              subvariants: []
+            }]
+          }]
+        })
       });
 
     }
@@ -560,7 +761,10 @@ describe('Specifying subvariants tests', function () {
     }
 
     let problemAoptions = ["angry", "bad", "churlish", "drab", "excoriated"];
+    let problemAselectOptions = ["bad", "angry", "drab", "excoriated", "churlish"];
+
     let problemBoptions = [7, 13, 47, 7, 13];
+    let problemBselectOptions = [7, 47, 13];
 
     cy.log("Test each combination of problems")
     for (let ind1 = 0; ind1 < 2; ind1++) {
@@ -585,11 +789,11 @@ describe('Specifying subvariants tests', function () {
                     <variantControl nvariants="5" variants="a b c d e" />
                     <p>Word:
                       <select>
-                        <option selectForVariants="a"><text>angry</text></option>
                         <option selectForVariants="b"><text>bad</text></option>
-                        <option selectForVariants="c"><text>churlish</text></option>
+                        <option selectForVariants="a"><text>angry</text></option>
                         <option selectForVariants="d"><text>drab</text></option>
                         <option selectForVariants="e"><text>excoriated</text></option>
+                        <option selectForVariants="c"><text>churlish</text></option>
                       </select>
                     </p>
                   </problem></option>
@@ -598,8 +802,8 @@ describe('Specifying subvariants tests', function () {
                     <p>Number: 
                       <select>
                          <option selectForVariants="a"><number>7</number></option>
-                         <option selectForVariants="b"><number>13</number></option>
                          <option selectForVariants="c"><number>47</number></option>
+                         <option selectForVariants="b"><number>13</number></option>
                     </select></p>
                   </problem></option>
                 </select>
@@ -629,23 +833,62 @@ describe('Specifying subvariants tests', function () {
                 cy.window().then((win) => {
                   let components = Object.assign({}, win.state.components);
 
+                  let generatedVariantInfo = {
+                    index: 0,
+                    name: 'a',
+                    subvariantsSpecified: true,
+                    subvariants: [{
+                      indices: [],
+                      subvariants: []
+                    }]
+                  }
+
                   let problemInds = [ind1, ind2, ind3];
 
-                  let selectInds = [ind4, ind5, ind6];
+                  let problemVariantInds = [ind4, ind5, ind6];
 
                   for (let i = 1; i <= 3; i++) {
                     let problem = components['/problem' + i];
                     let variantInd = titlesToInd[problem.stateValues.title];
                     expect(variantInd).eq(problemInds[i - 1]);
+                    generatedVariantInfo.subvariants[0].indices.push(variantInd);
 
                     let p = problem.activeChildren[4];
 
                     if (variantInd === 0) {
-                      expect(p.activeChildren[1].stateValues.value).eq(problemAoptions[selectInds[i - 1]])
+                      let word = problemAoptions[problemVariantInds[i - 1]];
+                      expect(p.activeChildren[1].stateValues.value).eq(word)
+                      let selectIndex = problemAselectOptions.indexOf(word)
+                      generatedVariantInfo.subvariants[0].subvariants.push({
+                        index: problemVariantInds[i - 1],
+                        name: numberToLetters(problemVariantInds[i - 1] + 1, true),
+                        subvariantsSpecified: false,
+                        subvariants: [{
+                          indices: [selectIndex],
+                          subvariants: []
+                        }]
+                      })
                     } else {
-                      expect(p.activeChildren[1].stateValues.value).eq(problemBoptions[selectInds[i - 1]])
+                      let number = problemBoptions[problemVariantInds[i - 1]];
+                      expect(p.activeChildren[1].stateValues.value).eq(number)
+                      let selectIndex = problemBselectOptions.indexOf(number)
+                      generatedVariantInfo.subvariants[0].subvariants.push({
+                        index: problemVariantInds[i - 1] % 3,
+                        name: numberToLetters(problemVariantInds[i - 1] % 3 + 1, true),
+                        subvariantsSpecified: false,
+                        subvariants: [{
+                          indices: [selectIndex],
+                          subvariants: []
+                        }]
+                      })
+
                     }
+
                   }
+
+                  expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                    generatedVariantInfo
+                  )
                 })
               }
             }
@@ -737,6 +980,16 @@ describe('Specifying subvariants tests', function () {
                 cy.window().then((win) => {
                   let components = Object.assign({}, win.state.components);
 
+                  let generatedVariantInfo = {
+                    index: 0,
+                    name: 'a',
+                    subvariantsSpecified: true,
+                    subvariants: [{
+                      indices: [],
+                      subvariants: []
+                    }]
+                  }
+
                   let problemInds = [ind1, ind2, ind3];
 
                   let selectInds = [ind4, ind5, ind6];
@@ -745,15 +998,38 @@ describe('Specifying subvariants tests', function () {
                     let problem = components['/problem' + i];
                     let variantInd = titlesToInd[problem.stateValues.title];
                     expect(variantInd).eq(problemInds[i - 1]);
+                    generatedVariantInfo.subvariants[0].indices.push(variantInd);
 
                     let p = problem.activeChildren[4];
 
                     if (variantInd === 0) {
                       expect(p.activeChildren[1].stateValues.value).eq(problemAoptions[selectInds[i - 1]])
+                      generatedVariantInfo.subvariants[0].subvariants.push({
+                        index: problem.stateValues.generatedVariantInfo.index,
+                        name: numberToLetters(problem.stateValues.generatedVariantInfo.index + 1, true),
+                        subvariantsSpecified: true,
+                        subvariants: [{
+                          indices: [selectInds[i - 1]],
+                          subvariants: []
+                        }]
+                      })
                     } else {
                       expect(p.activeChildren[1].stateValues.value).eq(problemBoptions[selectInds[i - 1]])
+                      generatedVariantInfo.subvariants[0].subvariants.push({
+                        index: problem.stateValues.generatedVariantInfo.index,
+                        name: numberToLetters(problem.stateValues.generatedVariantInfo.index + 1, true),
+                        subvariantsSpecified: true,
+                        subvariants: [{
+                          indices: [selectInds[i - 1]],
+                        }]
+                      })
                     }
                   }
+
+                  expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                    generatedVariantInfo
+                  )
+
                 })
               }
             }
