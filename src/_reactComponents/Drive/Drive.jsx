@@ -1562,7 +1562,7 @@ const DoenetML = React.memo((props)=>{
 
   let label = props.item?.label;
   if ( props.item?.isAssigned == "1"){
-    label = props.item?.assignment_title;
+    label = props.item?.label;
   }
 
   useEffect(() => {
