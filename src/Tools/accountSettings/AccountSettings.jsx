@@ -15,79 +15,100 @@ import {
 import styled from "styled-components";
 import Tool from '../_framework/Tool';
 import { useToolControlHelper } from '../_framework/ToolRoot';
-
-
+import { a } from 'react-spring'
+import InfiniteSlider from '../_framework/temp/InfiniteSlider'
 import "../_framework/doenet.css";
 import Textinput from "../_framework/Textinput";
 import Switch from "../_framework/Switch";
 import Cookies from 'js-cookie';
 import axios from "axios";
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 let SectionHeader = styled.h2`
   margin-top: 2em;
   margin-bottom: 2em;
-`;
+`
 
-let ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url("/media/profile_pictures/${props => props.pic}.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
+const Content = styled.div`
+  width: 100%;
+  height: 100%;
+`
+
+const Image = styled(a.div)`
+  width: 100%;
+  height: 100%;
   background-size: cover;
-  width: 5em;
-  height: 5em;
-  color: rgba(0, 0, 0, 0);
-  font-size: 2em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 100px;
-  border-radius: 50%;
-  border-style:none;
-  user-select: none;
-  &:hover, &:focus {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-      url("/media/profile_pictures/${props => props.pic}.jpg");
-    color: rgba(255, 255, 255, 1);
-  }
-`;
+  background-position: center center;
+`
 
-const PictureBox = styled.button`
-  width: 40px;
-  height: 40px;
-  background-image: url("/media/profile_pictures/${(props) => props.pic}.jpg");
-  background-size: contain;
-  margin: 3px;
-  border: none;
-  border-radius: 3px;
-`;
 
-const DropDown = styled.div`
-  text-align: right;
-  width: 150px;
-  z-index: 2;
-  position: absolute;
-  margin-right: 100px;
-`;
+// let ProfilePicture = styled.button`
+//   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+//     url("/media/profile_pictures/${props => props.pic}.jpg");
+//   background-position: center;
+//   background-repeat: no-repeat;
+//   background-size: cover;
+//   width: 5em;
+//   height: 5em;
+//   color: rgba(0, 0, 0, 0);
+//   font-size: 2em;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   margin-left: 100px;
+//   border-radius: 50%;
+//   border-style:none;
+//   user-select: none;
+//   &:hover, &:focus {
+//     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+//       url("/media/profile_pictures/${props => props.pic}.jpg");
+//     color: rgba(255, 255, 255, 1);
+//   }
+// `;
 
-const ListContainer = styled.ul`
-  /* max-width: 80px; */
-  padding: 4px;
-  list-style-type: none;
-  /* border: 1px solid #505050; */
-  border-radius: 3px;
-  box-shadow: 3px 3px 7px #888888;
-  background: #ffffff;
-  margin: 0 auto;
-  text-align: left;
-`;
+// const PictureBox = styled.button`
+//   width: 40px;
+//   height: 40px;
+//   background-image: url("/media/profile_pictures/${(props) => props.pic}.jpg");
+//   background-size: contain;
+//   margin: 3px;
+//   border: none;
+//   border-radius: 3px;
+// `;
 
-const ListItem = styled.li`
-  display: inline-block;
-  vertical-align: top;
-`;
+// const DropDown = styled.div`
+//   text-align: right;
+//   width: 150px;
+//   z-index: 2;
+//   position: absolute;
+//   margin-right: 100px;
+// `;
 
-const PROFILE_PICTURES = ['anonymous', 'bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle'];
+// const ListContainer = styled.ul`
+//   /* max-width: 80px; */
+//   padding: 4px;
+//   list-style-type: none;
+//   /* border: 1px solid #505050; */
+//   border-radius: 3px;
+//   box-shadow: 3px 3px 7px #888888;
+//   background: #ffffff;
+//   margin: 0 auto;
+//   text-align: left;
+// `;
+
+// const ListItem = styled.li`
+//   display: inline-block;
+//   vertical-align: top;
+// `;
+
+const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle', 'anonymous'];
+const picture_items = PROFILE_PICTURES.map(picture => {
+  let path = `/media/profile_pictures/${picture}.jpg`
+  let url = `url("${path}")`
+  return {css: url}
+})
+console.log(picture_items);
 
 const getProfileQuerry = atom({
   key: "getProfileQuerry",
@@ -105,27 +126,27 @@ const getProfileQuerry = atom({
   })
 })
 
-const PictureSelector = (props) => {
-  //let [selectedPic, setSelectedPic] = useState();
+// const PictureSelector = (props) => {
+//   //let [selectedPic, setSelectedPic] = useState();
 
-  var list = props.list.map((item, i) => (
-    <ListItem key={i}>
-      <PictureBox
-        value={item}
-        pic={item}
-        onClick={(e) => {
-          props.callBack(e.target.value);
-        }}
-      />
-    </ListItem>
-  ));
+//   var list = props.list.map((item, i) => (
+//     <ListItem key={i}>
+//       <PictureBox
+//         value={item}
+//         pic={item}
+//         onClick={(e) => {
+//           props.callBack(e.target.value);
+//         }}
+//       />
+//     </ListItem>
+//   ));
 
-  return (
-    <DropDown onBlur = {props.onblur}>
-      <ListContainer>{list}</ListContainer>
-    </DropDown>
-  );
-}
+//   return (
+//     <DropDown onBlur = {props.onblur}>
+//       <ListContainer>{list}</ListContainer>
+//     </DropDown>
+//   );
+// }
 
 const getProfile = selector({
   key: 'getProfile',
@@ -153,6 +174,8 @@ const boolToString = (bool) => {
   }
 }
 
+const translateArray = (arr, k) => arr.concat(arr).slice(k, k+arr.length)
+
 export default function DoenetProfile(props) {
 
     const setProfile = useRecoilCallback(
@@ -170,7 +193,10 @@ export default function DoenetProfile(props) {
     //let [profile, setProfile] = useRecoilStateLoadable(getProfile);
     let profile = useRecoilValueLoadable(getProfile);
 
-    let [expand, setExpand] = useState(false);
+    let [editMode, setEditMode] = useState(false);
+    let [pic, setPic] = useState(0);
+
+    //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
 
     // if(profile.state == 'hasValue'){
     //   console.log(profile.contents);
@@ -185,23 +211,34 @@ export default function DoenetProfile(props) {
             <mainPanel>
               <div style = {{margin: "auto", width: "70%"}}>
                 <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
-                  <ProfilePicture
-                      pic={profile.contents.profilePicture}
-                      onClick={e => {
-                        setExpand(!expand)
-                      }}
-                      name="changeProfilePicture"
-                      id="changeProfilePicture"
-                  >
-                  </ProfilePicture>
-                  {expand? <div style = {{}}><PictureSelector onblur = {e => {
-                    setExpand(false)
-                  }} list = {PROFILE_PICTURES} 
-                    callBack = {(newPicture) => {
-                      let data = {...profile.contents}
-                      data.profilePicture = newPicture
-                      setProfile(data)
-                  }}/></div> : null}
+                  <div style = {{width: "150px", height: "150px", margin: "auto"}}>
+                  {editMode ?
+                  <>
+                  <div style = {{float: "right"}}><FontAwesomeIcon onClick = {e => {
+                    let data = {...profile.contents}
+                    data.profilePicture = pic
+                    setProfile(data)
+                    setEditMode(false)
+                  }} style = {{color: "#444", position: "absolute", zIndex: "2", textAlign: "right"}} icon={faTimes}/></div>
+                  <InfiniteSlider items={translateArray(picture_items, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))} showButtons={editMode} showCounter={false} callBack = {(i) => {
+                    setPic(translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))[i-1])
+                  }}>
+                    {({ css }, i) => {
+                      // console.log(">>> pic index ", i);
+                      
+                      // setPicIndex(i)
+                      return (
+                        <Content>
+                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
+                        </Content>
+                      )
+                    }}
+                  </InfiniteSlider></> : 
+                    <Content onClick = {e => setEditMode(true)}>
+                      <Image style={{ backgroundImage: `url('/media/profile_pictures/${profile.contents.profilePicture}.jpg')`, borderRadius: '50%' }} />
+                    </Content>
+                  }
+                  </div>
                   <Textinput
                       style={{ width: '300px' }}
                       id="screen name"
