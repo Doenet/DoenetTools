@@ -32,6 +32,9 @@ export default class Copy extends CompositeComponent {
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
+    attributes.propFromComposite = {
+      createPrimitiveOfType: "boolean",
+    };
     attributes.componentType = {
       createPrimitiveOfType: "string",
     };
@@ -358,6 +361,19 @@ export default class Copy extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.propFromComposite = {
+      returnDependencies: () => ({
+        propFromComposite: {
+          dependencyType: "attribute",
+          attributeName: "propFromComposite"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { propFromComposite: dependencyValues.propFromComposite } }
+      }
+    }
+
+
 
     stateVariableDefinitions.isPlainMacro = {
       returnDependencies: () => ({
@@ -373,7 +389,7 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.replacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "componentIndex",
+        "targetComponent", "componentIndex", "propName", "propFromComposite"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
@@ -381,10 +397,13 @@ export default class Copy extends CompositeComponent {
 
         if (stateValues.targetComponent !== null) {
 
-          if (componentInfoObjects.isCompositeComponent({
-            componentType: stateValues.targetComponent.componentType,
-            includeNonStandard: false
-          })) {
+          if (
+            componentInfoObjects.isCompositeComponent({
+              componentType: stateValues.targetComponent.componentType,
+              includeNonStandard: false
+            })
+            && !(stateValues.propName && stateValues.propFromComposite)
+          ) {
             dependencies.targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
@@ -587,7 +606,7 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent"
+        "targetComponent", "propName", "propFromComposite"
       ],
       returnDependencies({ stateValues, componentInfoObjects }) {
 
@@ -613,10 +632,13 @@ export default class Copy extends CompositeComponent {
           //   variableName: "propName",
           // },
         };
-        if (stateValues.targetComponent && componentInfoObjects.isCompositeComponent({
-          componentType: stateValues.targetComponent.componentType,
-          includeNonStandard: false
-        })) {
+        if (
+          stateValues.targetComponent && componentInfoObjects.isCompositeComponent({
+            componentType: stateValues.targetComponent.componentType,
+            includeNonStandard: false
+          })
+          && !(stateValues.propName && stateValues.propFromComposite)
+        ) {
           dependencies.targetReadyToExpandWhenResolved = {
             dependencyType: "stateVariable",
             componentName: stateValues.targetComponent.componentName,
@@ -637,6 +659,7 @@ export default class Copy extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "replacementSourceIdentities", "effectivePropNameBySource",
+        "propName", "propFromComposite"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
@@ -695,6 +718,7 @@ export default class Copy extends CompositeComponent {
             componentType: stateValues.targetComponent.componentType,
             includeNonStandard: false
           })
+          && !(stateValues.propName && stateValues.propFromComposite)
         ) {
 
           // Include identities of all replacements (and inactive target variable)
@@ -1988,7 +2012,7 @@ export function replacementFromProp({ component, components,
 
   } else {
 
-    if(stateVarObj.hasVariableComponentType) {
+    if (stateVarObj.hasVariableComponentType) {
       // evaluate stateVarObj to make sure componentType is calculated and up-to-date
       stateVarObj.value;
     }
