@@ -86,7 +86,7 @@ export const assignmentDictionary = atomFamily({            //TODO
         folderId: driveIditemIdbranchIdparentFolderId.folderId,
       };
       let folderInfo = get(folderDictionarySelector(folderInfoQueryKey));
-      console.log(">>>folderInfo",folderInfo);
+      // console.log(">>>folderInfo",folderInfo);
       const itemObj =
         folderInfo?.contentsDictionary?.[
           driveIditemIdbranchIdparentFolderId.itemId
@@ -372,7 +372,7 @@ export default function Course(props) {
 }
 
 const DoenetMLInfoPanel = (props) => {
-  console.log(">>> DoenetMLInfoPanel",props);
+  // console.log(">>> DoenetMLInfoPanel",props);
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.props.route.location.search),
   );
@@ -667,6 +667,7 @@ const DoenetMLInfoPanel = (props) => {
   // // View Assignment Form
   const checkIsVersionAssigned = () =>{
     const selectedVersionId  = useRecoilValue(versionHistoryReleasedSelectedAtom); 
+    // console.log("selectedVersionId",selectedVersionId);
    const assignedArr = props.versionArr.filter((item)=>item.versionId === selectedVersionId);
   if(assignedArr.length > 0 && assignedArr[0].isAssigned == '1') {
     return true;
@@ -932,19 +933,18 @@ const FolderInfoPanel = () => {
   return <h1>Folder Info</h1>;
 };
 const VersionHistoryInfoPanel = (props) => {
-  console.log(">>>VersionHistoryInfoPanel" ,props );
+  // console.log(">>>VersionHistoryInfoPanel" ,props );
   const itemInfo = props.contentInfo;
-  console.log(">>>itemInfo after selection",itemInfo);
+  // console.log(">>>itemInfo after selection",itemInfo);
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(itemInfo.branchId))
   const selectedVersionId  = useRecoilValue(versionHistoryReleasedSelectedAtom); 
+  // console.log(">>>>>>>>>>>>>>>>>>>>>>>>selectedVersionId",selectedVersionId);
   const { openOverlay } = useToolControlHelper();
-  const {addContentAssignment,changeSettings,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError,} = useAssignment();
+  const {addContentAssignment,updateVersionHistory,updatePrevVersionHistory,changeSettings,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError,} = useAssignment();
   const {makeAssignment,onmakeAssignmentError,publishAssignment,onPublishAssignmentError,publishContent,onPublishContentError, updateAssignmentTitle,onUpdateAssignmentTitleError,convertAssignmentToContent,onConvertAssignmentToContentError} = useAssignmentCallbacks();
-
-  
-
   const [addToast, ToastType] = useToast();
  const [checkIsAssigned,setIsAssigned] = useState(false);
+ const [selectVersion,setSelectVersion] = useState(false)
  
   const versionHistorySelected = useRecoilCallback(({snapshot,set})=> async (version)=>{
     set(versionHistoryReleasedSelectedAtom,version.versionId) 
@@ -973,22 +973,17 @@ let aInfo = '';
     return null;}
 
     let assignVersions = [];
-        // let makeAssignmentforReleasedButton = null;
-        // let makeContentforReleasedAssignmentButton = null;
-        // let viewContentButton = null;
-        let releasedVersions = [];
-        
-    if(versionHistory.state === "hasValue"){
-      for (let version of versionHistory.contents.named){
-        console.log(">>>version",version);
-        let titleText = version.title;
-        let versionStyle = {};
-     
-       
         let makeAssignmentforReleasedButton = null;
         let makeContentforReleasedAssignmentButton = null;
         let viewContentButton = null;
-        if (selectedVersionId === version.versionId ){
+        let releasedVersions = [];
+        let switchAssignmentButton = null;
+    if(versionHistory.state === "hasValue"){
+      for (let version of versionHistory.contents.named){
+        // console.log(">>>version",version);
+        let titleText = version.title;
+        let versionStyle = {};
+        if (selectVersion){
           versionStyle = {backgroundColor:"#b8d2ea"}
          
            makeAssignmentforReleasedButton = <>
@@ -1026,6 +1021,10 @@ let aInfo = '';
               itemId: itemInfo.itemId,
               payload: payload,
             });
+            updateVersionHistory(
+              itemInfo.branchId,
+              version?.versionId
+            )
             try {
               if(result.success){
                 addToast(`Add new assignment 'Untitled assignment'`, ToastType.SUCCESS,);
@@ -1100,6 +1099,68 @@ let aInfo = '';
               />
             </>
           );
+          switchAssignmentButton= (
+            <>
+              <Button
+          value="Switch Assignment"
+          callback={async () => {
+            // setShowAForm(true);
+            setIsAssigned(true);
+            const result = await addContentAssignment({
+              driveIditemIdbranchIdparentFolderId: {
+                driveId: itemInfo.driveId,
+                folderId: itemInfo.parentFolderId,
+                itemId: itemInfo.itemId,
+              },
+              branchId: itemInfo.branchId,
+              contentId: selectedContentId(),
+              versionId:selectedVId,
+              // prevAssignedVersionId:prevAssignedVersionId(),
+            });
+            let payload = {
+              // ...aInfo,
+              itemId: itemInfo.itemId,
+              assignment_title: 'Untitled Assignment',
+              isAssigned: '1',
+              branchId: itemInfo.branchId,
+              contentId: selectedContentId(),
+              driveId:itemInfo.driveId,
+              versionId:selectedVId
+            };
+
+            makeAssignment({
+              driveIdFolderId: {
+                driveId: itemInfo.driveId,
+                folderId: itemInfo.parentFolderId,
+              },
+              itemId: itemInfo.itemId,
+              payload: payload,
+            });
+            updateVersionHistory(
+              itemInfo.branchId,
+              selectedVId
+            )
+            updatePrevVersionHistory(
+              itemInfo.branchId,
+              prevAssignedVersionId()
+            )
+            try {
+              if(result.success){
+                addToast(`Switch  assignment 'Untitled assignment'`, ToastType.SUCCESS,);
+              }
+              else{
+                onAssignmentError({ errorMessage: result.message });
+              }
+              
+            } catch (e) {
+              onAssignmentError({ errorMessage: e});
+
+            }
+          }}
+        />
+            </>
+          );
+
       }
   let assignedTitle = '';
   let assignedIcon = '';
@@ -1121,10 +1182,10 @@ let aInfo = '';
             >
               <div>{version.title}</div>
             </div>
-            {itemInfo.isAssigned !== '1'  && makeAssignmentforReleasedButton}
+            {/* {itemInfo.isAssigned !== '1'  && makeAssignmentforReleasedButton} */}
            {/* {itemInfo.isAssigned !== '1'  && viewContentButton} */}
 
-           {itemInfo.isAssigned == '1' &&version?.isAssigned == '1' && makeContentforReleasedAssignmentButton}
+           {/* {itemInfo.isAssigned == '1' && version?.isAssigned == '1' && makeContentforReleasedAssignmentButton} */}
           </React.Fragment>
         );
       //TODO do we need draft or only released or latest released
@@ -1135,30 +1196,71 @@ let aInfo = '';
   
     }
     }
- const [selectVersion,setSelectVersion] = useState(false)
- 
-const selectedVersion = () =>{
-  setSelectVersion(true)
-  return <p>test selected</p>
+ const [selectedVId, setSelectedVId] = useState();
 
+const selectedVersion = (item) =>{
+  // console.log(">>selectedVersion event ",item, item.isAssigned);
+  setSelectVersion(true)
+  setSelectedVId(item);
 }
-  
+
+const checkIfAssigned = (item) =>{
+  // console.log(">>> !!!!!!!!!!!!!!!!checkIfAssigned versionHistory",versionHistory.contents.named);
+  const assignedArr =  versionHistory.contents.named.filter((item)=>item.versionId === selectedVId);
+if(assignedArr.length > 0 && assignedArr[0].isAssigned == '1') {
+  return true;
+}else{
+  return false;
+}
+}
+
+const checkAssignArrItemAssigned = (item) =>{
+  const assignedArr =  versionHistory.contents.named.filter((item)=>item.isAssigned == '1');
+if(assignedArr.length > 0) {
+  return true;
+}else{
+  return false;
+}
+} 
+const prevAssignedVersionId = () =>{
+  const assignedArr =  versionHistory.contents.named.filter((item)=>item.isAssigned == '1');
+  if(assignedArr.length > 0) {
+    return assignedArr[0].versionId;
+  }else{
+    return '';
+  }
+}
+const selectedContentId = () =>{
+  const assignedArr =  versionHistory.contents.named.filter((item)=>item.versionId === selectedVId);
+  if(assignedArr.length > 0) {
+    return assignedArr[0].contentId;
+  }else{
+    return '';
+  }
+}
   return (
     <>
-      <select multiple onChange = {() => selectedVersion()}>
-        <option value="">Select Version</option>
-        {assignVersions.map((item, i) => (
-          <option key={i} value={item.title}>
+      <select multiple onChange = {(event) => selectedVersion(event.target.value)}>
+        {versionHistory.contents.named.map((item, i) => (
+            <>
+
+            {item.isReleased == 1 ?  <option key={i} value={item.versionId}>
             {item.title}
-          </option>
+            {console.log(">>>>>>>>>>>>item",versionHistory.contents.named)}
+          </option> : ""}
+
+          </>
         ))}
       </select>
 
-      <h3>Assign</h3>
-      {assignVersions}
       <br />
-      {/* {itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton}
-      {itemInfo.isAssigned !== '1' && viewContentButton}
+      <br />
+    {itemInfo.isAssigned !== '1' &&  makeAssignmentforReleasedButton}
+    {/* {console.log("@@@@@@@@@@@@checkIfAssigned",checkIfAssigned())} */}
+    {itemInfo.isAssigned == '1'  && checkIfAssigned() && makeContentforReleasedAssignmentButton}
+    {itemInfo.isAssigned == '1'  && checkAssignArrItemAssigned() && !checkIfAssigned() &&  switchAssignmentButton}
+
+        {/*   {itemInfo.isAssigned !== '1' && viewContentButton}
 
       {itemInfo.isAssigned == '1' &&
         version?.isAssigned == '1' &&
@@ -1168,11 +1270,9 @@ const selectedVersion = () =>{
   };
 
 const ItemInfoPanel = (props) => {
-  console.log("ItemInfoPanel >>>props",props);
   let versionArr = [];
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.branchId))
-    console.log(">>> DoenetMLInfoPanel versionHistory",versionHistory);
 
     if (versionHistory.state === "loading"){ return null;}
     if (versionHistory.state === "hasError"){ 
