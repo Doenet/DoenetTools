@@ -28,6 +28,16 @@ services:
       - ./volumes/db_init:/docker-entrypoint-initdb.d
     restart: always
 
+  rtnode:
+    image: node:lts-alpine3.13
+    user: 'node'
+    working_dir: /home/node/app
+    volumes:
+      - ../:/home/node/app
+    command: 'npm run realtime'
+    ports:
+      - '81:81'
+
   # node:
   #   build: './node'
   #   # image: node:13.8
