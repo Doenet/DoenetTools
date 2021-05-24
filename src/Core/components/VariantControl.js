@@ -1,3 +1,4 @@
+import { numberToLetters } from '../utils/sequence';
 import BaseComponent from './abstract/BaseComponent';
 
 export default class VariantControl extends BaseComponent {
@@ -191,10 +192,10 @@ export default class VariantControl extends BaseComponent {
         while (variantNumber < globalDependencyValues.nVariantsSpecified) {
           variantNumber++;
           variantValue++;
-          variantString = numberToLowercaseLetters(variantValue);
+          variantString = indexToLowercaseLetters(variantValue);
           while (globalDependencyValues.originalVariants.includes(variantString)) {
             variantValue++;
-            variantString = numberToLowercaseLetters(variantValue);
+            variantString = indexToLowercaseLetters(variantValue);
           }
           variants.push(variantString);
         }
@@ -204,15 +205,11 @@ export default class VariantControl extends BaseComponent {
     }
 
 
-    stateVariableDefinitions.selectedVariantNumber = {
+    stateVariableDefinitions.selectedVariantIndex = {
       public: true,
       componentType: "number",
       immutable: true,
       returnDependencies: ({ sharedParameters }) => ({
-        // essentialSelectedVariantNumber: {
-        //   dependencyType: "potentialEssentialVariable",
-        //   variableName: "selectedVariantNumber",
-        // },
         variantsObject: {
           dependencyType: "variants",
         },
@@ -228,10 +225,6 @@ export default class VariantControl extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "nVariantsSpecified"
         },
-        hashStringToInteger: {
-          dependencyType: "value",
-          value: sharedParameters.hashStringToInteger,
-        },
         selectRng: {
           dependencyType: "value",
           value: sharedParameters.selectRng,
@@ -242,87 +235,75 @@ export default class VariantControl extends BaseComponent {
 
         // determine how variant will be selected.
         // Use the first of these options that is available
-        // 1. if selectedVariantNumber is an essential state variable
-        //    then use that variantNumber
-        // 2. if variants.desiredVariantNumber is defined and is a valid index,
-        //    then use that for variantNumber
-        // 3. if variants.desiredVariant is defined and is a valid variant
-        //    then use the variantNumber corresponding to that value
-        // 4. else, random generate variantNumber
+        // 1. if variants.desiredVariantIndex is defined and is a valid index,
+        //    then use that for variantIndex
+        // 2. if variants.desiredVariantName is defined and is a valid variant
+        //    then use the variantIndex corresponding to that name
+        // 3. else, randomly generate variantIndex (except use 0 for document)
 
-        // if (dependencyValues.essentialSelectedVariantNumber !== null) {
-        //   return {
-        //     makeEssential: ["selectedVariantNumber"],
-        //     newValues: {
-        //       selectedVariantNumber: dependencyValues.essentialSelectedVariantNumber
-        //     }
-        //   }
-        // }
 
         // no essential state variable, so try to find desiredVariant
         if (dependencyValues.variantsObject !== undefined) {
-          if (dependencyValues.variantsObject.desiredVariantNumber !== undefined) {
-            let desiredVariantNumber = Number(dependencyValues.variantsObject.desiredVariantNumber);
-            if (!Number.isInteger(desiredVariantNumber)) {
-              throw Error("Variant number " + dependencyValues.variantsObject.desiredVariantNumber + " must be an integer");
+          if (dependencyValues.variantsObject.desiredVariantIndex !== undefined) {
+            let desiredVariantIndex = Number(dependencyValues.variantsObject.desiredVariantIndex);
+            if (!Number.isInteger(desiredVariantIndex)) {
+              throw Error("Variant index " + dependencyValues.variantsObject.desiredVariantIndex + " must be an integer");
             } else {
-              let selectedVariantNumber = desiredVariantNumber % dependencyValues.nVariantsSpecified;
-              if (selectedVariantNumber < 0) {
-                selectedVariantNumber += dependencyValues.nVariantsSpecified;
+              let selectedVariantIndex = desiredVariantIndex % dependencyValues.nVariantsSpecified;
+              if (selectedVariantIndex < 0) {
+                selectedVariantIndex += dependencyValues.nVariantsSpecified;
               }
               return {
-                makeEssential: { selectedVariantNumber: true },
-                newValues: { selectedVariantNumber }
+                makeEssential: { selectedVariantIndex: true },
+                newValues: { selectedVariantIndex }
               }
             }
           }
-          if (dependencyValues.variantsObject.desiredVariant !== undefined) {
-            if (typeof dependencyValues.variantsObject.desiredVariant === "string") {
+          if (dependencyValues.variantsObject.desiredVariantName !== undefined) {
+            if (typeof dependencyValues.variantsObject.desiredVariantName === "string") {
               // want case insensitive test, so convert to lower case
               // treat originalVariants separately so don't have to lower case
               // remaining variants, which are alread lowercase
               let originalLowerCaseVariants = dependencyValues.originalVariants.map(x => x.toLowerCase());
               let lowerCaseVariants = [...originalLowerCaseVariants, ...dependencyValues.variants.slice(originalLowerCaseVariants.length)];
-              let desiredNumber = lowerCaseVariants.indexOf(dependencyValues.variantsObject.desiredVariant.toLowerCase());
-              if (desiredNumber !== -1) {
+              let desiredIndex = lowerCaseVariants.indexOf(dependencyValues.variantsObject.desiredVariantName.toLowerCase());
+              if (desiredIndex !== -1) {
                 return {
-                  makeEssential: { selectedVariantNumber: true },
-                  newValues: { selectedVariantNumber: desiredNumber }
+                  makeEssential: { selectedVariantIndex: true },
+                  newValues: { selectedVariantIndex: desiredIndex }
                 }
               }
             }
-            console.log("Variant " + dependencyValues.variantsObject.desiredVariant + " is not valid, convert to variant index");
-            let selectedVariantNumber = Math.abs(
-              dependencyValues.hashStringToInteger(
-                JSON.stringify(dependencyValues.variantsObject.desiredVariant)
-              )
-              % dependencyValues.nVariantsSpecified
-            );
-            return {
-              makeEssential: { selectedVariantNumber: true },
-              newValues: { selectedVariantNumber }
-            }
+            throw Error("Variant name " + dependencyValues.variantsObject.desiredVariantName + " is not valid");
           }
         }
 
-        // randomly pick variant number using random number generator
-        // from shared parameters
+        // variant was not specified
 
-        // random number in [0, 1)
-        let rand = dependencyValues.selectRng();
-        // random integer from 0 to nVariants-1
-        let selectedVariantNumber = Math.floor(rand * dependencyValues.nVariantsSpecified);
+        let selectedVariantIndex;
 
+        // if selectRng exists
+        // randomly pick variant index
+        if (dependencyValues.selectRng) {
+          // random number in [0, 1)
+          let rand = dependencyValues.selectRng();
+          // random integer from 0 to nVariants-1
+          selectedVariantIndex = Math.floor(rand * dependencyValues.nVariantsSpecified);
+        } else {
+          // if selectRng does not exist, we are in document
+          // Just choose the first variant
+          selectedVariantIndex = 0;
+        }
 
         return {
-          makeEssential: { selectedVariantNumber: true },
-          newValues: { selectedVariantNumber }
+          makeEssential: { selectedVariantIndex: true },
+          newValues: { selectedVariantIndex }
         }
 
       }
     }
 
-    stateVariableDefinitions.selectedVariant = {
+    stateVariableDefinitions.selectedVariantName = {
       public: true,
       componentType: "text",
       returnDependencies: () => ({
@@ -330,16 +311,16 @@ export default class VariantControl extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "variants"
         },
-        selectedVariantNumber: {
+        selectedVariantIndex: {
           dependencyType: "stateVariable",
-          variableName: "selectedVariantNumber",
+          variableName: "selectedVariantIndex",
         }
       }),
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
-            selectedVariant:
-              dependencyValues.variants[dependencyValues.selectedVariantNumber]
+            selectedVariantName:
+              dependencyValues.variants[dependencyValues.selectedVariantIndex]
           }
         }
       }
@@ -347,9 +328,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.selectedSeed = {
       returnDependencies: () => ({
-        selectedVariantNumber: {
+        selectedVariantIndex: {
           dependencyType: "stateVariable",
-          variableName: "selectedVariantNumber",
+          variableName: "selectedVariantIndex",
         },
         seeds: {
           dependencyType: "stateVariable",
@@ -358,17 +339,17 @@ export default class VariantControl extends BaseComponent {
 
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.selectedVariantNumber < dependencyValues.seeds.length) {
-          return { newValues: { selectedSeed: dependencyValues.seeds[dependencyValues.selectedVariantNumber] } }
+        if (dependencyValues.selectedVariantIndex < dependencyValues.seeds.length) {
+          return { newValues: { selectedSeed: dependencyValues.seeds[dependencyValues.selectedVariantIndex] } }
         }
 
-        // if fewer seeds than selectedVariantNumber, find additional seeds
-        // try seeds, n+1, n+2, ...., selectedVariantNumber
+        // if fewer seeds than selectedVariantIndex, find additional seeds
+        // try seeds, n+1, n+2, ...., selectedVariantIndex
         // except skipping seeds that are already in original seeds
         let seedNumber = dependencyValues.seeds.length - 1;
         let seedValue = seedNumber + 1;
         let seedString;
-        while (seedNumber < dependencyValues.selectedVariantNumber) {
+        while (seedNumber < dependencyValues.selectedVariantIndex) {
           seedNumber++;
           seedValue++;
           seedString = seedValue.toString();
@@ -382,30 +363,11 @@ export default class VariantControl extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.convertedSeed = {
+    stateVariableDefinitions.selectRng = {
       returnDependencies: ({ sharedParameters }) => ({
         selectedSeed: {
           dependencyType: "stateVariable",
-          variableName: "selectedSeed"
-        },
-        hashStringToInteger: {
-          dependencyType: "value",
-          value: sharedParameters.hashStringToInteger,
-        },
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          convertedSeed: dependencyValues.hashStringToInteger(dependencyValues.selectedSeed)
-        }
-      })
-    }
-
-
-    stateVariableDefinitions.selectRng = {
-      returnDependencies: ({ sharedParameters }) => ({
-        convertedSeed: {
-          dependencyType: "stateVariable",
-          variableName: "convertedSeed",
+          variableName: "selectedSeed",
         },
         rngClass: {
           dependencyType: "value",
@@ -415,7 +377,7 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          selectRng: new dependencyValues.rngClass(dependencyValues.convertedSeed)
+          selectRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
         }
       })
     }
@@ -425,15 +387,6 @@ export default class VariantControl extends BaseComponent {
 
 }
 
-function numberToLowercaseLetters(number) {
-  let letters = "";
-  while (true) {
-    let nextNum = number % 26;
-    letters = String.fromCharCode(97 + nextNum) + letters;
-    if (number < 26) {
-      break;
-    }
-    number = Math.floor(number / 26) - 1;
-  }
-  return letters;
+function indexToLowercaseLetters(index) {
+  return numberToLetters(index + 1, true)
 }

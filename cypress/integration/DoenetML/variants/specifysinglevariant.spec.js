@@ -1,3 +1,5 @@
+import { numberToLetters } from "../../../../src/Core/utils/sequence";
+
 describe('Specifying single variant document tests', function () {
 
   beforeEach(() => {
@@ -27,6 +29,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       nWithIndex0 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.log("Number doesn't change with multiple updates");
@@ -48,6 +58,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -62,11 +80,20 @@ describe('Specifying single variant document tests', function () {
         requestedVariant: { index: 0 },
       }, "*");
     });
+
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `b`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -83,11 +110,23 @@ describe('Specifying single variant document tests', function () {
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `c`)
+
+    let generatedVariantInfo;
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
+      generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo));
     })
 
+    cy.log(`Number doesn't change when use generatedVariantInfo`)
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -97,7 +136,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: generatedVariantInfo,
       }, "*");
     });
     // to wait for page to load
@@ -105,6 +144,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: true,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.log("Number changes for index 1");
@@ -129,6 +176,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       nWithIndex1 = components['/n'].stateValues.value;
       expect(nWithIndex1).not.eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
 
@@ -149,6 +204,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -168,6 +231,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.log("Index 101 same as index 1");
@@ -188,6 +259,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -198,6 +277,12 @@ describe('Specifying single variant document tests', function () {
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
+    expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+      index: 0,
+      subvariants: [{
+        indices: [nWithIndex1 - 1]
+      }]
+    })
     `,
         requestedVariant: { index: 101 },
       }, "*");
@@ -207,6 +292,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.log("Index -299 same as index 1");
@@ -227,6 +320,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -246,6 +347,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.log("Index 83057200 same as index 0");
@@ -266,6 +375,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -285,6 +402,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.log("Variant 'a' same as index 0");
@@ -297,7 +422,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'a' },
+        requestedVariant: { name: 'a' },
       }, "*");
     });
     // to wait for page to load
@@ -305,6 +430,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -316,7 +449,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'a' },
+        requestedVariant: { name: 'a' },
       }, "*");
     });
     // to wait for page to load
@@ -324,6 +457,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.log("Variant 'b' same as index 1");
@@ -336,7 +477,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'b' },
+        requestedVariant: { name: 'b' },
       }, "*");
     });
     // to wait for page to load
@@ -344,6 +485,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -355,7 +504,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'b' },
+        requestedVariant: { name: 'b' },
       }, "*");
     });
     // to wait for page to load
@@ -363,6 +512,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex1 - 1]
+        }]
+      })
     })
 
     cy.log("Index '300' same as index 0");
@@ -383,6 +540,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex0 - 1]
+        }]
+      })
     })
 
     cy.log("Variant 'cQ' and index '94' are the same");
@@ -408,6 +573,14 @@ describe('Specifying single variant document tests', function () {
       nWithIndex94 = components['/n'].stateValues.value;
       expect(nWithIndex94).not.eq(nWithIndex0);
       expect(nWithIndex94).not.eq(nWithIndex1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 94,
+        name: 'cq',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex94 - 1]
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -419,7 +592,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'cQ' },
+        requestedVariant: { name: 'cQ' },
       }, "*");
     });
     // to wait for page to load
@@ -427,131 +600,15 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithIndex94);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 94,
+        name: 'cq',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithIndex94 - 1]
+        }]
+      })
     })
-
-    cy.log("Variant 'nonexistent one' doesn't change");
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>u</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { value: 'nonexistent one' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `u`);
-
-    let nWithValueNonexistent;
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      nWithValueNonexistent = components['/n'].stateValues.value;
-    })
-
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>v</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { value: 'nonexistent one' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `v`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithValueNonexistent);
-    })
-
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>w</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { value: 'nonexistent one' },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `w`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithValueNonexistent);
-    })
-
-
-    cy.log("Object as variant doesn't change");
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>x</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { value: { a: 'b', c: [9, 2, 'q', 'z'], d: { 'h': null } } },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `x`);
-
-    let nWithObject;
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      nWithObject = components['/n'].stateValues.value;
-    })
-
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>y</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { value: { a: 'b', c: [9, 2, 'q', 'z'], d: { 'h': null } } },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `y`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithObject);
-    })
-
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-    <p>
-      <text>z</text>
-      Selected number: 
-      <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
-    `,
-        requestedVariant: { value: { a: 'b', c: [9, 2, 'q', 'z'], d: { 'h': null } } },
-      }, "*");
-    });
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `z`);
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithObject);
-    })
-
 
   });
 
@@ -593,6 +650,15 @@ describe('Specifying single variant document tests', function () {
       expect(x2).eq(expectedx);
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'avocado',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [3],
+          subvariants: []
+        }]
+      })
     })
 
     cy.log("specify third variant index")
@@ -631,10 +697,20 @@ describe('Specifying single variant document tests', function () {
       expect(x2).eq(expectedx);
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 2,
+        name: 'carrot',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [1],
+          subvariants: []
+        }]
+      })
     })
 
 
     cy.log("specify variant bRoccoli")
+    let generatedVariantInfo;
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -652,7 +728,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
-        requestedVariant: { value: 'bRoccoli' },
+        requestedVariant: { name: 'bRoccoli' },
       }, "*");
     })
     // to wait for page to load
@@ -670,8 +746,65 @@ describe('Specifying single variant document tests', function () {
       expect(x2).eq(expectedx);
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'broccoli',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [4],
+          subvariants: []
+        }]
+      })
+      generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo))
     })
 
+
+    cy.log("same result with previous generatedVariantInfo")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>3a</text>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <p>Selected variable:
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
+    </select>
+    </p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    `,
+        requestedVariant: generatedVariantInfo,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `3a`)
+
+    cy.window().then((win) => {
+      let expectedx = 'b';
+
+      let components = Object.assign({}, win.state.components);
+      let x = components['/x'].stateValues.value.tree;
+      expect(x).eq(expectedx);
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(xorig).eq(expectedx);
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
+      expect(x2).eq(expectedx);
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'broccoli',
+        subvariantsSpecified: true,
+        subvariants: [{
+          indices: [4],
+          subvariants: []
+        }]
+      })
+    })
 
     cy.log("specify variant dill")
     cy.window().then((win) => {
@@ -691,7 +824,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
-        requestedVariant: { value: 'dill' },
+        requestedVariant: { name: 'dill' },
       }, "*");
     })
     // to wait for page to load
@@ -709,6 +842,15 @@ describe('Specifying single variant document tests', function () {
       expect(x2).eq(expectedx);
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 3,
+        name: 'dill',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [0],
+          subvariants: []
+        }]
+      })
     })
 
 
@@ -748,6 +890,15 @@ describe('Specifying single variant document tests', function () {
       expect(x2).eq(expectedx);
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 4,
+        name: 'eggplant',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [2],
+          subvariants: []
+        }]
+      })
     })
 
 
@@ -787,6 +938,15 @@ describe('Specifying single variant document tests', function () {
       expect(x2).eq(expectedx);
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'broccoli',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [4],
+          subvariants: []
+        }]
+      })
     })
 
   });
@@ -815,6 +975,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       nWithSeed50283 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed50283 - 1],
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -836,6 +1004,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed50283);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed50283 - 1],
+        }]
+      })
     })
 
     cy.log("specify second variant index")
@@ -861,6 +1037,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       nWithSeed25018 = components['/n'].stateValues.value;
       expect(nWithSeed25018).not.eq(nWithSeed50283);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed25018 - 1],
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -881,6 +1065,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed25018);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed25018 - 1],
+        }]
+      })
     })
 
     cy.log("specify third variant by name")
@@ -894,7 +1086,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'c' },
+        requestedVariant: { name: 'c' },
       }, "*");
     })
     // to wait for page to load
@@ -907,6 +1099,14 @@ describe('Specifying single variant document tests', function () {
       nWithSeed52018 = components['/n'].stateValues.value;
       expect(nWithSeed52018).not.eq(nWithSeed50283);
       expect(nWithSeed52018).not.eq(nWithSeed25018);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 2,
+        name: 'c',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed52018 - 1],
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -919,7 +1119,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'c' },
+        requestedVariant: { name: 'c' },
       }, "*");
     })
     // to wait for page to load
@@ -927,6 +1127,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed52018);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 2,
+        name: 'c',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed52018 - 1],
+        }]
+      })
     })
 
     cy.log("specify fourth variant as string")
@@ -954,14 +1162,16 @@ describe('Specifying single variant document tests', function () {
       expect(nWithSeed2917392).not.eq(nWithSeed50283);
       expect(nWithSeed2917392).not.eq(nWithSeed25018);
       expect(nWithSeed2917392).not.eq(nWithSeed52018);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 3,
+        name: 'd',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed2917392 - 1],
+        }]
+      })
     })
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
-    })
-
-    cy.log("specify fourth variant as string")
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -980,6 +1190,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 3,
+        name: 'd',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed2917392 - 1],
+        }]
+      })
     })
 
 
@@ -999,11 +1217,6 @@ describe('Specifying single variant document tests', function () {
     })
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `i`)
-    cy.window().then((win) => {
-      win.tempvariant = {
-        index: '-820572306'
-      }
-    });
 
     let nWithSeed603962;
 
@@ -1014,8 +1227,17 @@ describe('Specifying single variant document tests', function () {
       expect(nWithSeed603962).not.eq(nWithSeed25018);
       expect(nWithSeed603962).not.eq(nWithSeed52018);
       expect(nWithSeed603962).not.eq(nWithSeed2917392);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 4,
+        name: 'e',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed603962 - 1],
+        }]
+      })
     })
 
+    let generatedVariantInfo;
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1024,7 +1246,7 @@ describe('Specifying single variant document tests', function () {
     <p>
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
-    </p>
+    </p>1
     `,
         requestedVariant: { index: '-820572306' },
       }, "*");
@@ -1034,7 +1256,47 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed603962);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 4,
+        name: 'e',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed603962 - 1],
+        }]
+      })
+      generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo))
     })
+
+
+    cy.log('same results with previous generatedVariantInfo')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>ja</text>
+    <variantControl nvariants="5" seeds="50283  25018  52018  2917392  603962"/>
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>1
+    `,
+        requestedVariant: generatedVariantInfo,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `ja`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/n'].stateValues.value).eq(nWithSeed603962);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 4,
+        name: 'e',
+        subvariantsSpecified: true,
+        subvariants: [{
+          indices: [nWithSeed603962 - 1],
+        }]
+      })
+    })
+
 
     cy.log('reorder seeds');
     cy.log("specify first variant index")
@@ -1058,6 +1320,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed2917392 - 1],
+        }]
+      })
     })
 
     cy.window().then((win) => {
@@ -1078,6 +1348,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed2917392 - 1],
+        }]
+      })
     })
 
     cy.log("specify second variant index")
@@ -1100,6 +1378,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed52018);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'b',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed52018 - 1],
+        }]
+      })
     })
 
 
@@ -1114,7 +1400,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { value: 'c' },
+        requestedVariant: { name: 'c' },
       }, "*");
     })
     // to wait for page to load
@@ -1123,6 +1409,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed603962);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 2,
+        name: 'c',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed603962 - 1],
+        }]
+      })
     })
 
     cy.log("specify fourth variant as string")
@@ -1145,6 +1439,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed50283);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 3,
+        name: 'd',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed50283 - 1],
+        }]
+      })
     })
 
     cy.log("specify fifth variant as negative")
@@ -1167,6 +1469,14 @@ describe('Specifying single variant document tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed25018);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 4,
+        name: 'e',
+        subvariantsSpecified: false,
+        subvariants: [{
+          indices: [nWithSeed25018 - 1],
+        }]
+      })
     })
 
   });
@@ -1180,11 +1490,12 @@ describe('Specifying single variant document tests', function () {
       "Variable:": 3
     }
 
-    cy.log("Test a bunch of variants")
-    for (let ind = 0; ind < 10; ind++) {
+    let generatedVariantInfo;
+    let originalVariantInd;
+    let originalSecondValue;
 
-      let originalVariantInd;
-      let originalSecondValue;
+    cy.log("Test a bunch of variants")
+    for (let ind = 0; ind < 20; ind++) {
 
       // show values don't change for same variant
       for (let ind2 = 0; ind2 < 3; ind2++) {
@@ -1226,29 +1537,84 @@ describe('Specifying single variant document tests', function () {
           let components = Object.assign({}, win.state.components);
           let p = components['/p'];
 
+          generatedVariantInfo = {
+            index: ind,
+            name: numberToLetters(ind + 1, true),
+            subvariantsSpecified: false,
+            subvariants: []
+          }
+
           let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
           expect(variantInd).not.eq(undefined);
 
           let secondChild = p.activeChildren[1];
 
           if (variantInd === 0) {
-            expect(["red", "orange", "green", "white", "chartreuse"].includes(secondChild.stateValues.value)).eq(true)
+            let i = ["red", "orange", "green", "white", "chartreuse"].indexOf(secondChild.stateValues.value)
+            expect(i).not.eq(-1);
+            generatedVariantInfo.subvariants.push({
+              indices: [0],
+              subvariants: [{
+                indices: [i],
+                subvariants: []
+              }]
+            })
           } else if (variantInd === 1) {
             let num = secondChild.stateValues.value;
             expect(Number.isInteger(num)).eq(true);
-            expect((num >= 1000 && num <= 2000) || (num >= -1000 && num <= -900)).eq(true);
+            if (num > 0) {
+              expect(num).gte(1000);
+              expect(num).lte(2000);
+              generatedVariantInfo.subvariants.push({
+                indices: [1],
+                subvariants: [{
+                  indices: [0],
+                  subvariants: [{
+                    indices: [num - 1000],
+                  }]
+                }]
+              })
+            } else {
+              expect(num).gte(-1000);
+              expect(num).lte(-900)
+              generatedVariantInfo.subvariants.push({
+                indices: [1],
+                subvariants: [{
+                  indices: [1],
+                  subvariants: [{
+                    indices: [num + 1000],
+                  }]
+                }]
+              })
+            }
           } else if (variantInd === 2) {
-            expect(["a", "b", "c", "d", "e", "f", "g"].includes(secondChild.stateValues.value)).eq(true)
+            let i = ["a", "b", "c", "d", "e", "f", "g"].indexOf(secondChild.stateValues.value);
+            expect(i).not.eq(-1);
+            generatedVariantInfo.subvariants.push({
+              indices: [2],
+              subvariants: [{
+                indices: [i],
+              }]
+            })
           } else {
-            expect(["u", "v", "w", "x", "y", "z"].includes(secondChild.stateValues.value)).eq(true)
+            let i = ["u", "v", "w", "x", "z", "y"].indexOf(secondChild.stateValues.value);
+            expect(i).not.eq(-1);
+            generatedVariantInfo.subvariants.push({
+              indices: [3],
+              subvariants: [{
+                indices: [i],
+                subvariants: []
+              }]
+            })
           }
+
+          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+            generatedVariantInfo
+          )
 
           let secondValue = secondChild.stateValues.value;
-          if (secondValue === undefined) {
-            secondValue = secondChild.stateValues.value;
-          }
 
-          if (originalVariantInd === undefined) {
+          if (ind2 === 0) {
             originalVariantInd = variantInd;
             originalSecondValue = secondValue
           } else {
@@ -1261,6 +1627,126 @@ describe('Specifying single variant document tests', function () {
 
     }
 
+    cy.log(`repeat last one with previous generatedVariantInfo`)
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>repeat</text>
+    <variantControl nvariants="100"/>
+
+    <select assignnames="(p)">
+      <option><p>Favorite color:
+        <select>
+          <option><text>red</text></option>
+          <option><text>orange</text></option>
+          <option><text>green</text></option>
+          <option><text>white</text></option>
+          <option><text>chartreuse</text></option>
+        </select>
+      </p></option>
+      <option><p>Selected number: 
+        <select>
+          <option><selectfromsequence from="1000" to="2000" /></option>
+          <option><selectfromsequence from="-1000" to="-900" /></option>
+        </select>
+      </p></option>
+      <option><p>Chosen letter: <selectfromsequence type="letters" to="g" /></p></option>
+      <option><p>Variable: <select type="text">u v w x z y</select></p></option>
+    </select>
+    `,
+        requestedVariant: generatedVariantInfo,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `repeat`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let p = components['/p'];
+
+      generatedVariantInfo = {
+        index: 19,
+        name: numberToLetters(19 + 1, true),
+        subvariantsSpecified: true,
+        subvariants: []
+      }
+
+      let variantInd = firstStringsToInd[p.activeChildren[0].stateValues.value.trim()];
+      expect(variantInd).not.eq(undefined);
+
+      let secondChild = p.activeChildren[1];
+
+      if (variantInd === 0) {
+        let i = ["red", "orange", "green", "white", "chartreuse"].indexOf(secondChild.stateValues.value)
+        expect(i).not.eq(-1);
+        generatedVariantInfo.subvariants.push({
+          indices: [0],
+          subvariants: [{
+            indices: [i],
+            subvariants: []
+          }]
+        })
+      } else if (variantInd === 1) {
+        let num = secondChild.stateValues.value;
+        expect(Number.isInteger(num)).eq(true);
+        if (num > 0) {
+          expect(num).gte(1000);
+          expect(num).lte(2000);
+          generatedVariantInfo.subvariants.push({
+            indices: [1],
+            subvariants: [{
+              indices: [0],
+              subvariants: [{
+                indices: [num - 1000],
+              }]
+            }]
+          })
+        } else {
+          expect(num).gte(-1000);
+          expect(num).lte(-900)
+          generatedVariantInfo.subvariants.push({
+            indices: [1],
+            subvariants: [{
+              indices: [1],
+              subvariants: [{
+                indices: [num + 1000],
+              }]
+            }]
+          })
+        }
+      } else if (variantInd === 2) {
+        let i = ["a", "b", "c", "d", "e", "f", "g"].indexOf(secondChild.stateValues.value);
+        expect(i).not.eq(-1);
+        generatedVariantInfo.subvariants.push({
+          indices: [2],
+          subvariants: [{
+            indices: [i],
+          }]
+        })
+      } else {
+        let i = ["u", "v", "w", "x", "z", "y"].indexOf(secondChild.stateValues.value);
+        expect(i).not.eq(-1);
+        generatedVariantInfo.subvariants.push({
+          indices: [3],
+          subvariants: [{
+            indices: [i],
+            subvariants: []
+          }]
+        })
+      }
+
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+        generatedVariantInfo
+      )
+
+      let secondValue = secondChild.stateValues.value;
+
+      expect(variantInd).eq(originalVariantInd);
+      expect(secondValue).eq(originalSecondValue);
+
+    })
+
   });
 
   it('selected problems', () => {
@@ -1270,11 +1756,18 @@ describe('Specifying single variant document tests', function () {
       "A number problem": 1,
     }
 
+    let variantOfProblemsFound = {
+      0: [],
+      1: []
+    }
+
+    let originalVariantInds;
+    let originalSecondValues;
+
+    let generatedVariantInfo;
+
     cy.log("Test a bunch of variants")
     for (let ind = 0; ind < 10; ind++) {
-
-      let originalVariantInds = [];
-      let originalSecondValues = [];
 
       // show values don't change for same variant
       for (let ind2 = 0; ind2 < 3; ind2++) {
@@ -1290,16 +1783,16 @@ describe('Specifying single variant document tests', function () {
             <variantControl nvariants="5" variants="a b c d e" />
             <p>Word:
               <select>
-                <option selectForVariants="a"><text>angry</text></option>
                 <option selectForVariants="b"><text>bad</text></option>
-                <option selectForVariants="c"><text>churlish</text></option>
+                <option selectForVariants="a"><text>angry</text></option>
                 <option selectForVariants="d"><text>drab</text></option>
                 <option selectForVariants="e"><text>excoriated</text></option>
+                <option selectForVariants="c"><text>churlish</text></option>
               </select>
             </p>
           </problem></option>
           <option><problem><title>A number problem</title>
-            <variantControl nvariants="10" />
+            <variantControl nvariants="6" />
             <p>Number: <selectfromsequence to="10"/></p>
           </problem></option>
         </select>
@@ -1314,6 +1807,16 @@ describe('Specifying single variant document tests', function () {
         cy.window().then((win) => {
           let components = Object.assign({}, win.state.components);
 
+          generatedVariantInfo = {
+            index: ind,
+            name: numberToLetters(ind + 1, true),
+            subvariantsSpecified: false,
+            subvariants: [{
+              indices: [],
+              subvariants: []
+            }]
+          }
+
           let variantInds = [];
           let secondValues = [];
 
@@ -1324,17 +1827,48 @@ describe('Specifying single variant document tests', function () {
             expect(variantInd).not.eq(undefined);
 
             variantInds.push(variantInd);
+            generatedVariantInfo.subvariants[0].indices.push(variantInd);
 
             let p = problem.activeChildren[4];
 
             if (variantInd === 0) {
               expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
-              expect(["angry", "bad", "churlish", "drab", "excoriated"].includes(p.activeChildren[1].stateValues.value)).eq(true)
+              let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value);
+              expect(problemVariantInd).not.eq(-1)
+              if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
+                variantOfProblemsFound[0].push(problemVariantInd);
+              }
+              expect(problemVariantInd).eq(problem.stateValues.generatedVariantInfo.index)
+
+              let selectVariantInd = ["bad", "angry", "drab", "excoriated", "churlish"].indexOf(p.activeChildren[1].stateValues.value);
+
+              generatedVariantInfo.subvariants[0].subvariants.push({
+                index: problemVariantInd,
+                name: numberToLetters(problemVariantInd + 1, true),
+                subvariantsSpecified: false,
+                subvariants: [{
+                  indices: [selectVariantInd],
+                  subvariants: []
+                }]
+              })
             } else {
               expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
               let num = p.activeChildren[1].stateValues.value;
               expect(Number.isInteger(num)).eq(true);
               expect(num >= 1 && num <= 10).eq(true);
+
+              let problemVariantInd = problem.stateValues.generatedVariantInfo.index
+              if (!variantOfProblemsFound[1].includes(problemVariantInd)) {
+                variantOfProblemsFound[1].push(problemVariantInd);
+              }
+              generatedVariantInfo.subvariants[0].subvariants.push({
+                index: problemVariantInd,
+                name: numberToLetters(problemVariantInd + 1, true),
+                subvariantsSpecified: false,
+                subvariants: [{
+                  indices: [num - 1],
+                }]
+              })
             }
 
             let secondValue = p.activeChildren[1].stateValues.value;
@@ -1344,7 +1878,11 @@ describe('Specifying single variant document tests', function () {
             secondValues.push(secondValue);
           }
 
-          if (originalVariantInds.length === 0) {
+          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+            generatedVariantInfo
+          )
+
+          if (ind2 === 0) {
             originalVariantInds = variantInds;
             originalSecondValues = secondValues
           } else {
@@ -1358,6 +1896,129 @@ describe('Specifying single variant document tests', function () {
 
       }
     }
+
+    cy.log(`repeat last with previous generatedVariantInfo`)
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>repeat</text>
+    <variantControl nvariants="100"/>
+
+    <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+      <option><problem><title>A word problem</title>
+        <variantControl nvariants="5" variants="a b c d e" />
+        <p>Word:
+          <select>
+            <option selectForVariants="b"><text>bad</text></option>
+            <option selectForVariants="a"><text>angry</text></option>
+            <option selectForVariants="d"><text>drab</text></option>
+            <option selectForVariants="e"><text>excoriated</text></option>
+            <option selectForVariants="c"><text>churlish</text></option>
+          </select>
+        </p>
+      </problem></option>
+      <option><problem><title>A number problem</title>
+        <variantControl nvariants="6" />
+        <p>Number: <selectfromsequence to="10"/></p>
+      </problem></option>
+    </select>
+    `,
+        requestedVariant: generatedVariantInfo,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `repeat`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      generatedVariantInfo = {
+        index: 9,
+        name: numberToLetters(9 + 1, true),
+        subvariantsSpecified: true,
+        subvariants: [{
+          indices: [],
+          subvariants: []
+        }]
+      }
+
+      let variantInds = [];
+      let secondValues = [];
+
+      for (let i = 1; i <= 3; i++) {
+        let problem = components['/problem' + i];
+        let variantInd = titlesToInd[problem.stateValues.title];
+
+        expect(variantInd).not.eq(undefined);
+
+        variantInds.push(variantInd);
+        generatedVariantInfo.subvariants[0].indices.push(variantInd);
+
+        let p = problem.activeChildren[4];
+
+        if (variantInd === 0) {
+          expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
+          let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value);
+          expect(problemVariantInd).not.eq(-1)
+          if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
+            variantOfProblemsFound[0].push(problemVariantInd);
+          }
+          expect(problemVariantInd).eq(problem.stateValues.generatedVariantInfo.index)
+
+          let selectVariantInd = ["bad", "angry", "drab", "excoriated", "churlish"].indexOf(p.activeChildren[1].stateValues.value);
+
+          generatedVariantInfo.subvariants[0].subvariants.push({
+            index: problemVariantInd,
+            name: numberToLetters(problemVariantInd + 1, true),
+            subvariantsSpecified: true,
+            subvariants: [{
+              indices: [selectVariantInd],
+              subvariants: []
+            }]
+          })
+        } else {
+          expect(p.activeChildren[0].stateValues.value.trim()).eq("Number:");
+          let num = p.activeChildren[1].stateValues.value;
+          expect(Number.isInteger(num)).eq(true);
+          expect(num >= 1 && num <= 10).eq(true);
+
+          let problemVariantInd = problem.stateValues.generatedVariantInfo.index
+          if (!variantOfProblemsFound[1].includes(problemVariantInd)) {
+            variantOfProblemsFound[1].push(problemVariantInd);
+          }
+          generatedVariantInfo.subvariants[0].subvariants.push({
+            index: problemVariantInd,
+            name: numberToLetters(problemVariantInd + 1, true),
+            subvariantsSpecified: true,
+            subvariants: [{
+              indices: [num - 1],
+            }]
+          })
+        }
+
+        let secondValue = p.activeChildren[1].stateValues.value;
+        if (secondValue === undefined) {
+          secondValue = p.activeChildren[1].stateValues.value;
+        }
+        secondValues.push(secondValue);
+      }
+
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+        generatedVariantInfo
+      )
+
+      expect(variantInds).eqls(originalVariantInds);
+      expect(secondValues).eqls(originalSecondValues);
+
+
+    })
+
+
+    cy.log('make sure all problem variants were selected at least once').then(() => {
+      expect(variantOfProblemsFound[0].sort()).eqls([0, 1, 2, 3, 4]);
+      expect(variantOfProblemsFound[1].sort()).eqls([0, 1, 2, 3, 4, 5]);
+    })
 
   });
 
