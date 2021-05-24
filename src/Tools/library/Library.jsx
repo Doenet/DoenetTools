@@ -579,8 +579,14 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <br />
   <Button value="Edit DoenetML" callback={()=>{
-    openOverlay({type:"editor",branchId:itemInfo.branchId,title:itemInfo.label})
-    // open("editor", itemInfo.branchId, itemInfo.label);
+    openOverlay({
+      type:"editor",
+      branchId:itemInfo.branchId,
+      title:itemInfo.label,
+      driveId:itemInfo.driveId,
+      folderId:itemInfo.parentFolderId,
+      itemId:itemInfo.itemId
+    })
   }} />
   <br />
   <br />
@@ -1018,7 +1024,14 @@ export default function Library(props) {
             drivePathSyncKey="main"
             urlClickBehavior="select" 
             doenetMLDoubleClickCallback={(info)=>{
-              openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
+              openOverlay({
+                type:"editor",
+                branchId: info.item.branchId,
+                title: info.item.label,
+                driveId: info.driveId,
+                folderId: info.item.parentFolderId,
+                itemId: info.item.itemId
+              });
             }}
           />
           </Container>
@@ -1055,7 +1068,14 @@ export default function Library(props) {
 
         urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{
-          openOverlay({type:"editor",branchId: info.item.branchId,title: info.item.label});
+          openOverlay({
+            type:"editor",
+            branchId: info.item.branchId,
+            title: info.item.label,
+            driveId: info.driveId,
+            folderId: info.item.parentFolderId,
+            itemId: info.item.itemId
+          });
         }}
         />
       </Container>
