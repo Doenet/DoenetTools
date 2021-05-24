@@ -10,11 +10,10 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
-$assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
-$courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
+$driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
-$itemId = mysqli_real_escape_string($conn,$_POST["itemId"]);
+$versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 
 //make assignment 
 $title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
@@ -58,37 +57,33 @@ else if($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
 $success = TRUE;
 $message = "";
 
-
-if ($courseId == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing courseId';
-}elseif ($assignmentId == ""){
-  $success = FALSE;
-  $message = "Internal Error: missing assignmentId";
-}elseif ($branchId == ""){
+if ($branchId == ""){
   $success = FALSE;
   $message = "Internal Error: missing branchId";
-}elseif ($contentId == ""){
+}else if ($contentId == ""){
   $success = FALSE;
   $message = "Internal Error: missing contentId";
+}
+else if($driveId == ''){
+  $success = FALSE;
+  $message = "Internal Error: missing driveId";
 }
 
 if ($success){
 
     $sql="
-    INSERT INTO assignment_draft
-    (assignmentId,
-    courseId,
+    INSERT INTO assignment
+    (
     title,
-    creationDate,
+    branchId,
+    contentId,
+    driveId,
     assignedDate,
     dueDate,
     timeLimit,
     numberOfAttemptsAllowed,
     attemptAggregation,
     totalPointsOrPercent,
-    sourceBranchId,
-    contentId,
     gradeCategory,
     individualize,
     multipleAttempts,
@@ -98,18 +93,17 @@ if ($success){
     showCorrectness,
     proctorMakesAvailable)
     VALUES
-    ('$assignmentId',
-    '$courseId',
-    '$title',
-    NOW(),
+    (
+      '$title',
+      '$branchId',
+      '$contentId',
+    '$driveId',
     '$assignedDate',
     '$dueDate',
     '$timeLimit',
     '$numberOfAttemptsAllowed',
     '$attemptAggregation',
     '$totalPointsOrPercent',
-    '$branchId',
-    '$contentId',
     '$gradeCategory',
     '$individualize',
     '$multipleAttempts',
@@ -123,10 +117,12 @@ if ($success){
 $result = $conn->query($sql); 
 }
   // echo $sql;
-$sqlnew="UPDATE drive_content SET assignmentId='$assignmentId',isAssignment=1 WHERE branchId='$branchId';";
+$sqlnew="UPDATE drive_content SET isAssigned=1 WHERE branchId='$branchId';";
 //  echo $sqlnew;
-$result = $conn->query($sqlnew); 
+$result = $conn->query($sqlnew);
 
+$sql ="UPDATE content SET isAssigned=1 WHERE contentId='$contentId' AND versionId='$versionId';";
+$result = $conn->query($sql); 
 
 $response_arr = array(
   "success"=>$success,
