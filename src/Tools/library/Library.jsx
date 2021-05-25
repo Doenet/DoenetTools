@@ -1019,8 +1019,8 @@ export default function Library(props) {
           <Container>
           <Drive 
             types={['content','course']}  
-            // viewAccess="assigned"
-            // viewAccess="released"
+            // columnTypes={['Due Date','Released','Assigned','Public']}
+            columnTypes={['Released','Public']}
             drivePathSyncKey="main"
             urlClickBehavior="select" 
             doenetMLDoubleClickCallback={(info)=>{
@@ -1063,8 +1063,8 @@ export default function Library(props) {
       <Drive 
         drivePathSyncKey="support"
         types={['content','course']}  
-        // viewAccess="released"
-        // viewAccess="assigned"
+        // columnTypes={['Due Date','Released','Assigned','Public']}
+            columnTypes={['Released','Public']}
 
         urlClickBehavior="select" 
         doenetMLDoubleClickCallback={(info)=>{

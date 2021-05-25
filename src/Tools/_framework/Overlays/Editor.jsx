@@ -208,6 +208,8 @@ function VersionHistoryPanel(props){
   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
   const toggleReleaseNamed = useRecoilCallback(({set})=> async (branchId,versionId,driveId,folderId)=>{
+    let doenetIsReleased = false;
+    
     set(itemHistoryAtom(branchId),(was)=>{
       let newHistory = {...was}
       newHistory.named = [...was.named];
@@ -229,6 +231,12 @@ function VersionHistoryPanel(props){
           }
         }
       }
+      for (let named of newHistory.named){
+        if (named.isReleased === '1'){
+          doenetIsReleased = true;
+          break;
+        }
+      }
       let newDBVersion = {...newVersion,
         isNewToggleRelease:'1',
         branchId
@@ -243,7 +251,7 @@ function VersionHistoryPanel(props){
       newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
       newFolderInfo.contentsDictionary[props.itemId] = {...was.contentsDictionary[props.itemId]};
       let newIsReleased = '0';
-      if (was.contentsDictionary[props.itemId].isReleased === '0'){
+      if (doenetIsReleased){
         newIsReleased = '1';
       }
       newFolderInfo.contentsDictionary[props.itemId].isReleased = newIsReleased;

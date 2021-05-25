@@ -85,10 +85,6 @@ export default class SelectFromSequence extends Sequence {
       immutable: true,
       additionalStateVariablesDefined: ["selectedIndices"],
       returnDependencies: ({ sharedParameters }) => ({
-        // essentialSelectedValues: {
-        //   dependencyType: "potentialEssentialVariable",
-        //   variableName: "selectedValues",
-        // },
         numberToSelect: {
           dependencyType: "stateVariable",
           variableName: "numberToSelect",
@@ -142,11 +138,6 @@ export default class SelectFromSequence extends Sequence {
 
       }),
       definition: makeSelection,
-    }
-
-    stateVariableDefinitions.isVariantComponent = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { isVariantComponent: true } })
     }
 
     stateVariableDefinitions.isVariantComponent = {
@@ -514,15 +505,6 @@ export default class SelectFromSequence extends Sequence {
 function makeSelection({ dependencyValues }) {
   // console.log(`make selection`)
   // console.log(dependencyValues)
-
-  // if (dependencyValues.essentialSelectedValues !== null) {
-  //   return {
-  //     makeEssential: ["selectedValues"],
-  //     newValues: {
-  //       selectedValues: dependencyValues.essentialSelectedValues
-  //     }
-  //   }
-  // }
 
   if (dependencyValues.numberToSelect < 1) {
     return {
