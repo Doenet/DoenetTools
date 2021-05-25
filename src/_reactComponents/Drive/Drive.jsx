@@ -462,8 +462,6 @@ export const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenId
 
 function DriveHeader(props){
   // console.log("===DriveHeader")
-  // console.log(">>>props.numColumns",props.numColumns)
-
 
   let columns = '250px repeat(4,1fr)'; //5 columns
   if (props.numColumns === 4){
@@ -487,16 +485,16 @@ function DriveHeader(props){
        //update number of columns in header
       const breakpoints = [375,500,650,800];
       if (width >= breakpoints[3] && props.numColumns !== 5 && 
-        props.columns[3]){
+        props.columnTypes[3]){
         if (props.setNumColumns){props.setNumColumns(5)}
       }else if(width < breakpoints[3] && width >= breakpoints[2] && 
-        props.numColumns !== 4 && props.columns[2]){
+        props.numColumns !== 4 && props.columnTypes[2]){
         if (props.setNumColumns){props.setNumColumns(4)}
       }else if(width < breakpoints[2] && width >= breakpoints[1] && 
-        props.numColumns !== 3 && props.columns[1]){
+        props.numColumns !== 3 && props.columnTypes[1]){
         if (props.setNumColumns){props.setNumColumns(3)}
       }else if(width < breakpoints[1] && width >= breakpoints[0] && 
-        props.numColumns !== 2 && props.columns[0]){
+        props.numColumns !== 2 && props.columnTypes[0]){
         if (props.setNumColumns){props.setNumColumns(2)}
       }else if(width < breakpoints[0] && props.numColumns !== 1){
         if (props.setNumColumns){props.setNumColumns(1)}
@@ -525,10 +523,10 @@ function DriveHeader(props){
                 alignContent: 'center'
               }}>
                 <span>Name</span> 
-              {props.numColumns >= 2 && props.columns[0] ? <span style={{textAlign:"center"}}>{props.columns[0]}</span> : null}  
-              {props.numColumns >= 3 && props.columns[1] ? <span style={{textAlign:"center"}}>{props.columns[1]}</span> : null}  
-              {props.numColumns >= 4 && props.columns[2] ? <span style={{textAlign:"center"}}>{props.columns[2]}</span> : null}  
-              {props.numColumns >= 5 && props.columns[3] ? <span style={{textAlign:"center"}}>{props.columns[3]}</span> : null}  
+              {props.numColumns >= 2 && props.columnTypes[0] ? <span style={{textAlign:"center"}}>{props.columnTypes[0]}</span> : null}  
+              {props.numColumns >= 3 && props.columnTypes[1] ? <span style={{textAlign:"center"}}>{props.columnTypes[1]}</span> : null}  
+              {props.numColumns >= 4 && props.columnTypes[2] ? <span style={{textAlign:"center"}}>{props.columnTypes[2]}</span> : null}  
+              {props.numColumns >= 5 && props.columnTypes[3] ? <span style={{textAlign:"center"}}>{props.columnTypes[3]}</span> : null}  
            
               </div>
           </div>
@@ -540,8 +538,8 @@ function DriveHeader(props){
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
-  let columns = []
-  if (props.columns){ columns = props.columns} //Protect against not being defined
+  let columnTypes = []
+  if (props.columnTypes){ columnTypes = props.columnTypes} //Protect against not being defined
 
   const [numColumns,setNumColumns] = useState(1);
   
@@ -580,7 +578,7 @@ function DriveRouted(props){
 
   let heading = null;
   if (!props.isNav){
-    heading = <DriveHeader driveInstanceId={props.driveInstanceId} numColumns={numColumns} setNumColumns={setNumColumns} columns={columns}/>
+    heading = <DriveHeader driveInstanceId={props.driveInstanceId} numColumns={numColumns} setNumColumns={setNumColumns} columnTypes={columnTypes}/>
   }
    
   //default to all
@@ -606,7 +604,7 @@ function DriveRouted(props){
       foldersOnly={props.foldersOnly}
       doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
       numColumns={numColumns}
-      columns={columns}
+      columnTypes={columnTypes}
       viewAccess={viewAccess}
       drivePathSyncKey={props.drivePathSyncKey}
     />
@@ -1269,6 +1267,7 @@ function Folder(props){
             foldersOnly={props.foldersOnly}
             doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
             numColumns={props.numColumns}
+            columnTypes={props.columnTypes}
             drivePathSyncKey={props.drivePathSyncKey}
             />)
           break;
@@ -1285,7 +1284,7 @@ function Folder(props){
               doubleClickCallback={props.doenetMLDoubleClickCallback}
               deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
-              columns={props.columns}
+              columnTypes={props.columnTypes}
               setDrivePath={setDrivePath}
             />)
           break;
@@ -1314,7 +1313,7 @@ function Folder(props){
   </div>
 }
 
-const EmptyNode =  React.memo(function Node(props){
+const EmptyNode =  React.memo(function Node(){
 
   return (<div style={{
     // width: "840px",
@@ -1535,7 +1534,6 @@ function columnJSX(columnType,item){
 
 const DoenetML = React.memo((props)=>{
   // console.log(`=== 📜 DoenetML`)
-  // console.log(">>>props.columns",props.columns)
 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
@@ -1570,10 +1568,10 @@ const DoenetML = React.memo((props)=>{
   let widthSize = "auto";
   let marginSize = "0";
   
-  let column2 = columnJSX(props.columns[0],props.item);
-  let column3 = columnJSX(props.columns[1],props.item);
-  let column4 = columnJSX(props.columns[2],props.item);
-  let column5 = columnJSX(props.columns[3],props.item);
+  let column2 = columnJSX(props.columnTypes[0],props.item);
+  let column3 = columnJSX(props.columnTypes[1],props.item);
+  let column4 = columnJSX(props.columnTypes[2],props.item);
+  let column5 = columnJSX(props.columnTypes[3],props.item);
 
   let label = props.item?.label;
 
@@ -1722,160 +1720,6 @@ const DoenetML = React.memo((props)=>{
       </WithDropTarget>;
     }
     return doenetMLJSX;
-  })
-
-const Url = React.memo((props)=>{
-  const { onDragStart, onDrag, onDragEnd, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
-  const [dragState] = useRecoilState(dragStateAtom);
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.driveId}))
-  const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
-  const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
-
-  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
-  const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
-  const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
-
-  const indentPx = 30;
-  let bgcolor = "#ffffff";
-  let borderSide = "0px 0px 0px 0px";
-  let widthSize = "60vw";
-  let marginSize = "0";
-  let date = props.item.creationDate.slice(0,10);
-  let published = <FontAwesomeIcon icon={faUsersSlash}/>
-  let assigned = '-'
-  let columns = 'repeat(4,25%)'
-  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='1fr'};
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99"}
-  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
-  if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
-  if (props.item.isAssigned == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
-
-  useEffect(() => {
-    parentFolderSortOrderRef.current = parentFolderSortOrder;
-  }, [parentFolderSortOrder])
-
-  const onDragOver = ({x, y, dropTargetRef}) => {
-    const dropTargetTopY = dropTargetRef?.offsetTop;
-    const dropTargetHeight = dropTargetRef?.clientHeight;
-    const cursorY = y;
-    const cursorArea = (cursorY - dropTargetTopY) / dropTargetHeight;
-    if (parentFolderSortOrderRef.current === sortOptions.DEFAULT) {
-      
-    }
-  }
-
-  const onDragEndCb = () => {
-    onDragEnd();
-  }
-
-  let urlJSX = <div
-      data-doenet-driveinstanceid={props.driveInstanceId}
-      tabIndex={0}
-      className="noselect nooutline" 
-      style={{
-        cursor: "pointer",
-        // width: "60vw",
-        padding: "8px",
-        border: "0px",
-        borderBottom: "2px solid black",
-        backgroundColor: bgcolor,
-        width: widthSize,
-        // boxShadow: borderSide,
-        marginLeft: marginSize
-      }}
-      onClick={(e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        if (props.urlClickBehavior === "select"){
-          if (props.isNav){
-            //Only select one item
-          props.setDrivePath({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"Url"})
-          }else{
-            e.preventDefault();
-            e.stopPropagation();
-            if (!e.shiftKey && !e.metaKey){
-              setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
-            }else if (e.shiftKey && !e.metaKey){
-              setSelected({instructionType:"range to item",parentFolderId:props.item.parentFolderId})
-            }else if (!e.shiftKey && e.metaKey){
-              setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
-            }
-          }
-          setSelectedDrive(props.driveId);
-        }else{
-          //Default url behavior is new tab
-          let linkTo = props.item?.url; //Enable this when add URL is completed
-          window.open(linkTo)
-        }
-      }}
-      onBlur={(e) => {
-        //Don't clear on navigation changes
-        if (!props.isNav){
-        //Only clear if focus goes outside of this node group
-          // if (e.relatedTarget === null ||
-          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-          //   !e.relatedTarget.dataset.doenetDriveStayselected)
-          //   ){
-          //     setSelected({instructionType:"clear all"})
-          // }
-          // if (e.relatedTarget.dataset.doenetDriveStayselected){
-          //   console.log(">>>GET FOCUS BACK!")
-          // }
-          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
-          //   setSelected({instructionType:"clear all"});
-          // }
-        }
-      }}
-      ><div 
-      className="noselect" 
-      style={{
-        marginLeft: `${props.indentLevel * indentPx}px`,
-        display: 'grid',
-        gridTemplateColumns: columns,
-        gridTemplateRows: '1fr',
-        alignItems: 'center'
-      }}>
-    <div style={{display: 'inline', margin: '0px'}}><FontAwesomeIcon icon={faLink}/> {props.item?.label}</div> {date} {published} {assigned}</div></div>
-
-  if (!props.isNav) {
-    // make URL draggable
-    const onDragStartCallback = () => {
-      if (globalSelectedNodes.length === 0 || !isSelected) {
-        setSelected({instructionType:"clear all"});
-        setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId});
-      } 
-    }
-    let draggableClassName = "";
-    urlJSX = <Draggable
-      key={`dnode${props.driveInstanceId}${props.item.itemId}`} 
-      id={props.item.itemId}
-      className={draggableClassName}
-      onDragStart={({ev}) => onDragStart({ ev, nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
-      onDrag={onDrag}
-      onDragEnd={onDragEnd}
-      onDragEnd={onDragEndCb}
-      ghostElement={renderDragGhost(props.item.itemId, urlJSX)}
-      >
-      { urlJSX } 
-    </Draggable>
-  }
-
-  // attach dropTarget to enable drag-reordering
-  urlJSX = <WithDropTarget
-    key={`wdtnode${props.driveInstanceId}${props.item.itemId}`} 
-    id={props.item.itemId}
-    registerDropTarget={registerDropTarget} 
-    unregisterDropTarget={unregisterDropTarget}
-    dropCallbacks={{
-      onDragOver: onDragOver,
-    }}
-    >
-    { urlJSX } 
-  </WithDropTarget>
-
-  return urlJSX;
-
   })
 
 function useDnDCallbacks() {
