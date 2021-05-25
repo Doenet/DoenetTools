@@ -99,8 +99,8 @@ import Select from './components/Select';
 import Group from './components/Group';
 import AnimateFromSequence from './components/AnimateFromSequence';
 import Evaluate from './components/Evaluate';
-import RandomNumber from './components/RandomNumber';
-import GenerateRandomNumbers from './components/GenerateRandomNumbers';
+import SelectRandomNumbers from './components/SelectRandomNumbers';
+import SampleRandomNumbers from './components/SampleRandomNumbers';
 import Substitute from './components/Substitute';
 import Offsets from './components/Offsets';
 import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
@@ -221,8 +221,8 @@ const componentTypeArray = [
   Group,
   AnimateFromSequence,
   Evaluate,
-  RandomNumber,
-  GenerateRandomNumbers,
+  SelectRandomNumbers,
+  SampleRandomNumbers,
   Substitute,
   Offsets,
   DiscreteInfiniteSet,

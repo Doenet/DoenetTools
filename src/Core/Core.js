@@ -2689,7 +2689,7 @@ export default class Core {
                 success: true,
                 instructions: [{
                   setDependency: "targetVariable",
-                  desiredValue: desiredStateVariableValues[attribute],
+                  desiredValue: desiredStateVariableValues[varName],
                 }]
               };
             } else if (usedDefault.ancestorProp) {
@@ -2745,7 +2745,7 @@ export default class Core {
               && !usedDefault.targetVariable) {
               // if don't have attribute component 
               // and target has attribute, use that value
-              return { newValues: { [attribute]: dependencyValues.targetVariable } };
+              return { newValues: { [varName]: dependencyValues.targetVariable } };
             } else {
               return {
                 useEssentialOrDefaultValue: {
@@ -2786,7 +2786,7 @@ export default class Core {
                 success: true,
                 instructions: [{
                   setDependency: "targetVariable",
-                  desiredValue: desiredStateVariableValues[attribute],
+                  desiredValue: desiredStateVariableValues[varName],
                 }]
               };
             } else
@@ -6543,7 +6543,7 @@ export default class Core {
           [component.componentName]: { newComponents, parent: change.parent }
         }
 
-        if (unproxiedComponent.shadowedBy) {
+        if (unproxiedComponent.shadowedBy && currentShadowedBy[unproxiedComponent.componentName].length > 0) {
           let newReplacementsForShadows = this.createShadowedReplacements({
             replacementsToShadow: newComponents,
             componentToShadow: unproxiedComponent,
@@ -6739,6 +6739,9 @@ export default class Core {
 
     if (composite.shadowedBy) {
       for (let shadowingComposite of composite.shadowedBy) {
+        if (shadowingComposite.shadows.propVariable) {
+          continue;
+        }
 
         let shadowingComponentsToDelete;
 
@@ -6748,6 +6751,9 @@ export default class Core {
             let shadowingCompToDelete;
             if (compToDelete.shadowedBy) {
               for (let cShadow of compToDelete.shadowedBy) {
+                if (cShadow.shadows.propVariable) {
+                  continue;
+                }
                 if (cShadow.shadows.compositeName === shadowingComposite.shadows.compositeName) {
                   shadowingCompToDelete = cShadow;
                   break;
@@ -6884,6 +6890,9 @@ export default class Core {
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
+        if (shadowingComponent.shadows.propVariable) {
+          continue;
+        }
         this.processChildChangesAndRecurseToShadows(shadowingComponent)
       }
     }
@@ -6918,6 +6927,9 @@ export default class Core {
     let newComponentsForShadows = {};
 
     for (let shadowingComponent of componentToShadow.shadowedBy) {
+      if (shadowingComponent.shadows.propVariable) {
+        continue;
+      }
 
       if (this.updateInfo.compositesBeingExpanded.includes(shadowingComponent.componentName)) {
         throw Error(`circular dependence involving ${shadowingComponent.componentName}`)
@@ -7007,6 +7019,9 @@ export default class Core {
         if (parentToShadow) {
           if (parentToShadow.shadowedBy) {
             for (let pShadow of parentToShadow.shadowedBy) {
+              if (pShadow.shadows.propVariable) {
+                continue;
+              }
               if (pShadow.shadows.compositeName === shadowingComponent.shadows.compositeName) {
                 shadowingParent = pShadow;
                 break;
@@ -7023,7 +7038,7 @@ export default class Core {
           parent: shadowingParent
         };
 
-        if (shadowingComponent.shadowedBy) {
+        if (shadowingComponent.shadowedBy && currentShadowedBy[shadowingComponent.componentName].length > 0) {
           let recursionComponents = this.createShadowedReplacements({
             replacementsToShadow: newComponents,
             componentToShadow: shadowingComponent,
@@ -7107,6 +7122,9 @@ export default class Core {
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
+        if(shadowingComponent.shadows.propVariable) {
+          continue;
+        }
         let additionalcompositesWithAdjustedReplacements =
           this.adjustReplacementsToWithhold({
             component: shadowingComponent, change, componentChanges,
@@ -8509,9 +8527,11 @@ function calculateAllComponentsShadowing(component) {
   let allShadowing = [];
   if (component.shadowedBy) {
     for (let comp2 of component.shadowedBy) {
-      allShadowing.push(comp2.componentName);
-      let additionalShadowing = calculateAllComponentsShadowing(comp2);
-      allShadowing.push(...additionalShadowing);
+      if (!comp2.shadows.propVariable) {
+        allShadowing.push(comp2.componentName);
+        let additionalShadowing = calculateAllComponentsShadowing(comp2);
+        allShadowing.push(...additionalShadowing);
+      }
     }
   }
   if (component.replacementOf) {
