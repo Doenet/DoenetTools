@@ -125,7 +125,7 @@ export function evaluateLogic({ logicTree,
     // TODO: should we simplify before evaluating to constant?
     let numericalValue = expression.simplify().evaluate_to_constant();
 
-    if(!Number.isFinite(numericalValue)) {
+    if (!Number.isFinite(numericalValue)) {
       return 0;
     }
 
@@ -345,14 +345,17 @@ export function evaluateLogic({ logicTree,
     operands = operands[0].slice(1);
   }
 
-  operands = operands.map(function (x) {
+  let mathOperands = operands.map(function (x) {
     return me.fromAst(replaceMath(x));
   });
 
   if (operator === "=") {
-    let expr = operands[0];
+    let expr = mathOperands[0];
+    if (Number.isNaN(expr.tree)) {
+      return mathOperands.slice(1).every(x => Number.isNaN(x.tree)) ? 1 : 0;
+    }
     if (dependencyValues.matchPartial) {
-      let results = operands.slice(1).map(x => checkEquality({
+      let results = mathOperands.slice(1).map(x => checkEquality({
         object1: expr,
         object2: x,
         isUnordered: unorderedCompare,
@@ -370,7 +373,7 @@ export function evaluateLogic({ logicTree,
       let sum = results.reduce((a, c) => a + c.fraction_equal, 0);
       return sum / results.length;
     } else {
-      return operands.slice(1).every(x => checkEquality(
+      return mathOperands.slice(1).every(x => checkEquality(
         {
           object1: expr,
           object2: x,
@@ -391,8 +394,8 @@ export function evaluateLogic({ logicTree,
 
     let fraction_equal = checkEquality(
       {
-        object1: operands[0],
-        object2: operands[1],
+        object1: mathOperands[0],
+        object2: mathOperands[1],
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
         symbolicEquality: dependencyValues.symbolicEquality,
@@ -410,8 +413,8 @@ export function evaluateLogic({ logicTree,
 
   if (operator === "in" || operator === "notin") {
 
-    let element = operands[0];
-    let set = operands[1];
+    let element = mathOperands[0];
+    let set = mathOperands[1];
     let set_tree = set.tree;
     if (!(Array.isArray(set_tree) && set_tree[0] === "set")) {
       console.warn("Invalid format for boolean condition");
@@ -466,42 +469,42 @@ export function evaluateLogic({ logicTree,
 
 
   // since have inequality, all operands must be numbers
-  operands = operands.map(x => x.simplify().evaluate_to_constant());
-  if (operands.some(x => (x === null || Number.isNaN(x)))) {
+  let numberOperands = mathOperands.map(x => x.simplify().evaluate_to_constant());
+  if (numberOperands.some(x => (x === null || Number.isNaN(x)))) {
     return 0;
   }
 
   // at this point, all operands are numbers, Infinity, or -Infinity
 
   if (operator === "<") {
-    return operands[0] < operands[1] ? 1 : 0;
+    return numberOperands[0] < numberOperands[1] ? 1 : 0;
   } else if (operator === ">") {
-    return operands[0] > operands[1] ? 1 : 0;
+    return numberOperands[0] > numberOperands[1] ? 1 : 0;
   } else if (operator === "le") {
-    return operands[0] <= operands[1] ? 1 : 0;
+    return numberOperands[0] <= numberOperands[1] ? 1 : 0;
   } else if (operator === "ge") {
-    return operands[0] >= operands[1] ? 1 : 0;
+    return numberOperands[0] >= numberOperands[1] ? 1 : 0;
   }
 
   // have lts or gts
   for (let ind = 0; ind < strict.length; ind++) {
     if (operator === "lts") {
       if (strict[ind] === true) {
-        if (!(operands[ind] < operands[ind + 1])) {
+        if (!(numberOperands[ind] < numberOperands[ind + 1])) {
           return 0;
         }
       } else {
-        if (!(operands[ind] <= operands[ind + 1])) {
+        if (!(numberOperands[ind] <= numberOperands[ind + 1])) {
           return 0;
         }
       }
     } else {
       if (strict[ind] === true) {
-        if (!(operands[ind] > operands[ind + 1])) {
+        if (!(numberOperands[ind] > numberOperands[ind + 1])) {
           return 0;
         }
       } else {
-        if (!(operands[ind] >= operands[ind + 1])) {
+        if (!(numberOperands[ind] >= numberOperands[ind + 1])) {
           return 0;
         }
       }
