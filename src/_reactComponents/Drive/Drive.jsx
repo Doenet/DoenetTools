@@ -13,6 +13,7 @@ import {
   faChevronDown, 
   faUsersSlash, 
   faUsers, 
+  faCheck,
   faUserEdit, 
   faBookOpen,
   faChalkboard
@@ -251,10 +252,12 @@ export const dragStateAtom = atom({
     copyMode: false
   }
 })
+
 const dragShadowId = "dragShadow";
 
 export default function Drive(props){
   // console.log("=== Drive")
+  
   const isNav = useContext(IsNavContext);
 
   const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
@@ -458,40 +461,46 @@ export const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenId
 }
 
 function DriveHeader(props){
-  const [width,setWidth] = useState(0);
-  const [numColumns,setNumColumns] = useState(4);
+  // console.log("===DriveHeader")
+  // console.log(">>>props.numColumns",props.numColumns)
 
-  let columns = '250px repeat(3,1fr)';
-  if (numColumns === 3){
+
+  let columns = '250px repeat(4,1fr)'; //5 columns
+  if (props.numColumns === 4){
+    columns = '250px repeat(3,1fr)';
+  }else if (props.numColumns === 3){
     columns = '250px 1fr 1fr';
-  }else if (numColumns === 2){
+  }else if (props.numColumns === 2){
     columns = '250px 1fr';
-  }else if (numColumns === 1){
+  }else if (props.numColumns === 1){
     columns = '100%';
   }
 
-  //update number of columns in header
-  const breakpoints = [375,500,650];
-  if (width >= breakpoints[2] && numColumns !== 4){
-    if (props.setNumColumns){props.setNumColumns(4)}
-    setNumColumns(4);
-  }else if(width < breakpoints[2] && width >= breakpoints[1] && numColumns !== 3){
-    if (props.setNumColumns){props.setNumColumns(3)}
-    setNumColumns(3);
-  }else if(width < breakpoints[1] && width >= breakpoints[0] && numColumns !== 2){
-    if (props.setNumColumns){props.setNumColumns(2)}
-    setNumColumns(2);
-  }else if(width < breakpoints[0] && numColumns !== 1){
-    if (props.setNumColumns){props.setNumColumns(1)}
-    setNumColumns(1);
-  }
 
 
   return (
     <Measure
     bounds
     onResize={contentRect =>{
-      setWidth(contentRect.bounds.width)
+      const width = contentRect.bounds.width;
+      // console.log(">>>width",width)
+       //update number of columns in header
+      const breakpoints = [375,500,650,800];
+      if (width >= breakpoints[3] && props.numColumns !== 5 && 
+        props.columns[3]){
+        if (props.setNumColumns){props.setNumColumns(5)}
+      }else if(width < breakpoints[3] && width >= breakpoints[2] && 
+        props.numColumns !== 4 && props.columns[2]){
+        if (props.setNumColumns){props.setNumColumns(4)}
+      }else if(width < breakpoints[2] && width >= breakpoints[1] && 
+        props.numColumns !== 3 && props.columns[1]){
+        if (props.setNumColumns){props.setNumColumns(3)}
+      }else if(width < breakpoints[1] && width >= breakpoints[0] && 
+        props.numColumns !== 2 && props.columns[0]){
+        if (props.setNumColumns){props.setNumColumns(2)}
+      }else if(width < breakpoints[0] && props.numColumns !== 1){
+        if (props.setNumColumns){props.setNumColumns(1)}
+      }
     }}
     >
       {({ measureRef }) => (
@@ -516,9 +525,10 @@ function DriveHeader(props){
                 alignContent: 'center'
               }}>
                 <span>Name</span> 
-              {numColumns >= 2 ? <span>Date</span> : null}  
-              {numColumns >= 3 ? <span>Published</span> : null}  
-              {numColumns >= 4 ? <span>Assigned</span> : null}  
+              {props.numColumns >= 2 && props.columns[0] ? <span style={{textAlign:"center"}}>{props.columns[0]}</span> : null}  
+              {props.numColumns >= 3 && props.columns[1] ? <span style={{textAlign:"center"}}>{props.columns[1]}</span> : null}  
+              {props.numColumns >= 4 && props.columns[2] ? <span style={{textAlign:"center"}}>{props.columns[2]}</span> : null}  
+              {props.numColumns >= 5 && props.columns[3] ? <span style={{textAlign:"center"}}>{props.columns[3]}</span> : null}  
            
               </div>
           </div>
@@ -530,8 +540,11 @@ function DriveHeader(props){
 
 function DriveRouted(props){
   // console.log("=== DriveRouted")
+  let columns = []
+  if (props.columns){ columns = props.columns} //Protect against not being defined
 
   const [numColumns,setNumColumns] = useState(1);
+  
   const { onDragEnterInvalidArea, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey))
 
@@ -567,7 +580,7 @@ function DriveRouted(props){
 
   let heading = null;
   if (!props.isNav){
-    heading = <DriveHeader driveInstanceId={props.driveInstanceId} setNumColumns={setNumColumns}/>
+    heading = <DriveHeader driveInstanceId={props.driveInstanceId} numColumns={numColumns} setNumColumns={setNumColumns} columns={columns}/>
   }
    
   //default to all
@@ -593,6 +606,7 @@ function DriveRouted(props){
       foldersOnly={props.foldersOnly}
       doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
       numColumns={numColumns}
+      columns={columns}
       viewAccess={viewAccess}
       drivePathSyncKey={props.drivePathSyncKey}
     />
@@ -1258,23 +1272,6 @@ function Folder(props){
             drivePathSyncKey={props.drivePathSyncKey}
             />)
           break;
-          case "Url":
-            items.push(<Url 
-              key={`item${itemId}${props.driveInstanceId}`} 
-              driveId={props.driveId} 
-              item={item} 
-              indentLevel={props.indentLevel+1}
-              driveInstanceId={props.driveInstanceId}
-              route={props.route}
-              isNav={props.isNav} 
-              urlClickBehavior={props.urlClickBehavior}
-              pathItemId={props.pathItemId}
-              deleteItem={deleteItemCallback}
-              numColumns={props.numColumns}
-              setDrivePath={setDrivePath}
-
-            />)
-          break;
           case "DoenetML":
             items.push(<DoenetML 
               key={`item${itemId}${props.driveInstanceId}`} 
@@ -1288,6 +1285,7 @@ function Folder(props){
               doubleClickCallback={props.doenetMLDoubleClickCallback}
               deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
+              columns={props.columns}
               setDrivePath={setDrivePath}
             />)
           break;
@@ -1342,11 +1340,11 @@ const DragShadow =  React.memo(function Node(props){
   }} ><div className="noselect">.</div></div>)
 })
 
-function LogVisible(props){
-  const globalSelected = useRecoilValue(globalSelectedNodesAtom);
-  console.log("globalSelected",globalSelected)
-  return null;
-}
+// function LogVisible(props){
+//   const globalSelected = useRecoilValue(globalSelectedNodesAtom);
+//   console.log("globalSelected",globalSelected)
+//   return null;
+// }
 
 export const selectedDriveItemsAtom = atomFamily({
   key:"selectedDriveItemsAtom",
@@ -1518,8 +1516,26 @@ const selectedDriveItems = selectorFamily({
   }
 })
 
+function columnJSX(columnType,item){
+  // console.log(">>>columnType,item",columnType,item)
+      // console.log(">>>item",item)
+  if (columnType === 'Released' && item.isReleased === '1'){
+    return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
+  }else if (columnType === 'Assigned' && item.isAssigned === '1'){
+    return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
+  }else if (columnType === 'Public' && item.isPublic === '1'){
+    return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
+  }else if (columnType === 'Due Date'){
+    //TODO: Update to due date
+    let date = item.creationDate.slice(0,10)
+    return <span style={{textAlign:"center"}}>{date}</span>
+  }
+  return <span></span>;
+}
+
 const DoenetML = React.memo((props)=>{
   // console.log(`=== 📜 DoenetML`)
+  // console.log(">>>props.columns",props.columns)
 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId})); 
@@ -1535,8 +1551,11 @@ const DoenetML = React.memo((props)=>{
   const indentPx = 30;
 
   let woIndent = 250 - props.indentLevel * indentPx;
-  let columns = `${woIndent}px repeat(3,1fr)`;
-  if (props.numColumns === 3){
+
+  let columns = `${woIndent}px repeat(4,1fr)`; //5 columns
+  if (props.numColumns === 4){
+    columns = `${woIndent}px repeat(3,1fr)`;
+  }else if (props.numColumns === 3){
     columns = `${woIndent}px 1fr 1fr`;
   }else if (props.numColumns === 2){
     columns = `${woIndent}px 1fr`;
@@ -1550,20 +1569,19 @@ const DoenetML = React.memo((props)=>{
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "auto";
   let marginSize = "0";
-  let date = props.item.creationDate.slice(0,10)
-  let published = <FontAwesomeIcon icon={faUsersSlash}/>
-  let assigned = '-'
-  // let columns = 'repeat(4,25%)'
-  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; date = ''; published=''; assigned=''; columns='1fr'}
-  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99";}
-  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
-  if (props.item.isPublished == 1 && !props.isNav) {published = <FontAwesomeIcon icon={faUsers}/>}
-  if (props.item.isAssigned == 1 && !props.isNav) {assigned = <FontAwesomeIcon icon={faUserEdit}/>}
+  
+  let column2 = columnJSX(props.columns[0],props.item);
+  let column3 = columnJSX(props.columns[1],props.item);
+  let column4 = columnJSX(props.columns[2],props.item);
+  let column5 = columnJSX(props.columns[3],props.item);
 
   let label = props.item?.label;
-  if ( props.item?.isAssigned == "1"){
-    label = props.item?.label;
-  }
+
+  if (props.isNav) {widthSize = "224px"; marginSize = "0px"; column2 = null; column3=null; column4=null; column5=null; columns='1fr'}
+  if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) { bgcolor = "hsl(209,54%,82%)"; borderSide = "8px 0px 0px 0px #1A5A99";}
+  if (isSelected && dragState.isDragging) { bgcolor = "#e2e2e2"; }  
+
+
 
   useEffect(() => {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
@@ -1648,25 +1666,7 @@ const DoenetML = React.memo((props)=>{
         }
         setSelectedDrive(props.driveId);
       }}
-      onBlur={(e) => {
-        //Don't clear on navigation changes
-        if (!props.isNav){
-        //Only clear if focus goes outside of this node group
-          // if (e.relatedTarget === null ||
-          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-          //   !e.relatedTarget.dataset.doenetDriveStayselected)
-          //   ){
-          //     setSelected({instructionType:"clear all"})
-          // }
-          // if (e.relatedTarget === null){
-          //   setSelected({instructionType:"clear all"})
-          // }
-          // console.log(">>>dataset",e?.relatedTarget?.dataset)
-          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
-          //   setSelected({instructionType:"clear all"});
-          // }
-        }
-      }}
+     
       ><div 
       style={{
         marginLeft: `${props.indentLevel * indentPx}px`, 
@@ -1679,9 +1679,10 @@ const DoenetML = React.memo((props)=>{
         <span data-cy="doenetMLIcon"><FontAwesomeIcon icon={faCode}/></span>
         <span data-cy="doenetMLLabel">{label} </span>
       </p> 
-      {props.numColumns >= 2 ? <span>{date}</span> : null }
-      {props.numColumns >= 3 ? <span>{published}</span> : null }
-      {props.numColumns >= 4 ? <span>{assigned}</span> : null }
+      {props.numColumns >= 2 ? column2 : null }
+      {props.numColumns >= 3 ? column3 : null }
+      {props.numColumns >= 4 ? column4 : null }
+      {props.numColumns >= 5 ? column5 : null }
       </div></div>
 
     if (!props.isNav) {
