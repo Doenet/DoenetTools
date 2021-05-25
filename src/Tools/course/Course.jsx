@@ -63,6 +63,10 @@ export const roleAtom = atom({
   key: 'roleAtom',
   default: 'Instructor',
 });
+export const selectedVersionAtom = atom({
+  key: 'selectedVersionAtom',
+  default: '',
+});
 const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
   get: (branchId) => async ({ get, set }) => {
@@ -73,7 +77,7 @@ const loadAssignmentSelector = selectorFamily({
   },
   
 });
-export const assignmentDictionary = atomFamily({            //TODO
+export const assignmentDictionary = atomFamily({            
   key: 'assignmentDictionary',
   default: selectorFamily({
     key: 'assignmentDictionary/Default',
@@ -86,16 +90,12 @@ export const assignmentDictionary = atomFamily({            //TODO
         folderId: driveIditemIdbranchIdparentFolderId.folderId,
       };
       let folderInfo = get(folderDictionarySelector(folderInfoQueryKey));
-      // console.log(">>>folderInfo",folderInfo);
       const itemObj =
         folderInfo?.contentsDictionary?.[
           driveIditemIdbranchIdparentFolderId.itemId
         ];
-      let itemIdassignmentId = itemObj?.assignmentId
-        ? itemObj.assignmentId
-        : null;
-      if (itemIdassignmentId) {
-        const aInfo = await get(loadAssignmentSelector(itemIdassignmentId));
+      if (driveIditemIdbranchIdparentFolderId.branchId) {
+        const aInfo = await get(loadAssignmentSelector(driveIditemIdbranchIdparentFolderId.branchId));
         if (aInfo) {
           return aInfo?.assignments[0];
         } else return null;
@@ -104,7 +104,6 @@ export const assignmentDictionary = atomFamily({            //TODO
   }),
 });
 let assignmentDictionarySelector = selectorFamily({
-  //recoilvalue(assignmentDictionaryNewSelector(assignmentId))
   key: 'assignmentDictionaryNewSelector',
   get: (driveIditemIdbranchIdparentFolderId) => ({ get }) => {
     return get(assignmentDictionary(driveIditemIdbranchIdparentFolderId));
@@ -129,7 +128,7 @@ function Container(props) {
 
 
 function AutoSelect(props) {
-  const { activateMenuPanel } = useToolControlHelper();
+  const { openOverlay,activateMenuPanel } = useToolControlHelper();
 
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   
@@ -312,11 +311,11 @@ export default function Course(props) {
               <Container>
                 <Drive
                  viewAccess="released"
-                //  viewAccess="assigned"
+                 columnTypes={['Due Date','Assigned']}
+                //  viewAccess="assigned"  //TODO
                   driveId={routePathDriveId}
                   hideUnpublished={hideUnpublished}
                   subTypes={['Administrator']}
-                  // types={['content','course']}
                   urlClickBehavior="select"
                   drivePathSyncKey="main"
                   doenetMLDoubleClickCallback={(info)=>{
@@ -329,7 +328,6 @@ export default function Course(props) {
             <div
               onClick={cleardrivecardSelection}
               tabIndex={0}
-              // className={routePathDriveId ? '' : 'mainPanelStyle'}
             >
               {!routePathDriveId && <h2>Admin</h2>}
               <DriveCards
@@ -372,22 +370,28 @@ export default function Course(props) {
 }
 
 const DoenetMLInfoPanel = (props) => {
-  // console.log(">>> DoenetMLInfoPanel",props);
+  // console.log(">>>>>>>>>>> DoenetMLInfoPanel",props);
   let urlParamsObj = Object.fromEntries(
     new URLSearchParams(props.props.route.location.search),
   );
    
   const {addContentAssignment,changeSettings,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError,} = useAssignment();
   const {makeAssignment,onmakeAssignmentError,publishAssignment,onPublishAssignmentError,publishContent,onPublishContentError, updateAssignmentTitle,onUpdateAssignmentTitleError,convertAssignmentToContent,onConvertAssignmentToContentError} = useAssignmentCallbacks();
-
+  const selectedVId  = useRecoilValue(selectedVersionAtom); 
+    // console.log(">>>>>>>>>>>>>>>>>>>>DoenetMLInfoPanel selectedVId",selectedVId);
   
   const itemInfo = props.contentInfo;
+  const vInfo = props.versionArr;
   const assignmentInfoSettings = useRecoilValueLoadable(
     assignmentDictionarySelector({
       driveId: itemInfo.driveId,
       folderId: itemInfo.parentFolderId,
       itemId: itemInfo.itemId,
+      branchId:itemInfo.branchId,
+      versionId:selectedVId,
+      contentId:vInfo.contentId
     }),
+    
   );
 
   let aInfo = '';
@@ -395,6 +399,7 @@ const DoenetMLInfoPanel = (props) => {
 
   if (assignmentInfoSettings?.state === 'hasValue') {
     aInfo = assignmentInfoSettings?.contents;
+    // console.log(">>>>>>>>>>aInfo",aInfo);
     if (aInfo?.assignmentId) {
       assignmentId = aInfo?.assignmentId;
     }
@@ -419,7 +424,7 @@ const DoenetMLInfoPanel = (props) => {
     />
   );
 
-  const { openOverlay } = useToolControlHelper();
+  const { openOverlay,activateMenuPanel } = useToolControlHelper();
   const [addToast, ToastType] = useToast();
   const handleChange = (event) => {
     event.preventDefault();
@@ -611,64 +616,13 @@ const DoenetMLInfoPanel = (props) => {
     );
   }
 
-  if (itemInfo?.isAssigned === '0') {
-    // // Make assignment
-    makeAssignmentButton = (
-      <>
-        <Button
-          value="Make Assignment"
-          callback={async () => {
-            setShowAForm(true);
-            const result = await addContentAssignment({
-              driveIditemIdbranchIdparentFolderId: {
-                driveId: itemInfo.driveId,
-                folderId: itemInfo.parentFolderId,
-                itemId: itemInfo.itemId,
-              },
-              branchId: itemInfo.branchId,
-              contentId: itemInfo.contentId
-                ? itemInfo.contentId
-                : itemInfo.branchId,
-            });
-            let payload = {
-              ...aInfo,
-              itemId: itemInfo.itemId,
-              assignment_title: 'Untitled Assignment',
-              isAssigned: '1',
-              branchId: itemInfo.branchId,
-              contentId: itemInfo.contentId,
-            };
 
-            makeAssignment({
-              driveIdFolderId: {
-                driveId: itemInfo.driveId,
-                folderId: itemInfo.parentFolderId,
-              },
-              itemId: itemInfo.itemId,
-              payload: payload,
-            });
-            try {
-              if(result.success){
-                addToast(`Add new assignment 'Untitled assignment'`, ToastType.SUCCESS,);
-              }
-              else{
-                onAssignmentError({ errorMessage: result.message });
-              }
-              
-            } catch (e) {
-              onAssignmentError({ errorMessage: e});
-
-            }
-          }}
-        />
-      </>
-    );
-  }
   // // View Assignment Form
   const checkIsVersionAssigned = () =>{
-    const selectedVersionId  = useRecoilValue(versionHistoryReleasedSelectedAtom); 
-    // console.log("selectedVersionId",selectedVersionId);
-   const assignedArr = props.versionArr.filter((item)=>item.versionId === selectedVersionId);
+    
+    const selectedVId  = useRecoilValue(selectedVersionAtom); 
+    // console.log(">>>>>>>>>>>>>>>>>>>>selectedVersionId",selectedVId);
+   const assignedArr = props.versionArr.filter((item)=>item.versionId === selectedVId);
   if(assignedArr.length > 0 && assignedArr[0].isAssigned == '1') {
     return true;
   }else{
@@ -676,8 +630,7 @@ const DoenetMLInfoPanel = (props) => {
   }
     }
 
-  if (
-    itemInfo.isAssigned === '1' && checkIsVersionAssigned()) {
+  if (itemInfo.isAssigned === '1' && checkIsVersionAssigned()) {
     assignmentForm = (
       <>
         {
@@ -938,8 +891,7 @@ const VersionHistoryInfoPanel = (props) => {
   // console.log(">>>itemInfo after selection",itemInfo);
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(itemInfo.branchId))
   const selectedVersionId  = useRecoilValue(versionHistoryReleasedSelectedAtom); 
-  // console.log(">>>>>>>>>>>>>>>>>>>>>>>>selectedVersionId",selectedVersionId);
-  const { openOverlay } = useToolControlHelper();
+  const { openOverlay,activateMenuPanel } = useToolControlHelper();
   const {addContentAssignment,updateVersionHistory,updatePrevVersionHistory,changeSettings,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError,} = useAssignment();
   const {makeAssignment,onmakeAssignmentError,publishAssignment,onPublishAssignmentError,publishContent,onPublishContentError, updateAssignmentTitle,onUpdateAssignmentTitleError,convertAssignmentToContent,onConvertAssignmentToContentError} = useAssignmentCallbacks();
   const [addToast, ToastType] = useToast();
@@ -961,10 +913,6 @@ let aInfo = '';
   const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(itemInfo.branchId));
   if (assignmentInfoSettings?.state === 'hasValue') {
   aInfo = assignmentInfoSettings?.contents
-  }
-  const showMakeAssignmentButton = (contentId) =>{
-    let test = aInfo.assignments.filter((item)=> item.contentId === contentId)
-    return test;
   }
 
   if (versionHistory.state === "loading"){ return null;}
@@ -1003,10 +951,11 @@ let aInfo = '';
               versionId:version?.versionId,
             });
             let payload = {
-              // ...aInfo,
+              ...aInfo,
               itemId: itemInfo.itemId,
               assignment_title: 'Untitled Assignment',
               isAssigned: '1',
+              dueDate:aInfo?.dueDate,
               branchId: itemInfo.branchId,
               contentId: version.contentId,
               driveId:itemInfo.driveId,
@@ -1196,12 +1145,16 @@ let aInfo = '';
   
     }
     }
+
  const [selectedVId, setSelectedVId] = useState();
+ const setSelectedVersionAtom = useSetRecoilState(selectedVersionAtom)
 
 const selectedVersion = (item) =>{
   // console.log(">>selectedVersion event ",item, item.isAssigned);
   setSelectVersion(true)
   setSelectedVId(item);
+  setSelectedVersionAtom(item)
+
 }
 
 const checkIfAssigned = (item) =>{
@@ -1243,10 +1196,8 @@ const selectedContentId = () =>{
       <select multiple onChange = {(event) => selectedVersion(event.target.value)}>
         {versionHistory.contents.named.map((item, i) => (
             <>
-
             {item.isReleased == 1 ?  <option key={i} value={item.versionId}>
-            {item.title}
-            {console.log(">>>>>>>>>>>>item",versionHistory.contents.named)}
+            {item.isAssigned == 1 ? '*' : ''}{item.title}
           </option> : ""}
 
           </>

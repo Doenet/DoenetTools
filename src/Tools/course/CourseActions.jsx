@@ -151,6 +151,15 @@ export const useAssignment = () => {
               newHistory.named.splice(i,1,newVersion)
             }
           }
+          const payload ={
+            versionId:versionId
+          }
+          const result = axios.post('/api/switchVersionUpdate.php', payload)
+          result.then(resp => {
+            if (resp.data.success){
+              return resp.data;
+            }
+          });
           
           return newHistory;
         })

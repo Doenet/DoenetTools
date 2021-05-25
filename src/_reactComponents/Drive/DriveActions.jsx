@@ -936,7 +936,7 @@ export const useAssignmentCallbacks = () => {
       let newItemObj = newObj.contentsDictionary[itemId];          
       newItemObj.isAssigned = "1";
       newItemObj.assignment_title = payload?.assignment_title;      
-      newItemObj.assignmentId = payload?.assignmentId;
+      newItemObj.dueDate = payload?.dueDate;
       return newObj;
     })
   }
@@ -953,7 +953,6 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         newItemObj.assignment_isPublished = "1";
         newItemObj.isAssigned = "1";
         newItemObj.assignment_title = payload?.assignment_title;
-        newItemObj.assignmentId = payload?.assignmentId;
         return newObj;
       })
     }
