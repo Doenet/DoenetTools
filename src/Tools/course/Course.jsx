@@ -50,7 +50,6 @@ import {
   itemHistoryAtom, 
   fileByContentId 
 } from '../../_sharedRecoil/content';
-import { version } from 'esbuild';
 
 const versionHistoryReleasedSelectedAtom = atom({
   key:"versionHistoryReleasedSelectedAtom",
