@@ -14,6 +14,7 @@ $userId = $jwtArray['userId'];
 // $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
 $branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
 $contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+$versionId =  mysqli_real_escape_string($conn,$_REQUEST["versionId"]);
 
 $assignment_arr = array();
 
@@ -37,15 +38,18 @@ $response_arr = array(
   a.showHints AS showHints,
   a.showCorrectness AS showCorrectness,
   a.proctorMakesAvailable AS proctorMakesAvailable,
-  a.contentId As contentId,
-  dc.isAssigned As isAssigned
+  a.contentId AS contentId,
+  dc.isAssigned AS isAssigned,
+  c.isAssigned AS versionIsAssigned
   FROM assignment AS a
   LEFT JOIN drive_content AS dc
+  LEFT JOIN content AS c
   ON a.driveId = dc.driveId
-  WHERE a.branchId = '$branchId'
+  WHERE a.branchId = '$branchId' AND c.versionId = '$versionId'
   ";
   
   $result = $conn->query($sql);
+  echo $sql;
   $assignment_arr = array();
   
   if ($result->num_rows > 0){
