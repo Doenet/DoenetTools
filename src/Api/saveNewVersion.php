@@ -108,7 +108,25 @@ if ($isDraft){
   ";
   $result = $conn->query($sql);
   //TODO: update drive_content isReleased if necessary
-    
+  $sql = "
+  SELECT isReleased
+  FROM content
+  WHERE branchId='$branchId'
+  AND isNamed='1'
+  AND isReleased='1'
+  ";
+  $result = $conn->query($sql);
+  $doenetIsReleased = '0';
+  if ($result->num_rows > 0){
+    $doenetIsReleased = '1';
+  }
+  $sql = "
+  UPDATE drive_content
+  SET isReleased='$doenetIsReleased'
+  WHERE branchId='$branchId'
+  ";
+  $result = $conn->query($sql);
+
 }else{
 
     //Protect against duplicate versionId's
