@@ -43,13 +43,14 @@ $response_arr = array(
   c.isAssigned AS versionIsAssigned
   FROM assignment AS a
   LEFT JOIN drive_content AS dc
-  LEFT JOIN content AS c
   ON a.driveId = dc.driveId
-  WHERE a.branchId = '$branchId' AND c.versionId = '$versionId'
+  LEFT JOIN content AS c
+  ON a.contentId = c.contentId
+  WHERE c.branchId = '$branchId' 
   ";
   
   $result = $conn->query($sql);
-  echo $sql;
+  // echo $sql;
   $assignment_arr = array();
   
   if ($result->num_rows > 0){
@@ -73,7 +74,8 @@ $response_arr = array(
           "isAssigned" => $row['isAssigned'],  
           "contentId" => $row['contentId'],
           "branchId" => $row['branchId'],
-          "driveId" => $row['driveId']
+          "driveId" => $row['driveId'],
+          "versionId" => $row['versionId']
   
   );
       array_push($assignment_arr,$assignment);
