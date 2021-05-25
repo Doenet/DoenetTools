@@ -482,20 +482,21 @@ function DriveHeader(props){
     onResize={contentRect =>{
       const width = contentRect.bounds.width;
       // console.log(">>>width",width)
+      const maxColumns = props.columnTypes.length + 1;
        //update number of columns in header
       const breakpoints = [375,500,650,800];
-      if (width >= breakpoints[3] && props.numColumns !== 5 && 
-        props.columnTypes[3]){
-        if (props.setNumColumns){props.setNumColumns(5)}
-      }else if(width < breakpoints[3] && width >= breakpoints[2] && 
-        props.numColumns !== 4 && props.columnTypes[2]){
-        if (props.setNumColumns){props.setNumColumns(4)}
-      }else if(width < breakpoints[2] && width >= breakpoints[1] && 
-        props.numColumns !== 3 && props.columnTypes[1]){
-        if (props.setNumColumns){props.setNumColumns(3)}
-      }else if(width < breakpoints[1] && width >= breakpoints[0] && 
-        props.numColumns !== 2 && props.columnTypes[0]){
-        if (props.setNumColumns){props.setNumColumns(2)}
+      if (width >= breakpoints[3] && props.numColumns !== 5){
+        const numColumns = Math.min(maxColumns,5)
+        if (props.setNumColumns){props.setNumColumns(numColumns)}
+      }else if(width < breakpoints[3] && width >= breakpoints[2] && props.numColumns !== 4){
+        const numColumns = Math.min(maxColumns,4)
+        if (props.setNumColumns){props.setNumColumns(numColumns)}
+      }else if(width < breakpoints[2] && width >= breakpoints[1] && props.numColumns !== 3){
+        const numColumns = Math.min(maxColumns,3)
+        if (props.setNumColumns){props.setNumColumns(numColumns)}
+      }else if(width < breakpoints[1] && width >= breakpoints[0] && props.numColumns !== 2 ){
+        const numColumns = Math.min(maxColumns,2)
+        if (props.setNumColumns){props.setNumColumns(numColumns)}
       }else if(width < breakpoints[0] && props.numColumns !== 1){
         if (props.setNumColumns){props.setNumColumns(1)}
       }
