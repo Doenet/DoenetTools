@@ -26,9 +26,9 @@ export default function Content({ branchId = '', title }) {
       return null;}
       let contentId = '';
       for (let version of versionHistory.contents.named){
-            if(version?.isAsssigned === '1'){
-              contentId = version.contentId
-            }
+        if(version?.isAsssigned === '1'){
+          contentId = version.contentId
+        }
 
       }
     let attemptNumber = 1;
