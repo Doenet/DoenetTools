@@ -680,13 +680,13 @@ function addResponsesToDescendantsWithTname(components, tName) {
 
   for (let component of components) {
     let propsOrDAttrs = component.props;
-    if(!propsOrDAttrs) {
+    if (!propsOrDAttrs) {
       propsOrDAttrs = component.doenetAttributes;
     }
     if (propsOrDAttrs) {
       for (let prop in propsOrDAttrs) {
         if (prop.toLowerCase() === "tname" && propsOrDAttrs[prop] === tName) {
-          if(!component.attributes) {
+          if (!component.attributes) {
             component.attributes = {};
           }
           let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
@@ -904,7 +904,7 @@ function createEvaluateIfFindMatchedClosingParens({
       attributes: {
         function: {
           componentType: "function",
-          doenetAttributes: {createdFromMacro: true},
+          doenetAttributes: { createdFromMacro: true },
           children: componentsFromMacro
         },
         input: {
@@ -1665,7 +1665,7 @@ export function serializedComponentsReviver(key, value) {
   return me.reviver(key, nanInfinityReviver(key, value))
 }
 
-export function gatherVariantComponents({ serializedComponents, componentTypesCreatingVariants, allComponentClasses }) {
+export function gatherVariantComponents({ serializedComponents, componentInfoObjects }) {
 
   // a list of lists of variantComponents
   // where each component is a list of variantComponents 
@@ -1675,96 +1675,88 @@ export function gatherVariantComponents({ serializedComponents, componentTypesCr
   for (let serializedComponent of serializedComponents) {
     let componentType = serializedComponent.componentType;
 
-    if (componentType in componentTypesCreatingVariants) {
-      if (serializedComponent.variants === undefined) {
-        serializedComponent.variants = {};
+    if (componentType in componentInfoObjects.componentTypesCreatingVariants) {
+      serializedComponent.variants = {
+        isVariantComponent: true
       }
-      serializedComponent.variants.isVariantComponent = true;
       variantComponents.push(serializedComponent);
+      continue;
     }
-    // recurse on children
-    if (serializedComponent.children !== undefined) {
-      let descendantVariantComponents = gatherVariantComponents({
-        serializedComponents: serializedComponent.children,
-        componentTypesCreatingVariants,
-        allComponentClasses,
-      });
 
-      if (descendantVariantComponents.length > 0) {
-        if (serializedComponent.variants === undefined) {
-          serializedComponent.variants = {};
-        }
 
-        // if one of children is a variantControl,
-        // then component itself is considered a variantComponent
-        let variantControlInd, variantControlChild;
-        for (let [index, dvc] of descendantVariantComponents.entries()) {
-          if (dvc.componentType === "variantControl") {
-            variantControlInd = index;
-            variantControlChild = dvc;
-            break;
-          }
-        }
-        if (variantControlInd !== undefined) {
-          if (!serializedComponent.variants.isVariantComponent) {
-            serializedComponent.variants.isVariantComponent = true;
-            variantComponents.push(serializedComponent);
-          }
-          // delete variant control child from descendantVariantComponents
-          descendantVariantComponents.splice(variantControlInd, 1);
-        }
+    if (!serializedComponent.children) {
+      continue;
+    }
 
-        serializedComponent.variants.descendantVariantComponents = descendantVariantComponents;
-
-        if (!serializedComponent.variants.isVariantComponent) {
-          variantComponents.push(...descendantVariantComponents)
-        }
-
-        // if have a variant control child
-        // check if it specifies remove duplicates
-        // if so, then attempt determine number of variants available
-        if (variantControlChild !== undefined) {
-          let uniqueVariants = false;
-          if (variantControlChild.state !== undefined &&
-            variantControlChild.state.uniqueVariants !== undefined) {
-            uniqueVariants = variantControlChild.state.uniqueVariants;
-          }
-          if (variantControlChild.attributes &&
-            variantControlChild.attributes.uniqueVariants !== undefined
-          ) {
-            let uniqueVariantsComp = variantControlChild.attributes.uniqueVariants;
-
-            if (uniqueVariantsComp.state !== undefined) {
-              if (uniqueVariantsComp.state.implicitValue !== undefined) {
-                uniqueVariants = uniqueVariantsComp.state.implicitValue;
-              }
-              if (uniqueVariantsComp.state.value !== undefined) {
-                uniqueVariants = uniqueVariantsComp.state.value;
-              }
-            }
-            if (uniqueVariantsComp.children !== undefined) {
-              for (let grandchild of uniqueVariantsComp.children) {
-                if (grandchild.componentType === "string") {
-                  uniqueVariants = grandchild.state.value;
-                  break;
-                }
-              }
-            }
-          }
-          if (typeof uniqueVariants === "string") {
-            if (uniqueVariants.trim().toLowerCase() === "true") {
-              uniqueVariants = true;
-            } else {
-              uniqueVariants = false;
-            }
-          }
-
-          if (uniqueVariants) {
-            serializedComponent.variants.uniqueVariants = true;
-            determineNumVariants({ serializedComponent, allComponentClasses });
-          }
-        }
+    // check if have a variant control child, which means this component
+    // is a variant component
+    if (serializedComponent.children.some(x => x.componentType === "variantControl")) {
+      serializedComponent.variants = {
+        isVariantComponent: true
       }
+      variantComponents.push(serializedComponent);
+      continue;
+    }
+
+    // recurse on children
+
+    let descendantVariantComponents = gatherVariantComponents({
+      serializedComponents: serializedComponent.children,
+      componentInfoObjects,
+    });
+
+    if (descendantVariantComponents.length > 0) {
+
+      serializedComponent.variants = {
+        descendantVariantComponents: descendantVariantComponents
+      }
+
+      variantComponents.push(...descendantVariantComponents)
+
+      // // if have a variant control child
+      // // check if it specifies remove duplicates
+      // // if so, then attempt determine number of variants available
+      // if (variantControlChild !== undefined) {
+      //   let uniqueVariants = false;
+      //   if (variantControlChild.state !== undefined &&
+      //     variantControlChild.state.uniqueVariants !== undefined) {
+      //     uniqueVariants = variantControlChild.state.uniqueVariants;
+      //   }
+      //   if (variantControlChild.attributes &&
+      //     variantControlChild.attributes.uniqueVariants !== undefined
+      //   ) {
+      //     let uniqueVariantsComp = variantControlChild.attributes.uniqueVariants;
+
+      //     if (uniqueVariantsComp.state !== undefined) {
+      //       if (uniqueVariantsComp.state.implicitValue !== undefined) {
+      //         uniqueVariants = uniqueVariantsComp.state.implicitValue;
+      //       }
+      //       if (uniqueVariantsComp.state.value !== undefined) {
+      //         uniqueVariants = uniqueVariantsComp.state.value;
+      //       }
+      //     }
+      //     if (uniqueVariantsComp.children !== undefined) {
+      //       for (let grandchild of uniqueVariantsComp.children) {
+      //         if (grandchild.componentType === "string") {
+      //           uniqueVariants = grandchild.state.value;
+      //           break;
+      //         }
+      //       }
+      //     }
+      //   }
+      //   if (typeof uniqueVariants === "string") {
+      //     if (uniqueVariants.trim().toLowerCase() === "true") {
+      //       uniqueVariants = true;
+      //     } else {
+      //       uniqueVariants = false;
+      //     }
+      //   }
+
+      //   if (uniqueVariants) {
+      //     serializedComponent.variants.uniqueVariants = true;
+      //     determineNumVariants({ serializedComponent, allComponentClasses });
+      //   }
+      // }
     }
   }
 
@@ -1898,8 +1890,8 @@ export function processAssignNames({
 
     let component = serializedComponents[ind];
 
-    if(component.componentType === "string") {
-      numStrings ++;
+    if (component.componentType === "string") {
+      numStrings++;
       processedComponents.push(component);
       continue;
     }

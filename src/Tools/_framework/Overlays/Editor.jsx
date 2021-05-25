@@ -47,6 +47,7 @@ import {
 
 import { useToast } from '../../_framework/Toast';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { folderDictionary } from '../../../_reactComponents/Drive/Drive';
 
 const editorDoenetMLAtom = atom({
   key:"editorDoenetMLAtom",
@@ -206,7 +207,9 @@ function VersionHistoryPanel(props){
   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
-  const toggleReleaseNamed = useRecoilCallback(({set})=> async (branchId,versionId)=>{
+  const toggleReleaseNamed = useRecoilCallback(({set})=> async (branchId,versionId,driveId,folderId)=>{
+    let doenetIsReleased = false;
+    
     set(itemHistoryAtom(branchId),(was)=>{
       let newHistory = {...was}
       newHistory.named = [...was.named];
@@ -228,6 +231,12 @@ function VersionHistoryPanel(props){
           }
         }
       }
+      for (let named of newHistory.named){
+        if (named.isReleased === '1'){
+          doenetIsReleased = true;
+          break;
+        }
+      }
       let newDBVersion = {...newVersion,
         isNewToggleRelease:'1',
         branchId
@@ -236,6 +245,17 @@ function VersionHistoryPanel(props){
          axios.post("/api/saveNewVersion.php",newDBVersion)
           // .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
       return newHistory;
+    })
+    set(folderDictionary({driveId,folderId}),(was)=>{
+      let newFolderInfo = {...was};
+      newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+      newFolderInfo.contentsDictionary[props.itemId] = {...was.contentsDictionary[props.itemId]};
+      let newIsReleased = '0';
+      if (doenetIsReleased){
+        newIsReleased = '1';
+      }
+      newFolderInfo.contentsDictionary[props.itemId].isReleased = newIsReleased;
+      return newFolderInfo;
     })
 })
 
@@ -264,10 +284,10 @@ function VersionHistoryPanel(props){
     
   for (let version of versionHistory.contents.named){
     // console.log(">>>named",version)
-    let releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId)} >Release</button></div>
+    let releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId,props.driveId,props.folderId)} >Release</button></div>
     let releasedIcon = '';
     if (version.isReleased === '1'){
-      releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId)} >Retract</button></div>
+      releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId,props.driveId,props.folderId)} >Retract</button></div>
       releasedIcon = '•';
     }
     let namedTitle = `${releasedIcon} ${version.title}`
@@ -366,8 +386,9 @@ function TextEditor(props){
       branchId:props.branchId
     }
        axios.post("/api/saveNewVersion.php",newDBVersion)
-        // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})
+// .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})  
   });
+  
   const autoSave = useRecoilCallback(({snapshot,set})=> async ()=>{
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
@@ -645,7 +666,7 @@ const editorInitAtom = atom({
   default:false
 })
 
-export default function Editor({ branchId, title }) {
+export default function Editor({ branchId, title, driveId, folderId, itemId }) {
   // console.log("===Editor!");
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
@@ -692,10 +713,10 @@ export default function Editor({ branchId, title }) {
       </supportPanel>
 
       <menuPanel title="Info">
-        <EditorInfoPanel branchId={branchId}/>
+        <EditorInfoPanel branchId={branchId} driveId={driveId} folderId={folderId} itemId={itemId}/>
       </menuPanel>
       <menuPanel title="Version history">
-        <VersionHistoryPanel branchId={branchId} />
+        <VersionHistoryPanel branchId={branchId} driveId={driveId} folderId={folderId} itemId={itemId}/>
       </menuPanel>
       
     </Tool>

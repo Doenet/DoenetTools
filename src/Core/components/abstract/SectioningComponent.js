@@ -416,50 +416,58 @@ export default class SectioningComponent extends BlockComponent {
     }
 
 
-    stateVariableDefinitions.selectedVariantInfo = {
+    stateVariableDefinitions.generatedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
       returnDependencies: ({ componentInfoObjects }) => ({
         variantControlChild: {
           dependencyType: "child",
           childLogicName: "atMostOneVariantControl",
-          variableNames: ["selectedVariantNumber"]
+          variableNames: ["selectedVariantIndex", "selectedVariantName"]
         },
         variantDescendants: {
           dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
-            "selectedVariantInfo",
+            "generatedVariantInfo",
           ],
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
           definingChildrenFirst: true,
-        }
+        },
+        variants: {
+          dependencyType: "variants",
+        },
       }),
       definition({ dependencyValues }) {
 
         let isVariantComponent;
-        let selectedVariantInfo = {};
+        let generatedVariantInfo = {};
         if (dependencyValues.variantControlChild.length === 1) {
           isVariantComponent = true;
-          selectedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantNumber;
+          generatedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex;
+          generatedVariantInfo.name = dependencyValues.variantControlChild[0].stateValues.selectedVariantName;
+          generatedVariantInfo.subvariantsSpecified = Boolean(
+            dependencyValues.variants.desiredVariant &&
+            dependencyValues.variants.desiredVariant.subvariants
+          )
         } else {
           isVariantComponent = false;
         }
 
-        let subvariants = selectedVariantInfo.subvariants = [];
+        let subvariants = generatedVariantInfo.subvariants = [];
 
         for (let descendant of dependencyValues.variantDescendants) {
           if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.selectedVariantInfo)
-          } else if (descendant.stateValues.selectedVariantInfo) {
-            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
 
         }
-        return { newValues: { selectedVariantInfo, isVariantComponent } }
+        return { newValues: { generatedVariantInfo, isVariantComponent } }
 
       }
     }
@@ -689,6 +697,7 @@ export default class SectioningComponent extends BlockComponent {
 
   static setUpVariant({
     serializedComponent, sharedParameters, definingChildrenSoFar,
+    descendantVariantComponents,
     allComponentClasses
   }) {
     let variantcontrolChild;
@@ -698,14 +707,18 @@ export default class SectioningComponent extends BlockComponent {
         break;
       }
     }
-    sharedParameters.variant = variantcontrolChild.state.selectedVariant.value;
-    sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber.value;
+    sharedParameters.variantName = variantcontrolChild.state.selectedVariantName.value;
+    sharedParameters.variantIndex = variantcontrolChild.state.selectedVariantIndex.value;
     sharedParameters.selectRng = variantcontrolChild.state.selectRng.value;
     sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
 
+    // seed rng for random numbers predictably from variant using selectRng
+    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng()*1000000).toString()
+    sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
+
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantcontrolChild.state.selectedSeed);
-    console.log("Variant for " + this.componentType + ": " + sharedParameters.variant);
+    // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants
     let desiredVariant = serializedComponent.variants.desiredVariant;
@@ -714,24 +727,23 @@ export default class SectioningComponent extends BlockComponent {
       desiredVariant = {};
     }
 
-    // if subvariants aren't defined but we have uniqueVariants specified
-    // then calculate variant information for the descendant variant component
-    if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-      let variantInfo = this.getUniqueVariant({
-        serializedComponent: serializedComponent,
-        variantNumber: sharedParameters.variantNumber,
-        allComponentClasses: allComponentClasses,
-      })
-      if (variantInfo.success) {
-        Object.assign(desiredVariant, variantInfo.desiredVariant);
-      }
-    }
+    // // if subvariants aren't defined but we have uniqueVariants specified
+    // // then calculate variant information for the descendant variant component
+    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
+    //   let variantInfo = this.getUniqueVariant({
+    //     serializedComponent: serializedComponent,
+    //     variantIndex: sharedParameters.variantIndex,
+    //     allComponentClasses: allComponentClasses,
+    //   })
+    //   if (variantInfo.success) {
+    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
+    //   }
+    // }
 
-    if (desiredVariant !== undefined && desiredVariant.subvariants !== undefined &&
-      serializedComponent.variants.descendantVariantComponents !== undefined) {
+    if (desiredVariant.subvariants && descendantVariantComponents) {
       for (let ind in desiredVariant.subvariants) {
         let subvariant = desiredVariant.subvariants[ind];
-        let variantComponent = serializedComponent.variants.descendantVariantComponents[ind];
+        let variantComponent = descendantVariantComponents[ind];
         if (variantComponent === undefined) {
           break;
         }
@@ -818,7 +830,7 @@ export default class SectioningComponent extends BlockComponent {
 
   }
 
-  static getUniqueVariant({ serializedComponent, variantNumber, allComponentClasses }) {
+  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
     if (serializedComponent.variants === undefined) {
       return { succes: false }
     }
@@ -827,18 +839,18 @@ export default class SectioningComponent extends BlockComponent {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantNumber) || variantNumber < 0 || variantNumber >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
       return { success: false }
     }
 
     let desiredVariant = {
-      index: variantNumber,
+      index: variantIndex,
     }
 
     if (serializedComponent.variants.uniqueVariants) {
 
       let result = getVariantsForDescendants({
-        variantNumber: variantNumber,
+        variantIndex: variantIndex,
         serializedComponent: serializedComponent,
         allComponentClasses: allComponentClasses
       })

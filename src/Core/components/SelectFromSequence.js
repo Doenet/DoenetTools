@@ -85,10 +85,6 @@ export default class SelectFromSequence extends Sequence {
       immutable: true,
       additionalStateVariablesDefined: ["selectedIndices"],
       returnDependencies: ({ sharedParameters }) => ({
-        // essentialSelectedValues: {
-        //   dependencyType: "potentialEssentialVariable",
-        //   variableName: "selectedValues",
-        // },
         numberToSelect: {
           dependencyType: "stateVariable",
           variableName: "numberToSelect",
@@ -149,12 +145,7 @@ export default class SelectFromSequence extends Sequence {
       definition: () => ({ newValues: { isVariantComponent: true } })
     }
 
-    stateVariableDefinitions.isVariantComponent = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { isVariantComponent: true } })
-    }
-
-    stateVariableDefinitions.selectedVariantInfo = {
+    stateVariableDefinitions.generatedVariantInfo = {
       returnDependencies: () => ({
         selectedIndices: {
           dependencyType: "stateVariable",
@@ -163,11 +154,11 @@ export default class SelectFromSequence extends Sequence {
       }),
       definition({ dependencyValues }) {
 
-        let selectedVariantInfo = {
+        let generatedVariantInfo = {
           indices: dependencyValues.selectedIndices
         };
 
-        return { newValues: { selectedVariantInfo } }
+        return { newValues: { generatedVariantInfo } }
 
       }
     }
@@ -462,7 +453,7 @@ export default class SelectFromSequence extends Sequence {
 
   }
 
-  static getUniqueVariant({ serializedComponent, variantNumber }) {
+  static getUniqueVariant({ serializedComponent, variantIndex }) {
 
     if (serializedComponent.variants === undefined) {
       return { succes: false }
@@ -472,7 +463,7 @@ export default class SelectFromSequence extends Sequence {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantNumber) || variantNumber < 0 || variantNumber >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
       return { success: false }
     }
 
@@ -493,15 +484,15 @@ export default class SelectFromSequence extends Sequence {
     }
 
     if (numberToSelect === 1) {
-      return { success: true, desiredVariant: { indices: [getSingleIndex(variantNumber)] } }
+      return { success: true, desiredVariant: { indices: [getSingleIndex(variantIndex)] } }
     }
 
     let numbers = enumerateSelectionCombinations({
       numberOfIndices: numberToSelect,
       numberOfOptions: nOptions,
-      maxNumber: variantNumber + 1,
+      maxNumber: variantIndex + 1,
       withReplacement: withReplacement,
-    })[variantNumber];
+    })[variantIndex];
     let indices = numbers.map(getSingleIndex)
     return { success: true, desiredVariant: { indices: indices } }
 
@@ -514,15 +505,6 @@ export default class SelectFromSequence extends Sequence {
 function makeSelection({ dependencyValues }) {
   // console.log(`make selection`)
   // console.log(dependencyValues)
-
-  // if (dependencyValues.essentialSelectedValues !== null) {
-  //   return {
-  //     makeEssential: ["selectedValues"],
-  //     newValues: {
-  //       selectedValues: dependencyValues.essentialSelectedValues
-  //     }
-  //   }
-  // }
 
   if (dependencyValues.numberToSelect < 1) {
     return {
