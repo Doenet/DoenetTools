@@ -39,6 +39,7 @@
     "lezer": "^0.13.4",
     "lezer-generator": "^0.13.3",
     "lezer-xml": "^0.13.4",
+    "lodash.debounce": "^4.0.8",
     "lorem-ipsum": "^2.0.3",
     "math-expressions": "^2.0.0-alpha26",
     "nanoid": "^3.1.23",
