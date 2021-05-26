@@ -35,9 +35,13 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 0,
           name: 'a',
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: [ind],
+            meta: { createdBy: "/_select1" },
             subvariants: []
           }]
         })
@@ -82,9 +86,13 @@ describe('Specifying subvariants tests', function () {
           expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
             index: 0,
             name: 'a',
-            subvariantsSpecified: true,
+            meta: {
+              subvariantsSpecified: true,
+              createdBy: "/_document1"
+            },
             subvariants: [{
               indices: [ind1, ind2],
+              meta: { createdBy: "/_select1" },
               subvariants: []
             }]
           })
@@ -126,9 +134,13 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 0,
           name: 'a',
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: [ind],
+            meta: { createdBy: "/_selectfromsequence1" },
           }]
         })
       })
@@ -170,9 +182,13 @@ describe('Specifying subvariants tests', function () {
           expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
             index: 0,
             name: 'a',
-            subvariantsSpecified: true,
+            meta: {
+              subvariantsSpecified: true,
+              createdBy: "/_document1"
+            },
             subvariants: [{
               indices: [ind1, ind2],
+              meta: { createdBy: "/_selectfromsequence1" },
             }]
           })
         })
@@ -250,12 +266,17 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: ind,
           name: numberToLetters(ind + 1, true),
-          subvariantsSpecified: false,
+          meta: {
+            subvariantsSpecified: false,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: directionIndByVariantName[variant],
+            meta: { createdBy: "/_select1" },
             subvariants: []
           }, {
             indices: sideOrder,
+            meta: { createdBy: "/_select2" },
             subvariants: []
           }]
         })
@@ -314,12 +335,17 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: ind % 4,
           name: numberToLetters((ind % 4) + 1, true),
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: [directionInd],
+            meta: { createdBy: "/_select1" },
             subvariants: []
           }, {
             indices: sideOrder,
+            meta: { createdBy: "/_select2" },
             subvariants: []
           }]
         })
@@ -379,12 +405,17 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: ind % 4,
           name: numberToLetters((ind % 4) + 1, true),
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: directionIndByVariantName[variant],
+            meta: { createdBy: "/_select1" },
             subvariants: []
           }, {
             indices: sideInds,
+            meta: { createdBy: "/_select2" },
             subvariants: []
           }]
         })
@@ -443,12 +474,17 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 0,
           name: 'a',
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: [directionInd],
+            meta: { createdBy: "/_select1" },
             subvariants: []
           }, {
             indices: sideInds,
+            meta: { createdBy: "/_select2" },
             subvariants: []
           }]
         })
@@ -479,7 +515,7 @@ describe('Specifying subvariants tests', function () {
       <variantControl nvariants="100"/>
   
       <select assignnames="(p)">
-        <option><p>Favorite color:
+        <option><p newNamespace>Favorite color:
           <select>
             <option><text>red</text></option>
             <option><text>orange</text></option>
@@ -488,14 +524,14 @@ describe('Specifying subvariants tests', function () {
             <option><text>chartreuse</text></option>
           </select>
         </p></option>
-        <option><p>Selected number: 
-          <select>
+        <option><p newNamespace>Selected number: 
+          <select assignNames="(s)">
             <option><selectfromsequence from="1000" to="2000" /></option>
             <option><selectfromsequence from="-1000" to="-400" /></option>
           </select>
         </p></option>
-        <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
-        <option><p>Variable: <select>u v w x z y</select></p></option>
+        <option><p newNamespace>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+        <option><p newNamespace>Variable: <select>u v w x z y</select></p></option>
       </select>
       `,
           requestedVariant: {
@@ -523,11 +559,16 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 0,
           name: 'a',
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: [0],
+            meta: { createdBy: "/_select1" },
             subvariants: [{
               indices: [ind % 5],
+              meta: { createdBy: "/p/_select1" },
               subvariants: []
             }]
           }]
@@ -547,7 +588,7 @@ describe('Specifying subvariants tests', function () {
         <variantControl nvariants="100"/>
 
         <select assignnames="(p)">
-          <option><p>Favorite color:
+          <option><p newNamespace>Favorite color:
             <select>
               <option><text>red</text></option>
               <option><text>orange</text></option>
@@ -556,14 +597,14 @@ describe('Specifying subvariants tests', function () {
               <option><text>chartreuse</text></option>
             </select>
           </p></option>
-          <option><p>Selected number: 
-            <select>
+          <option><p newNamespace>Selected number: 
+            <select assignNames="(s)">
               <option><selectfromsequence from="1000" to="2000" /></option>
               <option><selectfromsequence from="-1000" to="-400" /></option>
             </select>
           </p></option>
-          <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
-          <option><p>Variable: <select>u v w x z y</select></p></option>
+          <option><p newNamespace>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+          <option><p newNamespace>Variable: <select>u v w x z y</select></p></option>
         </select>
         `,
             requestedVariant: {
@@ -604,12 +645,18 @@ describe('Specifying subvariants tests', function () {
           expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
             index: 0,
             name: 'a',
-            subvariantsSpecified: true,
+            meta: {
+              subvariantsSpecified: true,
+              createdBy: "/_document1"
+            },
             subvariants: [{
               indices: [1],
+              meta: { createdBy: "/_select1" },
               subvariants: [{
                 indices: [ind1 % 2],
+                meta: { createdBy: "/p/_select1" },
                 subvariants: [{
+                  meta: { createdBy: "/p/s" },
                   indices: [effectiveInd2],
                 }]
               }]
@@ -628,7 +675,7 @@ describe('Specifying subvariants tests', function () {
       <variantControl nvariants="100"/>
   
       <select assignnames="(p)">
-        <option><p>Favorite color:
+        <option><p newNamespace>Favorite color:
           <select>
             <option><text>red</text></option>
             <option><text>orange</text></option>
@@ -637,14 +684,14 @@ describe('Specifying subvariants tests', function () {
             <option><text>chartreuse</text></option>
           </select>
         </p></option>
-        <option><p>Selected number: 
-          <select>
+        <option><p newNamespace>Selected number: 
+          <select assignNames="(s)">
             <option><selectfromsequence from="1000" to="2000" /></option>
             <option><selectfromsequence from="-1000" to="-400" /></option>
           </select>
         </p></option>
-        <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
-        <option><p>Variable: <select>u v w x z y</select></p></option>
+        <option><p newNamespace>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+        <option><p newNamespace>Variable: <select>u v w x z y</select></p></option>
       </select>
       `,
           requestedVariant: {
@@ -672,11 +719,16 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 0,
           name: 'a',
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: [2],
+            meta: { createdBy: "/_select1" },
             subvariants: [{
               indices: [ind % 5],
+              meta: { createdBy: "/p/_selectfromsequence1" },
             }]
           }]
         })
@@ -694,7 +746,7 @@ describe('Specifying subvariants tests', function () {
       <variantControl nvariants="100"/>
   
       <select assignnames="(p)">
-        <option><p>Favorite color:
+        <option><p newNamespace>Favorite color:
           <select>
             <option><text>red</text></option>
             <option><text>orange</text></option>
@@ -703,14 +755,14 @@ describe('Specifying subvariants tests', function () {
             <option><text>chartreuse</text></option>
           </select>
         </p></option>
-        <option><p>Selected number: 
-          <select>
+        <option><p newNamespace>Selected number: 
+          <select assignNames="(s)">
             <option><selectfromsequence from="1000" to="2000" /></option>
             <option><selectfromsequence from="-1000" to="-400" /></option>
           </select>
         </p></option>
-        <option><p>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
-        <option><p>Variable: <select>u v w x z y</select></p></option>
+        <option><p newNamespace>Chosen letter: <selectfromsequence type="letters" from="c" to="g" /></p></option>
+        <option><p newNamespace>Variable: <select>u v w x z y</select></p></option>
       </select>
       `,
           requestedVariant: {
@@ -738,11 +790,16 @@ describe('Specifying subvariants tests', function () {
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: 0,
           name: 'a',
-          subvariantsSpecified: true,
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
           subvariants: [{
             indices: [3],
+            meta: { createdBy: "/_select1" },
             subvariants: [{
               indices: [ind % 6],
+              meta: { createdBy: "/p/_select1" },
               subvariants: []
             }]
           }]
@@ -785,7 +842,7 @@ describe('Specifying subvariants tests', function () {
                 <variantControl nvariants="100"/>
             
                 <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
-                  <option><problem><title>A word problem</title>
+                  <option><problem newNamespace><title>A word problem</title>
                     <variantControl nvariants="5" variants="a b c d e" />
                     <p>Word:
                       <select>
@@ -797,7 +854,7 @@ describe('Specifying subvariants tests', function () {
                       </select>
                     </p>
                   </problem></option>
-                  <option><problem><title>A number problem</title>
+                  <option><problem newNamespace><title>A number problem</title>
                     <variantControl nvariants="3" />
                     <p>Number: 
                       <select>
@@ -836,9 +893,13 @@ describe('Specifying subvariants tests', function () {
                   let generatedVariantInfo = {
                     index: 0,
                     name: 'a',
-                    subvariantsSpecified: true,
+                    meta: {
+                      subvariantsSpecified: true,
+                      createdBy: "/_document1"
+                    },
                     subvariants: [{
                       indices: [],
+                      meta: { createdBy: "/_select1" },
                       subvariants: []
                     }]
                   }
@@ -859,12 +920,17 @@ describe('Specifying subvariants tests', function () {
                       let word = problemAoptions[problemVariantInds[i - 1]];
                       expect(p.activeChildren[1].stateValues.value).eq(word)
                       let selectIndex = problemAselectOptions.indexOf(word)
+                      let problemIndex = problemVariantInds[i - 1];
                       generatedVariantInfo.subvariants[0].subvariants.push({
-                        index: problemVariantInds[i - 1],
-                        name: numberToLetters(problemVariantInds[i - 1] + 1, true),
-                        subvariantsSpecified: false,
+                        index: problemIndex,
+                        name: numberToLetters(problemIndex + 1, true),
+                        meta: {
+                          subvariantsSpecified: false,
+                          createdBy: `/problem${i}`
+                        },
                         subvariants: [{
                           indices: [selectIndex],
+                          meta: { createdBy: `/problem${i}/_select1` },
                           subvariants: []
                         }]
                       })
@@ -872,12 +938,17 @@ describe('Specifying subvariants tests', function () {
                       let number = problemBoptions[problemVariantInds[i - 1]];
                       expect(p.activeChildren[1].stateValues.value).eq(number)
                       let selectIndex = problemBselectOptions.indexOf(number)
+                      let problemIndex = problemVariantInds[i - 1] % 3;
                       generatedVariantInfo.subvariants[0].subvariants.push({
-                        index: problemVariantInds[i - 1] % 3,
-                        name: numberToLetters(problemVariantInds[i - 1] % 3 + 1, true),
-                        subvariantsSpecified: false,
+                        index: problemIndex,
+                        name: numberToLetters(problemIndex + 1, true),
+                        meta: {
+                          subvariantsSpecified: false,
+                          createdBy: `/problem${i}`
+                        },
                         subvariants: [{
                           indices: [selectIndex],
+                          meta: { createdBy: `/problem${i}/_select1` },
                           subvariants: []
                         }]
                       })
@@ -929,7 +1000,7 @@ describe('Specifying subvariants tests', function () {
                   <variantControl nvariants="100"/>
               
                   <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
-                    <option><problem><title>A word problem</title>
+                    <option><problem newNamespace><title>A word problem</title>
                       <variantControl nvariants="5" />
                       <p>Word:
                         <select>
@@ -941,7 +1012,7 @@ describe('Specifying subvariants tests', function () {
                         </select>
                       </p>
                     </problem></option>
-                    <option><problem><title>A number problem</title>
+                    <option><problem newNamespace><title>A number problem</title>
                       <variantControl nvariants="3" />
                       <p>Number: 
                         <selectfromsequence length="10" />
@@ -983,9 +1054,13 @@ describe('Specifying subvariants tests', function () {
                   let generatedVariantInfo = {
                     index: 0,
                     name: 'a',
-                    subvariantsSpecified: true,
+                    meta: {
+                      subvariantsSpecified: true,
+                      createdBy: "/_document1"
+                    },
                     subvariants: [{
                       indices: [],
+                      meta: { createdBy: "/_select1" },
                       subvariants: []
                     }]
                   }
@@ -1007,9 +1082,13 @@ describe('Specifying subvariants tests', function () {
                       generatedVariantInfo.subvariants[0].subvariants.push({
                         index: problem.stateValues.generatedVariantInfo.index,
                         name: numberToLetters(problem.stateValues.generatedVariantInfo.index + 1, true),
-                        subvariantsSpecified: true,
+                        meta: {
+                          subvariantsSpecified: true,
+                          createdBy: `/problem${i}`
+                        },
                         subvariants: [{
                           indices: [selectInds[i - 1]],
+                          meta: { createdBy: `/problem${i}/_select1` },
                           subvariants: []
                         }]
                       })
@@ -1018,9 +1097,13 @@ describe('Specifying subvariants tests', function () {
                       generatedVariantInfo.subvariants[0].subvariants.push({
                         index: problem.stateValues.generatedVariantInfo.index,
                         name: numberToLetters(problem.stateValues.generatedVariantInfo.index + 1, true),
-                        subvariantsSpecified: true,
+                        meta: {
+                          subvariantsSpecified: true,
+                          createdBy: `/problem${i}`
+                        },
                         subvariants: [{
                           indices: [selectInds[i - 1]],
+                          meta: { createdBy: `/problem${i}/_selectfromsequence1` },
                         }]
                       })
                     }
