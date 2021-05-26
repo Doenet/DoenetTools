@@ -190,8 +190,7 @@ function ClipboardLinkButtons(props){
   
 
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
-  return <div>This content 
-  
+  return <div> 
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
   <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
   </CopyToClipboard>
@@ -203,6 +202,7 @@ function ClipboardLinkButtons(props){
 }
 
 function VersionHistoryPanel(props){
+  
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
@@ -271,79 +271,59 @@ function VersionHistoryPanel(props){
       return newObj});
   })
   
-
-
-  // const [editingTitleText,setEditingTitleText] = useState("")
+  const [selectedVersionId,setSelectedVersionId] = useState(null)
 
   if (versionHistory.state === "loading"){ return null;}
   if (versionHistory.state === "hasError"){ 
     console.error(versionHistory.contents)
     return null;}
 
-    let namedVersions = [];
-    
+    let controls = null;
+    let options = [];
+    let versionsObj = {}
+
   for (let version of versionHistory.contents.named){
-    // console.log(">>>named",version)
-    let releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId,props.driveId,props.folderId)} >Release</button></div>
-    let releasedIcon = '';
-    if (version.isReleased === '1'){
-      releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId,props.driveId,props.folderId)} >Retract</button></div>
-      releasedIcon = '•';
+    console.log(">>>version title",version.title)
+    versionsObj[version.versionId] = version;
+    let selected = false;
+    if (version.versionId === selectedVersionId){
+      selected = true;
     }
-    let namedTitle = `${releasedIcon} ${version.title}`
-    namedVersions.push(<CollapseSection
-      title={namedTitle}
-      collapsed={true}
-      widthCSS='200px'
-      >
-        <ClipboardLinkButtons contentId={version.contentId} />
-        <div><RenameVersionControl branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
+    let released = '';
+    if (version.isReleased === '1'){
+      released = "(Released)";
+    }
+    options.push(<option value={version.versionId} selected={selected}>{released} {version.title}</option>,)
+  }
+    let selector = <select 
+    size='8' 
+    onChange={(e)=>{setSelectedVersionId(e.target.value)}}>
+    {options}
+  </select>
+
+if (selectedVersionId){
+  const version = versionsObj[selectedVersionId];
+  let releaseButtonText = "Release";
+  if (version.isReleased === '1'){
+    releaseButtonText = "Retract"
+  }
+
+    const releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId,props.driveId,props.folderId)} >{releaseButtonText}</button></div>
+
+  controls = <>
+  <div>Name: {version.title}</div>
+  <ClipboardLinkButtons contentId={version.contentId} />
+        <div><RenameVersionControl key={version.versionId} branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
        <div><button onClick={(e)=>versionHistoryActive(version)} >View</button></div> 
        <div><button onClick={(e)=>console.log(">>>Set As Current "+version.versionId)} >Set As Current</button></div> 
         {releaseButton}
-      </CollapseSection>)
-  }
-
-  let namedVersionsTitle = `${namedVersions.length} Named Versions`
-    if (namedVersions.length === 1){
-      namedVersionsTitle = '1 Named Version';
-    }
-
-  const namedSection = <CollapseSection
-  title={namedVersionsTitle}
-  collapsed={false}
-  >{namedVersions}</CollapseSection>
-
-  let saveSection = []
-  for (let version of versionHistory.contents.autoSaves){
-    saveSection.push(<CollapseSection
-      title={version.timestamp}
-      collapsed={true}
-      widthCSS='200px'
-      >buttons here</CollapseSection>)
-  }
-
-    let autoSaveTitle = `${saveSection.length} Auto Saves`
-    if (saveSection.length === 1){
-      autoSaveTitle = '1 Auto Save';
-    }
-    let autoSaves = <CollapseSection
-    title={autoSaveTitle}
-    collapsed={true}
-    >
-    {saveSection}
-    </CollapseSection>
+  </>
+}
      
   return <>
-  <CollapseSection
-    title="Current Version"
-    collapsed={true}
-    >
-      buttons
-    </CollapseSection>
-
-  {namedSection}
-  {autoSaves}
+  <h2>Versions</h2>
+  {selector}
+  {controls}
   </>
 }
 
