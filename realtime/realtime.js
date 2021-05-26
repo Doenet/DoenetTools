@@ -44,19 +44,24 @@
 
     socket.on('joinRoom', (room) => {
       socket.join(room);
-      socket.emit(
+      io.to(room).emit(
         'chat message',
-        '{"messageId": -1, "message": "Socket.io connection Successful! Try joining a room!"}',
+        `{"messageId": -1, "message": "${socket.data.profile.screenName} joined room ${room}"}`,
         'Sever',
       );
     });
 
     socket.on('leaveRoom', (room) => {
       socket.leave(room);
+      io.to(room).emit(
+        'chat message',
+        `{"messageId": -1, "message": "${socket.data.profile.screenName} left the room"}`,
+        'Sever',
+      );
     });
 
-    socket.on('chat message', (data) => {
-      io.emit('chat message', data, socket.data.profile.screenName);
+    socket.on('chat message', (data, room) => {
+      io.to(room).emit('chat message', data, socket.data.profile.screenName);
     });
 
     socket.on('typing', (data) => {

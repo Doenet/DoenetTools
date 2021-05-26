@@ -67,7 +67,6 @@ export default function Chat() {
     let socket = io('localhost:81', { withCredentials: true });
     socket.on('connect', () => {
       console.log('socket', socket.id, 'connected');
-      socket.emit('joinRoom', room);
       setSocket(socket);
     });
     socket.on('connect_error', (e) => {
@@ -115,8 +114,8 @@ export default function Chat() {
                 JSON.stringify({
                   message: messageEl.value,
                   messageId: new Date(),
-                  room: room,
                 }),
+                `chat:${room}`,
                 //   new RTChatMessage(
                 //     'a user, security TBI',
                 //     'user',
@@ -140,8 +139,8 @@ export default function Chat() {
           onSubmit={(e) => {
             e.preventDefault();
             let roomEl = document.getElementById('roomInput');
-            socket.emit('leaveRoom', 'chat:' + room);
-            socket.emit('joinRoom', 'chat:' + roomEl.value);
+            socket.emit('leaveRoom', `chat:${room}`);
+            socket.emit('joinRoom', `chat:${roomEl.value}`);
             setRoom(roomEl.value);
           }}
         >
