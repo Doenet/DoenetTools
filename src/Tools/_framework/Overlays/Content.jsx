@@ -20,7 +20,6 @@ export default function Content({ branchId = '', title }) {
 
     const viewerDoenetML = useRecoilValue(viewerContentDoenetMLAtom);
     const versionHistory = useRecoilValueLoadable(itemHistoryAtom(branchId))
-    console.log(">>>>versionHistory",versionHistory);
     if (versionHistory.state === "loading"){ return null;}
     if (versionHistory.state === "hasError"){ 
       console.error(versionHistory.contents)
