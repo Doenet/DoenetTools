@@ -270,6 +270,44 @@ function VersionHistoryPanel(props){
       newObj.updateNumber = was.updateNumber+1;
       return newObj});
   })
+
+  const setAsCurrent = useRecoilCallback(({snapshot,set})=> async (branchId,version)=>{
+    // console.log(">>>sac",branchId,version)
+    //current to autosave
+    const newDraftVersionId = nanoid();
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    let newVersions = {...oldVersions};
+    let autoSaveWasDraft = {...oldVersions.draft}
+    autoSaveWasDraft.isDraft = "0";
+    autoSaveWasDraft.title = "Autosave (was draft)";
+    autoSaveWasDraft.timestamp = buildTimestamp();
+    newVersions.autoSaves = [autoSaveWasDraft,...oldVersions.autoSaves]
+    //copy (or move?) named version to current
+    let newDraft = {...version};
+    newDraft.isDraft = "1";
+    newDraft.versionId = newDraftVersionId;
+    newVersions.draft = newDraft;
+    set(itemHistoryAtom(branchId),newVersions)
+    //set viewer's and text editor's doenetML
+    let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
+    set(editorDoenetMLAtom,doenetML);
+    set(viewerDoenetMLAtom,(was)=>{
+      let newObj = {...was}
+      newObj.doenetML = doenetML;
+      newObj.updateNumber = was.updateNumber+1;
+      return newObj});
+
+      let newDBVersion = {...newDraft,
+        isSetAsCurrent:'1',
+        newDraftVersionId,
+        newDraftContentId:newDraft.contentId,
+        branchId
+      }
+      // console.log(">>>newDBVersion",newDBVersion)
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+      // .then(resp=>console.log(">>>resp",resp.data))
+
+  });
   
   const [selectedVersionId,setSelectedVersionId] = useState(null)
 
@@ -313,8 +351,8 @@ if (selectedVersionId){
   <div>Name: {version.title}</div>
   <ClipboardLinkButtons contentId={version.contentId} />
         <div><RenameVersionControl key={version.versionId} branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
-       <div><button onClick={(e)=>versionHistoryActive(version)} >View</button></div> 
-       <div><button onClick={(e)=>console.log(">>>Set As Current "+version.versionId)} >Set As Current</button></div> 
+       <div><button onClick={()=>versionHistoryActive(version)} >View</button></div> 
+       <div><button onClick={()=>setAsCurrent(props.branchId,version)} >Set As Current</button></div> 
         {releaseButton}
   </>
 }
