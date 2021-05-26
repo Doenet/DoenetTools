@@ -14,11 +14,11 @@
     "build:core": "node package.core.js",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
-    "publish_db": "cd doenet_docker && docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql doenet_docker_mysql_1 mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
+    "publish_db": "docker compose up -d mysql && docker exec --privileged -w /var/lib/mysql doenet_docker_mysql_1 mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
     "reset_db": "docker exec -i doenet_docker_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql",
     "reset_volumes": "docker volume rm doenet_node_modules doenet_vendor",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\"",
-    "lint": "eslint \"src/**/*.{js,jsx}\""
+    "lint": "eslint \"src/**/*.{js,jsx}\"",
     "realtime": "node realtime/realtime.js"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "codemirror": "^5.61.1",
     "compromise": "^13.11.2",
     "compromise-numbers": "^1.2.0",
+    "cookie": "^0.4.1",
     "crypto-js": "^4.0.0",
     "cssesc": "^3.0.0",
     "csv-parse": "^4.15.3",
@@ -77,15 +78,15 @@
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
     "esbuild": "^0.12.1",
-    "eslint": "^7.26.0",
+    "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.2.0",
-    "eslint-plugin-import": "^2.23.2",
+    "eslint-plugin-import": "^2.23.3",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy": "^1.18.1",
     "prettier": "^2.3.0",
-    "snowpack": "^3.4.0",
+    "snowpack": "^3.5.1",
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {

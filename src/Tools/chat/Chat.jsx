@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { io } from 'socket.io-client';
+import Tool from '@Tool';
 
 const ChatContainer = styled.div`
-  width: 500px;
   border: solid black 1px;
 `;
 
@@ -19,7 +19,8 @@ const ChatSend = styled.button`
 `;
 
 const MessageLogContainer = styled.div`
-  height: 800px;
+  display: flex;
+  flex-direction: column;
   overflow: scroll;
 `;
 
@@ -43,8 +44,6 @@ const RoomJoin = styled.button`
   color: white;
 `;
 
-const NameInput = styled.input``;
-
 const NameLabel = styled.label``;
 
 function ChatMessage(props) {
@@ -56,95 +55,100 @@ function ChatMessage(props) {
   );
 }
 
-export default function Chat(props) {
-  const key = props.key ? props.key : '';
+export default function Chat() {
   const [chatLog, setCL] = useState([]);
-  const [socket, setSocket] = useState({ id: null });
-  const [room, setRoom] = useState(undefined);
+  const [socket, setSocket] = useState();
+  const [room, setRoom] = useState(12);
+  const [screenName] = useState(
+    JSON.parse(localStorage.getItem('Profile')).screenName,
+  );
 
   useEffect(() => {
-    console.log('running setup effect');
-    setSocket(io('localhost:81'));
+    let socket = io('localhost:81', { withCredentials: true });
+    socket.on('connect', () => {
+      console.log('socket', socket.id, 'connected');
+      socket.emit('joinRoom', room);
+      setSocket(socket);
+    });
+    socket.on('connect_error', (e) => {
+      console.log('socket connection error:', e);
+    });
+
+    socket.on('chat message', (message, userId) => {
+      let newMessage = JSON.parse(message);
+      newMessage.userId = userId;
+      setCL((prev) => [...prev, newMessage]);
+      let log = document.getElementById('messageLogContainer');
+      log.scrollTop = log.scrollHeight;
+    });
+
+    socket.on('disconnect', () => {
+      console.log('socket disconnected');
+    });
+
+    return () => socket.disconnect();
   }, []);
-
-  useEffect(() => {
-    console.log('running config effect');
-    if (socket.id !== null) {
-      socket.on('connect', () => {
-        console.log('socket connected');
-      });
-      socket.on('connect_error', (e) => {
-        console.log('socket connection error', e);
-      });
-
-      socket.on('chat message', (message) => {
-        console.log(message);
-        setCL((prev) => [...prev, message]);
-        let log = document.getElementById('messageLogContainer');
-        log.scrollTop = log.scrollHeight;
-      });
-
-      socket.on('disconnect', () => {
-        console.log('disconnecting socket');
-      });
-    }
-  }, [socket.id]);
 
   let messages = chatLog.map((val, i) => (
     <ChatMessage
-      key={`doenet-chat-message-${key}-${i}-${val.messageId}`}
+      key={`doenet-chat-message-${i}-${val.messageId}`}
       messageId={val.messageId}
       userId={val.userId}
     >
       {val.message}
     </ChatMessage>
   ));
-
   return (
-    <>
-      <RoomForm
-        onSubmit={(e) => {
-          e.preventDefault();
-          let roomEl = document.getElementById('roomInput');
-          socket.emit('leaveRoom', 'chat:' + room);
-          socket.emit('joinRoom', 'chat:' + roomEl.value);
-          setRoom(roomEl.value);
-        }}
-      >
-        <RoomInput type="number" id="roomInput" defaultValue="12" />
-        <RoomJoin type="submit">Join Room</RoomJoin>
-      </RoomForm>
-      <NameLabel htmlFor="nameInput" />
-      <NameInput type="text" name="nameInput" id="nameInput" />
-      <ChatContainer>
-        <MessageLogContainer id="messageLogContainer">
-          {messages}
-        </MessageLogContainer>
-        <ChatForm
+    <Tool>
+      <headerPanel />
+      <mainPanel>
+        <ChatContainer>
+          <MessageLogContainer id="messageLogContainer">
+            {messages}
+          </MessageLogContainer>
+          <ChatForm
+            onSubmit={(e) => {
+              e.preventDefault();
+              let messageEl = document.getElementById('chatInput');
+              socket.emit(
+                'chat message',
+                JSON.stringify({
+                  message: messageEl.value,
+                  messageId: new Date(),
+                  room: room,
+                }),
+                //   new RTChatMessage(
+                //     'a user, security TBI',
+                //     'user',
+                //     new Date(),
+                //     messageEl.value,
+                //     new Date(),
+                //     room,
+                //   ).toString(),
+              );
+              messageEl.value = '';
+            }}
+          >
+            <ChatInput type="text" autocomplete="hidden" id="chatInput" />
+            <ChatSend type="submit">Send Message</ChatSend>
+          </ChatForm>
+        </ChatContainer>
+      </mainPanel>
+      <menuPanel title="options" isInitOpen>
+        <NameLabel>Messaging as: {screenName}</NameLabel>
+        <RoomForm
           onSubmit={(e) => {
             e.preventDefault();
-            let messageEl = document.getElementById('chatInput');
-            let nameEl = document.getElementById('nameInput');
-            socket.emit(
-              'chat message',
-              { message: messageEl.value, nick: nameEl },
-              //   new RTChatMessage(
-              //     'a user, security TBI',
-              //     'user',
-              //     new Date(),
-              //     messageEl.value,
-              //     new Date(),
-              //     room,
-              //   ).toString(),
-            );
-            console.log(messageEl.value, nameEl.value, room);
-            messageEl.value = '';
+            let roomEl = document.getElementById('roomInput');
+            socket.emit('leaveRoom', 'chat:' + room);
+            socket.emit('joinRoom', 'chat:' + roomEl.value);
+            setRoom(roomEl.value);
           }}
         >
-          <ChatInput type="text" autocomplete="hidden" id="chatInput" />
-          <ChatSend type="submit">Send Message</ChatSend>
-        </ChatForm>
-      </ChatContainer>
-    </>
+          <RoomInput type="number" id="roomInput" defaultValue={room} />
+          <RoomJoin type="submit">Join Room</RoomJoin>
+        </RoomForm>
+      </menuPanel>
+    </Tool>
   );
 }

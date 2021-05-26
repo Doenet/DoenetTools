@@ -1,18 +1,23 @@
-import React, {useState, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
+import React, {
+  useState,
+  lazy,
+  Suspense,
+  useRef,
+} from '../_snowpack/pkg/react.js';
 import {
   atom,
   useSetRecoilState,
   useRecoilValue,
-  useRecoilCallback
-} from "../_snowpack/pkg/recoil.js";
-import Toast from "./Toast.js";
-import {useMenuPanelController} from "./Panels/MenuPanel.js";
-import {useSupportDividerController} from "./Panels/ContentPanel.js";
-import Cookies from "../_snowpack/pkg/js-cookie.js";
-import axios from "../_snowpack/pkg/axios.js";
+  useRecoilCallback,
+} from '../_snowpack/pkg/recoil.js';
+import Toast from './Toast.js';
+import { useMenuPanelController } from './Panels/MenuPanel.js';
+import { useSupportDividerController } from './Panels/ContentPanel.js';
+import axios from '../_snowpack/pkg/axios.js';
+
 const layerStackAtom = atom({
-  key: "layerStackAtom",
-  default: []
+  key: 'layerStackAtom',
+  default: [],
 });
 export const useToolControlHelper = () => {
   const setLayers = useSetRecoilState(layerStackAtom);
@@ -25,15 +30,15 @@ export const useToolControlHelper = () => {
     Image,
     Calendar,
     GradebookAssignmentView,
-    GradebookAttemptView
+    GradebookAttemptView,
   ] = useRef([
-    lazy(() => import("./Overlays/Content.js")),
-    lazy(() => import("./Overlays/Assignment.js")),
-    lazy(() => import("./Overlays/Editor.js")),
-    lazy(() => import("./Overlays/Image.js")),
-    lazy(() => import("./Overlays/Calendar.js")),
-    lazy(() => import("./Overlays/GradebookAssignmentView.js")),
-    lazy(() => import("./Overlays/GradebookAttemptView.js"))
+    lazy(() => import('./Overlays/Content.js')),
+    lazy(() => import('./Overlays/Assignment.js')),
+    lazy(() => import('./Overlays/Editor.js')),
+    lazy(() => import('./Overlays/Image.js')),
+    lazy(() => import('./Overlays/Calendar.js')),
+    lazy(() => import('./Overlays/GradebookAssignmentView.js')),
+    lazy(() => import('./Overlays/GradebookAttemptView.js')),
   ]).current;
   const openOverlay = ({
     type,
@@ -43,51 +48,51 @@ export const useToolControlHelper = () => {
     branchId,
     assignmentId,
     attemptNumber,
-    userId
+    userId,
   }) => {
     switch (type.toLowerCase()) {
-      case "gradebookassignmentview":
+      case 'gradebookassignmentview':
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(GradebookAssignmentView, {
             assignmentId,
-            key: `GBAssign${old.length + 1}`
-          })
+            key: `GBAssign${old.length + 1}`,
+          }),
         ]);
         break;
-      case "gradebookattemptview":
+      case 'gradebookattemptview':
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(GradebookAttemptView, {
             assignmentId,
             userId,
             attemptNumber,
-            key: `GBView${old.length + 1}`
-          })
+            key: `GBView${old.length + 1}`,
+          }),
         ]);
         break;
-      case "editor":
+      case 'editor':
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Editor, {
             branchId,
             title,
-            key: `EditorLayer${old.length + 1}`
-          })
+            key: `EditorLayer${old.length + 1}`,
+          }),
         ]);
         break;
-      case "content":
+      case 'content':
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Content, {
             contentId,
             branchId,
             title,
-            key: `ContentLayer${old.length + 1}`
-          })
+            key: `ContentLayer${old.length + 1}`,
+          }),
         ]);
         break;
-      case "assignment":
+      case 'assignment':
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Assignment, {
@@ -96,31 +101,31 @@ export const useToolControlHelper = () => {
             assignmentId,
             courseId,
             contentId,
-            key: `AssignmentLayer${old.length + 1}`
-          })
+            key: `AssignmentLayer${old.length + 1}`,
+          }),
         ]);
         break;
-      case "calendar":
+      case 'calendar':
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Calendar, {
             branchId,
             contentId,
-            key: `CalendarLayer${old.length + 1}`
-          })
+            key: `CalendarLayer${old.length + 1}`,
+          }),
         ]);
         break;
-      case "image":
+      case 'image':
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Image, {
             branchId,
-            key: `ImageLayer${old.length + 1}`
-          })
+            key: `ImageLayer${old.length + 1}`,
+          }),
         ]);
         break;
       default:
-        console.error("Unknown Overlay Name");
+        console.error('Unknown Overlay Name');
     }
   };
   const close = () => {
@@ -134,11 +139,11 @@ export const useToolControlHelper = () => {
     openOverlay,
     close,
     activateMenuPanel,
-    activateSupportPanel
+    activateSupportPanel,
   };
 };
 export const useStackId = () => {
-  const getId = useRecoilCallback(({snapshot}) => () => {
+  const getId = useRecoilCallback(({ snapshot }) => () => {
     const currentId = snapshot.getLoadable(layerStackAtom);
     return currentId.getValue().length;
   });
@@ -146,23 +151,47 @@ export const useStackId = () => {
   return stackId;
 };
 export const ProfileContext = React.createContext({});
-export default function ToolRoot({tool}) {
+export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
-  const [_, setRefresh] = useState(0);
-  const profile = JSON.parse(localStorage.getItem("Profile"));
+  const [, setRefresh] = useState(0);
+  const profile = JSON.parse(localStorage.getItem('Profile'));
   if (!profile) {
-    axios.get("/api/loadProfile.php", {params: {}}).then((resp) => {
-      if (resp.data.success === "1") {
-        localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
-        setRefresh((was) => was + 1);
-      }
-    }).catch((error) => {
-    });
+    axios
+      .get('/api/loadProfile.php', { params: {} })
+      .then((resp) => {
+        if (resp.data.success === '1') {
+          localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
+          setRefresh((was) => was + 1);
+        }
+      })
+      .catch((error) => {
+        throw new Error(`failed to load profile: ${error}`);
+      });
     return null;
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ProfileContext.Provider, {
-    value: profile
-  }, tool, /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement("div", null, "loading...")
-  }, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null)));
+  return /* @__PURE__ */ React.createElement(
+    React.Fragment,
+    null,
+    /* @__PURE__ */ React.createElement(
+      ProfileContext.Provider,
+      {
+        value: profile,
+      },
+      tool,
+      /* @__PURE__ */ React.createElement(
+        Suspense,
+        {
+          fallback: /* @__PURE__ */ React.createElement(
+            'div',
+            null,
+            'loading...',
+          ),
+        },
+        overlays.map((layer, idx) =>
+          idx == overlays.length - 1 ? layer : null,
+        ),
+      ),
+      /* @__PURE__ */ React.createElement(Toast, null),
+    ),
+  );
 }
