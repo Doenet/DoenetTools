@@ -7,7 +7,6 @@ export default function SignOut() {
   useEffect(() => {
     localStorage.clear();
     axios.get("/api/signOut.php", {params: {}}).then((resp) => {
-      console.log(">>>signout resp", resp);
       setSignOutAttempted(true);
     }).catch((error) => {
       this.setState({error});

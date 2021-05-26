@@ -30,6 +30,7 @@ $isHttpOnly = true;
 $expirationTime = time() - 3600;
 setcookie("JWT", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
 setcookie("JWT_JS", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
+setcookie("TrackingConsent", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
 // make it json format
 // echo json_encode($response_arr);
 

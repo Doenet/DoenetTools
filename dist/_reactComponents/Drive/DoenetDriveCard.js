@@ -48,13 +48,16 @@ const LabelContainer = styled.p`
 const DriveCard = (props) => {
   let imageURL = `/media/drive_pictures/${props.image}`;
   return /* @__PURE__ */ React.createElement(DriveCardContainer, {
+    "data-cy": "driveCard",
     url: imageURL,
     color: props.color
   }, /* @__PURE__ */ React.createElement(Image, {
     url: imageURL,
     color: props.color
   }), /* @__PURE__ */ React.createElement(Info, {
-    style: {backgroundColor: props.selectedCard ? "rgb(184, 210, 234)" : ""}
-  }, /* @__PURE__ */ React.createElement(LabelContainer, null, /* @__PURE__ */ React.createElement("b", null, props.label))));
+    style: {backgroundColor: props.isSelected ? "rgb(184, 210, 234)" : ""}
+  }, /* @__PURE__ */ React.createElement(LabelContainer, null, /* @__PURE__ */ React.createElement("b", {
+    "data-cy": "driveCardLabel"
+  }, props.label))));
 };
 export default DriveCard;

@@ -5,11 +5,21 @@ import {
   useRecoilValue,
   useRecoilCallback
 } from "../_snowpack/pkg/recoil.js";
+import styled from "../_snowpack/pkg/styled-components.js";
 import Toast from "./Toast.js";
 import {useMenuPanelController} from "./Panels/MenuPanel.js";
 import {useSupportDividerController} from "./Panels/ContentPanel.js";
-import Cookies from "../_snowpack/pkg/js-cookie.js";
 import axios from "../_snowpack/pkg/axios.js";
+const LoadingFallback = styled.div`
+  background-color: hsl(0, 0%, 99%);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  width: 100vw;
+  height: 100vh;
+`;
 const layerStackAtom = atom({
   key: "layerStackAtom",
   default: []
@@ -43,7 +53,10 @@ export const useToolControlHelper = () => {
     branchId,
     assignmentId,
     attemptNumber,
-    userId
+    userId,
+    driveId,
+    folderId,
+    itemId
   }) => {
     switch (type.toLowerCase()) {
       case "gradebookassignmentview":
@@ -72,6 +85,9 @@ export const useToolControlHelper = () => {
           /* @__PURE__ */ React.createElement(Editor, {
             branchId,
             title,
+            driveId,
+            folderId,
+            itemId,
             key: `EditorLayer${old.length + 1}`
           })
         ]);
@@ -120,7 +136,6 @@ export const useToolControlHelper = () => {
         ]);
         break;
       default:
-        console.error("Unknown Overlay Name");
     }
   };
   const close = () => {
@@ -160,9 +175,9 @@ export default function ToolRoot({tool}) {
     });
     return null;
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ProfileContext.Provider, {
+  return /* @__PURE__ */ React.createElement(ProfileContext.Provider, {
     value: profile
-  }, tool, /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement("div", null, "loading...")
-  }, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null)));
+  }, /* @__PURE__ */ React.createElement(Suspense, {
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
+  }, tool, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null));
 }

@@ -129,6 +129,7 @@ export default function DragPanel({
   }, /* @__PURE__ */ React.createElement(Background, {
     $vertical: direction.vertical
   }, children), /* @__PURE__ */ React.createElement(DragHandle, {
+    "data-cy": "panelDragHandle",
     $vertical: direction.vertical,
     $rounding: direction.rounding,
     $handleSize: handleSize,

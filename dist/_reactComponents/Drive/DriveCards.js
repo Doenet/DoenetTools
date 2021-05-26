@@ -8,7 +8,6 @@ import {
 import {useMenuPanelController} from "../../_framework/Panels/MenuPanel.js";
 import {drivecardSelectedNodesAtom} from "../../library/Library.js";
 import {
-  atom,
   useSetRecoilState,
   useRecoilValue,
   useRecoilState,
@@ -19,14 +18,14 @@ import {
   drivePathSyncFamily
 } from "./Drive.js";
 const DriveCards = (props) => {
-  const {routePathDriveId, driveDoubleClickCallback, isOneDriveSelect, subTypes, types, drivePathSyncKey} = props;
+  const {driveDoubleClickCallback, isOneDriveSelect, subTypes, types, drivePathSyncKey} = props;
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let driveInfo = [];
   if (drivesInfo.state === "hasValue") {
     driveInfo = drivesInfo.contents.driveIdsAndLabels;
   }
   let drivecardComponent = null;
-  if (driveInfo && driveInfo.length > 0 && routePathDriveId === "") {
+  if (driveInfo && driveInfo.length > 0) {
     drivecardComponent = /* @__PURE__ */ React.createElement(DriveCardWrapper, {
       driveDoubleClickCallback,
       subTypes,
@@ -35,7 +34,7 @@ const DriveCards = (props) => {
       isOneDriveSelect,
       driveInfo
     });
-  } else if (driveInfo.length === 0 && routePathDriveId === "") {
+  } else if (driveInfo.length === 0) {
     if (isOneDriveSelect) {
       drivecardComponent = /* @__PURE__ */ React.createElement("h2", null, "You have no courses.");
     } else {
@@ -46,8 +45,9 @@ const DriveCards = (props) => {
 };
 const DriveCardWrapper = (props) => {
   const {driveDoubleClickCallback, isOneDriveSelect, subTypes, driveInfo, drivePathSyncKey, types} = props;
-  const history = useHistory();
-  let encodeParams = (p) => Object.entries(p).map((kv) => kv.map(encodeURIComponent).join("=")).join("&");
+  const [drivecardSelectedValue, setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom);
+  const setOpenMenuPanel = useMenuPanelController();
+  const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey));
   let driveCardItems = [];
   let heights = [];
   const [width, setWidth] = useState(0);
@@ -85,13 +85,16 @@ const DriveCardWrapper = (props) => {
     const xy = [width / columns * column, (heights[column] += 250) - 250];
     return {...child, xy, width: width / columns, height: 250};
   });
-  const [on, toggle] = useState(false);
-  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
-  const drivecardSelectedValue = useRecoilValue(drivecardSelectedNodesAtom);
-  const setOpenMenuPanel = useMenuPanelController();
-  const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(props.drivePathSyncKey));
   if (driveCardPath.driveId !== "") {
     return null;
+  }
+  function setRecoilDrivePath(driveId) {
+    setDrivecardPath({
+      driveId,
+      parentFolderId: driveId,
+      itemId: driveId,
+      type: "Drive"
+    });
   }
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
@@ -106,11 +109,6 @@ const DriveCardWrapper = (props) => {
   const handleKeyUp = (e, item) => {
     if (e.key === "Tab") {
       setDrivecardSelection([item]);
-    }
-  };
-  const handleKeyBlur = (e, item) => {
-    if (e.type === "blur") {
-      setDrivecardSelection([]);
     }
   };
   const drivecardselection = (e, item) => {
@@ -174,8 +172,8 @@ const DriveCardWrapper = (props) => {
     if (drivecardSelectedValue.length == 0) {
       return false;
     }
-    let avalibleCard = drivecardSelectedValue.filter((i) => i.driveId === cardItem.driveId);
-    return avalibleCard.length > 0 ? true : false;
+    let availableCard = drivecardSelectedValue.filter((i) => i.driveId === cardItem.driveId && i.drivePathSyncKey === drivePathSyncKey);
+    return availableCard.length > 0 ? true : false;
   };
   return /* @__PURE__ */ React.createElement("div", {
     className: "drivecardContainer"
@@ -191,10 +189,11 @@ const DriveCardWrapper = (props) => {
     },
     className: `list`
   }, driveCardItems.map((item, index) => {
-    let selectedCard = getSelectedCard(item);
+    item["drivePathSyncKey"] = drivePathSyncKey;
+    let isSelected = getSelectedCard(item);
     return /* @__PURE__ */ React.createElement("div", {
       key: index,
-      className: `adiv ${selectedCard ? "borderselection" : ""}`,
+      className: `adiv ${isSelected ? "borderselection" : ""}`,
       style: {
         width: 250,
         height: 250,
@@ -215,16 +214,13 @@ const DriveCardWrapper = (props) => {
         e.preventDefault();
         e.stopPropagation();
         setDrivecardSelection([]);
-        if (driveDoubleClickCallback) {
-          driveDoubleClickCallback({item});
-        }
+        setRecoilDrivePath(item.driveId);
       }
     }, /* @__PURE__ */ React.createElement(DriveCard, {
-      driveId: item.driveId,
       image: item.image,
       color: item.color,
       label: item.label,
-      selectedCard
+      isSelected
     })));
   }))));
 };

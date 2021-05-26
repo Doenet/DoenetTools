@@ -51,7 +51,7 @@ export default class Answer extends DoenetRenderer {
       }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
         icon: faLevelDownAlt,
         transform: {rotate: 90}
-      }), "\xA0", checkWorkText);
+      }), " ", checkWorkText);
       if (this.doenetSvData.showCorrectness) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
@@ -60,7 +60,7 @@ export default class Answer extends DoenetRenderer {
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCheck
-          }), "\xA0 Correct");
+          }), "  Correct");
         } else if (validationState === "incorrect") {
           checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
           checkworkComponent = /* @__PURE__ */ React.createElement("span", {
@@ -68,7 +68,7 @@ export default class Answer extends DoenetRenderer {
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faTimes
-          }), "\xA0 Incorrect");
+          }), "  Incorrect");
         } else if (validationState === "partialcorrect") {
           checkWorkStyle.backgroundColor = "#efab34";
           let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
@@ -86,7 +86,7 @@ export default class Answer extends DoenetRenderer {
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCloud
-          }), "\xA0 Response Saved");
+          }), "  Response Saved");
         }
       }
       return /* @__PURE__ */ React.createElement("span", {

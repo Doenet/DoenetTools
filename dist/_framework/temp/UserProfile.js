@@ -191,7 +191,7 @@ class UserProfile extends Component {
           this.profileMenuMap.push({
             id: "Account",
             label: "Account Settings",
-            link: "/accountsettings/"
+            link: "/accountSettings/"
           });
           break;
       }
