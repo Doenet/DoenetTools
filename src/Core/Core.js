@@ -277,6 +277,10 @@ export default class Core {
 
       serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
 
+      // remove blank string children again, as they could be created above
+      // e.g., from macros
+      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
+
       arrayOfSerializedComponents.push(serializedComponents);
 
       let newContentComponents = serializeFunctions.findContentCopies({ serializedComponents });

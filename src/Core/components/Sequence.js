@@ -129,7 +129,7 @@ export default class Sequence extends CompositeComponent {
         attributesFromComposite = convertAttributesForComponentType({
           attributes: { fixed: component.attributes.fixed },
           componentType,
-          componentInfoObjects, compositeAttributesObj: {},
+          componentInfoObjects,
           compositeCreatesNewNamespace: component.attributes.newNamespace
         })
       }
@@ -328,7 +328,7 @@ export default class Sequence extends CompositeComponent {
             attributesFromComposite = convertAttributesForComponentType({
               attributes: { fixed: component.attributes.fixed },
               componentType,
-              componentInfoObjects, compositeAttributesObj: {},
+              componentInfoObjects,
               compositeCreatesNewNamespace: component.attributes.newNamespace
             })
           }

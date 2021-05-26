@@ -262,7 +262,6 @@ export class UpdateValue extends InlineComponent {
           variableName: "simplify"
         }
       }),
-      defaultValue: null,
       definition: function ({ dependencyValues }) {
         if (dependencyValues.newValueAttr === null) {
           return {
