@@ -1219,18 +1219,21 @@ const selectedContentId = () =>{
     return '';
   }
 }
+let assigned = <select multiple onChange = {(event) => selectedVersion(event.target.value)}>
+          {versionHistory.contents.named.map((item, i) => (
+    <>
+    {item.isReleased == 1 ?  <option key={i} value={item.versionId}>
+    {item.isAssigned == 1 ? '*' : ''}{item.title}
+  </option> : ""}
+
+  </>
+))}
+</select>;
+
   return (
     <>
-      <select multiple onChange = {(event) => selectedVersion(event.target.value)}>
-        {versionHistory.contents.named.map((item, i) => (
-            <>
-            {item.isReleased == 1 ?  <option key={i} value={item.versionId}>
-            {item.isAssigned == 1 ? '*' : ''}{item.title}
-          </option> : ""}
-
-          </>
-        ))}
-      </select>
+    {assigned}
+      
 
       <br />
       <br />
