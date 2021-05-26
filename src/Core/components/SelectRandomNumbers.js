@@ -40,13 +40,13 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
     stateVariableDefinitions.step.immutable = true;
     stateVariableDefinitions.from.immutable = true;
-    stateVariableDefinitions.from.additionalStateVariablesDefined[0].immutable=true;
-    stateVariableDefinitions.from.additionalStateVariablesDefined[1].immutable=true;
+    stateVariableDefinitions.from.additionalStateVariablesDefined[0].immutable = true;
+    stateVariableDefinitions.from.additionalStateVariablesDefined[1].immutable = true;
 
     stateVariableDefinitions.mean.immutable = true;
     stateVariableDefinitions.variance.immutable = true;
     stateVariableDefinitions.standardDeviation.immutable = true;
-    
+
 
     delete stateVariableDefinitions.sampledValues;
 
@@ -220,10 +220,11 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           variableName: "selectedValues"
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
         let generatedVariantInfo = {
-          values: dependencyValues.selectedValues
+          values: dependencyValues.selectedValues,
+          meta: { createdBy: componentName }
         };
 
         return { newValues: { generatedVariantInfo } }

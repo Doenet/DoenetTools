@@ -433,10 +433,11 @@ export default class Select extends CompositeComponent {
           definingChildrenFirst: true,
         }
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
         let generatedVariantInfo = {
-          indices: dependencyValues.selectedIndices
+          indices: dependencyValues.selectedIndices,
+          meta: { createdBy: componentName }
         };
 
         let subvariants = generatedVariantInfo.subvariants = [];

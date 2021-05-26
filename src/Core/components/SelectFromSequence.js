@@ -152,10 +152,11 @@ export default class SelectFromSequence extends Sequence {
           variableName: "selectedIndices"
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
         let generatedVariantInfo = {
-          indices: dependencyValues.selectedIndices
+          indices: dependencyValues.selectedIndices,
+          meta: { createdBy: componentName }
         };
 
         return { newValues: { generatedVariantInfo } }

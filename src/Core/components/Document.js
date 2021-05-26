@@ -369,7 +369,7 @@ export default class Document extends BaseComponent {
           dependencyType: "variants",
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
         let subvariantsSpecified = Boolean(
           dependencyValues.variants.desiredVariant &&
@@ -379,7 +379,10 @@ export default class Document extends BaseComponent {
         let generatedVariantInfo = {
           index: dependencyValues.variantIndex,
           name: dependencyValues.variantName,
-          subvariantsSpecified,
+          meta: {
+            createdBy: componentName,
+            subvariantsSpecified
+          },
         }
 
 

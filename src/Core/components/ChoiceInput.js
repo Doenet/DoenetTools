@@ -223,7 +223,7 @@ export default class Choiceinput extends Input {
           definingChildrenFirst: true,
         }
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
         if (dependencyValues.fixedOrder) {
           return {
@@ -235,7 +235,8 @@ export default class Choiceinput extends Input {
         }
 
         let generatedVariantInfo = {
-          indices: dependencyValues.choiceOrder
+          indices: dependencyValues.choiceOrder,
+          meta: { createdBy: componentName }
         };
 
         let subvariants = generatedVariantInfo.subvariants = [];

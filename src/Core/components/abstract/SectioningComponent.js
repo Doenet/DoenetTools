@@ -441,20 +441,30 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "variants",
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
-        let isVariantComponent;
-        let generatedVariantInfo = {};
-        if (dependencyValues.variantControlChild.length === 1) {
-          isVariantComponent = true;
-          generatedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex;
-          generatedVariantInfo.name = dependencyValues.variantControlChild[0].stateValues.selectedVariantName;
-          generatedVariantInfo.subvariantsSpecified = Boolean(
-            dependencyValues.variants.desiredVariant &&
-            dependencyValues.variants.desiredVariant.subvariants
-          )
-        } else {
-          isVariantComponent = false;
+        if (dependencyValues.variantControlChild.length === 0) {
+          return {
+            newValues: {
+              generatedVariantInfo: null,
+              isVariantComponent: false
+            }
+          }
+        }
+
+
+        let subvariantsSpecified = Boolean(
+          dependencyValues.variants.desiredVariant &&
+          dependencyValues.variants.desiredVariant.subvariants
+        );
+
+        let generatedVariantInfo = {
+          index: dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex,
+          name: dependencyValues.variantControlChild[0].stateValues.selectedVariantName,
+          meta: {
+            createdBy: componentName,
+            subvariantsSpecified
+          }
         }
 
         let subvariants = generatedVariantInfo.subvariants = [];
@@ -465,9 +475,14 @@ export default class SectioningComponent extends BlockComponent {
           } else if (descendant.stateValues.generatedVariantInfo) {
             subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
-
         }
-        return { newValues: { generatedVariantInfo, isVariantComponent } }
+
+        return {
+          newValues: {
+            generatedVariantInfo,
+            isVariantComponent: true
+          }
+        }
 
       }
     }
@@ -713,7 +728,7 @@ export default class SectioningComponent extends BlockComponent {
     sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
 
     // seed rng for random numbers predictably from variant using selectRng
-    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng()*1000000).toString()
+    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
     sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
 
     // console.log("****Variant for sectioning component****")
