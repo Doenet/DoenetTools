@@ -141,7 +141,6 @@ function AutoSelect(props) {
       return null;}
       if (versionHistory.state === "hasValue"){ 
         const contentId = versionHistory.contents.named.contentId;
-  
        }
   }
 
@@ -917,8 +916,10 @@ const FolderInfoPanel = () => {
 };
 const VersionHistoryInfoPanel = (props) => {
   // console.log(">>>VersionHistoryInfoPanel" ,props );
+
+ const [selectedVId, setSelectedVId] = useState();
+ const setSelectedVersionAtom = useSetRecoilState(selectedVersionAtom)
   const itemInfo = props.contentInfo;
-  // console.log(">>>itemInfo after selection",itemInfo);
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(itemInfo.branchId))
   const selectedVersionId  = useRecoilValue(versionHistoryReleasedSelectedAtom); 
   const { openOverlay,activateMenuPanel } = useToolControlHelper();
@@ -1175,8 +1176,6 @@ let aInfo = '';
     }
     }
 
- const [selectedVId, setSelectedVId] = useState();
- const setSelectedVersionAtom = useSetRecoilState(selectedVersionAtom)
 
 const selectedVersion = (item) =>{
   // console.log(">>selectedVersion event ",item, item.isAssigned);
@@ -1238,15 +1237,9 @@ let assigned = <select multiple onChange = {(event) => selectedVersion(event.tar
       <br />
       <br />
     {itemInfo.isAssigned !== '1' &&  makeAssignmentforReleasedButton}
-    {/* {console.log("@@@@@@@@@@@@checkIfAssigned",checkIfAssigned())} */}
     {itemInfo.isAssigned == '1'  && checkIfAssigned() && unAssignButton}
     {itemInfo.isAssigned == '1'  && checkAssignArrItemAssigned() && !checkIfAssigned() &&  switchAssignmentButton}
 
-        {/*   {itemInfo.isAssigned !== '1' && viewContentButton}
-
-      {itemInfo.isAssigned == '1' &&
-        version?.isAssigned == '1' &&
-        unAssignButton} */}
     </>
   );
   };
@@ -1319,6 +1312,7 @@ const VersionInfo = (props) => {
   } else if (contentInfoLoad.contents?.number === 1) {
     if (contentInfo?.itemType === 'DoenetML') {
       return (
+        
         <VersionHistoryInfoPanel
           key={`VersionHistoryInfoPanel${contentInfo.itemId}`}
           contentInfo={contentInfo}
