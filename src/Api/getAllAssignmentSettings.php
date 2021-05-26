@@ -46,7 +46,7 @@ $response_arr = array(
   ON a.driveId = dc.driveId
   LEFT JOIN content AS c
   ON a.contentId = c.contentId
-  WHERE c.branchId = '$branchId' 
+  WHERE c.branchId = '$branchId' AND c.contentId = '$contentId'
   ";
   
   $result = $conn->query($sql);
