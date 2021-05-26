@@ -20,15 +20,16 @@ export default function Content({ branchId = '', title }) {
 
     const viewerDoenetML = useRecoilValue(viewerContentDoenetMLAtom);
     const versionHistory = useRecoilValueLoadable(itemHistoryAtom(branchId))
+    console.log(">>>>versionHistory",versionHistory);
     if (versionHistory.state === "loading"){ return null;}
     if (versionHistory.state === "hasError"){ 
       console.error(versionHistory.contents)
       return null;}
       let contentId = '';
       for (let version of versionHistory.contents.named){
-        if(version?.isAsssigned === '1'){
+        if(version?.isAssigned === '1'){
           contentId = version.contentId
-        }
+        }            
 
       }
     let attemptNumber = 1;
