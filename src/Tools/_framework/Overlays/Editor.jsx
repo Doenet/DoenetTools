@@ -283,7 +283,6 @@ function VersionHistoryPanel(props){
     let versionsObj = {}
 
   for (let version of versionHistory.contents.named){
-    console.log(">>>version title",version.title)
     versionsObj[version.versionId] = version;
     let selected = false;
     if (version.versionId === selectedVersionId){
@@ -356,7 +355,8 @@ function TextEditor(props){
     let oldVersionsReplacement = {...oldVersions};
     oldVersionsReplacement.draft = newVersion;
     set(itemHistoryAtom(props.branchId),oldVersionsReplacement)
-    set(fileByContentId(contentId),{data:doenetML})
+    set(fileByContentId(contentId),doenetML)
+    // set(fileByContentId(contentId),{data:doenetML})
 
     //Save in localStorage
     localStorage.setItem(contentId,doenetML)
@@ -393,7 +393,8 @@ function TextEditor(props){
     let newVersions = {...oldVersions}
     newVersions.autoSaves = [newVersion,...oldVersions.autoSaves]
       set(itemHistoryAtom(props.branchId),newVersions)
-      set(fileByContentId(newVersion.contentId),{data:doenetML});
+      // set(fileByContentId(newVersion.contentId),{data:doenetML});
+      set(fileByContentId(newVersion.contentId),doenetML);
   
       axios.post("/api/saveNewVersion.php",newDBVersion)
         // .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
@@ -594,7 +595,8 @@ function NameCurrentVersionControl(props){
     newVersions.named = [newVersion,...oldVersions.named];
 
     set(itemHistoryAtom(branchId),newVersions)
-    set(fileByContentId(contentId),{data:doenetML});
+    // set(fileByContentId(contentId),{data:doenetML});
+    set(fileByContentId(contentId),doenetML);
     
     axios.post("/api/saveNewVersion.php",newDBVersion)
       //  .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
