@@ -110,6 +110,7 @@ export default function ContentPanel({main, support}) {
     $proportion: panelProportion
   }, main, support ? /* @__PURE__ */ React.createElement(DragHandle, {
     onMouseDown,
+    "data-cy": "contentPanelDragHandle",
     key: `SupportHandle${stackId}`
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faGripLinesVertical

@@ -51,7 +51,7 @@ class DoenetViewerChild extends Component {
     this.assignmentId = props.assignmentId;
     this.requestedVariant = props.requestedVariant;
     if (this.requestedVariant === void 0) {
-      this.requestedVariant = {index: 0};
+      this.requestedVariant = {index: this.attemptNumber - 1};
     }
     this.documentRenderer = /* @__PURE__ */ React.createElement(React.Fragment, null, "Loading...");
     if (props.contentId === void 0) {
@@ -110,7 +110,7 @@ class DoenetViewerChild extends Component {
     }
   }
   coreReady() {
-    this.resultingVariant = this.core.document.state.selectedVariantInfo.value;
+    this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
     if (this.cumulativeStateVariableChanges) {
       let nFailures = Infinity;
       while (nFailures > 0) {
@@ -185,7 +185,7 @@ class DoenetViewerChild extends Component {
       }
     }
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
-    let variantString = JSON.stringify(this.resultingVariant, serializedComponentsReplacer);
+    let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
     const phpUrl = "/api/recordContentInteraction.php";
     const data = {
       contentId,
@@ -289,7 +289,7 @@ class DoenetViewerChild extends Component {
       assignmentId: this.assignmentId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
-      variant: JSON.stringify(this.resultingVariant, serializedComponentsReplacer),
+      variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
       verb: event.verb,
       object: JSON.stringify(event.object, serializedComponentsReplacer),
       result: JSON.stringify(event.result, serializedComponentsReplacer),

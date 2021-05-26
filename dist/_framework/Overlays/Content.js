@@ -1,14 +1,29 @@
 import React from "../../_snowpack/pkg/react.js";
-import {atom, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
+import {atom, useRecoilValue, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
 import Tool from "../Tool.js";
 import DoenetViewer from "../../viewer/DoenetViewer.js";
+import {itemHistoryAtom} from "../../_sharedRecoil/content.js";
 const viewerContentDoenetMLAtom = atom({
   key: "viewerContentDoenetMLAtom",
   default: {updateNumber: 0, doenetML: ""}
 });
-export default function Content({branchId = "", contentId = "", title}) {
+export default function Content({branchId = "", title}) {
   function DoenetViewerPanel() {
     const viewerDoenetML = useRecoilValue(viewerContentDoenetMLAtom);
+    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(branchId));
+    if (versionHistory.state === "loading") {
+      return null;
+    }
+    if (versionHistory.state === "hasError") {
+      console.error(versionHistory.contents);
+      return null;
+    }
+    let contentId = "";
+    for (let version of versionHistory.contents.named) {
+      if (version?.isAssigned === "1") {
+        contentId = version.contentId;
+      }
+    }
     let attemptNumber = 1;
     let requestedVariant = {index: attemptNumber};
     let assignmentId = "myassignmentid";
@@ -16,16 +31,15 @@ export default function Content({branchId = "", contentId = "", title}) {
     return /* @__PURE__ */ React.createElement(DoenetViewer, {
       key: "doenetviewer" + viewerDoenetML?.updateNumber,
       doenetML: viewerDoenetML?.doenetML,
-      contentId: contentId ? contentId : branchId,
+      contentId,
       flags: {
         showCorrectness: true,
-        readOnly: true,
+        readOnly: false,
         solutionDisplayMode,
         showFeedback: true,
         showHints: true
       },
       attemptNumber,
-      assignmentId,
       ignoreDatabase: true,
       requestedVariant
     });

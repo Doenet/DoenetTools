@@ -10,7 +10,7 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
+$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 
 
 $sql = "
@@ -21,9 +21,9 @@ email,
 empId,
 dateEnrolled,
 section
-FROM course_enrollment
+FROM enrollment
 WHERE withdrew = '0'
-AND courseId = '$courseId'
+AND driveId = '$driveId'
 ORDER BY firstName
 ";
 $result = $conn->query($sql);
