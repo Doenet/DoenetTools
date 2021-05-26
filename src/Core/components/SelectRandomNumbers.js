@@ -273,7 +273,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         attributesFromComposite = convertAttributesForComponentType({
           attributes: attributesToConvert,
           componentType: "number",
-          componentInfoObjects, compositeAttributesObj: {},
+          componentInfoObjects,
           compositeCreatesNewNamespace: component.attributes.newNamespace
         })
       }

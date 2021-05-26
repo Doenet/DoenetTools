@@ -2143,4 +2143,45 @@ describe('SelectByCondition Tag Tests', function () {
 
   });
 
+  it('blank string removed after macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <text name="dog">dog</text>
+    <text name="cat">cat</text>
+    <mathinput name="n" />
+    <p name="p"><selectByCondition>
+      <case condition="$n < 0">
+        $dog
+      </case>
+      <else>
+        $cat
+      </else>
+    </selectByCondition></p>
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/p').should('have.text', 'cat');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/_case1"].serializedChildren.length).eq(1)
+      expect(components["/_case1"].stateValues.serializedChildren).eqls(components["/_case1"].serializedChildren)
+      expect(components["/_else1"].serializedChildren.length).eq(1)
+      expect(components["/_else1"].stateValues.serializedChildren).eqls(components["/_else1"].serializedChildren)
+    })
+
+    cy.log('enter -1')
+    cy.get('#\\/n textarea').type("-1{enter}", { force: true })
+
+    cy.get('#\\/p').should('have.text', 'dog');
+
+  });
+
+
 });
