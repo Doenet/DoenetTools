@@ -36,36 +36,38 @@
 
   io.on('connection', (socket) => {
     console.log('connecting', socket.id);
-    socket.emit(
-      'chat message',
-      '{"messageId": -1, "message": "Socket.io connection Successful! Try joining a room!"}',
-      'Sever',
-    );
+    socket.emit('chat message', {
+      messageId: -1,
+      message: 'Socket.io connection Successful! Try joining a room!',
+      userId: 'Server',
+    });
 
     socket.on('joinRoom', (room) => {
       socket.join(room);
-      io.to(room).emit(
-        'chat message',
-        `{"messageId": -1, "message": "${socket.data.profile.screenName} joined room ${room}"}`,
-        'Sever',
-      );
+      io.to(room).emit('chat message', {
+        messageId: -1,
+        message: `${socket.data.profile.screenName} joined room ${room}`,
+        userId: 'Sever',
+      });
     });
 
     socket.on('leaveRoom', (room) => {
       socket.leave(room);
-      io.to(room).emit(
-        'chat message',
-        `{"messageId": -1, "message": "${socket.data.profile.screenName} left the room"}`,
-        'Sever',
-      );
+      io.to(room).emit('chat message', {
+        messageId: -1,
+        message: `${socket.data.profile.screenName} left the room`,
+        userId: 'Sever',
+      });
     });
 
     socket.on('chat message', (data, room) => {
-      io.to(room).emit('chat message', data, socket.data.profile.screenName);
+      data.userId = socket.data.profile.screenName;
+      io.to(room).emit('chat message', data);
     });
 
     socket.on('typing', (data) => {
-      socket.broadcast.emit('typing', data, socket.data.profile.screenName);
+      data.userId = socket.data.profile.screenName;
+      socket.broadcast.emit('typing', data);
     });
 
     socket.on('disconnect', () => {

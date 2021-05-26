@@ -73,10 +73,8 @@ export default function Chat() {
       console.log('socket connection error:', e);
     });
 
-    socket.on('chat message', (message, userId) => {
-      let newMessage = JSON.parse(message);
-      newMessage.userId = userId;
-      setCL((prev) => [...prev, newMessage]);
+    socket.on('chat message', (message) => {
+      setCL((prev) => [...prev, message]);
       let log = document.getElementById('messageLogContainer');
       log.scrollTop = log.scrollHeight;
     });
@@ -111,10 +109,10 @@ export default function Chat() {
               let messageEl = document.getElementById('chatInput');
               socket.emit(
                 'chat message',
-                JSON.stringify({
+                {
                   message: messageEl.value,
                   messageId: new Date(),
-                }),
+                },
                 `chat:${room}`,
                 //   new RTChatMessage(
                 //     'a user, security TBI',
