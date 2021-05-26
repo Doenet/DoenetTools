@@ -69,9 +69,9 @@ export const selectedVersionAtom = atom({
 });
 const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
-  get: (branchId) => async ({ get, set }) => {
+  get: (branchIdcontentId) => async ({ get, set }) => {
     const { data } = await axios.get(
-      `/api/getAllAssignmentSettings.php?branchId=${branchId}`,
+      `/api/getAllAssignmentSettings.php?branchId=${branchIdcontentId.branchId}&contentId=${branchIdcontentId.contentId}`,
     );
     return data;
   },
@@ -95,7 +95,7 @@ export const assignmentDictionary = atomFamily({
           driveIditemIdbranchIdparentFolderId.itemId
         ];
       if (driveIditemIdbranchIdparentFolderId.branchId) {
-        const aInfo = await get(loadAssignmentSelector(driveIditemIdbranchIdparentFolderId.branchId));
+        const aInfo = await get(loadAssignmentSelector({branchId:driveIditemIdbranchIdparentFolderId.branchId,contentId:driveIditemIdbranchIdparentFolderId.contentId}));
         if (aInfo) {
           return aInfo?.assignments[0];
         } else return null;
@@ -169,6 +169,7 @@ export default function Course(props) {
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
   const [openEnrollment, setEnrollmentView] = useState(false);
+  const [viewAccess, setViewAccess] = useState(false);
   const role = useRecoilValue(roleAtom);
   const  setDrivePath = useSetRecoilState(drivePathSyncFamily("main"));
 
@@ -215,7 +216,10 @@ export default function Course(props) {
     e.preventDefault();
     setEnrollmentView(!openEnrollment);
   };
-
+  const setViewAccessToggle = (e) => {
+    e.preventDefault();
+    setViewAccess(!viewAccess);
+  };
   const enrollDriveId = { driveId: routePathDriveId };
   let hideUnpublished = true;
   if (role === 'Instructor') {
@@ -226,13 +230,24 @@ export default function Course(props) {
     urlClickBehavior = 'select';
   }
   let responsiveControls = '';
+
   if (routePathDriveId) {
     responsiveControls = (
+      <>
       <Button
         value={openEnrollment ? 'Close Enrollment' : 'Open Enrollment'}
         callback={(e) => setEnrollment(e)}
       ></Button>
+      
+        <Button
+        value={viewAccess ? 'released' : 'assigned'}
+        callback={(e) => setViewAccessToggle(e)}
+      ></Button>
+      </>
+      
     );
+     
+    
   }
 
 
@@ -310,9 +325,8 @@ export default function Course(props) {
             >
               <Container>
                 <Drive
-                 viewAccess="released"
                  columnTypes={['Due Date','Assigned']}
-                //  viewAccess="assigned"  //TODO
+                 viewAccess={viewAccess ?   "assigned" : "released"} 
                   driveId={routePathDriveId}
                   hideUnpublished={hideUnpublished}
                   subTypes={['Administrator']}
@@ -382,6 +396,16 @@ const DoenetMLInfoPanel = (props) => {
   
   const itemInfo = props.contentInfo;
   const vInfo = props.versionArr;
+  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(itemInfo.branchId))
+
+  const selectedContentId = () =>{
+    const assignedArr =  versionHistory.contents.named.filter((item)=>item.versionId === selectedVId);
+    if(assignedArr.length > 0) {
+      return assignedArr[0].contentId;
+    }else{
+      return '';
+    }
+  }
   const assignmentInfoSettings = useRecoilValueLoadable(
     assignmentDictionarySelector({
       driveId: itemInfo.driveId,
@@ -389,7 +413,7 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       branchId:itemInfo.branchId,
       versionId:selectedVId,
-      contentId:vInfo.contentId
+      contentId:selectedContentId()
     }),
     
   );
@@ -440,6 +464,9 @@ const DoenetMLInfoPanel = (props) => {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
+        branchId:itemInfo.branchId,
+        versionId:selectedVId,
+        contentId:selectedContentId()
       },
     });
     result
@@ -463,6 +490,9 @@ const DoenetMLInfoPanel = (props) => {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
+        branchId:itemInfo.branchId,
+        versionId:selectedVId,
+        contentId:selectedContentId()
       },
     });
     let payload = {
@@ -871,7 +901,7 @@ const DoenetMLInfoPanel = (props) => {
       <br />
       {publishContentButton}
       <br />
-      {viewDoenetMLButton}
+      {/* {viewDoenetMLButton} */}
        <br />
       {/* {loadAssignmentButton} */}
       <br />
@@ -922,7 +952,7 @@ let aInfo = '';
 
     let assignVersions = [];
         let makeAssignmentforReleasedButton = null;
-        let makeContentforReleasedAssignmentButton = null;
+        let unAssignButton = null;
         let viewContentButton = null;
         let releasedVersions = [];
         let switchAssignmentButton = null;
@@ -947,19 +977,18 @@ let aInfo = '';
                 itemId: itemInfo.itemId,
               },
               branchId: itemInfo.branchId,
-              contentId: version?.contentId,
-              versionId:version?.versionId,
+              contentId: selectedContentId(),
+              versionId:selectedVId,
             });
             let payload = {
               ...aInfo,
               itemId: itemInfo.itemId,
               assignment_title: 'Untitled Assignment',
               isAssigned: '1',
-              dueDate:aInfo?.dueDate,
               branchId: itemInfo.branchId,
-              contentId: version.contentId,
+              contentId: selectedContentId(),
               driveId:itemInfo.driveId,
-              versionId:version?.versionId
+              versionId:selectedVId
             };
 
             makeAssignment({
@@ -972,7 +1001,7 @@ let aInfo = '';
             });
             updateVersionHistory(
               itemInfo.branchId,
-              version?.versionId
+              selectedVId
             )
             try {
               if(result.success){
@@ -990,7 +1019,7 @@ let aInfo = '';
         />
         <br />
           </>
-           makeContentforReleasedAssignmentButton = <>
+           unAssignButton = <>
            <Button
             value="Unassign"
             callback={async () => { 
@@ -1134,7 +1163,7 @@ let aInfo = '';
             {/* {itemInfo.isAssigned !== '1'  && makeAssignmentforReleasedButton} */}
            {/* {itemInfo.isAssigned !== '1'  && viewContentButton} */}
 
-           {/* {itemInfo.isAssigned == '1' && version?.isAssigned == '1' && makeContentforReleasedAssignmentButton} */}
+           {/* {itemInfo.isAssigned == '1' && version?.isAssigned == '1' && unAssignButton} */}
           </React.Fragment>
         );
       //TODO do we need draft or only released or latest released
@@ -1158,7 +1187,6 @@ const selectedVersion = (item) =>{
 }
 
 const checkIfAssigned = (item) =>{
-  // console.log(">>> !!!!!!!!!!!!!!!!checkIfAssigned versionHistory",versionHistory.contents.named);
   const assignedArr =  versionHistory.contents.named.filter((item)=>item.versionId === selectedVId);
 if(assignedArr.length > 0 && assignedArr[0].isAssigned == '1') {
   return true;
@@ -1208,14 +1236,14 @@ const selectedContentId = () =>{
       <br />
     {itemInfo.isAssigned !== '1' &&  makeAssignmentforReleasedButton}
     {/* {console.log("@@@@@@@@@@@@checkIfAssigned",checkIfAssigned())} */}
-    {itemInfo.isAssigned == '1'  && checkIfAssigned() && makeContentforReleasedAssignmentButton}
+    {itemInfo.isAssigned == '1'  && checkIfAssigned() && unAssignButton}
     {itemInfo.isAssigned == '1'  && checkAssignArrItemAssigned() && !checkIfAssigned() &&  switchAssignmentButton}
 
         {/*   {itemInfo.isAssigned !== '1' && viewContentButton}
 
       {itemInfo.isAssigned == '1' &&
         version?.isAssigned == '1' &&
-        makeContentforReleasedAssignmentButton} */}
+        unAssignButton} */}
     </>
   );
   };

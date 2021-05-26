@@ -52,7 +52,7 @@ export const useAssignment = () => {
         assignment_title: 'Untitled Assignment',
         assignedDate: creationDate,
         attemptAggregation: 'e',
-        dueDate: futureDueDate,
+        dueDate: creationDate,
         gradeCategory: 'l',
         individualize: '0',
         isAssigned: '1',
