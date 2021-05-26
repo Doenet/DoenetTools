@@ -12,22 +12,41 @@ $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 
-
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
+$branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
 
+$success = TRUE;
+$message = "";
 
+if ($itemId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing itemId";
+}
+
+if ($success){
 
 $sql = "UPDATE drive_content SET
-isAssignment = '1'
+isAssigned = '1'
 WHERE itemId = '$itemId'
+AND branchId = '$branchId'
 ";
 
 $result = $conn->query($sql);
+}
 // echo $sql;
+// set response code - 200 OK
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
+
+
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
-echo json_encode(200);
+echo json_encode($response_arr);
+
 
 $conn->close();
+?>

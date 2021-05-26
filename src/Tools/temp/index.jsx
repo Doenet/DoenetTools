@@ -83,14 +83,31 @@ import {parse,parseAndCompile,showCursor} from '../../Parser/parser.js';
 
   // <DynamicLoad />,
 
+  function Select(){
+    const options = [
+      <option value="v1" >Version 1</option>,
+    <option value="v2" selected={false}>Version 2</option>,
+    <option value="v3" >Version 3</option>,
+    <option value="v4" >Version 4</option>,
+    <option value="v5" >Version 5</option>,
+    ]
+
+    return <select 
+    size='8' 
+    select="v1" 
+    onChange={(e)=>{console.log(">>>e",e,e.target.value)}}>
+    {options}
+  </select>
+  }
+
 
 ReactDOM.render(
-  <p>temp</p>,
+  <Select />,
   document.getElementById('root'),
 );
 
 
-const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
+// const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
 
 // const doenetMl = `
 //   <p> this is a test string 
@@ -99,13 +116,13 @@ const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <t
 //   <test passed="true" />`
 
 
-let t = parse(doenetMl);
-console.log(t);
-// console.log(t.node.getChildren());
-console.log(showCursor(t));
+// let t = parse(doenetMl);
+// console.log(t);
+// // console.log(t.node.getChildren());
+// console.log(showCursor(t));
 
-let o = parseAndCompile(doenetMl);
-console.log(o)
+// let o = parseAndCompile(doenetMl);
+// console.log(o)
 
 // while(t.next()){
 //   console.log(">>>node type",t.type)

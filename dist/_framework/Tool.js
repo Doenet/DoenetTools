@@ -20,7 +20,7 @@ const ToolContainer = styled(animated.div)`
   gap: 5px;
   box-sizing: border-box;
 `;
-const LoadingFiller = styled.div`
+const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
   border-radius: 4px;
   display: flex;
@@ -143,17 +143,17 @@ export default function Tool({children}) {
   return /* @__PURE__ */ React.createElement(ToolContainer, {
     $isOverlay: stackId > 0
   }, /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement(LoadingFiller, null, "loading...")
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
   }, panels.navPanel), /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement(LoadingFiller, null, "loading...")
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
   }, panels.headerPanel), /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement(LoadingFiller, null, "loading...")
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
   }, /* @__PURE__ */ React.createElement(ContentPanel, {
     main: panels.mainPanel,
     support: panels.supportPanel
   })), /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement(LoadingFiller, null, "loading...")
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
   }, panels.menuPanel), /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement(LoadingFiller, null, "loading...")
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
   }, panels.footerPanel));
 }

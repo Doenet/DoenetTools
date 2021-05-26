@@ -22,7 +22,7 @@ if ($userId == ""){
 }
 
 if ($success){
-  //Gather matching drive ids
+  //Gather matching drive ids for author
   
   $sql = "
   SELECT
@@ -30,7 +30,7 @@ if ($success){
   d.label AS label,
   d.driveType AS driveType,
   d.isShared AS isShared,
-  d.courseId AS courseId,
+  d.isPublic AS isPublic,
   d.image AS image,
   d.color AS color
   FROM drive AS d
@@ -48,7 +48,7 @@ if ($success){
       "type"=>$row['driveType'],
       "subType"=>"Administrator",
       "isShared"=>$row['isShared'],
-      "courseId"=>$row['courseId'],
+      "isPublic"=>$row['isPublic'],
       "image"=>$row['image'],
       "color"=>$row['color'],
 
@@ -62,13 +62,13 @@ if ($success){
   d.label AS label,
   d.driveType AS driveType,
   d.isShared AS isShared,
-  d.courseId AS courseId,
+  d.isPublic AS isPublic,
   d.image AS image,
   d.color AS color
-  FROM course_enrollment AS ce
+  FROM enrollment AS e
   LEFT JOIN drive AS d
-  ON d.courseId = ce.courseId
-  WHERE ce.userId='$userId'
+  ON d.driveId = e.driveId
+  WHERE e.userId='$userId'
   AND d.isDeleted = '0'
   ";
 
@@ -80,7 +80,7 @@ if ($success){
       "type"=>$row['driveType'],
       "subType"=>"Student",
       "isShared"=>$row['isShared'],
-      "courseId"=>$row['courseId'],
+      "isPublic"=>$row['isPublic'],
       "image"=>$row['image'],
       "color"=>$row['color'],
 

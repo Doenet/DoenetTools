@@ -1,5 +1,5 @@
-import { r as react } from './common/index-678ccbe9.js';
-import './common/_commonjsHelpers-4f955397.js';
+import { r as react } from './common/index-f66788ca.js';
+import './common/_commonjsHelpers-f5d70792.js';
 
 // vector add
 function addV(v1, v2) {
@@ -736,6 +736,22 @@ function getInternalDragOptions(config) {
   }
 
   return resolveWith(config, InternalDragOptionsNormalizers);
+}
+function _buildDragConfig(_ref3) {
+  var domTarget = _ref3.domTarget,
+      eventOptions = _ref3.eventOptions,
+      window = _ref3.window,
+      enabled = _ref3.enabled,
+      rest = _objectWithoutPropertiesLoose(_ref3, ["domTarget", "eventOptions", "window", "enabled"]);
+
+  var opts = getInternalGenericOptions({
+    domTarget: domTarget,
+    eventOptions: eventOptions,
+    window: window,
+    enabled: enabled
+  });
+  opts.drag = getInternalDragOptions(rest);
+  return opts;
 }
 function buildComplexConfig(config, actions) {
   if (config === void 0) {
@@ -1850,6 +1866,151 @@ var DragRecognizer = /*#__PURE__*/function (_CoordinatesRecognize) {
 }(CoordinatesRecognizer);
 
 /**
+ * Inlined from https://github.com/alexreardon/memoize-one
+ */
+function memoizeOne(resultFn, isEqual) {
+  var lastThis;
+  var lastArgs = [];
+  var lastResult;
+  var calledOnce = false;
+
+  function memoized() {
+    for (var _len = arguments.length, newArgs = new Array(_len), _key = 0; _key < _len; _key++) {
+      newArgs[_key] = arguments[_key];
+    }
+
+    if (calledOnce && lastThis === this && isEqual(newArgs, lastArgs)) {
+      return lastResult;
+    }
+
+    lastResult = resultFn.apply(this, newArgs);
+    calledOnce = true;
+    lastThis = this;
+    lastArgs = newArgs;
+    return lastResult;
+  }
+
+  return memoized;
+}
+
+/**
+ * Taken from https://github.com/FormidableLabs/react-fast-compare
+ *
+ * Dropped comments and ArrayBuffer handling
+ */
+function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+    var length, i, keys;
+
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length !== b.length) return false;
+
+      for (i = length; i-- !== 0;) {
+        if (!equal(a[i], b[i])) return false;
+      }
+
+      return true;
+    }
+
+    var it;
+
+    if (typeof Map === 'function' && a instanceof Map && b instanceof Map) {
+      if (a.size !== b.size) return false;
+      it = a.entries();
+
+      while (!(i = it.next()).done) {
+        if (!b.has(i.value[0])) return false;
+      }
+
+      it = a.entries();
+
+      while (!(i = it.next()).done) {
+        if (!equal(i.value[1], b.get(i.value[0]))) return false;
+      }
+
+      return true;
+    }
+
+    if (typeof Set === 'function' && a instanceof Set && b instanceof Set) {
+      if (a.size !== b.size) return false;
+      it = a.entries();
+
+      while (!(i = it.next()).done) {
+        if (!b.has(i.value[0])) return false;
+      }
+
+      return true;
+    }
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;) {
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+    }
+
+    if (typeof Element !== 'undefined' && a instanceof Element) return false;
+
+    for (i = length; i-- !== 0;) {
+      if (keys[i] === '_owner' && a.$$typeof) continue;
+      if (!equal(a[keys[i]], b[keys[i]])) return false;
+    }
+
+    return true;
+  } // true if both NaN, false otherwise — NaN !== NaN → true
+  // eslint-disable-next-line no-self-compare
+
+
+  return a !== a && b !== b;
+}
+
+function isEqual(a, b) {
+  try {
+    return equal(a, b);
+  } catch (error) {
+    if ((error.message || '').match(/stack|recursion/i)) {
+      // eslint-disable-next-line no-console
+      console.warn('react-fast-compare cannot handle circular refs');
+      return false;
+    }
+
+    throw error;
+  }
+}
+
+/**
+ * Drag hook.
+ *
+ * @param handler - the function fired every time the drag gesture updates
+ * @param [config={}] - the config object including generic options and drag options
+ */
+
+function useDrag(handler, config) {
+  if (config === void 0) {
+    config = {};
+  }
+
+  RecognizersMap.set('drag', DragRecognizer);
+  var buildDragConfig = react.useRef();
+
+  if (!buildDragConfig.current) {
+    buildDragConfig.current = memoizeOne(_buildDragConfig, isEqual);
+  }
+
+  return useRecognizers({
+    drag: handler
+  }, buildDragConfig.current(config));
+}
+
+/**
  * @private
  * Abstract class for distance/angle-based gesture recongizers
  */
@@ -2500,4 +2661,4 @@ function includeStartEndHandlers(handlers, handlerKey) {
   return fn;
 }
 
-export { useGesture };
+export { useDrag, useGesture };

@@ -13,7 +13,6 @@ import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
 import Hex from 'crypto-js/enc-hex'
-import { ancestorsIncludingComposites } from './utils/descendants';
 
 // string to componentClass: this.allComponentClasses["string"]
 // componentClass to string: componentClass.componentType
@@ -128,7 +127,8 @@ export default class Core {
     // console.time('serialize doenetML');
 
     this.parameterStack = new ParameterStack(parameters);
-    this.setUpRng();
+
+    this.parameterStack.parameters.rngClass = prng_alea;
 
     let contentId = Hex.stringify(sha256(doenetML));
     this.expandDoenetMLsToFullSerializedComponents({
@@ -209,7 +209,12 @@ export default class Core {
 
     // console.timeEnd('serialize doenetML');
 
-    this.setUpVariants(serializedComponents);
+    if (this.requestedVariant !== undefined) {
+      this.parameterStack.parameters.variant = this.requestedVariant;
+    }
+    serializedComponents[0].variants = {
+      desiredVariant: this.parameterStack.parameters.variant
+    }
 
     //Make these variables available for cypress
     window.state = {
@@ -250,44 +255,6 @@ export default class Core {
 
   }
 
-  setUpVariants(serializedComponents) {
-
-    let variantComponents = serializeFunctions.gatherVariantComponents({
-      serializedComponents,
-      componentTypesCreatingVariants: this.componentTypesCreatingVariants,
-      allComponentClasses: this.allComponentClasses,
-    });
-
-    if (this.requestedVariant !== undefined) {
-      this.parameterStack.parameters.variant = this.requestedVariant;
-    }
-
-    variantComponents[0].variants.desiredVariant = this.parameterStack.parameters.variant;
-
-  }
-
-  setUpRng() {
-
-    // from https://stackoverflow.com/a/7616484
-    this.parameterStack.parameters.hashStringToInteger = function (s) {
-      var hash = 0, i, chr;
-      if (s.length === 0)
-        return hash;
-      for (i = 0; i < s.length; i++) {
-        chr = s.charCodeAt(i);
-        hash = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-      }
-      return hash;
-    };
-    if (this.parameterStack.parameters.seed === undefined) {
-      // this.parameterStack.parameters.seed = '47';
-      this.parameterStack.parameters.seed = this.parameterStack.parameters.hashStringToInteger(Date.now().toString());
-    }
-    this.parameterStack.parameters.selectRng = new prng_alea(this.parameterStack.parameters.seed);
-    this.parameterStack.parameters.rngClass = prng_alea;
-  }
-
   expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {
 
     let arrayOfSerializedComponents = [];
@@ -309,6 +276,10 @@ export default class Core {
       serializeFunctions.decodeXMLEntities(serializedComponents);
 
       serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
+
+      // remove blank string children again, as they could be created above
+      // e.g., from macros
+      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
 
       arrayOfSerializedComponents.push(serializedComponents);
 
@@ -1098,15 +1069,24 @@ export default class Core {
 
       if (setUpVariant) {
 
+        let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
+          serializedComponents: serializedChildren,
+          componentInfoObjects: this.componentInfoObjects,
+        });
+
         if (variantControlInd !== undefined) {
-          // if have desired variant value or index
+          // if have desired variant name or index
           // add that information to variantControl child
           let desiredVariant = serializedComponent.variants.desiredVariant;
           if (desiredVariant !== undefined) {
             if (desiredVariant.index !== undefined) {
-              variantControlChild.variants.desiredVariantNumber = desiredVariant.index;
-            } else if (desiredVariant.value !== undefined) {
-              variantControlChild.variants.desiredVariant = desiredVariant.value;
+              variantControlChild.variants = {
+                desiredVariantIndex: desiredVariant.index
+              }
+            } else if (desiredVariant.name !== undefined) {
+              variantControlChild.variants = {
+                desiredVariantName: desiredVariant.name
+              }
             }
           }
 
@@ -1132,6 +1112,7 @@ export default class Core {
           sharedParameters,
           definingChildrenSoFar: definingChildren,
           allComponentClasses: this.allComponentClasses,
+          descendantVariantComponents
         });
 
         let indicesToCreate = [...serializedChildren.keys()].filter(v => v !== variantControlInd);
@@ -2712,7 +2693,7 @@ export default class Core {
                 success: true,
                 instructions: [{
                   setDependency: "targetVariable",
-                  desiredValue: desiredStateVariableValues[attribute],
+                  desiredValue: desiredStateVariableValues[varName],
                 }]
               };
             } else if (usedDefault.ancestorProp) {
@@ -2768,7 +2749,7 @@ export default class Core {
               && !usedDefault.targetVariable) {
               // if don't have attribute component 
               // and target has attribute, use that value
-              return { newValues: { [attribute]: dependencyValues.targetVariable } };
+              return { newValues: { [varName]: dependencyValues.targetVariable } };
             } else {
               return {
                 useEssentialOrDefaultValue: {
@@ -2809,7 +2790,7 @@ export default class Core {
                 success: true,
                 instructions: [{
                   setDependency: "targetVariable",
-                  desiredValue: desiredStateVariableValues[attribute],
+                  desiredValue: desiredStateVariableValues[varName],
                 }]
               };
             } else
@@ -6566,7 +6547,7 @@ export default class Core {
           [component.componentName]: { newComponents, parent: change.parent }
         }
 
-        if (unproxiedComponent.shadowedBy) {
+        if (unproxiedComponent.shadowedBy && currentShadowedBy[unproxiedComponent.componentName].length > 0) {
           let newReplacementsForShadows = this.createShadowedReplacements({
             replacementsToShadow: newComponents,
             componentToShadow: unproxiedComponent,
@@ -6762,6 +6743,9 @@ export default class Core {
 
     if (composite.shadowedBy) {
       for (let shadowingComposite of composite.shadowedBy) {
+        if (shadowingComposite.shadows.propVariable) {
+          continue;
+        }
 
         let shadowingComponentsToDelete;
 
@@ -6771,6 +6755,9 @@ export default class Core {
             let shadowingCompToDelete;
             if (compToDelete.shadowedBy) {
               for (let cShadow of compToDelete.shadowedBy) {
+                if (cShadow.shadows.propVariable) {
+                  continue;
+                }
                 if (cShadow.shadows.compositeName === shadowingComposite.shadows.compositeName) {
                   shadowingCompToDelete = cShadow;
                   break;
@@ -6907,6 +6894,9 @@ export default class Core {
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
+        if (shadowingComponent.shadows.propVariable) {
+          continue;
+        }
         this.processChildChangesAndRecurseToShadows(shadowingComponent)
       }
     }
@@ -6941,6 +6931,9 @@ export default class Core {
     let newComponentsForShadows = {};
 
     for (let shadowingComponent of componentToShadow.shadowedBy) {
+      if (shadowingComponent.shadows.propVariable) {
+        continue;
+      }
 
       if (this.updateInfo.compositesBeingExpanded.includes(shadowingComponent.componentName)) {
         throw Error(`circular dependence involving ${shadowingComponent.componentName}`)
@@ -7030,6 +7023,9 @@ export default class Core {
         if (parentToShadow) {
           if (parentToShadow.shadowedBy) {
             for (let pShadow of parentToShadow.shadowedBy) {
+              if (pShadow.shadows.propVariable) {
+                continue;
+              }
               if (pShadow.shadows.compositeName === shadowingComponent.shadows.compositeName) {
                 shadowingParent = pShadow;
                 break;
@@ -7046,7 +7042,7 @@ export default class Core {
           parent: shadowingParent
         };
 
-        if (shadowingComponent.shadowedBy) {
+        if (shadowingComponent.shadowedBy && currentShadowedBy[shadowingComponent.componentName].length > 0) {
           let recursionComponents = this.createShadowedReplacements({
             replacementsToShadow: newComponents,
             componentToShadow: shadowingComponent,
@@ -7130,6 +7126,9 @@ export default class Core {
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
+        if(shadowingComponent.shadows.propVariable) {
+          continue;
+        }
         let additionalcompositesWithAdjustedReplacements =
           this.adjustReplacementsToWithhold({
             component: shadowingComponent, change, componentChanges,
@@ -8532,9 +8531,11 @@ function calculateAllComponentsShadowing(component) {
   let allShadowing = [];
   if (component.shadowedBy) {
     for (let comp2 of component.shadowedBy) {
-      allShadowing.push(comp2.componentName);
-      let additionalShadowing = calculateAllComponentsShadowing(comp2);
-      allShadowing.push(...additionalShadowing);
+      if (!comp2.shadows.propVariable) {
+        allShadowing.push(comp2.componentName);
+        let additionalShadowing = calculateAllComponentsShadowing(comp2);
+        allShadowing.push(...additionalShadowing);
+      }
     }
   }
   if (component.replacementOf) {

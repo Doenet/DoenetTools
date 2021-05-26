@@ -39,14 +39,14 @@ export default function Enrollment(params){
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
 
 
-  const [courseId,setCourseId] = useState("");
+  const [driveId,setDriveId] = useState("");
   const [enrollmentTableData, setEnrollmentTableData] = useState([]);
 
   //Load Enrollment Data When CourseId changes
   useEffect(()=>{
-    if (courseId !== ""){
+    if (driveId !== ""){
 
-      const payload = { params: {courseId} }
+      const payload = { params: {driveId} }
       axios.get('/api/getEnrollment.php',payload)
         .then(resp=>{
         //TODO: Make sure we don't overwrite existing data
@@ -56,13 +56,13 @@ export default function Enrollment(params){
         })
         .catch(error=>{console.warn(error)});
     }
-  },[courseId])
+  },[driveId])
   if (!params.selectedCourse){
     return ("")
     (< > <p>Loading...</p> </>)
   }else{
-    if (courseId === ""){
-      setCourseId(params.selectedCourse.courseId);
+    if (driveId === ""){
+      setDriveId(params.selectedCourse.driveId);
     }
   }
 
@@ -204,7 +204,7 @@ export default function Enrollment(params){
         <>
           <Button value="Merge" key='merge' callback={() => {
             const payload = {
-              courseId,
+              driveId,
               mergeHeads,
               mergeId,
               mergeFirstName,

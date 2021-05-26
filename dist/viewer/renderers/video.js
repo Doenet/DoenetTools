@@ -1,6 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import DoenetRenderer from "./DoenetRenderer.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
+import {sizeToCSS} from "./utils/css.js";
 export default class Video extends DoenetRenderer {
   constructor(props) {
     super(props);
@@ -13,8 +14,8 @@ export default class Video extends DoenetRenderer {
       let cName = cssesc(this.componentName);
       this.player = new window.YT.Player(cName, {
         videoId: this.doenetSvData.youtube,
-        width: this.doenetSvData.width,
-        height: this.doenetSvData.height,
+        width: sizeToCSS(this.doenetSvData.width),
+        height: sizeToCSS(this.doenetSvData.height),
         playerVars: {
           autoplay: 0,
           controls: 1,
@@ -61,8 +62,8 @@ export default class Video extends DoenetRenderer {
           id: this.componentName,
           style: {objectFit: "fill"},
           controls: true,
-          width: this.doenetSvData.width,
-          height: this.doenetSvData.height
+          width: sizeToCSS(this.doenetSvData.width),
+          height: sizeToCSS(this.doenetSvData.height)
         }, /* @__PURE__ */ React.createElement("source", {
           src: this.doenetSvData.source,
           type

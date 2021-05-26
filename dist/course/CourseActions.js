@@ -4,106 +4,202 @@ import axios from "../_snowpack/pkg/axios.js";
 import {useRecoilCallback} from "../_snowpack/pkg/recoil.js";
 import {assignmentDictionary} from "./Course.js";
 import Toast, {useToast} from "../_framework/Toast.js";
+import {
+  itemHistoryAtom
+} from "../_sharedRecoil/content.js";
+const formatDate = (dt) => {
+  const formattedDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
+  return formattedDate;
+};
+const formatFutureDate = (dt) => {
+  const formattedFutureDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${(dt.getDate() + 7).toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
+  return formattedFutureDate;
+};
 export const useAssignment = () => {
   const [addToast, ToastType] = useToast();
   const addContentAssignment = useRecoilCallback(({snapshot, set}) => async (props) => {
-    let {driveIdcourseIditemIdparentFolderId, assignmentId, contentId, branchId} = props;
+    let {driveIditemIdbranchIdparentFolderId, contentId, versionId, branchId: branchId2} = props;
+    const dt = new Date();
+    const creationDate = formatDate(dt);
+    const futureDueDate = formatFutureDate(dt);
     let newAssignmentObj = {
-      assignmentId,
       assignment_title: "Untitled Assignment",
-      assignedDate: "",
-      attemptAggregation: "",
-      dueDate: "",
-      gradeCategory: "",
+      assignedDate: creationDate,
+      attemptAggregation: "e",
+      dueDate: creationDate,
+      gradeCategory: "l",
       individualize: "0",
-      isAssignment: "1",
+      isAssigned: "1",
       isPublished: "0",
-      itemId: driveIdcourseIditemIdparentFolderId.itemId,
-      multipleAttempts: "",
-      numberOfAttemptsAllowed: "",
+      itemId: driveIditemIdbranchIdparentFolderId.itemId,
+      versionId,
+      contentId,
+      multipleAttempts: "0",
+      numberOfAttemptsAllowed: "2",
       proctorMakesAvailable: "0",
       showCorrectness: "1",
       showFeedback: "1",
       showHints: "1",
       showSolution: "1",
-      timeLimit: "",
-      totalPointsOrPercent: "",
+      timeLimit: "10:10",
+      totalPointsOrPercent: "00.00",
+      assignment_isPublished: "0",
+      subType: "Administrator"
+    };
+    let newchangedAssignmentObj = {
+      assignment_title: "Untitled Assignment",
+      assignedDate: creationDate,
+      attemptAggregation: "e",
+      dueDate: futureDueDate,
+      gradeCategory: "l",
+      individualize: false,
+      isAssigned: "1",
+      isPublished: "0",
+      contentId,
+      itemId: driveIditemIdbranchIdparentFolderId.itemId,
+      versionId,
+      multipleAttempts: false,
+      numberOfAttemptsAllowed: "2",
+      proctorMakesAvailable: false,
+      showCorrectness: true,
+      showFeedback: true,
+      showHints: true,
+      showSolution: true,
+      timeLimit: "10:10",
+      totalPointsOrPercent: "00.00",
       assignment_isPublished: "0",
       subType: "Administrator"
     };
     let payload = {
-      assignmentId,
-      itemId: driveIdcourseIditemIdparentFolderId.itemId,
-      courseId: driveIdcourseIditemIdparentFolderId.courseId,
-      branchId,
+      ...newAssignmentObj,
+      driveId: driveIditemIdbranchIdparentFolderId.driveId,
+      itemId: driveIditemIdbranchIdparentFolderId.itemId,
+      branchId: branchId2,
       contentId
     };
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), newAssignmentObj);
-    axios.post(`/api/makeNewAssignment.php`, payload).then((response) => {
-      console.log(response.data);
+    set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), newchangedAssignmentObj);
+    let result = await axios.post(`/api/makeNewAssignment.php`, payload).catch((e) => {
+      return {data: {message: e, success: false}};
     });
-    return newAssignmentObj;
+    try {
+      if (result.data.success) {
+        return result.data;
+      } else {
+        return {message: result.data.message, success: false};
+      }
+    } catch (e) {
+      return {message: e, success: false};
+    }
+  });
+  const updateVersionHistory = useRecoilCallback(({snapshot, set}) => async (branchId2, versionId) => {
+    set(itemHistoryAtom(branchId2), (was) => {
+      let newHistory = {...was};
+      newHistory.named = [...was.named];
+      let newVersion;
+      for (const [i, version] of newHistory.named.entries()) {
+        if (versionId === version.versionId) {
+          newVersion = {...version};
+          newVersion.isAssigned = 1;
+          newHistory.named.splice(i, 1, newVersion);
+        }
+      }
+      return newHistory;
+    });
+  });
+  const updatePrevVersionHistory = useRecoilCallback(({snapshot, set}) => async (branchId2, versionId) => {
+    set(itemHistoryAtom(branchId2), (was) => {
+      let newHistory = {...was};
+      newHistory.named = [...was.named];
+      let newVersion;
+      for (const [i, version] of newHistory.named.entries()) {
+        if (versionId === version.versionId) {
+          newVersion = {...version};
+          newVersion.isAssigned = 0;
+          newHistory.named.splice(i, 1, newVersion);
+        }
+      }
+      const payload = {
+        versionId
+      };
+      const result = axios.post("/api/switchVersionUpdate.php", payload);
+      result.then((resp) => {
+        if (resp.data.success) {
+          return resp.data;
+        }
+      });
+      return newHistory;
+    });
   });
   const changeSettings = useRecoilCallback(({snapshot, set}) => async (props) => {
-    let {driveIdcourseIditemIdparentFolderId, ...value} = props;
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), (old) => {
+    let {driveIditemIdbranchIdparentFolderId, ...value} = props;
+    set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), (old) => {
       return {...old, ...value};
     });
   });
   const saveSettings = useRecoilCallback(({snapshot, set}) => async (props) => {
-    let {driveIdcourseIditemIdparentFolderId, ...value} = props;
-    const saveInfo = await snapshot.getPromise(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), (old) => {
+    let {driveIditemIdbranchIdparentFolderId, ...value} = props;
+    const saveInfo = await snapshot.getPromise(assignmentDictionary(driveIditemIdbranchIdparentFolderId));
+    set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), (old) => {
       return {...old, ...value};
     });
     let saveAssignmentNew = {...saveInfo, ...value};
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), saveAssignmentNew);
     const payload = {
-      ...saveInfo,
+      ...saveAssignmentNew,
       assignmentId: saveAssignmentNew.assignmentId,
-      assignment_isPublished: "0"
+      assignment_isPublished: "0",
+      branchId
     };
-    axios.post("/api/saveAssignmentToDraft.php", payload).then((resp) => {
-      console.log(resp.data);
+    const result = axios.post("/api/saveAssignmentToDraft.php", payload);
+    result.then((resp) => {
+      if (resp.data.success) {
+        return resp.data;
+      }
     });
+    return result;
   });
   const publishContentAssignment = useRecoilCallback(({snapshot, set}) => async (props) => {
-    let {driveIdcourseIditemIdparentFolderId, ...value} = props;
-    const publishAssignment = await snapshot.getPromise(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), publishAssignment);
+    let {driveIditemIdbranchIdparentFolderId, ...value} = props;
+    const publishAssignment = await snapshot.getPromise(assignmentDictionary(driveIditemIdbranchIdparentFolderId));
+    set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), publishAssignment);
     const payloadPublish = {
       ...value,
       assignmentId: props.assignmentId,
       assignment_isPublished: "1",
       branchId: props.branchId,
-      courseId: props.courseId
+      contentId: props.contentId
     };
-    axios.post("/api/publishAssignment.php", payloadPublish).then((resp) => {
-      console.log(resp.data);
+    const result = axios.post("/api/publishAssignment.php", payloadPublish);
+    result.then((resp) => {
+      if (resp.data.success) {
+        return resp.data;
+      }
     });
+    return result;
   });
   const updateexistingAssignment = useRecoilCallback(({snapshot, set}) => async (props) => {
-    let {driveIdcourseIditemIdparentFolderId, ...value} = props;
+    let {driveIditemIdbranchIdparentFolderId, ...value} = props;
     let editAssignment = get(assignmentDictionary);
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), editAssignment);
+    set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), editAssignment);
   });
   const assignmentToContent = useRecoilCallback(({snapshot, set}) => async (props) => {
-    let {driveIdcourseIditemIdparentFolderId, ...value} = props;
-    const handlebackContent = await snapshot.getPromise(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
-    const payloadContent = {...handlebackContent, isAssignment: 0};
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), payloadContent);
+    let {driveIditemIdbranchIdparentFolderId, ...value} = props;
+    const handlebackContent = await snapshot.getPromise(assignmentDictionary(driveIditemIdbranchIdparentFolderId));
+    const payloadContent = {...handlebackContent, isAssigned: 0};
+    set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), payloadContent);
   });
   const loadAvailableAssignment = useRecoilCallback(({snapshot, set}) => async (props) => {
-    let {driveIdcourseIditemIdparentFolderId, ...value} = props;
-    const handlebackAssignment = await snapshot.getPromise(assignmentDictionary(driveIdcourseIditemIdparentFolderId));
-    const payloadAssignment = {...handlebackAssignment, isAssignment: 1};
-    set(assignmentDictionary(driveIdcourseIditemIdparentFolderId), payloadAssignment);
+    let {driveIditemIdbranchIdparentFolderId, ...value} = props;
+    const handlebackAssignment = await snapshot.getPromise(assignmentDictionary(driveIditemIdbranchIdparentFolderId));
+    const payloadAssignment = {...handlebackAssignment, isAssigned: 1};
+    set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), payloadAssignment);
   });
   const onAssignmentError = ({errorMessage = null}) => {
     addToast(`${errorMessage}`, ToastType.ERROR);
   };
   return {
     addContentAssignment,
+    updateVersionHistory,
+    updatePrevVersionHistory,
     changeSettings,
     saveSettings,
     publishContentAssignment,

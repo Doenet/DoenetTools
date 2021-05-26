@@ -11,7 +11,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$courseId = mysqli_real_escape_string($conn,$_POST["courseId"]);
+$driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
 $mergeHeads = array_map(function($branchId) use($conn) {
 return mysqli_real_escape_string($conn, $branchId);
 }, $_POST['mergeHeads']);
@@ -42,8 +42,8 @@ $userIds = array_map(function($branchId) use($conn) {
 $sql = "
 SELECT email,
 empId
-FROM course_enrollment
-WHERE courseId = '$courseId'
+FROM enrollment
+WHERE driveId = '$driveId'
 ";
 $result = $conn->query($sql);
 $db_emails = array();
@@ -80,18 +80,18 @@ if (($id != "0" && in_array($id,$db_empids,FALSE)) || in_array($email,$db_emails
 	if ($section != ""){ $update_columns = $update_columns . "section = '$section',";}
 	$update_columns = rtrim($update_columns, ", "); //REMOVE trailing comma
 	if ($email == ""){
-		$sql = "UPDATE course_enrollment
+		$sql = "UPDATE enrollment
 		SET
 		$update_columns
 		WHERE
-		courseId = '$courseId'
+		driveId= '$driveId'
 		AND empId = '$id'";
 	}else{
-		$sql = "UPDATE course_enrollment
+		$sql = "UPDATE enrollment
 		SET
 		$update_columns
 		WHERE
-		courseId = '$courseId'
+		driveId = '$driveId'
 		AND email = '$email'";
 	}
 
@@ -102,10 +102,30 @@ if (($id != "0" && in_array($id,$db_empids,FALSE)) || in_array($email,$db_emails
 	$userId = $userIds[$i];
 
 	$sql = "
-	INSERT INTO course_enrollment
-	(courseId,userId,firstName,lastName,email,empId,dateEnrolled,section)
+	INSERT INTO enrollment
+	(driveId,userId,firstName,lastName,email,empId,dateEnrolled,section)
 	VALUES
-	('$courseId','$userId','$firstName','$lastName','$email','$id',NOW(),'$section')
+	('$driveId','$userId','$firstName','$lastName','$email','$id',NOW(),'$section')
+	";
+	$result = $conn->query($sql);
+
+	$sql = "
+	INSERT INTO drive_user
+	(userId,
+	driveId,
+	canViewDrive, 
+	canDeleteDrive, 
+	canShareDrive,
+	canAddItemsAndFolders,
+	canDeleteItemsAndFolders,
+	canMoveItemsAndFolders,
+	canRenameItemsAndFolders,
+	canPublishItemsAndFolders,
+	canViewUnreleasedItemsAndFolders,
+	canViewUnassignedItemsAndFolders,
+	canChangeAllDriveSettings)
+	VALUES
+	('$userId','$driveId','1','0','0','0','0','0','0','0','0','0','0')
 	";
 	$result = $conn->query($sql);
 
@@ -122,9 +142,9 @@ email,
 empId,
 dateEnrolled,
 section
-FROM course_enrollment
+FROM enrollment
 WHERE withdrew = '0'
-AND courseId = '$courseId'
+AND driveId = '$driveId'
 ORDER BY firstName
 ";
 $result = $conn->query($sql);

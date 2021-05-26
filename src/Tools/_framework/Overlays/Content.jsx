@@ -2,23 +2,35 @@
  * External dependencies
  */
 import React from 'react';
-import { atom, useRecoilValue } from 'recoil';
+import { atom, useRecoilValue,useRecoilValueLoadable } from 'recoil';
 
 /**
  * Internal dependencies
  */
 import Tool from '../Tool';
 import DoenetViewer from '../../../Viewer/DoenetViewer';
-
+import { itemHistoryAtom} from '../../../_sharedRecoil/content';
 const viewerContentDoenetMLAtom = atom({
   key: 'viewerContentDoenetMLAtom',
   default: { updateNumber: 0, doenetML: '' },
 });
 
-export default function Content({ branchId = '', contentId = '', title }) {
+export default function Content({ branchId = '', title }) {
   function DoenetViewerPanel() {
-    const viewerDoenetML = useRecoilValue(viewerContentDoenetMLAtom);
 
+    const viewerDoenetML = useRecoilValue(viewerContentDoenetMLAtom);
+    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(branchId))
+    if (versionHistory.state === "loading"){ return null;}
+    if (versionHistory.state === "hasError"){ 
+      console.error(versionHistory.contents)
+      return null;}
+      let contentId = '';
+      for (let version of versionHistory.contents.named){
+        if(version?.isAssigned === '1'){
+          contentId = version.contentId
+        }            
+
+      }
     let attemptNumber = 1;
     let requestedVariant = { index: attemptNumber };
     let assignmentId = 'myassignmentid';
@@ -28,7 +40,7 @@ export default function Content({ branchId = '', contentId = '', title }) {
       <DoenetViewer
         key={'doenetviewer' + viewerDoenetML?.updateNumber}
         doenetML={viewerDoenetML?.doenetML}
-        contentId={contentId ? contentId : branchId}
+        contentId={contentId}
         flags={{
           showCorrectness: true,
           readOnly: false,
@@ -37,7 +49,7 @@ export default function Content({ branchId = '', contentId = '', title }) {
           showHints: true,
         }}
         attemptNumber={attemptNumber}
-        assignmentId={assignmentId}
+        // assignmentIsd={assignmentId}
         ignoreDatabase={true}
         requestedVariant={requestedVariant}
       />

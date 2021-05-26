@@ -197,7 +197,7 @@ export default class Choiceinput extends Input {
     }
 
 
-    stateVariableDefinitions.selectedVariantInfo = {
+    stateVariableDefinitions.generatedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
       returnDependencies: ({ componentInfoObjects }) => ({
         choiceOrder: {
@@ -213,7 +213,7 @@ export default class Choiceinput extends Input {
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
-            "selectedVariantInfo",
+            "generatedVariantInfo",
           ],
           useReplacementsForComposites: true,
           recurseToMatchedChildren: false,
@@ -223,32 +223,33 @@ export default class Choiceinput extends Input {
           definingChildrenFirst: true,
         }
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
         if (dependencyValues.fixedOrder) {
           return {
             newValues: {
               isVariantComponent: false,
-              selectedVariantInfo: null
+              generatedVariantInfo: null
             }
           }
         }
 
-        let selectedVariantInfo = {
-          indices: dependencyValues.choiceOrder
+        let generatedVariantInfo = {
+          indices: dependencyValues.choiceOrder,
+          meta: { createdBy: componentName }
         };
 
-        let subvariants = selectedVariantInfo.subvariants = [];
+        let subvariants = generatedVariantInfo.subvariants = [];
 
         for (let descendant of dependencyValues.variantDescendants) {
           if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.selectedVariantInfo)
-          } else if (descendant.stateValues.selectedVariantInfo) {
-            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
 
         }
-        return { newValues: { selectedVariantInfo, isVariantComponent: true } }
+        return { newValues: { generatedVariantInfo, isVariantComponent: true } }
 
       }
     }

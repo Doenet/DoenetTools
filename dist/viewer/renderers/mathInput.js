@@ -13,15 +13,14 @@ export default class MathInput extends DoenetRenderer {
     super(props);
     this.state = {latex: ""};
     this.handlePressEnter = this.handlePressEnter.bind(this);
-    this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.mathExpression = this.doenetSvData.value;
-    this.latexValue = stripLatex(this.doenetSvData.value.toLatex());
-    this.valueToRevertTo = this.mathExpression;
-    this.latexValueToRevertTo = this.latexValue;
-    if (this.latexValue === "\uFF3F") {
+    this.mathExpression = this.doenetSvData.valueForDisplay;
+    this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+    this.valueToRevertTo = this.doenetSvData.value;
+    this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
+    if (this.latexValue === "＿") {
       this.latexValue = "";
     }
   }
@@ -31,17 +30,21 @@ export default class MathInput extends DoenetRenderer {
   calculateMathExpressionFromLatex(text) {
     let expression;
     text = substituteUnicodeInLatexString(text);
+    let fromLatex = getCustomFromLatex({
+      functionSymbols: this.doenetSvData.functionSymbols
+    });
     try {
-      expression = me.fromLatex(text);
+      expression = fromLatex(text);
     } catch (e) {
-      expression = me.fromAst("\uFF3F");
+      expression = me.fromAst("＿");
     }
     return expression;
   }
   updateImmediateValueFromLatex(text) {
+    let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
     this.latexValue = text;
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
-    if (!newMathExpression.equalsViaSyntax(this.mathExpression)) {
+    if (!newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
         mathExpression: newMathExpression
@@ -62,7 +65,7 @@ export default class MathInput extends DoenetRenderer {
   }
   handlePressEnter(e) {
     this.valueToRevertTo = this.doenetSvData.immediateValue;
-    this.latexValueToRevertTo = this.latexValue;
+    this.valueForDisplayToRevertTo = this.mathExpression;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
     }
@@ -71,17 +74,6 @@ export default class MathInput extends DoenetRenderer {
     }
     this.forceUpdate();
   }
-  handleKeyDown(e) {
-    if (e.key === "Escape") {
-      if (!this.mathExpression.equalsViaSyntax(this.valueToRevertTo)) {
-        this.mathExpression = this.valueToRevertTo;
-        this.actions.updateImmediateValue({
-          mathExpression: this.valueToRevertTo
-        });
-        this.forceUpdate();
-      }
-    }
-  }
   handleFocus(e) {
     this.focused = true;
     this.forceUpdate();
@@ -89,7 +81,7 @@ export default class MathInput extends DoenetRenderer {
   handleBlur(e) {
     this.focused = false;
     this.valueToRevertTo = this.doenetSvData.immediateValue;
-    this.latexValueToRevertTo = this.latexValue;
+    this.valueForDisplayToRevertTo = this.mathExpression;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
     }
@@ -108,14 +100,14 @@ export default class MathInput extends DoenetRenderer {
     if (this.focused) {
       surroundingBorderColor = "#82a5ff";
     }
-    if (!this.valueToRevertTo.equalsViaSyntax(this.doenetSvData.value)) {
-      this.mathExpression = this.doenetSvData.value;
+    if (!this.valueForDisplayToRevertTo.equalsViaSyntax(this.doenetSvData.valueForDisplay)) {
+      this.mathExpression = this.doenetSvData.valueForDisplay;
       this.latexValue = stripLatex(this.mathExpression.toLatex());
-      if (this.latexValue === "\uFF3F") {
+      if (this.latexValue === "＿") {
         this.latexValue = "";
       }
       this.valueToRevertTo = this.doenetSvData.value;
-      this.latexValueToRevertTo = this.latexValue;
+      this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
     }
     let checkWorkStyle = {
       position: "relative",
@@ -229,51 +221,112 @@ function stripLatex(latex) {
   let s = latex.replaceAll(`\\,`, "");
   return s;
 }
+var appliedFunctionSymbols = [
+  "abs",
+  "exp",
+  "log",
+  "ln",
+  "log10",
+  "sign",
+  "sqrt",
+  "erf",
+  "acos",
+  "acosh",
+  "acot",
+  "acoth",
+  "acsc",
+  "acsch",
+  "asec",
+  "asech",
+  "asin",
+  "asinh",
+  "atan",
+  "atanh",
+  "cos",
+  "cosh",
+  "cot",
+  "coth",
+  "csc",
+  "csch",
+  "sec",
+  "sech",
+  "sin",
+  "sinh",
+  "tan",
+  "tanh",
+  "arcsin",
+  "arccos",
+  "arctan",
+  "arccsc",
+  "arcsec",
+  "arccot",
+  "cosec",
+  "arg",
+  "min",
+  "max",
+  "mean",
+  "median",
+  "floor",
+  "ceil",
+  "round",
+  "sum",
+  "prod",
+  "var",
+  "std",
+  "count",
+  "mod"
+];
+function getCustomFromLatex({functionSymbols}) {
+  return (x) => me.fromAst(new me.converters.latexToAstObj({
+    appliedFunctionSymbols,
+    functionSymbols
+  }).convert(x));
+}
 function substituteUnicodeInLatexString(latexString) {
   let substitutions = [
-    ["\u03B1", "\\alpha "],
-    ["\u03B2", "\\beta "],
-    ["\u03D0", "\\beta "],
-    ["\u0393", "\\Gamma "],
-    ["\u03B3", "\\gamma "],
-    ["\u0394", "\\Delta "],
-    ["\u03B4", "\\delta "],
-    ["\u03B5", "\\epsilon "],
-    ["\u03F5", "\\epsilon "],
-    ["\u03B6", "\\zeta "],
-    ["\u03B7", "\\eta "],
-    ["\u0398", "\\Theta "],
-    ["\u03F4", "\\Theta "],
-    ["\u03B8", "\\theta "],
-    ["\u1DBF", "\\theta "],
-    ["\u03D1", "\\theta "],
-    ["\u03B9", "\\iota "],
-    ["\u03BA", "\\kappa "],
-    ["\u039B", "\\Lambda "],
-    ["\u03BB", "\\lambda "],
-    ["\u03BC", "\\mu "],
-    ["\xB5", "\\mu "],
-    ["\u03BD", "\\nu "],
-    ["\u039E", "\\Xi "],
-    ["\u03BE", "\\xi "],
-    ["\u03A0", "\\Pi "],
-    ["\u03C0", "\\pi "],
-    ["\u03D6", "\\pi "],
-    ["\u03C1", "\\rho "],
-    ["\u03F1", "\\rho "],
-    ["\u03A3", "\\Sigma "],
-    ["\u03C3", "\\sigma "],
-    ["\u03C2", "\\sigma "],
-    ["\u03C4", "\\tau "],
-    ["\u03A5", "\\Upsilon "],
-    ["\u03C5", "\\upsilon "],
-    ["\u03A6", "\\Phi "],
-    ["\u03C6", "\\phi "],
-    ["\u03D5", "\\phi "],
-    ["\u03A8", "\\Psi "],
-    ["\u03C8", "\\psi "],
-    ["\u03A9", "\\Omega "],
-    ["\u03C9", "\\omega "]
+    ["α", "\\alpha "],
+    ["β", "\\beta "],
+    ["ϐ", "\\beta "],
+    ["Γ", "\\Gamma "],
+    ["γ", "\\gamma "],
+    ["Δ", "\\Delta "],
+    ["δ", "\\delta "],
+    ["ε", "\\epsilon "],
+    ["ϵ", "\\epsilon "],
+    ["ζ", "\\zeta "],
+    ["η", "\\eta "],
+    ["Θ", "\\Theta "],
+    ["ϴ", "\\Theta "],
+    ["θ", "\\theta "],
+    ["ᶿ", "\\theta "],
+    ["ϑ", "\\theta "],
+    ["ι", "\\iota "],
+    ["κ", "\\kappa "],
+    ["Λ", "\\Lambda "],
+    ["λ", "\\lambda "],
+    ["μ", "\\mu "],
+    ["µ", "\\mu "],
+    ["ν", "\\nu "],
+    ["Ξ", "\\Xi "],
+    ["ξ", "\\xi "],
+    ["Π", "\\Pi "],
+    ["π", "\\pi "],
+    ["ϖ", "\\pi "],
+    ["ρ", "\\rho "],
+    ["ϱ", "\\rho "],
+    ["Σ", "\\Sigma "],
+    ["σ", "\\sigma "],
+    ["ς", "\\sigma "],
+    ["τ", "\\tau "],
+    ["Υ", "\\Upsilon "],
+    ["υ", "\\upsilon "],
+    ["Φ", "\\Phi "],
+    ["φ", "\\phi "],
+    ["ϕ", "\\phi "],
+    ["Ψ", "\\Psi "],
+    ["ψ", "\\psi "],
+    ["Ω", "\\Omega "],
+    ["ω", "\\omega "]
   ];
   for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1]);

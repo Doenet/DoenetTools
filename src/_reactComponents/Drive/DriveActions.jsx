@@ -934,9 +934,9 @@ export const useAssignmentCallbacks = () => {
     set(folderDictionary(driveIdFolderId),(old)=>{
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];          
-      newItemObj.isAssignment = "1";
+      newItemObj.isAssigned = "1";
       newItemObj.assignment_title = payload?.assignment_title;      
-      newItemObj.assignmentId = payload?.assignmentId;
+      newItemObj.dueDate = payload?.dueDate;
       return newObj;
     })
   }
@@ -951,9 +951,8 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.assignment_isPublished = "1";
-        newItemObj.isAssignment = "1";
+        newItemObj.isAssigned = "1";
         newItemObj.assignment_title = payload?.assignment_title;
-        newItemObj.assignmentId = payload?.assignmentId;
         return newObj;
       })
     }
@@ -983,7 +982,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
       set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
-        newItemObj.isAssignment = "1";
+        newItemObj.isAssigned = "1";
         newItemObj.assignment_title = payloadAssignment?.assignment_title;     
         newItemObj.assignedDate = payloadAssignment?.assignedDate;
         newItemObj.dueDate = payloadAssignment?.dueDate;
@@ -1005,7 +1004,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
       set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];
-        newItemObj.isAssignment = "0";
+        newItemObj.isAssigned = "0";
         return newObj;
       })
 

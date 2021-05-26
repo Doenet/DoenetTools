@@ -58,6 +58,9 @@ export const useToolControlHelper = () => {
     assignmentId,
     attemptNumber,
     userId,
+    driveId,
+    folderId,
+    itemId,
   }) => {
     switch (type.toLowerCase()) {
       case 'gradebookassignmentview':
@@ -86,6 +89,9 @@ export const useToolControlHelper = () => {
           <Editor
             branchId={branchId}
             title={title}
+            driveId={driveId}
+            folderId={folderId}
+            itemId={itemId}
             key={`EditorLayer${old.length + 1}`}
           />,
         ]);
