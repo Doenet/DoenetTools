@@ -1,4 +1,4 @@
-import * as PropertyComponents from './components/PropertyComponents';
+import * as Aliases from './components/Aliases';
 import * as MMeMen from './components/MMeMen';
 import * as MdMdnMrow from './components/MdMdnMrow';
 import * as BooleanOperators from './components/BooleanOperators';
@@ -143,7 +143,7 @@ import TextOrInline from './components/abstract/TextOrInline';
 
 
 const componentTypeArray = [
-  ...Object.values(PropertyComponents),
+  ...Object.values(Aliases),
   ...Object.values(MMeMen),
   ...Object.values(MdMdnMrow),
   ...Object.values(BooleanOperators),

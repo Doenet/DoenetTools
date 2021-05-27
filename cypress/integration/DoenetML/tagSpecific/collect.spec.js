@@ -1944,65 +1944,65 @@ describe('Collect Tag Tests', function () {
       let group2reps = group2.stateValues.fullRecursiveReplacements
         .map(x => components[x.componentName]);
 
-      expect(components['/_group1'].replacements.length).eq(6);
+      expect(components['/_group1'].replacements.length).eq(13);
       expect(components['/_collect1'].replacements.length).eq(6);
       expect(collect2.replacements.length).eq(6);
       expect(group2.replacements.length).eq(1);
-      expect(group2reps.length).eq(6);
+      expect(group2reps.length).eq(13);
 
-      expect(components['/_group1'].replacements[0].componentType).eq("mathInput");
-      expect(components['/_group1'].replacements[0].stateValues.value.tree).eq('x');
+      expect(components['/_group1'].replacements[1].componentType).eq("mathInput");
+      expect(components['/_group1'].replacements[1].stateValues.value.tree).eq('x');
       expect(components['/_collect1'].replacements[0].componentType).eq("mathInput");
       expect(components['/_collect1'].replacements[0].stateValues.value.tree).eq('x');
       expect(collect2.replacements[0].componentType).eq("math");
       expect(collect2.replacements[0].stateValues.value.tree).eq('x');
-      expect(group2reps[0].componentType).eq("mathInput");
-      expect(group2reps[0].stateValues.value.tree).eq('x');
+      expect(group2reps[1].componentType).eq("mathInput");
+      expect(group2reps[1].stateValues.value.tree).eq('x');
 
-      expect(components['/_group1'].replacements[1].componentType).eq("textInput");
-      expect(components['/_group1'].replacements[1].stateValues.value).eq('hello');
+      expect(components['/_group1'].replacements[3].componentType).eq("textInput");
+      expect(components['/_group1'].replacements[3].stateValues.value).eq('hello');
       expect(components['/_collect1'].replacements[1].componentType).eq("textInput");
       expect(components['/_collect1'].replacements[1].stateValues.value).eq('hello');
       expect(collect2.replacements[1].componentType).eq("text");
       expect(collect2.replacements[1].stateValues.value).eq('hello');
-      expect(group2reps[1].componentType).eq("textInput");
-      expect(group2reps[1].stateValues.value).eq('hello');
+      expect(group2reps[3].componentType).eq("textInput");
+      expect(group2reps[3].stateValues.value).eq('hello');
 
-      expect(components['/_group1'].replacements[2].componentType).eq("booleanInput");
-      expect(components['/_group1'].replacements[2].stateValues.value).eq(false);
+      expect(components['/_group1'].replacements[5].componentType).eq("booleanInput");
+      expect(components['/_group1'].replacements[5].stateValues.value).eq(false);
       expect(components['/_collect1'].replacements[2].componentType).eq("booleanInput");
       expect(components['/_collect1'].replacements[2].stateValues.value).eq(false);
       expect(collect2.replacements[2].componentType).eq("boolean");
       expect(collect2.replacements[2].stateValues.value).eq(false);
-      expect(group2reps[2].componentType).eq("booleanInput");
-      expect(group2reps[2].stateValues.value).eq(false);
+      expect(group2reps[5].componentType).eq("booleanInput");
+      expect(group2reps[5].stateValues.value).eq(false);
 
-      expect(components['/_group1'].replacements[3].componentType).eq("math");
-      expect(components['/_group1'].replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(components['/_group1'].replacements[7].componentType).eq("math");
+      expect(components['/_group1'].replacements[7].stateValues.value.tree).eqls(["*", 2, "x"]);
       expect(components['/_collect1'].replacements[3].componentType).eq("math");
       expect(components['/_collect1'].replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
       expect(collect2.replacements[3].componentType).eq("math");
       expect(collect2.replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
-      expect(group2reps[3].componentType).eq("math");
-      expect(group2reps[3].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(group2reps[7].componentType).eq("math");
+      expect(group2reps[7].stateValues.value.tree).eqls(["*", 2, "x"]);
 
-      expect(components['/_group1'].replacements[4].componentType).eq("text");
-      expect(components['/_group1'].replacements[4].stateValues.value).eq('hello there');
+      expect(components['/_group1'].replacements[9].componentType).eq("text");
+      expect(components['/_group1'].replacements[9].stateValues.value).eq('hello there');
       expect(components['/_collect1'].replacements[4].componentType).eq("text");
       expect(components['/_collect1'].replacements[4].stateValues.value).eq('hello there');
       expect(collect2.replacements[4].componentType).eq("text");
       expect(collect2.replacements[4].stateValues.value).eq('hello there');
-      expect(group2reps[4].componentType).eq("text");
-      expect(group2reps[4].stateValues.value).eq('hello there');
+      expect(group2reps[9].componentType).eq("text");
+      expect(group2reps[9].stateValues.value).eq('hello there');
 
-      expect(components['/_group1'].replacements[5].componentType).eq("boolean");
-      expect(components['/_group1'].replacements[5].stateValues.value).eq(true);
+      expect(components['/_group1'].replacements[11].componentType).eq("boolean");
+      expect(components['/_group1'].replacements[11].stateValues.value).eq(true);
       expect(components['/_collect1'].replacements[5].componentType).eq("boolean");
       expect(components['/_collect1'].replacements[5].stateValues.value).eq(true);
       expect(collect2.replacements[5].componentType).eq("boolean");
       expect(collect2.replacements[5].stateValues.value).eq(true);
-      expect(group2reps[5].componentType).eq("boolean");
-      expect(group2reps[5].stateValues.value).eq(true);
+      expect(group2reps[11].componentType).eq("boolean");
+      expect(group2reps[11].stateValues.value).eq(true);
 
     })
 
