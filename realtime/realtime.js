@@ -17,7 +17,7 @@
 
   io.use((socket, next) => {
     //TODO: auth against central database instead of local
-    socket.data.profile.screenName = 'remote-test-anon';
+    socket.data.profile = { screenName: 'remote-test-anon' };
     next();
     // axios
     //   .get('http://localhost/api/loadProfile.php', {
