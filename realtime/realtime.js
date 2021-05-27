@@ -15,31 +15,31 @@
   });
   const { default: axios } = require('axios');
 
-  // io.use((socket, next) => {
-  //   //TODO: auth against central database instead of local
-  //   socket.data.profile.screenName = 'remote-test-anon';
-  //   next();
-  //   // axios
-  //   //   .get('http://localhost/api/loadProfile.php', {
-  //   //     headers: socket.handshake.headers,
-  //   //     params: {},
-  //   //   })
-  //   //   .then((resp) => {
-  //   //     if (resp.data.success === '1') {
-  //   //       if (resp.data.profile.signedIn === '1') {
-  //   //         socket.data.profile = resp.data.profile;
-  //   //         next();
-  //   //       } else {
-  //   //         next(new Error('Please sign in'));
-  //   //       }
-  //   //     } else {
-  //   //       next(new Error('PHP sever error'));
-  //   //     }
-  //   //   })
-  //   //   .catch((error) => {
-  //   //     next(new Error(`Axios request error: ${error}`));
-  //   //   });
-  // });
+  io.use((socket, next) => {
+    //TODO: auth against central database instead of local
+    socket.data.profile.screenName = 'remote-test-anon';
+    next();
+    // axios
+    //   .get('http://localhost/api/loadProfile.php', {
+    //     headers: socket.handshake.headers,
+    //     params: {},
+    //   })
+    //   .then((resp) => {
+    //     if (resp.data.success === '1') {
+    //       if (resp.data.profile.signedIn === '1') {
+    //         socket.data.profile = resp.data.profile;
+    //         next();
+    //       } else {
+    //         next(new Error('Please sign in'));
+    //       }
+    //     } else {
+    //       next(new Error('PHP sever error'));
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     next(new Error(`Axios request error: ${error}`));
+    //   });
+  });
 
   io.on('connection', (socket) => {
     console.log('connecting', socket.id);
