@@ -68,7 +68,7 @@
     });
 
     socket.on('chat message', (data) => {
-      data.screenName = socket.data.profile.screenName;
+      // data.screenName = socket.data.profile.screenName;
       io.to(data.room).emit('chat message', data);
     });
 
