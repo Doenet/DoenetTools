@@ -227,6 +227,7 @@ export default class Select extends CompositeComponent {
 
 
     stateVariableDefinitions.selectedIndices = {
+      immutable: true,
       returnDependencies: ({ sharedParameters }) => ({
         // essentialSelectedIndices: {
         //   dependencyType: "potentialEssentialVariable",
@@ -270,16 +271,6 @@ export default class Select extends CompositeComponent {
         // console.log(`definition of selected Indices`)
         // console.log(dependencyValues);
 
-        // if (dependencyValues.essentialSelectedIndices !== null) {
-        //   return {
-        //     makeEssential: ["selectedIndices"],
-        //     newValues: {
-        //       selectedIndices: dependencyValues.essentialSelectedIndices
-        //     },
-        //     makeImmutable: ["selectedIndices"]
-        //   }
-        // }
-
 
         if (!(dependencyValues.numberToSelect >= 1) || dependencyValues.nOptions === 0) {
           return {
@@ -287,7 +278,6 @@ export default class Select extends CompositeComponent {
             newValues: {
               selectedIndices: [],
             },
-            makeImmutable: ["selectedIndices"]
           }
         }
 
@@ -310,7 +300,6 @@ export default class Select extends CompositeComponent {
               newValues: {
                 selectedIndices: desiredIndices,
               },
-              makeImmutable: ["selectedIndices"]
             }
           }
         }
@@ -338,7 +327,6 @@ export default class Select extends CompositeComponent {
             newValues: {
               selectedIndices: variantOptions,
             },
-            makeImmutable: ["selectedIndices"]
           }
 
         }
@@ -402,7 +390,6 @@ export default class Select extends CompositeComponent {
           newValues: {
             selectedIndices,
           },
-          makeImmutable: ["selectedIndices"]
         }
       }
     }
