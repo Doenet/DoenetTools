@@ -71,18 +71,37 @@ export default function SliderContainer(props) {
   )
 }
 
-/**
- * Calculates a spring-physics driven infinite slider
- *
- * @param {Array} items - display items
- * @param {Function} children - render child
- * @param {number} width - fixed item with
- * @param {number} visible - number of items that must be visible on screen
- * @param {object} style - container styles
- * @param {boolean} showButtons - shows buttons
- * @param {boolean} showCounter - shows counter
- */
-function Slider({ items, itemWidth = 'full', visible = items.length - 2, style, children, showButtons = true, showCounter = true, callBack }) {
+// /**
+//  * Calculates a spring-physics driven infinite slider
+//  *
+//  * @param {Array} items - display items
+//  * @param {Function} children - render child
+//  * @param {number} width - fixed item with
+//  * @param {number} visible - number of items that must be visible on screen
+//  * @param {object} style - container styles
+//  * @param {boolean} showButtons - shows buttons
+//  * @param {boolean} showCounter - shows counter
+//  */
+function Slider({ fileNames, itemWidth = 'full', visible = fileNames.length - 2, style, children, showButtons = true, showCounter = true, callBack }) {
+
+  // useEffect(() => {
+  //   const cssitems = fileNames.map(file => {
+  //     let url = `url("${file}")`
+  //     return {css: url}
+  //   })
+  
+  //   const items = cssitems.concat(cssitems).slice(startingIndex, startingIndex+cssitems.length)
+  //   console.log(items)
+  // }, [fileNames]);
+
+  const items = fileNames.map(file => {
+    let url = `url("${file}")`
+    return {css: url}
+  })
+
+  // const items = cssitems.concat(cssitems).slice(startingIndex, startingIndex+cssitems.length)
+  // console.log(items)
+
 
   if (items.length <= 2)
     console.warn("The slider doesn't handle two or less items very well, please use it with an array of at least 3 items in length")
@@ -99,7 +118,7 @@ function Slider({ items, itemWidth = 'full', visible = items.length - 2, style, 
   //const [update, setUpdate] = useState(true);
 
   useEffect(() => {
-    callBack(active);
+    callBack(active - 1);
   }, [active]);
 
 

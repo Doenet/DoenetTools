@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     atom,
     RecoilRoot,
@@ -102,13 +102,9 @@ const Image = styled(a.div)`
 //   vertical-align: top;
 // `;
 
-const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle', 'anonymous'];
-const picture_items = PROFILE_PICTURES.map(picture => {
-  let path = `/media/profile_pictures/${picture}.jpg`
-  let url = `url("${path}")`
-  return {css: url}
-})
-console.log(picture_items);
+const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle'];
+
+// console.log(picture_items);
 
 const getProfileQuerry = atom({
   key: "getProfileQuerry",
@@ -192,10 +188,29 @@ export default function DoenetProfile(props) {
 
     //let [profile, setProfile] = useRecoilStateLoadable(getProfile);
     let profile = useRecoilValueLoadable(getProfile);
+    
+    const [initPhoto, setInitPhoto] = useState(profile.contents.profilePicture)
+    //const [initBool, setInitBool] = useState(false)
+    useEffect(() => {
+      setInitPhoto(profile.contents.profilePicture)
+      console.log(profile.state)
+    }, [profile.state])
 
-    let [editMode, setEditMode] = useState(false);
-    let [pic, setPic] = useState(0);
+    //console.log(">>> init photo", initPhoto)
+    // let translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))
+    // //console.log("translated names", translatednames)
+    //   // const translatednames = translateArray(PROFILE_PICTURES, 0)
+    // let translateditems = translatednames.map(picture => `/media/profile_pictures/${picture}.jpg`)
 
+    let translatednames = PROFILE_PICTURES
+
+    if(initPhoto){
+      translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
+    }
+
+    const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
+    
+    //let [editMode, setEditMode] = useState(false);
     //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
 
     // if(profile.state == 'hasValue'){
@@ -207,12 +222,12 @@ export default function DoenetProfile(props) {
     return (
         <Tool>
             <headerPanel title="Account Settings" />
-            {profile.state == 'hasValue' ? 
+            {profile.state == 'hasValue'? 
             <mainPanel>
               <div style = {{margin: "auto", width: "70%"}}>
                 <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
                   <div style = {{width: "150px", height: "150px", margin: "auto"}}>
-                  {editMode ?
+                  {/* {editMode ?
                   <>
                   <div style = {{float: "right"}}><FontAwesomeIcon onClick = {e => {
                     let data = {...profile.contents}
@@ -220,8 +235,11 @@ export default function DoenetProfile(props) {
                     setProfile(data)
                     setEditMode(false)
                   }} style = {{color: "#444", position: "absolute", zIndex: "2", textAlign: "right"}} icon={faTimes}/></div>
-                  <InfiniteSlider items={translateArray(picture_items, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))} showButtons={editMode} showCounter={false} callBack = {(i) => {
-                    setPic(translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))[i-1])
+                  <InfiniteSlider fileNames = {translateArray(picture_items, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))} showButtons={true} showCounter={false} callBack = {(i) => {
+                    console.log(PROFILE_PICTURES[i])
+                    let data = {...profile.contents}
+                    data.profilePicture = PROFILE_PICTURES[i]
+                    setProfile(data)
                   }}>
                     {({ css }, i) => {
                       // console.log(">>> pic index ", i);
@@ -237,7 +255,25 @@ export default function DoenetProfile(props) {
                     <Content onClick = {e => setEditMode(true)}>
                       <Image style={{ backgroundImage: `url('/media/profile_pictures/${profile.contents.profilePicture}.jpg')`, borderRadius: '50%' }} />
                     </Content>
-                  }
+                  } */}
+                  <InfiniteSlider fileNames = {translateditems} showButtons={true} showCounter={false} callBack = {(i) => {
+                    //console.log(translatednames[i])
+                    let data = {...profile.contents}
+                    data.profilePicture = translatednames[i]
+                    setProfile(data)
+                    //setPic(translatednames[i])
+                  }}>
+                    {({ css }, i) => {
+                      // console.log(">>> pic index ", i);
+                      
+                      // setPicIndex(i)
+                      return (
+                        <Content>
+                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
+                        </Content>
+                      )
+                    }}
+                  </InfiniteSlider>
                   </div>
                   <Textinput
                       style={{ width: '300px' }}
