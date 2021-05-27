@@ -12,26 +12,28 @@
 
   io.use((socket, next) => {
     //TODO: auth against central database instead of local
-    axios
-      .get('http://apache/api/loadProfile.php', {
-        headers: socket.handshake.headers,
-        params: {},
-      })
-      .then((resp) => {
-        if (resp.data.success === '1') {
-          if (resp.data.profile.signedIn === '1') {
-            socket.data.profile = resp.data.profile;
-            next();
-          } else {
-            next(new Error('Please sign in'));
-          }
-        } else {
-          next(new Error('PHP sever error'));
-        }
-      })
-      .catch((error) => {
-        next(new Error(`Axios request error: ${error}`));
-      });
+    socket.data.profile.screenName = 'remote-test-anon';
+    next();
+    // axios
+    //   .get('http://localhost/api/loadProfile.php', {
+    //     headers: socket.handshake.headers,
+    //     params: {},
+    //   })
+    //   .then((resp) => {
+    //     if (resp.data.success === '1') {
+    //       if (resp.data.profile.signedIn === '1') {
+    //         socket.data.profile = resp.data.profile;
+    //         next();
+    //       } else {
+    //         next(new Error('Please sign in'));
+    //       }
+    //     } else {
+    //       next(new Error('PHP sever error'));
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     next(new Error(`Axios request error: ${error}`));
+    //   });
   });
 
   io.on('connection', (socket) => {
@@ -39,7 +41,7 @@
     socket.emit('chat message', {
       messageId: -1,
       message: 'Socket.io connection Successful! Try joining a room!',
-      userId: 'Server',
+      screenName: 'Server',
     });
 
     socket.on('joinRoom', (room) => {
@@ -47,7 +49,7 @@
       io.to(room).emit('chat message', {
         messageId: -1,
         message: `${socket.data.profile.screenName} joined room ${room}`,
-        userId: 'Sever',
+        screenName: 'Sever',
       });
     });
 
@@ -56,17 +58,17 @@
       io.to(room).emit('chat message', {
         messageId: -1,
         message: `${socket.data.profile.screenName} left the room`,
-        userId: 'Sever',
+        screenName: 'Sever',
       });
     });
 
-    socket.on('chat message', (data, room) => {
-      data.userId = socket.data.profile.screenName;
-      io.to(room).emit('chat message', data);
+    socket.on('chat message', (data) => {
+      data.screenName = socket.data.profile.screenName;
+      io.to(data.room).emit('chat message', data);
     });
 
     socket.on('typing', (data) => {
-      data.userId = socket.data.profile.screenName;
+      data.screenName = socket.data.profile.screenName;
       socket.broadcast.emit('typing', data);
     });
 

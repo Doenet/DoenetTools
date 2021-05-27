@@ -49,7 +49,7 @@ const NameLabel = styled.label``;
 function ChatMessage(props) {
   return (
     <MessageElement>
-      <MessageName>{props.userId}:</MessageName>
+      <MessageName>{props.screenName}:</MessageName>
       <MessageContent>{props.children}</MessageContent>
     </MessageElement>
   );
@@ -90,7 +90,7 @@ export default function Chat() {
     <ChatMessage
       key={`doenet-chat-message-${i}-${val.messageId}`}
       messageId={val.messageId}
-      userId={val.userId}
+      screenName={val.screenName}
     >
       {val.message}
     </ChatMessage>
@@ -112,8 +112,8 @@ export default function Chat() {
                 {
                   message: messageEl.value,
                   messageId: new Date(),
+                  room: `chat:${room}`,
                 },
-                `chat:${room}`,
                 //   new RTChatMessage(
                 //     'a user, security TBI',
                 //     'user',
