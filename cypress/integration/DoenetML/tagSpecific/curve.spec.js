@@ -331,7 +331,7 @@ describe('Curve Tag Tests', function () {
 
 
     <p>Temp way to change controls 1:
-    <choiceInput name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group>
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -340,7 +340,7 @@ describe('Curve Tag Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <group>
         <choice>none</choice>
         <choice>symmetric</choice>
