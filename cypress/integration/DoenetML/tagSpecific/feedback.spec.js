@@ -316,7 +316,7 @@ describe('Feedback Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer>
-    <choiceinput>
+    <choiceinput randomizeOrder>
     <choice credit="0.1">cat</choice>
     <choice credit="1">dog</choice>
     <choice credit="0.2">cow</choice>
@@ -594,7 +594,7 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p>
     <answer>
-      <choiceinput>
+      <choiceinput randomizeOrder>
       <choice feedbacktext="meow" credit="0.5">cat</choice>
       <choice feedbackcodes="goodjob" credit="1">dog</choice>
       <choice>monkey</choice>

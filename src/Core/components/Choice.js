@@ -25,6 +25,11 @@ export default class Choice extends InlineComponent {
       defaultValue: null,
       public: true,
     };
+    attributes.preSelect = {
+      createComponentOfType: "boolean",
+      createStateVariable: "preSelect",
+      defaultValue: false,
+    };
 
     return attributes;
   }

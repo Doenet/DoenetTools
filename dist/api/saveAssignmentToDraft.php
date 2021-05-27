@@ -13,7 +13,6 @@ $userId = $jwtArray['userId'];
 //TODO: Make sure of instructor
 $_POST = json_decode(file_get_contents("php://input"),true);
 
-$assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
 if($title == ''){$title = 'Untitled Assignment';}
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
@@ -32,26 +31,46 @@ $gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
 if ($gradeCategory == ''){ $gradeCategory = 'e';}
 $individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
 if ($individualize == ''){ $individualize = '0';}
+else if ($individualize){ $individualize = '1';}
 $multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
 if ($multipleAttempts == ''){ $multipleAttempts = '0';}
+else if ($multipleAttempts){ $multipleAttempts = '1';}
 $showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
 if ($showSolution == ''){ $showSolution = '0';}
+else if ($showSolution){ $showSolution = '1';}
 $showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
 if ($showFeedback == ''){ $showFeedback = '0';}
+else if ($showFeedback){ $showFeedback = '1';}
 $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 if ($showHints == ''){ $showHints = '0';}
+else if ($showHints){ $showHints = '1';}
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 if ($showCorrectness == ''){ $showCorrectness = '0';}
+else if ($showCorrectness){ $showCorrectness = '1';}
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
+else if ($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
+$branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
+$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
 $submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
-$courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
 $role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
+$success = TRUE;
+$message = "";
 
-$sql = "UPDATE assignment_draft SET
+
+if ($branchId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing branchId";
+}else if($contentId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing contentId";
+}
+if ($success){
+
+$sql = "UPDATE assignment SET
 title = '$title',
 assignedDate = '$assignedDate',
 dueDate = '$dueDate',
@@ -67,16 +86,27 @@ showFeedback = '$showFeedback',
 showHints = '$showHints',
 showCorrectness = '$showCorrectness',
 proctorMakesAvailable = '$proctorMakesAvailable'
-WHERE assignmentId = '$assignmentId'
+WHERE branchId = '$branchId' 
+AND contentId = '$contentId'
 ";
 
 $result = $conn->query($sql);
-
+}
 // echo $sql;
+// set response code - 200 OK
+
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
+
+
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
 
-$conn->close();
+  
+  $conn->close();
+?>
