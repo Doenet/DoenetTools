@@ -64,7 +64,7 @@ export default function Chat() {
   );
 
   useEffect(() => {
-    let socket = io('localhost:81', { withCredentials: true });
+    let socket = io('198.199.122.67:81', { withCredentials: true });
     socket.on('connect', () => {
       console.log('socket', socket.id, 'connected');
       setSocket(socket);

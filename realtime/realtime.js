@@ -2,7 +2,11 @@
   const httpServer = require('http').createServer();
   const io = require('socket.io')(httpServer, {
     cors: {
-      origin: ['http://localhost', 'http://localhost:81'],
+      origin: [
+        'http://localhost',
+        'http://localhost:81',
+        'http://198.199.122.67:81',
+      ],
       methods: ['GET', 'POST'],
       allowedHeaders: ['access'],
       credentials: true,
