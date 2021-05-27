@@ -357,18 +357,48 @@ export const folderDictionary = atomFamily({
   })
 })
 
-export const folderDictionarySelector = selectorFamily({
-  //{driveId,folderId}
-  get:(driveIdFolderId)=>({get})=>{
-    return get(folderDictionary(driveIdFolderId));
-  },
-  set: (driveIdFolderId) => async ({set,get},instructions)=>{
-        
-  }
-  // set:(setObj,newValue)=>({set,get})=>{
-  //   console.log("setObj",setObj,newValue);
+export const folderDictionaryFilterAtom = atomFamily({
+  key:"folderDictionaryFilterAtom",
+  default:selectorFamily({
+    key:"folderDictionaryFilterAtom/Default",
+    get:(driveId)=>()=>{
+        return "All"
+    }
+  })
+})
 
-  // }
+export const folderDictionaryFilterSelector = selectorFamily({
+  get:(driveIdFolderId)=>({get})=>{
+    const filter = get(folderDictionaryFilterAtom({driveId:driveIdFolderId.driveId}))
+    console.log(">>>filter in drive ????????",filter,"driveId",driveIdFolderId.driveId )
+    const fD = get(folderDictionary(driveIdFolderId));
+    let fDreturn = {...fD}
+     fDreturn.contentIds = {...fD.contentIds}
+     console.log(">>>fDreturn.contentIds",  fDreturn.contentIds)
+     // filter = 'All' handled already without any prop(filter)
+     if(filter === 'Released Only'){
+      let newDefaultOrder  = []
+      for(let contentId of fD.contentIds.defaultOrder){
+        if(fD.contentsDictionary[contentId].isReleased === '1'){
+          newDefaultOrder.push(contentId)
+        }
+      }
+       fDreturn.contentIds.defaultOrder = newDefaultOrder
+       
+       
+     }
+  
+
+    return fDreturn;
+  }
+})
+
+
+
+export const folderDictionarySelector = selectorFamily({
+  get:(driveIdFolderId)=>({get})=>{
+    return get(folderDictionaryFilterAtom(driveIdFolderId));
+  }
 })
 
 export const folderSortOrderAtom = atomFamily({
@@ -387,6 +417,7 @@ export const folderInfoSelector = selectorFamily({
     
     const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}))
     const folderSortOrder = get(folderSortOrderAtom(driveIdInstanceIdFolderId))
+    console.log(">>>here@@@@@@@@@@@@",contentIds);
     let contentIdsArr = contentIds[folderSortOrder] ?? [];
 
     const sortedContentIdsNotInCache = !contentIdsArr.length && contentIds[sortOptions.DEFAULT].length;
@@ -650,7 +681,8 @@ export const fetchDrivesSelector = selector({
     let newDrive;
     function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
       let contentObjs = {};
-      const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));
+      // const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));  
+      const sourceFolder = get(folderDictionaryFilterSelector({driveId:sourceDriveId,folderId:sourceFolderId}));
       if (destFolderId === undefined){
         destFolderId = destDriveId;  //Root Folder of drive
         destParentFolderId = destDriveId;  //Root Folder of drive
@@ -899,16 +931,16 @@ function Folder(props){
     console.error(folderInfoObj.contents)
     return null;}
     let {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
-    //TODO: Move filter into recoil loadable
-  //Note viewAccess All is not filtered and Folders are always shown
-    if (props.viewAccess === "released"){
-      contentIdsArr = contentIdsArr.filter((id)=>
-      contentsDictionary[id].itemType === 'Folder' ||
-      (contentsDictionary[id].isReleased === '1' || contentsDictionary[id].isAssigned === '1' ));
-    }else if (props.viewAccess === "assigned"){
-      contentIdsArr = contentIdsArr.filter((id)=>
-      contentsDictionary[id].itemType === 'Folder' || contentsDictionary[id].isAssigned === '1' );
-    }
+  //   //TODO: Move filter into recoil loadable
+  // //Note viewAccess All is not filtered and Folders are always shown
+  //   if (props.viewAccess === "released"){
+  //     contentIdsArr = contentIdsArr.filter((id)=>
+  //     contentsDictionary[id].itemType === 'Folder' ||
+  //     (contentsDictionary[id].isReleased === '1' || contentsDictionary[id].isAssigned === '1' ));
+  //   }else if (props.viewAccess === "assigned"){
+  //     contentIdsArr = contentIdsArr.filter((id)=>
+  //     contentsDictionary[id].itemType === 'Folder' || contentsDictionary[id].isAssigned === '1' );
+  //   }
  
   let openCloseText = isOpen ? 
     <span data-cy="folderToggleCloseIcon"><FontAwesomeIcon icon={faChevronDown}/></span> : 
@@ -1392,7 +1424,8 @@ const selectedDriveItems = selectorFamily({
     let lastSelectedItem = globalSelected[globalSelected.length-1];
 
     function buildItemIdsAndParentIds({parentFolderId,driveInstanceId,driveId,itemIdArr=[],parentFolderIdArr=[]}){
-      const folderObj = get(folderDictionary({driveId,folderId:parentFolderId}))
+      // const folderObj = get(folderDictionary({driveId,folderId:parentFolderId}))
+      const folderObj = get(folderDictionaryFilterSelector({driveId,folderId:parentFolderId}))
       for (let itemId of folderObj.contentIds.defaultOrder){
         itemIdArr.push(itemId);
         parentFolderIdArr.push(parentFolderId);

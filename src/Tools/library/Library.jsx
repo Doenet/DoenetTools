@@ -35,6 +35,7 @@ import Drive, {
   folderDictionarySelector, 
   globalSelectedNodesAtom, 
   folderDictionary, 
+  folderDictionaryFilterSelector,
   clearDriveAndItemSelections,
   fetchDrivesSelector,
   encodeParams,
@@ -100,7 +101,8 @@ export const selectedInformation = selector({
     const driveId = globalSelected[0].driveId;
     const folderId = globalSelected[0].parentFolderId;
     const driveInstanceId = globalSelected[0].driveInstanceId;
-    let folderInfo = get(folderDictionary({driveId,folderId})); 
+    // let folderInfo = get(folderDictionary({driveId,folderId})); 
+    let folderInfo = get(folderDictionaryFilterSelector({driveId,folderId})); 
 
     const itemId = globalSelected[0].itemId;
     let itemInfo = {...folderInfo.contentsDictionary[itemId]};

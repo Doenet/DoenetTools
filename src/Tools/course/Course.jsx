@@ -29,6 +29,7 @@ import Drive, {
   clearDriveAndItemSelections,
   encodeParams,
   drivePathSyncFamily,
+  folderDictionaryFilterAtom
 } from '../../_reactComponents/Drive/Drive';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
@@ -168,9 +169,9 @@ export default function Course(props) {
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
   const [openEnrollment, setEnrollmentView] = useState(false);
-  const [viewAccess, setViewAccess] = useState(false);
   const role = useRecoilValue(roleAtom);
   const  setDrivePath = useSetRecoilState(drivePathSyncFamily("main"));
+
 
   if (urlParamsObj?.path !== undefined) {
     [
@@ -183,15 +184,24 @@ export default function Course(props) {
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId] = urlParamsObj.path.split(':');
   }
-
+const [init,setInit]  = useState(false)
+// const setFilteredDrive = useSetRecoilState(folderDictionaryFilterAtom({driveId:routePathDriveId}));
+const [filter, setFilteredDrive] = useRecoilState(folderDictionaryFilterAtom({driveId:routePathDriveId}));
+console.log(">>>filter in course",filter);
   //Select +Add menuPanel if no course selected on startup
   useEffect(() => {
     if (routePathDriveId === '') {
       activateMenuPanel(1);
     }
+    setInit(true);
+    setFilteredDrive("Released Only")
   }, []);
-  const history = useHistory();
 
+  if(!init){
+    return null;
+  
+  }
+console.log(">>>Here show stuff");
   function cleardrivecardSelection() {
     setDrivePath({
       driveId:"",
@@ -201,7 +211,7 @@ export default function Course(props) {
     })
     // setDrivecardSelection([]);
   }
-  function useOutsideDriveSelector() {
+  function outsideDriveSelection() {
     setDrivePath({
       driveId:"",
       parentFolderId:"",
@@ -215,10 +225,9 @@ export default function Course(props) {
     e.preventDefault();
     setEnrollmentView(!openEnrollment);
   };
-  const setViewAccessToggle = (e) => {
-    e.preventDefault();
-    setViewAccess(!viewAccess);
-  };
+  // const setViewAccessToggle = (e) => {
+  //   e.preventDefault();
+  // };
   const enrollDriveId = { driveId: routePathDriveId };
   let hideUnpublished = true;
   if (role === 'Instructor') {
@@ -239,7 +248,7 @@ export default function Course(props) {
       ></Button>
       
         <Button
-        value={viewAccess ? 'released' : 'assigned'}
+        value='released'
         callback={(e) => setViewAccessToggle(e)}
       ></Button>
       </>
@@ -303,7 +312,7 @@ export default function Course(props) {
       <navPanel isInitOpen>
         <div
           style={{ marginBottom: '40px', height: '100vh' }}
-          onClick={useOutsideDriveSelector}
+          onClick={outsideDriveSelection}
         >
           <Drive driveId={routePathDriveId} foldersOnly={true} drivePathSyncKey="main"/>
         </div>
@@ -324,8 +333,8 @@ export default function Course(props) {
             >
               <Container>
                 <Drive
+                //  filter="Released only"
                  columnTypes={['Due Date','Assigned']}
-                 viewAccess={viewAccess ?   "assigned" : "released"} 
                   driveId={routePathDriveId}
                   hideUnpublished={hideUnpublished}
                   subTypes={['Administrator']}
