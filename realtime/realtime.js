@@ -53,7 +53,7 @@
       socket.join(room);
       io.to(room).emit('chat message', {
         messageId: -1,
-        message: `${socket.data.profile.screenName} joined room ${room}`,
+        message: ` joined room ${room}`,
         screenName: 'Sever',
       });
     });
@@ -62,7 +62,7 @@
       socket.leave(room);
       io.to(room).emit('chat message', {
         messageId: -1,
-        message: `${socket.data.profile.screenName} left the room`,
+        message: ` left the room`,
         screenName: 'Sever',
       });
     });
