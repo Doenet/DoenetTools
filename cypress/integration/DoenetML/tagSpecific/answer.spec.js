@@ -4579,7 +4579,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p>The animal is a <answer>
-  <choiceinput inline>
+  <choiceinput inline randomizeOrder>
     <choice credit="0.5">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>
@@ -4807,7 +4807,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p>The animal is a <answer>
-  <choiceinput inline>
+  <choiceinput inline randomizeOrder>
     <choice credit="0.5">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>
@@ -5035,7 +5035,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p>The animal is a <answer>
-  <choiceinput inline fixedorder>
+  <choiceinput inline>
     <choice credit="0.5">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>
@@ -5742,7 +5742,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p>The animal is a:</p>
   <answer>
-  <choiceinput>
+  <choiceinput randomizeOrder>
     <choice credit="0.5">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>
@@ -6249,7 +6249,7 @@ describe('Answer Tag Tests', function () {
     <p>Num: <mathinput name="num" prefill="3"/></p>
 
     <answer>
-    <choiceinput>
+    <choiceinput randomizeOrder>
       <map>
         <template>
           <choice credit="$m">
@@ -6628,7 +6628,7 @@ describe('Answer Tag Tests', function () {
       <p>Credit for cat: <mathinput name="catcredit" prefill="0.3" /> </p>
       <p>Last option: <textinput prefill="bird" name="last" /></p>
       <answer>
-        <choiceinput fixedOrder>
+        <choiceinput>
         <choice credit="$catcredit">cat</choice>
         <choice credit="1">dog</choice>
         <choice>monkey</choice>
@@ -6794,7 +6794,7 @@ describe('Answer Tag Tests', function () {
       <text>a</text>
       <p>Inline: <booleaninput name="inline" /> </p>
       <answer inline="$inline">
-        <choiceinput>
+        <choiceinput randomizeOrder>
         <choice credit="0.5">cat</choice>
         <choice credit="1">dog</choice>
         <choice>monkey</choice>
