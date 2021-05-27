@@ -267,19 +267,17 @@ export default class Core {
 
       serializeFunctions.correctComponentTypeCapitalization(serializedComponents, this.componentTypeLowerCaseMapping);
 
-      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
-
       serializeFunctions.createAttributesFromProps(serializedComponents, this.componentInfoObjects, this.flags);
 
       serializedComponents = serializeFunctions.applyMacros(serializedComponents, this.componentInfoObjects);
 
+      // remove blank string children after applying macros,
+      // as applying macros could create additional blank string children
+      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
+
       serializeFunctions.decodeXMLEntities(serializedComponents);
 
       serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
-
-      // remove blank string children again, as they could be created above
-      // e.g., from macros
-      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
 
       arrayOfSerializedComponents.push(serializedComponents);
 
@@ -1148,11 +1146,9 @@ export default class Core {
 
         // create any remaining children
         let childrenToCreate = [];
-        let indicesToCreate = [];
         for (let [ind, child] of serializedChildren.entries()) {
           if (!(childrenAddressed.has(ind))) {
             childrenToCreate.push(child)
-            indicesToCreate.push(ind);
           }
         }
 
@@ -1164,9 +1160,8 @@ export default class Core {
             namespaceForUnamed,
           });
 
-          for (let [createInd, locationInd] of indicesToCreate.entries()) {
-            definingChildren[locationInd] = childrenResult.components[createInd];
-          }
+          definingChildren = childrenResult.components;
+
         }
 
       } else {
@@ -7126,7 +7121,7 @@ export default class Core {
 
     if (component.shadowedBy) {
       for (let shadowingComponent of component.shadowedBy) {
-        if(shadowingComponent.shadows.propVariable) {
+        if (shadowingComponent.shadows.propVariable) {
           continue;
         }
         let additionalcompositesWithAdjustedReplacements =

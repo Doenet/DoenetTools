@@ -2620,7 +2620,9 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let chosenChildren = components['/_select1'].replacements[0].replacements.map((v, i) => i < 2 ? v : v.replacements[0])
+      let chosenChildren = components['/_select1'].replacements[0].replacements
+        .filter(x => x.componentType !== "string")
+        .map((v, i) => i < 2 ? v : v.replacements[0])
       let option = options[components['/_select1'].stateValues.selectedIndices[0]];
 
       expect(chosenChildren[0].stateValues.value.toString()).eq(option.a)
@@ -2938,6 +2940,66 @@ describe('Select Tag Tests', function () {
 
       cy.get(`#\\/_p1`).should('have.text', `${c}, `)
       cy.get(`#\\/_p2`).should('have.text', `${c}, ${d}`)
+
+    })
+  });
+
+  it("string and blank strings in options", () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <text name="animal1" hide>fox</text><text name="verb1" hide>jumps</text>
+    <text name="animal2" hide>elephant</text><text name="verb2" hide>trumpets</text>
+  
+    <p name="pa">a: <select assignnames="a">
+      <option>The $animal1 $verb1.</option>
+      <option>The $animal2 $verb2.</option>
+    </select></p>
+
+    <p name="pa1">a1: <copy tname="a" assignNames="((a11) (a12))" /></p>
+
+    <p name="ppieces" >pieces: <copy tname="_select1" assignNames="(b c)" /></p>
+  
+    <p name="pb1">b1: <copy tname="b" assignNames="b1" /></p>
+    <p name="pc1">c1: <copy tname="c" assignNames="c1" /></p>
+  
+    
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let options = [{
+      animal: "fox",
+      verb: "jumps"
+    },
+    {
+      animal: "elephant",
+      verb: "trumpets"
+    }];
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let option = options[components['/_select1'].stateValues.selectedIndices[0]];
+
+
+      cy.get('#\\/pa').should('have.text', `a: The ${option.animal} ${option.verb}.`);
+      cy.get('#\\/pa1').should('have.text', `a1: The ${option.animal} ${option.verb}.`);
+      cy.get('#\\/ppieces').should('have.text', `pieces: The ${option.animal} ${option.verb}.`);
+      cy.get('#\\/pb1').should('have.text', `b1: ${option.animal}`);
+      cy.get('#\\/pc1').should('have.text', `c1: ${option.verb}`);
+
+      cy.get('#\\/a11').should('have.text', `${option.animal}`);
+      cy.get('#\\/a12').should('have.text', `${option.verb}`);
+      cy.get('#\\/b1').should('have.text', `${option.animal}`);
+      cy.get('#\\/c1').should('have.text', `${option.verb}`);
+
+
+
 
     })
   });
