@@ -610,12 +610,6 @@ function DriveRouted(props){
   if (!props.isNav){
     heading = <DriveHeader driveInstanceId={props.driveInstanceId} numColumns={numColumns} setNumColumns={setNumColumns} columnTypes={columnTypes}/>
   }
-   
-  //default to all
-  let viewAccess = props?.viewAccess;
-  if (!viewAccess){
-    viewAccess = 'all';
-  }
 
   return <>
     {heading}
@@ -635,7 +629,6 @@ function DriveRouted(props){
       doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
       numColumns={numColumns}
       columnTypes={columnTypes}
-      viewAccess={viewAccess}
       drivePathSyncKey={props.drivePathSyncKey}
     />
     <WithDropTarget
@@ -929,16 +922,6 @@ function Folder(props){
     console.error(folderInfoObj.contents)
     return null;}
     let {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
-  //   //TODO: Move filter into recoil loadable
-  // //Note viewAccess All is not filtered and Folders are always shown
-  //   if (props.viewAccess === "released"){
-  //     contentIdsArr = contentIdsArr.filter((id)=>
-  //     contentsDictionary[id].itemType === 'Folder' ||
-  //     (contentsDictionary[id].isReleased === '1' || contentsDictionary[id].isAssigned === '1' ));
-  //   }else if (props.viewAccess === "assigned"){
-  //     contentIdsArr = contentIdsArr.filter((id)=>
-  //     contentsDictionary[id].itemType === 'Folder' || contentsDictionary[id].isAssigned === '1' );
-  //   }
  
   let openCloseText = isOpen ? 
     <span data-cy="folderToggleCloseIcon"><FontAwesomeIcon icon={faChevronDown}/></span> : 
