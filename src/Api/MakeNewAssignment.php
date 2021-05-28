@@ -70,51 +70,79 @@ else if($driveId == ''){
 }
 
 if ($success){
+    $sqlnew="SELECT * from assignment WHERE contentId = $contentId";
+    $resultnew = $conn->query($sqlnew); 
+    if ($result->num_rows > 0){
+      $sqlUpdate = "UPDATE assignment SET 
+      title=$title,
+      branchId=$branchId,
+      driveId=$driveId,
+      assignedDate=$assignedDate,
+      dueDate=$dueDate,
+      timeLimit=$timeLimit,
+      numberOfAttemptsAllowed=$numberOfAttemptsAllowed,
+      attemptAggregation=$attemptAggregation,
+      totalPointsOrPercent=$totalPointsOrPercent,
+      gradeCategory=$gradeCategory,
+      individualize=$individualize,
+      multipleAttempts=$multipleAttempts,
+      showSolution=$showSolution,
+      showFeedback=$showFeedback,
+      showHints=$showHints,
+      showCorrectness=$showCorrectness,
+      proctorMakesAvailable=$proctorMakesAvailable
+      WHERE contentId=$contentId
+      ";
+          $resultUpdate = $conn->query($sqlUpdate); 
 
-    $sql="
-    INSERT INTO assignment
-    (
-    title,
-    branchId,
-    contentId,
-    driveId,
-    assignedDate,
-    dueDate,
-    timeLimit,
-    numberOfAttemptsAllowed,
-    attemptAggregation,
-    totalPointsOrPercent,
-    gradeCategory,
-    individualize,
-    multipleAttempts,
-    showSolution,
-    showFeedback,
-    showHints,
-    showCorrectness,
-    proctorMakesAvailable)
-    VALUES
-    (
-      '$title',
-      '$branchId',
-      '$contentId',
-    '$driveId',
-    '$assignedDate',
-    '$dueDate',
-    '$timeLimit',
-    '$numberOfAttemptsAllowed',
-    '$attemptAggregation',
-    '$totalPointsOrPercent',
-    '$gradeCategory',
-    '$individualize',
-    '$multipleAttempts',
-    '$showSolution',
-    '$showFeedback',
-    '$showHints',
-    '$showCorrectness',
-    '$proctorMakesAvailable')
-    ";
+    }else{
+      $sql="
+      INSERT INTO assignment
+      (
+      title,
+      branchId,
+      contentId,
+      driveId,
+      assignedDate,
+      dueDate,
+      timeLimit,
+      numberOfAttemptsAllowed,
+      attemptAggregation,
+      totalPointsOrPercent,
+      gradeCategory,
+      individualize,
+      multipleAttempts,
+      showSolution,
+      showFeedback,
+      showHints,
+      showCorrectness,
+      proctorMakesAvailable)
+      VALUES
+      (
+        '$title',
+        '$branchId',
+        '$contentId',
+      '$driveId',
+      '$assignedDate',
+      '$dueDate',
+      '$timeLimit',
+      '$numberOfAttemptsAllowed',
+      '$attemptAggregation',
+      '$totalPointsOrPercent',
+      '$gradeCategory',
+      '$individualize',
+      '$multipleAttempts',
+      '$showSolution',
+      '$showFeedback',
+      '$showHints',
+      '$showCorrectness',
+      '$proctorMakesAvailable')
+      ";
+    
+  $result = $conn->query($sql); 
+    }
+    
 
-$result = $conn->query($sql); 
 }
   // echo $sql;
 $sqlnew="UPDATE drive_content SET isAssigned=1 WHERE branchId='$branchId';";
