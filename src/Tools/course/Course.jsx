@@ -254,7 +254,7 @@ const [filter, setFilteredDrive] = useRecoilState(folderDictionaryFilterAtom({dr
       ></Button>
       
         <Button
-        value='released'
+        value={filter === "Released Only" ? 'Assigned'  : 'Released'}
         callback={(e) => setViewAccessToggle(e)}
       ></Button>
       </>
@@ -339,7 +339,7 @@ const [filter, setFilteredDrive] = useRecoilState(folderDictionaryFilterAtom({dr
             >
               <Container>
                 <Drive
-                //  filter="Released only"
+                 filter={filter}
                  columnTypes={['Due Date','Assigned']}
                   driveId={routePathDriveId}
                   hideUnpublished={hideUnpublished}
