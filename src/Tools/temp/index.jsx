@@ -87,12 +87,12 @@ import Drive, {folderDictionaryFilterAtom,folderDictionaryFilterSelector} from '
 
 
 function Demo(props) {
-  const [myAtom,setMyAtom] = useRecoilState(folderDictionaryFilterAtom({driveId:"n4Dc63X426CTRpgrG58nq"}));
-  const [myAtom2,setMyAtom2] = useRecoilState(folderDictionaryFilterAtom({driveId:"r1jFXxZQUajetKpp11oJe"}));
-  const filterValue = useRecoilValue(folderDictionaryFilterSelector({driveId:"n4Dc63X426CTRpgrG58nq",folderId:"n4Dc63X426CTRpgrG58nq"}));
-  const filterValue2 = useRecoilValue(folderDictionaryFilterSelector({driveId:"r1jFXxZQUajetKpp11oJe",folderId:"r1jFXxZQUajetKpp11oJe"}));
-  console.log(">>>filterValue",filterValue);
-  console.log(">>>filterValue2",filterValue2);
+  const [myAtom,setMyAtom] = useRecoilState(folderDictionaryFilterAtom({driveId:"94Kbcv37ZlVH6qLtQDY9g"}));
+  const [myAtom2,setMyAtom2] = useRecoilState(folderDictionaryFilterAtom({driveId:"rrUE5eriLBarSSGb0OXog"}));
+  const filterValue = useRecoilValue(folderDictionaryFilterSelector({driveId:"94Kbcv37ZlVH6qLtQDY9g",folderId:"94Kbcv37ZlVH6qLtQDY9g"}));
+  const filterValue2 = useRecoilValue(folderDictionaryFilterSelector({driveId:"rrUE5eriLBarSSGb0OXog",folderId:"rrUE5eriLBarSSGb0OXog"}));
+  console.log(">>>contentIds",filterValue.contentIds.defaultOrder);
+  console.log(">>>contentIds2",filterValue2.contentIds.defaultOrder);
   return (
     <>
 

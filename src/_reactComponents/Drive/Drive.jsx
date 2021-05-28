@@ -370,34 +370,34 @@ export const folderDictionaryFilterAtom = atomFamily({
 export const folderDictionaryFilterSelector = selectorFamily({
   get:(driveIdFolderId)=>({get})=>{
     const filter = get(folderDictionaryFilterAtom({driveId:driveIdFolderId.driveId}))
-    console.log(">>>filter in drive ????????",filter,"driveId",driveIdFolderId.driveId )
     const fD = get(folderDictionary(driveIdFolderId));
     let fDreturn = {...fD}
      fDreturn.contentIds = {...fD.contentIds}
-     console.log(">>>fDreturn.contentIds",  fDreturn.contentIds)
      // filter = 'All' handled already without any prop(filter)
      if(filter === 'Released Only'){
       let newDefaultOrder  = []
       for(let contentId of fD.contentIds.defaultOrder){
-        if(fD.contentsDictionary[contentId].isReleased === '1'){
+        if(fD.contentsDictionary[contentId].isReleased === '1' ||
+        fD.contentsDictionary[contentId].itemType === 'Folder'
+        ){
           newDefaultOrder.push(contentId)
         }
       }
        fDreturn.contentIds.defaultOrder = newDefaultOrder
-       
-       
+     }else if (filter === 'Assigned Only'){
+      let newDefaultOrder  = []
+      for(let contentId of fD.contentIds.defaultOrder){
+        if(fD.contentsDictionary[contentId].isAssigned === '1' ||
+        fD.contentsDictionary[contentId].itemType === 'Folder'
+
+        ){
+          newDefaultOrder.push(contentId)
+        }
+      }
+       fDreturn.contentIds.defaultOrder = newDefaultOrder
      }
   
-
     return fDreturn;
-  }
-})
-
-
-
-export const folderDictionarySelector = selectorFamily({
-  get:(driveIdFolderId)=>({get})=>{
-    return get(folderDictionaryFilterAtom(driveIdFolderId));
   }
 })
 
@@ -414,10 +414,8 @@ export const folderCacheDirtyAtom = atomFamily({
 export const folderInfoSelector = selectorFamily({
   get:(driveIdInstanceIdFolderId)=>({get})=>{
     const { driveId, folderId } = driveIdInstanceIdFolderId;
-    
-    const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}))
+    const {folderInfo, contentsDictionary, contentIds} = get(folderDictionaryFilterSelector({driveId, folderId}))
     const folderSortOrder = get(folderSortOrderAtom(driveIdInstanceIdFolderId))
-    console.log(">>>here@@@@@@@@@@@@",contentIds);
     let contentIdsArr = contentIds[folderSortOrder] ?? [];
 
     const sortedContentIdsNotInCache = !contentIdsArr.length && contentIds[sortOptions.DEFAULT].length;
@@ -800,7 +798,7 @@ const folderOpenSelector = selectorFamily({
     const isOpen = get(folderOpenAtom(driveInstanceIdDriveIdItemId))
     if (isOpen){ 
       //Deselect contained items on close
-      const folder = get(folderDictionarySelector({driveId:driveInstanceIdDriveIdItemId.driveId,folderId:driveInstanceIdDriveIdItemId.itemId}));
+      const folder = get(folderDictionaryFilterSelector({driveId:driveInstanceIdDriveIdItemId.driveId,folderId:driveInstanceIdDriveIdItemId.itemId}));
       const itemIds = folder.contentIds.defaultOrder;
       const globalItemsSelected = get(globalSelectedNodesAtom);
       let newGlobalSelected = [];
@@ -841,7 +839,7 @@ function Folder(props){
   const setDrivePath = useSetRecoilState(drivePathSyncFamily(drivePathSyncKey));
 
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
-  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
+  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:props.folderId}))
 
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, onDragExit, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
@@ -1923,7 +1921,7 @@ export const nodePathSelector = selectorFamily({
     let path = []
     let currentNode = folderId;
     while (currentNode && currentNode !== driveId) {
-      const folderInfoObj = get(folderDictionarySelector({ driveId, folderId: currentNode}));
+      const folderInfoObj = get(folderDictionaryFilterSelector({ driveId, folderId: currentNode}));
       path.push({folderId: currentNode, label: folderInfoObj.folderInfo.label})
       currentNode = folderInfoObj.folderInfo.parentFolderId;
     }
@@ -1944,7 +1942,7 @@ const nodeChildrenSelector = selectorFamily({
       let size = queue.length;
       for (let i = 0; i < size; i++) {
         let currentNodeId = queue.shift();
-        const folderInfoObj = get(folderDictionarySelector({ driveId, folderId: currentNodeId}));
+        const folderInfoObj = get(folderDictionaryFilterSelector({ driveId, folderId: currentNodeId}));
         children.push(currentNodeId);
         for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
           queue.push(childId); 

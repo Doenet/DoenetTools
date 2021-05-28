@@ -12,7 +12,7 @@ import {
  * Internal dependencies
  */
 import { 
-  folderDictionarySelector, 
+  folderDictionaryFilterSelector, 
   globalSelectedNodesAtom, 
   folderDictionary, 
   selectedDriveItemsAtom,
@@ -831,10 +831,10 @@ export const useDragShadowCallbacks = () => {
 
 export const useSortFolder = () => {
   const [addToast, ToastType] = useToast();
-  const sortFolder = useRecoilCallback(({set})=> 
+  const sortFolder = useRecoilCallback(({set,snapshot})=> 
     async ({driveIdInstanceIdFolderId, sortKey})=>{
       const {driveId, folderId} = driveIdInstanceIdFolderId;
-      const {contentIds} = await snapshot.getPromise(folderDictionarySelector({driveId, folderId}));
+      const {contentIds} = await snapshot.getPromise(folderDictionaryFilterSelector({driveId, folderId}));
       set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortKey);
       
       // if sortOrder not already cached in folderDictionary

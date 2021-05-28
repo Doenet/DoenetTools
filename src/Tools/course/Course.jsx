@@ -25,7 +25,7 @@ import { nanoid } from 'nanoid';
  * Internal dependencies
  */
 import Drive, {
-  folderDictionarySelector,
+  folderDictionaryFilterSelector,
   clearDriveAndItemSelections,
   encodeParams,
   drivePathSyncFamily,
@@ -90,7 +90,7 @@ export const assignmentDictionary = atomFamily({
         driveId: driveIditemIdbranchIdparentFolderId.driveId,
         folderId: driveIditemIdbranchIdparentFolderId.folderId,
       };
-      let folderInfo = get(folderDictionarySelector(folderInfoQueryKey));
+      let folderInfo = get(folderDictionaryFilterSelector(folderInfoQueryKey));
       const itemObj =
         folderInfo?.contentsDictionary?.[
           driveIditemIdbranchIdparentFolderId.itemId
@@ -184,24 +184,25 @@ export default function Course(props) {
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId] = urlParamsObj.path.split(':');
   }
-const [init,setInit]  = useState(false)
+// const [init,setInit]  = useState(false)
 // const setFilteredDrive = useSetRecoilState(folderDictionaryFilterAtom({driveId:routePathDriveId}));
 const [filter, setFilteredDrive] = useRecoilState(folderDictionaryFilterAtom({driveId:routePathDriveId}));
-console.log(">>>filter in course",filter);
   //Select +Add menuPanel if no course selected on startup
   useEffect(() => {
     if (routePathDriveId === '') {
       activateMenuPanel(1);
     }
-    setInit(true);
-    setFilteredDrive("Released Only")
   }, []);
 
-  if(!init){
-    return null;
-  
+//Default filter
+  if(filter === "All"){
+    setFilteredDrive("Released Only") 
   }
-console.log(">>>Here show stuff");
+
+  //Wait for the filter to change
+  if(filter === "All" && routePathDriveId !== ""){
+    return null;
+  }
   function cleardrivecardSelection() {
     setDrivePath({
       driveId:"",
@@ -225,9 +226,14 @@ console.log(">>>Here show stuff");
     e.preventDefault();
     setEnrollmentView(!openEnrollment);
   };
-  // const setViewAccessToggle = (e) => {
-  //   e.preventDefault();
-  // };
+  const setViewAccessToggle = (e) => {
+    e.preventDefault();
+    if (filter === 'Released Only'){
+      setFilteredDrive("Assigned Only")
+    }else{
+      setFilteredDrive("Released Only")
+    }
+  };
   const enrollDriveId = { driveId: routePathDriveId };
   let hideUnpublished = true;
   if (role === 'Instructor') {

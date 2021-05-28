@@ -32,7 +32,6 @@ import 'codemirror/theme/material.css';
  * Internal dependencies
  */
 import Drive, { 
-  folderDictionarySelector, 
   globalSelectedNodesAtom, 
   folderDictionary, 
   folderDictionaryFilterSelector,
@@ -455,7 +454,7 @@ const DriveInfoPanel = function(props){
 const FolderInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
-  const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
   const { deleteItem, onDeleteItemError } = useDeleteItem();
   const { renameItem, onRenameItemError } = useRenameItem();
   const [addToast, ToastType] = useToast();
@@ -527,7 +526,7 @@ const FolderInfoPanel = function(props){
 const DoenetMLInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
-  const setFolder = useSetRecoilState(folderDictionarySelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
   const { deleteItem, onDeleteItemError } = useDeleteItem();
   const [addToast, ToastType] = useToast();
   const { renameItem, onRenameItemError } = useRenameItem();
@@ -766,7 +765,7 @@ function AddMenuPanel(props){
       path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
   }
   let [driveId,folderId] = path.split(":");
-  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}))
+  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}))
   const { addItem, onAddItemError } = useAddItem();
   const [addToast, ToastType] = useToast();
 
