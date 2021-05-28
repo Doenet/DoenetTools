@@ -32,6 +32,7 @@ import Drive, {
 } from '../../_reactComponents/Drive/Drive';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
+// import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime';
 import DriveCards from '../../_reactComponents/Drive/DriveCards';
 import '../../_reactComponents/Drive/drivecard.css';
 import '../../_utils/util.css';
@@ -44,7 +45,6 @@ import Enrollment from './Enrollment';
 import { useAssignment } from '../course/CourseActions';
 import { useAssignmentCallbacks } from '../../_reactComponents/Drive/DriveActions';
 import { selectedInformation } from '../library/Library';
-// import {assignmentDictionary} from "../_framework/Overlays/Content"
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { 
   itemHistoryAtom, 
@@ -565,6 +565,9 @@ const DoenetMLInfoPanel = (props) => {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
+        branchId:itemInfo.branchId,
+        versionId:selectedVId,
+        contentId:selectedContentId()
       },
     });
    
@@ -827,51 +830,7 @@ const DoenetMLInfoPanel = (props) => {
               />
             </div>
             <br />
-            <div>
-              <Button
-                value="Publish assignment"
-                switch_value="publish changes"
-                callback={() => {
-                  const result = publishContentAssignment({
-                    driveIditemIdbranchIdparentFolderId: {
-                      driveId: itemInfo.driveId,
-                      folderId: itemInfo.parentFolderId,
-                      itemId: itemInfo.itemId,
-                    },
-                    branchId: itemInfo.branchId,
-                    contentId: itemInfo.contentId
-                      ? itemInfo.contentId
-                      : itemInfo.branchId,
-                  });
-                  const payload = {
-                    ...aInfo,
-                    assignment_isPublished: '1',
-                    branchId: itemInfo.branchId,
-                  };
-                  publishAssignment({
-                    driveIdFolderId: {
-                      driveId: itemInfo.driveId,
-                      folderId: itemInfo.parentFolderId,
-                    },
-                    itemId: itemInfo.itemId,
-                    payload: payload,
-                  });
 
-                  result.then((resp) => {
-                    if (resp.data.success) {
-                      addToast(`'${aInfo.assignment_title}' Published'`, ToastType.SUCCESS);
-                    }
-                    else{
-                      onAssignmentError({errorMessage: resp.data.message});
-                    }
-                  })
-                  .catch( e => {
-                    onAssignmentError({errorMessage: e.message});
-                  })
-                }}
-                type="submit"
-              ></Button>
-            </div>
           </>
         }
       </>
@@ -976,6 +935,9 @@ let aInfo = '';
                 driveId: itemInfo.driveId,
                 folderId: itemInfo.parentFolderId,
                 itemId: itemInfo.itemId,
+                branchId: itemInfo.branchId,
+                contentId: selectedContentId(),
+                versionId:selectedVId,
               },
               branchId: itemInfo.branchId,
               contentId: selectedContentId(),
@@ -1031,6 +993,9 @@ let aInfo = '';
                   driveId: itemInfo.driveId,
                   folderId: itemInfo.parentFolderId,
                   itemId: itemInfo.itemId,
+                  branchId: itemInfo.branchId,
+                  contentId: selectedContentId(),
+                  versionId:selectedVId,
                 },
                 branchId: itemInfo.branchId,
                 contentId: version?.contentId,
@@ -1090,6 +1055,9 @@ let aInfo = '';
                 driveId: itemInfo.driveId,
                 folderId: itemInfo.parentFolderId,
                 itemId: itemInfo.itemId,
+                branchId: itemInfo.branchId,
+                contentId: selectedContentId(),
+                versionId:selectedVId,
               },
               branchId: itemInfo.branchId,
               contentId: selectedContentId(),
