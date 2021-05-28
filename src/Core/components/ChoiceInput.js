@@ -72,9 +72,9 @@ export default class Choiceinput extends Input {
       public: true,
       forRenderer: true,
     };
-    attributes.fixedOrder = {
+    attributes.randomizeOrder = {
       createComponentOfType: "boolean",
-      createStateVariable: "fixedOrder",
+      createStateVariable: "randomizeOrder",
       defaultValue: false,
       public: true,
     };
@@ -85,6 +85,12 @@ export default class Choiceinput extends Input {
       propagateToDescendants: true,
       mergeArrays: true
     };
+
+    attributes.preselectChoice = {
+      createComponentOfType: "number",
+      createStateVariable: "preselectChoice",
+      defaultValue: null,
+    }
 
     attributes.bindValueTo = {
       createComponentOfType: "text"
@@ -136,9 +142,9 @@ export default class Choiceinput extends Input {
           childLogicName: "atLeastZeroChoices",
           variableNames: ["text"]
         },
-        fixedOrder: {
+        randomizeOrder: {
           dependencyType: "stateVariable",
-          variableName: "fixedOrder"
+          variableName: "randomizeOrder"
         },
         selectRng: {
           dependencyType: "value",
@@ -152,7 +158,7 @@ export default class Choiceinput extends Input {
       definition: function ({ dependencyValues }) {
         let numberChoices = dependencyValues.choiceChildren.length;
         let choiceOrder;
-        if (dependencyValues.fixedOrder) {
+        if (!dependencyValues.randomizeOrder) {
           choiceOrder = [...Array(numberChoices).keys()]
         } else {
 
@@ -204,9 +210,9 @@ export default class Choiceinput extends Input {
           dependencyType: "stateVariable",
           variableName: "choiceOrder"
         },
-        fixedOrder: {
+        randomizeOrder: {
           dependencyType: "stateVariable",
-          variableName: "fixedOrder"
+          variableName: "randomizeOrder"
         },
         variantDescendants: {
           dependencyType: "descendant",
@@ -225,7 +231,7 @@ export default class Choiceinput extends Input {
       }),
       definition({ dependencyValues, componentName }) {
 
-        if (dependencyValues.fixedOrder) {
+        if (!dependencyValues.randomizeOrder) {
           return {
             newValues: {
               isVariantComponent: false,
@@ -284,6 +290,10 @@ export default class Choiceinput extends Input {
     }
 
     stateVariableDefinitions.choiceTexts = {
+      additionalStateVariablesDefined: [{
+        variableName: "choicePreselects",
+        isArray: true,
+      }],
       public: true,
       componentType: "text",
       isArray: true,
@@ -307,7 +317,7 @@ export default class Choiceinput extends Input {
           choiceChildren: {
             dependencyType: "child",
             childLogicName: "atLeastZeroChoices",
-            variableNames: ["text"]
+            variableNames: ["text", "preSelect"]
           },
         };
 
@@ -320,7 +330,8 @@ export default class Choiceinput extends Input {
 
         return {
           newValues: {
-            choiceTexts: choiceChildrenOrdered.map(x => x.stateValues.text)
+            choiceTexts: choiceChildrenOrdered.map(x => x.stateValues.text),
+            choicePreselects: choiceChildrenOrdered.map(x => x.stateValues.preSelect),
           }
         }
       }
@@ -368,7 +379,6 @@ export default class Choiceinput extends Input {
 
 
     stateVariableDefinitions.allSelectedIndices = {
-      defaultValue: [],
       returnDependencies() {
         return {
           choiceOrder: {
@@ -383,6 +393,14 @@ export default class Choiceinput extends Input {
           indexMatchedByBoundValue: {
             dependencyType: "stateVariable",
             variableName: "indexMatchedByBoundValue"
+          },
+          preselectChoice: {
+            dependencyType: "stateVariable",
+            variableName: "preselectChoice"
+          },
+          choicePreselects: {
+            dependencyType: "stateVariable",
+            variableName: "choicePreselects"
           },
           bindValueTo: {
             dependencyType: "attributeComponent",
@@ -405,7 +423,19 @@ export default class Choiceinput extends Input {
         } else {
           return {
             useEssentialOrDefaultValue: {
-              allSelectedIndices: { variablesToCheck: ["allSelectedIndices"] }
+              allSelectedIndices: {
+                variablesToCheck: ["allSelectedIndices"],
+                get defaultValue() {
+                  let ind = dependencyValues.choicePreselects.indexOf(true);
+                  if (ind !== -1) {
+                    return [ind + 1];
+                  } else if (dependencyValues.preselectChoice !== null) {
+                    return [dependencyValues.preselectChoice];
+                  } else {
+                    return [];
+                  }
+                }
+              }
             }
           }
         }

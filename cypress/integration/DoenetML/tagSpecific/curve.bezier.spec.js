@@ -59,7 +59,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -68,43 +68,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -263,7 +263,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -272,43 +272,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -632,7 +632,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -641,43 +641,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -1062,7 +1062,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -1071,43 +1071,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -1595,7 +1595,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -1604,43 +1604,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -2030,7 +2030,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -2039,43 +2039,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -2463,7 +2463,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -2472,43 +2472,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -2904,7 +2904,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -2913,43 +2913,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -3342,7 +3342,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -3351,43 +3351,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -3780,7 +3780,7 @@ describe('Curve Tag Bezier Tests', function () {
     <copy tname="g2" assignNames="g3" />
 
     <p>Temp way to change controls 1:
-    <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
       <group name="choices">
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -3789,43 +3789,43 @@ describe('Curve Tag Bezier Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 2:
-    <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
 
     <p>Temp way to change controls 3:
-    <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+    <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+    <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+    <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
       <copy tname="choices" />
     </choiceInput>
-    <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+    <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
       <copy tname="choices" />
     </choiceInput>
     </p>
@@ -5607,7 +5607,7 @@ describe('Curve Tag Bezier Tests', function () {
   <copy tname="g2" assignNames="g3" />
 
   <p>Temp way to change controls 1:
-  <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
     <group name="choices">
       <choice>none</choice>
       <choice>symmetric</choice>
@@ -5616,43 +5616,43 @@ describe('Curve Tag Bezier Tests', function () {
       <choice>next</choice>
     </group>
   </choiceInput>
-  <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 2:
-  <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
-  <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
@@ -6019,7 +6019,7 @@ describe('Curve Tag Bezier Tests', function () {
   <copy tname="g2" assignNames="g3" />
 
   <p>Temp way to change controls 1:
-  <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
     <group name="choices">
       <choice>none</choice>
       <choice>symmetric</choice>
@@ -6028,43 +6028,43 @@ describe('Curve Tag Bezier Tests', function () {
       <choice>next</choice>
     </group>
   </choiceInput>
-  <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 2:
-  <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
-  <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
@@ -6431,7 +6431,7 @@ describe('Curve Tag Bezier Tests', function () {
   <copy tname="g2" assignNames="g3" />
 
   <p>Temp way to change controls 1:
-  <choiceInput inline name="dir1" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
     <group name="choices">
       <choice>none</choice>
       <choice>symmetric</choice>
@@ -6440,52 +6440,52 @@ describe('Curve Tag Bezier Tests', function () {
       <choice>next</choice>
     </group>
   </choiceInput>
-  <choiceInput inline name="dir2" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2" bindValueTo="$(_curve1{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir5" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection5'})" >
+  <choiceInput inline name="dir5" bindValueTo="$(_curve1{prop='vectorcontroldirection5'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 2:
-  <choiceInput inline name="dir1a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1a" bindValueTo="$(g2/curve{prop='vectorcontroldirection1'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir2a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2a" bindValueTo="$(g2/curve{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4a" bindValueTo="$(g2/curve{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir5a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection5'})" >
+  <choiceInput inline name="dir5a" bindValueTo="$(g2/curve{prop='vectorcontroldirection5'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
-  <choiceInput inline name="dir1b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
+  <choiceInput inline name="dir1b" bindValueTo="$(g3/curve{prop='vectorcontroldirection1'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir2b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
+  <choiceInput inline name="dir2b" bindValueTo="$(g3/curve{prop='vectorcontroldirection2'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir4b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
+  <choiceInput inline name="dir4b" bindValueTo="$(g3/curve{prop='vectorcontroldirection4'})" >
     <copy tname="choices" />
   </choiceInput>
-  <choiceInput inline name="dir5b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection5'})" >
+  <choiceInput inline name="dir5b" bindValueTo="$(g3/curve{prop='vectorcontroldirection5'})" >
     <copy tname="choices" />
   </choiceInput>
   </p>
@@ -8122,7 +8122,7 @@ describe('Curve Tag Bezier Tests', function () {
   <copy tname="g2" assignNames="g3" />
 
   <p>Temp way to change controls 1:
-  <choiceInput inline name="dir3" fixedOrder bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3" bindValueTo="$(_curve1{prop='vectorcontroldirection3'})" >
     <group name="choices">
       <choice>none</choice>
       <choice>symmetric</choice>
@@ -8134,13 +8134,13 @@ describe('Curve Tag Bezier Tests', function () {
   </p>
 
   <p>Temp way to change controls 2:
-  <choiceInput inline name="dir3a" fixedOrder bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3a" bindValueTo="$(g2/curve{prop='vectorcontroldirection3'})" >
   <copy tname="choices" />
   </choiceInput>
   </p>
 
   <p>Temp way to change controls 3:
-  <choiceInput inline name="dir3b" fixedOrder bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
+  <choiceInput inline name="dir3b" bindValueTo="$(g3/curve{prop='vectorcontroldirection3'})" >
   <copy tname="choices" />
   </choiceInput>
   </p>

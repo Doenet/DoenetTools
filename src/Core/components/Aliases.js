@@ -1,7 +1,7 @@
 import TextComponent from './Text';
 import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
 import TextOrInline from './abstract/TextOrInline';
-import Option from './Option';
+import Group from './Group';
 import Template from './Template';
 import MathComponent from './Math';
 
@@ -37,7 +37,7 @@ export class Description extends TextOrInline {
   static rendererType = undefined;
 }
 
-export class Else extends Option {
+export class Else extends Group {
   static componentType = "else";
 }
 

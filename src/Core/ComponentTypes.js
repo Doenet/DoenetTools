@@ -1,4 +1,4 @@
-import * as PropertyComponents from './components/PropertyComponents';
+import * as Aliases from './components/Aliases';
 import * as MMeMen from './components/MMeMen';
 import * as MdMdnMrow from './components/MdMdnMrow';
 import * as BooleanOperators from './components/BooleanOperators';
@@ -6,7 +6,6 @@ import * as BooleanOperatorsOfMath from './components/BooleanOperatorsOfMath';
 import * as MathOperators from './components/MathOperators';
 import * as FunctionOperators from './components/FunctionOperators';
 import * as Extrema from './components/Extrema';
-import * as PatternReplace from './components/PatternReplace';
 import * as ParagraphMarkup from './components/ParagraphMarkup';
 import * as SingleCharacterComponents from './components/SingleCharacterComponents';
 import * as Sectioning from './components/Sectioning';
@@ -17,6 +16,7 @@ import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
 import * as SideBySide from './components/SideBySide';
 import * as UpdateValue from './components/UpdateValue';
+import * as Indexing from './components/Indexing';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -143,7 +143,7 @@ import TextOrInline from './components/abstract/TextOrInline';
 
 
 const componentTypeArray = [
-  ...Object.values(PropertyComponents),
+  ...Object.values(Aliases),
   ...Object.values(MMeMen),
   ...Object.values(MdMdnMrow),
   ...Object.values(BooleanOperators),
@@ -151,7 +151,6 @@ const componentTypeArray = [
   ...Object.values(MathOperators),
   ...Object.values(FunctionOperators),
   ...Object.values(Extrema),
-  ...Object.values(PatternReplace),
   ...Object.values(ParagraphMarkup),
   ...Object.values(SingleCharacterComponents),
   ...Object.values(Sectioning),
@@ -162,6 +161,7 @@ const componentTypeArray = [
   ...Object.values(UpdateValue),
   ...Object.values(SideBySide),
   ...Object.values(ComponentWithSelectableType),
+  ...Object.values(Indexing),
   Document,
   StringComponent,
   Text, TextList,
