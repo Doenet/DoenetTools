@@ -10,7 +10,7 @@ import InfiniteSlider from '../_framework/temp/InfiniteSlider'
 import "../_framework/doenet.css";
 import Textinput from "../_framework/Textinput";
 import Switch from "../_framework/Switch";
-
+import GlobalFont from '../../_utils/GlobalFont';
 import axios from "axios";
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -67,13 +67,66 @@ export default function DoenetProfile(props) {
       }
     )
 
-  const profile = useContext(ProfileContext);
+    const profile = useContext(ProfileContext);
+    const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
 
+    //console.log(">>> init photo", initPhoto)
 
     let [editMode, setEditMode] = useState(false);
     let [pic, setPic] = useState(0);
 
     //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
+
+    const translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
+
+    // if(initPhoto){
+    //   translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
+    // }
+
+    const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
+
+    if (profile.signedIn === '0') {
+      return (
+        <>
+          <GlobalFont />
+          <Tool>
+            <headerPanel title="Account Settings"></headerPanel>
+  
+            <mainPanel>
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '20px',
+                  margin: 'auto',
+                  marginTop: '10%',
+                  padding: '10px',
+                  width: '50%',
+                }}
+              >
+                <div
+                  style={{
+                    textAlign: 'center',
+                    alignItems: 'center',
+                    marginBottom: '20px',
+                  }}
+                >
+                  <h2>You are not signed in</h2>
+                  <h2>Account Settings currently requires sign in for use</h2>
+                  <button style={{ background: '#1a5a99', borderRadius: '5px' }}>
+                    <a
+                      href="/signin"
+                      style={{ color: 'white', textDecoration: 'none' }}
+                    >
+                      Sign in with this link
+                    </a>
+                  </button>
+                </div>
+              </div>
+            </mainPanel>
+          </Tool>
+        </>
+      );
+    }
 
     return (
         <Tool>
@@ -83,7 +136,7 @@ export default function DoenetProfile(props) {
               <div style = {{margin: "auto", width: "70%"}}>
                 <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
                   <div style = {{width: "150px", height: "150px", margin: "auto"}}>
-                  {editMode ?
+                  {/* {editMode ?
                   <>
                   <div style = {{float: "right"}}><FontAwesomeIcon onClick = {e => {
                     let data = {...profile}
@@ -108,7 +161,25 @@ export default function DoenetProfile(props) {
                     <Content onClick = {e => setEditMode(true)}>
                       <Image style={{ backgroundImage: `url('/media/profile_pictures/${profile.profilePicture}.jpg')`, borderRadius: '50%' }} />
                     </Content>
-                  }
+                  } */}
+                  <InfiniteSlider fileNames = {translateditems} showButtons={true} showCounter={false} callBack = {(i) => {
+                    //console.log(translatednames[i])
+                    let data = {...profile}
+                    data.profilePicture = translatednames[i]
+                    setProfile(data)
+                    //setPic(translatednames[i])
+                  }}>
+                    {({ css }, i) => {
+                      // console.log(">>> pic index ", i);
+                      
+                      // setPicIndex(i)
+                      return (
+                        <Content>
+                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
+                        </Content>
+                      )
+                    }}
+                  </InfiniteSlider>
                   </div>
                   <Textinput
                       style={{ width: '300px' }}

@@ -82,7 +82,12 @@ export default function SliderContainer(props) {
  * @param {boolean} showButtons - shows buttons
  * @param {boolean} showCounter - shows counter
  */
-function Slider({ items, itemWidth = 'full', visible = items.length - 2, style, children, showButtons = true, showCounter = true, callBack }) {
+function Slider({ fileNames, itemWidth = 'full', visible = fileNames.length - 2, style, children, showButtons = true, showCounter = true, callBack }) {
+
+  const items = fileNames.map(file => {
+    let url = `url("${file}")`
+    return {css: url}
+  })
 
   if (items.length <= 2)
     console.warn("The slider doesn't handle two or less items very well, please use it with an array of at least 3 items in length")
@@ -99,7 +104,7 @@ function Slider({ items, itemWidth = 'full', visible = items.length - 2, style, 
   //const [update, setUpdate] = useState(true);
 
   useEffect(() => {
-    callBack(active);
+    callBack(active-1);
   }, [active]);
 
 
