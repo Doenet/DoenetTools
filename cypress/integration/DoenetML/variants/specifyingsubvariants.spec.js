@@ -1123,4 +1123,107 @@ describe('Specifying subvariants tests', function () {
 
   });
 
+  it('specify values of a selectRandomNumbers', () => {
+
+    let values = [0.150382373817, 502385.24839203, -3.18593023941];
+
+    cy.log("specify values, even if out of range of distribution")
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <selectRandomNumbers assignnames="n" />
+      `,
+          requestedVariant: {
+            subvariants: [{
+              values: [values[ind]]
+            }]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+        expect(components['/n'].stateValues.value).eq(values[ind]);
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
+          subvariants: [{
+            values: [values[ind]],
+            meta: { createdBy: "/_selectrandomnumbers1" },
+          }]
+        })
+      })
+
+    }
+  })
+
+  it('specify indices of a selectByCondition', () => {
+
+    let indices = [[2], [0], [1, 2]];
+    let texts = ["hello", "bye", "now"];
+
+    cy.log("specify indices, even if couldn't get them from a condition")
+    for (let ind = 0; ind < 3; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>${ind}</text>
+      <number name="n">3</number>
+      <selectByCondition assignNames="(t) (u)">
+        <case condition="$n > 0"><text>hello</text></case>
+        <case condition="$n < 0"><text>bye</text></case>
+        <else><text>now</text></else>
+      </selectByCondition>
+      `,
+          requestedVariant: {
+            subvariants: [{
+              indices: indices[ind]
+            }]
+          }
+        }, "*");
+      });
+
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+        expect(components['/t'].stateValues.value).eq(texts[indices[ind][0]]);
+        if (indices[ind].length > 1) {
+          expect(components['/u'].stateValues.value).eq(texts[indices[ind][1]]);
+        } else {
+          expect(components['/u']).eq(undefined);
+        }
+        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+          index: 0,
+          name: 'a',
+          meta: {
+            subvariantsSpecified: true,
+            createdBy: "/_document1"
+          },
+          subvariants: [{
+            indices: indices[ind],
+            subvariants: [],
+            meta: { createdBy: "/_selectbycondition1" },
+          }]
+        })
+      })
+
+    }
+  })
+
+
 });

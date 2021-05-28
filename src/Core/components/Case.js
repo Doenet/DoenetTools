@@ -1,7 +1,6 @@
-import Option from './Option';
-import { deepClone } from '../utils/deepFunctions';
+import Group from './Group';
 
-export default class Case extends Option {
+export default class Case extends Group {
   static componentType = "case";
 
   static get stateVariablesShadowedForReference() {
