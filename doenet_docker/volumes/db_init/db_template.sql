@@ -37,7 +37,6 @@ CREATE TABLE `assignment` (
   `branchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
   `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'matches code table contentId',
   `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `title` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled Assignment',
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
   `timeLimit` time DEFAULT NULL COMMENT 'NULL means it''s not timed',
@@ -312,7 +311,7 @@ CREATE TABLE `event` (
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `verb` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
-  `assignmentId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `branchId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `attemptNumber` int(11) DEFAULT NULL,
   `variant` text COLLATE utf8_unicode_ci NOT NULL,
   `object` mediumtext COLLATE utf8_unicode_ci,
@@ -577,4 +576,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-19 21:19:27
+-- Dump completed on 2021-05-29 22:34:26
