@@ -70,9 +70,9 @@ else if($driveId == ''){
 }
 
 if ($success){
-    $sqlnew="SELECT * from assignment WHERE contentId = $contentId";
+    $sqlnew="SELECT * from assignment WHERE contentId = '$contentId'";
     $resultnew = $conn->query($sqlnew); 
-    if ($result->num_rows > 0){
+    if ($resultnew->num_rows > 0){
       $sqlUpdate = "UPDATE assignment SET 
       title=$title,
       branchId=$branchId,
@@ -91,7 +91,7 @@ if ($success){
       showHints=$showHints,
       showCorrectness=$showCorrectness,
       proctorMakesAvailable=$proctorMakesAvailable
-      WHERE contentId=$contentId
+      WHERE contentId='$contentId'
       ";
           $resultUpdate = $conn->query($sqlUpdate); 
 
