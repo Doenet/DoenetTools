@@ -129,10 +129,17 @@ function AutoSelect(props) {
   const { activateMenuPanel } = useToolControlHelper();
 
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
+  if(contentInfoLoad.state === "hasValue"){
+    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.branchId))
 
-  if (contentInfoLoad.state === 'hasValue') {
+    if (versionHistory.state === "loading"){ return null;}
+    if (versionHistory.state === "hasError"){ 
+      console.error(versionHistory.contents)
+      return null;}
+      if (versionHistory.state === "hasValue"){ 
+        const contentId = versionHistory.contents.named.contentId;
+       }
   }
-
   if (contentInfoLoad?.contents?.number > 0) {
     activateMenuPanel(0);
   } else {
@@ -375,8 +382,8 @@ export default function Course(props) {
 }
 
 const DoenetMLInfoPanel = (props) => {
-  const { changeSettings, saveSettings, onAssignmentError } = useAssignment();
-  const { updateAssignmentTitle } = useAssignmentCallbacks();
+  const {addContentAssignment,changeSettings,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError,} = useAssignment();
+  const {makeAssignment,onmakeAssignmentError,publishAssignment,onPublishAssignmentError,publishContent,onPublishContentError, updateAssignmentTitle,onUpdateAssignmentTitleError,convertAssignmentToContent,onConvertAssignmentToContentError} = useAssignmentCallbacks();
   const selectedVId = useRecoilValue(selectedVersionAtom);
 
   const itemInfo = props.contentInfo;
@@ -410,9 +417,9 @@ const DoenetMLInfoPanel = (props) => {
   if (assignmentInfoSettings?.state === 'hasValue') {
     aInfo = assignmentInfoSettings?.contents;
 
-    // if (aInfo?.assignmentId) {
-    //   assignmentId = aInfo?.assignmentId;
-    // }
+    if (aInfo?.assignmentId) {
+      assignmentId = aInfo?.assignmentId;
+    }
   }
 
   let assignmentForm = null;
@@ -702,6 +709,7 @@ const VersionHistoryInfoPanel = (props) => {
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
   const {
     addContentAssignment,
+    addSwitchAssignment,
     updateVersionHistory,
     updatePrevVersionHistory,
     changeSettings,
@@ -731,13 +739,23 @@ const VersionHistoryInfoPanel = (props) => {
         });
       },
   );
-
+  const selectedContentId = () => {
+    const assignedArr = versionHistory.contents.named.filter(
+      (item) => item.versionId === selectedVId,
+    );
+    if (assignedArr.length > 0) {
+      return assignedArr[0].contentId;
+    } else {
+      return '';
+    }
+  };
   let aInfo = '';
   const assignmentInfoSettings = useRecoilValueLoadable(
-    loadAssignmentSelector(itemInfo.branchId),
+    loadAssignmentSelector({branchId:itemInfo.branchId,contentId:selectedContentId()}),
   );
   if (assignmentInfoSettings?.state === 'hasValue') {
-    aInfo = assignmentInfoSettings?.contents;
+    aInfo = assignmentInfoSettings?.contents?.assignments[0];
+
   }
 
   if (versionHistory.state === 'loading') {
@@ -893,7 +911,7 @@ const VersionHistoryInfoPanel = (props) => {
               value="Switch Assignment"
               callback={async () => {
                 setIsAssigned(true);
-                const result = await addContentAssignment({
+                const result = await addSwitchAssignment({
                   driveIditemIdbranchIdparentFolderId: {
                     driveId: itemInfo.driveId,
                     folderId: itemInfo.parentFolderId,
@@ -905,12 +923,14 @@ const VersionHistoryInfoPanel = (props) => {
                   branchId: itemInfo.branchId,
                   contentId: selectedContentId(),
                   versionId: selectedVId,
+                  ...aInfo
                   // prevAssignedVersionId:prevAssignedVersionId(),
                 });
+                console.log(">>>>>>>>aInfo",aInfo);
                 let payload = {
-                  // ...aInfo,
+                  ...aInfo,
                   itemId: itemInfo.itemId,
-                  assignment_title: 'Untitled Assignment',
+                  // assignment_title: 'Untitled Assignment',
                   isAssigned: '1',
                   branchId: itemInfo.branchId,
                   contentId: selectedContentId(),
@@ -1014,16 +1034,7 @@ const VersionHistoryInfoPanel = (props) => {
       return '';
     }
   };
-  const selectedContentId = () => {
-    const assignedArr = versionHistory.contents.named.filter(
-      (item) => item.versionId === selectedVId,
-    );
-    if (assignedArr.length > 0) {
-      return assignedArr[0].contentId;
-    } else {
-      return '';
-    }
-  };
+
   let assigned = (
     <select multiple onChange={(event) => selectedVersion(event.target.value)}>
       {versionHistory.contents.named.map((item, i) => (

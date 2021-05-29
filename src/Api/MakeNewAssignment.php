@@ -93,7 +93,7 @@ if ($success){
       proctorMakesAvailable=$proctorMakesAvailable
       WHERE contentId='$contentId'
       ";
-          $resultUpdate = $conn->query($sqlUpdate); 
+          $result = $conn->query($sqlUpdate); 
 
     }else{
       $sql="

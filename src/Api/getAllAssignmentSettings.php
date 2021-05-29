@@ -39,11 +39,11 @@ $response_arr = array(
   a.showCorrectness AS showCorrectness,
   a.proctorMakesAvailable AS proctorMakesAvailable,
   a.contentId AS contentId,
-  dc.isAssigned AS isAssigned,
-  c.isAssigned AS versionIsAssigned
+  a.branchId AS branchId,
+  a.driveId AS driveId,
+  c.isAssigned AS isAssigned,
+  c.versionId AS versionId
   FROM assignment AS a
-  LEFT JOIN drive_content AS dc
-  ON a.driveId = dc.driveId
   LEFT JOIN content AS c
   ON a.contentId = c.contentId
   WHERE c.branchId = '$branchId' AND c.contentId = '$contentId'

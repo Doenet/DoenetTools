@@ -120,6 +120,82 @@ export const useAssignment = () => {
     },
   );
 
+  const addSwitchAssignment = useRecoilCallback(
+    ({ snapshot, set }) => async (props) => {
+      let { driveIditemIdbranchIdparentFolderId ,contentId,versionId,branchId, ...rest } = props;
+      const dt = new Date();
+      const creationDate = formatDate(dt);
+      const futureDueDate = formatFutureDate(dt);
+      let newAssignmentObj = {
+        assignment_title: rest.assignment_title ? rest.assignment_title : 'Untitled Assignment',
+        assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
+        attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'e',
+        dueDate: rest.dueDate ? rest.dueDate : creationDate,
+        gradeCategory: rest.gradeCategory ? rest.gradeCategory :'l',
+        individualize: rest.individualize ? rest.individualize : '0',
+        isAssigned: rest.isAssigned ? rest.isAssigned : '1',
+        isPublished: rest.isPublished ?rest.isPublished : '0',
+        contentId:contentId,
+        itemId: driveIditemIdbranchIdparentFolderId.itemId,
+        versionId:versionId,
+        multipleAttempts: rest.multipleAttempts ? rest.multipleAttempts : '0',
+        numberOfAttemptsAllowed: rest.numberOfAttemptsAllowed ?rest.numberOfAttemptsAllowed : '2',
+        proctorMakesAvailable: rest.proctorMakesAvailable ? rest.proctorMakesAvailable : '2',
+        showCorrectness: rest.showCorrectness ? rest.showCorrectness : '1',
+        showFeedback: rest.showFeedback ? rest.showFeedback : '1',
+        showHints: rest.showHints ? rest.showHints : '1',
+        showSolution: rest.showSolution ? rest.showSolution : '1',
+        timeLimit: rest.timeLimit ? rest.timeLimit : '10:10',
+        totalPointsOrPercent: rest.totalPointsOrPercent ? rest.totalPointsOrPercent : '00.00' ,
+        subType: 'Administrator',
+      };
+      let newchangedAssignmentObj = {
+        assignment_title: rest.assignment_title ? rest.assignment_title : 'Untitled Assignment',
+        assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
+        attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'e',
+        dueDate: rest.dueDate ? rest.dueDate : creationDate,
+        gradeCategory: rest.gradeCategory ? rest.gradeCategory :'l',
+        individualize: rest.individualize ? rest.individualize : false,
+        isAssigned: rest.isAssigned ? rest.isAssigned : '1',
+        isPublished: rest.isPublished ?rest.isPublished : '0',
+        contentId:contentId,
+        itemId: driveIditemIdbranchIdparentFolderId.itemId,
+        versionId:versionId,
+        multipleAttempts: rest.multipleAttempts ? rest.multipleAttempts : false,
+        numberOfAttemptsAllowed: rest.numberOfAttemptsAllowed ?rest.numberOfAttemptsAllowed : '2',
+        proctorMakesAvailable: rest.proctorMakesAvailable ? rest.proctorMakesAvailable : false,
+        showCorrectness: rest.showCorrectness ? rest.showCorrectness : true,
+        showFeedback: rest.showFeedback ? rest.showFeedback : true,
+        showHints: rest.showHints ? rest.showHints : true,
+        showSolution: rest.showSolution ? rest.showSolution : true,
+        timeLimit: rest.timeLimit ? rest.timeLimit : '10:10',
+        totalPointsOrPercent: rest.totalPointsOrPercent ? rest.totalPointsOrPercent : '00.00' ,
+        subType: 'Administrator',
+      };
+
+      let payload = {
+        ...newAssignmentObj,
+        driveId: driveIditemIdbranchIdparentFolderId.driveId,
+        itemId: driveIditemIdbranchIdparentFolderId.itemId,
+        branchId: branchId,
+        contentId: contentId,
+      };
+      set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), newchangedAssignmentObj);
+
+      let result = await axios.post(`/api/makeNewAssignment.php`, payload).catch((e) =>{return {data:{message:e, success:false}}})
+     try {
+        if(result.data.success){
+          return result.data;
+        }     
+      else{
+        return  {message:result.data.message, success:false};
+      }
+     } catch (e) {
+      return {message:e, success:false};
+     }
+    },
+  );
+
   const updateVersionHistory = useRecoilCallback(({snapshot,set})=> async (branchId,versionId)=>{
     // console.log(">>>",{branchId,versionId,newTitle})
       set(itemHistoryAtom(branchId),(was)=>{
@@ -270,6 +346,7 @@ export const useAssignment = () => {
   };
   return {
     addContentAssignment,
+    addSwitchAssignment,
     updateVersionHistory,
     updatePrevVersionHistory,
     changeSettings,
