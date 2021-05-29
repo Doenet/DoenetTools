@@ -15,7 +15,6 @@ import * as FeedbackDefinitions from './components/FeedbackDefinitions';
 import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
 import * as SideBySide from './components/SideBySide';
-import * as UpdateValue from './components/UpdateValue';
 import * as Indexing from './components/Indexing';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
@@ -120,6 +119,9 @@ import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
 import SelectByCondition from './components/SelectByCondition';
 import Lorem from './components/Lorem';
+import UpdateValue from './components/UpdateValue';
+import CallAction from './components/CallAction';
+import TriggerSet from './components/TriggerSet';
 
 
 //Extended
@@ -158,7 +160,6 @@ const componentTypeArray = [
   ...Object.values(DynamicalSystems),
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
-  ...Object.values(UpdateValue),
   ...Object.values(SideBySide),
   ...Object.values(ComponentWithSelectableType),
   ...Object.values(Indexing),
@@ -241,6 +242,10 @@ const componentTypeArray = [
   Case,
   SelectByCondition,
   Lorem,
+  UpdateValue,
+  CallAction,
+  TriggerSet,
+
   BaseComponent,
   InlineComponent,
   BlockComponent,

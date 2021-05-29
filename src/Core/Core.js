@@ -409,16 +409,32 @@ export default class Core {
 
   }
 
-  addComponents({ serializedComponents, parent, indexOfDefiningChildren, initialAdd = false }) {
+  addComponents({ serializedComponents, parentName,
+    indexOfDefiningChildren, initialAdd = false,
+    assignNamesOffset
+  }) {
 
     if (!Array.isArray(serializedComponents)) {
       serializedComponents = [serializedComponents];
     }
 
-    let parentName;
+    let parent;
     let ancestors = [];
-    if (parent) {
-      parentName = parent.componentName;
+    let createNameContext = "";
+
+    if (!initialAdd) {
+
+      parent = this._components[parentName];
+      if (!parent) {
+        console.warn(`Cannot add children to parent ${parenetName} as ${parentName} does not exist`)
+        return [];
+      }
+
+      if (parent.isShadow) {
+        console.warn(`Cannot add children to parent ${parentName} as it is a shadow component.`);
+        return [];
+      }
+
       ancestors = [
         {
           componentName: parentName,
@@ -427,15 +443,25 @@ export default class Core {
         ...parent.ancestors
       ];
 
+      this.parameterStack.push(parent.sharedParameters, false);
+
+      if (!this.nTimesAddedComponents) {
+        this.nTimesAddedComponents = 1;
+      } else {
+        this.nTimesAddedComponents++;
+      }
+
+      createNameContext = `addComponents${this.nTimesAddedComponents}`;
+
     }
 
-    // TODO: not currently setting shared parameters as this is called from the beginning
-    // However, if we call add components from some other context,
-    // do we need to appropriately set shared parameters? 
-
     let createResult = this.createIsolatedComponents({
-      serializedComponents, ancestors,
+      serializedComponents, ancestors, createNameContext,
     });
+
+    if (!initialAdd) {
+      this.parameterStack.pop();
+    }
 
     if (createResult.success !== true) {
       throw Error(createResult.message);
@@ -447,7 +473,7 @@ export default class Core {
     let addedComponents = {};
     newComponents.forEach(x => addedComponents[x.componentName] = x);
 
-    if (initialAdd === true) {
+    if (initialAdd) {
       if (newComponents.length !== 1) {
         throw Error("Initial components need to be an array of just one component.");
       }
@@ -468,14 +494,11 @@ export default class Core {
         indexOfDefiningChildren = parent.definingChildren.length;
       }
 
-      if (parent.isShadow === true) {
-        throw Error("Cannot add components to a shadow component " + parent.componentName);
-      }
-
-      let addResults = this.addChildren({
+      let addResults = this.addChildrenAndRecurseToShadows({
         parent,
         indexOfDefiningChildren: indexOfDefiningChildren,
         newChildren: newComponents,
+        assignNamesOffset
       });
       if (!addResults.success) {
         throw Error("Couldn't satisfy child logic result.  Need informative error message");
@@ -872,7 +895,7 @@ export default class Core {
   }
 
   createIsolatedComponents({ serializedComponents, ancestors,
-    applyAdapters = true, shadow = false }
+    applyAdapters = true, shadow = false, createNameContext = "" }
   ) {
 
     let namespaceForUnamed = "/";
@@ -892,7 +915,8 @@ export default class Core {
       ancestors,
       applyAdapters,
       shadow,
-      namespaceForUnamed
+      namespaceForUnamed,
+      createNameContext
     });
 
     let componentsTouched = [...new Set(this.updateInfo.componentsTouched)];
@@ -3295,15 +3319,10 @@ export default class Core {
         if (targetName) {
           let componentActionsChained = this.actionsChangedToActions[targetName];
           if (!componentActionsChained) {
-            componentActionsChained = this.actionsChangedToActions[targetName] = {};
+            componentActionsChained = this.actionsChangedToActions[targetName] = [];
           }
 
-          let triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction]
-          if (!triggeringActionsChained) {
-            triggeringActionsChained = componentActionsChained[chainInfo.triggeringAction] = [];
-          }
-
-          triggeringActionsChained.push({
+          componentActionsChained.push({
             componentName: component.componentName,
             actionName: chainInfo.triggeredAction
           });
@@ -6101,7 +6120,9 @@ export default class Core {
     }
   }
 
-  addChildren({ parent, indexOfDefiningChildren, newChildren }) {
+  addChildrenAndRecurseToShadows({ parent, indexOfDefiningChildren,
+    newChildren, assignNamesOffset
+  }) {
 
     this.spliceChildren(parent, indexOfDefiningChildren, newChildren);
 
@@ -6110,12 +6131,76 @@ export default class Core {
     let addedComponents = {};
     let deletedComponents = {};
 
-    newChildren.forEach(x => addedComponents[x.componentName] = x);
-
-
     if (!newChildrenResult.success) {
       return newChildrenResult;
     }
+
+    newChildren.forEach(x => addedComponents[x.componentName] = x);
+
+
+    if (parent.shadowedBy) {
+      for (let shadowingParent of parent.shadowedBy) {
+        if (shadowingParent.shadows.propVariable) {
+          continue;
+        }
+
+        let shadowingSerializeChildren = newChildren.map(x => x.serialize({ forCopy: true }))
+        shadowingSerializeChildren = postProcessCopy({
+          serializedComponents: shadowingSerializeChildren,
+          componentName: shadowingParent.shadows.compositeName
+        });
+
+        // we can use original only if we created a new namespace
+        let originalNamesAreConsistent = shadowingParent.attributes.newNamespace;
+
+        let processResult = serializeFunctions.processAssignNames({
+          indOffset: assignNamesOffset,
+          serializedComponents: shadowingSerializeChildren,
+          parentName: shadowingParent.componentName,
+          parentCreatesNewNamespace: shadowingParent.attributes.newNamespace,
+          componentInfoObjects: this.componentInfoObjects,
+          originalNamesAreConsistent,
+        });
+
+        shadowingSerializeChildren = processResult.serializedComponents;
+
+
+        let unproxiedShadowingParent = this._components[shadowingParent.componentName];
+        this.parameterStack.push(unproxiedShadowingParent.sharedParameters, false);
+
+        let namespaceForUnamed;
+        if (shadowingParent.attributes.newNamespace) {
+          namespaceForUnamed = shadowingParent.componentName + "/";
+        } else {
+          namespaceForUnamed = getNamespaceFromName(shadowingParent.componentName);
+        }
+
+        let createResult = this.createIsolatedComponentsSub({
+          serializedComponents: shadowingSerializeChildren,
+          ancestors: shadowingParent.ancestors,
+          createNameContext: shadowingParent.componentName + "|addChildren|" + assignNamesOffset,
+          namespaceForUnamed,
+        });
+
+        this.parameterStack.pop();
+
+
+        let shadowResult = this.addChildrenAndRecurseToShadows({ 
+          parent: unproxiedShadowingParent, 
+          indexOfDefiningChildren,
+          newChildren: createResult.components,
+           assignNamesOffset
+        });
+
+        if(!shadowResult.success) {
+          throw Error(`was able to add components to parent but not shadows!`)
+        }
+
+        Object.assign(addedComponents, shadowResult.addedComponents)
+
+      }
+    }
+
 
     return {
       success: true,
@@ -7281,13 +7366,11 @@ export default class Core {
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
   }
 
-  triggerChainedActions({ componentName, actionName }) {
+  triggerChainedActions({ componentName }) {
 
     if (this.actionsChangedToActions[componentName]) {
-      if (this.actionsChangedToActions[componentName][actionName]) {
-        for (let chainedActionInstructions of this.actionsChangedToActions[componentName][actionName]) {
-          this.requestAction(chainedActionInstructions);
-        }
+      for (let chainedActionInstructions of this.actionsChangedToActions[componentName]) {
+        this.requestAction(chainedActionInstructions);
       }
     }
   }
@@ -7365,13 +7448,28 @@ export default class Core {
         });
 
       } else if (instruction.updateType === "addComponents") {
-        console.log("add component")
-        // this.addComponents({
-        //   serializedComponents: instruction.serializedComponents,
-        //   parent: instruction.parent,
-        // })
+        this.addComponents({
+          serializedComponents: instruction.serializedComponents,
+          parentName: instruction.parentName,
+          assignNamesOffset: instruction.assignNamesOffset,
+        })
       } else if (instruction.updateType === "deleteComponents") {
-        console.log("delete component")
+        if (instruction.componentNames.length > 0) {
+          let componentsToDelete = [];
+          for (let componentName of instruction.componentNames) {
+            let component = this._components[componentName];
+            if (component) {
+              componentsToDelete.push(component);
+            } else {
+              console.warn(`Cannot delete ${componentName} as it doesn't exist.`)
+            }
+          }
+
+          if (componentsToDelete.length > 0) {
+            this.deleteComponents({ components: componentsToDelete });
+          }
+        }
+
       } else if (instruction.updateType === "executeUpdate") {
         // this should be used only if further updates depend on having all
         // state variables updated,

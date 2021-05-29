@@ -1,3 +1,4 @@
+import { processAssignNames } from '../utils/serializedStateProcessing';
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Graph extends BlockComponent {
@@ -146,6 +147,21 @@ export default class Graph extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.nChildrenAdded = {
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { nChildrenAdded: {} } }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "nChildrenAdded",
+            value: desiredStateVariableValues.nChildrenAdded
+          }]
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -202,8 +218,68 @@ export default class Graph extends BlockComponent {
 
   }
 
+  addChildren({ serializedComponents }) {
+
+    if (serializedComponents && serializedComponents.length > 0) {
+
+      let processResult = processAssignNames({
+        serializedComponents,
+        parentName: this.componentName,
+        parentCreatesNewNamespace: this.attributes.newNamespace,
+        componentInfoObjects: this.componentInfoObjects,
+        indOffset: this.stateValues.nChildrenAdded
+      });
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "addComponents",
+          serializedComponents: processResult.serializedComponents,
+          parentName: this.componentName,
+          assignNamesOffset: this.stateValues.nChildrenAdded,
+        }, {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "nChildrenAdded",
+          value: this.stateValues.nChildrenAdded + processResult.serializedComponents.length,
+        }],
+      })
+    }
+  }
+
+  deleteChildren({ number }) {
+
+    let numberToDelete = Math.min(number, this.stateValues.nChildrenAdded);
+
+    if (numberToDelete > 0) {
+      let nChildren = this.definingChildren.length;
+      let componentNamesToDelete = this.definingChildren
+        .slice(nChildren - numberToDelete, nChildren)
+        .map(x => x.componentName);
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "deleteComponents",
+          componentNames: componentNamesToDelete
+        }, {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "nChildrenAdded",
+          value: this.stateValues.nChildrenAdded - numberToDelete,
+        }],
+      })
+
+    }
+
+  }
+
   actions = {
     changeAxisLimits: this.changeAxisLimits.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    addChildren: this.addChildren.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    deleteChildren: this.deleteChildren.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     )
   };

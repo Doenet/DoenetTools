@@ -1,4 +1,5 @@
 import { convertAttributesForComponentType } from '../utils/copy';
+import { sampleFromRandomNumbers } from '../utils/randomNumbers';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import SampleRandomNumbers from './SampleRandomNumbers';
 
@@ -53,7 +54,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     stateVariableDefinitions.selectedValues = {
       immutable: true,
       returnDependencies: ({ sharedParameters }) => ({
-        numberToSelect: {
+        numberOfSamples: {
           dependencyType: "stateVariable",
           variableName: "numberToSelect",
         },
@@ -89,7 +90,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           dependencyType: "stateVariable",
           variableName: "variants"
         },
-        selectRng: {
+        rng: {
           dependencyType: "value",
           value: sharedParameters.selectRng,
           doNotProxy: true,
@@ -98,7 +99,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.numberToSelect < 1) {
+        if (dependencyValues.numberOfSamples < 1) {
           return {
             makeEssential: { selectedValues: true },
             newValues: {
@@ -110,7 +111,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         if (dependencyValues.variants && dependencyValues.variants.desiredVariant) {
           let desiredValues = dependencyValues.variants.desiredVariant.values;
           if (desiredValues) {
-            if (desiredValues.length !== dependencyValues.numberToSelect) {
+            if (desiredValues.length !== dependencyValues.numberOfSamples) {
               throw Error("Number of values specified for selectRandomNumber must match number to select");
             }
 
@@ -125,86 +126,13 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           }
         }
 
-        if (dependencyValues.type === "gaussian") {
-
-          if (!(dependencyValues.standardDeviation >= 0) || !Number.isFinite(dependencyValues.mean)) {
-            let message = "Invalid mean (" + dependencyValues.mean
-              + ") or standard deviation (" + dependencyValues.standardDeviation
-              + ") for a gaussian random variable.";
-            console.warn(message);
+        let selectedValues = sampleFromRandomNumbers(dependencyValues);
 
             return {
               makeEssential: { selectedValues: true },
-              newValues: {
-                selectedValues: Array(dependencyValues.numberToSelect).fill(NaN),
+          newValues: { selectedValues }
               }
-            }
-          }
 
-          let selectedValues = [];
-
-          for (let i = 0; i < dependencyValues.numberToSelect; i++) {
-            // Standard Normal variate using Box-Muller transform.
-            let u = 0, v = 0;
-            while (u === 0) {
-              u = dependencyValues.selectRng();
-            }
-            while (v === 0) {
-              v = dependencyValues.selectRng();
-            }
-            let standardNormal = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-
-            // transform to correct parameters
-            selectedValues.push(dependencyValues.mean + dependencyValues.standardDeviation * standardNormal);
-
-          }
-
-          return {
-            makeEssential: { selectedValues: true },
-            newValues: {
-              selectedValues,
-            }
-          }
-
-        } else if (dependencyValues.type === "uniform") {
-
-          let selectedValues = [];
-
-          let diff = dependencyValues.to - dependencyValues.from
-
-          for (let i = 0; i < dependencyValues.numberToSelect; i++) {
-            selectedValues.push(dependencyValues.from + dependencyValues.selectRng() * diff);
-          }
-
-          return {
-            makeEssential: { selectedValues: true },
-            newValues: {
-              selectedValues,
-            }
-          }
-
-        } else {
-          // discreteuniform
-          let selectedValues = [];
-
-          if (dependencyValues.nDiscreteValues > 0) {
-            for (let i = 0; i < dependencyValues.numberToSelect; i++) {
-              // random integer from 0 to nDiscreteValues-1
-              let ind = Math.floor(dependencyValues.selectRng() * dependencyValues.nDiscreteValues);
-
-              selectedValues.push(dependencyValues.from + dependencyValues.step * ind)
-
-            }
-          }
-
-          return {
-            makeEssential: { selectedValues: true },
-            newValues: {
-              selectedValues,
-            }
-          }
-
-        }
       }
     }
 
@@ -250,11 +178,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
   }
 
 
-
-
   static createSerializedReplacements({ component, componentInfoObjects }) {
-
-
 
     let attributesToConvert = {};
     for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
@@ -262,7 +186,6 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
         attributesToConvert[attr] = component.attributes[attr]
       }
     }
-
 
 
     let replacements = [];

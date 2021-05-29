@@ -820,7 +820,7 @@ describe('UpdateValue Tag Tests', function () {
   })
 
 
-  it('update set', () => {
+  it('triggerSet', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -830,12 +830,12 @@ describe('UpdateValue Tag Tests', function () {
     <p>Say hello: <text name="hello"></text></p>
     <p>Count: <number name="n">1</number></p>
 
-    <updateValueSet label="perform updates" >
+    <triggerSet label="perform updates" >
       <updateValue tName="b" newValue="not$b" type="boolean" />
       <updateValue tName="hello" newValue="$hello hello" type="text" />
       <updateValue tName="n" newValue="$n+1" type="number" />
 
-    </updateValueSet>
+    </triggerSet>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -844,23 +844,23 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/hello').should('have.text', "");
     cy.get('#\\/n').should('have.text', "1");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "true");
     cy.get('#\\/hello').should('have.text', " hello");
     cy.get('#\\/n').should('have.text', "2");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "false");
     cy.get('#\\/hello').should('have.text', " hello hello");
     cy.get('#\\/n').should('have.text', "3");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "true");
     cy.get('#\\/hello').should('have.text', " hello hello hello");
     cy.get('#\\/n').should('have.text', "4");
   })
 
-  it('update set and chain to updatevalue', () => {
+  it('triggerSet and chain to updatevalue', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -870,13 +870,13 @@ describe('UpdateValue Tag Tests', function () {
     <p>Say hello: <text name="hello"></text></p>
     <p>Count: <number name="n">1</number></p>
 
-    <updateValueSet label="perform updates" >
+    <triggerSet label="perform updates" >
       <updateValue tName="b" newValue="not$b" type="boolean" />
       <updateValue tName="hello" newValue="$hello hello" type="text" />
 
-    </updateValueSet>
+    </triggerSet>
 
-    <updateValue tName="n" newValue="$n+1" type="number" triggerWithTname="_updatevalueset1" />
+    <updateValue tName="n" newValue="$n+1" type="number" triggerWithTname="_triggerset1" />
 
     `}, "*");
     });
@@ -886,23 +886,23 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/hello').should('have.text', "");
     cy.get('#\\/n').should('have.text', "1");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "true");
     cy.get('#\\/hello').should('have.text', " hello");
     cy.get('#\\/n').should('have.text', "2");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "false");
     cy.get('#\\/hello').should('have.text', " hello hello");
     cy.get('#\\/n').should('have.text', "3");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "true");
     cy.get('#\\/hello').should('have.text', " hello hello hello");
     cy.get('#\\/n').should('have.text', "4");
   })
 
-  it('update set and chain to updatevalueset', () => {
+  it('triggerSet and chain to triggerset', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -913,15 +913,15 @@ describe('UpdateValue Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <updateValueSet label="perform updates" >
+    <triggerSet label="perform updates" >
       <updateValue tName="b" newValue="not$b" type="boolean" />
       <updateValue tName="hello" newValue="$hello hello" type="text" />
-    </updateValueSet>
+    </triggerSet>
 
-    <updateValueSet label="perform updates" triggerWithTname="_updatevalueset1" >
+    <triggerSet label="perform updates" triggerWithTname="_triggerset1" >
       <updateValue tName="n" newValue="$n+1" type="number"  />
       <updateValue tName="m" newValue="$m-1" type="number"  />
-    </updateValueSet>
+    </triggerSet>
 
     `}, "*");
     });
@@ -931,28 +931,28 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/hello').should('have.text', "");
     cy.get('#\\/n').should('have.text', "1");
     cy.get('#\\/m').should('have.text', "5");
-    cy.get('#\\/_updatevalueset2').should('not.exist');
+    cy.get('#\\/_triggerset2').should('not.exist');
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "true");
     cy.get('#\\/hello').should('have.text', " hello");
     cy.get('#\\/n').should('have.text', "2");
     cy.get('#\\/m').should('have.text', "4");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "false");
     cy.get('#\\/hello').should('have.text', " hello hello");
     cy.get('#\\/n').should('have.text', "3");
     cy.get('#\\/m').should('have.text', "3");
 
-    cy.get('#\\/_updatevalueset1').click();
+    cy.get('#\\/_triggerset1').click();
     cy.get('#\\/b').should('have.text', "true");
     cy.get('#\\/hello').should('have.text', " hello hello hello");
     cy.get('#\\/n').should('have.text', "4");
     cy.get('#\\/m').should('have.text', "2");
   })
 
-  it('update set based on trigger', () => {
+  it('triggerSet based on trigger', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -964,10 +964,10 @@ describe('UpdateValue Tag Tests', function () {
   <math name="x">x</math>
   <math name="y">y</math>
   
-  <updateValueSet triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+  <triggerSet triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
     <updateValue name="trip" tName="x" newValue="3$x" simplify />
     <updateValue name="quad" tName="y" newValue="4$y" simplify />
-  </updateValueSet>
+  </triggerSet>
   `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1073,7 +1073,7 @@ describe('UpdateValue Tag Tests', function () {
     });
   })
 
-  it('triggerWhen supercedes chaining for updatevalueset', () => {
+  it('triggerWhen supercedes chaining for triggerset', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -1088,15 +1088,15 @@ describe('UpdateValue Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <updateValueSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+    <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
       <updateValue tName="b" newValue="not$b" type="boolean" />
       <updateValue tName="hello" newValue="$hello hello" type="text" />
-    </updateValueSet>
+    </triggerSet>
 
-    <updateValueSet label="perform updates" triggerWithTname="_updatevalueset1" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" >
+    <triggerSet label="perform updates" triggerWithTname="_triggerset1" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" >
       <updateValue tName="n" newValue="$n+1" type="number"  />
       <updateValue tName="m" newValue="$m-1" type="number"  />
-    </updateValueSet>
+    </triggerSet>
 
     `}, "*");
     });
@@ -1106,8 +1106,8 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/hello').should('have.text', "");
     cy.get('#\\/n').should('have.text', "1");
     cy.get('#\\/m').should('have.text', "5");
-    cy.get('#\\/_updatevalueset1').should('not.exist');
-    cy.get('#\\/_updatevalueset2').should('not.exist');
+    cy.get('#\\/_triggerset1').should('not.exist');
+    cy.get('#\\/_triggerset2').should('not.exist');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1184,7 +1184,7 @@ describe('UpdateValue Tag Tests', function () {
     });
   })
 
-  it('updatevalueset supercedes triggerWhen for updateValue children', () => {
+  it('triggerset supercedes triggerWhen for updateValue children', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -1198,11 +1198,11 @@ describe('UpdateValue Tag Tests', function () {
     <p>Say hello: <text name="hello"></text></p>
     <p>Count: <number name="n">1</number></p>
 
-    <updateValueSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+    <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
       <updateValue tName="b" newValue="not$b" type="boolean" />
       <updateValue tName="hello" newValue="$hello hello" type="text" />
       <updateValue tName="n" newValue="$n+1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
-    </updateValueSet>
+    </triggerSet>
 
     `}, "*");
     });
@@ -1279,7 +1279,7 @@ describe('UpdateValue Tag Tests', function () {
     });
   })
 
-  it('updatevalueset supercedes chaining for updateValue children', () => {
+  it('triggerset supercedes chaining for updateValue children', () => {
 
     cy.window().then((win) => {
       win.postMessage({
@@ -1294,11 +1294,11 @@ describe('UpdateValue Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <updateValueSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+    <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
       <updateValue tName="b" newValue="not$b" type="boolean" />
       <updateValue tName="hello" newValue="$hello hello" type="text" />
       <updateValue tName="n" newValue="$n+1" type="number" triggerWithTname="uv" />
-    </updateValueSet>
+    </triggerSet>
 
     <updateValue name="uv" tName="m" newValue="$m-1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
 
@@ -1310,7 +1310,7 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/hello').should('have.text', "");
     cy.get('#\\/n').should('have.text', "1");
     cy.get('#\\/m').should('have.text', "5");
-    cy.get('#\\/_updatevalueset1').should('not.exist');
+    cy.get('#\\/_triggerset1').should('not.exist');
     cy.get('#\\/uv').should('not.exist');
 
     cy.window().then((win) => {

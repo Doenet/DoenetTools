@@ -145,7 +145,9 @@ export default class Point extends DoenetRenderer {
     }
 
 
-    if (this.componentName in sourceOfUpdate.sourceInformation) {
+    if (sourceOfUpdate && sourceOfUpdate.sourceInformation &&
+      this.componentName in sourceOfUpdate.sourceInformation
+    ) {
       this.props.board.updateInfobox(this.pointJXG);
     }
 
