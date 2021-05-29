@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import {parse,parseAndCompile,showCursor} from '../../Parser/parser.js';
+import { useRecoilState,RecoilRoot, useRecoilValue } from 'recoil';
+import Drive, {folderDictionaryFilterAtom,folderDictionaryFilterSelector} from '../../_reactComponents/Drive/Drive';
 
 // import axios from 'axios';
 
@@ -83,26 +84,38 @@ import {parse,parseAndCompile,showCursor} from '../../Parser/parser.js';
 
   // <DynamicLoad />,
 
-  function Select(){
-    const options = [
-      <option value="v1" >Version 1</option>,
-    <option value="v2" selected={false}>Version 2</option>,
-    <option value="v3" >Version 3</option>,
-    <option value="v4" >Version 4</option>,
-    <option value="v5" >Version 5</option>,
-    ]
-
-    return <select 
-    size='8' 
-    select="v1" 
-    onChange={(e)=>{console.log(">>>e",e,e.target.value)}}>
-    {options}
-  </select>
-  }
 
 
+function Demo(props) {
+  const [myAtom,setMyAtom] = useRecoilState(folderDictionaryFilterAtom({driveId:"94Kbcv37ZlVH6qLtQDY9g"}));
+  const [myAtom2,setMyAtom2] = useRecoilState(folderDictionaryFilterAtom({driveId:"rrUE5eriLBarSSGb0OXog"}));
+  const filterValue = useRecoilValue(folderDictionaryFilterSelector({driveId:"94Kbcv37ZlVH6qLtQDY9g",folderId:"94Kbcv37ZlVH6qLtQDY9g"}));
+  const filterValue2 = useRecoilValue(folderDictionaryFilterSelector({driveId:"rrUE5eriLBarSSGb0OXog",folderId:"rrUE5eriLBarSSGb0OXog"}));
+  console.log(">>>contentIds",filterValue.contentIds.defaultOrder);
+  console.log(">>>contentIds2",filterValue2.contentIds.defaultOrder);
+  return (
+    <>
+
+<button onClick={()=>setMyAtom("Released Only")}>set atom</button>
+<p>{myAtom}</p>
+<br />
+<button onClick={()=>setMyAtom2("Released Only")}>set atom 2</button>
+    {/* <Drive driveId="n4Dc63X426CTRpgrG58nq"/> */}
+  <p>{myAtom2}</p>
+
+  </>
+  )
+  ;
+  
+}
 ReactDOM.render(
-  <Select />,
+      <RecoilRoot>
+        <Suspense fallback={<p>loading...</p>}>
+        <Demo />
+
+        </Suspense>
+      </RecoilRoot>
+  ,
   document.getElementById('root'),
 );
 
