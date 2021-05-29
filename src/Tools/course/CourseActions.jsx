@@ -49,7 +49,6 @@ export const useAssignment = () => {
       const futureDueDate = formatFutureDate(dt);
       // assignment creation
       let newAssignmentObj = {
-        assignment_title: 'Untitled Assignment',
         assignedDate: creationDate,
         attemptAggregation: 'e',
         dueDate: creationDate,
@@ -73,7 +72,6 @@ export const useAssignment = () => {
         subType: 'Administrator',
       };
       let newchangedAssignmentObj = {
-        assignment_title: 'Untitled Assignment',
         assignedDate: creationDate,
         attemptAggregation: 'e',
         dueDate: creationDate,
@@ -127,7 +125,6 @@ export const useAssignment = () => {
       const creationDate = formatDate(dt);
       const futureDueDate = formatFutureDate(dt);
       let newAssignmentObj = {
-        assignment_title: rest.assignment_title ? rest.assignment_title : 'Untitled Assignment',
         assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
         attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'e',
         dueDate: rest.dueDate ? rest.dueDate : creationDate,
@@ -150,7 +147,6 @@ export const useAssignment = () => {
         subType: 'Administrator',
       };
       let newchangedAssignmentObj = {
-        assignment_title: rest.assignment_title ? rest.assignment_title : 'Untitled Assignment',
         assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
         attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'e',
         dueDate: rest.dueDate ? rest.dueDate : creationDate,

@@ -16,8 +16,6 @@ $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 
 //make assignment 
-$title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
-if($title == ''){$title = 'Untitled Assignment';}
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
 if ($dueDate == ''){ $dueDate = '0001-01-01 01:01:01';}
 $assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);

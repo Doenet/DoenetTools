@@ -524,8 +524,8 @@ const DoenetMLInfoPanel = (props) => {
       <>
         {
           <>
-            <div>
-              <label>Assignment Name :</label>
+            {/* <div>
+              <label>Assignment Name :</label> 
               <input
                 required
                 type="text"
@@ -535,7 +535,7 @@ const DoenetMLInfoPanel = (props) => {
                 onBlur={(e) => handleOnBlur(e)}
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
             <div>
               <label>Assigned Date:</label>
               <input
@@ -801,7 +801,6 @@ const VersionHistoryInfoPanel = (props) => {
                 let payload = {
                   ...aInfo,
                   itemId: itemInfo.itemId,
-                  assignment_title: 'Untitled Assignment',
                   isAssigned: '1',
                   branchId: itemInfo.branchId,
                   contentId: selectedContentId(),
@@ -875,7 +874,7 @@ const VersionHistoryInfoPanel = (props) => {
                   .then((resp) => {
                     if (resp.data.success) {
                       addToast(
-                        `'${itemInfo.assignment_title}' back to '${itemInfo.label}''`,
+                        `'version title' back to '${itemInfo.label}''`,  //TODO update version title
                         ToastType.SUCCESS,
                       );
                     } else {
@@ -926,11 +925,9 @@ const VersionHistoryInfoPanel = (props) => {
                   ...aInfo
                   // prevAssignedVersionId:prevAssignedVersionId(),
                 });
-                console.log(">>>>>>>>aInfo",aInfo);
                 let payload = {
                   ...aInfo,
                   itemId: itemInfo.itemId,
-                  // assignment_title: 'Untitled Assignment',
                   isAssigned: '1',
                   branchId: itemInfo.branchId,
                   contentId: selectedContentId(),
@@ -1159,7 +1156,6 @@ const VersionInfo = (props) => {
 //         itemInfo.assignment_isPublished ===
 //           '1'(
 //             <div>
-//               <h1>{aInfo?.assignment_title}</h1>
 //               <p>Due: {aInfo?.dueDate}</p>
 //               <p>Time Limit: {aInfo?.timeLimit}</p>
 //               <p>

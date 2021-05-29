@@ -23,7 +23,6 @@ $response_arr = array(
 ); 
 
   $sql = "SELECT
-  a.title AS assignment_title,
   a.assignedDate AS assignedDate,
   a.dueDate AS dueDate,
   a.timeLimit AS timeLimit,
@@ -56,7 +55,6 @@ $response_arr = array(
   if ($result->num_rows > 0){
     while($row = $result->fetch_assoc()){
       $assignment = array(
-          "assignment_title" => $row['assignment_title'],
           "assignedDate" => $row['assignedDate'],
           "dueDate" => $row['dueDate'],
           "timeLimit" => $row['timeLimit'],
