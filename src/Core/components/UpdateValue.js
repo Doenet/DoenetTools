@@ -1,8 +1,10 @@
 import { normalizeMathExpression } from '../utils/math';
 import InlineComponent from './abstract/InlineComponent';
 
-export class UpdateValue extends InlineComponent {
+export default class UpdateValue extends InlineComponent {
   static componentType = "updateValue";
+
+  static triggeringAction = "updateValue";
 
   static acceptTname = true;
 
@@ -286,18 +288,18 @@ export class UpdateValue extends InlineComponent {
       },
     };
 
-    stateVariableDefinitions.insideUpdateValueSet = {
+    stateVariableDefinitions.insideTriggerSet = {
       returnDependencies: () => ({
-        parentUpdateValueSet: {
+        parentTriggerSet: {
           dependencyType: "parentStateVariable",
-          parentComponentType: "updateValueSet",
-          variableName: "updateValuesToTrigger"
+          parentComponentType: "triggerSet",
+          variableName: "updateValueAndActionsToTrigger"
         },
       }),
       definition({ dependencyValues }) {
         return {
           newValues: {
-            insideUpdateValueSet: dependencyValues.parentUpdateValueSet !== null
+            insideTriggerSet: dependencyValues.parentTriggerSet !== null
           }
         }
       }
@@ -313,13 +315,13 @@ export class UpdateValue extends InlineComponent {
           dependencyType: "attribute",
           attributeName: "triggerWhen"
         },
-        insideUpdateValueSet: {
+        insideTriggerSet: {
           dependencyType: "stateVariable",
-          variableName: "insideUpdateValueSet"
+          variableName: "insideTriggerSet"
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.insideUpdateValueSet) {
+        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet) {
           return { newValues: { triggerWithTname: null } }
         } else {
           return { newValues: { triggerWithTname: dependencyValues.triggerWithTname } }
@@ -329,7 +331,6 @@ export class UpdateValue extends InlineComponent {
 
     stateVariableDefinitions.triggerWithFullTname = {
       chainActionOnActionOfStateVariableTarget: {
-        triggeringAction: "updateValue",
         triggeredAction: "updateValue"
       },
       stateVariablesDeterminingDependencies: ["triggerWithTname"],
@@ -364,9 +365,9 @@ export class UpdateValue extends InlineComponent {
         dependencyType: "stateVariable",
         variableName: "triggerWithTname"
       }
-      dependencies.insideUpdateValueSet = {
+      dependencies.insideTriggerSet = {
         dependencyType: "stateVariable",
-        variableName: "insideUpdateValueSet"
+        variableName: "insideTriggerSet"
       }
       return dependencies;
     }
@@ -374,7 +375,7 @@ export class UpdateValue extends InlineComponent {
     stateVariableDefinitions.hidden.definition = function (args) {
       if (args.dependencyValues.triggerWhen ||
         args.dependencyValues.triggerWithTname ||
-        args.dependencyValues.insideUpdateValueSet
+        args.dependencyValues.insideTriggerSet
       ) {
         return { newValues: { hidden: true } }
       } else {
@@ -427,7 +428,6 @@ export class UpdateValue extends InlineComponent {
           },
           callBack: () => this.coreFunctions.triggerChainedActions({
             componentName: this.componentName,
-            actionName: "updateValue"
           })
         });
       }
@@ -437,8 +437,10 @@ export class UpdateValue extends InlineComponent {
   }
 
   updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
-    if (stateValues.triggerWhen && !previousValues.triggerWhen &&
-      !this.stateValues.insideUpdateValueSet
+    // Note: explicitly test if previous value is false
+    // so don't trigger on initialization when it is undefined
+    if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
+      !this.stateValues.insideTriggerSet
     ) {
       this.updateValue();
     }
@@ -454,224 +456,3 @@ export class UpdateValue extends InlineComponent {
   };
 }
 
-
-export class UpdateValueSet extends InlineComponent {
-  static componentType = "updateValueSet";
-  static rendererType = "updateValue";
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
-    // attributes.width = {default: 300};
-    // attributes.height = {default: 50};
-    attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "update value",
-      public: true,
-      forRenderer: true,
-    };
-
-    attributes.triggerWhen = {
-      createComponentOfType: "boolean",
-      createStateVariable: "triggerWhen",
-      defaultValue: false,
-      triggerActionOnChange: "updateValueIfTriggerNewlyTrue"
-    }
-
-    attributes.triggerWithTname = {
-      createPrimitiveOfType: "string"
-    }
-
-    return attributes;
-  }
-
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    childLogic.newLeaf({
-      name: "atLeastZeroUpdateValues",
-      componentType: 'updateValue',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-
-    return childLogic;
-  }
-
-
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.updateValuesToTrigger = {
-      returnDependencies: () => ({
-        updateValueChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroUpdateValues",
-          variableNames: ["targets", "newValue", "propName", "tName"]
-        }
-      }),
-      definition({ dependencyValues }) {
-        return {
-          newValues: {
-            updateValuesToTrigger: dependencyValues.updateValueChildren
-          }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWithTname = {
-      returnDependencies: () => ({
-        triggerWithTname: {
-          dependencyType: "attribute",
-          attributeName: "triggerWithTname"
-        },
-        triggerWhen: {
-          dependencyType: "attribute",
-          attributeName: "triggerWhen"
-        }
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen) {
-          return { newValues: { triggerWithTname: null } }
-        } else {
-          return { newValues: { triggerWithTname: dependencyValues.triggerWithTname } }
-        }
-      }
-    }
-
-    stateVariableDefinitions.triggerWithFullTname = {
-      chainActionOnActionOfStateVariableTarget: {
-        triggeringAction: "updateValue",
-        triggeredAction: "updateValue"
-      },
-      stateVariablesDeterminingDependencies: ["triggerWithTname"],
-      returnDependencies({ stateValues }) {
-        if (stateValues.triggerWithTname) {
-          return {
-            triggerWithFullTname: {
-              dependencyType: "expandTargetName",
-              tName: stateValues.triggerWithTname
-            }
-          }
-        } else {
-          return {}
-        }
-      },
-      definition({ dependencyValues }) {
-        return { newValues: { triggerWithFullTname: dependencyValues.triggerWithFullTname } }
-      }
-    }
-
-
-    let originalHiddenReturnDependencies = stateVariableDefinitions.hidden.returnDependencies;
-    let originalHiddenDefinition = stateVariableDefinitions.hidden.definition;
-
-    stateVariableDefinitions.hidden.returnDependencies = function (args) {
-      let dependencies = originalHiddenReturnDependencies(args);
-      dependencies.triggerWhen = {
-        dependencyType: "attributeComponent",
-        attributeName: "triggerWhen"
-      },
-        dependencies.triggerWithTname = {
-          dependencyType: "stateVariable",
-          variableName: "triggerWithTname"
-        }
-      return dependencies;
-    }
-
-    stateVariableDefinitions.hidden.definition = function (args) {
-      if (args.dependencyValues.triggerWhen || args.dependencyValues.triggerWithTname) {
-        return { newValues: { hidden: true } }
-      } else {
-        return originalHiddenDefinition(args);
-      }
-    }
-
-    return stateVariableDefinitions;
-
-  }
-
-
-  updateValue() {
-
-    let updateInstructions = [];
-
-    for (let updateValueChild of this.stateValues.updateValuesToTrigger) {
-
-      if (updateValueChild.stateValues.targets !== null && updateValueChild.stateValues.newValue !== null) {
-
-        for (let target of updateValueChild.stateValues.targets) {
-          let stateVariable = "value";
-          if (target.stateValues) {
-            stateVariable = Object.keys(target.stateValues)[0];
-            if (stateVariable === undefined) {
-              console.warn(`Cannot update prop="${updateValueChild.stateValues.propName}" of ${updateValueChild.stateValues.tName} as could not find prop ${updateValueChild.stateValues.propName} on a component of type ${target.componentType}`)
-              continue;
-            }
-          }
-
-          updateInstructions.push({
-            updateType: "updateValue",
-            componentName: target.componentName,
-            stateVariable,
-            value: updateValueChild.stateValues.newValue,
-          })
-
-        }
-      }
-
-    }
-
-    if (updateInstructions.length > 0) {
-
-      let allUpdateValueNames = [
-        this.componentName,
-        ...this.stateValues.updateValuesToTrigger.map(x => x.componentName)
-      ]
-
-      this.coreFunctions.requestUpdate({
-        updateInstructions,
-        event: {
-          verb: "selected",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            response: this.stateValues.updateValuesToTrigger.map(x => x.stateValues.newValue),
-            responseText: this.stateValues.updateValuesToTrigger.map(x => x.stateValues.newValue.toString()),
-          }
-        },
-        callBack: () => {
-          for (let cName of allUpdateValueNames) {
-            this.coreFunctions.triggerChainedActions({
-              componentName: cName,
-              actionName: "updateValue"
-            })
-          }
-        }
-      });
-    }
-
-
-  }
-
-  updateValueIfTriggerNewlyTrue({ stateValues, previousValues }) {
-    if (stateValues.triggerWhen && !previousValues.triggerWhen) {
-      this.updateValue();
-    }
-  }
-
-  actions = {
-    updateValue: this.updateValue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    updateValueIfTriggerNewlyTrue: this.updateValueIfTriggerNewlyTrue.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-  };
-}

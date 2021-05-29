@@ -1886,7 +1886,7 @@ export function processAssignNames({
 
   for (let ind = 0; ind < nComponents; ind++) {
 
-    let indForNames = ind + indOffset - numStrings;
+    let indForNames = ind + indOffset;
 
     let component = serializedComponents[ind];
 
@@ -1896,7 +1896,7 @@ export function processAssignNames({
       continue;
     }
 
-    let name = assignNames[indForNames];
+    let name = assignNames[indForNames - numStrings];
 
 
     if (!component.doenetAttributes) {

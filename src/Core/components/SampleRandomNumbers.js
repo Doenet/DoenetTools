@@ -1,4 +1,5 @@
 import { convertAttributesForComponentType } from '../utils/copy';
+import { sampleFromRandomNumbers } from '../utils/randomNumbers';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import CompositeComponent from './abstract/CompositeComponent';
 
@@ -362,86 +363,22 @@ export default class SampleRandomNumbers extends CompositeComponent {
           }
         }
 
-        if (dependencyValues.type === "gaussian") {
+        let sampledValues = sampleFromRandomNumbers(dependencyValues);
 
-          if (!(dependencyValues.standardDeviation >= 0) || !Number.isFinite(dependencyValues.mean)) {
-            let message = "Invalid mean (" + dependencyValues.mean
-              + ") or standard deviation (" + dependencyValues.standardDeviation
-              + ") for a gaussian random variable.";
-            console.warn(message);
-
-            return {
-              makeEssential: { sampledValues: true },
-              newValues: {
-                sampledValues: Array(dependencyValues.numberOfSamples).fill(NaN),
-              }
-            }
-          }
-
-          let sampledValues = [];
-
-          for (let i = 0; i < dependencyValues.numberOfSamples; i++) {
-            // Standard Normal variate using Box-Muller transform.
-            let u = 0, v = 0;
-            while (u === 0) {
-              u = dependencyValues.rng();
-            }
-            while (v === 0) {
-              v = dependencyValues.rng();
-            }
-            let standardNormal = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-
-            // transform to correct parameters
-            sampledValues.push(dependencyValues.mean + dependencyValues.standardDeviation * standardNormal);
-
-          }
-
-          return {
-            makeEssential: { sampledValues: true },
-            newValues: {
-              sampledValues,
-            }
-          }
-
-        } else if (dependencyValues.type === "uniform") {
-
-          let sampledValues = [];
-
-          let diff = dependencyValues.to - dependencyValues.from
-
-          for (let i = 0; i < dependencyValues.numberOfSamples; i++) {
-            sampledValues.push(dependencyValues.from + dependencyValues.rng() * diff);
-          }
-
-          return {
-            makeEssential: { sampledValues: true },
-            newValues: {
-              sampledValues,
-            }
-          }
-
-        } else {
-          // discreteuniform
-          let sampledValues = [];
-
-          if (dependencyValues.nDiscreteValues > 0) {
-            for (let i = 0; i < dependencyValues.numberOfSamples; i++) {
-              // random integer from 0 to nDiscreteValues-1
-              let ind = Math.floor(dependencyValues.rng() * dependencyValues.nDiscreteValues);
-
-              sampledValues.push(dependencyValues.from + dependencyValues.step * ind)
-
-            }
-          }
-
-          return {
-            makeEssential: { sampledValues: true },
-            newValues: {
-              sampledValues,
-            }
-          }
-
+        return {
+          makeEssential: { sampledValues: true },
+          newValues: { sampledValues }
         }
+
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "sampledValues",
+            value: desiredStateVariableValues.sampledValues
+          }]
+        };
       }
     }
 
@@ -573,5 +510,38 @@ export default class SampleRandomNumbers extends CompositeComponent {
     return replacementChanges;
   }
 
+
+  resample() {
+
+    let sampledValues = sampleFromRandomNumbers({
+      type: this.stateValues.type,
+      numberOfSamples: this.stateValues.numberOfSamples,
+      standardDeviation: this.stateValues.standardDeviation,
+      mean: this.stateValues.mean,
+      to: this.stateValues.to,
+      from: this.stateValues.from,
+      step: this.stateValues.step,
+      nDiscreteValues: this.stateValues.nDiscreteValues,
+      rng: this.sharedParameters.rng
+    });
+
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "sampledValues",
+        value: sampledValues,
+      }]
+    })
+
+  }
+
+
+  actions = {
+    resample: this.resample.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+  };
 
 }
