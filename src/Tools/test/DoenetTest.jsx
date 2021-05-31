@@ -7,7 +7,7 @@ function Test() {
   // console.log("===Test")
 
   // const [doenetML,setDoenetML] = useState("");
-  let doenetML = useRef("");
+  let doenetML = useRef(null);
 
   //New DoenetViewer when code changes
   useEffect(() => {
@@ -22,8 +22,13 @@ function Test() {
   const [readOnly, setReadOnly] = useState(false);
   const [showFeedback, setShowFeedback] = useState(true);
   const [showHints, setShowHints] = useState(true);
-  const [ignoreDatabase, setIgnoreDatabase] = useState(true);
+
   const [bundledCore, setBundledCore] = useState(false);
+  const [allowLoadPageState, setAllowLoadPageState] = useState(false);
+  const [allowSavePageState, setAllowSavePageState] = useState(false);
+  const [allowSavePageStateLocally, setAllowSavePageStateLocally] = useState(false);
+  const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(false);
+  const [allowSaveEvents, setAllowSaveEvents] = useState(false);
   const solutionDisplayMode = "button";
 
   // let requestedVariant = useRef({ index: 0 });
@@ -54,7 +59,7 @@ function Test() {
   let buttonText = 'show';
   if (controlsVisible) {
     buttonText = 'hide';
-    controls = <div>
+    controls = <div style={{padding:"8px"}}>
       <div>
         <label>Attempt Number: {attemptNumber} <button onClick={
           () => {
@@ -63,7 +68,6 @@ function Test() {
           }
         }>New Attempt</button></label>
       </div>
-
       <div>
         <label> <input type='checkbox' checked={showCorrectness} onChange={
           () => {
@@ -97,14 +101,48 @@ function Test() {
           }
         } />Show Hints</label>
       </div>
+     <hr />
       <div>
-        <label> <input type='checkbox' checked={ignoreDatabase} onChange={
+        <label> <input type='checkbox' checked={allowLoadPageState} onChange={
           () => {
-            setIgnoreDatabase(was => !was)
+            setAllowLoadPageState(was => !was)
             setUpdateNumber((was) => was + 1)
           }
-        } />Ignore Database</label>
+        } />Allow Load Page State</label>
       </div>
+      <div>
+        <label> <input type='checkbox' checked={allowSavePageState} onChange={
+          () => {
+            setAllowSavePageState(was => !was)
+            setUpdateNumber((was) => was + 1)
+          }
+        } />Allow Save Page State</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={allowSavePageStateLocally} onChange={
+          () => {
+            setAllowSavePageStateLocally(was => !was)
+            setUpdateNumber((was) => was + 1)
+          }
+        } />Allow Save Page State Locally</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={allowSaveSubmissions} onChange={
+          () => {
+            setAllowSaveSubmissions(was => !was)
+            setUpdateNumber((was) => was + 1)
+          }
+        } />Allow Save Submissions</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={allowSaveEvents} onChange={
+          () => {
+            setAllowSaveEvents(was => !was)
+            setUpdateNumber((was) => was + 1)
+          }
+        } />Allow Save Events</label>
+      </div>
+     <hr />
       <div>
         <label> <input type='checkbox' checked={bundledCore} onChange={
           () => {
@@ -119,6 +157,11 @@ function Test() {
   let coreProp = core;
   if (bundledCore) {
     coreProp = null;
+  }
+
+  //Don't construct core until we have the doenetML defined
+  if (doenetML.current === null){ 
+    return null;
   }
 
   return (
@@ -140,7 +183,11 @@ function Test() {
           showHints,
         }}
         attemptNumber={attemptNumber}
-        ignoreDatabase={ignoreDatabase}
+        allowLoadPageState={allowLoadPageState}
+        allowSavePageState={allowSavePageState}
+        allowSavePageStateLocally={allowSavePageStateLocally}
+        allowSaveSubmissions={allowSaveSubmissions}
+        allowSaveEvents={allowSaveEvents}
         requestedVariant={requestedVariant.current}
         core={coreProp}
       // collaborate={true}

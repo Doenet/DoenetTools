@@ -41,9 +41,11 @@ export function serializedComponentsReviver(key, value) {
   return me.reviver(key, nanInfinityReviver(key, value))
 }
 
-
 class DoenetViewerChild extends Component {
+
   constructor(props) {
+  console.log("===DoenetViewerChild constructor")
+
     super(props);
     this.update = this.update.bind(this);
     this.coreReady = this.coreReady.bind(this);
@@ -102,7 +104,6 @@ class DoenetViewerChild extends Component {
 
     this.loadState(this.createCore);
   }
-
 
   createCore({ stateVariables, variant }) {
 
@@ -164,7 +165,6 @@ class DoenetViewerChild extends Component {
 
   }
 
-
   coreReady() {
 
     this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
@@ -198,7 +198,21 @@ class DoenetViewerChild extends Component {
 
     //TODO: Handle if number of items changed. Handle if weights changed
 
-    if (this.assignmentId && !this.props.ignoreDatabase) {
+    // console.log(">>>this.props.allowLoadPageState", this.props.allowLoadPageState)
+    // console.log(">>>this.props.allowSavePageState", this.props.allowSavePageState)
+    // console.log(">>>this.props.allowSavePageStateLocally", this.props.allowSavePageStateLocally)
+    // console.log(">>>this.props.allowSaveSubmissions", this.props.allowSaveSubmissions)
+    // console.log(">>>this.props.allowSaveEvents", this.props.allowSaveEvents)
+    //TODO: too blunt eliminate ignoreDatabase
+    //Propose: 
+    //props.AllowLoadPageState (ContentInteractions) (Only for Automated testing)
+    //props.AllowSavePageState (ContentInteractions) (Saves where you were)
+    //props.AllowSavePageStateLocally (Give user this option save only to device not Doenet)
+    //props.AllowSaveSubmissions (grades)
+    //props.AllowSaveEvents
+
+    if (this.assignmentId ) {
+      // if (this.assignmentId && !this.props.ignoreDatabase) {
       const payload = {
         weights: this.core.scoredItemWeights,
         contentId: this.contentId,
@@ -206,7 +220,8 @@ class DoenetViewerChild extends Component {
         attemptNumber: this.attemptNumber
       }
       console.log(">>>this.assignmentId", this.assignmentId)
-      console.log(">>>this.props.ignoreDatabase", this.props.ignoreDatabase)
+     
+
       console.log("core ready payload:", payload)
       axios.post('/api/saveAssignmentWeights.php', payload)
         .then(resp => {
@@ -256,7 +271,8 @@ class DoenetViewerChild extends Component {
   }) {
 
     // TODO: what should we do with transient updates?
-    if (transient || this.props.ignoreDatabase) {
+    if (transient) {
+      // if (transient || this.props.ignoreDatabase) {
       return;
     }
 
@@ -328,13 +344,13 @@ class DoenetViewerChild extends Component {
 
   loadState(callback) {
 
-    if (this.props.ignoreDatabase) {
-      callback({
-        stateVariables: null,
-        variant: null
-      });
-      return;
-    }
+    // if (this.props.ignoreDatabase) {
+    //   callback({
+    //     stateVariables: null,
+    //     variant: null
+    //   });
+    //   return;
+    // }
 
     const phpUrl = '/api/loadContentInteractions.php';
     const data = {
@@ -391,11 +407,12 @@ class DoenetViewerChild extends Component {
     itemCreditAchieved,
     callBack,
   }) {
-    // console.log('CALLED!',
-    //   itemNumber,
-    //   itemCreditAchieved
-    // )
-    //
+    console.log('CALLED!',
+      itemNumber,
+      itemCreditAchieved,
+      this.attemptNumber
+    )
+    
     if (this.assignmentId) {
       const payload = {
         assignmentId: this.assignmentId,
@@ -412,7 +429,6 @@ class DoenetViewerChild extends Component {
 
     callBack("submitResponse callback parameter");
   }
-
 
   // TODO: if assignmentId, then need to record fact that student
   // viewed solution in user_assignment_attempt_item
@@ -439,12 +455,11 @@ class DoenetViewerChild extends Component {
 
   }
 
-
   recordEvent(event) {
 
-    if (this.props.ignoreDatabase) {
-      return;
-    }
+    // if (this.props.ignoreDatabase) {
+    //   return;
+    // }
 
     const payload = {
       assignmentId: this.assignmentId,
@@ -467,6 +482,13 @@ class DoenetViewerChild extends Component {
   }
 
   render() {
+    console.log("===DoenetViewerChild renderer")
+
+    // console.log(">>>render this.props.allowLoadPageState", this.props.allowLoadPageState)
+    // console.log(">>>render this.props.allowSavePageState", this.props.allowSavePageState)
+    // console.log(">>>render this.props.allowSavePageStateLocally", this.props.allowSavePageStateLocally)
+    // console.log(">>>render this.props.allowSaveSubmissions", this.props.allowSaveSubmissions)
+    // console.log(">>>render this.props.allowSaveEvents", this.props.allowSaveEvents)
     return this.documentRenderer;
   }
 
