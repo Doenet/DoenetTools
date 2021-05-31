@@ -316,7 +316,7 @@ export default class Core {
               originalCopyWithUri.children = [];
             }
             originalCopyWithUri.children.push({
-              componentType: "externalcontent",
+              componentType: "externalContent",
               children: serializedComponentsForContentId,
               attributes: { newNamespace: true }
             });
@@ -331,7 +331,7 @@ export default class Core {
               originalCopyWithUri.children = [];
             }
             originalCopyWithUri.children.push({
-              componentType: "externalcontent",
+              componentType: "externalContent",
               children: serializedComponentsForContentName,
               attributes: { newNamespace: true }
             });

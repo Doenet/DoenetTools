@@ -333,7 +333,7 @@ export default class Copy extends CompositeComponent {
         }
         let childrenOfContent = externalContentChild.stateValues.serializedChildren;
         let serializedComponentsForContentId = {
-          componentType: "externalcontent",
+          componentType: "externalContent",
           state: { rendered: true },
           children: childrenOfContent,
           originalName: externalContentChild.componentName,
