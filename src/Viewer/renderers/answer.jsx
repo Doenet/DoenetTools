@@ -13,9 +13,29 @@ export default class Answer extends DoenetRenderer {
     }
 
     let submitAnswer = this.actions.submitAnswer;
-    if(this.doenetSvData.submitAllAnswersAtAncestor) {
+    if (this.doenetSvData.submitAllAnswersAtAncestor) {
       submitAnswer = this.actions.submitAllAnswers;
     }
+
+    // BADBADBAD: need to redo how getting the input child
+    // without using the internal guts of componentInstructions
+    // is just asking for trouble
+
+    let inputChildToRender = null;
+    if (this.doenetSvData.inputChild) {
+
+      if (this.doenetSvData.inputChild) {
+        let inputChildInd;
+        for (let [ind, child] of this.children.entries()) {
+          if (child.props.componentInstructions.componentName === this.doenetSvData.inputChild.componentName) {
+            inputChildInd = ind;
+            break;
+          }
+        }
+        inputChildToRender = this.children[inputChildInd];
+      }
+    }
+
 
     if (!this.doenetSvData.delegateCheckWork) {
 
@@ -40,7 +60,7 @@ export default class Answer extends DoenetRenderer {
         //marginBottom: "30px",  //Space after check work
       }
 
-      if(this.doenetSvData.disabled) {
+      if (this.doenetSvData.disabled) {
         checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       }
 
@@ -115,11 +135,11 @@ export default class Answer extends DoenetRenderer {
 
       return <span id={this.componentName}>
         <a name={this.componentName} />
-        {this.children}
+        {inputChildToRender}
         {checkworkComponent}
       </span>;
     } else {
-      return <span id={this.componentName}><a name={this.componentName} />{this.children}</span>;
+      return <span id={this.componentName}><a name={this.componentName} />{inputChildToRender}</span>;
     }
 
   }
