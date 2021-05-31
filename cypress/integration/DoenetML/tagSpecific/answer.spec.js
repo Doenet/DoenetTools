@@ -5983,6 +5983,63 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('answer with choiceinput, no bug when submit first', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>The animal is a:</p>
+  <answer>
+  <choiceinput>
+    <choice credit="0.5">cat</choice>
+    <choice credit="1">dog</choice>
+    <choice>monkey</choice>
+  </choiceinput>
+  </answer>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_choiceinput1').should('have.value', '');
+    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.log("Click submit button")
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('incorrect')
+    })
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+
+    cy.log("Select correct answer")
+    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
+    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.log("Click submit button")
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('correct')
+    })
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+
+  });
+
   it.skip('answer with sugared block choiceinput', () => {
     cy.window().then((win) => {
       win.postMessage({

@@ -164,45 +164,6 @@ export class Example extends SectioningComponent {
 }
 
 
-export class AnswerSet extends SectioningComponent {
-  static componentType = "answerSet";
-  static rendererType = "section";
-
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
-    attributes.aggregateScores.defaultValue = true;
-    attributes.sectionWideCheckWork = {
-      createComponentOfType: "boolean",
-      createStateVariable: "sectionWideCheckWork",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
-      ignorePropagationFromAncestors: true
-    };
-
-    return attributes;
-  }
-
-
-  static returnStateVariableDefinitions() {
-
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: null }
-    });
-
-    stateVariableDefinitions.containerTag.definition = () => ({
-      newValues: { containerTag: "none" }
-    });
-
-    return stateVariableDefinitions;
-  }
-
-}
-
-
 export class StandinForFutureLayoutTag extends SectioningComponent {
   static componentType = "standinForFutureLayoutTag";
   static rendererType = "section";

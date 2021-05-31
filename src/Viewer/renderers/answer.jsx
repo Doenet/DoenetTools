@@ -40,10 +40,10 @@ export default class Answer extends DoenetRenderer {
     if (!this.doenetSvData.delegateCheckWork) {
 
       let validationState = "unvalidated";
-      if (this.doenetSvData.justSubmittedForSubmitButton) {
-        if (this.doenetSvData.creditAchievedForSubmitButton === 1) {
+      if (this.doenetSvData.justSubmitted) {
+        if (this.doenetSvData.creditAchieved === 1) {
           validationState = "correct";
-        } else if (this.doenetSvData.creditAchievedForSubmitButton === 0) {
+        } else if (this.doenetSvData.creditAchieved === 0) {
           validationState = "incorrect";
         } else {
           validationState = "partialcorrect";
@@ -108,7 +108,7 @@ export default class Answer extends DoenetRenderer {
             </span>);
         } else if (validationState === "partialcorrect") {
           checkWorkStyle.backgroundColor = "#efab34";
-          let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+          let percent = Math.round(this.doenetSvData.creditAchieved * 100);
           let partialCreditContents = `${percent}% Correct`;
 
           checkworkComponent = (

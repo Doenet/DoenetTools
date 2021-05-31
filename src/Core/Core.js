@@ -6185,14 +6185,14 @@ export default class Core {
         this.parameterStack.pop();
 
 
-        let shadowResult = this.addChildrenAndRecurseToShadows({ 
-          parent: unproxiedShadowingParent, 
+        let shadowResult = this.addChildrenAndRecurseToShadows({
+          parent: unproxiedShadowingParent,
           indexOfDefiningChildren,
           newChildren: createResult.components,
-           assignNamesOffset
+          assignNamesOffset
         });
 
-        if(!shadowResult.success) {
+        if (!shadowResult.success) {
           throw Error(`was able to add components to parent but not shadows!`)
         }
 
