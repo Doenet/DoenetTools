@@ -488,6 +488,21 @@ class DoenetViewerChild extends Component {
         newContentIds,
         success: true
       })
+    }).catch(err => {
+
+      let message;
+      if(newContentIds.length === 1) {
+        message = `Could not retrieve contentId ${newContentIds[0]}`
+      } else {
+        message = `Could not retrieve contentIds ${newContentIds.join(',')}`
+      }
+
+      callBack({
+        success: false,
+        message,
+        newDoenetMLs: [],
+        newContentIds: []
+      })
     })
   
   }

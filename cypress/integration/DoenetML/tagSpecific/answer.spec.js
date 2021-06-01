@@ -7564,8 +7564,7 @@ describe('Answer Tag Tests', function () {
     }
   });
 
-
-  it.only('award credit from boolean', () => {
+  it('award credit from boolean', () => {
 
     let options = ["meow", "woof", "squeak", "blub"]
     for (let ind = 0; ind < 4; ind++) {
