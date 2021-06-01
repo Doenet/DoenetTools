@@ -4,12 +4,7 @@ import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import me from 'math-expressions';
-// TODO: dynamic loading of renderers fails if we don't load HotTable
-// even though we don't use HotTable anywhere
-// What is the cause of this dependency?
-// import { HotTable } from '@handsontable/react';
 
-// import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 
 export function serializedComponentsReplacer(key, value) {
   if (value !== value) {
@@ -60,6 +55,10 @@ class DoenetViewerChild extends Component {
 
     this.cumulativeStateVariableChanges = {};
 
+    this.needNewCoreFlag = false;
+
+    //Track if viewer should update with:
+    //this.state.doenetML, this.state.attemptNumber, and this.state.contentId
     this.state = {
       doenetML:null,
       attemptNumber:null,
@@ -160,18 +159,7 @@ class DoenetViewerChild extends Component {
 
     //TODO: Handle if number of items changed. Handle if weights changed
 
-    // console.log(">>>this.props.allowLoadPageState", this.props.allowLoadPageState)
-    // console.log(">>>this.props.allowSavePageState", this.props.allowSavePageState)
-    // console.log(">>>this.props.allowSavePageStateLocally", this.props.allowSavePageStateLocally)
-    // console.log(">>>this.props.allowSaveSubmissions", this.props.allowSaveSubmissions)
-    // console.log(">>>this.props.allowSaveEvents", this.props.allowSaveEvents)
-    //TODO: too blunt eliminate ignoreDatabase
-    //Propose: 
-    //props.AllowLoadPageState (ContentInteractions) (Only for Automated testing)
-    //props.AllowSavePageState (ContentInteractions) (Saves where you were)
-    //props.AllowSavePageStateLocally (Give user this option save only to device not Doenet)
-    //props.AllowSaveSubmissions (grades)
-    //props.AllowSaveEvents
+    
 
     if (this.assignmentId ) {
       // if (this.assignmentId && !this.props.ignoreDatabase) {
@@ -219,6 +207,8 @@ class DoenetViewerChild extends Component {
       )
 
       // this.forceUpdate();
+      this.needNewCoreFlag = false;
+
       this.setState({
         doenetML:this.doenetML,
         attemptNumber:this.attemptNumber,
@@ -453,38 +443,67 @@ class DoenetViewerChild extends Component {
     }
 
     
-    //Set this.doenetML if it hasn't been set yet
-    if (!this.doenetML ){
-      if (this.props.doenetML){
-        this.doenetML = this.props.doenetML;
-        this.contentId = sha256(JSON.stringify(this.doenetML)).toString(CryptoJS.enc.Hex);
-      }else{
-        //Load the doenetML from the server
-        axios.get(`/media/${contentId}.doenet`)
-          .then(resp => {
-            this.doenetML = resp.data;
-            this.forceUpdate();
-            })
-      }
-    }else if (this.state.doenetML !== this.props.doenetML){
-      //editor changed doenetML
+
+    if (this.props.doenetML && !this.props.contentId){
+      //*** Define this.contentId if not prop
       this.doenetML = this.props.doenetML;
-      this.contentId = sha256(JSON.stringify(this.doenetML)).toString(CryptoJS.enc.Hex);
+      if (this.doenetML !== this.state.doenetML){
+        this.contentId = sha256(JSON.stringify(this.props.doenetML)).toString(CryptoJS.enc.Hex);
+        this.needNewCoreFlag = true;
+      }
+    }else if (this.props.doenetML && !this.props.contentId){
+      //*** Define this.doenetML if not prop
+      this.contentId = this.props.contentId;
+      //If contentId is different load the corresponding contentId
+      if (this.contentId !== this.state.contentId){
+          this.needNewCoreFlag = true;
+          //Try to load doenetML from local storage
+          this.doenetML = localStorage.getItem(contentId);
+          if (!this.doenetML){
+          try {
+            //Load the doenetML from the server
+            axios.get(`/media/${contentId}.doenet`)
+            .then(resp => {
+              this.doenetML = resp.data;
+              localStorage.setItem(this.contentId,this.doenetML)
+              this.forceUpdate();
+            })
+          } catch (err) {
+            //TODO: Handle 404
+            return "Error Loading";
+          }
+          return <p>loading...</p>
+
+        }
+
+      }
+      
+    }else if (this.props.doenetML && this.props.contentId){
+      //*** Have this.doenetML and this.contentId if not prop
+      this.doenetML = this.props.doenetML;
+      this.contentId = this.props.contentId;
+
+      //Content changed, so need new core
+      if (this.contentId !== this.state.contentId){
+        this.needNewCoreFlag = true;
+      }
     }
 
-    //Only load core when contentId or attemptNumber change
-    if (this.state.doenetML === null ||
-        this.state.attemptNumber !== this.attemptNumber ||
-        this.state.contentId !== this.contentId
-        ){  
+    if (this.attemptNumber !== this.state.attemptNumber){
+      this.needNewCoreFlag = true;
+    }
 
-      if (this.doenetML && this.contentId){
-        this.loadState(this.createCore);
-      }
 
+    if (this.needNewCoreFlag){
+      console.log(">>>needNewCoreFlag")
+      this.loadState(this.createCore);
       return <p>loading...</p>
 
     }
+    
+    
+
+
     console.log("===DoenetViewerChild renderer")
 
     console.log(">>>render this.props.allowLoadPageState", this.props.allowLoadPageState)
@@ -496,6 +515,19 @@ class DoenetViewerChild extends Component {
   }
 
 }
+
+// console.log(">>>this.props.allowLoadPageState", this.props.allowLoadPageState)
+    // console.log(">>>this.props.allowSavePageState", this.props.allowSavePageState)
+    // console.log(">>>this.props.allowSavePageStateLocally", this.props.allowSavePageStateLocally)
+    // console.log(">>>this.props.allowSaveSubmissions", this.props.allowSaveSubmissions)
+    // console.log(">>>this.props.allowSaveEvents", this.props.allowSaveEvents)
+    //TODO: too blunt eliminate ignoreDatabase
+    //Propose: 
+    //props.AllowLoadPageState (ContentInteractions) (Only for Automated testing)
+    //props.AllowSavePageState (ContentInteractions) (Saves where you were)
+    //props.AllowSavePageStateLocally (Give user this option save only to device not Doenet)
+    //props.AllowSaveSubmissions (grades)
+    //props.AllowSaveEvents
 
 class ErrorBoundary extends React.Component {
   constructor(props) {

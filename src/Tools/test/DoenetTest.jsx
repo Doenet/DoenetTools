@@ -12,10 +12,11 @@ function Test() {
   //New DoenetViewer when code changes
   useEffect(() => {
     doenetML.current = testCodeDoenetML;
-    setUpdateNumber((was) => was + 1)
+    setRefresh((was)=>was+1)
   }, [testCodeDoenetML]);
 
 
+  const [updateNumber, setUpdateNumber] = useState(0);
   const [attemptNumber, setAttemptNumber] = useState(1);
   const [controlsVisible, setControlsVisible] = useState(false);
   const [showCorrectness, setShowCorrectness] = useState(true);
@@ -29,6 +30,7 @@ function Test() {
   const [allowSavePageStateLocally, setAllowSavePageStateLocally] = useState(false);
   const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(false);
   const [allowSaveEvents, setAllowSaveEvents] = useState(false);
+  const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
   // let requestedVariant = useRef({ index: 0 });
@@ -37,7 +39,6 @@ function Test() {
   // unless get a message (from cypress) to select a particular variant
   let requestedVariant = useRef(undefined);
 
-  const [updateNumber, setUpdateNumber] = useState(1);
 
   //For Cypress Test Use
   window.onmessage = (e) => {
@@ -47,7 +48,6 @@ function Test() {
       if (e.data.requestedVariant) {
         requestedVariant.current = e.data.requestedVariant;
       }
-      setUpdateNumber((was) => was + 1)
     }
   };
 
@@ -64,7 +64,6 @@ function Test() {
         <label>Attempt Number: {attemptNumber} <button onClick={
           () => {
             setAttemptNumber(was => was + 1)
-            setUpdateNumber(was => was + 1)
           }
         }>New Attempt</button></label>
       </div>
@@ -72,7 +71,8 @@ function Test() {
         <label> <input type='checkbox' checked={showCorrectness} onChange={
           () => {
             setShowCorrectness(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
 
           }
         } />Show Correctness</label>
@@ -81,7 +81,8 @@ function Test() {
         <label> <input type='checkbox' checked={readOnly} onChange={
           () => {
             setReadOnly(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Read Only</label>
       </div>
@@ -89,7 +90,8 @@ function Test() {
         <label> <input type='checkbox' checked={showFeedback} onChange={
           () => {
             setShowFeedback(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Show Feedback</label>
       </div>
@@ -97,7 +99,8 @@ function Test() {
         <label> <input type='checkbox' checked={showHints} onChange={
           () => {
             setShowHints(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Show Hints</label>
       </div>
@@ -106,7 +109,8 @@ function Test() {
         <label> <input type='checkbox' checked={allowLoadPageState} onChange={
           () => {
             setAllowLoadPageState(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Allow Load Page State</label>
       </div>
@@ -114,7 +118,8 @@ function Test() {
         <label> <input type='checkbox' checked={allowSavePageState} onChange={
           () => {
             setAllowSavePageState(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Allow Save Page State</label>
       </div>
@@ -122,7 +127,8 @@ function Test() {
         <label> <input type='checkbox' checked={allowSavePageStateLocally} onChange={
           () => {
             setAllowSavePageStateLocally(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Allow Save Page State Locally</label>
       </div>
@@ -130,7 +136,8 @@ function Test() {
         <label> <input type='checkbox' checked={allowSaveSubmissions} onChange={
           () => {
             setAllowSaveSubmissions(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Allow Save Submissions</label>
       </div>
@@ -138,7 +145,8 @@ function Test() {
         <label> <input type='checkbox' checked={allowSaveEvents} onChange={
           () => {
             setAllowSaveEvents(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Allow Save Events</label>
       </div>
@@ -147,7 +155,7 @@ function Test() {
         <label> <input type='checkbox' checked={bundledCore} onChange={
           () => {
             setBundledCore(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
           }
         } />Bundled Core</label>
       </div>
@@ -172,7 +180,7 @@ function Test() {
         {controls}
       </div>
       <DoenetViewer
-        key={"doenetviewer" + updateNumber}
+        key={"doenetviewer"+updateNumber}
         doenetML={doenetML.current}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{
