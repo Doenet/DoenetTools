@@ -524,18 +524,10 @@ const DoenetMLInfoPanel = (props) => {
       <>
         {
           <>
-            {/* <div>
-              <label>Assignment Name :</label> 
-              <input
-                required
-                type="text"
-                name="assignment_title"
-                value={aInfo ? aInfo?.assignment_title : ''}
-                placeholder="Title goes here"
-                onBlur={(e) => handleOnBlur(e)}
-                onChange={handleChange}
-              />
-            </div> */}
+            <div>
+               
+              <h4>Assignment Name :{aInfo ? aInfo?.title : ''}</h4>
+            </div>
             <div>
               <label>Assigned Date:</label>
               <input

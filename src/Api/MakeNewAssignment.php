@@ -72,7 +72,6 @@ if ($success){
     $resultnew = $conn->query($sqlnew); 
     if ($resultnew->num_rows > 0){
       $sqlUpdate = "UPDATE assignment SET 
-      title=$title,
       branchId=$branchId,
       driveId=$driveId,
       assignedDate=$assignedDate,
@@ -97,7 +96,6 @@ if ($success){
       $sql="
       INSERT INTO assignment
       (
-      title,
       branchId,
       contentId,
       driveId,
@@ -117,7 +115,6 @@ if ($success){
       proctorMakesAvailable)
       VALUES
       (
-        '$title',
         '$branchId',
         '$contentId',
       '$driveId',

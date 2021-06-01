@@ -70,7 +70,6 @@ if ($branchId == ""){
 if ($success){
 
 $sql = "UPDATE assignment SET
-title = '$title',
 assignedDate = '$assignedDate',
 dueDate = '$dueDate',
 timeLimit = '$timeLimit',

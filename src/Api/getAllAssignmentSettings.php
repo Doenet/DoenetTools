@@ -23,7 +23,6 @@ $response_arr = array(
 ); 
 
   $sql = "SELECT
-  a.title AS assignment_title,
   a.assignedDate AS assignedDate,
   a.dueDate AS dueDate,
   a.timeLimit AS timeLimit,
@@ -42,7 +41,8 @@ $response_arr = array(
   a.branchId AS branchId,
   a.driveId AS driveId,
   c.isAssigned AS isAssigned,
-  c.versionId AS versionId
+  c.versionId AS versionId,
+  c.title AS title
   FROM assignment AS a
   LEFT JOIN content AS c
   ON a.contentId = c.contentId
@@ -75,7 +75,8 @@ $response_arr = array(
           "contentId" => $row['contentId'],
           "branchId" => $row['branchId'],
           "driveId" => $row['driveId'],
-          "versionId" => $row['versionId']
+          "versionId" => $row['versionId'],
+          "title" => $row['title']
   
   );
       array_push($assignment_arr,$assignment);
