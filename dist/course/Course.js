@@ -445,7 +445,7 @@ const DoenetMLInfoPanel = (props) => {
     const result = axios.post(`/api/handleMakeContent.php`, payload);
     result.then((resp) => {
       if (resp.data.success) {
-        addToast(`'version' back to '${itemInfo.label}''`, ToastType.SUCCESS);
+        addToast(`'${itemInfo.assignment_title}' back to '${itemInfo.label}''`, ToastType.SUCCESS);
       } else {
         onAssignmentError({errorMessage: resp.data.message});
       }

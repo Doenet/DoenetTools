@@ -692,6 +692,7 @@ export const useAssignmentCallbacks = () => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
       newItemObj.isAssigned = "1";
+      newItemObj.assignment_title = payload?.assignment_title;
       newItemObj.dueDate = payload?.dueDate;
       return newObj;
     });
@@ -705,6 +706,7 @@ export const useAssignmentCallbacks = () => {
       let newItemObj = newObj.contentsDictionary[itemId];
       newItemObj.assignment_isPublished = "1";
       newItemObj.isAssigned = "1";
+      newItemObj.assignment_title = payload?.assignment_title;
       return newObj;
     });
   });
@@ -727,6 +729,7 @@ export const useAssignmentCallbacks = () => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
       newItemObj.isAssigned = "1";
+      newItemObj.assignment_title = payloadAssignment?.assignment_title;
       newItemObj.assignedDate = payloadAssignment?.assignedDate;
       newItemObj.dueDate = payloadAssignment?.dueDate;
       newItemObj.timeLimit = payloadAssignment?.timeLimit;
