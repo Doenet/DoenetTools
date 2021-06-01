@@ -357,18 +357,48 @@ export const folderDictionary = atomFamily({
   })
 })
 
-export const folderDictionarySelector = selectorFamily({
-  //{driveId,folderId}
-  get:(driveIdFolderId)=>({get})=>{
-    return get(folderDictionary(driveIdFolderId));
-  },
-  set: (driveIdFolderId) => async ({set,get},instructions)=>{
-        
-  }
-  // set:(setObj,newValue)=>({set,get})=>{
-  //   console.log("setObj",setObj,newValue);
+export const folderDictionaryFilterAtom = atomFamily({
+  key:"folderDictionaryFilterAtom",
+  default:selectorFamily({
+    key:"folderDictionaryFilterAtom/Default",
+    get:(driveId)=>()=>{
+        return "All"
+    }
+  })
+})
 
-  // }
+export const folderDictionaryFilterSelector = selectorFamily({
+  get:(driveIdFolderId)=>({get})=>{
+    const filter = get(folderDictionaryFilterAtom({driveId:driveIdFolderId.driveId}))
+    const fD = get(folderDictionary(driveIdFolderId));
+    let fDreturn = {...fD}
+     fDreturn.contentIds = {...fD.contentIds}
+     // filter = 'All' handled already without any prop(filter)
+     if(filter === 'Released Only'){
+      let newDefaultOrder  = []
+      for(let contentId of fD.contentIds.defaultOrder){
+        if(fD.contentsDictionary[contentId].isReleased === '1' ||
+        fD.contentsDictionary[contentId].itemType === 'Folder'
+        ){
+          newDefaultOrder.push(contentId)
+        }
+      }
+       fDreturn.contentIds.defaultOrder = newDefaultOrder
+     }else if (filter === 'Assigned Only'){
+      let newDefaultOrder  = []
+      for(let contentId of fD.contentIds.defaultOrder){
+        if(fD.contentsDictionary[contentId].isAssigned === '1' ||
+        fD.contentsDictionary[contentId].itemType === 'Folder'
+
+        ){
+          newDefaultOrder.push(contentId)
+        }
+      }
+       fDreturn.contentIds.defaultOrder = newDefaultOrder
+     }
+  
+    return fDreturn;
+  }
 })
 
 export const folderSortOrderAtom = atomFamily({
@@ -384,8 +414,7 @@ export const folderCacheDirtyAtom = atomFamily({
 export const folderInfoSelector = selectorFamily({
   get:(driveIdInstanceIdFolderId)=>({get})=>{
     const { driveId, folderId } = driveIdInstanceIdFolderId;
-    
-    const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}))
+    const {folderInfo, contentsDictionary, contentIds} = get(folderDictionaryFilterSelector({driveId, folderId}))
     const folderSortOrder = get(folderSortOrderAtom(driveIdInstanceIdFolderId))
     let contentIdsArr = contentIds[folderSortOrder] ?? [];
 
@@ -581,12 +610,6 @@ function DriveRouted(props){
   if (!props.isNav){
     heading = <DriveHeader driveInstanceId={props.driveInstanceId} numColumns={numColumns} setNumColumns={setNumColumns} columnTypes={columnTypes}/>
   }
-   
-  //default to all
-  let viewAccess = props?.viewAccess;
-  if (!viewAccess){
-    viewAccess = 'all';
-  }
 
   return <>
     {heading}
@@ -606,7 +629,6 @@ function DriveRouted(props){
       doenetMLDoubleClickCallback={props.doenetMLDoubleClickCallback}
       numColumns={numColumns}
       columnTypes={columnTypes}
-      viewAccess={viewAccess}
       drivePathSyncKey={props.drivePathSyncKey}
     />
     <WithDropTarget
@@ -650,7 +672,8 @@ export const fetchDrivesSelector = selector({
     let newDrive;
     function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
       let contentObjs = {};
-      const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));
+      // const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));  
+      const sourceFolder = get(folderDictionaryFilterSelector({driveId:sourceDriveId,folderId:sourceFolderId}));
       if (destFolderId === undefined){
         destFolderId = destDriveId;  //Root Folder of drive
         destParentFolderId = destDriveId;  //Root Folder of drive
@@ -768,7 +791,7 @@ const folderOpenSelector = selectorFamily({
     const isOpen = get(folderOpenAtom(driveInstanceIdDriveIdItemId))
     if (isOpen){ 
       //Deselect contained items on close
-      const folder = get(folderDictionarySelector({driveId:driveInstanceIdDriveIdItemId.driveId,folderId:driveInstanceIdDriveIdItemId.itemId}));
+      const folder = get(folderDictionaryFilterSelector({driveId:driveInstanceIdDriveIdItemId.driveId,folderId:driveInstanceIdDriveIdItemId.itemId}));
       const itemIds = folder.contentIds.defaultOrder;
       const globalItemsSelected = get(globalSelectedNodesAtom);
       let newGlobalSelected = [];
@@ -809,7 +832,7 @@ function Folder(props){
   const setDrivePath = useSetRecoilState(drivePathSyncFamily(drivePathSyncKey));
 
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
-  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId:props.driveId,folderId:props.folderId}))
+  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:props.folderId}))
 
   const { onDragStart, onDrag, onDragOverContainer, onDragEnd, onDragExit, renderDragGhost, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
@@ -899,16 +922,6 @@ function Folder(props){
     console.error(folderInfoObj.contents)
     return null;}
     let {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
-    //TODO: Move filter into recoil loadable
-  //Note viewAccess All is not filtered and Folders are always shown
-    if (props.viewAccess === "released"){
-      contentIdsArr = contentIdsArr.filter((id)=>
-      contentsDictionary[id].itemType === 'Folder' ||
-      (contentsDictionary[id].isReleased === '1' || contentsDictionary[id].isAssigned === '1' ));
-    }else if (props.viewAccess === "assigned"){
-      contentIdsArr = contentIdsArr.filter((id)=>
-      contentsDictionary[id].itemType === 'Folder' || contentsDictionary[id].isAssigned === '1' );
-    }
  
   let openCloseText = isOpen ? 
     <span data-cy="folderToggleCloseIcon"><FontAwesomeIcon icon={faChevronDown}/></span> : 
@@ -1392,7 +1405,8 @@ const selectedDriveItems = selectorFamily({
     let lastSelectedItem = globalSelected[globalSelected.length-1];
 
     function buildItemIdsAndParentIds({parentFolderId,driveInstanceId,driveId,itemIdArr=[],parentFolderIdArr=[]}){
-      const folderObj = get(folderDictionary({driveId,folderId:parentFolderId}))
+      // const folderObj = get(folderDictionary({driveId,folderId:parentFolderId}))
+      const folderObj = get(folderDictionaryFilterSelector({driveId,folderId:parentFolderId}))
       for (let itemId of folderObj.contentIds.defaultOrder){
         itemIdArr.push(itemId);
         parentFolderIdArr.push(parentFolderId);
@@ -1890,7 +1904,7 @@ export const nodePathSelector = selectorFamily({
     let path = []
     let currentNode = folderId;
     while (currentNode && currentNode !== driveId) {
-      const folderInfoObj = get(folderDictionarySelector({ driveId, folderId: currentNode}));
+      const folderInfoObj = get(folderDictionaryFilterSelector({ driveId, folderId: currentNode}));
       path.push({folderId: currentNode, label: folderInfoObj.folderInfo.label})
       currentNode = folderInfoObj.folderInfo.parentFolderId;
     }
@@ -1911,7 +1925,7 @@ const nodeChildrenSelector = selectorFamily({
       let size = queue.length;
       for (let i = 0; i < size; i++) {
         let currentNodeId = queue.shift();
-        const folderInfoObj = get(folderDictionarySelector({ driveId, folderId: currentNodeId}));
+        const folderInfoObj = get(folderDictionaryFilterSelector({ driveId, folderId: currentNodeId}));
         children.push(currentNodeId);
         for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
           queue.push(childId); 
