@@ -429,6 +429,32 @@ class DoenetViewerChild extends Component {
   render() {
     console.log(">>>this.state",this.state)
 
+    this.allowLoadPageState = true;
+    if (this.props.allowLoadPageState === false){
+      this.allowLoadPageState = false;
+    }
+    this.allowSavePageState = true;
+    if (this.props.allowSavePageState === false){
+      this.allowSavePageState = false;
+    }
+    this.allowSavePageStateLocally = true;
+    if (this.props.allowSavePageStateLocally === false){
+      this.allowSavePageStateLocally = false;
+    }
+    this.allowSaveSubmissions = true;
+    if (this.props.allowSaveSubmissions === false){
+      this.allowSaveSubmissions = false;
+    }
+    this.allowSaveEvents = true;
+    if (this.props.allowSaveEvents === false){
+      this.allowSaveEvents = false;
+    }
+    console.log(">>>render this.allowLoadPageState", this.allowLoadPageState)
+    // console.log(">>>render this.allowSavePageState", this.allowSavePageState)
+    // console.log(">>>render this.allowSavePageStateLocally", this.allowSavePageStateLocally)
+    // console.log(">>>render this.allowSaveSubmissions", this.allowSaveSubmissions)
+    // console.log(">>>render this.allowSaveEvents", this.allowSaveEvents)
+
     //If no attemptNumber prop then set to 1
     this.attemptNumber = this.props.attemptNumber;
     if (this.attemptNumber === undefined) {
@@ -490,6 +516,7 @@ class DoenetViewerChild extends Component {
     }
 
     if (this.attemptNumber !== this.state.attemptNumber){
+      //TODO: Change attempt number without needing a new core
       this.needNewCoreFlag = true;
     }
 
@@ -506,11 +533,7 @@ class DoenetViewerChild extends Component {
 
     console.log("===DoenetViewerChild renderer")
 
-    console.log(">>>render this.props.allowLoadPageState", this.props.allowLoadPageState)
-    // console.log(">>>render this.props.allowSavePageState", this.props.allowSavePageState)
-    // console.log(">>>render this.props.allowSavePageStateLocally", this.props.allowSavePageStateLocally)
-    // console.log(">>>render this.props.allowSaveSubmissions", this.props.allowSaveSubmissions)
-    // console.log(">>>render this.props.allowSaveEvents", this.props.allowSaveEvents)
+    
     return this.documentRenderer;
   }
 
@@ -523,7 +546,7 @@ class DoenetViewerChild extends Component {
     // console.log(">>>this.props.allowSaveEvents", this.props.allowSaveEvents)
     //TODO: too blunt eliminate ignoreDatabase
     //Propose: 
-    //props.AllowLoadPageState (ContentInteractions) (Only for Automated testing)
+    //props.AllowLoadPageState (ContentInteractions) (Turn off only for automated testing)
     //props.AllowSavePageState (ContentInteractions) (Saves where you were)
     //props.AllowSavePageStateLocally (Give user this option save only to device not Doenet)
     //props.AllowSaveSubmissions (grades)
