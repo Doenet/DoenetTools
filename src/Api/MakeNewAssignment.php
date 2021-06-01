@@ -10,7 +10,6 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
-$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
@@ -58,9 +57,6 @@ $message = "";
 if ($branchId == ""){
   $success = FALSE;
   $message = "Internal Error: missing branchId";
-}else if ($contentId == ""){
-  $success = FALSE;
-  $message = "Internal Error: missing contentId";
 }
 else if($driveId == ''){
   $success = FALSE;
@@ -68,7 +64,7 @@ else if($driveId == ''){
 }
 
 if ($success){
-    $sqlnew="SELECT * from assignment WHERE contentId = '$contentId'";
+    $sqlnew="SELECT * from assignment WHERE branchId = '$branchId'";
     $resultnew = $conn->query($sqlnew); 
     if ($resultnew->num_rows > 0){
       $sqlUpdate = "UPDATE assignment SET 
@@ -88,7 +84,7 @@ if ($success){
       showHints=$showHints,
       showCorrectness=$showCorrectness,
       proctorMakesAvailable=$proctorMakesAvailable
-      WHERE contentId='$contentId'
+      WHERE branchId='$branchId'
       ";
           $result = $conn->query($sqlUpdate); 
 
@@ -97,7 +93,6 @@ if ($success){
       INSERT INTO assignment
       (
       branchId,
-      contentId,
       driveId,
       assignedDate,
       dueDate,
@@ -116,7 +111,6 @@ if ($success){
       VALUES
       (
         '$branchId',
-        '$contentId',
       '$driveId',
       '$assignedDate',
       '$dueDate',
@@ -144,7 +138,7 @@ $sqlnew="UPDATE drive_content SET isAssigned=1 WHERE branchId='$branchId';";
 //  echo $sqlnew;
 $result = $conn->query($sqlnew);
 
-$sql ="UPDATE content SET isAssigned=1 WHERE contentId='$contentId' AND versionId='$versionId';";
+$sql ="UPDATE content SET isAssigned=1 WHERE branchId='$branchId' AND versionId='$versionId';";
 $result = $conn->query($sql); 
 
 $response_arr = array(

@@ -37,16 +37,14 @@ $response_arr = array(
   a.showHints AS showHints,
   a.showCorrectness AS showCorrectness,
   a.proctorMakesAvailable AS proctorMakesAvailable,
-  a.contentId AS contentId,
   a.branchId AS branchId,
   a.driveId AS driveId,
   c.isAssigned AS isAssigned,
-  c.versionId AS versionId,
-  c.title AS title
+  c.versionId AS versionId
   FROM assignment AS a
   LEFT JOIN content AS c
-  ON a.contentId = c.contentId
-  WHERE c.branchId = '$branchId' AND c.contentId = '$contentId'
+  ON a.branchId = c.branchId
+  WHERE c.branchId = '$branchId' 
   ";
   
   $result = $conn->query($sql);
@@ -72,11 +70,9 @@ $response_arr = array(
           "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "isAssigned" => $row['isAssigned'],  
-          "contentId" => $row['contentId'],
           "branchId" => $row['branchId'],
           "driveId" => $row['driveId'],
           "versionId" => $row['versionId'],
-          "title" => $row['title']
   
   );
       array_push($assignment_arr,$assignment);

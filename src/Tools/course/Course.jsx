@@ -62,10 +62,10 @@ export const selectedVersionAtom = atom({
 const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
   get:
-    (branchIdcontentId) =>
+    (branchId) =>
     async ({ get, set }) => {
       const { data } = await axios.get(
-        `/api/getAllAssignmentSettings.php?branchId=${branchIdcontentId.branchId}&contentId=${branchIdcontentId.contentId}`,
+        `/api/getAllAssignmentSettings.php?branchId=${branchId}`,
       );
       return data;
     },
@@ -90,10 +90,9 @@ export const assignmentDictionary = atomFamily({
           ];
         if (driveIditemIdbranchIdparentFolderId.branchId) {
           const aInfo = await get(
-            loadAssignmentSelector({
-              branchId: driveIditemIdbranchIdparentFolderId.branchId,
-              contentId: driveIditemIdbranchIdparentFolderId.contentId,
-            }),
+            loadAssignmentSelector(
+              driveIditemIdbranchIdparentFolderId.branchId,
+            ),
           );
           if (aInfo) {
             return aInfo?.assignments[0];
@@ -524,10 +523,7 @@ const DoenetMLInfoPanel = (props) => {
       <>
         {
           <>
-            <div>
-               
-              <h4>Assignment Name :{aInfo ? aInfo?.title : ''}</h4>
-            </div>
+           
             <div>
               <label>Assigned Date:</label>
               <input
@@ -743,7 +739,7 @@ const VersionHistoryInfoPanel = (props) => {
   };
   let aInfo = '';
   const assignmentInfoSettings = useRecoilValueLoadable(
-    loadAssignmentSelector({branchId:itemInfo.branchId,contentId:selectedContentId()}),
+    loadAssignmentSelector(itemInfo.branchId),
   );
   if (assignmentInfoSettings?.state === 'hasValue') {
     aInfo = assignmentInfoSettings?.contents?.assignments[0];
