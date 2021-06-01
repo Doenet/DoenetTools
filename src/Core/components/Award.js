@@ -14,6 +14,7 @@ export default class Award extends BaseComponent {
       createStateVariable: "credit",
       defaultValue: 1,
       public: true,
+      attributesForCreatedComponent: { convertBoolean: true }
     };
     attributes.matchPartial = {
       createComponentOfType: "boolean",
@@ -430,6 +431,7 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   let dependenciesForEvaluateLogic = {
     mathChildrenByCode: {},
+    numberChildrenByCode: {},
     mathListChildrenByCode: {},
     textChildrenByCode: {},
     textListChildrenByCode: {},

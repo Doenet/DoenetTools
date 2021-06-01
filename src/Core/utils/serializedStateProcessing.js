@@ -383,7 +383,8 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
           attributes[propName] = componentFromAttribute({
             attrObj,
             value: component.props[prop],
-            componentInfoObjects
+            componentInfoObjects,
+            flags
           });
           delete component.props[prop];
         } else if (!["name", "assignnames", "tname"].includes(prop.toLowerCase())) {
@@ -410,7 +411,8 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
         attributes[attr] = componentFromAttribute({
           attrObj,
           value: attrObj.defaultValue,
-          componentInfoObjects
+          componentInfoObjects,
+          flags
         });
       }
     }
@@ -424,7 +426,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
   }
 }
 
-export function componentFromAttribute({ attrObj, value, componentInfoObjects }) {
+export function componentFromAttribute({ attrObj, value, componentInfoObjects, flags }) {
   if (attrObj.createComponentOfType) {
     let newComponent;
     if (value === true &&
@@ -448,12 +450,18 @@ export function componentFromAttribute({ attrObj, value, componentInfoObjects })
         ]
       };
     }
+
+    if (attrObj.attributesForCreatedComponent) {
+      newComponent.props = attrObj.attributesForCreatedComponent;
+      createAttributesFromProps([newComponent], componentInfoObjects, flags)
+    }
+
     return newComponent;
   } else if (attrObj.createPrimitiveOfType) {
     let newPrimitive;
     if (attrObj.createPrimitiveOfType === "boolean") {
       newPrimitive = value === true ||
-        value.trim().toLowerCase() === "true";
+        (typeof value === "string" && value.trim().toLowerCase() === "true");
     } else if (attrObj.createPrimitiveOfType === "number") {
       if (value === true) {
         // can't use Number(), as Number(true) returns 1

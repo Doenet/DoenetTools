@@ -22,6 +22,12 @@ export default class Document extends BaseComponent {
     delete attributes.styleNumber;
     delete attributes.isResponse;
 
+    attributes.documentWideCheckWork = {
+      createComponentOfType: "boolean",
+      createStateVariable: "documentWideCheckWork",
+      defaultValue: false,
+      public: true,
+    };
     attributes.feedbackDefinitions = {
       createComponentOfType: "feedbackDefinitions",
       createStateVariable: "feedbackDefinitions",
@@ -293,6 +299,52 @@ export default class Document extends BaseComponent {
 
     }
 
+    stateVariableDefinitions.answerDescendants = {
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "descendant",
+          componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
+          recurseToMatchedChildren: false,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+      }
+    }
+
+    stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            justSubmitted:
+              dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        return { newValues: { showCorrectness } }
+      }
+    }
+
 
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
@@ -302,6 +354,7 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
+      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",
@@ -341,6 +394,45 @@ export default class Document extends BaseComponent {
 
       }
     }
+
+    stateVariableDefinitions.creditAchievedIfSubmit = {
+      defaultValue: 0,
+      stateVariablesDeterminingDependencies: ["scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          scoredDescendants: {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+        }
+        for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+          dependencies["creditAchievedIfSubmit" + ind] = {
+            dependencyType: "stateVariable",
+            componentName: descendant.componentName,
+            variableName: "creditAchievedIfSubmit"
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let weight = component.stateValues.weight;
+          creditSum += dependencyValues["creditAchievedIfSubmit" + ind] * weight;
+          totalWeight += weight;
+        }
+        let creditAchievedIfSubmit = creditSum / totalWeight;
+
+        return { newValues: { creditAchievedIfSubmit } }
+
+      }
+    }
+
 
     stateVariableDefinitions.generatedVariantInfo = {
       returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
@@ -401,33 +493,61 @@ export default class Document extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.createSubmitAllButton = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "suppressAnswerSubmitButtons",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        documentWideCheckWork: {
+          dependencyType: "stateVariable",
+          variableName: "documentWideCheckWork"
+        },
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let createSubmitAllButton = false;
+        let suppressAnswerSubmitButtons = false;
+
+        if (dependencyValues.documentWideCheckWork) {
+          createSubmitAllButton = true;
+          suppressAnswerSubmitButtons = true
+        }
+
+        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
+  actions = {
+    submitAllAnswers: this.submitAllAnswers.bind(this),
+  }
 
   submitAllAnswers() {
-    let answersToSubmit = [];
-    for (let answer of this.descendantsFound.answer) {
-      if (!answer.state.allAwardsJustSubmitted) {
-        answersToSubmit.push(answer);
+
+    this.coreFunctions.requestRecordEvent({
+      verb: "submitted",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: {
+        creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
-    }
-    // Set answersToSubmitCounter to the number of answers that we have to submit
-    // Each submission involves a call to an external function that has
-    // an asynchronous callBack.  The callBack will decrement the counter each
-    // time so that it can know when all answers have been submitted
-    // (i.e., the counter is back to zero)
-    // at which point the callback should do something
-    this.answersToSubmitCounter = answersToSubmit.length;
-    if (this.answersToSubmitCounter === 0) {
-      this.externalFunctions.allAnswersSubmitted();
-    } else {
-      for (let answer of answersToSubmit) {
-        answer.submitAnswer();
+
+    })
+    for (let answer of this.stateValues.answerDescendants) {
+      if (!answer.stateValues.justSubmitted) {
+        this.coreFunctions.requestAction({
+          componentName: answer.componentName,
+          actionName: "submitAnswer"
+        })
       }
     }
   }
-
 
   static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
     descendantVariantComponents,
