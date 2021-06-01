@@ -7333,7 +7333,7 @@ describe('Answer Tag Tests', function () {
 
 
       cy.get("#\\/val textarea").type("3{enter}", { force: true });
-      
+
       cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3')
       });
@@ -7354,7 +7354,6 @@ describe('Answer Tag Tests', function () {
 
     })
   });
-
 
   it('immediate value used for submit button', () => {
     cy.window().then((win) => {
@@ -7501,6 +7500,140 @@ describe('Answer Tag Tests', function () {
       cy.get(caAnchor).should('have.text', '1')
 
     })
+  });
+
+  it('choiceinput credit from boolean', () => {
+
+    let options = ["meow", "woof", "squeak", "blub"]
+    for (let ind = 0; ind < 4; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <variantControl nvariants="4" variants="cat dog mouse fish"/>
+  
+        <select assignNames="(animal)" hide>
+          <option selectForVariants="cat">
+            <text>cat</text>
+          </option>
+          <option selectForVariants="dog">
+            <text>dog</text>
+          </option>
+          <option selectForVariants="mouse">
+            <text>mouse</text>
+          </option>
+          <option selectForVariants="fish">
+            <text>fish</text>
+          </option>
+        </select>
+        
+        <p>What does the $animal say?
+          <answer name="ans">
+            <choiceinput randomizeOrder>
+            <choice credit="$animal=cat" >meow</choice>
+            <choice credit="$animal=dog" >woof</choice>
+            <choice credit="$animal=mouse" >squeak</choice>
+            <choice credit="$animal=fish" >blub</choice>
+            </choiceinput>
+          </answer>
+        </p>
+        `,
+          requestedVariant: { index: ind },
+        }, "*");
+      });
+
+
+      cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
+
+      for (let ind2 = 0; ind2 < 4; ind2++) {
+
+        cy.get('#\\/_choiceinput1').contains(options[ind2]).click({ force: true });
+
+        cy.get('#\\/_choiceinput1_submit').click();
+        cy.get('#\\/_choiceinput1_submit').should('not.exist');
+        if (ind2 === ind) {
+          cy.get('#\\/_choiceinput1_correct').should('be.visible');
+          cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+        } else {
+          cy.get('#\\/_choiceinput1_correct').should('not.exist');
+          cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+        }
+      }
+
+    }
+  });
+
+
+  it.only('award credit from boolean', () => {
+
+    let options = ["meow", "woof", "squeak", "blub"]
+    for (let ind = 0; ind < 4; ind++) {
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <variantControl nvariants="4" variants="cat dog mouse fish"/>
+  
+        <select assignNames="(animal sound)" hide>
+          <option selectForVariants="cat">
+            <text>cat</text><text>meow</text>
+          </option>
+          <option selectForVariants="dog">
+            <text>dog</text><text>woof</text>
+          </option>
+          <option selectForVariants="mouse">
+            <text>mouse</text><text>squeak</text>
+          </option>
+          <option selectForVariants="fish">
+            <text>fish</text><text>blub</text>
+          </option>
+        </select>
+        
+        <p>What does the $animal say?
+          <answer name="ans" type="text">
+            <award credit="$animal=cat" ><text>meow</text></award>
+            <award credit="$animal=dog" ><text>woof</text></award>
+            <award credit="$animal=mouse" ><text>squeak</text></award>
+            <award credit="$animal=fish" ><text>blub</text></award>
+          </answer>
+        </p>
+        `,
+          requestedVariant: { index: ind },
+        }, "*");
+      });
+
+
+      cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let textinputName = components['/ans'].stateValues.inputChild.componentName
+        let textinputAnchor = cesc('#' + textinputName + '_input');
+        let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+        let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
+        let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
+
+
+        for (let ind2 = 0; ind2 < 4; ind2++) {
+
+          cy.get(textinputAnchor).clear().type(options[ind2]);
+          cy.get(textinputSubmitAnchor).click();
+
+          cy.get(textinputSubmitAnchor).should('not.exist');
+          if (ind2 === ind) {
+            cy.get(textinputCorrectAnchor).should('be.visible');
+            cy.get(textinputIncorrectAnchor).should('not.exist');
+          } else {
+            cy.get(textinputCorrectAnchor).should('not.exist');
+            cy.get(textinputIncorrectAnchor).should('be.visible');
+          }
+        }
+      })
+
+    }
   });
 
 

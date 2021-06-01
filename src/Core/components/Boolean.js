@@ -1,18 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
-import me from 'math-expressions';
-import { evaluateLogic, splitSymbolsIfMath } from '../utils/booleanLogic';
-import { appliedFunctionSymbols } from '../utils/math';
+import { evaluateLogic, buildParsedExpression } from '../utils/booleanLogic';
 
-
-const appliedFunctionSymbolsWithBooleanOperators = [
-  ...appliedFunctionSymbols,
-  "isnumber", "isinteger"
-]
-
-var textToAstUnsplit = new me.converters.textToAstObj({
-  splitSymbols: false,
-  appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators
-});
 
 export default class BooleanComponent extends InlineComponent {
   static componentType = "boolean";
@@ -197,7 +185,7 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      componentType: "boolean",
       forRenderer: true,
       defaultValue: false,
       set: Boolean,
@@ -211,11 +199,6 @@ export default class BooleanComponent extends InlineComponent {
           childLogicName: "stringsMathsTextsAndBooleans",
           variableNames: ["value", "texts", "maths", "unordered"],
           variablesOptional: true,
-        },
-        mathChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
-          variableNames: ["value", "expand", "simplify"]
         },
         booleanChildrenByCode: {
           dependencyType: "stateVariable",
@@ -355,83 +338,3 @@ export default class BooleanComponent extends InlineComponent {
 
 }
 
-
-function buildParsedExpression({ dependencyValues, componentInfoObjects }) {
-
-  let codePre = "comp";
-
-  // make sure that codePre is not in any string piece
-  let foundInString = true;
-  while (foundInString) {
-    foundInString = false;
-
-    for (let child of dependencyValues.stringChildren) {
-      if (child.stateValues.value.includes(codePre)) {
-        // found codePre in a string, so extend codePre and try again
-        foundInString = true;
-        codePre += "p";
-        break;
-      }
-    }
-  };
-
-  let inputString = "";
-  let subnum = 0;
-  let nonMathCodes = [];
-  let stringChildInd = 0;
-
-  for (let child of dependencyValues.stringMathTextBooleanChildren) {
-    if (child.componentType === "string") {
-      // need to use stringChildren
-      // as child variable doesn't have stateVariables
-      inputString += " " + dependencyValues.stringChildren[stringChildInd].stateValues.value + " ";
-      stringChildInd++;
-    }
-    else { // a math, mathList, text, textList, boolean, or booleanList
-      let code = codePre + subnum;
-
-      // make sure code is surrounded by spaces
-      // (the presence of numbers inside code will ensure that 
-      // it is parsed as a multicharcter variable)
-      inputString += " " + code + " ";
-
-      if (!(
-        componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: child.componentType,
-          baseComponentType: "math"
-        }) ||
-        componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: child.componentType,
-          baseComponentType: "mathList"
-        })
-      )) {
-        nonMathCodes.push(code);
-      }
-
-      subnum += 1;
-
-    }
-  }
-
-  let parsedExpression = null;
-
-  try {
-    parsedExpression = me.fromAst(textToAstUnsplit.convert(inputString));
-  } catch (e) {
-  }
-
-  if (parsedExpression) {
-    parsedExpression = me.fromAst(splitSymbolsIfMath({
-      logicTree: parsedExpression.tree,
-      nonMathCodes,
-    }));
-  }
-
-
-  return {
-    newValues: {
-      codePre, parsedExpression
-    }
-  }
-
-}
