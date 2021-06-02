@@ -143,37 +143,6 @@ export default class Extract extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  get allPotentialRendererTypes() {
-
-    let allPotentialRendererTypes = [];
-
-    // let allReplacementClasses = [
-    //   ...this.stateValues.replacementClasses,
-    //   ...this.stateValues.replacementClassesForProp,
-    //   ...this.stateValues.potentialReplacementClasses,
-    // ]
-
-    // for (let replacementClass of allReplacementClasses) {
-    //   let rendererType = replacementClass.rendererType;
-    //   if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
-    //     allPotentialRendererTypes.push(rendererType);
-    //   }
-    // }
-
-    if (this.replacements) {
-      for (let replacement of this.replacements) {
-        for (let rendererType of replacement.allPotentialRendererTypes) {
-          if (!allPotentialRendererTypes.includes(rendererType)) {
-            allPotentialRendererTypes.push(rendererType);
-          }
-        }
-
-      }
-    }
-
-    return allPotentialRendererTypes;
-
-  }
 
   static createSerializedReplacements({ component, components, workspace,
     componentInfoObjects, flags,

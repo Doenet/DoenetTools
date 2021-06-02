@@ -317,8 +317,9 @@ export default class Core {
             }
             originalCopyWithUri.children.push({
               componentType: "externalContent",
-              children: serializedComponentsForContentId,
-              attributes: { newNamespace: true }
+              children: JSON.parse(JSON.stringify(serializedComponentsForContentId)),
+              attributes: { newNamespace: true },
+              doenetAttributes: { createUniqueName: true }
             });
           }
         }
@@ -332,8 +333,9 @@ export default class Core {
             }
             originalCopyWithUri.children.push({
               componentType: "externalContent",
-              children: serializedComponentsForContentName,
-              attributes: { newNamespace: true }
+              children: JSON.parse(JSON.stringify(serializedComponentsForContentName)),
+              attributes: { newNamespace: true },
+              doenetAttributes: { createUniqueName: true }
             });
           }
         }

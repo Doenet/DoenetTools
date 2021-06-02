@@ -88,7 +88,18 @@ export default class CompositeComponent extends BaseComponent {
 
   get allPotentialRendererTypes() {
 
-    let allPotentialRendererTypes = [];
+    let allPotentialRendererTypes = super.allPotentialRendererTypes;
+
+    // we still recurse to all children, even though was skipped at base component
+    // due to not having a rendererType
+    for (let childName in this.allChildren) {
+      let child = this.allChildren[childName].component;
+      for (let rendererType of child.allPotentialRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
 
     if (this.replacements) {
       for (let replacement of this.replacements) {
@@ -97,7 +108,6 @@ export default class CompositeComponent extends BaseComponent {
             allPotentialRendererTypes.push(rendererType);
           }
         }
-
       }
     }
 

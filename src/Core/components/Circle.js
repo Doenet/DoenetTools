@@ -1734,9 +1734,9 @@ export default class Circle extends Curve {
         return [2];
       },
       returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
-        console.log(`array dependencies by key for circle center`)
-        console.log(arrayKeys)
-        console.log(stateValues);
+        // console.log(`array dependencies by key for circle center`)
+        // console.log(arrayKeys)
+        // console.log(stateValues);
 
         let globalDependencies = {};
         let dependenciesByKey = {};
@@ -1806,8 +1806,6 @@ export default class Circle extends Curve {
 
           }
         }
-
-        console.log({ dependenciesByKey, globalDependencies })
 
         return { dependenciesByKey, globalDependencies };
       },
