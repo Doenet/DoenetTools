@@ -5590,5 +5590,206 @@ describe('Math Operator Tag Tests', function () {
     })
   })
 
+  it('extract parts of math expression', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <p>original expression: <math name="expr" functionSymbols="f g">f(x)+g(y,z)+h(q)</math></p>
+      <p>Operator: <extractMathOperator name="operator">$expr</extractMathOperator></p>
+      <p>First operand: <extractMathOperand name="operand1" >$expr</extractMathOperand></p>
+      <p>First operand again: <extractMathOperand operandNumber="1" name="operand1a">$expr</extractMathOperand></p>
+      <p>Second operand: <extractMathOperand operandNumber="2" name="operand2">$expr</extractMathOperand></p>
+      <p>Third operand: <extractMathOperand operandNumber="3" name="operand3">$expr</extractMathOperand></p>
+      <p>No fourth operand: <extractMathOperand operandNumber="4" name="blank1">$expr</extractMathOperand></p>
+      <p>Function from first operand: <extractMathFunction name="f">$operand1</extractMathFunction></p>
+      <p>Function from second operand: <extractMathFunction name="g">$operand2</extractMathFunction></p>
+      <p>No function from third operand: <extractMathFunction name="blank2">$operand3</extractMathFunction></p>
+      <p>Function argument from first operand: <extractFunctionArgument name="farg1">$operand1</extractFunctionArgument></p>
+      <p>Function argument from first operand again: <extractFunctionArgument argumentNumber="1" name="farg1a">$operand1</extractFunctionArgument></p>
+      <p>No second function argument from first operand: <extractFunctionArgument argumentNumber="2" name="blank3">$operand1</extractFunctionArgument></p>
+      <p>All function arguments from second operand: <extractFunctionArgument name="gargAll">$operand2</extractFunctionArgument></p>
+      <p>First function argument from second operand: <extractFunctionArgument argumentNumber="1" name="garg1">$operand2</extractFunctionArgument></p>
+      <p>Second function argument from second operand: <extractFunctionArgument argumentNumber="2" name="garg2">$operand2</extractFunctionArgument></p>
+      <p>No third function argument from second operand: <extractFunctionArgument argumentNumber="3" name="blank4">$operand2</extractFunctionArgument></p>
+      <p>No function argument from third operand: <extractFunctionArgument name="blank5">$operand3</extractFunctionArgument></p>
+
+      <p>Pick operand number: <mathinput name="nOperand" prefill="1" /></p>
+      <p>Resulting operand: <extractMathOperand operandNumber="$nOperand" name="operandN">$expr</extractMathOperand></p>
+      <p>Function of resulting operand: <extractMathFunction name="functionN">$operandN</extractMathFunction></p>
+      <p>Pick argument number: <mathinput name="nArgument" prefill="1" /></p>
+      <p>Resulting argument: <extractFunctionArgument argumentNumber="$nArgument" name="argumentN">$operandN</extractFunctionArgument></p>
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/operator').should('have.text', '+')
+    cy.get('#\\/operand1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)')
+    });
+    cy.get('#\\/operand1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)')
+    });
+    cy.get('#\\/operand2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g(y,z)')
+    });
+    cy.get('#\\/operand3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hq')
+    });
+    cy.get('#\\/blank1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f')
+    });
+    cy.get('#\\/g').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g')
+    });
+    cy.get('#\\/blank2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/farg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/farg1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/blank3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/gargAll').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(y,z)')
+    });
+    cy.get('#\\/garg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+    cy.get('#\\/garg2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+    cy.get('#\\/blank4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/blank5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)')
+    });
+    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f')
+    });
+    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/operator'].stateValues.value).eq('+')
+      expect(components['/operand1'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
+      expect(components['/operand1a'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
+      expect(components['/operand2'].stateValues.value.tree).eqls(['apply', 'g', ["tuple",'y',"z"]])
+      expect(components['/operand3'].stateValues.value.tree).eqls(['*', 'h', 'q'])
+      expect(components['/blank1'].stateValues.value.tree).eqls('＿')
+      expect(components['/f'].stateValues.value.tree).eqls('f')
+      expect(components['/g'].stateValues.value.tree).eqls('g')
+      expect(components['/blank2'].stateValues.value.tree).eqls('＿')
+      expect(components['/farg1'].stateValues.value.tree).eqls('x')
+      expect(components['/farg1a'].stateValues.value.tree).eqls('x')
+      expect(components['/blank3'].stateValues.value.tree).eqls('＿')
+      expect(components['/gargAll'].stateValues.value.tree).eqls(["tuple",'y',"z"])
+      expect(components['/garg1'].stateValues.value.tree).eqls('y')
+      expect(components['/garg2'].stateValues.value.tree).eqls('z')
+      expect(components['/blank4'].stateValues.value.tree).eqls('＿')
+      expect(components['/blank5'].stateValues.value.tree).eqls('＿')
+
+      expect(components['/operandN'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
+      expect(components['/functionN'].stateValues.value.tree).eqls('f')
+      expect(components['/argumentN'].stateValues.value.tree).eqls('x')
+
+    })
+
+    cy.get('#\\/nArgument textarea').type('{end}{backspace}2', { force: true }).blur();
+    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/argumentN'].stateValues.value.tree).eqls('＿')
+    })
+
+    cy.get('#\\/nOperand textarea').type('{end}{backspace}2', { force: true }).blur();
+    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g(y,z)')
+    });
+    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('g')
+    });
+    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/operandN'].stateValues.value.tree).eqls(['apply', 'g', ["tuple",'y',"z"]])
+      expect(components['/functionN'].stateValues.value.tree).eqls('g')
+      expect(components['/argumentN'].stateValues.value.tree).eqls('z')
+    })
+
+    cy.get('#\\/nArgument textarea').type('{end}{backspace}3', { force: true }).blur();
+    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/argumentN'].stateValues.value.tree).eqls('＿')
+    })
+
+
+    cy.get('#\\/nArgument textarea').type('{end}{backspace}1', { force: true }).blur();
+    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/argumentN'].stateValues.value.tree).eqls('y')
+    })
+
+    cy.get('#\\/nOperand textarea').type('{end}{backspace}3', { force: true }).blur();
+    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('hq')
+    });
+    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/operandN'].stateValues.value.tree).eqls(['*', 'h', 'q'])
+      expect(components['/functionN'].stateValues.value.tree).eqls('＿')
+      expect(components['/argumentN'].stateValues.value.tree).eqls('＿')
+    })
+
+    cy.get('#\\/nOperand textarea').type('{end}{backspace}4', { force: true }).blur();
+    cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/functionN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/argumentN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/operandN'].stateValues.value.tree).eqls('＿')
+      expect(components['/functionN'].stateValues.value.tree).eqls('＿')
+      expect(components['/argumentN'].stateValues.value.tree).eqls('＿')
+    })
+
+
+  })
+
 
 })
