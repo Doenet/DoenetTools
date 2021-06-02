@@ -62,7 +62,8 @@ class DoenetViewerChild extends Component {
     this.state = {
       doenetML:null,
       attemptNumber:null,
-      contentId:null
+      contentId:null,
+      errMsg:null
     }
   }
 
@@ -229,8 +230,7 @@ class DoenetViewerChild extends Component {
   }) {
 
     // TODO: what should we do with transient updates?
-    if (transient) {
-      // if (transient || this.props.ignoreDatabase) {
+    if (transient || !this.allowSavePageState) {
       return;
     }
 
@@ -262,25 +262,19 @@ class DoenetViewerChild extends Component {
     // maybe that's shown when enroll in class, and you cannot turn it off
     // without disenrolling from class
 
-
-
-    // if (assignmentId) {
-    //   //Save Assignment Info
-    //   console.log('assignment')
-    // }
-
-    const phpUrl = '/api/recordContentInteraction.php';
+ 
     const data = {
       contentId,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
-      assignmentId: this.assignmentId,
+      branchId: this.props.branchId,
       variant: variantString,
     }
 
-    axios.post(phpUrl, data)
+    console.log(">>>localStateChanged data",data)
+    axios.post('/api/recordContentInteraction.php', data)
       .then(resp => {
-        console.log('save', resp.data);
+        console.log('>>>localStateChanged resp', resp.data);
       });
 
 
@@ -288,35 +282,41 @@ class DoenetViewerChild extends Component {
   }
 
   loadState(callback) {
+    console.log(">>>loadState props",this.props)
 
-    // if (this.props.ignoreDatabase) {
-    //   callback({
-    //     stateVariables: null,
-    //     variant: null
-    //   });
-    //   return;
-    // }
-
-    const phpUrl = '/api/loadContentInteractions.php';
-    const data = {
-      contentId: this.contentId,
-      attemptNumber: this.attemptNumber,
-      assignmentId: this.assignmentId,
+    if (!this.allowLoadPageState) {
+      callback({
+        stateVariables: null,
+        variant: null
+      });
+      return;
     }
+
     const payload = {
-      params: data
+      params: {
+        contentId: this.contentId,
+        attemptNumber: this.attemptNumber,
+        branchId: this.props.branchId,
+      }
     }
+    console.log(">>>payload",payload)
 
-    axios.get(phpUrl, payload)
+    axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
-        // console.log(">>>load ci", resp.data)
+        console.log(">>>load ci resp.data", resp.data)
+        if (!resp.data.success){
+          throw new Error(resp.data.message)
+        }
         if (callback) {
           callback({
             stateVariables: resp.data.stateVariables,
             variant: resp.data.variant
           })
         }
-      });
+      })
+      .catch(errMsg => {
+        this.setState({errMsg:errMsg.message})
+      })
 
   }
 
@@ -429,6 +429,10 @@ class DoenetViewerChild extends Component {
   render() {
     console.log(">>>this.state",this.state)
 
+    if (this.state.errMsg !== null){
+      return <div>{this.state.errMsg}</div>
+    }
+
     this.allowLoadPageState = true;
     if (this.props.allowLoadPageState === false){
       this.allowLoadPageState = false;
@@ -449,7 +453,7 @@ class DoenetViewerChild extends Component {
     if (this.props.allowSaveEvents === false){
       this.allowSaveEvents = false;
     }
-    console.log(">>>render this.allowLoadPageState", this.allowLoadPageState)
+    // console.log(">>>render this.allowLoadPageState", this.allowLoadPageState)
     // console.log(">>>render this.allowSavePageState", this.allowSavePageState)
     // console.log(">>>render this.allowSavePageStateLocally", this.allowSavePageStateLocally)
     // console.log(">>>render this.allowSaveSubmissions", this.allowSaveSubmissions)
@@ -474,10 +478,10 @@ class DoenetViewerChild extends Component {
       //*** Define this.contentId if not prop
       this.doenetML = this.props.doenetML;
       if (this.doenetML !== this.state.doenetML){
-        this.contentId = sha256(JSON.stringify(this.props.doenetML)).toString(CryptoJS.enc.Hex);
+        this.contentId = sha256(this.props.doenetML).toString(CryptoJS.enc.Hex);
         this.needNewCoreFlag = true;
       }
-    }else if (this.props.doenetML && !this.props.contentId){
+    }else if (!this.props.doenetML && this.props.contentId){
       //*** Define this.doenetML if not prop
       this.contentId = this.props.contentId;
       //If contentId is different load the corresponding contentId
@@ -498,7 +502,7 @@ class DoenetViewerChild extends Component {
             //TODO: Handle 404
             return "Error Loading";
           }
-          return <p>loading...</p>
+          return null;
 
         }
 
@@ -524,7 +528,7 @@ class DoenetViewerChild extends Component {
     if (this.needNewCoreFlag){
       console.log(">>>needNewCoreFlag")
       this.loadState(this.createCore);
-      return <p>loading...</p>
+      return null;
 
     }
     
@@ -539,11 +543,6 @@ class DoenetViewerChild extends Component {
 
 }
 
-// console.log(">>>this.props.allowLoadPageState", this.props.allowLoadPageState)
-    // console.log(">>>this.props.allowSavePageState", this.props.allowSavePageState)
-    // console.log(">>>this.props.allowSavePageStateLocally", this.props.allowSavePageStateLocally)
-    // console.log(">>>this.props.allowSaveSubmissions", this.props.allowSaveSubmissions)
-    // console.log(">>>this.props.allowSaveEvents", this.props.allowSaveEvents)
     //TODO: too blunt eliminate ignoreDatabase
     //Propose: 
     //props.AllowLoadPageState (ContentInteractions) (Turn off only for automated testing)
@@ -555,6 +554,7 @@ class DoenetViewerChild extends Component {
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
+    // console.log(">>>error",props)
     this.state = {
       hasError: false,
       errorMsg: ""
