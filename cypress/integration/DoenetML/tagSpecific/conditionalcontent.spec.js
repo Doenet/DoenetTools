@@ -2503,6 +2503,35 @@ describe('Conditional Content Tag Tests', function () {
 
   })
 
+  it('copy with invalid tname gets expanded', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="n" />
+  before
+  <conditionalContent assignNames='a'>
+    <case condition="$n=1" newNamespace>nothing: <copy tname="nada" name="nothing" /></case>
+  </conditionalContent>
+  after
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.get('#\\/n textarea').type("1", { force: true }).blur();
+
+    cy.get('#\\/_document1').should('have.text', '\n  a\n  1\n  before\n  nothing: \n  after\n  ')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/a/nothing"].isExpanded).eq(true)
+      expect(components["/a/nothing"].replacements).eqls([])
+      expect(components["/_document1"].activeChildren.filter(x => x.componentType === "copy")).eqls([])
+    });
+
+  })
+
 
 })
 
