@@ -1,8 +1,8 @@
-import BooleanComponent from '../Boolean';
+import TextComponent from '../Text';
 
-export default class BooleanBaseOperatorOfMath extends BooleanComponent {
-  static componentType = "_booleanOperatorOfMath";
-  static rendererType = "boolean";
+export default class TextBaseOperatorOfMath extends TextComponent {
+  static componentType = "_textOperatorOfMath";
+  static rendererType = "text";
 
   static returnChildLogic (args) {
     let childLogic = super.returnChildLogic(args);
@@ -25,14 +25,11 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    delete stateVariableDefinitions.parsedExpression;
-    delete stateVariableDefinitions.mathChildrenByCode;
-
     let constructor = this;
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      componentType: "text",
       forRenderer: true,
       returnDependencies: () => ({
         mathChildren: {
@@ -44,7 +41,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       definition: function ({ dependencyValues }) {
         return {
           newValues: {
-            value: constructor.applyBooleanOperator(
+            value: constructor.applyTextOperator(
               dependencyValues.mathChildren
                 .map(x => x.stateValues.value)
             )
