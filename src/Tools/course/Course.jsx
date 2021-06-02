@@ -240,7 +240,7 @@ export default function Course(props) {
         ></Button>
 
         <Button
-          value={filter === 'Released Only' ? 'Show Assigned' : 'Show Released'}
+          value={filter === 'Released Only' ? 'View as student' : 'Instructor View'}
           callback={(e) => setViewAccessToggle(e)}
         ></Button>
       </>
@@ -326,7 +326,7 @@ export default function Course(props) {
                 <Container>
                   <Drive
                     filter={filter}
-                    columnTypes={['Due Date', 'Assigned']}
+                    columnTypes={filter === 'Released Only' ? ['Due Date', 'Assigned'] : ['Due Date'] }
                     driveId={routePathDriveId}
                     hideUnpublished={hideUnpublished}
                     subTypes={['Administrator']}
@@ -573,14 +573,12 @@ const DoenetMLInfoPanel = (props) => {
             </div>
             <div>
               <label>Attempt Aggregation :</label>
-              <input
-                required
-                type="text"
-                name="attemptAggregation"
-                value={aInfo ? aInfo?.attemptAggregation : ''}
-                onBlur={handleOnBlur}
-                onChange={handleChange}
-              />
+              <select name="attemptAggregation" onChange={handleOnBlur}>
+                <option value='m' selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}>m
+                </option>
+                <option value='l' selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}>l
+                </option>
+              </select>              
             </div>
             <div>
               <label>Total Points Or Percent: </label>
