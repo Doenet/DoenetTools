@@ -231,8 +231,9 @@ class DoenetViewerChild extends Component {
     contentId, sourceOfUpdate, transient = false
   }) {
 
+   
     // TODO: what should we do with transient updates?
-    if (transient || !this.allowSavePageState) {
+    if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
       return;
     }
 
@@ -273,6 +274,15 @@ class DoenetViewerChild extends Component {
       variant: variantString,
     }
 
+    if (this.allowLocalPageState){
+      console.log(">>>save data locally!!!!!!",`${contentId}${this.props.branchId}${this.attemptNumber}`)
+      localStorage.setItem(`${contentId}${this.props.branchId}${this.attemptNumber}`,JSON.stringify({stateVariables:changeString,variant:variantString}))
+    }
+
+    if (!this.allowSavePageState){
+      return;
+    }
+
     console.log(">>>localStateChanged data",data)
     axios.post('/api/recordContentInteraction.php', data)
       .then(resp => {
@@ -286,10 +296,27 @@ class DoenetViewerChild extends Component {
   loadState(callback) {
     console.log(">>>loadState props",this.props)
 
-    if (!this.allowLoadPageState) {
+    if (!this.allowLoadPageState && !this.allowLocalPageState) {
       callback({
         stateVariables: null,
         variant: null
+      });
+      return;
+    }
+
+    if (this.allowLocalPageState){
+
+      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.branchId}${this.attemptNumber}`)) 
+      let stateVariables = null;
+      let variant = null;
+      
+       if (stateVarVariant){
+         stateVariables = stateVarVariant.stateVariables;
+         variant = stateVarVariant.variant
+       }
+      callback({
+        stateVariables,
+        variant
       });
       return;
     }
@@ -301,11 +328,11 @@ class DoenetViewerChild extends Component {
         branchId: this.props.branchId,
       }
     }
-    console.log(">>>payload",payload)
+    // console.log(">>>payload",payload)
 
     axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
-        console.log(">>>load ci resp.data", resp.data)
+        // console.log(">>>load ci resp.data", resp.data)
         if (!resp.data.success){
           throw new Error(resp.data.message)
         }
@@ -483,9 +510,9 @@ class DoenetViewerChild extends Component {
     if (this.props.allowSavePageState === false){
       this.allowSavePageState = false;
     }
-    this.allowSavePageStateLocally = true;
-    if (this.props.allowSavePageStateLocally === false){
-      this.allowSavePageStateLocally = false;
+    this.allowLocalPageState = true;
+    if (this.props.allowLocalPageState === false){
+      this.allowLocalPageState = false;
     }
     this.allowSaveSubmissions = true;
     if (this.props.allowSaveSubmissions === false){
@@ -497,7 +524,7 @@ class DoenetViewerChild extends Component {
     }
     // console.log(">>>render this.allowLoadPageState", this.allowLoadPageState)
     // console.log(">>>render this.allowSavePageState", this.allowSavePageState)
-    // console.log(">>>render this.allowSavePageStateLocally", this.allowSavePageStateLocally)
+    // console.log(">>>render this.allowLocalPageState", this.allowLocalPageState)
     // console.log(">>>render this.allowSaveSubmissions", this.allowSaveSubmissions)
     // console.log(">>>render this.allowSaveEvents", this.allowSaveEvents)
 

@@ -27,7 +27,7 @@ function Test() {
   const [bundledCore, setBundledCore] = useState(false);
   const [allowLoadPageState, setAllowLoadPageState] = useState(false);
   const [allowSavePageState, setAllowSavePageState] = useState(false);
-  const [allowSavePageStateLocally, setAllowSavePageStateLocally] = useState(false);
+  const [allowLocalPageState, setAllowLocalPageState] = useState(false);
   const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(false);
   const [allowSaveEvents, setAllowSaveEvents] = useState(false);
   const [_, setRefresh] = useState(0);
@@ -124,13 +124,13 @@ function Test() {
         } />Allow Save Page State</label>
       </div>
       <div>
-        <label> <input type='checkbox' checked={allowSavePageStateLocally} onChange={
+        <label> <input type='checkbox' checked={allowLocalPageState} onChange={
           () => {
-            setAllowSavePageStateLocally(was => !was)
+            setAllowLocalPageState(was => !was)
             setUpdateNumber(was => was+1)
 
           }
-        } />Allow Save Page State Locally</label>
+        } />Allow Local Page State</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={allowSaveSubmissions} onChange={
@@ -193,7 +193,7 @@ function Test() {
         attemptNumber={attemptNumber}
         allowLoadPageState={allowLoadPageState}
         allowSavePageState={allowSavePageState}
-        allowSavePageStateLocally={allowSavePageStateLocally}
+        allowLocalPageState={allowLocalPageState}
         allowSaveSubmissions={allowSaveSubmissions}
         allowSaveEvents={allowSaveEvents}
         requestedVariant={requestedVariant.current}
