@@ -59,7 +59,7 @@ export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
   default: '',
 });
-const loadAssignmentSelector = selectorFamily({
+export const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
   get:
     (branchId) =>
@@ -367,14 +367,14 @@ export default function Course(props) {
           )}
         </mainPanel>
         {routePathDriveId && (
-          <menuPanel isInitOpen title="Assigned">
+          <menuPanel isInitOpen title="Assignment">
             <VersionInfo route={props.route} />
             <br />
+
+            <ItemInfoPanel route={props.route} />
+
           </menuPanel>
         )}
-        <menuPanel title="Info">
-          <ItemInfoPanel route={props.route} />
-        </menuPanel>
       </Tool>
     </>
   );
@@ -518,12 +518,12 @@ const DoenetMLInfoPanel = (props) => {
     }
   };
 
-  if (itemInfo.isAssigned === '1' && checkIsVersionAssigned()) {
+  if (itemInfo.isAssigned === '1') {
     assignmentForm = (
       <>
         {
           <>
-           
+           <h3>Assignment Info</h3>
             <div>
               <label>Assigned Date:</label>
               <input
@@ -574,9 +574,9 @@ const DoenetMLInfoPanel = (props) => {
             <div>
               <label>Attempt Aggregation :</label>
               <select name="attemptAggregation" onChange={handleOnBlur}>
-                <option value='m' selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}>m
+                <option value='m' selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}>Maximum
                 </option>
-                <option value='l' selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}>l
+                <option value='l' selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}>Last Attempt
                 </option>
               </select>              
             </div>

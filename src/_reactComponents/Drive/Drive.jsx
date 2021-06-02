@@ -61,7 +61,7 @@ import {
 import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
 import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
-
+import {loadAssignmentSelector} from '../../Tools/course/Course';
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
   default: selectorFamily({
@@ -1533,16 +1533,22 @@ const selectedDriveItems = selectorFamily({
 function columnJSX(columnType,item){
   // console.log(">>>columnType,item",columnType,item)
       // console.log(">>>item",item)
+      const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.branchId));
+      let aInfo = '';
+      if (assignmentInfoSettings?.state === 'hasValue') {
+        aInfo = assignmentInfoSettings?.contents?.assignments[0];
+      }
+      
   if (columnType === 'Released' && item.isReleased === '1'){
     return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
   }else if (columnType === 'Assigned' && item.isAssigned === '1'){
     return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
   }else if (columnType === 'Public' && item.isPublic === '1'){
     return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
-  }else if (columnType === 'Due Date'){
-    //TODO: Update to due date
-    let date = item.creationDate.slice(0,10)
-    return <span style={{textAlign:"center"}}>{date}</span>
+  }else if (columnType === 'Due Date' && item.isAssigned === '1'){
+    return <span style={{textAlign:"center"}}>
+      {aInfo?.dueDate}
+      </span>
   }
   return <span></span>;
 }
