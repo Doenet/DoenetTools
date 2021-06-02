@@ -1,29 +1,9 @@
 import InlineComponent from './abstract/InlineComponent';
-import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
-import { createUniqueName, getNamespaceFromName } from '../utils/naming';
 import { deepCompare } from '../utils/deepFunctions';
 // import sha1 from 'crypto-js/sha1';
 // import Base64 from 'crypto-js/enc-base64';
 
 export default class Answer extends InlineComponent {
-  constructor(args) {
-    super(args);
-
-    //Complex because the stateValues isn't defined until later
-    Object.defineProperty(this.actions, 'submitAllAnswers', {
-      get: function () {
-        if (this.stateValues.submitAllAnswersAtAncestor !== null) {
-          return () => this.coreFunctions.requestAction({
-            componentName: this.stateValues.submitAllAnswersAtAncestor,
-            actionName: "submitAllAnswers"
-          })
-        } else {
-          return () => null
-        }
-      }.bind(this)
-    });
-
-  }
   static componentType = "answer";
 
   static renderChildren = true;
@@ -72,13 +52,6 @@ export default class Answer extends InlineComponent {
       createStateVariable: "forceFullCheckworkButton",
       defaultValue: false,
       public: true,
-    };
-    attributes.forceFullCheckworkButton = {
-      createComponentOfType: "boolean",
-      createStateVariable: "forceFullCheckworkButton",
-      defaultValue: false,
-      public: true,
-      propagateToDescendants: true
     };
     attributes.simplifyOnCompare = {
       createComponentOfType: "text",
@@ -834,7 +807,6 @@ export default class Answer extends InlineComponent {
         [
           "delegateCheckWorkToInput",
           "delegateCheckWorkToAncestor",
-          { variableName: "submitAllAnswersAtAncestor", forRenderer: true }
         ],
       forRenderer: true,
       returnDependencies: () => ({
@@ -851,10 +823,13 @@ export default class Answer extends InlineComponent {
           componentType: "_sectioningComponent",
           variableNames: [
             "suppressAnswerSubmitButtons",
-            "componentNameForSubmitAll",
-            "answerDelegatedForSubmitAll",
-            "justSubmittedForSubmitAll",
-            "creditAchievedForSubmitAll"
+          ]
+        },
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: [
+            "suppressAnswerSubmitButtons",
           ]
         }
       }),
@@ -862,16 +837,13 @@ export default class Answer extends InlineComponent {
         let delegateCheckWorkToAncestor = false;
         let delegateCheckWorkToInput = false;
         let delegateCheckWork = false;
-        let submitAllAnswersAtAncestor = null;
 
-        if (dependencyValues.sectionAncestor) {
+        if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
+          delegateCheckWorkToAncestor = delegateCheckWork = true;
+        } else if (dependencyValues.sectionAncestor) {
           let ancestorState = dependencyValues.sectionAncestor.stateValues;
           if (ancestorState.suppressAnswerSubmitButtons) {
-            if (ancestorState.answerDelegatedForSubmitAll === componentName) {
-              submitAllAnswersAtAncestor = ancestorState.componentNameForSubmitAll;
-            } else {
-              delegateCheckWorkToAncestor = delegateCheckWork = true;
-            }
+            delegateCheckWorkToAncestor = delegateCheckWork = true;
           }
         }
 
@@ -883,7 +855,7 @@ export default class Answer extends InlineComponent {
         return {
           newValues: {
             delegateCheckWork, delegateCheckWorkToAncestor,
-            delegateCheckWorkToInput, submitAllAnswersAtAncestor
+            delegateCheckWorkToInput
           }
         };
       }
@@ -1069,52 +1041,6 @@ export default class Answer extends InlineComponent {
       },
     }
 
-    stateVariableDefinitions.creditAchievedForSubmitButton = {
-      additionalStateVariablesDefined:
-        [{ variableName: "justSubmittedForSubmitButton", forRenderer: true }],
-      forRenderer: true,
-      returnDependencies: () => ({
-        creditAchieved: {
-          dependencyType: "stateVariable",
-          variableName: "creditAchieved"
-        },
-        justSubmitted: {
-          dependencyType: "stateVariable",
-          variableName: "justSubmitted"
-        },
-        submitAllAnswersAtAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "submitAllAnswersAtAncestor"
-        },
-        sectionAncestor: {
-          dependencyType: "ancestor",
-          componentType: "_sectioningComponent",
-          variableNames: [
-            "justSubmittedForSubmitAll",
-            "creditAchievedForSubmitAll"
-          ]
-        }
-      }),
-      definition({ dependencyValues }) {
-
-        if (dependencyValues.submitAllAnswersAtAncestor) {
-          let ancestorState = dependencyValues.sectionAncestor.stateValues;
-          return {
-            newValues: {
-              creditAchievedForSubmitButton: ancestorState.creditAchievedForSubmitAll,
-              justSubmittedForSubmitButton: ancestorState.justSubmittedForSubmitAll
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              creditAchievedForSubmitButton: dependencyValues.creditAchieved,
-              justSubmittedForSubmitButton: dependencyValues.justSubmitted
-            }
-          }
-        }
-      }
-    }
 
     stateVariableDefinitions.allFeedbacks = {
       returnDependencies: () => ({

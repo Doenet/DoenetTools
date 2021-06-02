@@ -316,7 +316,7 @@ export default class Core {
               originalCopyWithUri.children = [];
             }
             originalCopyWithUri.children.push({
-              componentType: "externalcontent",
+              componentType: "externalContent",
               children: serializedComponentsForContentId,
               attributes: { newNamespace: true }
             });
@@ -331,7 +331,7 @@ export default class Core {
               originalCopyWithUri.children = [];
             }
             originalCopyWithUri.children.push({
-              componentType: "externalcontent",
+              componentType: "externalContent",
               children: serializedComponentsForContentName,
               attributes: { newNamespace: true }
             });
@@ -351,9 +351,9 @@ export default class Core {
 
       let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
 
-        if (!success) {
-          console.warn(message);
-        }
+        // if (!success) {
+        //   console.warn(message);
+        // }
 
         // check to see if got the contentIds requested
         for (let [ind, contentId] of contentIdList.entries()) {
@@ -6185,14 +6185,14 @@ export default class Core {
         this.parameterStack.pop();
 
 
-        let shadowResult = this.addChildrenAndRecurseToShadows({ 
-          parent: unproxiedShadowingParent, 
+        let shadowResult = this.addChildrenAndRecurseToShadows({
+          parent: unproxiedShadowingParent,
           indexOfDefiningChildren,
           newChildren: createResult.components,
-           assignNamesOffset
+          assignNamesOffset
         });
 
-        if(!shadowResult.success) {
+        if (!shadowResult.success) {
           throw Error(`was able to add components to parent but not shadows!`)
         }
 
