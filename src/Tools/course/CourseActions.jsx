@@ -31,7 +31,7 @@ const formatFutureDate = (dt) => {
   const formattedFutureDate = `${
     dt.getFullYear().toString().padStart(2, '0')}-${
     (dt.getMonth()+1).toString().padStart(2, '0')}-${
-    (dt.getDate()+7).toString().padStart(2, '0')} ${
+    (dt.getDate()).toString().padStart(2, '0')} ${
     dt.getHours().toString().padStart(2, '0')}:${
     dt.getMinutes().toString().padStart(2, '0')}:${
     dt.getSeconds().toString().padStart(2, '0')}`;
@@ -45,13 +45,14 @@ export const useAssignment = () => {
     ({ snapshot, set }) => async (props) => {
       let { driveIditemIdbranchIdparentFolderId ,contentId,versionId,branchId } = props;
       const dt = new Date();
+      const ndt = new Date(new Date().getTime()+(5*24*60*60*1000));
       const creationDate = formatDate(dt);
-      const futureDueDate = formatFutureDate(dt);
+      const futureDueDate = formatFutureDate(ndt);
       // assignment creation
       let newAssignmentObj = {
         assignedDate: creationDate,
-        attemptAggregation: 'e',
-        dueDate: creationDate,
+        attemptAggregation: 'm',
+        dueDate: futureDueDate,
         gradeCategory: 'l',
         individualize: '0',
         isAssigned: '1',
@@ -73,8 +74,8 @@ export const useAssignment = () => {
       };
       let newchangedAssignmentObj = {
         assignedDate: creationDate,
-        attemptAggregation: 'e',
-        dueDate: creationDate,
+        attemptAggregation: 'm',
+        dueDate: futureDueDate,
         gradeCategory: 'l',
         individualize: false,
         isAssigned: '1',
@@ -121,13 +122,25 @@ export const useAssignment = () => {
   const addSwitchAssignment = useRecoilCallback(
     ({ snapshot, set }) => async (props) => {
       let { driveIditemIdbranchIdparentFolderId ,contentId,versionId,branchId, ...rest } = props;
+      const formatFutureDate = (dt) => {
+        const formattedFutureDate = `${
+          dt.getFullYear().toString().padStart(2, '0')}-${
+          (dt.getMonth()+1).toString().padStart(2, '0')}-${
+          (dt.getDate()).toString().padStart(2, '0')} ${
+          dt.getHours().toString().padStart(2, '0')}:${
+          dt.getMinutes().toString().padStart(2, '0')}:${
+          dt.getSeconds().toString().padStart(2, '0')}`;
+          
+        return formattedFutureDate;
+      }
       const dt = new Date();
       const creationDate = formatDate(dt);
-      const futureDueDate = formatFutureDate(dt);
+      const ndt = new Date(new Date().getTime()+(5*24*60*60*1000));
+      const futureDueDate = formatFutureDate(ndt);
       let newAssignmentObj = {
         assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
-        attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'e',
-        dueDate: rest.dueDate ? rest.dueDate : creationDate,
+        attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'm',
+        dueDate: rest.dueDate ? rest.dueDate : futureDueDate,
         gradeCategory: rest.gradeCategory ? rest.gradeCategory :'l',
         individualize: rest.individualize ? rest.individualize : '0',
         isAssigned: rest.isAssigned ? rest.isAssigned : '1',
@@ -149,7 +162,7 @@ export const useAssignment = () => {
       let newchangedAssignmentObj = {
         assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
         attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'e',
-        dueDate: rest.dueDate ? rest.dueDate : creationDate,
+        dueDate: rest.dueDate ? rest.dueDate : futureDueDate,
         gradeCategory: rest.gradeCategory ? rest.gradeCategory :'l',
         individualize: rest.individualize ? rest.individualize : false,
         isAssigned: rest.isAssigned ? rest.isAssigned : '1',
