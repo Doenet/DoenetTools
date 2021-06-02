@@ -31,7 +31,7 @@ const formatFutureDate = (dt) => {
   const formattedFutureDate = `${
     dt.getFullYear().toString().padStart(2, '0')}-${
     (dt.getMonth()+1).toString().padStart(2, '0')}-${
-    (dt.getDate()+7).toString().padStart(2, '0')} ${
+    (dt.getDate()).toString().padStart(2, '0')} ${
     dt.getHours().toString().padStart(2, '0')}:${
     dt.getMinutes().toString().padStart(2, '0')}:${
     dt.getSeconds().toString().padStart(2, '0')}`;
@@ -45,14 +45,14 @@ export const useAssignment = () => {
     ({ snapshot, set }) => async (props) => {
       let { driveIditemIdbranchIdparentFolderId ,contentId,versionId,branchId } = props;
       const dt = new Date();
+      const ndt = new Date(new Date().getTime()+(5*24*60*60*1000));
       const creationDate = formatDate(dt);
-      const futureDueDate = formatFutureDate(dt);
+      const futureDueDate = formatFutureDate(ndt);
       // assignment creation
       let newAssignmentObj = {
-        assignment_title: 'Untitled Assignment',
         assignedDate: creationDate,
-        attemptAggregation: 'e',
-        dueDate: creationDate,
+        attemptAggregation: 'm',
+        dueDate: futureDueDate,
         gradeCategory: 'l',
         individualize: '0',
         isAssigned: '1',
@@ -73,10 +73,9 @@ export const useAssignment = () => {
         subType: 'Administrator',
       };
       let newchangedAssignmentObj = {
-        assignment_title: 'Untitled Assignment',
         assignedDate: creationDate,
-        attemptAggregation: 'e',
-        dueDate: creationDate,
+        attemptAggregation: 'm',
+        dueDate: futureDueDate,
         gradeCategory: 'l',
         individualize: false,
         isAssigned: '1',
@@ -94,6 +93,92 @@ export const useAssignment = () => {
         timeLimit: '10:10',
         totalPointsOrPercent: '00.00',
         assignment_isPublished: '0',
+        subType: 'Administrator',
+      };
+
+      let payload = {
+        ...newAssignmentObj,
+        driveId: driveIditemIdbranchIdparentFolderId.driveId,
+        itemId: driveIditemIdbranchIdparentFolderId.itemId,
+        branchId: branchId,
+        contentId: contentId,
+      };
+      set(assignmentDictionary(driveIditemIdbranchIdparentFolderId), newchangedAssignmentObj);
+
+      let result = await axios.post(`/api/makeNewAssignment.php`, payload).catch((e) =>{return {data:{message:e, success:false}}})
+     try {
+        if(result.data.success){
+          return result.data;
+        }     
+      else{
+        return  {message:result.data.message, success:false};
+      }
+     } catch (e) {
+      return {message:e, success:false};
+     }
+    },
+  );
+
+  const addSwitchAssignment = useRecoilCallback(
+    ({ snapshot, set }) => async (props) => {
+      let { driveIditemIdbranchIdparentFolderId ,contentId,versionId,branchId, ...rest } = props;
+      const formatFutureDate = (dt) => {
+        const formattedFutureDate = `${
+          dt.getFullYear().toString().padStart(2, '0')}-${
+          (dt.getMonth()+1).toString().padStart(2, '0')}-${
+          (dt.getDate()).toString().padStart(2, '0')} ${
+          dt.getHours().toString().padStart(2, '0')}:${
+          dt.getMinutes().toString().padStart(2, '0')}:${
+          dt.getSeconds().toString().padStart(2, '0')}`;
+          
+        return formattedFutureDate;
+      }
+      const dt = new Date();
+      const creationDate = formatDate(dt);
+      const ndt = new Date(new Date().getTime()+(5*24*60*60*1000));
+      const futureDueDate = formatFutureDate(ndt);
+      let newAssignmentObj = {
+        assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
+        attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'm',
+        dueDate: rest.dueDate ? rest.dueDate : futureDueDate,
+        gradeCategory: rest.gradeCategory ? rest.gradeCategory :'l',
+        individualize: rest.individualize ? rest.individualize : '0',
+        isAssigned: rest.isAssigned ? rest.isAssigned : '1',
+        isPublished: rest.isPublished ?rest.isPublished : '0',
+        contentId:contentId,
+        itemId: driveIditemIdbranchIdparentFolderId.itemId,
+        versionId:versionId,
+        multipleAttempts: rest.multipleAttempts ? rest.multipleAttempts : '0',
+        numberOfAttemptsAllowed: rest.numberOfAttemptsAllowed ?rest.numberOfAttemptsAllowed : '2',
+        proctorMakesAvailable: rest.proctorMakesAvailable ? rest.proctorMakesAvailable : '2',
+        showCorrectness: rest.showCorrectness ? rest.showCorrectness : '1',
+        showFeedback: rest.showFeedback ? rest.showFeedback : '1',
+        showHints: rest.showHints ? rest.showHints : '1',
+        showSolution: rest.showSolution ? rest.showSolution : '1',
+        timeLimit: rest.timeLimit ? rest.timeLimit : '10:10',
+        totalPointsOrPercent: rest.totalPointsOrPercent ? rest.totalPointsOrPercent : '00.00' ,
+        subType: 'Administrator',
+      };
+      let newchangedAssignmentObj = {
+        assignedDate: rest.assignedDate ? rest.assignedDate : creationDate,
+        attemptAggregation: rest.attemptAggregation ? rest.attemptAggregation : 'e',
+        dueDate: rest.dueDate ? rest.dueDate : futureDueDate,
+        gradeCategory: rest.gradeCategory ? rest.gradeCategory :'l',
+        individualize: rest.individualize ? rest.individualize : false,
+        isAssigned: rest.isAssigned ? rest.isAssigned : '1',
+        isPublished: rest.isPublished ?rest.isPublished : '0',
+        contentId:contentId,
+        itemId: driveIditemIdbranchIdparentFolderId.itemId,
+        versionId:versionId,
+        multipleAttempts: rest.multipleAttempts ? rest.multipleAttempts : false,
+        numberOfAttemptsAllowed: rest.numberOfAttemptsAllowed ?rest.numberOfAttemptsAllowed : '2',
+        proctorMakesAvailable: rest.proctorMakesAvailable ? rest.proctorMakesAvailable : false,
+        showCorrectness: rest.showCorrectness ? rest.showCorrectness : true,
+        showFeedback: rest.showFeedback ? rest.showFeedback : true,
+        showHints: rest.showHints ? rest.showHints : true,
+        showSolution: rest.showSolution ? rest.showSolution : true,
+        timeLimit: rest.timeLimit ? rest.timeLimit : '10:10',
+        totalPointsOrPercent: rest.totalPointsOrPercent ? rest.totalPointsOrPercent : '00.00' ,
         subType: 'Administrator',
       };
 
@@ -270,6 +355,7 @@ export const useAssignment = () => {
   };
   return {
     addContentAssignment,
+    addSwitchAssignment,
     updateVersionHistory,
     updatePrevVersionHistory,
     changeSettings,

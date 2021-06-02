@@ -5,6 +5,7 @@ import * as BooleanOperators from './components/BooleanOperators';
 import * as BooleanOperatorsOfMath from './components/BooleanOperatorsOfMath';
 import * as MathOperators from './components/MathOperators';
 import * as FunctionOperators from './components/FunctionOperators';
+import * as TextOperatorsOfMath from './components/TextOperatorsOfMath';
 import * as Extrema from './components/Extrema';
 import * as ParagraphMarkup from './components/ParagraphMarkup';
 import * as SingleCharacterComponents from './components/SingleCharacterComponents';
@@ -152,6 +153,7 @@ const componentTypeArray = [
   ...Object.values(BooleanOperatorsOfMath),
   ...Object.values(MathOperators),
   ...Object.values(FunctionOperators),
+  ...Object.values(TextOperatorsOfMath),
   ...Object.values(Extrema),
   ...Object.values(ParagraphMarkup),
   ...Object.values(SingleCharacterComponents),

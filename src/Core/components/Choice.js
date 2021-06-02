@@ -12,6 +12,7 @@ export default class Choice extends InlineComponent {
       createStateVariable: "credit",
       defaultValue: 0,
       public: true,
+      attributesForCreatedComponent: { convertBoolean: true }
     };
     attributes.feedbackCodes = {
       createComponentOfType: "textList",

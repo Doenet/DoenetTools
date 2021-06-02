@@ -316,7 +316,7 @@ export default class Core {
               originalCopyWithUri.children = [];
             }
             originalCopyWithUri.children.push({
-              componentType: "externalcontent",
+              componentType: "externalContent",
               children: serializedComponentsForContentId,
               attributes: { newNamespace: true }
             });
@@ -331,7 +331,7 @@ export default class Core {
               originalCopyWithUri.children = [];
             }
             originalCopyWithUri.children.push({
-              componentType: "externalcontent",
+              componentType: "externalContent",
               children: serializedComponentsForContentName,
               attributes: { newNamespace: true }
             });
@@ -351,9 +351,9 @@ export default class Core {
 
       let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
 
-        if (!success) {
-          console.warn(message);
-        }
+        // if (!success) {
+        //   console.warn(message);
+        // }
 
         // check to see if got the contentIds requested
         for (let [ind, contentId] of contentIdList.entries()) {
@@ -506,6 +506,9 @@ export default class Core {
       Object.assign(addedComponents, addResults.addedComponents);
       Object.assign(deletedComponents, addResults.deletedComponents);
 
+      this.expandAllComposites(this.document);
+      this.expandAllComposites(this.document, true);
+
       this.updateRendererInstructions({ componentNames: this.componentAndRenderedDescendants(parent) });
       this.processStateVariableTriggers();
 
@@ -545,10 +548,12 @@ export default class Core {
         if (unproxiedComponent && unproxiedComponent.constructor.renderChildren) {
           if (!unproxiedComponent.childLogicSatisfied) {
             this.deriveChildResultsFromDefiningChildren({
-              parent: unproxiedComponent, expandComposites: true, //forceExpandComposites: true,
+              parent: unproxiedComponent, expandComposites: true, forceExpandComposites: true,
             });
           }
-          currentChildNames = unproxiedComponent.activeChildren.map(x => x.componentName);
+          currentChildNames = unproxiedComponent.activeChildren
+            .filter(x => x.rendererType)
+            .map(x => x.componentName);
         }
 
 
@@ -6185,14 +6190,14 @@ export default class Core {
         this.parameterStack.pop();
 
 
-        let shadowResult = this.addChildrenAndRecurseToShadows({ 
-          parent: unproxiedShadowingParent, 
+        let shadowResult = this.addChildrenAndRecurseToShadows({
+          parent: unproxiedShadowingParent,
           indexOfDefiningChildren,
           newChildren: createResult.components,
-           assignNamesOffset
+          assignNamesOffset
         });
 
-        if(!shadowResult.success) {
+        if (!shadowResult.success) {
           throw Error(`was able to add components to parent but not shadows!`)
         }
 
@@ -7619,7 +7624,15 @@ export default class Core {
 
 
     // calculate any replacement changes on composites touched
-    this.replacementChangesFromCompositesToUpdate();
+    let replacementResult = this.replacementChangesFromCompositesToUpdate();
+
+    if (replacementResult.updatedComposites) {
+      // make sure the new composite replacements didn't
+      // create other composites that have to be expanded
+      this.expandAllComposites(this.document);
+      this.expandAllComposites(this.document, true);
+
+    }
 
     // if preliminary, we don't update renderer instructions or display information
     if (preliminary) {
@@ -7690,6 +7703,8 @@ export default class Core {
 
     let nPasses = 0;
 
+    let updatedComposites = compositesToUpdateReplacements.length > 0;
+
     let componentChanges = []; // TODO: what to do with componentChanges?
     while (compositesToUpdateReplacements.length > 0) {
       for (let cName of compositesToUpdateReplacements) {
@@ -7742,7 +7757,8 @@ export default class Core {
 
     this.updateInfo.compositesToUpdateReplacements = compositesNotReady;
 
-    return { componentChanges };
+    // return { componentChanges };
+    return { updatedComposites };
   }
 
   processNewStateVariableValues(newStateVariableValues) {

@@ -36,9 +36,10 @@ const Message = styled(animated.div)`
 `;
 
 const Content = styled("div")`
-  color: white;
-  background: ${({ type }) => type?.background};
+  color: black;
+  /* background:  */
   /* opacity: 0.9; */
+  background: white;
   padding: 12px 22px;
   font-size: 1em;
   display: grid;
@@ -48,6 +49,9 @@ const Content = styled("div")`
   overflow: hidden;
   height: auto;
   border-radius: 3px;
+  border: 2px solid #e2e2e2;
+  border-left: 12px solid;
+  border-left-color: ${({ type }) => type?.background};
 `;
 
 const Life = styled(animated.div)`
@@ -71,10 +75,11 @@ const Button = styled("button")`
   margin: 0;
   padding: 0;
   padding-bottom: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  :hover {
-    color: rgba(255, 255, 255, 0.9);
-  }
+  // color: rgba(255, 255, 255, 0.7);
+  // :hover {
+  //   color: rgba(255, 255, 255, 0.9);
+  // }
+  color: black;
   font-size: 1em;
 `;
 
@@ -83,13 +88,13 @@ const ToastType = {
   ERROR: {
     // process failed or error occured, user must dissmis
     timeout: -1,
-    background: "rgba(193, 41, 46, 0.6)",
+    background: "rgba(193, 41, 46, 1)",
     gradientEnd: "rgba()",
   },
   ALERT: {
     // user attetion reqired to dissmiss
     timeout: -1,
-    background: "rgba(255, 230, 0, 0.6)",
+    background: "rgba(255, 230, 0, 1)",
   },
   ACTION: {
     // requires user interaction
@@ -99,17 +104,17 @@ const ToastType = {
   INFO: {
     // non-interactive information
     timeout: 3000,
-    background: "rgba(26, 90, 153,0.6)",
+    background: "rgba(26, 90, 153,1)",
   },
   SUCCESS: {
     // confirm action
     timeout: 3000,
-    background: "rgba(0, 222, 41,0.6)",
+    background: "rgba(41, 193, 67,  1)",
   },
   CONFIRMATION: {
     //confirm action and offer undo
     timeout: 5000,
-    background: "rgba(26,90,153,0.6)",
+    background: "rgba(26,90,153,1)",
   },
 };
 

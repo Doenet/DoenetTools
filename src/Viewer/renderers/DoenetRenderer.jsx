@@ -10,6 +10,10 @@ export default class DoenetRenderer extends Component {
     this.swapChildren = this.swapChildren.bind(this);
     this.update = this.update.bind(this);
 
+    // BADBADBAD: this.childrenToCreate gets updated indirectly by Core
+    // in updateRendererInstructions, where it modifies componentInstructions.children,
+    // and that change is assumed in addChildren, below.
+    // Very confusing!
     this.childrenToCreate = props.componentInstructions.children;
     this.componentName = props.componentInstructions.componentName;
 

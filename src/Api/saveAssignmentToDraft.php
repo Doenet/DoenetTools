@@ -13,8 +13,7 @@ $userId = $jwtArray['userId'];
 //TODO: Make sure of instructor
 $_POST = json_decode(file_get_contents("php://input"),true);
 
-$title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
-if($title == ''){$title = 'Untitled Assignment';}
+
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
 if ($dueDate == ''){ $dueDate = '0001-01-01 01:01:01';}
 $assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
@@ -53,7 +52,6 @@ else if ($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
 $branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
-$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
 $submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
 $role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
@@ -64,14 +62,10 @@ $message = "";
 if ($branchId == ""){
   $success = FALSE;
   $message = "Internal Error: missing branchId";
-}else if($contentId == ""){
-  $success = FALSE;
-  $message = "Internal Error: missing contentId";
 }
 if ($success){
 
 $sql = "UPDATE assignment SET
-title = '$title',
 assignedDate = '$assignedDate',
 dueDate = '$dueDate',
 timeLimit = '$timeLimit',
@@ -87,7 +81,6 @@ showHints = '$showHints',
 showCorrectness = '$showCorrectness',
 proctorMakesAvailable = '$proctorMakesAvailable'
 WHERE branchId = '$branchId' 
-AND contentId = '$contentId'
 ";
 
 $result = $conn->query($sql);
