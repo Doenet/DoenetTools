@@ -54,6 +54,27 @@ export default class Textinput extends Input {
     attributes.bindValueTo = {
       createComponentOfType: "text"
     };
+    attributes.expanded = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expanded",
+      defaultValue: false,
+      forRenderer: true,
+      public: true,
+    };
+    attributes.width = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "width",
+      defaultValue: { size: 600, isAbsolute: true },
+      forRenderer: true,
+      public: true,
+    };
+    attributes.height = {
+      createComponentOfType: "_componentSize",
+      createStateVariable: "height",
+      defaultValue: { size: 120, isAbsolute: true },
+      forRenderer: true,
+      public: true,
+    };
     return attributes;
   }
 
