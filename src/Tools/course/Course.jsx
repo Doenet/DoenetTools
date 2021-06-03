@@ -34,6 +34,7 @@ import '../../_reactComponents/Drive/drivecard.css';
 import '../../_utils/util.css';
 import GlobalFont from '../../_utils/GlobalFont';
 import Tool from '../_framework/Tool';
+import Switch from "../_framework/Switch";
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
 import { useToast } from '../_framework/Toast';
 import { URLPathSync } from '../library/Library';
@@ -237,12 +238,14 @@ export default function Course(props) {
         <Button
           value={openEnrollment ? 'Close Enrollment' : 'Open Enrollment'}
           callback={(e) => setEnrollment(e)}
-        ></Button>
+        ></Button> 
+        <label>View as Student</label>
 
-        <Button
-          value={filter === 'Released Only' ? 'View as student' : 'Instructor View'}
-          callback={(e) => setViewAccessToggle(e)}
-        ></Button>
+        <Switch
+          onChange={(e) => setViewAccessToggle(e)}
+          checked={filter === 'Released Only' ? false : true}
+        ></Switch>
+
       </>
     );
   }
