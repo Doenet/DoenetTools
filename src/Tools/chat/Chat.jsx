@@ -64,7 +64,7 @@ export default function Chat() {
   );
 
   useEffect(() => {
-    let socket = io('198.199.122.67:81', { withCredentials: true });
+    let socket = io('chat.rt.doenet.org:81', { withCredentials: true });
     socket.on('connect', () => {
       console.log('socket', socket.id, 'connected');
       setSocket(socket);
@@ -138,7 +138,9 @@ export default function Chat() {
             e.preventDefault();
             let roomEl = document.getElementById('roomInput');
             socket.emit('leaveRoom', `chat:${room}`);
-            socket.emit('joinRoom', `chat:${roomEl.value}`);
+            socket.emit('joinRoom', `chat:${roomEl.value}`, (resp) => {
+              console.log(resp);
+            });
             setRoom(roomEl.value);
           }}
         >

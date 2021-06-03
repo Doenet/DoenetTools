@@ -49,13 +49,14 @@
       screenName: 'Server',
     });
 
-    socket.on('joinRoom', (room) => {
+    socket.on('joinRoom', (room, cb) => {
       socket.join(room);
       io.to(room).emit('chat message', {
         messageId: -1,
         message: `${socket.data.profile.screenName} joined room ${room}`,
         screenName: 'Sever',
       });
+      cb(`joined ${room}`);
     });
 
     socket.on('leaveRoom', (room) => {
