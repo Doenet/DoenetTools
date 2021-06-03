@@ -15,21 +15,42 @@ function Test() {
     setRefresh((was)=>was+1)
   }, [testCodeDoenetML]);
 
+  const defaultTestSettings = {
+    updateNumber:0,
+    attemptNumber:1,
+    controlsVisible:false,
+    showCorrectness:true,
+    readOnly:false,
+    showFeedback:true,
+    showHints:true,
+    bundledCore:false,
+    allowLoadPageState:false,
+    allowSavePageState:false,
+    allowLocalPageState:false,
+    allowSaveSubmissions:false,
+    allowSaveEvents:false,
+  }
+  let testSettings = JSON.parse(localStorage.getItem("test settings")) 
+  if (!testSettings){
+    testSettings = defaultTestSettings;
+    localStorage.setItem("test settings",JSON.stringify(defaultTestSettings))
+  }
+  
 
-  const [updateNumber, setUpdateNumber] = useState(0);
-  const [attemptNumber, setAttemptNumber] = useState(1);
-  const [controlsVisible, setControlsVisible] = useState(false);
-  const [showCorrectness, setShowCorrectness] = useState(true);
-  const [readOnly, setReadOnly] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(true);
-  const [showHints, setShowHints] = useState(true);
+  const [updateNumber, setUpdateNumber] = useState(testSettings.updateNumber);
+  const [attemptNumber, setAttemptNumber] = useState(testSettings.attemptNumber);
+  const [controlsVisible, setControlsVisible] = useState(testSettings.controlsVisible);
+  const [showCorrectness, setShowCorrectness] = useState(testSettings.showCorrectness);
+  const [readOnly, setReadOnly] = useState(testSettings.readOnly);
+  const [showFeedback, setShowFeedback] = useState(testSettings.showFeedback);
+  const [showHints, setShowHints] = useState(testSettings.showHints);
 
-  const [bundledCore, setBundledCore] = useState(false);
-  const [allowLoadPageState, setAllowLoadPageState] = useState(false);
-  const [allowSavePageState, setAllowSavePageState] = useState(false);
-  const [allowLocalPageState, setAllowLocalPageState] = useState(false);
-  const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(false);
-  const [allowSaveEvents, setAllowSaveEvents] = useState(false);
+  const [bundledCore, setBundledCore] = useState(testSettings.bundledCore);
+  const [allowLoadPageState, setAllowLoadPageState] = useState(testSettings.allowLoadPageState);
+  const [allowSavePageState, setAllowSavePageState] = useState(testSettings.allowSavePageState);
+  const [allowLocalPageState, setAllowLocalPageState] = useState(testSettings.allowLocalPageState);
+  const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(testSettings.allowSaveSubmissions);
+  const [allowSaveEvents, setAllowSaveEvents] = useState(testSettings.allowSaveEvents);
   const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
@@ -60,16 +81,31 @@ function Test() {
   if (controlsVisible) {
     buttonText = 'hide';
     controls = <div style={{padding:"8px"}}>
+      <div><button onClick={()=>{
+        localStorage.setItem("test settings",JSON.stringify(defaultTestSettings))
+        location.href = '/test';
+      }}>Reset</button></div>
+      <hr />
       <div>
         <label>Attempt Number: {attemptNumber} <button onClick={
           () => {
+            testSettings.attemptNumber = testSettings.attemptNumber + 1;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setAttemptNumber(was => was + 1)
           }
-        }>New Attempt</button></label>
+        }>New Attempt</button> <button onClick={
+          () => {
+            testSettings.attemptNumber = 1;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
+            setAttemptNumber(1)
+          }
+        }>Reset Attempt Number</button></label>
       </div>
       <div>
         <label> <input type='checkbox' checked={showCorrectness} onChange={
           () => {
+            testSettings.showCorrectness = !testSettings.showCorrectness;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setShowCorrectness(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -80,6 +116,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={readOnly} onChange={
           () => {
+            testSettings.readOnly = !testSettings.readOnly;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setReadOnly(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -89,6 +127,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={showFeedback} onChange={
           () => {
+            testSettings.showFeedback = !testSettings.showFeedback;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setShowFeedback(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -98,6 +138,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={showHints} onChange={
           () => {
+            testSettings.showHints = !testSettings.showHints;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setShowHints(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -108,6 +150,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={allowLoadPageState} onChange={
           () => {
+            testSettings.allowLoadPageState = !testSettings.allowLoadPageState;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setAllowLoadPageState(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -117,6 +161,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={allowSavePageState} onChange={
           () => {
+            testSettings.allowSavePageState = !testSettings.allowSavePageState;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setAllowSavePageState(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -126,6 +172,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={allowLocalPageState} onChange={
           () => {
+            testSettings.allowLocalPageState = !testSettings.allowLocalPageState;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setAllowLocalPageState(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -135,6 +183,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={allowSaveSubmissions} onChange={
           () => {
+            testSettings.allowSaveSubmissions = !testSettings.allowSaveSubmissions;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setAllowSaveSubmissions(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -144,6 +194,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={allowSaveEvents} onChange={
           () => {
+            testSettings.allowSaveEvents = !testSettings.allowSaveEvents;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setAllowSaveEvents(was => !was)
             setUpdateNumber(was => was+1)
 
@@ -154,6 +206,8 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={bundledCore} onChange={
           () => {
+            testSettings.bundledCore = !testSettings.bundledCore;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setBundledCore(was => !was)
             setUpdateNumber(was => was+1)
           }
