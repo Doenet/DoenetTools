@@ -164,12 +164,12 @@ class DoenetViewerChild extends Component {
 
     
 
-    if (this.assignmentId ) {
+    if (this.props.branchId ) {
       // if (this.assignmentId && !this.props.ignoreDatabase) {
       const payload = {
         weights: this.core.scoredItemWeights,
         contentId: this.contentId,
-        assignmentId: this.assignmentId,
+        branchId: this.props.branchId,
         attemptNumber: this.attemptNumber
       }
 
