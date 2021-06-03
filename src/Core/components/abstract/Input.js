@@ -34,9 +34,8 @@ export default class Input extends InlineComponent {
           componentType: "answer",
           variableNames: [
             "delegateCheckWorkToInput",
-            "justSubmittedForSubmitButton",
-            "creditAchievedForSubmitButton",
-            "submitAllAnswersAtAncestor",
+            "justSubmitted",
+            "creditAchieved",
             "showCorrectness",
           ]
         }
@@ -69,7 +68,7 @@ export default class Input extends InlineComponent {
     }
 
 
-    stateVariableDefinitions.creditAchievedForSubmitButton = {
+    stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
       public: true,
       componentType: "number",
@@ -81,12 +80,12 @@ export default class Input extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        let creditAchievedForSubmitButton = 0;
+        let creditAchieved = 0;
         if (dependencyValues.answerAncestor) {
-          creditAchievedForSubmitButton = dependencyValues.answerAncestor.stateValues.creditAchievedForSubmitButton;
+          creditAchieved = dependencyValues.answerAncestor.stateValues.creditAchieved;
         }
         return {
-          newValues: { creditAchievedForSubmitButton }
+          newValues: { creditAchieved }
         }
       }
     }
@@ -126,7 +125,7 @@ export default class Input extends InlineComponent {
         let valueHasBeenValidated = false;
 
         if (dependencyValues.answerAncestor &&
-          dependencyValues.answerAncestor.stateValues.justSubmittedForSubmitButton) {
+          dependencyValues.answerAncestor.stateValues.justSubmitted) {
           valueHasBeenValidated = true;
         }
         return {

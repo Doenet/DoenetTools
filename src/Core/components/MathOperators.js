@@ -260,7 +260,7 @@ function makePeriodic({ value, lowerValue, upperValue }) {
   if (numericValue instanceof me.class) {
     numericValue = numericValue.evaluate_to_constant();
   }
-  
+
   if (!Number.isFinite(numericValue)) {
     return me.fromAst(NaN);
   }
@@ -871,4 +871,239 @@ export class Mod extends MathBaseOperator {
     return stateVariableDefinitions;
 
   }
+}
+
+
+export class ExtractMathOperand extends MathBaseOperatorOneInput {
+  static componentType = "extractMathOperand";
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.operandNumber = {
+      createComponentOfType: "number",
+      createStateVariable: "operandNumber",
+      defaultValue: 1,
+      public: true,
+    };
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({
+        operandNumber: {
+          dependencyType: "stateVariable",
+          variableName: "operandNumber"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          mathOperator: function (value) {
+
+            let tree = value.tree;
+
+            if (!Array.isArray(tree)) {
+              if (dependencyValues.operandNumber === 1) {
+                return value;
+              } else {
+                return me.fromAst('\uff3f')
+              }
+            }
+
+            let operator = tree[0];
+
+            if (operator === "apply") {
+              return me.fromAst('\uff3f')
+            }
+
+            let operand = tree[dependencyValues.operandNumber];
+
+            if (operand === undefined) {
+              return me.fromAst('\uff3f')
+            } else {
+              return me.fromAst(operand);
+            }
+
+          }
+        }
+      })
+    }
+
+    stateVariableDefinitions.inverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          inverseMathOperator: function (value) {
+            let desiredValue = value;
+            let valueNumeric = value.evaluate_to_constant();
+            if (Number.isFinite(valueNumeric)) {
+              if (valueNumeric < 0) {
+                desiredValue = me.fromAst(0)
+              }
+            }
+            return desiredValue;
+          }
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
+}
+
+
+export class ExtractMathFunction extends MathBaseOperatorOneInput {
+  static componentType = "extractMathFunction";
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          mathOperator: function (value) {
+
+            let tree = value.tree;
+
+            if (!Array.isArray(tree)) {
+              return me.fromAst('\uff3f')
+            }
+
+            let operator = tree[0];
+
+            if (operator !== "apply") {
+              return me.fromAst('\uff3f')
+            }
+
+            return me.fromAst(tree[1]);
+
+          }
+        }
+      })
+    }
+
+    stateVariableDefinitions.inverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          inverseMathOperator: function (value) {
+            let desiredValue = value;
+            let valueNumeric = value.evaluate_to_constant();
+            if (Number.isFinite(valueNumeric)) {
+              if (valueNumeric < 0) {
+                desiredValue = me.fromAst(0)
+              }
+            }
+            return desiredValue;
+          }
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
+}
+
+export class ExtractFunctionArgument extends MathBaseOperatorOneInput {
+  static componentType = "extractFunctionArgument";
+
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.argumentNumber = {
+      createComponentOfType: "number",
+      createStateVariable: "argumentNumber",
+      defaultValue: null,
+      public: true,
+    };
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({
+        argumentNumber: {
+          dependencyType: "stateVariable",
+          variableName: "argumentNumber"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          mathOperator: function (value) {
+
+            let tree = value.tree;
+
+            if (!Array.isArray(tree)) {
+              return me.fromAst('\uff3f')
+            }
+
+            let operator = tree[0];
+
+            if (operator !== "apply") {
+              return me.fromAst('\uff3f')
+            }
+
+            let allArgs = tree[2];
+
+            if(dependencyValues.argumentNumber === null) {
+              return me.fromAst(allArgs);
+            } else if(dependencyValues.argumentNumber === 1) {
+              if(!(Array.isArray(allArgs) && allArgs[0] === "tuple")) {
+                return me.fromAst(allArgs);
+              } else {
+                return me.fromAst(allArgs[1]);
+              }
+            } else {
+              if(!(Array.isArray(allArgs) && allArgs[0] === "tuple")) {
+                return me.fromAst('\uff3f')
+              } else {
+                let theArg = allArgs[dependencyValues.argumentNumber];
+                if(theArg === undefined) {
+                return me.fromAst('\uff3f')
+
+                } else {
+                  return me.fromAst(theArg);
+                }
+              }
+            }
+
+          }
+        }
+      })
+    }
+
+    stateVariableDefinitions.inverseMathOperator = {
+      returnDependencies: () => ({}),
+      definition: () => ({
+        newValues: {
+          inverseMathOperator: function (value) {
+            let desiredValue = value;
+            let valueNumeric = value.evaluate_to_constant();
+            if (Number.isFinite(valueNumeric)) {
+              if (valueNumeric < 0) {
+                desiredValue = me.fromAst(0)
+              }
+            }
+            return desiredValue;
+          }
+        }
+      })
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
 }

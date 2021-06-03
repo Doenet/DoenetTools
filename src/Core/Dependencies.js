@@ -3595,9 +3595,30 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
     let foundNewUpdated = true;
 
+
+    let changes = {};
+
     while (foundNewUpdated) {
       foundNewUpdated = false;
       result = super.getValue();
+
+      if(result.changes.valuesChanged) {
+        if(!changes.valuesChanged) {
+          changes.valuesChanged = result.changes.valuesChanged;
+        } else {
+          for(let ind in result.changes.valuesChanged) {
+            let changeObj = result.changes.valuesChanged[ind];
+            if(!changes.valuesChanged[ind]) {
+              changes.valuesChanged[ind] = changeObj;
+            } else {
+              for(let depName in changeObj) {
+                changes.valuesChanged[ind][depName] = changeObj[depName];
+              }
+            }
+          
+          }
+        }
+      }
 
       for (let cName in this.varsWithUpdatedDeps) {
         let compAccumulated = accumulatedVarsWithUpdatedDeps[cName];
@@ -3619,6 +3640,9 @@ class RecursiveDependencyValuesDependency extends Dependency {
     }
 
     this.gettingValue = false;
+
+
+    result.changes = changes;
 
     return result;
   }

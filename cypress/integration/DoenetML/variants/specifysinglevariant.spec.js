@@ -1678,7 +1678,7 @@ describe('Specifying single variant document tests', function () {
     for (let ind = 0; ind < 20; ind++) {
 
       // show values don't change for same variant
-      for (let ind2 = 0; ind2 < 3; ind2++) {
+      for (let ind2 = 0; ind2 < 2; ind2++) {
         cy.window().then((win) => {
           win.postMessage({
             doenetML: `
@@ -1946,9 +1946,6 @@ describe('Specifying single variant document tests', function () {
         })
       }
 
-      console.log(JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo)))
-      console.log(generatedVariantInfo)
-
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
         generatedVariantInfo
       )
@@ -1983,7 +1980,7 @@ describe('Specifying single variant document tests', function () {
     for (let ind = 0; ind < 10; ind++) {
 
       // show values don't change for same variant
-      for (let ind2 = 0; ind2 < 3; ind2++) {
+      for (let ind2 = 0; ind2 < 2; ind2++) {
         cy.window().then((win) => {
           win.postMessage({
             doenetML: `
@@ -2266,5 +2263,376 @@ describe('Specifying single variant document tests', function () {
     })
 
   });
+
+  it('select and sample random numbers', () => {
+
+    let generatedVariantInfo;
+    let originalNumbers;
+
+    cy.log("Test a bunch of variants")
+    for (let ind = 0; ind < 10; ind++) {
+
+      // show values don't change for same variant
+      for (let ind2 = 0; ind2 < 2; ind2++) {
+        cy.window().then((win) => {
+          win.postMessage({
+            doenetML: `
+        <text>${ind}</text>
+        <text>${ind2}</text>
+        <variantControl nvariants="100"/>
+        <p><selectRandomNumbers name="s1" assignNames="m" /></p>
+        <p><sampleRandomNumbers name="s2" assignNames="n" /></p>
+        <p><selectRandomNumbers name="s3" type="gaussian" numberToSelect="3" assignNames="x1 x2 x3" /></p>
+        <p><sampleRandomNumbers name="s4" type="gaussian" numberOfSamples="3" assignNames="y1 y2 y3" /></p>
+        `,
+            requestedVariant: { index: ind },
+          }, "*");
+        })
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get('#\\/_text2').should('have.text', `${ind2}`)
+
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+
+          let valuesS1 = components["/s1"].stateValues.selectedValues;
+          let valuesS3 = components["/s3"].stateValues.selectedValues;
+
+          let valuesS2 = components["/s2"].stateValues.sampledValues;
+          let valuesS4 = components["/s4"].stateValues.sampledValues;
+
+          generatedVariantInfo = {
+            index: ind,
+            name: numberToLetters(ind + 1, true),
+            meta: {
+              createdBy: "/_document1",
+              subvariantsSpecified: false,
+            },
+            subvariants: [{
+              values: [...valuesS1],
+              meta: { createdBy: "/s1" }
+            }, {
+              values: [...valuesS3],
+              meta: { createdBy: "/s3" }
+            }]
+          }
+
+          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+            generatedVariantInfo
+          )
+
+          let allNumbers = [...valuesS1, ...valuesS2, ...valuesS3, ...valuesS4]
+
+          if (ind2 === 0) {
+            expect(allNumbers).not.eqls(originalNumbers);
+            originalNumbers = allNumbers;
+          } else {
+            expect(allNumbers).eqls(originalNumbers);
+          }
+
+        })
+      }
+
+    }
+
+    cy.log(`repeat last one with previous generatedVariantInfo`)
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>repeat</text>
+    <variantControl nvariants="100"/>
+    <p><selectRandomNumbers name="s1" assignNames="m" /></p>
+    <p><sampleRandomNumbers name="s2" assignNames="n" /></p>
+    <p><selectRandomNumbers name="s3" type="gaussian" numberToSelect="3" assignNames="x1 x2 x3" /></p>
+    <p><sampleRandomNumbers name="s4" type="gaussian" numberOfSamples="3" assignNames="y1 y2 y3" /></p>
+    `,
+        requestedVariant: generatedVariantInfo,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `repeat`)
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let valuesS1 = components["/s1"].stateValues.selectedValues;
+      let valuesS3 = components["/s3"].stateValues.selectedValues;
+
+      let valuesS2 = components["/s2"].stateValues.sampledValues;
+      let valuesS4 = components["/s4"].stateValues.sampledValues;
+
+      generatedVariantInfo = {
+        index: 9,
+        name: numberToLetters(9 + 1, true),
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: true,
+        },
+        subvariants: [{
+          values: [...valuesS1],
+          meta: { createdBy: "/s1" }
+        }, {
+          values: [...valuesS3],
+          meta: { createdBy: "/s3" }
+        }]
+      }
+
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+        generatedVariantInfo
+      )
+
+      let allNumbers = [...valuesS1, ...valuesS2, ...valuesS3, ...valuesS4]
+
+      expect(allNumbers).eqls(originalNumbers);
+
+    })
+
+
+  });
+
+  it('choiceinputs', () => {
+
+    let generatedVariantInfo;
+    let originalChoiceOrders;
+    let originalChoiceTexts;
+
+    cy.log("Test a bunch of variants")
+    for (let ind = 0; ind < 10; ind++) {
+
+      // show values don't change for same variant
+      for (let ind2 = 0; ind2 < 2; ind2++) {
+        cy.window().then((win) => {
+          win.postMessage({
+            doenetML: `
+        <text>${ind}</text>
+        <text>${ind2}</text>
+        <variantControl nvariants="100"/>
+        <p><choiceinput randomizeOrder name="c1">
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+        </choiceinput></p>
+        <p><choiceinput randomizeOrder inline name="c2">
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+        </choiceinput></p>
+        <p><choiceinput name="c3">
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+        </choiceinput></p>
+        <p><choiceinput inline name="c4">
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+          <choice><lorem generateWords="3" /></choice>
+        </choiceinput></p>
+        `,
+            requestedVariant: { index: ind },
+          }, "*");
+        })
+        // to wait for page to load
+        cy.get('#\\/_text1').should('have.text', `${ind}`)
+        cy.get('#\\/_text2').should('have.text', `${ind2}`)
+
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+
+          let orderC1 = components["/c1"].stateValues.choiceOrder;
+          let orderC2 = components["/c2"].stateValues.choiceOrder;
+
+          let orderC3 = components["/c3"].stateValues.choiceOrder;
+          let orderC4 = components["/c4"].stateValues.choiceOrder;
+
+          generatedVariantInfo = {
+            index: ind,
+            name: numberToLetters(ind + 1, true),
+            meta: {
+              createdBy: "/_document1",
+              subvariantsSpecified: false,
+            },
+            subvariants: [{
+              indices: [...orderC1],
+              meta: { createdBy: "/c1" },
+              subvariants: []
+            }, {
+              indices: [...orderC2],
+              meta: { createdBy: "/c2" },
+              subvariants: []
+            }]
+          }
+
+          expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+            generatedVariantInfo
+          )
+
+          let textC1 = components["/c1"].stateValues.choiceTexts;
+          let textC2 = components["/c2"].stateValues.choiceTexts;
+
+          let textC3 = components["/c3"].stateValues.choiceTexts;
+          let textC4 = components["/c4"].stateValues.choiceTexts;
+
+
+          let allOrders = [...orderC1, ...orderC2, ...orderC3, ...orderC4]
+          let allTexts = [...textC1, ...textC2, ...textC3, ...textC4]
+          if (ind2 === 0) {
+            expect(allOrders).not.eqls(originalChoiceOrders);
+            originalChoiceOrders = allOrders;
+            expect(allTexts).not.eqls(originalChoiceTexts);
+            originalChoiceTexts = allTexts;
+          } else {
+            expect(allOrders).eqls(originalChoiceOrders);
+            expect(allTexts).eqls(originalChoiceTexts);
+          }
+
+        })
+      }
+
+    }
+
+    cy.log(`repeat last one with previous generatedVariantInfo`)
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>repeat</text>
+    <variantControl nvariants="100"/>
+    <p><choiceinput randomizeOrder name="c1">
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+    </choiceinput></p>
+    <p><choiceinput randomizeOrder inline name="c2">
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+    </choiceinput></p>
+    <p><choiceinput name="c3">
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+    </choiceinput></p>
+    <p><choiceinput inline name="c4">
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+      <choice><lorem generateWords="3" /></choice>
+    </choiceinput></p>
+    `,
+        requestedVariant: generatedVariantInfo,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `repeat`)
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let orderC1 = components["/c1"].stateValues.choiceOrder;
+      let orderC2 = components["/c2"].stateValues.choiceOrder;
+
+      let orderC3 = components["/c3"].stateValues.choiceOrder;
+      let orderC4 = components["/c4"].stateValues.choiceOrder;
+
+      generatedVariantInfo = {
+        index: 9,
+        name: numberToLetters(9 + 1, true),
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: true,
+        },
+        subvariants: [{
+          indices: [...orderC1],
+          meta: { createdBy: "/c1" },
+          subvariants: []
+        }, {
+          indices: [...orderC2],
+          meta: { createdBy: "/c2" },
+          subvariants: []
+        }]
+      }
+
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+        generatedVariantInfo
+      )
+
+
+      let textC1 = components["/c1"].stateValues.choiceTexts;
+      let textC2 = components["/c2"].stateValues.choiceTexts;
+
+      let textC3 = components["/c3"].stateValues.choiceTexts;
+      let textC4 = components["/c4"].stateValues.choiceTexts;
+
+      let allOrders = [...orderC1, ...orderC2, ...orderC3, ...orderC4]
+      let allTexts = [...textC1, ...textC2, ...textC3, ...textC4]
+      expect(allOrders).eqls(originalChoiceOrders);
+      expect(allTexts).eqls(originalChoiceTexts);
+    })
+
+
+  });
+
+  it('select by condition creates a variant', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p><number name="n">3</number></p>
+        <p><selectByCondition name="s" assignNames="t">
+          <case condition="$n > 0"><text>hello</text></case>
+          <else><text>bye</text></else>
+        </selectByCondition></p>
+        `,
+        requestedVariant: { index: 0 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let generatedVariantInfo = {
+        index: 0,
+        name: 'a',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [0],
+          subvariants: [],
+          meta: { createdBy: "/s" }
+        }]
+      }
+
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+        generatedVariantInfo
+      )
+
+    })
+
+
+  });
+
 
 });

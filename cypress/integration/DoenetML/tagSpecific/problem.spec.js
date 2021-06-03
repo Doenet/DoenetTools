@@ -849,4 +849,1090 @@ describe('Problem Tag Tests', function () {
     })
   });
 
+
+  it('section wide checkwork in problem', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Section wide checkwork: <booleaninput name="swcw" /></p>
+        <problem sectionWideCheckwork="$swcw" name="theProblem">
+        <title>Problem 1</title>
+      
+        <p>2x: <answer name="twox">2x</answer></p>
+      
+        <p>hello: <answer type="text" name="hello">hello</answer></p>
+
+        <p>banana: 
+        <answer name="fruit">
+          <choiceinput randomizeOrder name="fruitInput">
+            <choice credit="1">banana</choice>
+            <choice>apple</choice>
+            <choice>orange</choice>
+          </choiceinput>
+        </answer>
+        </p>
+      
+        <p>Numbers that add to 3: <mathinput name="n1" /> <mathinput name="n2" />
+        <answer name="sum3">
+          <award targetsAreResponses="n1 n2">
+            <when>$n1+$n2=3</when>
+          </award>
+        </answer></p>
+      
+      </problem>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/swcw_input').should('not.be.checked')
+
+    cy.get('#\\/theProblem_submit').should('not.exist');
+    cy.get('#\\/theProblem_correct').should('not.exist');
+    cy.get('#\\/theProblem_incorrect').should('not.exist');
+    cy.get('#\\/theProblem_partial').should('not.exist');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
+      let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
+      let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
+      let twoxInputIncorrectAnchor = cesc('#' + twoxInputName + '_incorrect');
+
+      cy.get(twoxInputSubmitAnchor).should('be.visible');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(twoxInputAnchor).type("2x{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('be.visible');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+
+      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputAnchor = cesc('#' + helloInputName + "_input");
+      let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
+      let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
+      let helloInputIncorrectAnchor = cesc('#' + helloInputName + '_incorrect');
+
+      cy.get(helloInputSubmitAnchor).should('be.visible');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputAnchor).type("hello{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('be.visible');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/fruitInput_submit').should('be.visible');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/fruitInput').contains(`banana`).click({ force: true });
+      cy.get('#\\/fruitInput_submit').click();
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('be.visible');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+
+      cy.get('#\\/sum3_submit').should('be.visible');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get("#\\/n1 textarea").type("2{enter}", { force: true })
+      cy.get("#\\/n2 textarea").type("1{enter}", { force: true })
+
+
+      cy.get('#\\/sum3_submit').should('be.visible');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/sum3_submit').click();
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('be.visible');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.log('switch to section wide checkwork')
+
+      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw_input').should('be.checked');
+
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('be.visible');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+
+      cy.get(twoxInputAnchor).type("{end}{backspace}y{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/theProblem_submit').should('be.visible');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').click();
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('75% correct')
+      })
+
+
+      cy.get(helloInputAnchor).type("2{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/theProblem_submit').should('be.visible');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').click();
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('50% correct')
+      })
+
+      cy.log('turn off section wide checkwork')
+
+      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw_input').should('not.be.checked');
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('be.visible');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('be.visible');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('be.visible');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('be.visible');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+    });
+
+  });
+
+  it('section wide checkwork in section', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Section wide checkwork: <booleaninput name="swcw" /></p>
+        <section aggregateScores sectionWideCheckwork="$swcw" name="theProblem">
+        <title>Problem 1</title>
+      
+        <p>2x: <answer name="twox">2x</answer></p>
+      
+        <p>hello: <answer type="text" name="hello">hello</answer></p>
+
+        <p>banana: 
+        <answer name="fruit">
+          <choiceinput randomizeOrder name="fruitInput">
+            <choice credit="1">banana</choice>
+            <choice>apple</choice>
+            <choice>orange</choice>
+          </choiceinput>
+        </answer>
+        </p>
+      
+        <p>Numbers that add to 3: <mathinput name="n1" /> <mathinput name="n2" />
+        <answer name="sum3">
+          <award targetsAreResponses="n1 n2">
+            <when>$n1+$n2=3</when>
+          </award>
+        </answer></p>
+      
+      </section>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/swcw_input').should('not.be.checked')
+
+    cy.get('#\\/theProblem_submit').should('not.exist');
+    cy.get('#\\/theProblem_correct').should('not.exist');
+    cy.get('#\\/theProblem_incorrect').should('not.exist');
+    cy.get('#\\/theProblem_partial').should('not.exist');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
+      let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
+      let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
+      let twoxInputIncorrectAnchor = cesc('#' + twoxInputName + '_incorrect');
+
+      cy.get(twoxInputSubmitAnchor).should('be.visible');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(twoxInputAnchor).type("2x{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('be.visible');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+
+      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputAnchor = cesc('#' + helloInputName + "_input");
+      let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
+      let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
+      let helloInputIncorrectAnchor = cesc('#' + helloInputName + '_incorrect');
+
+      cy.get(helloInputSubmitAnchor).should('be.visible');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputAnchor).type("hello{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('be.visible');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/fruitInput_submit').should('be.visible');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/fruitInput').contains(`banana`).click({ force: true });
+      cy.get('#\\/fruitInput_submit').click();
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('be.visible');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+
+      cy.get('#\\/sum3_submit').should('be.visible');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get("#\\/n1 textarea").type("2{enter}", { force: true })
+      cy.get("#\\/n2 textarea").type("1{enter}", { force: true })
+
+
+      cy.get('#\\/sum3_submit').should('be.visible');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/sum3_submit').click();
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('be.visible');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.log('switch to section wide checkwork')
+
+      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw_input').should('be.checked');
+
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('be.visible');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+
+      cy.get(twoxInputAnchor).type("{end}{backspace}y{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/theProblem_submit').should('be.visible');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').click();
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('75% correct')
+      })
+
+
+      cy.get(helloInputAnchor).type("2{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/theProblem_submit').should('be.visible');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').click();
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('50% correct')
+      })
+
+      cy.log('turn off section wide checkwork')
+
+      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw_input').should('not.be.checked');
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('be.visible');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('be.visible');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('be.visible');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('be.visible');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+    });
+
+  });
+
+  it('document wide checkwork', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <document documentWideCheckwork="$dwcw" name="theDocument">
+        <title>The problem</title>
+
+        <p>Document wide checkwork: <booleaninput name="dwcw" /></p>
+      
+        <p>2x: <answer name="twox">2x</answer></p>
+      
+        <p>hello: <answer type="text" name="hello">hello</answer></p>
+
+        <p>banana: 
+        <answer name="fruit">
+          <choiceinput randomizeOrder name="fruitInput">
+            <choice credit="1">banana</choice>
+            <choice>apple</choice>
+            <choice>orange</choice>
+          </choiceinput>
+        </answer>
+        </p>
+      
+        <p>Numbers that add to 3: <mathinput name="n1" /> <mathinput name="n2" />
+        <answer name="sum3">
+          <award targetsAreResponses="n1 n2">
+            <when>$n1+$n2=3</when>
+          </award>
+        </answer></p>
+        </document>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/dwcw_input').should('not.be.checked')
+
+    cy.get('#\\/theDocument_submit').should('not.exist');
+    cy.get('#\\/theDocument_correct').should('not.exist');
+    cy.get('#\\/theDocument_incorrect').should('not.exist');
+    cy.get('#\\/theDocument_partial').should('not.exist');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
+      let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
+      let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
+      let twoxInputIncorrectAnchor = cesc('#' + twoxInputName + '_incorrect');
+
+      cy.get(twoxInputSubmitAnchor).should('be.visible');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(twoxInputAnchor).type("2x{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('be.visible');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+
+      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputAnchor = cesc('#' + helloInputName + "_input");
+      let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
+      let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
+      let helloInputIncorrectAnchor = cesc('#' + helloInputName + '_incorrect');
+
+      cy.get(helloInputSubmitAnchor).should('be.visible');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputAnchor).type("hello{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('be.visible');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/fruitInput_submit').should('be.visible');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/fruitInput').contains(`banana`).click({ force: true });
+      cy.get('#\\/fruitInput_submit').click();
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('be.visible');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+
+      cy.get('#\\/sum3_submit').should('be.visible');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get("#\\/n1 textarea").type("2{enter}", { force: true })
+      cy.get("#\\/n2 textarea").type("1{enter}", { force: true })
+
+
+      cy.get('#\\/sum3_submit').should('be.visible');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/sum3_submit').click();
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('be.visible');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.log('switch to document wide checkwork')
+
+      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw_input').should('be.checked');
+
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('be.visible');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+
+      cy.get(twoxInputAnchor).type("{end}{backspace}y{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/theDocument_submit').should('be.visible');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+      cy.get('#\\/theDocument_submit').click();
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('75% correct')
+      })
+
+
+      cy.get(helloInputAnchor).type("2{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/theDocument_submit').should('be.visible');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+      cy.get('#\\/theDocument_submit').click();
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('50% correct')
+      })
+
+      cy.log('turn off document wide checkwork')
+
+      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw_input').should('not.be.checked');
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('be.visible');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('be.visible');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('be.visible');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('be.visible');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+    });
+
+  });
+
+  it('outer section wide checkwork supercedes inner section', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Section wide checkwork: <booleaninput name="swcw" /></p>
+        <section aggregateScores sectionWideCheckwork="$swcw" name="theProblem">
+        <title>Problem 1</title>
+
+        <p>2x: <answer name="twox">2x</answer></p>
+      
+        <p>hello: <answer type="text" name="hello">hello</answer></p>
+
+        <subsection aggregateScores sectionWideCheckwork name="subProblem">
+          <title>Sub problem a</title>
+          <p>banana: 
+          <answer name="fruit">
+            <choiceinput randomizeOrder name="fruitInput">
+              <choice credit="1">banana</choice>
+              <choice>apple</choice>
+              <choice>orange</choice>
+            </choiceinput>
+          </answer>
+          </p>
+      
+          <p>Numbers that add to 3: <mathinput name="n1" /> <mathinput name="n2" />
+          <answer name="sum3">
+            <award targetsAreResponses="n1 n2">
+              <when>$n1+$n2=3</when>
+            </award>
+          </answer></p>
+        </subsection>
+      
+      </section>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/swcw_input').should('not.be.checked')
+
+    cy.get('#\\/theProblem_submit').should('not.exist');
+    cy.get('#\\/theProblem_correct').should('not.exist');
+    cy.get('#\\/theProblem_incorrect').should('not.exist');
+    cy.get('#\\/theProblem_partial').should('not.exist');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
+      let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
+      let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
+      let twoxInputIncorrectAnchor = cesc('#' + twoxInputName + '_incorrect');
+
+      cy.get(twoxInputSubmitAnchor).should('be.visible');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(twoxInputAnchor).type("2x{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('be.visible');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+
+      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputAnchor = cesc('#' + helloInputName + "_input");
+      let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
+      let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
+      let helloInputIncorrectAnchor = cesc('#' + helloInputName + '_incorrect');
+
+      cy.get(helloInputSubmitAnchor).should('be.visible');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputAnchor).type("hello{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('be.visible');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get('#\\/subProblem_submit').should('be.visible');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+
+      cy.get('#\\/fruitInput').contains(`banana`).click({ force: true });
+      cy.get('#\\/subProblem_submit').click();
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('50% correct')
+      })
+
+      cy.get("#\\/n1 textarea").type("2{enter}", { force: true })
+      cy.get("#\\/n2 textarea").type("1{enter}", { force: true })
+
+      cy.get('#\\/subProblem_submit').should('be.visible');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+      cy.get('#\\/subProblem_submit').click();
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('be.visible');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+
+      cy.log('switch to section wide checkwork')
+
+      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw_input').should('be.checked');
+
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+      
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('be.visible');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+
+      cy.get(twoxInputAnchor).type("{end}{backspace}y{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/theProblem_submit').should('be.visible');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').click();
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('67% correct')
+      })
+
+
+      cy.get(helloInputAnchor).type("2{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/theProblem_submit').should('be.visible');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').click();
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('33% correct')
+      })
+
+      cy.log('turn off section wide checkwork')
+
+      cy.get('#\\/swcw_input').click();
+      cy.get('#\\/swcw_input').should('not.be.checked');
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('be.visible');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('be.visible');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('be.visible');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+      cy.get('#\\/theProblem_submit').should('not.exist');
+      cy.get('#\\/theProblem_correct').should('not.exist');
+      cy.get('#\\/theProblem_incorrect').should('not.exist');
+      cy.get('#\\/theProblem_partial').should('not.exist');
+
+    });
+
+  });
+
+  it('document wide checkwork supercedes section', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <document documentWideCheckwork="$dwcw" name="theDocument">
+        <title>The problem</title>
+
+        <p>Document wide checkwork: <booleaninput name="dwcw" /></p>
+        <p>2x: <answer name="twox">2x</answer></p>
+      
+        <p>hello: <answer type="text" name="hello">hello</answer></p>
+
+        <section aggregateScores sectionWideCheckwork name="subProblem">
+          <title>Sub problem a</title>
+          <p>banana: 
+          <answer name="fruit">
+            <choiceinput randomizeOrder name="fruitInput">
+              <choice credit="1">banana</choice>
+              <choice>apple</choice>
+              <choice>orange</choice>
+            </choiceinput>
+          </answer>
+          </p>
+      
+          <p>Numbers that add to 3: <mathinput name="n1" /> <mathinput name="n2" />
+          <answer name="sum3">
+            <award targetsAreResponses="n1 n2">
+              <when>$n1+$n2=3</when>
+            </award>
+          </answer></p>
+        </section>
+      
+      </document>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/dwcw_input').should('not.be.checked')
+
+    cy.get('#\\/theDocument_submit').should('not.exist');
+    cy.get('#\\/theDocument_correct').should('not.exist');
+    cy.get('#\\/theDocument_incorrect').should('not.exist');
+    cy.get('#\\/theDocument_partial').should('not.exist');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
+      let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
+      let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
+      let twoxInputIncorrectAnchor = cesc('#' + twoxInputName + '_incorrect');
+
+      cy.get(twoxInputSubmitAnchor).should('be.visible');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(twoxInputAnchor).type("2x{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('be.visible');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+
+      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputAnchor = cesc('#' + helloInputName + "_input");
+      let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
+      let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
+      let helloInputIncorrectAnchor = cesc('#' + helloInputName + '_incorrect');
+
+      cy.get(helloInputSubmitAnchor).should('be.visible');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputAnchor).type("hello{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('be.visible');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get('#\\/subProblem_submit').should('be.visible');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+
+      cy.get('#\\/fruitInput').contains(`banana`).click({ force: true });
+      cy.get('#\\/subProblem_submit').click();
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('50% correct')
+      })
+
+      cy.get("#\\/n1 textarea").type("2{enter}", { force: true })
+      cy.get("#\\/n2 textarea").type("1{enter}", { force: true })
+
+      cy.get('#\\/subProblem_submit').should('be.visible');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+      cy.get('#\\/subProblem_submit').click();
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('be.visible');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+
+      cy.log('switch to document wide checkwork')
+
+      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw_input').should('be.checked');
+
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('not.exist');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+      
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('be.visible');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+
+      cy.get(twoxInputAnchor).type("{end}{backspace}y{enter}", { force: true })
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/theDocument_submit').should('be.visible');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+      cy.get('#\\/theDocument_submit').click();
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('67% correct')
+      })
+
+
+      cy.get(helloInputAnchor).type("2{enter}")
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('not.exist');
+
+
+      cy.get('#\\/theDocument_submit').should('be.visible');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+      cy.get('#\\/theDocument_submit').click();
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').invoke('text').then((text) => {
+        expect(text.trim().toLowerCase()).equal('33% correct')
+      })
+
+      cy.log('turn off document wide checkwork')
+
+      cy.get('#\\/dwcw_input').click();
+      cy.get('#\\/dwcw_input').should('not.be.checked');
+
+      cy.get(twoxInputSubmitAnchor).should('not.exist');
+      cy.get(twoxInputCorrectAnchor).should('not.exist');
+      cy.get(twoxInputIncorrectAnchor).should('be.visible');
+
+      cy.get(helloInputSubmitAnchor).should('not.exist');
+      cy.get(helloInputCorrectAnchor).should('not.exist');
+      cy.get(helloInputIncorrectAnchor).should('be.visible');
+
+      cy.get('#\\/fruitInput_submit').should('not.exist');
+      cy.get('#\\/fruitInput_correct').should('not.exist');
+      cy.get('#\\/fruitInput_incorrect').should('not.exist');
+
+      cy.get('#\\/sum3_submit').should('not.exist');
+      cy.get('#\\/sum3_correct').should('not.exist');
+      cy.get('#\\/sum3_incorrect').should('not.exist');
+
+      cy.get('#\\/subProblem_submit').should('not.exist');
+      cy.get('#\\/subProblem_correct').should('be.visible');
+      cy.get('#\\/subProblem_incorrect').should('not.exist');
+      cy.get('#\\/subProblem_partial').should('not.exist');
+
+      cy.get('#\\/theDocument_submit').should('not.exist');
+      cy.get('#\\/theDocument_correct').should('not.exist');
+      cy.get('#\\/theDocument_incorrect').should('not.exist');
+      cy.get('#\\/theDocument_partial').should('not.exist');
+
+    });
+
+  });
+
+
 });

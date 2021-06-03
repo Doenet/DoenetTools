@@ -1,26 +1,16 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useContext } from "react";
 import {
-    atom,
-    RecoilRoot,
-    useSetRecoilState,
-    useRecoilState,
-    useRecoilValue,
-    selector,
-    atomFamily,
-    selectorFamily,
-    useRecoilValueLoadable,
-    useRecoilStateLoadable,
     useRecoilCallback,
   } from "recoil";
 import styled from "styled-components";
 import Tool from '../_framework/Tool';
-import { useToolControlHelper } from '../_framework/ToolRoot';
+import { profileAtom, ProfileContext } from '../_framework/ToolRoot';
 import { a } from 'react-spring'
 import InfiniteSlider from '../_framework/temp/InfiniteSlider'
 import "../_framework/doenet.css";
 import Textinput from "../_framework/Textinput";
 import Switch from "../_framework/Switch";
-import Cookies from 'js-cookie';
+import GlobalFont from '../../_utils/GlobalFont';
 import axios from "axios";
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,6 +31,329 @@ const Image = styled(a.div)`
   background-size: cover;
   background-position: center center;
 `
+
+
+const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle', 'anonymous'];
+const picture_items = PROFILE_PICTURES.map(picture => {
+  let path = `/media/profile_pictures/${picture}.jpg`
+  let url = `url("${path}")`
+  return {css: url}
+})
+
+
+
+const boolToString = (bool) => {
+  if(bool){
+    return "1"
+  }else{
+    return "0"
+  }
+}
+
+const translateArray = (arr, k) => arr.concat(arr).slice(k, k+arr.length)
+
+export default function DoenetProfile(props) {
+
+    const setProfile = useRecoilCallback(
+      ({set}) => async (newProfile) => {
+        const url = '/api/saveProfile.php'
+        const data = {
+          ...newProfile
+        }
+        localStorage.setItem('Profile', JSON.stringify(data));
+        set(profileAtom,  data)
+        await axios.post(url, data);
+        //console.log(">>> ", newProfile);
+      }
+    )
+
+    const profile = useContext(ProfileContext);
+    const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
+
+    //console.log(">>> init photo", initPhoto)
+
+    let [editMode, setEditMode] = useState(false);
+    let [pic, setPic] = useState(0);
+
+    //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
+
+    const translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
+
+    // if(initPhoto){
+    //   translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
+    // }
+
+    const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
+
+    if (profile.signedIn === '0') {
+      return (
+        <>
+          <GlobalFont />
+          <Tool>
+            <headerPanel title="Account Settings"></headerPanel>
+  
+            <mainPanel>
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '20px',
+                  margin: 'auto',
+                  marginTop: '10%',
+                  padding: '10px',
+                  width: '50%',
+                }}
+              >
+                <div
+                  style={{
+                    textAlign: 'center',
+                    alignItems: 'center',
+                    marginBottom: '20px',
+                  }}
+                >
+                  <h2>You are not signed in</h2>
+                  <h2>Account Settings currently requires sign in for use</h2>
+                  <button style={{ background: '#1a5a99', borderRadius: '5px' }}>
+                    <a
+                      href="/signin"
+                      style={{ color: 'white', textDecoration: 'none' }}
+                    >
+                      Sign in with this link
+                    </a>
+                  </button>
+                </div>
+              </div>
+            </mainPanel>
+          </Tool>
+        </>
+      );
+    }
+
+    return (
+        <Tool>
+            <headerPanel title="Account Settings" />
+            
+            <mainPanel>
+              <div style = {{margin: "auto", width: "70%"}}>
+                <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
+                  <div style = {{width: "150px", height: "150px", margin: "auto"}}>
+                  {/* {editMode ?
+                  <>
+                  <div style = {{float: "right"}}><FontAwesomeIcon onClick = {e => {
+                    let data = {...profile}
+                    data.profilePicture = pic
+                    setProfile(data)
+                    setEditMode(false)
+                  }} style = {{color: "#444", position: "absolute", zIndex: "2", textAlign: "right"}} icon={faTimes}/></div>
+                  <InfiniteSlider items={translateArray(picture_items, PROFILE_PICTURES.indexOf(profile.profilePicture))} showButtons={editMode} showCounter={false} callBack = {(i) => {
+                    setPic(translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(profile.profilePicture))[i-1])
+                  }}>
+                    {({ css }, i) => {
+                      // console.log(">>> pic index ", i);
+                      
+                      // setPicIndex(i)
+                      return (
+                        <Content>
+                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
+                        </Content>
+                      )
+                    }}
+                  </InfiniteSlider></> : 
+                    <Content onClick = {e => setEditMode(true)}>
+                      <Image style={{ backgroundImage: `url('/media/profile_pictures/${profile.profilePicture}.jpg')`, borderRadius: '50%' }} />
+                    </Content>
+                  } */}
+                  <InfiniteSlider fileNames = {translateditems} showButtons={true} showCounter={false} callBack = {(i) => {
+                    //console.log(translatednames[i])
+                    let data = {...profile}
+                    data.profilePicture = translatednames[i]
+                    setProfile(data)
+                    //setPic(translatednames[i])
+                  }}>
+                    {({ css }, i) => {
+                      // console.log(">>> pic index ", i);
+                      
+                      // setPicIndex(i)
+                      return (
+                        <Content>
+                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
+                        </Content>
+                      )
+                    }}
+                  </InfiniteSlider>
+                  </div>
+                  <Textinput
+                      style={{ width: '300px' }}
+                      id="screen name"
+                      label="Screen Name"
+                      value = {profile.screenName}
+                      onChange = {e => {}}
+                      onBlur = {e => {
+                        let data = {...profile}
+                        data.screenName = e.target.value
+                        setProfile(data)
+                      }}
+                      onKeyDown = {e => {
+                        if(e.key === 'Enter'){
+                          let data = {...profile}
+                          data.screenName = e.target.value
+                          setProfile(data)
+                        }
+                      }}
+                  ></Textinput>
+                  <Textinput
+                    style={{ width: '300px' }}
+                    id="firstName"
+                    label="First Name"
+                    value = {profile.firstName}
+                    onChange = {e => {}}
+                    onBlur={e => {
+                      let data = {...profile}
+                      data.firstName = e.target.value
+                      setProfile(data)
+                    }}
+                    onKeyDown = {e => {
+                      if(e.key === 'Enter'){
+                        let data = {...profile}
+                        data.firstName = e.target.value
+                        setProfile(data)
+                      }
+                    }}
+                  >
+                    {/* {profile.firstName} */}
+                  </Textinput>
+                  <Textinput
+                    style={{ width: '300px' }}
+                    id="lastName"
+                    label="Last Name"
+                    value = {profile.lastName}
+                    onChange = {e => {}}
+                    onBlur={e => {
+                      let data = {...profile}
+                      data.lastName = e.target.value
+                      setProfile(data)
+                    }}
+                    onKeyDown = {e => {
+                      if(e.key === 'Enter'){
+                        let data = {...profile}
+                        data.lastName = e.target.value
+                        setProfile(data)
+                      }
+                    }}
+                  >
+                    {/* {profile.lastName} */}
+                  </Textinput>
+                </div>
+
+                <p>Email Address: {profile.email}</p>
+
+                <Switch
+                  id="trackingConsent"
+                  onChange={e => {
+                    let data = {...profile}
+                    data.trackingConsent = boolToString(e.target.checked)
+                    setProfile(data)
+                  }}
+                  checked={profile.trackingConsent}
+                >
+                </Switch>
+                <p>I consent to the use of tracking technologies.</p>
+
+                <p>
+                  "I consent to the tracking of my progress and my activity on
+                  educational websites which participate in Doenet; my data will be
+                  used to provide my instructor with my grades on course assignments,
+                  and anonymous data may be provided to content authors to improve the
+                  educational effectiveness."
+                  <br />
+                  <br />
+                  <em>
+                    Revoking your consent may impact your ability to recieve credit
+                    for coursework.
+                  </em>
+                </p>
+
+                <SectionHeader>Your Roles</SectionHeader>
+                <Switch
+                  id="student"
+                  onChange={e => {
+                    let data = {...profile}
+                    data.roleStudent= boolToString(e.target.checked)
+                    setProfile(data)
+                  }} // updates immediately
+                  checked={profile.roleStudent}
+                >
+                </Switch>
+                <p>Student</p>
+                <Switch
+                  id="instructor"
+                  onChange={e => {
+                    let data = {...profile}
+                    data.roleInstructor= boolToString(e.target.checked)
+                    setProfile(data)
+                  }} // updates immediately
+                  checked={profile.roleInstructor}
+                >
+                </Switch>
+                <p>Instructor</p>
+                <Switch
+                  id="course_designer"
+                  onChange={e => {
+                    let data = {...profile}
+                    data.roleCourseDesigner= boolToString(e.target.checked)
+                    setProfile(data)
+                  }}
+                  checked={profile.roleCourseDesigner}
+                >
+                </Switch>
+                <p>Course Designer</p>
+              </div>
+          </mainPanel> 
+          
+        </Tool>
+    )
+}
+
+
+
+// console.log(picture_items);
+
+// const getProfileQuerry = atom({
+//   key: "getProfileQuerry",
+//   default: selector({
+//       key: "getProfileQuerry/Default",
+//       get: async () => {
+//           try{
+//               const { data } = await axios.get('/api/loadProfile.php')
+//               return data.profile
+//           }catch(error){
+//               console.log("Error loading user profile", error.message);                
+//               return {}
+//           }
+//       }
+//   })
+// })
+
+// const PictureSelector = (props) => {
+//   //let [selectedPic, setSelectedPic] = useState();
+
+//   var list = props.list.map((item, i) => (
+//     <ListItem key={i}>
+//       <PictureBox
+//         value={item}
+//         pic={item}
+//         onClick={(e) => {
+//           props.callBack(e.target.value);
+//         }}
+//       />
+//     </ListItem>
+//   ));
+
+//   return (
+//     <DropDown onBlur = {props.onblur}>
+//       <ListContainer>{list}</ListContainer>
+//     </DropDown>
+//   );
+// }
 
 
 // let ProfilePicture = styled.button`
@@ -101,276 +414,6 @@ const Image = styled(a.div)`
 //   display: inline-block;
 //   vertical-align: top;
 // `;
-
-const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle', 'anonymous'];
-const picture_items = PROFILE_PICTURES.map(picture => {
-  let path = `/media/profile_pictures/${picture}.jpg`
-  let url = `url("${path}")`
-  return {css: url}
-})
-console.log(picture_items);
-
-const getProfileQuerry = atom({
-  key: "getProfileQuerry",
-  default: selector({
-      key: "getProfileQuerry/Default",
-      get: async () => {
-          try{
-              const { data } = await axios.get('/api/loadProfile.php')
-              return data.profile
-          }catch(error){
-              console.log("Error loading user profile", error.message);                
-              return {}
-          }
-      }
-  })
-})
-
-// const PictureSelector = (props) => {
-//   //let [selectedPic, setSelectedPic] = useState();
-
-//   var list = props.list.map((item, i) => (
-//     <ListItem key={i}>
-//       <PictureBox
-//         value={item}
-//         pic={item}
-//         onClick={(e) => {
-//           props.callBack(e.target.value);
-//         }}
-//       />
-//     </ListItem>
-//   ));
-
-//   return (
-//     <DropDown onBlur = {props.onblur}>
-//       <ListContainer>{list}</ListContainer>
-//     </DropDown>
-//   );
-// }
-
-const getProfile = selector({
-  key: 'getProfile',
-  get: ({get}) => {
-      let data = get(getProfileQuerry)
-      return data;   
-  },
-  // set: ({set, get}, newProfile)=>{
-  //   //console.log("New Value: ", newValue);
-  //   const url = '/api/saveProfile.php'
-  //   //console.log(">>> ", newProfile)
-  //   const data = {
-  //     ...newProfile
-  //   }
-  //   set(getProfileQuerry,  data)
-  //   axios.post(url, data)
-  // }
-})
-
-const boolToString = (bool) => {
-  if(bool){
-    return "1"
-  }else{
-    return "0"
-  }
-}
-
-const translateArray = (arr, k) => arr.concat(arr).slice(k, k+arr.length)
-
-export default function DoenetProfile(props) {
-
-    const setProfile = useRecoilCallback(
-      ({set}) => async (newProfile) => {
-        const url = '/api/saveProfile.php'
-        const data = {
-          ...newProfile
-        }
-        set(getProfileQuerry,  data)
-        await axios.post(url, data);
-        //console.log(">>> ", newProfile);
-      }
-    )
-
-    //let [profile, setProfile] = useRecoilStateLoadable(getProfile);
-    let profile = useRecoilValueLoadable(getProfile);
-
-    let [editMode, setEditMode] = useState(false);
-    let [pic, setPic] = useState(0);
-
-    //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
-
-    // if(profile.state == 'hasValue'){
-    //   console.log(profile.contents);
-    //   let data = {...profile.contents.profile}
-    //   data.firstName = 'DevMod'
-    //   setProfile(data)
-    // }
-    return (
-        <Tool>
-            <headerPanel title="Account Settings" />
-            {profile.state == 'hasValue' ? 
-            <mainPanel>
-              <div style = {{margin: "auto", width: "70%"}}>
-                <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
-                  <div style = {{width: "150px", height: "150px", margin: "auto"}}>
-                  {editMode ?
-                  <>
-                  <div style = {{float: "right"}}><FontAwesomeIcon onClick = {e => {
-                    let data = {...profile.contents}
-                    data.profilePicture = pic
-                    setProfile(data)
-                    setEditMode(false)
-                  }} style = {{color: "#444", position: "absolute", zIndex: "2", textAlign: "right"}} icon={faTimes}/></div>
-                  <InfiniteSlider items={translateArray(picture_items, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))} showButtons={editMode} showCounter={false} callBack = {(i) => {
-                    setPic(translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(profile.contents.profilePicture))[i-1])
-                  }}>
-                    {({ css }, i) => {
-                      // console.log(">>> pic index ", i);
-                      
-                      // setPicIndex(i)
-                      return (
-                        <Content>
-                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
-                        </Content>
-                      )
-                    }}
-                  </InfiniteSlider></> : 
-                    <Content onClick = {e => setEditMode(true)}>
-                      <Image style={{ backgroundImage: `url('/media/profile_pictures/${profile.contents.profilePicture}.jpg')`, borderRadius: '50%' }} />
-                    </Content>
-                  }
-                  </div>
-                  <Textinput
-                      style={{ width: '300px' }}
-                      id="screen name"
-                      label="Screen Name"
-                      value = {profile.contents.screenName}
-                      onChange = {e => {}}
-                      onBlur = {e => {
-                        let data = {...profile.contents}
-                        data.screenName = e.target.value
-                        setProfile(data)
-                      }}
-                      onKeyDown = {e => {
-                        if(e.key === 'Enter'){
-                          let data = {...profile.contents}
-                          data.screenName = e.target.value
-                          setProfile(data)
-                        }
-                      }}
-                  ></Textinput>
-                  <Textinput
-                    style={{ width: '300px' }}
-                    id="firstName"
-                    label="First Name"
-                    value = {profile.contents.firstName}
-                    onChange = {e => {}}
-                    onBlur={e => {
-                      let data = {...profile.contents}
-                      data.firstName = e.target.value
-                      setProfile(data)
-                    }}
-                    onKeyDown = {e => {
-                      if(e.key === 'Enter'){
-                        let data = {...profile.contents}
-                        data.firstName = e.target.value
-                        setProfile(data)
-                      }
-                    }}
-                  >
-                    {/* {profile.firstName} */}
-                  </Textinput>
-                  <Textinput
-                    style={{ width: '300px' }}
-                    id="lastName"
-                    label="Last Name"
-                    value = {profile.contents.lastName}
-                    onChange = {e => {}}
-                    onBlur={e => {
-                      let data = {...profile.contents}
-                      data.lastName = e.target.value
-                      setProfile(data)
-                    }}
-                    onKeyDown = {e => {
-                      if(e.key === 'Enter'){
-                        let data = {...profile.contents}
-                        data.lastName = e.target.value
-                        setProfile(data)
-                      }
-                    }}
-                  >
-                    {/* {profile.lastName} */}
-                  </Textinput>
-                </div>
-
-                <p>Email Address: {profile.contents.email}</p>
-
-                <Switch
-                  id="trackingConsent"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.trackingConsent = boolToString(e.target.checked)
-                    setProfile(data)
-                  }}
-                  checked={profile.contents.trackingConsent}
-                >
-                </Switch>
-                <p>I consent to the use of tracking technologies.</p>
-
-                <p>
-                  "I consent to the tracking of my progress and my activity on
-                  educational websites which participate in Doenet; my data will be
-                  used to provide my instructor with my grades on course assignments,
-                  and anonymous data may be provided to content authors to improve the
-                  educational effectiveness."
-                  <br />
-                  <br />
-                  <em>
-                    Revoking your consent may impact your ability to recieve credit
-                    for coursework.
-                  </em>
-                </p>
-
-                <SectionHeader>Your Roles</SectionHeader>
-                <Switch
-                  id="student"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.roleStudent= boolToString(e.target.checked)
-                    setProfile(data)
-                  }} // updates immediately
-                  checked={profile.contents.roleStudent}
-                >
-                </Switch>
-                <p>Student</p>
-                <Switch
-                  id="instructor"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.roleInstructor= boolToString(e.target.checked)
-                    setProfile(data)
-                  }} // updates immediately
-                  checked={profile.contents.roleInstructor}
-                >
-                </Switch>
-                <p>Instructor</p>
-                <Switch
-                  id="course_designer"
-                  onChange={e => {
-                    let data = {...profile.contents}
-                    data.roleCourseDesigner= boolToString(e.target.checked)
-                    setProfile(data)
-                  }}
-                  checked={profile.contents.roleCourseDesigner}
-                >
-                </Switch>
-                <p>Course Designer</p>
-              </div>
-          </mainPanel> : <p>Loading...</p>
-          }
-        </Tool>
-    )
-}
-
 
 // import React, { useState, useRef } from "react";
 // import {

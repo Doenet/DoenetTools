@@ -12,7 +12,7 @@ import {
  * Internal dependencies
  */
 import { 
-  folderDictionarySelector, 
+  folderDictionaryFilterSelector, 
   globalSelectedNodesAtom, 
   folderDictionary, 
   selectedDriveItemsAtom,
@@ -831,10 +831,10 @@ export const useDragShadowCallbacks = () => {
 
 export const useSortFolder = () => {
   const [addToast, ToastType] = useToast();
-  const sortFolder = useRecoilCallback(({set})=> 
+  const sortFolder = useRecoilCallback(({set,snapshot})=> 
     async ({driveIdInstanceIdFolderId, sortKey})=>{
       const {driveId, folderId} = driveIdInstanceIdFolderId;
-      const {contentIds} = await snapshot.getPromise(folderDictionarySelector({driveId, folderId}));
+      const {contentIds} = await snapshot.getPromise(folderDictionaryFilterSelector({driveId, folderId}));
       set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortKey);
       
       // if sortOrder not already cached in folderDictionary
@@ -935,7 +935,6 @@ export const useAssignmentCallbacks = () => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];          
       newItemObj.isAssigned = "1";
-      newItemObj.assignment_title = payload?.assignment_title;      
       newItemObj.dueDate = payload?.dueDate;
       return newObj;
     })
@@ -952,7 +951,6 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.assignment_isPublished = "1";
         newItemObj.isAssigned = "1";
-        newItemObj.assignment_title = payload?.assignment_title;
         return newObj;
       })
     }
@@ -983,7 +981,6 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.isAssigned = "1";
-        newItemObj.assignment_title = payloadAssignment?.assignment_title;     
         newItemObj.assignedDate = payloadAssignment?.assignedDate;
         newItemObj.dueDate = payloadAssignment?.dueDate;
         newItemObj.timeLimit = payloadAssignment?.timeLimit;

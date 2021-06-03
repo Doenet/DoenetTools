@@ -138,6 +138,7 @@ class DoenetViewerChild extends Component {
           submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
+          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant,
@@ -152,6 +153,7 @@ class DoenetViewerChild extends Component {
           submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
+          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant,
@@ -465,6 +467,46 @@ class DoenetViewerChild extends Component {
       });
 
   }
+
+
+  contentIdsToDoenetMLs({ contentIds, callBack }) {
+    let promises = [];
+    let newDoenetMLs = {};
+    let newContentIds = contentIds;
+  
+    for (let contentId of contentIds) {
+      promises.push(axios.get(`/media/${contentId}.doenet`))
+  
+    }
+  
+    Promise.all(promises).then((resps) => {
+      // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
+      newDoenetMLs = resps.map(x=>x.data);
+
+      callBack({
+        newDoenetMLs,
+        newContentIds,
+        success: true
+      })
+    }).catch(err => {
+
+      let message;
+      if(newContentIds.length === 1) {
+        message = `Could not retrieve contentId ${newContentIds[0]}`
+      } else {
+        message = `Could not retrieve contentIds ${newContentIds.join(',')}`
+      }
+
+      callBack({
+        success: false,
+        message,
+        newDoenetMLs: [],
+        newContentIds: []
+      })
+    })
+  
+  }
+
 
   render() {
     return this.documentRenderer;

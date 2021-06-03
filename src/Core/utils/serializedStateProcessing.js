@@ -383,7 +383,8 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
           attributes[propName] = componentFromAttribute({
             attrObj,
             value: component.props[prop],
-            componentInfoObjects
+            componentInfoObjects,
+            flags
           });
           delete component.props[prop];
         } else if (!["name", "assignnames", "tname"].includes(prop.toLowerCase())) {
@@ -410,7 +411,8 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
         attributes[attr] = componentFromAttribute({
           attrObj,
           value: attrObj.defaultValue,
-          componentInfoObjects
+          componentInfoObjects,
+          flags
         });
       }
     }
@@ -424,7 +426,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
   }
 }
 
-export function componentFromAttribute({ attrObj, value, componentInfoObjects }) {
+export function componentFromAttribute({ attrObj, value, componentInfoObjects, flags }) {
   if (attrObj.createComponentOfType) {
     let newComponent;
     if (value === true &&
@@ -448,12 +450,18 @@ export function componentFromAttribute({ attrObj, value, componentInfoObjects })
         ]
       };
     }
+
+    if (attrObj.attributesForCreatedComponent) {
+      newComponent.props = attrObj.attributesForCreatedComponent;
+      createAttributesFromProps([newComponent], componentInfoObjects, flags)
+    }
+
     return newComponent;
   } else if (attrObj.createPrimitiveOfType) {
     let newPrimitive;
     if (attrObj.createPrimitiveOfType === "boolean") {
       newPrimitive = value === true ||
-        value.trim().toLowerCase() === "true";
+        (typeof value === "string" && value.trim().toLowerCase() === "true");
     } else if (attrObj.createPrimitiveOfType === "number") {
       if (value === true) {
         // can't use Number(), as Number(true) returns 1
@@ -1848,7 +1856,7 @@ export function processAssignNames({
 
     if (originalNamespace !== null) {
       for (let component of serializedComponents) {
-        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -1868,7 +1876,7 @@ export function processAssignNames({
       }
 
       if (originalNamespace !== null) {
-        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -1886,7 +1894,7 @@ export function processAssignNames({
 
   for (let ind = 0; ind < nComponents; ind++) {
 
-    let indForNames = ind + indOffset - numStrings;
+    let indForNames = ind + indOffset;
 
     let component = serializedComponents[ind];
 
@@ -1896,7 +1904,7 @@ export function processAssignNames({
       continue;
     }
 
-    let name = assignNames[indForNames];
+    let name = assignNames[indForNames - numStrings];
 
 
     if (!component.doenetAttributes) {
@@ -2077,23 +2085,33 @@ export function createComponentNamesFromParentName({
 }
 
 
-function setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components, doenetAttributesByFullTName }) {
+function setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components, doenetAttributesByFullTName }) {
 
   let namespaceLength = namespace.length;
   for (let component of components) {
     if (component.doenetAttributes && component.doenetAttributes.tName) {
       let fullTName = component.doenetAttributes.fullTName;
-      if (fullTName.substring(0, namespaceLength) !== namespace) {
-        component.doenetAttributes.tName = fullTName;
+      if (fullTName !== undefined) {
+        if (fullTName.substring(0, namespaceLength) !== namespace) {
+          component.doenetAttributes.tName = fullTName;
+        }
+        if (!doenetAttributesByFullTName[fullTName]) {
+          doenetAttributesByFullTName[fullTName] = [];
+        }
+        doenetAttributesByFullTName[fullTName].push(component.doenetAttributes);
       }
-      if (!doenetAttributesByFullTName[fullTName]) {
-        doenetAttributesByFullTName[fullTName] = [];
-      }
-      doenetAttributesByFullTName[fullTName].push(component.doenetAttributes);
     }
 
     if (component.children) {
-      setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components: component.children, doenetAttributesByFullTName })
+      setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: component.children, doenetAttributesByFullTName })
+    }
+    if (component.attributes) {
+      for (let attr in component.attributes) {
+        let comp = component.attributes[attr];
+        if (comp.componentType) {
+          setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: [comp], doenetAttributesByFullTName })
+        }
+      }
     }
   }
 }
