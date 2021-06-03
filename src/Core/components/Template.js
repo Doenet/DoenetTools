@@ -93,9 +93,18 @@ export default class Template extends CompositeComponent {
 
   get allPotentialRendererTypes() {
 
-    return this.potentialRendererTypesFromSerializedComponents(
+    let allPotentialRendererTypes = super.allPotentialRendererTypes;
+
+    let additionalRendererTypes = this.potentialRendererTypesFromSerializedComponents(
       this.stateValues.serializedChildren
     );
+    for (let rendererType of additionalRendererTypes) {
+      if (!allPotentialRendererTypes.includes(rendererType)) {
+        allPotentialRendererTypes.push(rendererType);
+      }
+    }
+
+    return allPotentialRendererTypes;
 
   }
 }

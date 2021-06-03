@@ -24,7 +24,7 @@ export default class ConditionalContent extends CompositeComponent {
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {
       if (!["case", "else"].includes(child.componentType)) {
-        if(!(child.attributes && ["case", "else"].includes(child.attributes.componentType))) {
+        if (!(child.attributes && ["case", "else"].includes(child.attributes.componentType))) {
           keepSerializedInds.push(ind)
         }
       }
@@ -361,4 +361,22 @@ export default class ConditionalContent extends CompositeComponent {
 
   }
 
+  get allPotentialRendererTypes() {
+
+    let allPotentialRendererTypes = super.allPotentialRendererTypes;
+
+    if (this.serializedChildren) {
+      let additionalRendererTypes = this.potentialRendererTypesFromSerializedComponents(
+        this.serializedChildren
+      );
+      for (let rendererType of additionalRendererTypes) {
+        if (!allPotentialRendererTypes.includes(rendererType)) {
+          allPotentialRendererTypes.push(rendererType);
+        }
+      }
+    }
+
+    return allPotentialRendererTypes;
+
+  }
 }
