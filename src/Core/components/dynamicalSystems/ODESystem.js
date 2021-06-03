@@ -444,7 +444,7 @@ export default class ODESystem extends InlineComponent {
             dependencyValues, usedDefault
           });
 
-          let thisLatex = `\\frac{\\mathrm{d}${variable}}{\\mathrm{d}${indVar}} &=  ${rhs.toLatex()}`
+          let thisLatex = `\\frac{d${variable}}{d${indVar}} &=  ${rhs.toLatex()}`
           if (dependencyValues.number && dim === 0) {
             thisLatex += `\\tag{${dependencyValues.equationTag}}`
           } else {
