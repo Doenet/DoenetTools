@@ -84,11 +84,11 @@ export default class BaseComponent {
   }
 
   get allPotentialRendererTypes() {
-    if (!this.rendererType) {
-      return [];
-    }
 
-    let allPotentialRendererTypes = [this.rendererType];
+    let allPotentialRendererTypes = [];
+    if (this.rendererType) {
+      allPotentialRendererTypes.push(this.rendererType);
+    }
 
     // include any potential renderer type that could be
     // created from a public state variable
@@ -116,6 +116,30 @@ export default class BaseComponent {
       }
     }
 
+    // include renderers from components it could adapt to
+    if (this.constructor.adapters) {
+      for (let adapterInfo of this.constructor.adapters) {
+        let componentType;
+        if (typeof adapterInfo === "string") {
+          componentType = adapterInfo;
+        } else {
+          componentType = adapterInfo.componentType;
+        }
+        let componentClass = this.componentInfoObjects.allComponentClasses[componentType];
+        if (componentClass) {
+          let rendererType = componentClass.rendererType;
+          if (rendererType && !allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType)
+          }
+        }
+      }
+    }
+
+    if (!this.rendererType) {
+      return allPotentialRendererTypes;
+    }
+
+
     // recurse to all children
     for (let childName in this.allChildren) {
       let child = this.allChildren[childName].component;
@@ -137,9 +161,61 @@ export default class BaseComponent {
 
     for (let comp of serializedComponents) {
       let compClass = this.componentInfoObjects.allComponentClasses[comp.componentType];
-      let rendererType = compClass.rendererType;
-      if (rendererType && !potentialRendererTypes.includes(rendererType)) {
-        potentialRendererTypes.push(rendererType);
+      if (compClass) {
+        let rendererType = compClass.rendererType;
+        if (rendererType && !potentialRendererTypes.includes(rendererType)) {
+          potentialRendererTypes.push(rendererType);
+        }
+
+        // include any potential renderer type that could be
+        // created from a public state variable
+
+        let stateVariableDescriptions = compClass.returnStateVariableInfo(
+          { onlyPublic: true, flags: this.flags }
+        ).stateVariableDescriptions;
+
+
+        for (let varName in stateVariableDescriptions) {
+          let stateDescrip = stateVariableDescriptions[varName];
+
+          let componentTypes = stateDescrip.componentType;
+          if (!Array.isArray(componentTypes)) {
+            componentTypes = [componentTypes]
+          }
+          if (stateDescrip.wrappingComponents) {
+            componentTypes.push(...flattenDeep(stateDescrip.wrappingComponents)
+              .map(x => typeof x === "object" ? x.componentType : x));
+          }
+          for (let componentType of componentTypes) {
+            let componentClass = this.componentInfoObjects.allComponentClasses[componentType];
+            if (componentClass) {
+              let rendererType = componentClass.rendererType;
+              if (rendererType && !potentialRendererTypes.includes(rendererType)) {
+                potentialRendererTypes.push(rendererType)
+              }
+            }
+          }
+        }
+
+
+        // include renderers from components it could adapt to
+        if (compClass.adapters) {
+          for (let adapterInfo of compClass.adapters) {
+            let componentType;
+            if (typeof adapterInfo === "string") {
+              componentType = adapterInfo;
+            } else {
+              componentType = adapterInfo.componentType;
+            }
+            let componentClass = this.componentInfoObjects.allComponentClasses[componentType];
+            if (componentClass) {
+              let rendererType = componentClass.rendererType;
+              if (rendererType && !potentialRendererTypes.includes(rendererType)) {
+                potentialRendererTypes.push(rendererType)
+              }
+            }
+          }
+        }
       }
 
       if (comp.children) {
@@ -157,8 +233,8 @@ export default class BaseComponent {
   }
 
   get childLogicSatisfied() {
-    return this.childLogic.logicResult && this.childLogic.logicResult.success 
-    && !this.placeholderActiveChildrenIndices;
+    return this.childLogic.logicResult && this.childLogic.logicResult.success
+      && !this.placeholderActiveChildrenIndices;
   }
 
   get childLogicSatisfiedWithPlaceholders() {
@@ -339,7 +415,7 @@ export default class BaseComponent {
       let thisDef = newDefinitions[varName];
       stateVariableDefinitions[varName] = thisDef;
 
-      if(thisDef.createWorkspace) {
+      if (thisDef.createWorkspace) {
         thisDef.workspace = {};
       }
 
@@ -723,7 +799,7 @@ export default class BaseComponent {
 
       adapterComponentType = varInfo.componentType;
 
-      if(!adapterComponentType) {
+      if (!adapterComponentType) {
         throw Error(`Couldn't get adapter component type for ${adapterStateVariable} of componentType ${this.componentType}`)
       }
     }

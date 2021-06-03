@@ -1856,7 +1856,7 @@ export function processAssignNames({
 
     if (originalNamespace !== null) {
       for (let component of serializedComponents) {
-        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -1876,7 +1876,7 @@ export function processAssignNames({
       }
 
       if (originalNamespace !== null) {
-        setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({
+        setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({
           namespace: originalNamespace,
           components: [component],
           doenetAttributesByFullTName
@@ -2085,23 +2085,33 @@ export function createComponentNamesFromParentName({
 }
 
 
-function setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components, doenetAttributesByFullTName }) {
+function setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components, doenetAttributesByFullTName }) {
 
   let namespaceLength = namespace.length;
   for (let component of components) {
     if (component.doenetAttributes && component.doenetAttributes.tName) {
       let fullTName = component.doenetAttributes.fullTName;
-      if (fullTName.substring(0, namespaceLength) !== namespace) {
-        component.doenetAttributes.tName = fullTName;
+      if (fullTName !== undefined) {
+        if (fullTName.substring(0, namespaceLength) !== namespace) {
+          component.doenetAttributes.tName = fullTName;
+        }
+        if (!doenetAttributesByFullTName[fullTName]) {
+          doenetAttributesByFullTName[fullTName] = [];
+        }
+        doenetAttributesByFullTName[fullTName].push(component.doenetAttributes);
       }
-      if (!doenetAttributesByFullTName[fullTName]) {
-        doenetAttributesByFullTName[fullTName] = [];
-      }
-      doenetAttributesByFullTName[fullTName].push(component.doenetAttributes);
     }
 
     if (component.children) {
-      setTNamesOutsideNamespaceToAbsoluteAndRecordAllTNames({ namespace, components: component.children, doenetAttributesByFullTName })
+      setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: component.children, doenetAttributesByFullTName })
+    }
+    if (component.attributes) {
+      for (let attr in component.attributes) {
+        let comp = component.attributes[attr];
+        if (comp.componentType) {
+          setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: [comp], doenetAttributesByFullTName })
+        }
+      }
     }
   }
 }
