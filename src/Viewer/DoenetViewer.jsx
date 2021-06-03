@@ -39,7 +39,7 @@ export function serializedComponentsReviver(key, value) {
 class DoenetViewerChild extends Component {
 
   constructor(props) {
-  console.log("===DoenetViewerChild constructor")
+  // console.log("===DoenetViewerChild constructor")
 
     super(props);
     this.update = this.update.bind(this);
@@ -172,8 +172,6 @@ class DoenetViewerChild extends Component {
         assignmentId: this.assignmentId,
         attemptNumber: this.attemptNumber
       }
-      console.log(">>>this.assignmentId", this.assignmentId)
-     
 
       console.log("core ready payload:", payload)
       axios.post('/api/saveAssignmentWeights.php', payload)
@@ -189,7 +187,6 @@ class DoenetViewerChild extends Component {
     // console.log(this.core.rendererTypesInDocument);
     for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
-      // console.log(`>>>dynamic import '${rendererClassName}'`)
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
 
@@ -275,7 +272,6 @@ class DoenetViewerChild extends Component {
     }
 
     if (this.allowLocalPageState){
-      console.log(">>>save data locally!!!!!!",`${contentId}${this.props.branchId}${this.attemptNumber}`)
       localStorage.setItem(`${contentId}${this.props.branchId}${this.attemptNumber}`,JSON.stringify({stateVariables:changeString,variant:variantString}))
     }
 
@@ -283,18 +279,15 @@ class DoenetViewerChild extends Component {
       return;
     }
 
-    console.log(">>>localStateChanged data",data)
     axios.post('/api/recordContentInteraction.php', data)
-      .then(resp => {
-        console.log('>>>localStateChanged resp', resp.data);
-      });
+      // .then(resp => {
+      // });
 
 
 
   }
 
   loadState(callback) {
-    console.log(">>>loadState props",this.props)
 
     if (!this.allowLoadPageState && !this.allowLocalPageState) {
       callback({
@@ -328,11 +321,9 @@ class DoenetViewerChild extends Component {
         branchId: this.props.branchId,
       }
     }
-    // console.log(">>>payload",payload)
 
     axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
-        // console.log(">>>load ci resp.data", resp.data)
         if (!resp.data.success){
           throw new Error(resp.data.message)
         }
@@ -381,22 +372,19 @@ class DoenetViewerChild extends Component {
     itemCreditAchieved,
     callBack,
   }) {
-    console.log('CALLED!',
-      itemNumber,
-      itemCreditAchieved,
-      this.attemptNumber
-    )
+
     
-    if (this.assignmentId) {
+    if (this.allowSaveSubmissions && this.props.branchId) {
       const payload = {
-        assignmentId: this.assignmentId,
+        branchId: this.props.branchId,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
         itemNumber,
       }
+      console.log(">>>saveCreditForItem payload",payload)
       axios.post('/api/saveCreditForItem.php', payload)
         .then(resp => {
-          // console.log('saveCreditForItem-->>>',resp.data);
+          console.log('saveCreditForItem-->>>',resp.data);
 
         });
     }
@@ -431,12 +419,12 @@ class DoenetViewerChild extends Component {
 
   recordEvent(event) {
 
-    // if (this.props.ignoreDatabase) {
-    //   return;
-    // }
+    if (!this.allowSaveEvents) {
+      return;
+    }
 
     const payload = {
-      assignmentId: this.assignmentId,
+      branchId: this.props.branchId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
       variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
@@ -449,9 +437,8 @@ class DoenetViewerChild extends Component {
     }
 
     axios.post('/api/recordEvent.php', payload)
-      .then(resp => {
-        // console.log('recordEvent-->>>',resp.data);
-      });
+      // .then(resp => {
+      // });
 
   }
 
@@ -496,7 +483,6 @@ class DoenetViewerChild extends Component {
 
 
   render() {
-    console.log(">>>this.state",this.state)
 
     if (this.state.errMsg !== null){
       return <div>{this.state.errMsg}</div>
@@ -522,11 +508,6 @@ class DoenetViewerChild extends Component {
     if (this.props.allowSaveEvents === false){
       this.allowSaveEvents = false;
     }
-    // console.log(">>>render this.allowLoadPageState", this.allowLoadPageState)
-    // console.log(">>>render this.allowSavePageState", this.allowSavePageState)
-    // console.log(">>>render this.allowLocalPageState", this.allowLocalPageState)
-    // console.log(">>>render this.allowSaveSubmissions", this.allowSaveSubmissions)
-    // console.log(">>>render this.allowSaveEvents", this.allowSaveEvents)
 
     //If no attemptNumber prop then set to 1
     this.attemptNumber = this.props.attemptNumber;
@@ -595,17 +576,10 @@ class DoenetViewerChild extends Component {
 
 
     if (this.needNewCoreFlag){
-      console.log(">>>needNewCoreFlag")
       this.loadState(this.createCore);
       return null;
-
     }
     
-    
-
-
-    console.log("===DoenetViewerChild renderer")
-
     
     return this.documentRenderer;
   }
@@ -623,7 +597,7 @@ class DoenetViewerChild extends Component {
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    // console.log(">>>error",props)
+
     this.state = {
       hasError: false,
       errorMsg: ""

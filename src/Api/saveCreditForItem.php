@@ -15,7 +15,7 @@ $response_arr = array(
 
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
+$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
@@ -27,7 +27,7 @@ $itemNumber = $itemNumber + 1;
 //**Find attemptAggregation
 $sql = "SELECT attemptAggregation
         FROM assignment
-        WHERE assignmentId='$assignmentId'";
+        WHERE branchId='$branchId'";
 
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
@@ -40,7 +40,7 @@ if ($attemptAggregation == 'm'){
 $sql = "SELECT credit
         FROM user_assignment_attempt_item
         WHERE userId = '$userId'
-        AND assignmentId = '$assignmentId'
+        AND branchId = '$branchId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
         ";
@@ -52,12 +52,12 @@ $credit_to_store = MAX($previousCredit,$credit);
     $credit_to_store = $credit;
 }
 
-
+echo "credit_to_store $credit_to_store";
 // Store credit in user_assignment_attempt_item
 $sql = "UPDATE user_assignment_attempt_item
         SET credit='$credit_to_store'
         WHERE userId = '$userId'
-        AND assignmentId = '$assignmentId'
+        AND branchId = '$branchId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
         ";
@@ -70,7 +70,7 @@ $result = $conn->query($sql);
 $sql = "SELECT credit,itemNumber,weight
         FROM user_assignment_attempt_item
         WHERE userId = '$userId'
-        AND assignmentId = '$assignmentId'
+        AND branchId = '$branchId'
         AND attemptNumber = '$attemptNumber'
         ORDER BY itemNumber
         ";
@@ -97,7 +97,7 @@ $credit_for_attempt = $total_credits / $total_weights;
 $sql = "UPDATE user_assignment_attempt
         SET credit='$credit_for_attempt'
         WHERE userId = '$userId'
-        AND assignmentId = '$assignmentId'
+        AND branchId = '$branchId'
         AND attemptNumber = '$attemptNumber'
         ";
 $result = $conn->query($sql);
@@ -112,7 +112,7 @@ $sql = "SELECT MAX(credit) AS maxCredit,
         MAX(creditOverride) AS maxCreditOverride
         FROM user_assignment_attempt
         WHERE userId = '$userId'
-        AND assignmentId = '$assignmentId'
+        AND branchId = '$branchId'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
@@ -122,7 +122,7 @@ $sql = "
     UPDATE user_assignment
     SET credit='$max_credit_for_assignment'
     WHERE userId = '$userId'
-    AND assignmentId = '$assignmentId'
+    AND branchId = '$branchId'
 ";
 $result = $conn->query($sql);
 
@@ -132,7 +132,7 @@ $result = $conn->query($sql);
 //     UPDATE user_assignment
 //     SET credit='$credit_for_attempt'
 //     WHERE userId = '$userId'
-//     AND assignmentId = '$assignmentId'
+//     AND branchId = '$branchId'
 // ";
 // $result = $conn->query($sql);
 // }
