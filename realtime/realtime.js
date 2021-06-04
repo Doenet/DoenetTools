@@ -17,32 +17,34 @@
   const { default: axios } = require('axios');
 
   chatSpace.use((socket, next) => {
-    axios
-      .get('https://doenet.org/api/loadProfile.php', {
-        headers: socket.handshake.headers,
-        params: {},
-      })
-      .then((resp) => {
-        if (resp.data.success === '1') {
-          if (resp.data.profile.signedIn === '1') {
-            socket.data.profile = resp.data.profile;
-            console.log('auth: ', socket.data.profile.screenName);
-            next();
-          } else {
-            next(new Error('Please sign in'));
-          }
-        } else {
-          next(new Error('PHP sever error'));
-        }
-      })
-      .catch((error) => {
-        next(new Error(`Axios request error: ${error}`));
-      });
+    //TODO: auth against central database instead of local
+    socket.data.profile = { screenName: 'remote-test-anon' };
+    next();
+    // axios
+    //   .get('https://doenet.org/api/loadProfile.php', {
+    //     headers: socket.handshake.headers,
+    //     params: {},
+    //   })
+    //   .then((resp) => {
+    //     if (resp.data.success === '1') {
+    //       if (resp.data.profile.signedIn === '1') {
+    //         socket.data.profile = resp.data.profile;
+    //         next();
+    //       } else {
+    //         next(new Error('Please sign in'));
+    //       }
+    //     } else {
+    //       next(new Error('PHP sever error'));
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     next(new Error(`Axios request error: ${error}`));
+    //   });
   });
 
   chatSpace.on('connection', (socket) => {
     console.log('connecting', socket.id);
-    io.to(socket.id).emit('chat message', {
+    chatSpace.to(socket.id).emit('chat message', {
       messageId: -1,
       message: 'Socket.io connection Successful! Try joining a room!',
       screenName: 'Server',
@@ -85,8 +87,31 @@
   driveSpace.on('connection', (socket) => {
     socket.on('rename_item', (data, cb) => {
       console.log('>>>Rename from', socket.id, 'to', data.name);
-      cb('resp code');
-      io.to('drive').in(data.driveId).emit('rename_item', data);
+      // axios.get('http://apache/api/updateItem.php', {
+      //   headers: socket.request.headers,
+      //   params: { driveId: '', itemId: '', label: '', instruction: 'rename' },
+      // });
+      // axios
+      //   .get('http://apache/api/loadProfile.php', {
+      //     headers: socket.handshake.headers,
+      //     params: {},
+      //   })
+      //   .then((resp) => {
+      //     console.log('request done for', data.name, resp.status);
+      if (data.respCode === '200') {
+        cb(200, data.transctionId);
+        socket.broadcast.emit('file_renamed', data);
+      } else if (data.respCode === '403') {
+        cb(403);
+      } else {
+        cb('error');
+      }
+      //   })
+      //   .catch((error) => {
+      //     cb(new Error(`Axios request error: ${error}`));
+      //   });
+      console.log('func done for', data.name);
+      // driveSpace.to(data.driveId).emit('rename_item', data);
     });
   });
   console.log('sever ready!');

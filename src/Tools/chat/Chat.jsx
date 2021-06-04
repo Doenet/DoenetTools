@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { io } from 'socket.io-client';
 import Tool from '@Tool';
+import { v4 as uuidV4 } from 'uuid';
 
 const ChatContainer = styled.div`
   border: solid black 1px;
@@ -62,10 +63,12 @@ export default function Chat() {
   const [screenName] = useState(
     JSON.parse(localStorage.getItem('Profile')).screenName,
   );
+  const [driveSocket, setDriveSocket] = useState();
+  const [docName, setDocName] = useState('one');
+  const [currentTransaction, setCurrentTransaction] = useState('');
 
   useEffect(() => {
-    let socket = io('chat.rt.doenet.org:81', { withCredentials: true });
-    let chatSocket = io('chat.rt.doenet.org:81/chat', {
+    let chatSocket = io('https://chat.rt.doenet.org/chat', {
       withCredentials: true,
     });
     chatSocket.on('connect', () => {
@@ -86,7 +89,27 @@ export default function Chat() {
       console.log('socket disconnected');
     });
 
-    return () => chatSocket.disconnect();
+    let driveSocket = io('https://chat.rt.doenet.org/drive', {
+      withCredentials: true,
+    });
+
+    driveSocket.on('connect', () => {
+      setDriveSocket(driveSocket);
+    });
+
+    driveSocket.on('file_renamed', (data) => {
+      setCurrentTransaction((currentId) => {
+        if (currentId !== data.transactionId) {
+          setDocName(data.name);
+          return data.transactionId;
+        }
+        return currentId;
+      });
+    });
+    return () => {
+      chatSocket.disconnect();
+      driveSocket.disconnect();
+    };
   }, []);
 
   let messages = chatLog.map((val, i) => (
@@ -100,7 +123,8 @@ export default function Chat() {
   ));
   return (
     <Tool>
-      <headerPanel />
+      <headerPanel>document name: {docName}</headerPanel>
+
       <mainPanel>
         <ChatContainer>
           <MessageLogContainer id="messageLogContainer">
@@ -134,6 +158,7 @@ export default function Chat() {
           </ChatForm>
         </ChatContainer>
       </mainPanel>
+
       <menuPanel title="options" isInitOpen>
         <NameLabel>Messaging as: {screenName}</NameLabel>
         <RoomForm
@@ -151,6 +176,44 @@ export default function Chat() {
           <RoomJoin type="submit">Join Room</RoomJoin>
         </RoomForm>
       </menuPanel>
+      <supportPanel>
+        <input type="text" id="newName" defaultValue="two" />
+        <button
+          onClick={() => {
+            let nameEl = document.getElementById('newName');
+            let name = nameEl.value;
+            let transactionId = uuidV4();
+            driveSocket.emit(
+              'rename_item',
+              {
+                name,
+                transactionId,
+                respCode: document.getElementById('respCode').value,
+              },
+              (resp, transactionId) => {
+                if (resp === 200) {
+                  console.log('success!');
+                  setDocName(name);
+                  setCurrentTransaction(transactionId);
+                } else if (resp === 403) {
+                  console.log('access deined');
+                  nameEl.value = docName;
+                } else {
+                  console.log('error:', resp);
+                  nameEl.value = docName;
+                }
+              },
+            );
+          }}
+        >
+          rename_item
+        </button>
+        <select name="respCode" id="respCode">
+          <option value={200}>OK</option>
+          <option value={403}>Forbidden</option>
+          <option value={404}>Sever Failed</option>
+        </select>
+      </supportPanel>
     </Tool>
   );
 }
