@@ -56,6 +56,7 @@ class DoenetViewerChild extends Component {
     this.cumulativeStateVariableChanges = {};
 
     this.needNewCoreFlag = false;
+    this.weightsStored = false;
 
     //Track if viewer should update with:
     //this.state.doenetML, this.state.attemptNumber, and this.state.contentId
@@ -161,25 +162,7 @@ class DoenetViewerChild extends Component {
 
 
     //TODO: Handle if number of items changed. Handle if weights changed
-
     
-
-    if (this.props.branchId ) {
-      // if (this.assignmentId && !this.props.ignoreDatabase) {
-      const payload = {
-        weights: this.core.scoredItemWeights,
-        contentId: this.contentId,
-        branchId: this.props.branchId,
-        attemptNumber: this.attemptNumber
-      }
-
-      console.log("core ready payload:", payload)
-      axios.post('/api/saveAssignmentWeights.php', payload)
-        .then(resp => {
-          console.log('saveAssignmentWeights-->>', resp.data);
-
-        });
-    }
 
     let renderPromises = [];
     let rendererClassNames = [];
@@ -375,14 +358,34 @@ class DoenetViewerChild extends Component {
 
     
     if (this.allowSaveSubmissions && this.props.branchId) {
-      const payload = {
+
+
+      if (!this.weightsStored){
+        this.weightsStored = true;
+        //TODO: Test if weights dynamically changed then store updates
+        //FOR NOW: Only call once
+        const payload1 = {
+          weights: this.core.scoredItemWeights,
+          contentId: this.contentId,
+          branchId: this.props.branchId,
+          attemptNumber: this.attemptNumber
+        }
+
+        axios.post('/api/saveAssignmentWeights.php', payload1)
+          // .then(resp => {
+          // });
+      }
+      
+
+      const payload2 = {
         branchId: this.props.branchId,
+        contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
         itemNumber,
       }
-      console.log(">>>saveCreditForItem payload",payload)
-      axios.post('/api/saveCreditForItem.php', payload)
+      console.log(">>>saveCreditForItem payload",payload2)
+      axios.post('/api/saveCreditForItem.php', payload2)
         .then(resp => {
           console.log('saveCreditForItem-->>>',resp.data);
 

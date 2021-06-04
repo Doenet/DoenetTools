@@ -15,54 +15,45 @@ $response_arr = array(
 
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $weights = array_map(function($item) use($conn) {
     return mysqli_real_escape_string($conn, $item);
   }, $_POST['weights']);
-  // var_dump($_POST);
 
-  //TODO: Test if weights dynamically changed then store updates
+//TODO: Test if weights dynamically changed then store updates
 
-
-  $sql = "SELECT userId
-          FROM  user_assignment_attempt_item
-          WHERE userId = '$userId'
-          AND branchId = '$branchId'
-          AND attemptNumber = '$attemptNumber'
-  ";
+$sql = "SELECT userId
+        FROM  user_assignment_attempt_item
+        WHERE userId = '$userId'
+        AND branchId = '$branchId'
+        AND contentId = '$contentId'
+        AND attemptNumber = '$attemptNumber'
+";
 $result = $conn->query($sql);
 
-//If already stored, don't store
+//Only insert if not stored
 if ($result->num_rows < 1){
 
-
-  $sql = "UPDATE user_assignment_attempt 
-      SET contentId='$contentId'
-      WHERE userId = '$userId'
-      AND branchId = '$branchId'
-      AND attemptNumber = '$attemptNumber'
-      ";
-$result = $conn->query($sql);
-
+  //Insert weights
   for ($itemNumber = 1; $itemNumber < count($weights) + 1; $itemNumber++){
-      //Store Item  weights
-      $weight = $weights[($itemNumber -1)];
-      $sql = "INSERT INTO user_assignment_attempt_item 
-      (userId,branchId,attemptNumber,itemNumber,weight)
-      values
-      ('$userId','$branchId','$attemptNumber','$itemNumber','$weight')
-      ";
-    $result = $conn->query($sql);
+    //Store Item  weights
+    $weight = $weights[($itemNumber -1)];
+    $sql = "INSERT INTO user_assignment_attempt_item 
+    (userId,branchId,contentId,attemptNumber,itemNumber,weight)
+    values
+    ('$userId','$branchId','$contentId','$attemptNumber','$itemNumber','$weight')
+    ";
+  $result = $conn->query($sql);
 
   }
 
 }
 
 
-    // set response code - 200 OK
-    http_response_code(200);
+// set response code - 200 OK
+http_response_code(200);
 
 //  echo json_encode($response_arr);
 
