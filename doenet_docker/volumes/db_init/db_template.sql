@@ -54,7 +54,7 @@ CREATE TABLE `assignment` (
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   `examCoverHTML` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=488 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=489 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,6 +63,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
+INSERT INTO `assignment` VALUES (488,'branchId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07','10:10:00',2,NULL,'m',0,'l',0,0,1,1,1,1,0,NULL);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -412,7 +413,6 @@ CREATE TABLE `user_assignment` (
   `branchId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
-  `username` varchar(10) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
   `timeLimitOverride` time DEFAULT NULL COMMENT 'NULL means no override',
   `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
@@ -424,7 +424,7 @@ CREATE TABLE `user_assignment` (
   `creditOverride` float DEFAULT NULL COMMENT 'if not NULL then credit field will be set to this',
   PRIMARY KEY (`id`),
   UNIQUE KEY `assignment-userId` (`branchId`,`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -447,7 +447,6 @@ CREATE TABLE `user_assignment_attempt` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `branchId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
-  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
   `credit` float DEFAULT NULL,
@@ -458,7 +457,7 @@ CREATE TABLE `user_assignment_attempt` (
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userid-assignmentid-attemptnum` (`userId`,`branchId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -482,7 +481,6 @@ CREATE TABLE `user_assignment_attempt_item` (
   `branchId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `attemptNumber` int(11) NOT NULL,
   `itemNumber` int(11) NOT NULL COMMENT 'The number of the scored item found in the Doenet code.',
   `credit` float DEFAULT NULL COMMENT 'maximum credit',
@@ -493,7 +491,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`,`branchId`,`attemptNumber`,`itemNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -517,7 +515,6 @@ CREATE TABLE `user_assignment_attempt_item_submission` (
   `branchId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `contentId` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
   `itemNumber` int(11) DEFAULT NULL,
   `submissionNumber` int(11) DEFAULT NULL,
@@ -526,7 +523,7 @@ CREATE TABLE `user_assignment_attempt_item_submission` (
   `submittedDate` datetime NOT NULL,
   `valid` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Past the due date. When the assesment wasn''t open.',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique rows` (`username`,`branchId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
+  UNIQUE KEY `unique rows` (`branchId`,`attemptNumber`,`itemNumber`,`submissionNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -576,4 +573,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-29 22:34:26
+-- Dump completed on 2021-06-04 13:22:43

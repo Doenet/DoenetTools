@@ -38,7 +38,7 @@ export default function Content({ branchId = '', title }) {
 
     return (
       <DoenetViewer
-        key={'doenetviewer' + viewerDoenetML?.updateNumber}
+        key={'doenetviewer'}
         doenetML={viewerDoenetML?.doenetML}
         contentId={contentId}
         flags={{
@@ -49,8 +49,12 @@ export default function Content({ branchId = '', title }) {
           showHints: true,
         }}
         attemptNumber={attemptNumber}
-        // assignmentIsd={assignmentId}
-        ignoreDatabase={true}
+        branchId={branchId}
+        allowLoadPageState={true}
+        allowSavePageState={true}
+        allowLocalPageState={true}
+        allowSaveSubmissions={true}
+        allowSaveEvents={true}
         requestedVariant={requestedVariant}
       />
     );
