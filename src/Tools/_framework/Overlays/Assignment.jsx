@@ -39,7 +39,7 @@ export default function Assignment({
 
     return (
       <DoenetViewer
-        key={'doenetviewer' + assignmentDoenetML?.updateNumber}
+        key={'doenetviewer'}
         doenetML={assignmentDoenetML?.doenetML}
         flags={{
           showCorrectness: true,
@@ -49,9 +49,13 @@ export default function Assignment({
           showHints: true,
         }}
         attemptNumber={attemptNumber}
-        contentId={contentId ? contentId : branchId}
-        assignmentId={assignmentId ? assignmentId : contentId}
-        ignoreDatabase={true}
+        // contentId={contentId}
+        // branchId={branchId}
+        allowLoadPageState={true}
+        allowSavePageState={true}
+        allowLocalPageState={true}
+        allowSaveSubmissions={true}
+        allowSaveEvents={true}
         requestedVariant={requestedVariant}
       />
     );
