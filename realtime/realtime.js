@@ -4,44 +4,42 @@
     cors: {
       origin: [
         'http://localhost',
-        'http://localhost:81',
-        'http://198.199.122.67',
-        'http://198.199.122.67:81',
+        'https://doenet.org',
+        'https://dev.doenet.org',
       ],
       methods: ['GET', 'POST'],
       allowedHeaders: ['access'],
       credentials: true,
     },
   });
+  const driveSpace = io.of('/drive');
+  const chatSpace = io.of('/chat');
   const { default: axios } = require('axios');
 
   io.use((socket, next) => {
-    //TODO: auth against central database instead of local
-    socket.data.profile = { screenName: 'remote-test-anon' };
-    next();
-    // axios
-    //   .get('http://localhost/api/loadProfile.php', {
-    //     headers: socket.handshake.headers,
-    //     params: {},
-    //   })
-    //   .then((resp) => {
-    //     if (resp.data.success === '1') {
-    //       if (resp.data.profile.signedIn === '1') {
-    //         socket.data.profile = resp.data.profile;
-    //         next();
-    //       } else {
-    //         next(new Error('Please sign in'));
-    //       }
-    //     } else {
-    //       next(new Error('PHP sever error'));
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     next(new Error(`Axios request error: ${error}`));
-    //   });
+    axios
+      .get('https://doenet.org/api/loadProfile.php', {
+        headers: socket.handshake.headers,
+        params: {},
+      })
+      .then((resp) => {
+        if (resp.data.success === '1') {
+          if (resp.data.profile.signedIn === '1') {
+            socket.data.profile = resp.data.profile;
+            next();
+          } else {
+            next(new Error('Please sign in'));
+          }
+        } else {
+          next(new Error('PHP sever error'));
+        }
+      })
+      .catch((error) => {
+        next(new Error(`Axios request error: ${error}`));
+      });
   });
 
-  io.on('connection', (socket) => {
+  chatSpace.on('connection', (socket) => {
     console.log('connecting', socket.id);
     socket.emit('chat message', {
       messageId: -1,
@@ -80,6 +78,14 @@
 
     socket.on('disconnect', () => {
       io.emit('user disconnected', socket.userId);
+    });
+  });
+
+  driveSpace.on('connection', (socket) => {
+    socket.on('rename_item', (data, cb) => {
+      console.log('>>>Rename from', socket.id, 'to', data.name);
+      cb('resp code');
+      io.to('drive').in(data.driveId).emit('rename_item', data);
     });
   });
   console.log('sever ready!');

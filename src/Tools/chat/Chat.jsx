@@ -64,7 +64,7 @@ export default function Chat() {
   );
 
   useEffect(() => {
-    let socket = io('chat.rt.doenet.org:81', { withCredentials: true });
+    let socket = io('chat.rt.doenet.org:81/chat', { withCredentials: true });
     socket.on('connect', () => {
       console.log('socket', socket.id, 'connected');
       setSocket(socket);
