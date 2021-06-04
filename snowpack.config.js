@@ -1,10 +1,13 @@
-const httpProxy = require('http-proxy');
-const proxy = httpProxy.createServer({ target: 'http://localhost:80' });
-proxy.on('proxyReq', function (proxyReq, req, res, options) {
-  proxyReq.setHeader('Host', 'localhost');
-});
+const proxy = require('http2-proxy');
 
 module.exports = {
+  alias: {
+    '@ToolRoot': './src/Tools/_framework/ToolRoot',
+    '@Tool': './src/Tools/_framework/Tool',
+    '@Toast': './src/Tools/_framework/Toast',
+    'solid-svg': '@fortawesome/free-solid-svg-icons',
+    'react-spring': '@react-spring/web',
+  },
   mount: {
     'src/Tools/accountSettings': '/accountSettings',
     'src/Tools/content': '/content',
@@ -35,24 +38,22 @@ module.exports = {
     [
       'snowpack-plugin-raw-file-loader',
       {
-        exts: ['.doenet', '.txt'], // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
+        // Add file extensions saying what files should be loaded as strings in your snowpack application. Default: '.txt'
+        exts: ['.doenet', '.txt'],
       },
     ],
   ],
   routes: [
     /* Enable an SPA Fallback in development: */
     // { match: 'routes', src: '.*', dest: '/index.html' },
-    //Using this to map port 80 to 8080 for api requests
+    //internal docker network mapping
     {
       src: '/api/.*',
       dest: (req, res) => {
-        proxy.web(req, res);
-      },
-    },
-    {
-      src: '/media/.*',
-      dest: (req, res) => {
-        proxy.web(req, res);
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
       },
     },
   ],
@@ -68,12 +69,13 @@ module.exports = {
     knownEntrypoints: ['crypto-js/sha1'],
   },
   devOptions: {
-    openUrl: '/library',
+    output: 'stream',
+    port: 80,
+    hmrPort: 80,
+    openUrl: '/exampleTool',
   },
   buildOptions: {
-    watch: true,
-    out: 'dist_local',
+    out: 'dist',
     clean: false,
-    // minify: true
   },
 };
