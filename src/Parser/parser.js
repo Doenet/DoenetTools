@@ -1,16 +1,5 @@
 import {parser} from './doenet.js'
 
-/*
-* There are 2 uses for this parser:
-* 1. Use as a replacement for the parser in core
-*  parseAndCompile() serves this purpose by making an extra pass and extracting the extra information from the input string and parse tree
-* 2. Use in the text editor
-*  parse() should be suffecient here -- the tree cursor class provides all/most of the methods you will want for text-editing purposes.
-* See https://lezer.codemirror.net/docs/ref/#tree.TreeCursor for details.
-* This file also provides a showCursor() method for use in demonstration/debugging. 
-* It should most likely be used in combination with the exported parse function
-*/
-
 /**
  *  takes in a string an outputs a TreeCursor
  * @param {string} inText 
@@ -23,6 +12,7 @@ export function parse(inText) {
  * parse string and output a convinent to use object. 
  * @param {string} inText
  */
+//TODO skip comments
 export function parseAndCompile(inText){
     function compileElement(cursor){
         if(cursor.name != "Element"){
