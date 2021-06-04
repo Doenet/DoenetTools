@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "./Switch.css";
 
@@ -33,6 +33,16 @@ export default function Switch(props) {
   }
   // Section: states
   let [checked, setChecked] = useState(propsChecked || false); // will be undefined if not specified which will show up like an empty string.
+  useEffect(() => {
+    if (
+      props.checked === true ||
+      props.checked === "true" ||
+      props.checked === "1" ||
+      props.checked === 1
+    ){
+      setChecked(true)
+    }
+  }, [props.checked])
 
   return (
     <div className={(props.className || "") + " switch"} key={id + "container"}>
