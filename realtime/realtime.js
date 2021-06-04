@@ -6,6 +6,7 @@
         'http://localhost',
         'https://doenet.org',
         'https://dev.doenet.org',
+        'https://chat.rt.doenet.org',
       ],
       methods: ['GET', 'POST'],
       allowedHeaders: ['access'],
