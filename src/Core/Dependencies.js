@@ -2841,7 +2841,7 @@ class Dependency {
 
     for (let [componentInd, componentName] of this.downstreamComponentNames.entries()) {
 
-      let depComponent = this.dependencyHandler.components[componentName];
+      let depComponent = this.dependencyHandler._components[componentName];
 
       if (depComponent) {
 
@@ -2871,7 +2871,7 @@ class Dependency {
 
             if (!this.variablesOptional || mappedVarName in depComponent.state) {
               if (!depComponent.state[mappedVarName].deferred) {
-                componentObj.stateValues[nameForOutput] = depComponent.stateValues[mappedVarName];
+                componentObj.stateValues[nameForOutput] = depComponent.state[mappedVarName].value;
                 if (this.valuesChanged[componentInd][mappedVarName].changed) {
                   if (!changes.valuesChanged) {
                     changes.valuesChanged = {};
@@ -3595,9 +3595,30 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
     let foundNewUpdated = true;
 
+
+    let changes = {};
+
     while (foundNewUpdated) {
       foundNewUpdated = false;
       result = super.getValue();
+
+      if(result.changes.valuesChanged) {
+        if(!changes.valuesChanged) {
+          changes.valuesChanged = result.changes.valuesChanged;
+        } else {
+          for(let ind in result.changes.valuesChanged) {
+            let changeObj = result.changes.valuesChanged[ind];
+            if(!changes.valuesChanged[ind]) {
+              changes.valuesChanged[ind] = changeObj;
+            } else {
+              for(let depName in changeObj) {
+                changes.valuesChanged[ind][depName] = changeObj[depName];
+              }
+            }
+          
+          }
+        }
+      }
 
       for (let cName in this.varsWithUpdatedDeps) {
         let compAccumulated = accumulatedVarsWithUpdatedDeps[cName];
@@ -3619,6 +3640,9 @@ class RecursiveDependencyValuesDependency extends Dependency {
     }
 
     this.gettingValue = false;
+
+
+    result.changes = changes;
 
     return result;
   }

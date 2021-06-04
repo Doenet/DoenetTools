@@ -1425,36 +1425,36 @@ function createInstance(defaultConfig) {
 }
 
 // Create the default instance to be exported
-var axios$1 = createInstance(defaults_1);
+var axios = createInstance(defaults_1);
 
 // Expose Axios class to allow class inheritance
-axios$1.Axios = Axios_1;
+axios.Axios = Axios_1;
 
 // Factory for creating new instances
-axios$1.create = function create(instanceConfig) {
-  return createInstance(mergeConfig(axios$1.defaults, instanceConfig));
+axios.create = function create(instanceConfig) {
+  return createInstance(mergeConfig(axios.defaults, instanceConfig));
 };
 
 // Expose Cancel & CancelToken
-axios$1.Cancel = Cancel_1;
-axios$1.CancelToken = CancelToken_1;
-axios$1.isCancel = isCancel;
+axios.Cancel = Cancel_1;
+axios.CancelToken = CancelToken_1;
+axios.isCancel = isCancel;
 
 // Expose all/spread
-axios$1.all = function all(promises) {
+axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios$1.spread = spread;
+axios.spread = spread;
 
 // Expose isAxiosError
-axios$1.isAxiosError = isAxiosError;
+axios.isAxiosError = isAxiosError;
 
-var axios_1 = axios$1;
+var axios_1 = axios;
 
 // Allow use of default import syntax in TypeScript
-var _default = axios$1;
+var _default = axios;
 axios_1.default = _default;
 
-var axios = axios_1;
+var axios$1 = axios_1;
 
-export default axios;
+export default axios$1;

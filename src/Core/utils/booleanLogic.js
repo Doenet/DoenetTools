@@ -1,17 +1,115 @@
 import checkEquality from './checkEquality';
 import me from 'math-expressions';
-import { textToAst } from './math';
+import { textToAst, appliedFunctionSymbols } from './math';
 
+const appliedFunctionSymbolsWithBooleanOperators = [
+  ...appliedFunctionSymbols,
+  "isnumber", "isinteger"
+]
+
+var textToAstUnsplit = new me.converters.textToAstObj({
+  splitSymbols: false,
+  appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators
+});
+
+export function buildParsedExpression({ dependencyValues, componentInfoObjects }) {
+
+  let codePre = "comp";
+
+  // make sure that codePre is not in any string piece
+  let foundInString = true;
+  while (foundInString) {
+    foundInString = false;
+
+    for (let child of dependencyValues.stringChildren) {
+      if (child.stateValues.value.includes(codePre)) {
+        // found codePre in a string, so extend codePre and try again
+        foundInString = true;
+        codePre += "p";
+        break;
+      }
+    }
+  };
+
+  let inputString = "";
+  let subnum = 0;
+  let nonMathCodes = [];
+  let stringChildInd = 0;
+
+  for (let child of dependencyValues.stringMathTextBooleanChildren) {
+    if (child.componentType === "string") {
+      // need to use stringChildren
+      // as child variable doesn't have stateVariables
+      inputString += " " + dependencyValues.stringChildren[stringChildInd].stateValues.value + " ";
+      stringChildInd++;
+    }
+    else { // a math, mathList, text, textList, boolean, or booleanList
+      let code = codePre + subnum;
+
+      // make sure code is surrounded by spaces
+      // (the presence of numbers inside code will ensure that 
+      // it is parsed as a multicharcter variable)
+      inputString += " " + code + " ";
+
+      if (!(
+        componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "math"
+        }) ||
+        componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "mathList"
+        }) ||
+        componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "number"
+        })
+      )) {
+        nonMathCodes.push(code);
+      }
+
+      subnum += 1;
+
+    }
+  }
+
+  let parsedExpression = null;
+
+  try {
+    parsedExpression = me.fromAst(textToAstUnsplit.convert(inputString));
+  } catch (e) {
+  }
+
+  if (parsedExpression) {
+    parsedExpression = me.fromAst(splitSymbolsIfMath({
+      logicTree: parsedExpression.tree,
+      nonMathCodes,
+    }));
+  }
+
+
+  return {
+    newValues: {
+      codePre, parsedExpression
+    }
+  }
+
+}
 
 export function evaluateLogic({ logicTree,
   unorderedCompare = false, simplifyOnCompare = false, expandOnCompare = false,
-  dependencyValues
+  dependencyValues, valueOnInvalid = 0
 }) {
+
+  if (!dependencyValues.numberChildrenByCode) {
+    dependencyValues = Object.assign({}, dependencyValues);
+    dependencyValues.numberChildrenByCode = {};
+  }
 
   let evaluateSub = x => evaluateLogic({
     logicTree: x,
     unorderedCompare, simplifyOnCompare,
-    expandOnCompare, dependencyValues,
+    expandOnCompare, dependencyValues, valueOnInvalid
 
   });
 
@@ -37,10 +135,20 @@ export function evaluateLogic({ logicTree,
           } else {
             return 0;
           }
-        } else if (logicTree.toLowerCase() === "true") {
-          return 1;
-        } else if (logicTree.toLowerCase() === "false") {
-          return 0;
+        } else {
+          let numberChild = dependencyValues.numberChildrenByCode[logicTree];
+          if (numberChild) {
+            let numericalValue = numberChild.stateValues.value
+            if (Number.isFinite(numericalValue) && numericalValue !== 0) {
+              return 1;
+            } else {
+              return 0;
+            }
+          } else if (logicTree.toLowerCase() === "true") {
+            return 1;
+          } else if (logicTree.toLowerCase() === "false") {
+            return 0;
+          }
         }
       }
     } else if (typeof logicTree === "number") {
@@ -48,7 +156,7 @@ export function evaluateLogic({ logicTree,
     }
 
     console.warn("Invalid format for boolean condition");
-    return 0;
+    return valueOnInvalid;
   }
 
   let operator = logicTree[0];
@@ -57,7 +165,7 @@ export function evaluateLogic({ logicTree,
   if (operator === "not") {
     if (operands.length !== 1) {
       console.warn("Invalid format for boolean condition");
-      return 0;
+      return valueOnInvalid;
     }
     return evaluateSub(operands[0]) === 0 ? 1 : 0;
   }
@@ -82,7 +190,10 @@ export function evaluateLogic({ logicTree,
 
   operands.forEach(function (x) {
     if (typeof x === "string") {
-      if (x in dependencyValues.mathChildrenByCode || x in dependencyValues.mathListChildrenByCode) {
+      if (x in dependencyValues.mathChildrenByCode ||
+        x in dependencyValues.mathListChildrenByCode ||
+        x in dependencyValues.numberChildrenByCode
+      ) {
         foundMath = true;
       } else if (x in dependencyValues.textChildrenByCode || x in dependencyValues.textListChildrenByCode) {
         foundText = true;
@@ -90,7 +201,7 @@ export function evaluateLogic({ logicTree,
         foundBoolean = true;
       }
     }
-  }.bind(this));
+  });
 
 
   let replaceMath = function (tree) {
@@ -103,6 +214,10 @@ export function evaluateLogic({ logicTree,
       if (child !== undefined) {
         return ["list", ...child.stateValues.maths.map(x => x.tree)];
       }
+      child = dependencyValues.numberChildrenByCode[tree];
+      if (child !== undefined) {
+        return child.stateValues.value;
+      }
       return tree;
     }
     if (!Array.isArray(tree)) {
@@ -111,7 +226,7 @@ export function evaluateLogic({ logicTree,
 
     return [tree[0], ...tree.slice(1).map(replaceMath)]
 
-  }.bind(this);
+  }
 
 
   if (operator === "apply" && ["isnumber", "isinteger"].includes(operands[0])) {
@@ -125,7 +240,7 @@ export function evaluateLogic({ logicTree,
     // TODO: should we simplify before evaluating to constant?
     let numericalValue = expression.simplify().evaluate_to_constant();
 
-    if(!Number.isFinite(numericalValue)) {
+    if (!Number.isFinite(numericalValue)) {
       return 0;
     }
 
@@ -150,7 +265,7 @@ export function evaluateLogic({ logicTree,
   if (!(["=", "ne", "<", ">", "le", "ge", "lts", "gts", "in", "notin"].includes(operator))) {
     if (foundText || foundBoolean) {
       console.warn("Invalid format for boolean condition");
-      return 0;
+      return valueOnInvalid;
     }
 
     // try to see if logic tree can be evaluated to a number
@@ -172,7 +287,7 @@ export function evaluateLogic({ logicTree,
   if (foundBoolean) {
     if (foundMath || foundText) {
       console.warn("Invalid format for boolean condition");
-      return 0;
+      return valueOnInvalid;
     }
 
     let foundInvalidWhen = false;
@@ -196,15 +311,15 @@ export function evaluateLogic({ logicTree,
         }
         console.warn("Invalid format for boolean condition");
         foundInvalidWhen = true;
-        return 0;
+        return valueOnInvalid;
       }
       console.warn("Invalid format for boolean condition");
       foundInvalidWhen = true;
-      return 0;
-    }.bind(this));
+      return valueOnInvalid;
+    });
 
     if (foundInvalidWhen) {
-      return 0;
+      return valueOnInvalid;
     }
 
     if (operator === "=") {
@@ -233,7 +348,7 @@ export function evaluateLogic({ logicTree,
     } else if (operator === "ne") {
       if (operands.length !== 2) {
         console.warn("Invalid format for boolean condition");
-        return 0;
+        return valueOnInvalid;
       }
       let fraction_equal = checkEquality(
         {
@@ -248,13 +363,13 @@ export function evaluateLogic({ logicTree,
 
     } else {
       console.warn("Invalid format for boolean condition");
-      return 0;
+      return valueOnInvalid;
     }
 
   } else if (foundText) {
     if (foundMath) {
       console.warn("Invalid format for boolean condition");
-      return 0;
+      return valueOnInvalid;
     }
 
     let foundInvalidWhen = false;
@@ -280,14 +395,14 @@ export function evaluateLogic({ logicTree,
       }
 
       return tree.slice(1).map(extractText).join(' ');
-    }.bind(this);
+    };
 
     // every operand must be a text or string that is true or false
     operands = operands.map(x => extractText(x, true));
 
 
     if (foundInvalidWhen) {
-      return 0;
+      return valueOnInvalid;
     }
 
     if (operator === "=") {
@@ -332,7 +447,7 @@ export function evaluateLogic({ logicTree,
 
     } else {
       console.warn("Invalid format for boolean condition");
-      return 0;
+      return valueOnInvalid;
     }
   }
 
@@ -345,14 +460,17 @@ export function evaluateLogic({ logicTree,
     operands = operands[0].slice(1);
   }
 
-  operands = operands.map(function (x) {
+  let mathOperands = operands.map(function (x) {
     return me.fromAst(replaceMath(x));
   });
 
   if (operator === "=") {
-    let expr = operands[0];
+    let expr = mathOperands[0];
+    if (Number.isNaN(expr.tree)) {
+      return mathOperands.slice(1).every(x => Number.isNaN(x.tree)) ? 1 : 0;
+    }
     if (dependencyValues.matchPartial) {
-      let results = operands.slice(1).map(x => checkEquality({
+      let results = mathOperands.slice(1).map(x => checkEquality({
         object1: expr,
         object2: x,
         isUnordered: unorderedCompare,
@@ -370,7 +488,7 @@ export function evaluateLogic({ logicTree,
       let sum = results.reduce((a, c) => a + c.fraction_equal, 0);
       return sum / results.length;
     } else {
-      return operands.slice(1).every(x => checkEquality(
+      return mathOperands.slice(1).every(x => checkEquality(
         {
           object1: expr,
           object2: x,
@@ -391,8 +509,8 @@ export function evaluateLogic({ logicTree,
 
     let fraction_equal = checkEquality(
       {
-        object1: operands[0],
-        object2: operands[1],
+        object1: mathOperands[0],
+        object2: mathOperands[1],
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
         symbolicEquality: dependencyValues.symbolicEquality,
@@ -410,12 +528,12 @@ export function evaluateLogic({ logicTree,
 
   if (operator === "in" || operator === "notin") {
 
-    let element = operands[0];
-    let set = operands[1];
+    let element = mathOperands[0];
+    let set = mathOperands[1];
     let set_tree = set.tree;
     if (!(Array.isArray(set_tree) && set_tree[0] === "set")) {
       console.warn("Invalid format for boolean condition");
-      return 0;
+      return valueOnInvalid;
     }
 
     if (dependencyValues.matchPartial) {
@@ -466,42 +584,42 @@ export function evaluateLogic({ logicTree,
 
 
   // since have inequality, all operands must be numbers
-  operands = operands.map(x => x.simplify().evaluate_to_constant());
-  if (operands.some(x => (x === null || Number.isNaN(x)))) {
+  let numberOperands = mathOperands.map(x => x.simplify().evaluate_to_constant());
+  if (numberOperands.some(x => (x === null || Number.isNaN(x)))) {
     return 0;
   }
 
   // at this point, all operands are numbers, Infinity, or -Infinity
 
   if (operator === "<") {
-    return operands[0] < operands[1] ? 1 : 0;
+    return numberOperands[0] < numberOperands[1] ? 1 : 0;
   } else if (operator === ">") {
-    return operands[0] > operands[1] ? 1 : 0;
+    return numberOperands[0] > numberOperands[1] ? 1 : 0;
   } else if (operator === "le") {
-    return operands[0] <= operands[1] ? 1 : 0;
+    return numberOperands[0] <= numberOperands[1] ? 1 : 0;
   } else if (operator === "ge") {
-    return operands[0] >= operands[1] ? 1 : 0;
+    return numberOperands[0] >= numberOperands[1] ? 1 : 0;
   }
 
   // have lts or gts
   for (let ind = 0; ind < strict.length; ind++) {
     if (operator === "lts") {
       if (strict[ind] === true) {
-        if (!(operands[ind] < operands[ind + 1])) {
+        if (!(numberOperands[ind] < numberOperands[ind + 1])) {
           return 0;
         }
       } else {
-        if (!(operands[ind] <= operands[ind + 1])) {
+        if (!(numberOperands[ind] <= numberOperands[ind + 1])) {
           return 0;
         }
       }
     } else {
       if (strict[ind] === true) {
-        if (!(operands[ind] > operands[ind + 1])) {
+        if (!(numberOperands[ind] > numberOperands[ind + 1])) {
           return 0;
         }
       } else {
-        if (!(operands[ind] >= operands[ind + 1])) {
+        if (!(numberOperands[ind] >= numberOperands[ind + 1])) {
           return 0;
         }
       }

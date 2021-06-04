@@ -1,12 +1,12 @@
-import * as PropertyComponents from './components/PropertyComponents';
+import * as Aliases from './components/Aliases';
 import * as MMeMen from './components/MMeMen';
 import * as MdMdnMrow from './components/MdMdnMrow';
 import * as BooleanOperators from './components/BooleanOperators';
 import * as BooleanOperatorsOfMath from './components/BooleanOperatorsOfMath';
 import * as MathOperators from './components/MathOperators';
 import * as FunctionOperators from './components/FunctionOperators';
+import * as TextOperatorsOfMath from './components/TextOperatorsOfMath';
 import * as Extrema from './components/Extrema';
-import * as PatternReplace from './components/PatternReplace';
 import * as ParagraphMarkup from './components/ParagraphMarkup';
 import * as SingleCharacterComponents from './components/SingleCharacterComponents';
 import * as Sectioning from './components/Sectioning';
@@ -16,7 +16,7 @@ import * as FeedbackDefinitions from './components/FeedbackDefinitions';
 import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
 import * as SideBySide from './components/SideBySide';
-import * as UpdateValue from './components/UpdateValue';
+import * as Indexing from './components/Indexing';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -99,8 +99,8 @@ import Select from './components/Select';
 import Group from './components/Group';
 import AnimateFromSequence from './components/AnimateFromSequence';
 import Evaluate from './components/Evaluate';
-import RandomNumber from './components/RandomNumber';
-import GenerateRandomNumbers from './components/GenerateRandomNumbers';
+import SelectRandomNumbers from './components/SelectRandomNumbers';
+import SampleRandomNumbers from './components/SampleRandomNumbers';
 import Substitute from './components/Substitute';
 import Offsets from './components/Offsets';
 import DiscreteInfiniteSet from './components/DiscreteInfiniteSet';
@@ -120,6 +120,9 @@ import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
 import SelectByCondition from './components/SelectByCondition';
 import Lorem from './components/Lorem';
+import UpdateValue from './components/UpdateValue';
+import CallAction from './components/CallAction';
+import TriggerSet from './components/TriggerSet';
 
 
 //Extended
@@ -143,15 +146,15 @@ import TextOrInline from './components/abstract/TextOrInline';
 
 
 const componentTypeArray = [
-  ...Object.values(PropertyComponents),
+  ...Object.values(Aliases),
   ...Object.values(MMeMen),
   ...Object.values(MdMdnMrow),
   ...Object.values(BooleanOperators),
   ...Object.values(BooleanOperatorsOfMath),
   ...Object.values(MathOperators),
   ...Object.values(FunctionOperators),
+  ...Object.values(TextOperatorsOfMath),
   ...Object.values(Extrema),
-  ...Object.values(PatternReplace),
   ...Object.values(ParagraphMarkup),
   ...Object.values(SingleCharacterComponents),
   ...Object.values(Sectioning),
@@ -159,9 +162,9 @@ const componentTypeArray = [
   ...Object.values(DynamicalSystems),
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
-  ...Object.values(UpdateValue),
   ...Object.values(SideBySide),
   ...Object.values(ComponentWithSelectableType),
+  ...Object.values(Indexing),
   Document,
   StringComponent,
   Text, TextList,
@@ -221,8 +224,8 @@ const componentTypeArray = [
   Group,
   AnimateFromSequence,
   Evaluate,
-  RandomNumber,
-  GenerateRandomNumbers,
+  SelectRandomNumbers,
+  SampleRandomNumbers,
   Substitute,
   Offsets,
   DiscreteInfiniteSet,
@@ -241,6 +244,10 @@ const componentTypeArray = [
   Case,
   SelectByCondition,
   Lorem,
+  UpdateValue,
+  CallAction,
+  TriggerSet,
+
   BaseComponent,
   InlineComponent,
   BlockComponent,

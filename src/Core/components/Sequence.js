@@ -129,7 +129,7 @@ export default class Sequence extends CompositeComponent {
         attributesFromComposite = convertAttributesForComponentType({
           attributes: { fixed: component.attributes.fixed },
           componentType,
-          componentInfoObjects, compositeAttributesObj: {},
+          componentInfoObjects,
           compositeCreatesNewNamespace: component.attributes.newNamespace
         })
       }
@@ -328,7 +328,7 @@ export default class Sequence extends CompositeComponent {
             attributesFromComposite = convertAttributesForComponentType({
               attributes: { fixed: component.attributes.fixed },
               componentType,
-              componentInfoObjects, compositeAttributesObj: {},
+              componentInfoObjects,
               compositeCreatesNewNamespace: component.attributes.newNamespace
             })
           }
@@ -376,11 +376,16 @@ export default class Sequence extends CompositeComponent {
   }
 
   get allPotentialRendererTypes() {
-    let allPotentialRendererTypes = [
-      this.componentInfoObjects.allComponentClasses[
-        this.stateValues.type === "letters" ? "text" : this.stateValues.type
-      ].rendererType
-    ];
+
+    let allPotentialRendererTypes = super.allPotentialRendererTypes;
+
+    let rendererType = this.componentInfoObjects.allComponentClasses[
+      this.stateValues.type === "letters" ? "text" : this.stateValues.type
+    ].rendererType;
+    if (!allPotentialRendererTypes.includes(rendererType)) {
+      allPotentialRendererTypes.push(rendererType);
+    }
+
     return allPotentialRendererTypes;
   }
 

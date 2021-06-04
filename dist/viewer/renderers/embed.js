@@ -1,16 +1,19 @@
 import React from "../../_snowpack/pkg/react.js";
 import DoenetRenderer from "./DoenetRenderer.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
+import {sizeToCSS} from "./utils/css.js";
 export default class Embed extends DoenetRenderer {
   componentDidMount() {
     if (this.doenetSvData.encodedGeogebraContent) {
       let doenetSvData = this.doenetSvData;
       let cName = cssesc(this.componentName);
+      let width = sizeToCSS(this.doenetSvData.width);
+      let height = sizeToCSS(this.doenetSvData.height);
       window.MathJax.Hub.Register.StartupHook("End", function() {
         let parameters = {
           id: cName,
-          width: doenetSvData.width,
-          height: doenetSvData.height,
+          width,
+          height,
           showResetIcon: false,
           enableLabelDrags: false,
           useBrowserForJS: true,
@@ -35,7 +38,7 @@ export default class Embed extends DoenetRenderer {
           allowUpscale: false
         };
         let applet = new window.GGBApplet(parameters, true);
-        applet.setHTML5Codebase("/geogebra/HTML5/5.0/web/", "true");
+        applet.setHTML5Codebase("/media/geogebra/HTML5/5.0/web/", "true");
         applet.inject("container_" + cName, "preferhtml5");
       });
       this.forceUpdate();
@@ -45,6 +48,8 @@ export default class Embed extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
+    let width = sizeToCSS(this.doenetSvData.width);
+    let height = sizeToCSS(this.doenetSvData.height);
     if (this.doenetSvData.geogebra) {
       return /* @__PURE__ */ React.createElement("div", {
         className: "geogebra",
@@ -54,9 +59,9 @@ export default class Embed extends DoenetRenderer {
       }), /* @__PURE__ */ React.createElement("iframe", {
         scrolling: "no",
         title: "",
-        src: `https://www.geogebra.org/material/iframe/id/${this.doenetSvData.geogebra}/width/${this.doenetSvData.width}/height/${this.doenetSvData.height}/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false`,
-        width: this.doenetSvData.width,
-        height: this.doenetSvData.height,
+        src: `https://www.geogebra.org/material/iframe/id/${this.doenetSvData.geogebra}/width/${width}/height/${height}/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false`,
+        width,
+        height,
         style: {border: "0px"}
       }, " "));
     } else if (this.doenetSvData.encodedGeogebraContent) {
@@ -66,7 +71,7 @@ export default class Embed extends DoenetRenderer {
       }, /* @__PURE__ */ React.createElement("div", {
         className: "geogebrawebapplet",
         id: "container_" + cssesc(this.componentName),
-        style: {minWidth: this.doenetSvData.width, minHeight: this.doenetSvData.height}
+        style: {minWidth: width, minHeight: height}
       }));
     }
     console.warn("Nothing specified to embed");

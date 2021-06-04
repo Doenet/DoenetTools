@@ -1,6 +1,7 @@
 import BaseComponent from './abstract/BaseComponent';
 import { getVariantsForDescendants } from '../utils/variants';
 import { returnDefaultStyleDefinitions } from '../utils/style';
+import { numberToLetters } from '../utils/sequence';
 
 export default class Document extends BaseComponent {
   static componentType = "document";
@@ -21,6 +22,12 @@ export default class Document extends BaseComponent {
     delete attributes.styleNumber;
     delete attributes.isResponse;
 
+    attributes.documentWideCheckWork = {
+      createComponentOfType: "boolean",
+      createStateVariable: "documentWideCheckWork",
+      defaultValue: false,
+      public: true,
+    };
     attributes.feedbackDefinitions = {
       createComponentOfType: "feedbackDefinitions",
       createStateVariable: "feedbackDefinitions",
@@ -292,6 +299,52 @@ export default class Document extends BaseComponent {
 
     }
 
+    stateVariableDefinitions.answerDescendants = {
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "descendant",
+          componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
+          recurseToMatchedChildren: false,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+      }
+    }
+
+    stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        answerDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            justSubmitted:
+              dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.showCorrectness = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        showCorrectnessFlag: {
+          dependencyType: "flag",
+          flagName: "showCorrectness"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
+        return { newValues: { showCorrectness } }
+      }
+    }
+
 
     stateVariableDefinitions.displayDigitsForCreditAchieved = {
       returnDependencies: () => ({}),
@@ -301,6 +354,7 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
+      forRenderer: true,
       defaultValue: 0,
       stateVariablesPrescribingAdditionalAttributes: {
         displayDigits: "displayDigitsForCreditAchieved",
@@ -341,75 +395,162 @@ export default class Document extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.selectedVariantInfo = {
+    stateVariableDefinitions.creditAchievedIfSubmit = {
+      defaultValue: 0,
+      stateVariablesDeterminingDependencies: ["scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          scoredDescendants: {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+        }
+        for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
+          dependencies["creditAchievedIfSubmit" + ind] = {
+            dependencyType: "stateVariable",
+            componentName: descendant.componentName,
+            variableName: "creditAchievedIfSubmit"
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues }) {
+
+
+        let creditSum = 0;
+        let totalWeight = 0;
+
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let weight = component.stateValues.weight;
+          creditSum += dependencyValues["creditAchievedIfSubmit" + ind] * weight;
+          totalWeight += weight;
+        }
+        let creditAchievedIfSubmit = creditSum / totalWeight;
+
+        return { newValues: { creditAchievedIfSubmit } }
+
+      }
+    }
+
+
+    stateVariableDefinitions.generatedVariantInfo = {
       returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
-        variantNumber: {
+        variantIndex: {
           dependencyType: "value",
-          value: sharedParameters.variantNumber,
+          value: sharedParameters.variantIndex,
+        },
+        variantName: {
+          dependencyType: "value",
+          value: sharedParameters.variantName,
         },
         variantDescendants: {
           dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
-            "selectedVariantInfo",
+            "generatedVariantInfo",
           ],
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
           definingChildrenFirst: true,
-        }
+        },
+        variants: {
+          dependencyType: "variants",
+        },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
-        let selectedVariantInfo = {
-          index: dependencyValues.variantNumber
+        let subvariantsSpecified = Boolean(
+          dependencyValues.variants.desiredVariant &&
+          dependencyValues.variants.desiredVariant.subvariants
+        )
+
+        let generatedVariantInfo = {
+          index: dependencyValues.variantIndex,
+          name: dependencyValues.variantName,
+          meta: {
+            createdBy: componentName,
+            subvariantsSpecified
+          },
         }
-        let subvariants = selectedVariantInfo.subvariants = [];
+
+
+        let subvariants = generatedVariantInfo.subvariants = [];
 
         for (let descendant of dependencyValues.variantDescendants) {
           if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.selectedVariantInfo)
-          } else if (descendant.stateValues.selectedVariantInfo) {
-            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
 
         }
-        return { newValues: { selectedVariantInfo } }
+        return { newValues: { generatedVariantInfo } }
 
+      }
+    }
+
+    stateVariableDefinitions.createSubmitAllButton = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "suppressAnswerSubmitButtons",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        documentWideCheckWork: {
+          dependencyType: "stateVariable",
+          variableName: "documentWideCheckWork"
+        },
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let createSubmitAllButton = false;
+        let suppressAnswerSubmitButtons = false;
+
+        if (dependencyValues.documentWideCheckWork) {
+          createSubmitAllButton = true;
+          suppressAnswerSubmitButtons = true
+        }
+
+        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
       }
     }
 
     return stateVariableDefinitions;
   }
 
+  actions = {
+    submitAllAnswers: this.submitAllAnswers.bind(this),
+  }
 
   submitAllAnswers() {
-    let answersToSubmit = [];
-    for (let answer of this.descendantsFound.answer) {
-      if (!answer.state.allAwardsJustSubmitted) {
-        answersToSubmit.push(answer);
+
+    this.coreFunctions.requestRecordEvent({
+      verb: "submitted",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: {
+        creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
-    }
-    // Set answersToSubmitCounter to the number of answers that we have to submit
-    // Each submission involves a call to an external function that has
-    // an asynchronous callBack.  The callBack will decrement the counter each
-    // time so that it can know when all answers have been submitted
-    // (i.e., the counter is back to zero)
-    // at which point the callback should do something
-    this.answersToSubmitCounter = answersToSubmit.length;
-    if (this.answersToSubmitCounter === 0) {
-      this.externalFunctions.allAnswersSubmitted();
-    } else {
-      for (let answer of answersToSubmit) {
-        answer.submitAnswer();
+
+    })
+    for (let answer of this.stateValues.answerDescendants) {
+      if (!answer.stateValues.justSubmitted) {
+        this.coreFunctions.requestAction({
+          componentName: answer.componentName,
+          actionName: "submitAnswer"
+        })
       }
     }
   }
 
-
   static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
+    descendantVariantComponents,
     allComponentClasses }) {
 
     // console.log("****Variant for document*****")
@@ -429,83 +570,66 @@ export default class Document extends BaseComponent {
 
       let nVariants = 100;
 
-      if (serializedComponent.variants.uniqueVariants) {
-        nVariants = serializedComponent.variants.numberOfVariants;
-      }
+      // if (serializedComponent.variants.uniqueVariants) {
+      //   nVariants = serializedComponent.variants.numberOfVariants;
+      // }
 
-      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(numberToLowercaseLetters);
+      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(indexToLowercaseLetters);
 
-      let variantNumber;
+      let variantIndex;
       // check if desiredVariant was specified
       let desiredVariant = serializedComponent.variants.desiredVariant;
       if (desiredVariant !== undefined) {
         if (desiredVariant.index !== undefined) {
-          let desiredVariantNumber = Number(desiredVariant.index);
-          if (!Number.isInteger(desiredVariantNumber)) {
-            throw Error("Variant number " + desiredVariant.index + " must be an integer");
+          let desiredVariantIndex = Number(desiredVariant.index);
+          if (!Number.isInteger(desiredVariantIndex)) {
+            throw Error("Variant index " + desiredVariant.index + " must be an integer");
           } else {
-            variantNumber = desiredVariantNumber % nVariants;
-            if (variantNumber < 0) {
-              variantNumber += nVariants;
+            variantIndex = desiredVariantIndex % nVariants;
+            if (variantIndex < 0) {
+              variantIndex += nVariants;
             }
           }
-        } else if (desiredVariant.value !== undefined) {
-          if (typeof desiredVariant.value === "string") {
+        } else if (desiredVariant.name !== undefined) {
+          if (typeof desiredVariant.name === "string") {
             // want case insensitive test, so convert to lower case
-            let desiredNumber = sharedParameters.allPossibleVariants.indexOf(desiredVariant.value.toLowerCase());
+            let desiredNumber = sharedParameters.allPossibleVariants.indexOf(desiredVariant.name.toLowerCase());
             if (desiredNumber !== -1) {
-              variantNumber = desiredNumber;
+              variantIndex = desiredNumber;
             }
           }
-          if (variantNumber === undefined) {
-            console.log("Variant " + desiredVariant.value + " is not valid, convert to variant index");
-            variantNumber = Math.abs(
-              sharedParameters.hashStringToInteger(
-                JSON.stringify(desiredVariant.value)
-              )
-              % nVariants
-            );
-            console.log(variantNumber);
+          if (variantIndex === undefined) {
+            throw Error("Variant name " + desiredVariant.name + " is not valid")
           }
         }
       }
 
-      if (variantNumber === undefined) {
-        // if variant number wasn't specifed, generate randomly
-        let rand = sharedParameters.selectRng();
-        variantNumber = Math.floor(rand * nVariants);
-
+      if (variantIndex === undefined) {
+        // if variant inedex wasn't specifed, use first variant
+        variantIndex = 0;
       }
 
-      let seed = variantNumber + 1;
-      let convertedSeed = sharedParameters.hashStringToInteger(
-        seed.toString()
-      );
+      let seed = (variantIndex + 1).toString();
 
-      sharedParameters.variantNumber = variantNumber;
-      sharedParameters.variant = numberToLowercaseLetters(variantNumber);
-      // console.log("Selected seed: " + seed);
-      sharedParameters.selectRng = new sharedParameters.rngClass(convertedSeed);
+      sharedParameters.variantIndex = variantIndex;
+      sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
+      sharedParameters.selectRng = new sharedParameters.rngClass(seed);
 
-
-      // save parameters to serializedComponent
-      // so can return to where left off on next pass
-      serializedComponent.variants.generatedSelectParameters = {
-        selectRng: sharedParameters.selectRng,
-        variant: sharedParameters.variant,
-        allPossibleVariants: sharedParameters.allPossibleVariants,
-      };
 
     } else {
       // get parameters from variant control child
-      sharedParameters.variant = variantControlChild.state.selectedVariant.value;
-      sharedParameters.variantNumber = variantControlChild.state.selectedVariantNumber.value;
+      sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
+      sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.selectRng = variantControlChild.state.selectRng.value;
       sharedParameters.allPossibleVariants = variantControlChild.state.variants.value;
       // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
     }
 
-    console.log("Document variant: " + sharedParameters.variant);
+    // seed rng for random numbers predictably from variant using selectRng
+    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
+    sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
+
+    // console.log("Document variant name: " + sharedParameters.variantName);
 
     // if subvariants were specified, add those to the corresponding descendants
     let desiredVariant = serializedComponent.variants.desiredVariant;
@@ -513,29 +637,27 @@ export default class Document extends BaseComponent {
       desiredVariant = {};
     }
 
-    // if subvariants aren't defined but we have uniqueVariants specified
-    // then calculate variant information for the descendant variant component
-    if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-      let variantInfo = this.getUniqueVariant({
-        serializedComponent: serializedComponent,
-        variantNumber: sharedParameters.variantNumber,
-        allComponentClasses: allComponentClasses,
-      })
-      if (variantInfo.success) {
-        Object.assign(desiredVariant, variantInfo.desiredVariant);
-      }
-    }
+    // // if subvariants aren't defined but we have uniqueVariants specified
+    // // then calculate variant information for the descendant variant component
+    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
+    //   let variantInfo = this.getUniqueVariant({
+    //     serializedComponent: serializedComponent,
+    //     variantIndex: sharedParameters.variantIndex,
+    //     allComponentClasses: allComponentClasses,
+    //   })
+    //   if (variantInfo.success) {
+    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
+    //   }
+    // }
 
-    if (desiredVariant.subvariants !== undefined) {
-      if (serializedComponent.variants.descendantVariantComponents !== undefined) {
-        for (let ind in desiredVariant.subvariants) {
-          let subvariant = desiredVariant.subvariants[ind];
-          let variantComponent = serializedComponent.variants.descendantVariantComponents[ind];
-          if (variantComponent === undefined) {
-            break;
-          }
-          variantComponent.variants.desiredVariant = subvariant;
+    if (desiredVariant.subvariants && descendantVariantComponents) {
+      for (let ind in desiredVariant.subvariants) {
+        let subvariant = desiredVariant.subvariants[ind];
+        let variantComponent = descendantVariantComponents[ind];
+        if (variantComponent === undefined) {
+          break;
         }
+        variantComponent.variants.desiredVariant = subvariant;
       }
     }
 
@@ -610,7 +732,7 @@ export default class Document extends BaseComponent {
 
   }
 
-  static getUniqueVariant({ serializedComponent, variantNumber, allComponentClasses }) {
+  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
     if (serializedComponent.variants === undefined) {
       return { succes: false }
     }
@@ -619,12 +741,12 @@ export default class Document extends BaseComponent {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantNumber) || variantNumber < 0 || variantNumber >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
       return { success: false }
     }
 
     let result = getVariantsForDescendants({
-      variantNumber: variantNumber,
+      variantIndex: variantIndex,
       serializedComponent: serializedComponent,
       allComponentClasses: allComponentClasses
     })
@@ -643,17 +765,8 @@ export default class Document extends BaseComponent {
 
 }
 
-function numberToLowercaseLetters(number) {
-  let letters = "";
-  while (true) {
-    let nextNum = number % 26;
-    letters = String.fromCharCode(97 + nextNum) + letters;
-    if (number < 26) {
-      break;
-    }
-    number = Math.floor(number / 26) - 1;
-  }
-  return letters;
+function indexToLowercaseLetters(index) {
+  return numberToLetters(index + 1, true)
 }
 
 

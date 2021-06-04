@@ -7,6 +7,6 @@ export default class Q extends DoenetRenderer {
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
       name: this.componentName
-    }), "\u201C", this.children, "\u201D");
+    }), "“", this.children, "”");
   }
 }

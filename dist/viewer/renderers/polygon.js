@@ -73,7 +73,6 @@ export default class Polygon extends DoenetRenderer {
     let polygonJXG = this.polygonJXG;
     let newPointcoords;
     function onDragBorder(i) {
-      console.log(`on drag border: ${i}`);
       newPointcoords = {};
       let border = polygonJXG.borders[i];
       for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {

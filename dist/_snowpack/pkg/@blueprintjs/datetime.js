@@ -1,10 +1,10 @@
-import { c as createCommonjsModule, a as commonjsGlobal, g as getDefaultExportFromCjs } from '../common/_commonjsHelpers-4f955397.js';
-import { r as react } from '../common/index-678ccbe9.js';
+import { c as createCommonjsModule, g as getDefaultExportFromCjs, a as commonjsGlobal } from '../common/_commonjsHelpers-f5d70792.js';
+import { r as react } from '../common/index-f66788ca.js';
 import { p as process } from '../common/process-e9e98960.js';
-import { p as propTypes } from '../common/index-ad697a84.js';
-import { g as global } from '../common/polyfill-node_global-a90d30ee.js';
-import { r as reactDom } from '../common/index-d53bc1a3.js';
-import { i as index } from '../common/ResizeObserver.es-696c4793.js';
+import { g as global } from '../common/_polyfill-node:global-acbc543a.js';
+import { p as propTypes } from '../common/index-4bda1d4e.js';
+import { r as reactDom } from '../common/index-89dd978b.js';
+import { i as index } from '../common/ResizeObserver.es-a52566ff.js';
 
 /*
  * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
@@ -85,47 +85,47 @@ var Position = {
     TOP_RIGHT: "top-right",
 };
 
-var NS$1 = process.env.BLUEPRINT_NAMESPACE || process.env.REACT_APP_BLUEPRINT_NAMESPACE || "bp3";
+var NS = process.env.BLUEPRINT_NAMESPACE || process.env.REACT_APP_BLUEPRINT_NAMESPACE || "bp3";
 // modifiers
-var ACTIVE = NS$1 + "-active";
-var ALIGN_LEFT = NS$1 + "-align-left";
-var ALIGN_RIGHT = NS$1 + "-align-right";
-var DARK = NS$1 + "-dark";
-var DISABLED = NS$1 + "-disabled";
-var FILL = NS$1 + "-fill";
-var LARGE = NS$1 + "-large";
-var LOADING = NS$1 + "-loading";
-var MINIMAL = NS$1 + "-minimal";
-var OUTLINED = NS$1 + "-outlined";
-var ROUND = NS$1 + "-round";
-var SMALL = NS$1 + "-small";
+var ACTIVE = NS + "-active";
+var ALIGN_LEFT = NS + "-align-left";
+var ALIGN_RIGHT = NS + "-align-right";
+var DARK = NS + "-dark";
+var DISABLED = NS + "-disabled";
+var FILL = NS + "-fill";
+var LARGE = NS + "-large";
+var LOADING = NS + "-loading";
+var MINIMAL = NS + "-minimal";
+var OUTLINED = NS + "-outlined";
+var ROUND = NS + "-round";
+var SMALL = NS + "-small";
 var INTENT_PRIMARY = intentClass(Intent.PRIMARY);
-intentClass(Intent.SUCCESS);
-intentClass(Intent.WARNING);
-intentClass(Intent.DANGER);
-var TEXT_OVERFLOW_ELLIPSIS = NS$1 + "-text-overflow-ellipsis";
-var HEADING = NS$1 + "-heading";
-var BUTTON = NS$1 + "-button";
+var INTENT_SUCCESS = intentClass(Intent.SUCCESS);
+var INTENT_WARNING = intentClass(Intent.WARNING);
+var INTENT_DANGER = intentClass(Intent.DANGER);
+var TEXT_OVERFLOW_ELLIPSIS = NS + "-text-overflow-ellipsis";
+var HEADING = NS + "-heading";
+var BUTTON = NS + "-button";
 var BUTTON_SPINNER = BUTTON + "-spinner";
 var BUTTON_TEXT = BUTTON + "-text";
-var DIVIDER = NS$1 + "-divider";
-var HTML_SELECT = NS$1 + "-html-select";
-var INPUT = NS$1 + "-input";
+var DIVIDER = NS + "-divider";
+var HTML_SELECT = NS + "-html-select";
+var INPUT = NS + "-input";
 var INPUT_GROUP = INPUT + "-group";
 var INPUT_LEFT_CONTAINER = INPUT + "-left-container";
 var INPUT_ACTION = INPUT + "-action";
-var MENU = NS$1 + "-menu";
+var MENU = NS + "-menu";
 var MENU_ITEM = MENU + "-item";
 var MENU_ITEM_LABEL = MENU_ITEM + "-label";
-var MENU_SUBMENU = NS$1 + "-submenu";
+var MENU_SUBMENU = NS + "-submenu";
 var MENU_DIVIDER = MENU + "-divider";
 var MENU_HEADER = MENU + "-header";
-var OVERLAY = NS$1 + "-overlay";
+var OVERLAY = NS + "-overlay";
 var OVERLAY_BACKDROP = OVERLAY + "-backdrop";
 var OVERLAY_CONTENT = OVERLAY + "-content";
 var OVERLAY_INLINE = OVERLAY + "-inline";
 var OVERLAY_OPEN = OVERLAY + "-open";
-var POPOVER = NS$1 + "-popover";
+var POPOVER = NS + "-popover";
 var POPOVER_ARROW = POPOVER + "-arrow";
 var POPOVER_BACKDROP = POPOVER + "-backdrop";
 var POPOVER_CAPTURING_DISMISS = POPOVER + "-capturing-dismiss";
@@ -135,21 +135,21 @@ var POPOVER_DISMISS_OVERRIDE = POPOVER_DISMISS + "-override";
 var POPOVER_OPEN = POPOVER + "-open";
 var POPOVER_TARGET = POPOVER + "-target";
 var POPOVER_WRAPPER = POPOVER + "-wrapper";
-var TRANSITION_CONTAINER = NS$1 + "-transition-container";
-var PORTAL = NS$1 + "-portal";
-var SPINNER = NS$1 + "-spinner";
+var TRANSITION_CONTAINER = NS + "-transition-container";
+var PORTAL = NS + "-portal";
+var SPINNER = NS + "-spinner";
 var SPINNER_ANIMATION = SPINNER + "-animation";
 var SPINNER_HEAD = SPINNER + "-head";
-var SPINNER_NO_SPIN = NS$1 + "-no-spin";
-var SPINNER_TRACK$1 = SPINNER + "-track";
-var TOOLTIP = NS$1 + "-tooltip";
-var ICON = NS$1 + "-icon";
+var SPINNER_NO_SPIN = NS + "-no-spin";
+var SPINNER_TRACK = SPINNER + "-track";
+var TOOLTIP = NS + "-tooltip";
+var ICON = NS + "-icon";
 /**
  * Returns the namespace prefix for all Blueprint CSS classes.
  * Customize this namespace at build time with the `process.env.BLUEPRINT_NAMESPACE` environment variable.
  */
 function getClassNamespace() {
-    return NS$1;
+    return NS;
 }
 /** Return CSS class for alignment. */
 function alignmentClass(alignment) {
@@ -166,13 +166,13 @@ function iconClass(iconName) {
     if (iconName == null) {
         return undefined;
     }
-    return iconName.indexOf(NS$1 + "-icon-") === 0 ? iconName : NS$1 + "-icon-" + iconName;
+    return iconName.indexOf(NS + "-icon-") === 0 ? iconName : NS + "-icon-" + iconName;
 }
 function intentClass(intent) {
     if (intent == null || intent === Intent.NONE) {
         return undefined;
     }
-    return NS$1 + "-intent-" + intent.toLowerCase();
+    return NS + "-intent-" + intent.toLowerCase();
 }
 
 /*! *****************************************************************************
@@ -259,7 +259,7 @@ function __spreadArrays() {
  */
 /** Returns whether the value is a function. Acts as a type guard. */
 // eslint-disable-next-line @typescript-eslint/ban-types
-function isFunction$2(value) {
+function isFunction(value) {
     return typeof value === "function";
 }
 
@@ -297,21 +297,22 @@ function elementIsOrContains(element, testElement) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var ns$1 = "[Blueprint]";
-var CLAMP_MIN_MAX = ns$1 + " clamp: max cannot be less than min";
-var INPUT_WARN_LEFT_ELEMENT_LEFT_ICON_MUTEX = ns$1 + " <InputGroup> leftElement and leftIcon prop are mutually exclusive, with leftElement taking priority.";
-var POPOVER_REQUIRES_TARGET = ns$1 + " <Popover> requires target prop or at least one child element.";
-var POPOVER_HAS_BACKDROP_INTERACTION = ns$1 + " <Popover hasBackdrop={true}> requires interactionKind={PopoverInteractionKind.CLICK}.";
-var POPOVER_WARN_TOO_MANY_CHILDREN = ns$1 +
+var ns = "[Blueprint]";
+var CLAMP_MIN_MAX = ns + " clamp: max cannot be less than min";
+var INPUT_WARN_LEFT_ELEMENT_LEFT_ICON_MUTEX = ns + " <InputGroup> leftElement and leftIcon prop are mutually exclusive, with leftElement taking priority.";
+var POPOVER_REQUIRES_TARGET = ns + " <Popover> requires target prop or at least one child element.";
+var POPOVER_HAS_BACKDROP_INTERACTION = ns + " <Popover hasBackdrop={true}> requires interactionKind={PopoverInteractionKind.CLICK}.";
+var POPOVER_WARN_TOO_MANY_CHILDREN = ns +
     " <Popover> supports one or two children; additional children are ignored." +
     " First child is the target, second child is the content. You may instead supply these two as props.";
-var POPOVER_WARN_DOUBLE_CONTENT = ns$1 + " <Popover> with two children ignores content prop; use either prop or children.";
-var POPOVER_WARN_DOUBLE_TARGET = ns$1 + " <Popover> with children ignores target prop; use either prop or children.";
-var POPOVER_WARN_EMPTY_CONTENT = ns$1 + " Disabling <Popover> with empty/whitespace content...";
-var POPOVER_WARN_HAS_BACKDROP_INLINE = ns$1 + " <Popover usePortal={false}> ignores hasBackdrop";
-var POPOVER_WARN_UNCONTROLLED_ONINTERACTION = ns$1 + " <Popover> onInteraction is ignored when uncontrolled.";
-var PORTAL_CONTEXT_CLASS_NAME_STRING = ns$1 + " <Portal> context blueprintPortalClassName must be string";
-var SPINNER_WARN_CLASSES_SIZE = ns$1 + " <Spinner> Classes.SMALL/LARGE are ignored if size prop is set.";
+var POPOVER_WARN_DOUBLE_CONTENT = ns + " <Popover> with two children ignores content prop; use either prop or children.";
+var POPOVER_WARN_DOUBLE_TARGET = ns + " <Popover> with children ignores target prop; use either prop or children.";
+var POPOVER_WARN_EMPTY_CONTENT = ns + " Disabling <Popover> with empty/whitespace content...";
+var POPOVER_WARN_HAS_BACKDROP_INLINE = ns + " <Popover usePortal={false}> ignores hasBackdrop";
+var POPOVER_WARN_PLACEMENT_AND_POSITION_MUTEX = ns + " <Popover> supports either placement or position prop, not both.";
+var POPOVER_WARN_UNCONTROLLED_ONINTERACTION = ns + " <Popover> onInteraction is ignored when uncontrolled.";
+var PORTAL_CONTEXT_CLASS_NAME_STRING = ns + " <Portal> context blueprintPortalClassName must be string";
+var SPINNER_WARN_CLASSES_SIZE = ns + " <Spinner> Classes.SMALL/LARGE are ignored if size prop is set.";
 
 /** Returns whether `"production"` exists and equals `env`. */
 function isNodeEnv(env) {
@@ -411,6 +412,8 @@ function isElementOfType(element, ComponentType) {
 }
 /**
  * Returns React.createRef if it's available, or a ref-like object if not.
+ *
+ * @deprecated use React.createRef or React.useRef
  */
 function createReactRef() {
     return typeof react.createRef !== "undefined" ? react.createRef() : { current: null };
@@ -432,28 +435,32 @@ function createReactRef() {
  * limitations under the License.
  */
 function isRefObject(value) {
-    return value != null && typeof value.current !== "undefined";
+    return value != null && typeof value !== "function";
 }
 function isRefCallback(value) {
     return typeof value === "function";
 }
-function getRef(ref) {
-    var _a;
-    if (ref === null) {
-        return null;
+/**
+ * Assign the given ref to a target, either a React ref object or a callback which takes the ref as its first argument.
+ */
+function setRef(refTarget, ref) {
+    if (isRefObject(refTarget)) {
+        refTarget.current = ref;
     }
-    return (_a = ref.current) !== null && _a !== void 0 ? _a : ref;
+    else if (isRefCallback(refTarget)) {
+        refTarget(ref);
+    }
 }
+/**
+ * Creates a ref handler which assigns the ref returned by React for a mounted component to a field on the target object.
+ * The target object is usually a component class.
+ *
+ * If provided, it will also update the given `refProp` with the value of the ref.
+ */
 function refHandler(refTargetParent, refTargetKey, refProp) {
-    if (isRefObject(refProp)) {
-        refTargetParent[refTargetKey] = refProp;
-        return refProp;
-    }
     return function (ref) {
         refTargetParent[refTargetKey] = ref;
-        if (isRefCallback(refProp)) {
-            refProp(ref);
-        }
+        setRef(refProp, ref);
     };
 }
 
@@ -659,7 +666,7 @@ function isKeyboardClick(keyCode) {
 
 var classnames = createCommonjsModule(function (module) {
 /*!
-  Copyright (c) 2017 Jed Watson.
+  Copyright (c) 2018 Jed Watson.
   Licensed under the MIT License (MIT), see
   http://jedwatson.github.io/classnames
 */
@@ -669,7 +676,7 @@ var classnames = createCommonjsModule(function (module) {
 
 	var hasOwn = {}.hasOwnProperty;
 
-	function classNames () {
+	function classNames() {
 		var classes = [];
 
 		for (var i = 0; i < arguments.length; i++) {
@@ -680,16 +687,22 @@ var classnames = createCommonjsModule(function (module) {
 
 			if (argType === 'string' || argType === 'number') {
 				classes.push(arg);
-			} else if (Array.isArray(arg) && arg.length) {
-				var inner = classNames.apply(null, arg);
-				if (inner) {
-					classes.push(inner);
+			} else if (Array.isArray(arg)) {
+				if (arg.length) {
+					var inner = classNames.apply(null, arg);
+					if (inner) {
+						classes.push(inner);
+					}
 				}
 			} else if (argType === 'object') {
-				for (var key in arg) {
-					if (hasOwn.call(arg, key) && arg[key]) {
-						classes.push(key);
+				if (arg.toString === Object.prototype.toString) {
+					for (var key in arg) {
+						if (hasOwn.call(arg, key) && arg[key]) {
+							classes.push(key);
+						}
 					}
+				} else {
+					classes.push(arg.toString());
 				}
 			}
 		}
@@ -697,7 +710,7 @@ var classnames = createCommonjsModule(function (module) {
 		return classes.join(' ');
 	}
 
-	if (module.exports) {
+	if ( module.exports) {
 		classNames.default = classNames;
 		module.exports = classNames;
 	} else {
@@ -755,7 +768,7 @@ componentWillMount.__suppressDeprecationWarning = true;
 componentWillReceiveProps.__suppressDeprecationWarning = true;
 componentWillUpdate.__suppressDeprecationWarning = true;
 
-function polyfill$3(Component) {
+function polyfill(Component) {
   var prototype = Component.prototype;
 
   if (!prototype || !prototype.isReactComponent) {
@@ -865,9 +878,10 @@ function polyfill$3(Component) {
 
 var reactLifecyclesCompat_es = /*#__PURE__*/Object.freeze({
     __proto__: null,
-    polyfill: polyfill$3
+    polyfill: polyfill
 });
 
+var objectWithoutPropertiesLoose = createCommonjsModule(function (module) {
 function _objectWithoutPropertiesLoose(source, excluded) {
   if (source == null) return {};
   var target = {};
@@ -883,7 +897,11 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   return target;
 }
 
-var objectWithoutPropertiesLoose = _objectWithoutPropertiesLoose;
+module.exports = _objectWithoutPropertiesLoose;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+});
+
+var _objectWithoutPropertiesLoose = /*@__PURE__*/getDefaultExportFromCjs(objectWithoutPropertiesLoose);
 
 var _extends_1 = createCommonjsModule(function (module) {
 function _extends() {
@@ -901,21 +919,15 @@ function _extends() {
     return target;
   };
 
+  module.exports["default"] = module.exports, module.exports.__esModule = true;
   return _extends.apply(this, arguments);
 }
 
 module.exports = _extends;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
 });
 
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-var assertThisInitialized = _assertThisInitialized;
+var _extends = /*@__PURE__*/getDefaultExportFromCjs(_extends_1);
 
 var setPrototypeOf = createCommonjsModule(function (module) {
 function _setPrototypeOf(o, p) {
@@ -924,20 +936,43 @@ function _setPrototypeOf(o, p) {
     return o;
   };
 
+  module.exports["default"] = module.exports, module.exports.__esModule = true;
   return _setPrototypeOf(o, p);
 }
 
 module.exports = _setPrototypeOf;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
 });
 
+var inheritsLoose = createCommonjsModule(function (module) {
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
   subClass.prototype.constructor = subClass;
   setPrototypeOf(subClass, superClass);
 }
 
-var inheritsLoose = _inheritsLoose;
+module.exports = _inheritsLoose;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+});
 
+var _inheritsLoose = /*@__PURE__*/getDefaultExportFromCjs(inheritsLoose);
+
+var assertThisInitialized = createCommonjsModule(function (module) {
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+module.exports = _assertThisInitialized;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+});
+
+var _assertThisInitialized = /*@__PURE__*/getDefaultExportFromCjs(assertThisInitialized);
+
+var defineProperty = createCommonjsModule(function (module) {
 function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
@@ -953,12 +988,16 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-var defineProperty$3 = _defineProperty;
+module.exports = _defineProperty;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
+});
 
-var toStr$4 = Object.prototype.toString;
+var _defineProperty = /*@__PURE__*/getDefaultExportFromCjs(defineProperty);
 
-var isArguments$1 = function isArguments(value) {
-	var str = toStr$4.call(value);
+var toStr = Object.prototype.toString;
+
+var isArguments = function isArguments(value) {
+	var str = toStr.call(value);
 	var isArgs = str === '[object Arguments]';
 	if (!isArgs) {
 		isArgs = str !== '[object Array]' &&
@@ -966,17 +1005,17 @@ var isArguments$1 = function isArguments(value) {
 			typeof value === 'object' &&
 			typeof value.length === 'number' &&
 			value.length >= 0 &&
-			toStr$4.call(value.callee) === '[object Function]';
+			toStr.call(value.callee) === '[object Function]';
 	}
 	return isArgs;
 };
 
-var keysShim$1;
+var keysShim;
 if (!Object.keys) {
 	// modified from https://github.com/es-shims/es5-shim
-	var has$1 = Object.prototype.hasOwnProperty;
-	var toStr$3 = Object.prototype.toString;
-	var isArgs = isArguments$1; // eslint-disable-line global-require
+	var has = Object.prototype.hasOwnProperty;
+	var toStr$1 = Object.prototype.toString;
+	var isArgs = isArguments; // eslint-disable-line global-require
 	var isEnumerable = Object.prototype.propertyIsEnumerable;
 	var hasDontEnumBug = !isEnumerable.call({ toString: null }, 'toString');
 	var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
@@ -1023,7 +1062,7 @@ if (!Object.keys) {
 		if (typeof window === 'undefined') { return false; }
 		for (var k in window) {
 			try {
-				if (!excludedKeys['$' + k] && has$1.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
+				if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
 					try {
 						equalsConstructorPrototype(window[k]);
 					} catch (e) {
@@ -1048,11 +1087,11 @@ if (!Object.keys) {
 		}
 	};
 
-	keysShim$1 = function keys(object) {
+	keysShim = function keys(object) {
 		var isObject = object !== null && typeof object === 'object';
-		var isFunction = toStr$3.call(object) === '[object Function]';
+		var isFunction = toStr$1.call(object) === '[object Function]';
 		var isArguments = isArgs(object);
-		var isString = isObject && toStr$3.call(object) === '[object String]';
+		var isString = isObject && toStr$1.call(object) === '[object String]';
 		var theKeys = [];
 
 		if (!isObject && !isFunction && !isArguments) {
@@ -1060,7 +1099,7 @@ if (!Object.keys) {
 		}
 
 		var skipProto = hasProtoEnumBug && isFunction;
-		if (isString && object.length > 0 && !has$1.call(object, 0)) {
+		if (isString && object.length > 0 && !has.call(object, 0)) {
 			for (var i = 0; i < object.length; ++i) {
 				theKeys.push(String(i));
 			}
@@ -1072,7 +1111,7 @@ if (!Object.keys) {
 			}
 		} else {
 			for (var name in object) {
-				if (!(skipProto && name === 'prototype') && has$1.call(object, name)) {
+				if (!(skipProto && name === 'prototype') && has.call(object, name)) {
 					theKeys.push(String(name));
 				}
 			}
@@ -1082,7 +1121,7 @@ if (!Object.keys) {
 			var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
 
 			for (var k = 0; k < dontEnums.length; ++k) {
-				if (!(skipConstructor && dontEnums[k] === 'constructor') && has$1.call(object, dontEnums[k])) {
+				if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
 					theKeys.push(dontEnums[k]);
 				}
 			}
@@ -1090,17 +1129,17 @@ if (!Object.keys) {
 		return theKeys;
 	};
 }
-var implementation$4 = keysShim$1;
+var implementation = keysShim;
 
-var slice$1 = Array.prototype.slice;
+var slice = Array.prototype.slice;
 
 
 var origKeys = Object.keys;
-var keysShim = origKeys ? function keys(o) { return origKeys(o); } : implementation$4;
+var keysShim$1 = origKeys ? function keys(o) { return origKeys(o); } : implementation;
 
 var originalKeys = Object.keys;
 
-keysShim.shim = function shimObjectKeys() {
+keysShim$1.shim = function shimObjectKeys() {
 	if (Object.keys) {
 		var keysWorksWithArguments = (function () {
 			// Safari 5.0 bug
@@ -1109,19 +1148,19 @@ keysShim.shim = function shimObjectKeys() {
 		}(1, 2));
 		if (!keysWorksWithArguments) {
 			Object.keys = function keys(object) { // eslint-disable-line func-name-matching
-				if (isArguments$1(object)) {
-					return originalKeys(slice$1.call(object));
+				if (isArguments(object)) {
+					return originalKeys(slice.call(object));
 				}
 				return originalKeys(object);
 			};
 		}
 	} else {
-		Object.keys = keysShim;
+		Object.keys = keysShim$1;
 	}
-	return Object.keys || keysShim;
+	return Object.keys || keysShim$1;
 };
 
-var objectKeys = keysShim;
+var objectKeys = keysShim$1;
 
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
 var shams = function hasSymbols() {
@@ -1146,7 +1185,7 @@ var shams = function hasSymbols() {
 
 	var symVal = 42;
 	obj[sym] = symVal;
-	for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax
+	for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax, no-unreachable-loop
 	if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
 
 	if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
@@ -1164,10 +1203,10 @@ var shams = function hasSymbols() {
 	return true;
 };
 
-var origSymbol = commonjsGlobal.Symbol;
+var origSymbol = typeof Symbol !== 'undefined' && Symbol;
 
 
-var hasSymbols$3 = function hasNativeSymbols() {
+var hasSymbols = function hasNativeSymbols() {
 	if (typeof origSymbol !== 'function') { return false; }
 	if (typeof Symbol !== 'function') { return false; }
 	if (typeof origSymbol('foo') !== 'symbol') { return false; }
@@ -1179,23 +1218,23 @@ var hasSymbols$3 = function hasNativeSymbols() {
 /* eslint no-invalid-this: 1 */
 
 var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
-var slice = Array.prototype.slice;
+var slice$1 = Array.prototype.slice;
 var toStr$2 = Object.prototype.toString;
 var funcType = '[object Function]';
 
-var implementation$3 = function bind(that) {
+var implementation$1 = function bind(that) {
     var target = this;
     if (typeof target !== 'function' || toStr$2.call(target) !== funcType) {
         throw new TypeError(ERROR_MESSAGE + target);
     }
-    var args = slice.call(arguments, 1);
+    var args = slice$1.call(arguments, 1);
 
     var bound;
     var binder = function () {
         if (this instanceof bound) {
             var result = target.apply(
                 this,
-                args.concat(slice.call(arguments))
+                args.concat(slice$1.call(arguments))
             );
             if (Object(result) === result) {
                 return result;
@@ -1204,7 +1243,7 @@ var implementation$3 = function bind(that) {
         } else {
             return target.apply(
                 that,
-                args.concat(slice.call(arguments))
+                args.concat(slice$1.call(arguments))
             );
         }
     };
@@ -1227,7 +1266,7 @@ var implementation$3 = function bind(that) {
     return bound;
 };
 
-var functionBind = Function.prototype.bind || implementation$3;
+var functionBind = Function.prototype.bind || implementation$1;
 
 var src = functionBind.call(Function.call, Object.prototype.hasOwnProperty);
 
@@ -1235,7 +1274,7 @@ var undefined$1;
 
 var $SyntaxError = SyntaxError;
 var $Function = Function;
-var $TypeError$2 = TypeError;
+var $TypeError = TypeError;
 
 // eslint-disable-next-line consistent-return
 var getEvalledConstructor = function (expressionSyntax) {
@@ -1244,19 +1283,19 @@ var getEvalledConstructor = function (expressionSyntax) {
 	} catch (e) {}
 };
 
-var $gOPD$1 = Object.getOwnPropertyDescriptor;
-if ($gOPD$1) {
+var $gOPD = Object.getOwnPropertyDescriptor;
+if ($gOPD) {
 	try {
-		$gOPD$1({}, '');
+		$gOPD({}, '');
 	} catch (e) {
-		$gOPD$1 = null; // this is IE 8, which has a broken gOPD
+		$gOPD = null; // this is IE 8, which has a broken gOPD
 	}
 }
 
 var throwTypeError = function () {
-	throw new $TypeError$2();
+	throw new $TypeError();
 };
-var ThrowTypeError = $gOPD$1
+var ThrowTypeError = $gOPD
 	? (function () {
 		try {
 			// eslint-disable-next-line no-unused-expressions, no-caller, no-restricted-properties
@@ -1265,7 +1304,7 @@ var ThrowTypeError = $gOPD$1
 		} catch (calleeThrows) {
 			try {
 				// IE 8 throws on Object.getOwnPropertyDescriptor(arguments, '')
-				return $gOPD$1(arguments, 'callee').get;
+				return $gOPD(arguments, 'callee').get;
 			} catch (gOPDthrows) {
 				return throwTypeError;
 			}
@@ -1273,19 +1312,19 @@ var ThrowTypeError = $gOPD$1
 	}())
 	: throwTypeError;
 
-var hasSymbols$2 = hasSymbols$3();
+var hasSymbols$1 = hasSymbols();
 
-var getProto$1 = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
+var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
 
 var needsEval = {};
 
-var TypedArray = typeof Uint8Array === 'undefined' ? undefined$1 : getProto$1(Uint8Array);
+var TypedArray = typeof Uint8Array === 'undefined' ? undefined$1 : getProto(Uint8Array);
 
 var INTRINSICS = {
 	'%AggregateError%': typeof AggregateError === 'undefined' ? undefined$1 : AggregateError,
 	'%Array%': Array,
 	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined$1 : ArrayBuffer,
-	'%ArrayIteratorPrototype%': hasSymbols$2 ? getProto$1([][Symbol.iterator]()) : undefined$1,
+	'%ArrayIteratorPrototype%': hasSymbols$1 ? getProto([][Symbol.iterator]()) : undefined$1,
 	'%AsyncFromSyncIteratorPrototype%': undefined$1,
 	'%AsyncFunction%': needsEval,
 	'%AsyncGenerator%': needsEval,
@@ -1313,10 +1352,10 @@ var INTRINSICS = {
 	'%Int32Array%': typeof Int32Array === 'undefined' ? undefined$1 : Int32Array,
 	'%isFinite%': isFinite,
 	'%isNaN%': isNaN,
-	'%IteratorPrototype%': hasSymbols$2 ? getProto$1(getProto$1([][Symbol.iterator]())) : undefined$1,
+	'%IteratorPrototype%': hasSymbols$1 ? getProto(getProto([][Symbol.iterator]())) : undefined$1,
 	'%JSON%': typeof JSON === 'object' ? JSON : undefined$1,
 	'%Map%': typeof Map === 'undefined' ? undefined$1 : Map,
-	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$2 ? undefined$1 : getProto$1(new Map()[Symbol.iterator]()),
+	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Map()[Symbol.iterator]()),
 	'%Math%': Math,
 	'%Number%': Number,
 	'%Object%': Object,
@@ -1329,15 +1368,15 @@ var INTRINSICS = {
 	'%Reflect%': typeof Reflect === 'undefined' ? undefined$1 : Reflect,
 	'%RegExp%': RegExp,
 	'%Set%': typeof Set === 'undefined' ? undefined$1 : Set,
-	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$2 ? undefined$1 : getProto$1(new Set()[Symbol.iterator]()),
+	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols$1 ? undefined$1 : getProto(new Set()[Symbol.iterator]()),
 	'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined$1 : SharedArrayBuffer,
 	'%String%': String,
-	'%StringIteratorPrototype%': hasSymbols$2 ? getProto$1(''[Symbol.iterator]()) : undefined$1,
-	'%Symbol%': hasSymbols$2 ? Symbol : undefined$1,
+	'%StringIteratorPrototype%': hasSymbols$1 ? getProto(''[Symbol.iterator]()) : undefined$1,
+	'%Symbol%': hasSymbols$1 ? Symbol : undefined$1,
 	'%SyntaxError%': $SyntaxError,
 	'%ThrowTypeError%': ThrowTypeError,
 	'%TypedArray%': TypedArray,
-	'%TypeError%': $TypeError$2,
+	'%TypeError%': $TypeError,
 	'%Uint8Array%': typeof Uint8Array === 'undefined' ? undefined$1 : Uint8Array,
 	'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined$1 : Uint8ClampedArray,
 	'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined$1 : Uint16Array,
@@ -1364,7 +1403,7 @@ var doEval = function doEval(name) {
 	} else if (name === '%AsyncIteratorPrototype%') {
 		var gen = doEval('%AsyncGenerator%');
 		if (gen) {
-			value = getProto$1(gen.prototype);
+			value = getProto(gen.prototype);
 		}
 	}
 
@@ -1467,7 +1506,7 @@ var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
 			value = doEval(intrinsicName);
 		}
 		if (typeof value === 'undefined' && !allowMissing) {
-			throw new $TypeError$2('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
+			throw new $TypeError('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
 		}
 
 		return {
@@ -1482,10 +1521,10 @@ var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
 
 var getIntrinsic = function GetIntrinsic(name, allowMissing) {
 	if (typeof name !== 'string' || name.length === 0) {
-		throw new $TypeError$2('intrinsic name must be a non-empty string');
+		throw new $TypeError('intrinsic name must be a non-empty string');
 	}
 	if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
-		throw new $TypeError$2('"allowMissing" argument must be a boolean');
+		throw new $TypeError('"allowMissing" argument must be a boolean');
 	}
 
 	var parts = stringToPath(name);
@@ -1527,12 +1566,12 @@ var getIntrinsic = function GetIntrinsic(name, allowMissing) {
 		} else if (value != null) {
 			if (!(part in value)) {
 				if (!allowMissing) {
-					throw new $TypeError$2('base intrinsic for ' + name + ' exists, but the property is not available.');
+					throw new $TypeError('base intrinsic for ' + name + ' exists, but the property is not available.');
 				}
 				return void undefined$1;
 			}
-			if ($gOPD$1 && (i + 1) >= parts.length) {
-				var desc = $gOPD$1(value, part);
+			if ($gOPD && (i + 1) >= parts.length) {
+				var desc = $gOPD(value, part);
 				isOwn = !!desc;
 
 				// By convention, when a data property is converted to an accessor
@@ -1619,16 +1658,16 @@ var callBound = function callBoundIntrinsic(name, allowMissing) {
 	return intrinsic;
 };
 
-var hasToStringTag$2 = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
 
 
-var $toString$1 = callBound('Object.prototype.toString');
+var $toString = callBound('Object.prototype.toString');
 
 var isStandardArguments = function isArguments(value) {
-	if (hasToStringTag$2 && value && typeof value === 'object' && Symbol.toStringTag in value) {
+	if (hasToStringTag && value && typeof value === 'object' && Symbol.toStringTag in value) {
 		return false;
 	}
-	return $toString$1(value) === '[object Arguments]';
+	return $toString(value) === '[object Arguments]';
 };
 
 var isLegacyArguments = function isArguments(value) {
@@ -1639,8 +1678,8 @@ var isLegacyArguments = function isArguments(value) {
 		typeof value === 'object' &&
 		typeof value.length === 'number' &&
 		value.length >= 0 &&
-		$toString$1(value) !== '[object Array]' &&
-		$toString$1(value.callee) === '[object Function]';
+		$toString(value) !== '[object Array]' &&
+		$toString(value.callee) === '[object Function]';
 };
 
 var supportsStandardArguments = (function () {
@@ -1649,16 +1688,16 @@ var supportsStandardArguments = (function () {
 
 isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
-var isArguments = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
+var isArguments$1 = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-var hasSymbols$1 = typeof Symbol === 'function' && typeof Symbol('foo') === 'symbol';
+var hasSymbols$2 = typeof Symbol === 'function' && typeof Symbol('foo') === 'symbol';
 
-var toStr$1 = Object.prototype.toString;
+var toStr$3 = Object.prototype.toString;
 var concat = Array.prototype.concat;
 var origDefineProperty = Object.defineProperty;
 
 var isFunction$1 = function (fn) {
-	return typeof fn === 'function' && toStr$1.call(fn) === '[object Function]';
+	return typeof fn === 'function' && toStr$3.call(fn) === '[object Function]';
 };
 
 var arePropertyDescriptorsSupported = function () {
@@ -1674,13 +1713,13 @@ var arePropertyDescriptorsSupported = function () {
 		return false;
 	}
 };
-var supportsDescriptors$2 = origDefineProperty && arePropertyDescriptorsSupported();
+var supportsDescriptors = origDefineProperty && arePropertyDescriptorsSupported();
 
-var defineProperty$2 = function (object, name, value, predicate) {
+var defineProperty$1 = function (object, name, value, predicate) {
 	if (name in object && (!isFunction$1(predicate) || !predicate())) {
 		return;
 	}
-	if (supportsDescriptors$2) {
+	if (supportsDescriptors) {
 		origDefineProperty(object, name, {
 			configurable: true,
 			enumerable: false,
@@ -1695,15 +1734,15 @@ var defineProperty$2 = function (object, name, value, predicate) {
 var defineProperties = function (object, map) {
 	var predicates = arguments.length > 2 ? arguments[2] : {};
 	var props = objectKeys(map);
-	if (hasSymbols$1) {
+	if (hasSymbols$2) {
 		props = concat.call(props, Object.getOwnPropertySymbols(map));
 	}
 	for (var i = 0; i < props.length; i += 1) {
-		defineProperty$2(object, props[i], map[props[i]], predicates[props[i]]);
+		defineProperty$1(object, props[i], map[props[i]], predicates[props[i]]);
 	}
 };
 
-defineProperties.supportsDescriptors = !!supportsDescriptors$2;
+defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 var defineProperties_1 = defineProperties;
 
@@ -1724,12 +1763,12 @@ var implementation$2 = function is(a, b) {
 	return false;
 };
 
-var polyfill$2 = function getPolyfill() {
+var polyfill$1 = function getPolyfill() {
 	return typeof Object.is === 'function' ? Object.is : implementation$2;
 };
 
-var shim$1 = function shimObjectIs() {
-	var polyfill = polyfill$2();
+var shim = function shimObjectIs() {
+	var polyfill = polyfill$1();
 	defineProperties_1(Object, { is: polyfill }, {
 		is: function testObjectIs() {
 			return Object.is !== polyfill;
@@ -1738,25 +1777,25 @@ var shim$1 = function shimObjectIs() {
 	return polyfill;
 };
 
-var polyfill$1 = callBind(polyfill$2(), Object);
+var polyfill$2 = callBind(polyfill$1(), Object);
 
-defineProperties_1(polyfill$1, {
-	getPolyfill: polyfill$2,
+defineProperties_1(polyfill$2, {
+	getPolyfill: polyfill$1,
 	implementation: implementation$2,
-	shim: shim$1
+	shim: shim
 });
 
-var objectIs = polyfill$1;
+var objectIs = polyfill$2;
 
-var hasSymbols = hasSymbols$3();
-var hasToStringTag$1 = hasSymbols && typeof Symbol.toStringTag === 'symbol';
-var has;
+var hasSymbols$3 = hasSymbols();
+var hasToStringTag$1 = hasSymbols$3 && typeof Symbol.toStringTag === 'symbol';
+var has$1;
 var $exec;
 var isRegexMarker;
 var badStringifier;
 
 if (hasToStringTag$1) {
-	has = callBound('Object.prototype.hasOwnProperty');
+	has$1 = callBound('Object.prototype.hasOwnProperty');
 	$exec = callBound('RegExp.prototype.exec');
 	isRegexMarker = {};
 
@@ -1773,8 +1812,8 @@ if (hasToStringTag$1) {
 	}
 }
 
-var $toString = callBound('Object.prototype.toString');
-var gOPD$1 = Object.getOwnPropertyDescriptor;
+var $toString$1 = callBound('Object.prototype.toString');
+var gOPD = Object.getOwnPropertyDescriptor;
 var regexClass = '[object RegExp]';
 
 var isRegex = hasToStringTag$1
@@ -1784,8 +1823,8 @@ var isRegex = hasToStringTag$1
 			return false;
 		}
 
-		var descriptor = gOPD$1(value, 'lastIndex');
-		var hasLastIndexDataProperty = descriptor && has(descriptor, 'value');
+		var descriptor = gOPD(value, 'lastIndex');
+		var hasLastIndexDataProperty = descriptor && has$1(descriptor, 'value');
 		if (!hasLastIndexDataProperty) {
 			return false;
 		}
@@ -1802,13 +1841,13 @@ var isRegex = hasToStringTag$1
 			return false;
 		}
 
-		return $toString(value) === regexClass;
+		return $toString$1(value) === regexClass;
 	};
 
 var $Object = Object;
 var $TypeError$1 = TypeError;
 
-var implementation$1 = function flags() {
+var implementation$3 = function flags() {
 	if (this != null && this !== $Object(this)) {
 		throw new $TypeError$1('RegExp.prototype.flags getter called on non-object');
 	}
@@ -1835,53 +1874,53 @@ var implementation$1 = function flags() {
 };
 
 var supportsDescriptors$1 = defineProperties_1.supportsDescriptors;
-var $gOPD = Object.getOwnPropertyDescriptor;
-var $TypeError = TypeError;
+var $gOPD$1 = Object.getOwnPropertyDescriptor;
+var $TypeError$2 = TypeError;
 
-var polyfill = function getPolyfill() {
+var polyfill$3 = function getPolyfill() {
 	if (!supportsDescriptors$1) {
-		throw new $TypeError('RegExp.prototype.flags requires a true ES5 environment that supports property descriptors');
+		throw new $TypeError$2('RegExp.prototype.flags requires a true ES5 environment that supports property descriptors');
 	}
 	if ((/a/mig).flags === 'gim') {
-		var descriptor = $gOPD(RegExp.prototype, 'flags');
+		var descriptor = $gOPD$1(RegExp.prototype, 'flags');
 		if (descriptor && typeof descriptor.get === 'function' && typeof (/a/).dotAll === 'boolean') {
 			return descriptor.get;
 		}
 	}
-	return implementation$1;
+	return implementation$3;
 };
 
-var supportsDescriptors = defineProperties_1.supportsDescriptors;
+var supportsDescriptors$2 = defineProperties_1.supportsDescriptors;
 
-var gOPD = Object.getOwnPropertyDescriptor;
-var defineProperty$1 = Object.defineProperty;
+var gOPD$1 = Object.getOwnPropertyDescriptor;
+var defineProperty$2 = Object.defineProperty;
 var TypeErr = TypeError;
-var getProto = Object.getPrototypeOf;
+var getProto$1 = Object.getPrototypeOf;
 var regex = /a/;
 
-var shim = function shimFlags() {
-	if (!supportsDescriptors || !getProto) {
+var shim$1 = function shimFlags() {
+	if (!supportsDescriptors$2 || !getProto$1) {
 		throw new TypeErr('RegExp.prototype.flags requires a true ES5 environment that supports property descriptors');
 	}
-	var polyfill$1 = polyfill();
-	var proto = getProto(regex);
-	var descriptor = gOPD(proto, 'flags');
-	if (!descriptor || descriptor.get !== polyfill$1) {
-		defineProperty$1(proto, 'flags', {
+	var polyfill = polyfill$3();
+	var proto = getProto$1(regex);
+	var descriptor = gOPD$1(proto, 'flags');
+	if (!descriptor || descriptor.get !== polyfill) {
+		defineProperty$2(proto, 'flags', {
 			configurable: true,
 			enumerable: false,
-			get: polyfill$1
+			get: polyfill
 		});
 	}
-	return polyfill$1;
+	return polyfill;
 };
 
-var flagsBound = callBind(implementation$1);
+var flagsBound = callBind(implementation$3);
 
 defineProperties_1(flagsBound, {
-	getPolyfill: polyfill,
-	implementation: implementation$1,
-	shim: shim
+	getPolyfill: polyfill$3,
+	implementation: implementation$3,
+	shim: shim$1
 });
 
 var regexp_prototype_flags = flagsBound;
@@ -1896,15 +1935,15 @@ var tryDateObject = function tryDateGetDayCall(value) {
 	}
 };
 
-var toStr = Object.prototype.toString;
+var toStr$4 = Object.prototype.toString;
 var dateClass = '[object Date]';
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag$2 = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
 
 var isDateObject = function isDateObject(value) {
 	if (typeof value !== 'object' || value === null) {
 		return false;
 	}
-	return hasToStringTag ? tryDateObject(value) : toStr.call(value) === dateClass;
+	return hasToStringTag$2 ? tryDateObject(value) : toStr$4.call(value) === dateClass;
 };
 
 var getTime = Date.prototype.getTime;
@@ -1960,7 +1999,7 @@ function objEquiv(a, b, opts) {
   // an identical 'prototype' property.
   if (a.prototype !== b.prototype) { return false; }
 
-  if (isArguments(a) !== isArguments(b)) { return false; }
+  if (isArguments$1(a) !== isArguments$1(b)) { return false; }
 
   var aIsRegex = isRegex(a);
   var bIsRegex = isRegex(b);
@@ -2096,7 +2135,7 @@ var debounce = supportsMicroTasks ? microtaskDebounce : taskDebounce;
  * @argument {Any} functionToCheck - variable to check
  * @returns {Boolean} answer to: is a function?
  */
-function isFunction(functionToCheck) {
+function isFunction$2(functionToCheck) {
   var getType = {};
   return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
@@ -2407,7 +2446,7 @@ var createClass = function () {
 
 
 
-var defineProperty = function (obj, key, value) {
+var defineProperty$3 = function (obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value: value,
@@ -2422,7 +2461,7 @@ var defineProperty = function (obj, key, value) {
   return obj;
 };
 
-var _extends = Object.assign || function (target) {
+var _extends$1 = Object.assign || function (target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i];
 
@@ -2444,7 +2483,7 @@ var _extends = Object.assign || function (target) {
  * @returns {Object} ClientRect like output
  */
 function getClientRect(offsets) {
-  return _extends({}, offsets, {
+  return _extends$1({}, offsets, {
     right: offsets.left + offsets.width,
     bottom: offsets.top + offsets.height
   });
@@ -2732,7 +2771,7 @@ function computeAutoPlacement(placement, refRect, popper, reference, boundariesE
   };
 
   var sortedAreas = Object.keys(rects).map(function (key) {
-    return _extends({
+    return _extends$1({
       key: key
     }, rects[key], {
       area: getArea(rects[key])
@@ -2905,7 +2944,7 @@ function runModifiers(modifiers, data, ends) {
       console.warn('`modifier.function` is deprecated, use `modifier.fn`!');
     }
     var fn = modifier['function'] || modifier.fn; // eslint-disable-line dot-notation
-    if (modifier.enabled && isFunction(fn)) {
+    if (modifier.enabled && isFunction$2(fn)) {
       // Add properties to offsets to make them a complete clientRect object
       // we do this before each modifier to make sure the previous one doesn't
       // mess with these values
@@ -3374,9 +3413,9 @@ function computeStyle(data, options) {
   };
 
   // Update `data` attributes, styles and arrowStyles
-  data.attributes = _extends({}, attributes, data.attributes);
-  data.styles = _extends({}, styles, data.styles);
-  data.arrowStyles = _extends({}, data.offsets.arrow, data.arrowStyles);
+  data.attributes = _extends$1({}, attributes, data.attributes);
+  data.styles = _extends$1({}, styles, data.styles);
+  data.arrowStyles = _extends$1({}, data.offsets.arrow, data.arrowStyles);
 
   return data;
 }
@@ -3486,7 +3525,7 @@ function arrow(data, options) {
   sideValue = Math.max(Math.min(popper[len] - arrowElementSize, sideValue), 0);
 
   data.arrowElement = arrowElement;
-  data.offsets.arrow = (_data$offsets$arrow = {}, defineProperty(_data$offsets$arrow, side, Math.round(sideValue)), defineProperty(_data$offsets$arrow, altSide, ''), _data$offsets$arrow);
+  data.offsets.arrow = (_data$offsets$arrow = {}, defineProperty$3(_data$offsets$arrow, side, Math.round(sideValue)), defineProperty$3(_data$offsets$arrow, altSide, ''), _data$offsets$arrow);
 
   return data;
 }
@@ -3656,7 +3695,7 @@ function flip(data, options) {
 
       // this object contains `position`, we want to preserve it along with
       // any additional property we may add in the future
-      data.offsets.popper = _extends({}, data.offsets.popper, getPopperOffsets(data.instance.popper, data.offsets.reference, data.placement));
+      data.offsets.popper = _extends$1({}, data.offsets.popper, getPopperOffsets(data.instance.popper, data.offsets.reference, data.placement));
 
       data = runModifiers(data.instance.modifiers, data, 'flip');
     }
@@ -3916,7 +3955,7 @@ function preventOverflow(data, options) {
       if (popper[placement] < boundaries[placement] && !options.escapeWithReference) {
         value = Math.max(popper[placement], boundaries[placement]);
       }
-      return defineProperty({}, placement, value);
+      return defineProperty$3({}, placement, value);
     },
     secondary: function secondary(placement) {
       var mainSide = placement === 'right' ? 'left' : 'top';
@@ -3924,13 +3963,13 @@ function preventOverflow(data, options) {
       if (popper[placement] > boundaries[placement] && !options.escapeWithReference) {
         value = Math.min(popper[mainSide], boundaries[placement] - (placement === 'right' ? popper.width : popper.height));
       }
-      return defineProperty({}, mainSide, value);
+      return defineProperty$3({}, mainSide, value);
     }
   };
 
   order.forEach(function (placement) {
     var side = ['left', 'top'].indexOf(placement) !== -1 ? 'primary' : 'secondary';
-    popper = _extends({}, popper, check[side](placement));
+    popper = _extends$1({}, popper, check[side](placement));
   });
 
   data.offsets.popper = popper;
@@ -3961,11 +4000,11 @@ function shift(data) {
     var measurement = isVertical ? 'width' : 'height';
 
     var shiftOffsets = {
-      start: defineProperty({}, side, reference[side]),
-      end: defineProperty({}, side, reference[side] + reference[measurement] - popper[measurement])
+      start: defineProperty$3({}, side, reference[side]),
+      end: defineProperty$3({}, side, reference[side] + reference[measurement] - popper[measurement])
     };
 
-    data.offsets.popper = _extends({}, popper, shiftOffsets[shiftvariation]);
+    data.offsets.popper = _extends$1({}, popper, shiftOffsets[shiftvariation]);
   }
 
   return data;
@@ -4474,7 +4513,7 @@ var Defaults = {
 
 // Utils
 // Methods
-var Popper$1 = function () {
+var Popper = function () {
   /**
    * Creates a new Popper.js instance.
    * @class Popper
@@ -4497,7 +4536,7 @@ var Popper$1 = function () {
     this.update = debounce(this.update.bind(this));
 
     // with {} we create a new object with the options inside it
-    this.options = _extends({}, Popper.Defaults, options);
+    this.options = _extends$1({}, Popper.Defaults, options);
 
     // init state
     this.state = {
@@ -4512,13 +4551,13 @@ var Popper$1 = function () {
 
     // Deep merge modifiers options
     this.options.modifiers = {};
-    Object.keys(_extends({}, Popper.Defaults.modifiers, options.modifiers)).forEach(function (name) {
-      _this.options.modifiers[name] = _extends({}, Popper.Defaults.modifiers[name] || {}, options.modifiers ? options.modifiers[name] : {});
+    Object.keys(_extends$1({}, Popper.Defaults.modifiers, options.modifiers)).forEach(function (name) {
+      _this.options.modifiers[name] = _extends$1({}, Popper.Defaults.modifiers[name] || {}, options.modifiers ? options.modifiers[name] : {});
     });
 
     // Refactoring modifiers' list (Object => Array)
     this.modifiers = Object.keys(this.options.modifiers).map(function (name) {
-      return _extends({
+      return _extends$1({
         name: name
       }, _this.options.modifiers[name]);
     })
@@ -4532,7 +4571,7 @@ var Popper$1 = function () {
     // they could add new properties to their options configuration
     // BE AWARE: don't add options to `options.modifiers.name` but to `modifierOptions`!
     this.modifiers.forEach(function (modifierOptions) {
-      if (modifierOptions.enabled && isFunction(modifierOptions.onLoad)) {
+      if (modifierOptions.enabled && isFunction$2(modifierOptions.onLoad)) {
         modifierOptions.onLoad(_this.reference, _this.popper, _this.options, modifierOptions, _this.state);
       }
     });
@@ -4623,9 +4662,9 @@ var Popper$1 = function () {
  */
 
 
-Popper$1.Utils = (typeof window !== 'undefined' ? window : global).PopperUtils;
-Popper$1.placements = placements;
-Popper$1.Defaults = Defaults;
+Popper.Utils = (typeof window !== 'undefined' ? window : global).PopperUtils;
+Popper.placements = placements;
+Popper.Defaults = Defaults;
 
 var key = '__global_unique_id__';
 
@@ -4644,13 +4683,13 @@ var warning = function() {};
 
 var warning_1 = warning;
 
-var implementation = createCommonjsModule(function (module, exports) {
+var implementation$4 = createCommonjsModule(function (module, exports) {
 
 exports.__esModule = true;
 
 
 
-_interopRequireDefault(react);
+var _react2 = _interopRequireDefault(react);
 
 
 
@@ -4662,7 +4701,7 @@ var _gud2 = _interopRequireDefault(gud);
 
 
 
-_interopRequireDefault(warning_1);
+var _warning2 = _interopRequireDefault(warning_1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4849,7 +4888,7 @@ var _react2 = _interopRequireDefault(react);
 
 
 
-var _implementation2 = _interopRequireDefault(implementation);
+var _implementation2 = _interopRequireDefault(implementation$4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -4865,7 +4904,7 @@ var ManagerReferenceNodeSetterContext = createContext();
 var Manager =
 /*#__PURE__*/
 function (_React$Component) {
-  inheritsLoose(Manager, _React$Component);
+  _inheritsLoose(Manager, _React$Component);
 
   function Manager() {
     var _this;
@@ -4876,9 +4915,9 @@ function (_React$Component) {
 
     _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
 
-    defineProperty$3(assertThisInitialized(_this), "referenceNode", void 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "referenceNode", void 0);
 
-    defineProperty$3(assertThisInitialized(_this), "setReferenceNode", function (newReferenceNode) {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setReferenceNode", function (newReferenceNode) {
       if (newReferenceNode && _this.referenceNode !== newReferenceNode) {
         _this.referenceNode = newReferenceNode;
 
@@ -4931,7 +4970,7 @@ var safeInvoke = function safeInvoke(fn) {
  * Sets a ref using either a ref callback or a ref object
  */
 
-var setRef = function setRef(ref, node) {
+var setRef$1 = function setRef(ref, node) {
   // if its a function call it
   if (typeof ref === "function") {
     return safeInvoke(ref, node);
@@ -4952,7 +4991,7 @@ var initialArrowStyle = {};
 var InnerPopper =
 /*#__PURE__*/
 function (_React$Component) {
-  inheritsLoose(InnerPopper, _React$Component);
+  _inheritsLoose(InnerPopper, _React$Component);
 
   function InnerPopper() {
     var _this;
@@ -4963,30 +5002,30 @@ function (_React$Component) {
 
     _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
 
-    defineProperty$3(assertThisInitialized(_this), "state", {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "state", {
       data: undefined,
       placement: undefined
     });
 
-    defineProperty$3(assertThisInitialized(_this), "popperInstance", void 0);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "popperInstance", void 0);
 
-    defineProperty$3(assertThisInitialized(_this), "popperNode", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "popperNode", null);
 
-    defineProperty$3(assertThisInitialized(_this), "arrowNode", null);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "arrowNode", null);
 
-    defineProperty$3(assertThisInitialized(_this), "setPopperNode", function (popperNode) {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setPopperNode", function (popperNode) {
       if (!popperNode || _this.popperNode === popperNode) return;
-      setRef(_this.props.innerRef, popperNode);
+      setRef$1(_this.props.innerRef, popperNode);
       _this.popperNode = popperNode;
 
       _this.updatePopperInstance();
     });
 
-    defineProperty$3(assertThisInitialized(_this), "setArrowNode", function (arrowNode) {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setArrowNode", function (arrowNode) {
       _this.arrowNode = arrowNode;
     });
 
-    defineProperty$3(assertThisInitialized(_this), "updateStateModifier", {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updateStateModifier", {
       enabled: true,
       order: 900,
       fn: function fn(data) {
@@ -5001,13 +5040,13 @@ function (_React$Component) {
       }
     });
 
-    defineProperty$3(assertThisInitialized(_this), "getOptions", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getOptions", function () {
       return {
         placement: _this.props.placement,
         eventsEnabled: _this.props.eventsEnabled,
         positionFixed: _this.props.positionFixed,
-        modifiers: _extends_1({}, _this.props.modifiers, {
-          arrow: _extends_1({}, _this.props.modifiers && _this.props.modifiers.arrow, {
+        modifiers: _extends({}, _this.props.modifiers, {
+          arrow: _extends({}, _this.props.modifiers && _this.props.modifiers.arrow, {
             enabled: !!_this.arrowNode,
             element: _this.arrowNode
           }),
@@ -5019,25 +5058,25 @@ function (_React$Component) {
       };
     });
 
-    defineProperty$3(assertThisInitialized(_this), "getPopperStyle", function () {
-      return !_this.popperNode || !_this.state.data ? initialStyle : _extends_1({
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getPopperStyle", function () {
+      return !_this.popperNode || !_this.state.data ? initialStyle : _extends({
         position: _this.state.data.offsets.popper.position
       }, _this.state.data.styles);
     });
 
-    defineProperty$3(assertThisInitialized(_this), "getPopperPlacement", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getPopperPlacement", function () {
       return !_this.state.data ? undefined : _this.state.placement;
     });
 
-    defineProperty$3(assertThisInitialized(_this), "getArrowStyle", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getArrowStyle", function () {
       return !_this.arrowNode || !_this.state.data ? initialArrowStyle : _this.state.data.arrowStyles;
     });
 
-    defineProperty$3(assertThisInitialized(_this), "getOutOfBoundariesState", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "getOutOfBoundariesState", function () {
       return _this.state.data ? _this.state.data.hide : undefined;
     });
 
-    defineProperty$3(assertThisInitialized(_this), "destroyPopperInstance", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "destroyPopperInstance", function () {
       if (!_this.popperInstance) return;
 
       _this.popperInstance.destroy();
@@ -5045,18 +5084,18 @@ function (_React$Component) {
       _this.popperInstance = null;
     });
 
-    defineProperty$3(assertThisInitialized(_this), "updatePopperInstance", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "updatePopperInstance", function () {
       _this.destroyPopperInstance();
 
-      var _assertThisInitialize = assertThisInitialized(_this),
+      var _assertThisInitialize = _assertThisInitialized(_assertThisInitialized(_this)),
           popperNode = _assertThisInitialize.popperNode;
 
       var referenceElement = _this.props.referenceElement;
       if (!referenceElement || !popperNode) return;
-      _this.popperInstance = new Popper$1(referenceElement, popperNode, _this.getOptions());
+      _this.popperInstance = new Popper(referenceElement, popperNode, _this.getOptions());
     });
 
-    defineProperty$3(assertThisInitialized(_this), "scheduleUpdate", function () {
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "scheduleUpdate", function () {
       if (_this.popperInstance) {
         _this.popperInstance.scheduleUpdate();
       }
@@ -5088,7 +5127,7 @@ function (_React$Component) {
   };
 
   _proto.componentWillUnmount = function componentWillUnmount() {
-    setRef(this.props.innerRef, null);
+    setRef$1(this.props.innerRef, null);
     this.destroyPopperInstance();
   };
 
@@ -5109,18 +5148,18 @@ function (_React$Component) {
   return InnerPopper;
 }(react.Component);
 
-defineProperty$3(InnerPopper, "defaultProps", {
+_defineProperty(InnerPopper, "defaultProps", {
   placement: 'bottom',
   eventsEnabled: true,
   referenceElement: undefined,
   positionFixed: false
 });
-function Popper(_ref) {
+function Popper$1(_ref) {
   var referenceElement = _ref.referenceElement,
-      props = objectWithoutPropertiesLoose(_ref, ["referenceElement"]);
+      props = _objectWithoutPropertiesLoose(_ref, ["referenceElement"]);
 
   return react.createElement(ManagerReferenceNodeContext.Consumer, null, function (referenceNode) {
-    return react.createElement(InnerPopper, _extends_1({
+    return react.createElement(InnerPopper, _extends({
       referenceElement: referenceElement !== undefined ? referenceElement : referenceNode
     }, props));
   });
@@ -5129,7 +5168,7 @@ function Popper(_ref) {
 var InnerReference =
 /*#__PURE__*/
 function (_React$Component) {
-  inheritsLoose(InnerReference, _React$Component);
+  _inheritsLoose(InnerReference, _React$Component);
 
   function InnerReference() {
     var _this;
@@ -5140,8 +5179,8 @@ function (_React$Component) {
 
     _this = _React$Component.call.apply(_React$Component, [this].concat(args)) || this;
 
-    defineProperty$3(assertThisInitialized(_this), "refHandler", function (node) {
-      setRef(_this.props.innerRef, node);
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "refHandler", function (node) {
+      setRef$1(_this.props.innerRef, node);
       safeInvoke(_this.props.setReferenceNode, node);
     });
 
@@ -5151,7 +5190,7 @@ function (_React$Component) {
   var _proto = InnerReference.prototype;
 
   _proto.componentWillUnmount = function componentWillUnmount() {
-    setRef(this.props.innerRef, null);
+    setRef$1(this.props.innerRef, null);
   };
 
   _proto.render = function render() {
@@ -5166,7 +5205,7 @@ function (_React$Component) {
 
 function Reference(props) {
   return react.createElement(ManagerReferenceNodeSetterContext.Consumer, null, function (setReferenceNode) {
-    return react.createElement(InnerReference, _extends_1({
+    return react.createElement(InnerReference, _extends({
       setReferenceNode: setReferenceNode
     }, props));
   });
@@ -5180,6 +5219,7 @@ function _interopRequireDefault(obj) {
 }
 
 module.exports = _interopRequireDefault;
+module.exports["default"] = module.exports, module.exports.__esModule = true;
 });
 
 var hasClass_1 = createCommonjsModule(function (module, exports) {
@@ -5649,7 +5689,7 @@ Transition.contextTypes = {
 Transition.childContextTypes = {
   transitionGroup: function transitionGroup() {}
 };
-Transition.propTypes = {};
+Transition.propTypes =  {};
 
 function noop() {}
 
@@ -5683,7 +5723,7 @@ var CSSTransition_1 = createCommonjsModule(function (module, exports) {
 exports.__esModule = true;
 exports.default = void 0;
 
-_interopRequireWildcard(propTypes);
+var PropTypes = _interopRequireWildcard(propTypes);
 
 var _addClass = _interopRequireDefault(addClass_1);
 
@@ -5931,7 +5971,7 @@ function (_React$Component) {
 CSSTransition.defaultProps = {
   classNames: ''
 };
-CSSTransition.propTypes = {};
+CSSTransition.propTypes =  {};
 var _default = CSSTransition;
 exports.default = _default;
 module.exports = exports["default"];
@@ -6233,7 +6273,7 @@ function (_React$Component) {
 TransitionGroup.childContextTypes = {
   transitionGroup: _propTypes.default.object.isRequired
 };
-TransitionGroup.propTypes = {};
+TransitionGroup.propTypes =  {};
 TransitionGroup.defaultProps = defaultProps;
 
 var _default = (0, reactLifecyclesCompat_es.polyfill)(TransitionGroup);
@@ -6247,7 +6287,7 @@ var ReplaceTransition_1 = createCommonjsModule(function (module, exports) {
 exports.__esModule = true;
 exports.default = void 0;
 
-_interopRequireDefault(propTypes);
+var _propTypes = _interopRequireDefault(propTypes);
 
 var _react = _interopRequireDefault(react);
 
@@ -6382,7 +6422,7 @@ function (_React$Component) {
   return ReplaceTransition;
 }(_react.default.Component);
 
-ReplaceTransition.propTypes = {};
+ReplaceTransition.propTypes =  {};
 var _default = ReplaceTransition;
 exports.default = _default;
 module.exports = exports["default"];
@@ -6424,7 +6464,7 @@ module.exports = {
  * limitations under the License.
  */
 /** Detect if `React.createPortal()` API method does not exist. */
-var cannotCreatePortal = !isFunction$2(reactDom.createPortal);
+var cannotCreatePortal = !isFunction(reactDom.createPortal);
 var REACT_CONTEXT_TYPES = {
     blueprintPortalClassName: function (obj, key) {
         if (obj[key] != null && typeof obj[key] !== "string") {
@@ -6538,6 +6578,7 @@ function maybeAddClass(classList, className) {
  * limitations under the License.
  */
 // HACKHACK: https://github.com/palantir/blueprint/issues/4342
+// eslint-disable-next-line deprecation/deprecation
 var Overlay = /** @class */ (function (_super) {
     __extends(Overlay, _super);
     function Overlay() {
@@ -6553,7 +6594,7 @@ var Overlay = /** @class */ (function (_super) {
             container: function (ref) { return (_this.containerElement = reactDom.findDOMNode(ref)); },
         };
         _this.maybeRenderChild = function (child) {
-            if (isFunction$2(child)) {
+            if (isFunction(child)) {
                 child = child();
             }
             if (child == null) {
@@ -6775,7 +6816,7 @@ var Overlay = /** @class */ (function (_super) {
     Overlay.openStack = [];
     Overlay.getLastOpened = function () { return Overlay_1.openStack[Overlay_1.openStack.length - 1]; };
     Overlay = Overlay_1 = __decorate([
-        polyfill$3
+        polyfill
     ], Overlay);
     return Overlay;
 }(AbstractPureComponent2));
@@ -6795,6 +6836,7 @@ var Overlay = /** @class */ (function (_super) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** `ResizeSensor` requires a single DOM element child and will error otherwise. */
 var ResizeSensor = /** @class */ (function (_super) {
     __extends(ResizeSensor, _super);
     function ResizeSensor() {
@@ -6865,7 +6907,7 @@ var ResizeSensor = /** @class */ (function (_super) {
     };
     ResizeSensor.displayName = DISPLAYNAME_PREFIX + ".ResizeSensor";
     ResizeSensor = __decorate([
-        polyfill$3
+        polyfill
     ], ResizeSensor);
     return ResizeSensor;
 }(AbstractPureComponent2));
@@ -6916,7 +6958,7 @@ var Tooltip = /** @class */ (function (_super) {
         transitionDuration: 100,
     };
     Tooltip = __decorate([
-        polyfill$3
+        polyfill
     ], Tooltip);
     return Tooltip;
 }(AbstractPureComponent2));
@@ -7154,6 +7196,7 @@ var Popover = /** @class */ (function (_super) {
     __extends(Popover, _super);
     function Popover() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        // eslint-disable-next-line deprecation/deprecation
         _this.popoverRef = createReactRef();
         /**
          * DOM element that contains the popover.
@@ -7366,7 +7409,7 @@ var Popover = /** @class */ (function (_super) {
         // as JSX component instead of intrinsic element. but because of its
         // type, tsc actually recognizes that it is _any_ intrinsic element, so
         // it can typecheck the HTML props!!
-        var _b = this.props, className = _b.className, disabled = _b.disabled, fill = _b.fill, placement = _b.placement;
+        var _b = this.props, className = _b.className, disabled = _b.disabled, fill = _b.fill, placement = _b.placement, _c = _b.position, position = _c === void 0 ? "auto" : _c;
         var isOpen = this.state.isOpen;
         var wrapperTagName = this.props.wrapperTagName;
         if (fill) {
@@ -7382,16 +7425,19 @@ var Popover = /** @class */ (function (_super) {
             _a[FILL] = fill,
             _a));
         var wrapper = react.createElement(wrapperTagName, { className: wrapperClasses }, react.createElement(Reference, { innerRef: this.handleTargetRef }, this.renderTarget), react.createElement(Overlay, { autoFocus: this.props.autoFocus, backdropClassName: POPOVER_BACKDROP, backdropProps: this.props.backdropProps, canEscapeKeyClose: this.props.canEscapeKeyClose, canOutsideClickClose: this.props.interactionKind === PopoverInteractionKind.CLICK, className: this.props.portalClassName, enforceFocus: this.props.enforceFocus, hasBackdrop: this.props.hasBackdrop, isOpen: isOpen && !isContentEmpty, onClose: this.handleOverlayClose, onClosed: this.props.onClosed, onClosing: this.props.onClosing, onOpened: this.props.onOpened, onOpening: this.props.onOpening, transitionDuration: this.props.transitionDuration, transitionName: POPOVER, usePortal: this.props.usePortal, portalContainer: this.props.portalContainer },
-            react.createElement(Popper, { innerRef: this.handlePopoverRef, 
-                // eslint-disable-next-line deprecation/deprecation
-                placement: placement !== null && placement !== void 0 ? placement : positionToPlacement(this.props.position), modifiers: this.getPopperModifiers() }, this.renderPopover)));
+            react.createElement(Popper$1, { innerRef: this.handlePopoverRef, placement: placement !== null && placement !== void 0 ? placement : positionToPlacement(position), modifiers: this.getPopperModifiers() }, this.renderPopover)));
         return react.createElement(Manager, null, wrapper);
     };
     Popover.prototype.componentDidMount = function () {
         this.updateDarkParent();
     };
-    Popover.prototype.componentDidUpdate = function (props, state) {
-        _super.prototype.componentDidUpdate.call(this, props, state);
+    Popover.prototype.componentDidUpdate = function (prevProps, prevState) {
+        _super.prototype.componentDidUpdate.call(this, prevProps, prevState);
+        if (prevProps.popoverRef !== this.props.popoverRef) {
+            setRef(prevProps.popoverRef, null);
+            this.handlePopoverRef = refHandler(this, "popoverElement", this.props.popoverRef);
+            setRef(this.props.popoverRef, this.popoverElement);
+        }
         this.updateDarkParent();
         var nextIsOpen = this.getIsOpen(this.props);
         if (this.props.isOpen != null && nextIsOpen !== this.state.isOpen) {
@@ -7413,13 +7459,16 @@ var Popover = /** @class */ (function (_super) {
             console.warn(POPOVER_WARN_HAS_BACKDROP_INLINE);
         }
         if (props.hasBackdrop && props.interactionKind !== PopoverInteractionKind.CLICK) {
-            throw new Error(POPOVER_HAS_BACKDROP_INTERACTION);
+            console.error(POPOVER_HAS_BACKDROP_INTERACTION);
+        }
+        if (props.placement !== undefined && props.position !== undefined) {
+            console.warn(POPOVER_WARN_PLACEMENT_AND_POSITION_MUTEX);
         }
         var childrenCount = react.Children.count(props.children);
         var hasContentProp = props.content !== undefined;
         var hasTargetProp = props.target !== undefined;
         if (childrenCount === 0 && !hasTargetProp) {
-            throw new Error(POPOVER_REQUIRES_TARGET);
+            console.error(POPOVER_REQUIRES_TARGET);
         }
         if (childrenCount > 2) {
             console.warn(POPOVER_WARN_TOO_MANY_CHILDREN);
@@ -7503,7 +7552,8 @@ var Popover = /** @class */ (function (_super) {
         return !minimal && ((modifiers === null || modifiers === void 0 ? void 0 : modifiers.arrow) == null || modifiers.arrow.enabled);
     };
     Popover.prototype.isElementInPopover = function (element) {
-        return this.popoverElement != null && this.popoverElement.contains(element);
+        var _a;
+        return (_a = this.popoverElement) === null || _a === void 0 ? void 0 : _a.contains(element);
     };
     Popover.prototype.isHoverInteractionKind = function () {
         return (this.props.interactionKind === PopoverInteractionKind.HOVER ||
@@ -7524,16 +7574,15 @@ var Popover = /** @class */ (function (_super) {
         minimal: false,
         modifiers: {},
         openOnTargetFocus: true,
-        // N.B. we don't set a default for `placement` here because that would override
-        // the deprecated `position` prop
-        position: "auto",
+        // N.B. we don't set a default for `placement` or `position` here because that would trigger
+        // a warning in validateProps if the other prop is specified by a user of this component
         targetTagName: "span",
         transitionDuration: 300,
         usePortal: true,
         wrapperTagName: "span",
     };
     Popover = __decorate([
-        polyfill$3
+        polyfill
     ], Popover);
     return Popover;
 }(AbstractPureComponent2));
@@ -7545,6 +7594,7 @@ var IconSvgPaths16 = {
     "add": ["M10.99 6.99h-2v-2c0-.55-.45-1-1-1s-1 .45-1 1v2h-2c-.55 0-1 .45-1 1s.45 1 1 1h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1zm-3-7c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.68 6-6 6z"],
     "add-column-left": ["M15 0H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-5 14H2V2h8v12zm4 0h-3V2h3v12zM4 9h1v1c0 .55.45 1 1 1s1-.45 1-1V9h1c.55 0 1-.45 1-1s-.45-1-1-1H7V6c0-.55-.45-1-1-1s-1 .45-1 1v1H4c-.55 0-1 .45-1 1s.45 1 1 1z"],
     "add-column-right": ["M8 9h1v1c0 .55.45 1 1 1s1-.45 1-1V9h1c.55 0 1-.45 1-1s-.45-1-1-1h-1V6c0-.55-.45-1-1-1s-1 .45-1 1v1H8c-.55 0-1 .45-1 1s.45 1 1 1zm7-9H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zM5 14H2V2h3v12zm9 0H6V2h8v12z"],
+    "add-location": ["M8 0a1 1 0 110 2 6 6 0 106 6 1 1 0 012 0 8 8 0 11-8-8zm0 5a3 3 0 110 6 3 3 0 010-6zm5-5a1 1 0 011 1v.999L15 2a1 1 0 010 2h-1v1a1 1 0 01-2 0V4h-1a1 1 0 010-2h1V1a1 1 0 011-1z"],
     "add-row-bottom": ["M6 11h1v1c0 .55.45 1 1 1s1-.45 1-1v-1h1c.55 0 1-.45 1-1s-.45-1-1-1H9V8c0-.55-.45-1-1-1s-1 .45-1 1v1H6c-.55 0-1 .45-1 1s.45 1 1 1zm9-11H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 14H2V6h12v8zm0-9H2V2h12v3z"],
     "add-row-top": ["M15 0H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 14H2v-3h12v3zm0-4H2V2h12v8zM6 7h1v1c0 .55.45 1 1 1s1-.45 1-1V7h1c.55 0 1-.45 1-1s-.45-1-1-1H9V4c0-.55-.45-1-1-1s-1 .45-1 1v1H6c-.55 0-1 .45-1 1s.45 1 1 1z"],
     "add-to-artifact": ["M14 4.01h-1v-1c0-.55-.45-1-1-1s-1 .45-1 1v1h-1c-.55 0-1 .45-1 1s.45 1 1 1h1v1c0 .55.45 1 1 1s1-.45 1-1v-1h1c.55 0 1-.45 1-1 0-.56-.45-1-1-1zm-13 2h6c.55 0 1-.45 1-1s-.45-1-1-1H1c-.55 0-1 .45-1 1s.45 1 1 1zm8 6H1c-.55 0-1 .45-1 1s.45 1 1 1h8c.55 0 1-.45 1-1 0-.56-.45-1-1-1zm0-4H1c-.55 0-1 .45-1 1s.45 1 1 1h8c.55 0 1-.45 1-1 0-.56-.45-1-1-1z"],
@@ -7960,7 +8010,10 @@ var IconSvgPaths16 = {
     "series-filtered": ["M9.29 9.3c.3.62.8 1.12 1.42 1.41l-1 1c-.18.18-.43.29-.71.29s-.53-.11-.71-.3L5 8.41l-3 3V13h13c.55 0 1 .45 1 1s-.45 1-1 1H1c-.55 0-1-.45-1-1V4c0-.55.45-1 1-1s1 .45 1 1v4.59l2.29-2.3C4.47 6.11 4.72 6 5 6s.53.11.71.29L9 9.59l.29-.29zM15.48 1c.31 0 .52.26.52.57 0 .16-.06.3-.17.41l-2.86 2.73v2.63c0 .16-.06.3-.17.41l-.82 1.1c-.1.1-.25.17-.41.17-.31 0-.57-.26-.57-.57V4.71L8.17 1.98A.566.566 0 018 1.57c0-.31.26-.57.57-.57h6.91z"],
     "series-search": ["M9.6 8.94a4.937 4.937 0 001.82.01c.1-.01.22-.04.39-.08l.23-.07c.04-.01.08-.02.11-.04l.22.22-2.7 2.72c-.18.19-.43.3-.71.3s-.53-.11-.71-.3L4.98 8.41l-2.99 3V13h12.94c.55 0 1 .45 1 1s-.45 1-1 1H1c-.55 0-1-.45-1-1V3.99c0-.55.45-1 1-1s1 .45 1 1v4.59l2.28-2.3c.17-.18.42-.29.7-.29s.53.11.7.29l3.28 3.3.64-.64zm6.22-.41c.1.12.17.27.18.44 0 .34-.27.61-.61.61a.57.57 0 01-.43-.18l-2.24-2.25c-.13.08-.26.16-.4.23-.02.01-.05.02-.07.03-.14.06-.27.12-.42.17h-.01c-.14.05-.29.08-.44.11-.04.01-.08.02-.11.02-.15.02-.3.04-.46.04-1.85 0-3.35-1.51-3.35-3.37S8.96 1.01 10.81 1c1.85 0 3.35 1.51 3.35 3.37 0 .16-.02.31-.04.47-.01.04-.01.07-.02.11-.02.15-.05.29-.1.44v.01c-.05.15-.11.28-.17.42-.01.02-.02.05-.03.07-.07.14-.14.27-.23.4l2.25 2.24zm-5.01-1.94c1.22 0 2.21-.99 2.21-2.22 0-1.23-.99-2.22-2.21-2.22S8.6 3.14 8.6 4.37c0 1.22.99 2.22 2.21 2.22z"],
     "settings": ["M3 1c0-.55-.45-1-1-1S1 .45 1 1v3h2V1zm0 4H1c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1zm12-4c0-.55-.45-1-1-1s-1 .45-1 1v2h2V1zM9 1c0-.55-.45-1-1-1S7 .45 7 1v6h2V1zM1 15c0 .55.45 1 1 1s1-.45 1-1v-5H1v5zM15 4h-2c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm-2 11c0 .55.45 1 1 1s1-.45 1-1V9h-2v6zM9 8H7c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-2 7c0 .55.45 1 1 1s1-.45 1-1v-2H7v2z"],
+    "shapes": ["M5.92 8.139c.44-.282 1.006-.121 1.264.358l2.689 4.988c.083.155.127.33.127.51C10 14.55 9.587 15 9.077 15H3.924a.864.864 0 01-.438-.12c-.449-.263-.617-.873-.376-1.362l2.465-4.989c.08-.162.2-.297.346-.39zM12 4a3 3 0 110 6 3 3 0 010-6zM6 1a1 1 0 011 1v4a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1h4z"],
     "share": ["M10.99 13.99h-9v-9h4.76l2-2H.99c-.55 0-1 .45-1 1v11c0 .55.45 1 1 1h11c.55 0 1-.45 1-1V7.24l-2 2v4.75zm4-14h-5c-.55 0-1 .45-1 1s.45 1 1 1h2.59L7.29 7.28a1 1 0 00-.3.71 1.003 1.003 0 001.71.71l5.29-5.29V6c0 .55.45 1 1 1s1-.45 1-1V1c0-.56-.45-1.01-1-1.01z"],
+    "shared-filter": ["M13.843 15.163c.232.53.138.837.138.837H6.017s-.088-.308.138-.837c.226-.53 1.338-.88 2.079-1.206.735-.332.66-.53.685-.8 0-.03.006-.068.006-.105a2.171 2.171 0 01-.61-.892v-.006s-.006-.006-.006-.012c-.025-.074-.056-.16-.075-.24-.176-.031-.276-.222-.314-.394a.8.8 0 01-.1-.437c.025-.253.131-.37.244-.419v-.037c0-.313.032-.775.088-1.07A1.835 1.835 0 018.85 8.37c.315-.24.76-.37 1.156-.37.396 0 .842.13 1.156.37.301.233.534.56.64.935.026.08.045.166.057.246.057.295.088.75.088 1.064v.043c.113.05.214.167.232.413a.75.75 0 01-.1.437c-.038.172-.132.357-.301.387a1.77 1.77 0 01-.076.24.136.136 0 01-.006.025 2.346 2.346 0 01-.597.892v.111c.025.277-.075.474.666.8.741.326 1.853.67 2.079 1.2z",
+        "M14.852 15h1.131s.083-.27-.12-.732c-.16-.373-.82-.641-1.411-.88a15.328 15.328 0 01-.409-.17c-.565-.25-.57-.412-.577-.61-.001-.03-.002-.06-.005-.09v-.097c.22-.2.401-.469.522-.781 0 0 .005-.016.005-.022.028-.07.05-.14.066-.21.149-.026.231-.188.264-.339a.655.655 0 00.088-.382c-.016-.215-.104-.318-.203-.36v-.039c0-.274-.028-.673-.077-.931a1.598 1.598 0 00-.61-1.034 1.736 1.736 0 00-1.285-.3c.236.285.42.622.529.996.038.124.065.248.083.36.048.257.079.578.093.867a1.736 1.736 0 01.08 1.624 1.65 1.65 0 01-.217.453 1.42 1.42 0 01-.176.209c-.08.204-.178.4-.292.585l.202.083c.285.117.64.261.9.387.226.11.475.245.698.414.213.161.476.408.63.764.034.08.065.159.091.235zM12.14 14.12l.09.037zM11 1c.55 0 1 .45 1 1 0 .28-.11.53-.29.7L8 6.41v1.374a2.813 2.813 0 00-.833 1.589 6.925 6.925 0 00-.092.86 1.64 1.64 0 00-.25.739l-.001.004c-.02.217.006.413.046.573L5.71 12.71A1.003 1.003 0 014 12V6.41L.29 2.71A1.003 1.003 0 011 1h10z"],
     "shield": ["M8 16c4.667-3.048 7-7.238 7-12.571-1.556 0-3.889-1.143-7-3.429-3.111 2.286-5.444 3.429-7 3.429C1 8.762 3.333 12.952 8 16zM8 2.121c2.005 1.388 3.715 2.304 5.186 2.735-.342 3.702-2.05 6.683-5.186 9.038V2.121z"],
     "shop": ["M3 2h10c.55 0 1-.45 1-1s-.45-1-1-1H3c-.55 0-1 .45-1 1s.45 1 1 1zm9 11H4v-3H2v5c0 .55.45 1 1 1h10c.55 0 1-.45 1-1v-5h-2v3zm4-6l-1.01-3.17C14.9 3.36 14.49 3 14 3H2c-.49 0-.9.36-.98.83L.01 7H0c0 1.1.9 2 2 2s2-.9 2-2c0 1.1.9 2 2 2s2-.9 2-2c0 1.1.9 2 2 2s2-.9 2-2c0 1.1.9 2 2 2s2-.9 2-2z"],
     "shopping-cart": ["M14 10H7.72l-.33-1H13c.39 0 .72-.23.89-.56h.01l2-4h-.01c.06-.13.11-.28.11-.44 0-.55-.45-1-1-1H5.39l-.44-1.32h-.01C4.8 1.29 4.44 1 4 1H1c-.55 0-1 .45-1 1s.45 1 1 1h2.28l2.33 7H4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2h6c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2zM6.05 5h7.33l-1 2H6.72l-.67-2z"],
@@ -8068,6 +8121,7 @@ var IconSvgPaths20 = {
     "add": ["M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm5-9h-4V5c0-.55-.45-1-1-1s-1 .45-1 1v4H5c-.55 0-1 .45-1 1s.45 1 1 1h4v4c0 .55.45 1 1 1s1-.45 1-1v-4h4c.55 0 1-.45 1-1s-.45-1-1-1z"],
     "add-column-left": ["M4 11h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1H8V7c0-.55-.45-1-1-1s-1 .45-1 1v2H4c-.55 0-1 .45-1 1s.45 1 1 1zM19 0H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-7 18H2V2h10v16zm6 0h-5V2h5v16z"],
     "add-column-right": ["M10 11h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1h-2V7c0-.55-.45-1-1-1s-1 .45-1 1v2h-2c-.55 0-1 .45-1 1s.45 1 1 1zm9-11H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zM7 18H2V2h5v16zm11 0H8V2h10v16z"],
+    "add-location": ["M10 0a1 1 0 010 2 8 8 0 108 8 1 1 0 012 0c0 5.523-4.477 10-10 10S0 15.523 0 10 4.477 0 10 0zm0 6a4 4 0 110 8 4 4 0 010-8zm6-6c.6 0 1 .4 1 1v2h2c.6 0 1 .4 1 1s-.4 1-1 1h-2v2c0 .6-.4 1-1 1s-1-.4-1-1V5h-2c-.6 0-1-.4-1-1 0-.5.4-1 1-1h2V1c0-.6.4-1 1-1z"],
     "add-row-bottom": ["M19 0H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 18H2V8h16v10zm0-11H2V2h16v5zM7 14h2v2c0 .55.45 1 1 1s1-.45 1-1v-2h2c.55 0 1-.45 1-1s-.45-1-1-1h-2v-2c0-.55-.45-1-1-1s-1 .45-1 1v2H7c-.55 0-1 .45-1 1s.45 1 1 1z"],
     "add-row-top": ["M7 8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h2c.55 0 1-.45 1-1s-.45-1-1-1h-2V4c0-.55-.45-1-1-1s-1 .45-1 1v2H7c-.55 0-1 .45-1 1s.45 1 1 1zm12-8H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-1 18H2v-5h16v5zm0-6H2V2h16v10z"],
     "add-to-artifact": ["M13 12H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zm0 4H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zM1 6h9c.55 0 1-.45 1-1s-.45-1-1-1H1c-.55 0-1 .45-1 1s.45 1 1 1zm12 2H1c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zm6-4h-2V2c0-.55-.45-1-1-1s-1 .45-1 1v2h-2c-.55 0-1 .45-1 1s.45 1 1 1h2v2c0 .55.45 1 1 1s1-.45 1-1V6h2c.55 0 1-.45 1-1s-.45-1-1-1z"],
@@ -8493,7 +8547,11 @@ var IconSvgPaths20 = {
     "series-filtered": ["M12.14 10.45c.21.67.65 1.23 1.22 1.61l-1.65 1.65c-.18.18-.43.29-.71.29s-.53-.11-.71-.3L7 10.41l-5 5V17h17c.55 0 1 .45 1 1s-.45 1-1 1H1a.998.998 0 01-1-1V4c0-.55.45-1 1-1s1 .45 1 1v8.59l4.29-4.3C6.47 8.11 6.72 8 7 8s.53.11.71.29l3.29 3.3 1.14-1.14zM19.35 1a.642.642 0 01.46 1.1l-3.03 3.03v2.95c0 .18-.07.34-.19.46l-1.28 1.29c-.11.1-.27.17-.45.17-.35 0-.64-.29-.64-.64V5.13L11.19 2.1a.642.642 0 01.45-1.1h7.71z"],
     "series-search": ["M11.28 11.31l-.28.28-3.29-3.3C7.53 8.11 7.28 8 7 8s-.53.11-.71.29L2 12.59V4c0-.55-.45-1-1-1s-1 .45-1 1v14a.998.998 0 001 1h18c.55 0 1-.45 1-1s-.45-1-1-1H2v-1.59l5-5 3.29 3.29c.18.19.43.3.71.3s.53-.11.71-.29l2.09-2.09c-.17.02-.34.02-.51.02-.7 0-1.38-.12-2.01-.33zm-.93-6c0-1.62 1.31-2.93 2.93-2.93s2.93 1.31 2.93 2.93-1.31 2.93-2.93 2.93-2.93-1.31-2.93-2.93zm6.47 2.43c.11-.17.21-.33.29-.51.01-.03.03-.06.04-.09.08-.18.16-.35.21-.54.06-.2.1-.38.14-.58.01-.05.01-.09.02-.14.03-.2.05-.39.05-.6 0-2.37-1.93-4.3-4.3-4.3-2.37.01-4.3 1.93-4.3 4.31s1.93 4.3 4.3 4.3c.21 0 .4-.02.6-.05.04 0 .09-.01.14-.02.2-.03.38-.08.57-.14.2-.06.37-.14.55-.21.03-.01.06-.03.09-.04.18-.09.34-.19.51-.29l2.87 2.87c.14.14.33.22.56.22.43 0 .78-.35.78-.78a.938.938 0 00-.23-.56l-2.89-2.85z"],
     "settings": ["M4 1c0-.55-.45-1-1-1S2 .45 2 1v5h2V1zM2 19c0 .55.45 1 1 1s1-.45 1-1v-6H2v6zm9-18c0-.55-.45-1-1-1S9 .45 9 1v8h2V1zm7 0c0-.55-.45-1-1-1s-1 .45-1 1v3h2V1zM9 19c0 .55.45 1 1 1s1-.45 1-1v-3H9v3zm9-14h-2c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V6c0-.55-.45-1-1-1zm-2 14c0 .55.45 1 1 1s1-.45 1-1v-8h-2v8zM4 7H2c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1V8c0-.55-.45-1-1-1zm7 3H9c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1z"],
+    "shapes": ["M7.88 11.12a.958.958 0 011.277.33l3.719 6.207c.081.136.124.29.124.447 0 .495-.419.896-.936.896H4.936a.969.969 0 01-.436-.103.878.878 0 01-.392-1.21l3.409-6.208a.915.915 0 01.362-.36zM15 5a4 4 0 110 8 4 4 0 010-8zM8 1a1 1 0 011 1v6a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1h6z"],
     "share": ["M15 18H2V5h8.76l2-2H1c-.55 0-1 .45-1 1v15c0 .55.45 1 1 1h15c.55 0 1-.45 1-1V7.24l-2 2V18zm4-18h-7c-.55 0-1 .45-1 1s.45 1 1 1h4.59l-7.3 7.29a1.003 1.003 0 001.42 1.42L18 3.41V8c0 .55.45 1 1 1s1-.45 1-1V1c0-.55-.45-1-1-1z"],
+    "shared-filter": ["M13.917 17.209c1.01.454 2.543.928 2.873 1.643.31.722.186 1.148.186 1.148H6.026s-.13-.426.186-1.148 1.842-1.203 2.86-1.65c1.017-.447.914-.722.948-1.093 0-.048.007-.097.007-.145a3.067 3.067 0 01-.839-1.237l-.007-.007c0-.007-.006-.014-.006-.02a1.757 1.757 0 01-.11-.337c-.234-.042-.372-.296-.426-.537a1.045 1.045 0 01-.138-.598c.034-.35.179-.509.337-.57v-.056c0-.44.034-1.065.117-1.478a2.508 2.508 0 01.962-1.623c.426-.33 1.038-.501 1.58-.501.544 0 1.155.172 1.588.502a2.496 2.496 0 01.963 1.622c.075.413.117 1.045.117 1.478v.062c.15.062.288.22.323.564.02.268-.083.502-.138.598-.048.234-.185.488-.42.537a2.635 2.635 0 01-.116.364 3.094 3.094 0 01-.818 1.224c0 .055 0 .11.007.158.034.378-.103.653.914 1.1z",
+        "M14.976 16.57c-.24-.099-.455-.186-.65-.273l-.007-.004a3.801 3.801 0 01-.194-.091c.224-.288.41-.609.554-.946l.001-.002.013-.033c.018-.043.036-.087.052-.13l.011-.027.016-.04c.105-.092.19-.19.256-.284.129-.184.213-.38.265-.563.105-.226.225-.592.192-1.026l-.001-.011-.002-.011a1.854 1.854 0 00-.325-.91 9.924 9.924 0 00-.12-1.246 3.09 3.09 0 00-.106-.475l-.001-.006a3.543 3.543 0 00-.763-1.353c.27-.092.56-.139.83-.139.495 0 1.05.156 1.444.456a2.269 2.269 0 01.875 1.475c.069.375.106.95.106 1.344v.056c.138.056.263.2.294.513.019.244-.075.456-.125.543-.044.213-.169.444-.381.488-.025.1-.056.206-.094.3a2.815 2.815 0 01-.756 1.144c0 .05 0 .1.006.144.004.043.006.086.007.127.01.283.018.518.824.872.192.087.404.173.623.263.83.34 1.752.717 1.99 1.231.28.657.168 1.044.168 1.044h-2.081a3.864 3.864 0 00-.188-.542l-.005-.013-.006-.012c-.183-.397-.491-.681-.76-.88a5.614 5.614 0 00-.896-.522 17.36 17.36 0 00-.916-.4l-.15-.061zM14 1c.55 0 1 .45 1 1 0 .28-.11.53-.29.7L10 7.41v.897a3.182 3.182 0 00-.69.4 3.508 3.508 0 00-1.343 2.259c-.07.37-.107.836-.122 1.237a1.836 1.836 0 00-.339.926c-.046.458.09.84.195 1.06.053.178.138.376.27.56.055.08.125.162.21.242v.143l.053.052L6.71 16.71A1.003 1.003 0 015 16V7.41L.29 2.71A1.003 1.003 0 011 1h13z",
+        "M9.059 14.361c-.23-.044-.366-.296-.42-.535a1.045 1.045 0 01-.138-.598c.034-.35.179-.509.337-.57v-.056c0-.44.034-1.065.117-1.478A2.508 2.508 0 0110 9.441V13c0 .28-.11.53-.29.71l-.651.651z"],
     "shield": ["M10 20c6-3.81 9-9.048 9-15.714-2 0-5-1.429-9-4.286-4 2.857-7 4.286-9 4.286C1 10.952 4 16.19 10 20zm0-17.348c2.577 1.734 4.776 2.88 6.667 3.419-.44 4.627-2.636 8.353-6.667 11.297V2.652z"],
     "shop": ["M17.94 3.63c-.01-.02-.01-.03-.02-.04l-.03-.09h-.01c-.18-.3-.49-.5-.86-.5h-14c-.42 0-.77.25-.92.61L0 8.5h.02a2.5 2.5 0 005 0 2.5 2.5 0 005 0 2.5 2.5 0 005 0 2.5 2.5 0 005 0l-2.08-4.87zM3.02 2h14c.55 0 1-.45 1-1s-.45-1-1-1h-14c-.55 0-1 .45-1 1s.44 1 1 1zm13 14h-12v-4h-2v7c0 .55.45 1 1 1h14c.55 0 1-.45 1-1v-7h-2v4z"],
     "shopping-cart": ["M18 14H8.72l-.67-2H17c.44 0 .8-.29.94-.69h.01l2-6h-.01c.03-.1.06-.2.06-.31 0-.55-.45-1-1-1H5.39l-.44-1.32h-.01C4.8 2.29 4.44 2 4 2H1c-.55 0-1 .45-1 1s.45 1 1 1h2.28l3.33 10H5c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2h9c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2zM6.05 6h11.56l-1.33 4H7.39L6.05 6z"],
@@ -8614,12 +8672,16 @@ var IconSvgPaths20 = {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var IconSize;
+(function (IconSize) {
+    IconSize[IconSize["STANDARD"] = 16] = "STANDARD";
+    IconSize[IconSize["LARGE"] = 20] = "LARGE";
+})(IconSize || (IconSize = {}));
 var Icon = /** @class */ (function (_super) {
     __extends(Icon, _super);
     function Icon() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Icon_1 = Icon;
     Icon.prototype.render = function () {
         var icon = this.props.icon;
         if (icon == null || typeof icon === "boolean") {
@@ -8628,9 +8690,9 @@ var Icon = /** @class */ (function (_super) {
         else if (typeof icon !== "string") {
             return icon;
         }
-        var _a = this.props, className = _a.className, color = _a.color, htmlTitle = _a.htmlTitle, _b = _a.iconSize, iconSize = _b === void 0 ? Icon_1.SIZE_STANDARD : _b, intent = _a.intent, _c = _a.title, title = _c === void 0 ? icon : _c, _d = _a.tagName, tagName = _d === void 0 ? "span" : _d, htmlprops = __rest(_a, ["className", "color", "htmlTitle", "iconSize", "intent", "title", "tagName"]);
+        var _a = this.props, className = _a.className, color = _a.color, htmlTitle = _a.htmlTitle, _b = _a.iconSize, iconSize = _b === void 0 ? IconSize.STANDARD : _b, intent = _a.intent, _c = _a.title, title = _c === void 0 ? icon : _c, _d = _a.tagName, tagName = _d === void 0 ? "span" : _d, htmlprops = __rest(_a, ["className", "color", "htmlTitle", "iconSize", "intent", "title", "tagName"]);
         // choose which pixel grid is most appropriate for given icon size
-        var pixelGridSize = iconSize >= Icon_1.SIZE_LARGE ? Icon_1.SIZE_LARGE : Icon_1.SIZE_STANDARD;
+        var pixelGridSize = iconSize >= IconSize.LARGE ? IconSize.LARGE : IconSize.STANDARD;
         // render path elements, or nothing if icon name is unknown.
         var paths = this.renderSvgPaths(pixelGridSize, icon);
         // eslint-disable-next-line deprecation/deprecation
@@ -8642,19 +8704,20 @@ var Icon = /** @class */ (function (_super) {
     };
     /** Render `<path>` elements for the given icon name. Returns `null` if name is unknown. */
     Icon.prototype.renderSvgPaths = function (pathsSize, iconName) {
-        var svgPathsRecord = pathsSize === Icon_1.SIZE_STANDARD ? IconSvgPaths16 : IconSvgPaths20;
+        var svgPathsRecord = pathsSize === IconSize.STANDARD ? IconSvgPaths16 : IconSvgPaths20;
         var pathStrings = svgPathsRecord[iconName];
         if (pathStrings == null) {
             return null;
         }
         return pathStrings.map(function (d, i) { return react.createElement("path", { key: i, d: d, fillRule: "evenodd" }); });
     };
-    var Icon_1;
     Icon.displayName = DISPLAYNAME_PREFIX + ".Icon";
-    Icon.SIZE_STANDARD = 16;
-    Icon.SIZE_LARGE = 20;
-    Icon = Icon_1 = __decorate([
-        polyfill$3
+    /** @deprecated use IconSize.STANDARD */
+    Icon.SIZE_STANDARD = IconSize.STANDARD;
+    /** @deprecated use IconSize.LARGE */
+    Icon.SIZE_LARGE = IconSize.LARGE;
+    Icon = __decorate([
+        polyfill
     ], Icon);
     return Icon;
 }(AbstractPureComponent2));
@@ -8674,9 +8737,15 @@ var Icon = /** @class */ (function (_super) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var SpinnerSize;
+(function (SpinnerSize) {
+    SpinnerSize[SpinnerSize["SMALL"] = 20] = "SMALL";
+    SpinnerSize[SpinnerSize["STANDARD"] = 50] = "STANDARD";
+    SpinnerSize[SpinnerSize["LARGE"] = 100] = "LARGE";
+})(SpinnerSize || (SpinnerSize = {}));
 // see http://stackoverflow.com/a/18473154/3124288 for calculating arc path
 var R = 45;
-var SPINNER_TRACK = "M 50,50 m 0,-" + R + " a " + R + "," + R + " 0 1 1 0," + R * 2 + " a " + R + "," + R + " 0 1 1 0,-" + R * 2;
+var SPINNER_TRACK$1 = "M 50,50 m 0,-" + R + " a " + R + "," + R + " 0 1 1 0," + R * 2 + " a " + R + "," + R + " 0 1 1 0,-" + R * 2;
 // unitless total length of SVG path, to which stroke-dash* properties are relative.
 // https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/pathLength
 // this value is the result of `<path d={SPINNER_TRACK} />.getTotalLength()` and works in all browsers:
@@ -8689,7 +8758,6 @@ var Spinner = /** @class */ (function (_super) {
     function Spinner() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Spinner_1 = Spinner;
     Spinner.prototype.componentDidUpdate = function (prevProps) {
         if (prevProps.value !== this.props.value) {
             // IE/Edge: re-render after changing value to force SVG update
@@ -8702,14 +8770,14 @@ var Spinner = /** @class */ (function (_super) {
         var size = this.getSize();
         var classes = classnames(SPINNER, intentClass(intent), (_a = {}, _a[SPINNER_NO_SPIN] = value != null, _a), className);
         // keep spinner track width consistent at all sizes (down to about 10px).
-        var strokeWidth = Math.min(MIN_STROKE_WIDTH, (STROKE_WIDTH * Spinner_1.SIZE_LARGE) / size);
+        var strokeWidth = Math.min(MIN_STROKE_WIDTH, (STROKE_WIDTH * SpinnerSize.LARGE) / size);
         var strokeOffset = PATH_LENGTH - PATH_LENGTH * (value == null ? 0.25 : clamp(value, 0, 1));
         // multiple DOM elements around SVG are necessary to properly isolate animation:
         // - SVG elements in IE do not support anim/trans so they must be set on a parent HTML element.
         // - SPINNER_ANIMATION isolates svg from parent display and is always centered inside root element.
         return react.createElement(tagName, { className: classes }, react.createElement(tagName, { className: SPINNER_ANIMATION }, react.createElement("svg", { width: size, height: size, strokeWidth: strokeWidth.toFixed(2), viewBox: this.getViewBox(strokeWidth) },
-            react.createElement("path", { className: SPINNER_TRACK$1, d: SPINNER_TRACK }),
-            react.createElement("path", { className: SPINNER_HEAD, d: SPINNER_TRACK, pathLength: PATH_LENGTH, strokeDasharray: PATH_LENGTH + " " + PATH_LENGTH, strokeDashoffset: strokeOffset }))));
+            react.createElement("path", { className: SPINNER_TRACK, d: SPINNER_TRACK$1 }),
+            react.createElement("path", { className: SPINNER_HEAD, d: SPINNER_TRACK$1, pathLength: PATH_LENGTH, strokeDasharray: PATH_LENGTH + " " + PATH_LENGTH, strokeDashoffset: strokeOffset }))));
     };
     Spinner.prototype.validateProps = function (_a) {
         var _b = _a.className, className = _b === void 0 ? "" : _b, size = _a.size;
@@ -8726,12 +8794,12 @@ var Spinner = /** @class */ (function (_super) {
         if (size == null) {
             // allow Classes constants to determine default size.
             if (className.indexOf(SMALL) >= 0) {
-                return Spinner_1.SIZE_SMALL;
+                return SpinnerSize.SMALL;
             }
             else if (className.indexOf(LARGE) >= 0) {
-                return Spinner_1.SIZE_LARGE;
+                return SpinnerSize.LARGE;
             }
-            return Spinner_1.SIZE_STANDARD;
+            return SpinnerSize.STANDARD;
         }
         return Math.max(MIN_SIZE, size);
     };
@@ -8742,13 +8810,15 @@ var Spinner = /** @class */ (function (_super) {
         var viewBoxWidth = (radius * 2).toFixed(2);
         return viewBoxX + " " + viewBoxX + " " + viewBoxWidth + " " + viewBoxWidth;
     };
-    var Spinner_1;
     Spinner.displayName = DISPLAYNAME_PREFIX + ".Spinner";
-    Spinner.SIZE_SMALL = 20;
-    Spinner.SIZE_STANDARD = 50;
-    Spinner.SIZE_LARGE = 100;
-    Spinner = Spinner_1 = __decorate([
-        polyfill$3
+    /** @deprecated use SpinnerSize.SMALL */
+    Spinner.SIZE_SMALL = SpinnerSize.SMALL;
+    /** @deprecated use SpinnerSize.STANDARD */
+    Spinner.SIZE_STANDARD = SpinnerSize.STANDARD;
+    /** @deprecated use SpinnerSize.LARGE */
+    Spinner.SIZE_LARGE = SpinnerSize.LARGE;
+    Spinner = __decorate([
+        polyfill
     ], Spinner);
     return Spinner;
 }(AbstractPureComponent2));
@@ -8798,7 +8868,7 @@ var AbstractButton = /** @class */ (function (_super) {
             /* eslint-disable deprecation/deprecation */
             if (isKeyboardClick(e.which)) {
                 _this.setState({ isActive: false });
-                (_a = getRef(_this.buttonRef)) === null || _a === void 0 ? void 0 : _a.click();
+                (_a = _this.buttonRef) === null || _a === void 0 ? void 0 : _a.click();
             }
             _this.currentKeyDown = undefined;
             (_c = (_b = _this.props).onKeyUp) === null || _c === void 0 ? void 0 : _c.call(_b, e);
@@ -8839,7 +8909,7 @@ var AbstractButton = /** @class */ (function (_super) {
     AbstractButton.prototype.renderChildren = function () {
         var _a = this.props, children = _a.children, icon = _a.icon, loading = _a.loading, rightIcon = _a.rightIcon, text = _a.text;
         return [
-            loading && react.createElement(Spinner, { key: "loading", className: BUTTON_SPINNER, size: Icon.SIZE_LARGE }),
+            loading && react.createElement(Spinner, { key: "loading", className: BUTTON_SPINNER, size: IconSize.LARGE }),
             react.createElement(Icon, { key: "leftIcon", icon: icon }),
             (!isReactNodeEmpty(text) || !isReactNodeEmpty(children)) && (react.createElement("span", { key: "text", className: BUTTON_TEXT },
                 text,
@@ -8877,10 +8947,17 @@ var Button = /** @class */ (function (_super) {
     Button.prototype.render = function () {
         return (react.createElement("button", __assign({ type: "button", ref: this.handleRef }, removeNonHTMLProps(this.props), this.getCommonButtonProps()), this.renderChildren()));
     };
+    Button.prototype.componentDidUpdate = function (prevProps) {
+        if (prevProps.elementRef !== this.props.elementRef) {
+            setRef(prevProps.elementRef, null);
+            this.handleRef = refHandler(this, "buttonRef", this.props.elementRef);
+            setRef(this.props.elementRef, this.buttonRef);
+        }
+    };
     Button.displayName = DISPLAYNAME_PREFIX + ".Button";
     return Button;
 }(AbstractButton));
-/** @class */ ((function (_super) {
+var AnchorButton = /** @class */ (function (_super) {
     __extends(AnchorButton, _super);
     function AnchorButton() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -8894,9 +8971,16 @@ var Button = /** @class */ (function (_super) {
         var commonProps = this.getCommonButtonProps();
         return (react.createElement("a", __assign({ role: "button", ref: this.handleRef }, removeNonHTMLProps(this.props), commonProps, { href: commonProps.disabled ? undefined : href, tabIndex: commonProps.disabled ? -1 : tabIndex }), this.renderChildren()));
     };
+    AnchorButton.prototype.componentDidUpdate = function (prevProps) {
+        if (prevProps.elementRef !== this.props.elementRef) {
+            setRef(prevProps.elementRef, null);
+            this.handleRef = refHandler(this, "buttonRef", this.props.elementRef);
+            setRef(this.props.elementRef, this.buttonRef);
+        }
+    };
     AnchorButton.displayName = DISPLAYNAME_PREFIX + ".AnchorButton";
     return AnchorButton;
-})(AbstractButton));
+}(AbstractButton));
 
 /*
  * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
@@ -9020,7 +9104,7 @@ var Text = /** @class */ (function (_super) {
         tagName: "div",
     };
     Text = __decorate([
-        polyfill$3
+        polyfill
     ], Text);
     return Text;
 }(AbstractPureComponent2));
@@ -9047,7 +9131,7 @@ var MenuItem = /** @class */ (function (_super) {
     }
     MenuItem.prototype.render = function () {
         var _a, _b;
-        var _c = this.props, active = _c.active, className = _c.className, children = _c.children, disabled = _c.disabled, icon = _c.icon, intent = _c.intent; _c.labelClassName; var labelElement = _c.labelElement, multiline = _c.multiline; _c.popoverProps; var shouldDismissPopover = _c.shouldDismissPopover, text = _c.text, textClassName = _c.textClassName, _d = _c.tagName, tagName = _d === void 0 ? "a" : _d, htmlTitle = _c.htmlTitle, htmlProps = __rest(_c, ["active", "className", "children", "disabled", "icon", "intent", "labelClassName", "labelElement", "multiline", "popoverProps", "shouldDismissPopover", "text", "textClassName", "tagName", "htmlTitle"]);
+        var _c = this.props, active = _c.active, className = _c.className, children = _c.children, disabled = _c.disabled, icon = _c.icon, intent = _c.intent, labelClassName = _c.labelClassName, labelElement = _c.labelElement, multiline = _c.multiline, popoverProps = _c.popoverProps, shouldDismissPopover = _c.shouldDismissPopover, text = _c.text, textClassName = _c.textClassName, _d = _c.tagName, tagName = _d === void 0 ? "a" : _d, htmlTitle = _c.htmlTitle, htmlProps = __rest(_c, ["active", "className", "children", "disabled", "icon", "intent", "labelClassName", "labelElement", "multiline", "popoverProps", "shouldDismissPopover", "text", "textClassName", "tagName", "htmlTitle"]);
         var hasSubmenu = children != null;
         var intentClass$1 = intentClass(intent);
         var anchorClasses = classnames(MENU_ITEM, intentClass$1, (_a = {},
@@ -9088,7 +9172,7 @@ var MenuItem = /** @class */ (function (_super) {
     };
     MenuItem.displayName = DISPLAYNAME_PREFIX + ".MenuItem";
     MenuItem = __decorate([
-        polyfill$3
+        polyfill
     ], MenuItem);
     return MenuItem;
 }(AbstractPureComponent2));
@@ -9141,7 +9225,7 @@ var Menu = /** @class */ (function (_super) {
     /** @deprecated use MenuItem*/
     Menu.Item = MenuItem;
     Menu = __decorate([
-        polyfill$3
+        polyfill
     ], Menu);
     return Menu;
 }(AbstractPureComponent2));
@@ -9175,7 +9259,7 @@ var Divider = /** @class */ (function (_super) {
     };
     Divider.displayName = DISPLAYNAME_PREFIX + ".Divider";
     Divider = __decorate([
-        polyfill$3
+        polyfill
     ], Divider);
     return Divider;
 }(AbstractPureComponent2));
@@ -9282,7 +9366,7 @@ var AsyncControllableInput = /** @class */ (function (_super) {
     };
     AsyncControllableInput.displayName = DISPLAYNAME_PREFIX + ".AsyncControllableInput";
     AsyncControllableInput = __decorate([
-        polyfill$3
+        polyfill
     ], AsyncControllableInput);
     return AsyncControllableInput;
 }(react.PureComponent));
@@ -9388,7 +9472,7 @@ var InputGroup = /** @class */ (function (_super) {
     };
     InputGroup.displayName = DISPLAYNAME_PREFIX + ".InputGroup";
     InputGroup = __decorate([
-        polyfill$3
+        polyfill
     ], InputGroup);
     return InputGroup;
 }(AbstractPureComponent2));
@@ -9435,7 +9519,7 @@ var HTMLSelect = /** @class */ (function (_super) {
             react.createElement(Icon, __assign({ icon: "double-caret-vertical" }, iconProps))));
     };
     HTMLSelect = __decorate([
-        polyfill$3
+        polyfill
     ], HTMLSelect);
     return HTMLSelect;
 }(AbstractPureComponent2));
@@ -9455,10 +9539,10 @@ var HTMLSelect = /** @class */ (function (_super) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var NS = getClassNamespace();
-var DATEINPUT = NS + "-dateinput";
+var NS$1 = getClassNamespace();
+var DATEINPUT = NS$1 + "-dateinput";
 var DATEINPUT_POPOVER = DATEINPUT + "-popover";
-var DATEPICKER = NS + "-datepicker";
+var DATEPICKER = NS$1 + "-datepicker";
 var DATEPICKER_CAPTION = DATEPICKER + "-caption";
 var DATEPICKER_CAPTION_MEASURE = DATEPICKER_CAPTION + "-measure";
 var DATEPICKER_DAY = "DayPicker-Day";
@@ -9469,9 +9553,9 @@ var DATEPICKER_YEAR_SELECT = DATEPICKER + "-year-select";
 var DATEPICKER_NAVBAR = DATEPICKER + "-navbar";
 var DATEPICKER_NAVBUTTON = "DayPicker-NavButton";
 var DATEPICKER_TIMEPICKER_WRAPPER = DATEPICKER + "-timepicker-wrapper";
-var DATERANGEPICKER = NS + "-daterangepicker";
+var DATERANGEPICKER = NS$1 + "-daterangepicker";
 var DATERANGEPICKER_SHORTCUTS = DATERANGEPICKER + "-shortcuts";
-var TIMEPICKER = NS + "-timepicker";
+var TIMEPICKER = NS$1 + "-timepicker";
 var TIMEPICKER_ARROW_BUTTON = TIMEPICKER + "-arrow-button";
 var TIMEPICKER_ARROW_ROW = TIMEPICKER + "-arrow-row";
 var TIMEPICKER_DIVIDER_TEXT = TIMEPICKER + "-divider-text";
@@ -9905,14 +9989,14 @@ var keys = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LEFT = 37;
-exports.UP = 38;
-exports.RIGHT = 39;
-exports.DOWN = 40;
-exports.ENTER = 13;
-exports.SPACE = 32;
-exports.ESC = 27;
-exports.TAB = 9;
+var LEFT = exports.LEFT = 37;
+var UP = exports.UP = 38;
+var RIGHT = exports.RIGHT = 39;
+var DOWN = exports.DOWN = 40;
+var ENTER = exports.ENTER = 13;
+var SPACE = exports.SPACE = 32;
+var ESC = exports.ESC = 27;
+var TAB = exports.TAB = 9;
 
 });
 
@@ -9927,10 +10011,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
-
-
-
-var _propTypes2 = _interopRequireDefault(propTypes);
 
 
 
@@ -9983,7 +10063,7 @@ var Caption = function (_Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: classNames.caption, role: 'heading' },
+        { className: classNames.caption, role: 'heading', 'aria-live': 'polite' },
         _react2.default.createElement(
           'div',
           { onClick: onClick, onKeyUp: this.handleKeyUp },
@@ -9996,16 +10076,6 @@ var Caption = function (_Component) {
   return Caption;
 }(react.Component);
 
-Caption.propTypes = {
-  date: _propTypes2.default.instanceOf(Date),
-  months: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  locale: _propTypes2.default.string,
-  localeUtils: _propTypes2.default.object,
-  onClick: _propTypes2.default.func,
-  classNames: _propTypes2.default.shape({
-    caption: _propTypes2.default.string.isRequired
-  }).isRequired
-};
 Caption.defaultProps = {
   localeUtils: _LocaleUtils2.default
 };
@@ -10063,10 +10133,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
-
-
-
-var _propTypes2 = _interopRequireDefault(propTypes);
 
 
 
@@ -10194,24 +10260,6 @@ var Navbar = function (_Component) {
   return Navbar;
 }(react.Component);
 
-Navbar.propTypes = {
-  classNames: _propTypes2.default.shape({
-    navBar: _propTypes2.default.string.isRequired,
-    navButtonPrev: _propTypes2.default.string.isRequired,
-    navButtonNext: _propTypes2.default.string.isRequired,
-    navButtonInteractionDisabled: _propTypes2.default.string.isRequired
-  }),
-  className: _propTypes2.default.string,
-  showPreviousButton: _propTypes2.default.bool,
-  showNextButton: _propTypes2.default.bool,
-  onPreviousClick: _propTypes2.default.func,
-  onNextClick: _propTypes2.default.func,
-  dir: _propTypes2.default.string,
-  labels: _propTypes2.default.shape({
-    previousMonth: _propTypes2.default.string.isRequired,
-    nextMonth: _propTypes2.default.string.isRequired
-  })
-};
 Navbar.defaultProps = {
   classNames: _classNames2.default,
   dir: 'ltr',
@@ -10237,10 +10285,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
-
-
-
-var _propTypes2 = _interopRequireDefault(propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -10309,21 +10353,6 @@ var Weekdays = function (_Component) {
   return Weekdays;
 }(react.Component);
 
-Weekdays.propTypes = {
-  classNames: _propTypes2.default.shape({
-    weekday: _propTypes2.default.string.isRequired,
-    weekdays: _propTypes2.default.string.isRequired,
-    weekdaysRow: _propTypes2.default.string.isRequired
-  }).isRequired,
-
-  firstDayOfWeek: _propTypes2.default.number.isRequired,
-  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  showWeekNumbers: _propTypes2.default.bool,
-  locale: _propTypes2.default.string.isRequired,
-  localeUtils: _propTypes2.default.object.isRequired,
-  weekdayElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(_react2.default.Component)])
-};
 exports.default = Weekdays;
 
 });
@@ -10760,10 +10789,6 @@ var _react2 = _interopRequireDefault(react);
 
 
 
-var _propTypes2 = _interopRequireDefault(propTypes);
-
-
-
 
 
 
@@ -10901,31 +10926,6 @@ var Day = function (_Component) {
   return Day;
 }(react.Component);
 
-Day.propTypes = {
-  classNames: _propTypes2.default.shape({
-    day: _propTypes2.default.string.isRequired
-  }).isRequired,
-
-  day: _propTypes2.default.instanceOf(Date).isRequired,
-  children: _propTypes2.default.node.isRequired,
-
-  ariaDisabled: _propTypes2.default.bool,
-  ariaLabel: _propTypes2.default.string,
-  ariaSelected: _propTypes2.default.bool,
-  empty: _propTypes2.default.bool,
-  modifiers: _propTypes2.default.object,
-  modifiersStyles: _propTypes2.default.object,
-  onClick: _propTypes2.default.func,
-  onKeyDown: _propTypes2.default.func,
-  onMouseEnter: _propTypes2.default.func,
-  onMouseLeave: _propTypes2.default.func,
-  onMouseDown: _propTypes2.default.func,
-  onMouseUp: _propTypes2.default.func,
-  onTouchEnd: _propTypes2.default.func,
-  onTouchStart: _propTypes2.default.func,
-  onFocus: _propTypes2.default.func,
-  tabIndex: _propTypes2.default.number
-};
 Day.defaultProps = {
   tabIndex: -1
 };
@@ -11033,10 +11033,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
-
-
-
-var _propTypes2 = _interopRequireDefault(propTypes);
 
 
 
@@ -11226,54 +11222,6 @@ var Month = function (_Component) {
   return Month;
 }(react.Component);
 
-Month.propTypes = {
-  classNames: _propTypes2.default.shape({
-    body: _propTypes2.default.string.isRequired,
-    month: _propTypes2.default.string.isRequired,
-    outside: _propTypes2.default.string.isRequired,
-    today: _propTypes2.default.string.isRequired,
-    week: _propTypes2.default.string.isRequired,
-    weekNumber: _propTypes2.default.string.isRequired,
-    disabled: _propTypes2.default.string.isRequired,
-    selected: _propTypes2.default.string.isRequired
-  }).isRequired,
-  tabIndex: _propTypes2.default.number,
-
-  month: _propTypes2.default.instanceOf(Date).isRequired,
-  months: _propTypes2.default.arrayOf(_propTypes2.default.string),
-
-  modifiersStyles: _propTypes2.default.object,
-
-  showWeekDays: _propTypes2.default.bool,
-  showOutsideDays: _propTypes2.default.bool,
-
-  renderDay: _propTypes2.default.func.isRequired,
-  renderWeek: _propTypes2.default.func.isRequired,
-
-  captionElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(_react2.default.Component)]).isRequired,
-  weekdayElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(_react2.default.Component)]),
-
-  fixedWeeks: _propTypes2.default.bool,
-  showWeekNumbers: _propTypes2.default.bool,
-
-  locale: _propTypes2.default.string.isRequired,
-  localeUtils: _propTypes2.default.object.isRequired,
-  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  firstDayOfWeek: _propTypes2.default.number.isRequired,
-
-  onCaptionClick: _propTypes2.default.func,
-  onDayClick: _propTypes2.default.func,
-  onDayFocus: _propTypes2.default.func,
-  onDayKeyDown: _propTypes2.default.func,
-  onDayMouseEnter: _propTypes2.default.func,
-  onDayMouseLeave: _propTypes2.default.func,
-  onDayMouseDown: _propTypes2.default.func,
-  onDayMouseUp: _propTypes2.default.func,
-  onDayTouchEnd: _propTypes2.default.func,
-  onDayTouchStart: _propTypes2.default.func,
-  onWeekClick: _propTypes2.default.func
-};
 exports.default = Month;
 
 });
@@ -11289,10 +11237,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
-
-
-
-var _propTypes2 = _interopRequireDefault(propTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11355,15 +11299,6 @@ var Weekday = function (_Component) {
   return Weekday;
 }(react.Component);
 
-Weekday.propTypes = {
-  weekday: _propTypes2.default.number,
-  className: _propTypes2.default.string,
-  locale: _propTypes2.default.string,
-  localeUtils: _propTypes2.default.object,
-
-  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string)
-};
 exports.default = Weekday;
 
 });
@@ -11382,10 +11317,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 
 var _react2 = _interopRequireDefault(react);
-
-
-
-var _propTypes2 = _interopRequireDefault(propTypes);
 
 
 
@@ -11909,97 +11840,6 @@ var DayPicker = exports.DayPicker = function (_Component) {
   return DayPicker;
 }(react.Component);
 
-DayPicker.propTypes = {
-  // Rendering months
-  initialMonth: _propTypes2.default.instanceOf(Date),
-  month: _propTypes2.default.instanceOf(Date),
-  numberOfMonths: _propTypes2.default.number,
-  fromMonth: _propTypes2.default.instanceOf(Date),
-  toMonth: _propTypes2.default.instanceOf(Date),
-  canChangeMonth: _propTypes2.default.bool,
-  reverseMonths: _propTypes2.default.bool,
-  pagedNavigation: _propTypes2.default.bool,
-  todayButton: _propTypes2.default.string,
-  showWeekNumbers: _propTypes2.default.bool,
-  showWeekDays: _propTypes2.default.bool,
-
-  // Modifiers
-  selectedDays: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.func, _propTypes2.default.array]),
-  disabledDays: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.func, _propTypes2.default.array]),
-
-  modifiers: _propTypes2.default.object,
-  modifiersStyles: _propTypes2.default.object,
-
-  // Localization
-  dir: _propTypes2.default.string,
-  firstDayOfWeek: _propTypes2.default.oneOf([0, 1, 2, 3, 4, 5, 6]),
-  labels: _propTypes2.default.shape({
-    nextMonth: _propTypes2.default.string.isRequired,
-    previousMonth: _propTypes2.default.string.isRequired
-  }),
-  locale: _propTypes2.default.string,
-  localeUtils: _propTypes2.default.shape({
-    formatMonthTitle: _propTypes2.default.func,
-    formatWeekdayShort: _propTypes2.default.func,
-    formatWeekdayLong: _propTypes2.default.func,
-    getFirstDayOfWeek: _propTypes2.default.func
-  }),
-  months: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  weekdaysLong: _propTypes2.default.arrayOf(_propTypes2.default.string),
-  weekdaysShort: _propTypes2.default.arrayOf(_propTypes2.default.string),
-
-  // Customization
-  showOutsideDays: _propTypes2.default.bool,
-  enableOutsideDaysClick: _propTypes2.default.bool,
-  fixedWeeks: _propTypes2.default.bool,
-
-  // CSS and HTML
-  classNames: _propTypes2.default.shape({
-    body: _propTypes2.default.string,
-    container: _propTypes2.default.string,
-    day: _propTypes2.default.string.isRequired,
-    disabled: _propTypes2.default.string.isRequired,
-    footer: _propTypes2.default.string,
-    interactionDisabled: _propTypes2.default.string,
-    months: _propTypes2.default.string,
-    month: _propTypes2.default.string,
-    navBar: _propTypes2.default.string,
-    outside: _propTypes2.default.string.isRequired,
-    selected: _propTypes2.default.string.isRequired,
-    today: _propTypes2.default.string.isRequired,
-    todayButton: _propTypes2.default.string,
-    week: _propTypes2.default.string,
-    wrapper: _propTypes2.default.string
-  }),
-  className: _propTypes2.default.string,
-  containerProps: _propTypes2.default.object,
-  tabIndex: _propTypes2.default.number,
-
-  // Custom elements
-  renderDay: _propTypes2.default.func,
-  renderWeek: _propTypes2.default.func,
-  weekdayElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(react.Component)]),
-  navbarElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(react.Component)]),
-  captionElement: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.func, _propTypes2.default.instanceOf(react.Component)]),
-
-  // Events
-  onBlur: _propTypes2.default.func,
-  onFocus: _propTypes2.default.func,
-  onKeyDown: _propTypes2.default.func,
-  onDayClick: _propTypes2.default.func,
-  onDayKeyDown: _propTypes2.default.func,
-  onDayMouseEnter: _propTypes2.default.func,
-  onDayMouseLeave: _propTypes2.default.func,
-  onDayMouseDown: _propTypes2.default.func,
-  onDayMouseUp: _propTypes2.default.func,
-  onDayTouchStart: _propTypes2.default.func,
-  onDayTouchEnd: _propTypes2.default.func,
-  onDayFocus: _propTypes2.default.func,
-  onMonthChange: _propTypes2.default.func,
-  onCaptionClick: _propTypes2.default.func,
-  onWeekClick: _propTypes2.default.func,
-  onTodayButtonClick: _propTypes2.default.func
-};
 DayPicker.defaultProps = {
   classNames: _classNames2.default,
   tabIndex: 0,
@@ -12105,15 +11945,15 @@ var DayPicker = /*@__PURE__*/getDefaultExportFromCjs(build);
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var ns = "[Blueprint]";
-var DATEPICKER_DEFAULT_VALUE_INVALID = ns + " <DatePicker> defaultValue must be within minDate and maxDate bounds.";
-var DATEPICKER_INITIAL_MONTH_INVALID = ns + " <DatePicker> initialMonth must be within minDate and maxDate bounds.";
-var DATEPICKER_MAX_DATE_INVALID = ns + " <DatePicker> maxDate must be later than minDate.";
-var DATEPICKER_VALUE_INVALID = ns + " <DatePicker> value prop must be within minDate and maxDate bounds.";
-DATEPICKER_DEFAULT_VALUE_INVALID.replace("DatePicker", "DateRangePicker");
-DATEPICKER_INITIAL_MONTH_INVALID.replace("DatePicker", "DateRangePicker");
-DATEPICKER_MAX_DATE_INVALID.replace("DatePicker", "DateRangePicker");
-DATEPICKER_VALUE_INVALID.replace("DatePicker", "DateRangePicker");
+var ns$1 = "[Blueprint]";
+var DATEPICKER_DEFAULT_VALUE_INVALID = ns$1 + " <DatePicker> defaultValue must be within minDate and maxDate bounds.";
+var DATEPICKER_INITIAL_MONTH_INVALID = ns$1 + " <DatePicker> initialMonth must be within minDate and maxDate bounds.";
+var DATEPICKER_MAX_DATE_INVALID = ns$1 + " <DatePicker> maxDate must be later than minDate.";
+var DATEPICKER_VALUE_INVALID = ns$1 + " <DatePicker> value prop must be within minDate and maxDate bounds.";
+var DATERANGEPICKER_DEFAULT_VALUE_INVALID = DATEPICKER_DEFAULT_VALUE_INVALID.replace("DatePicker", "DateRangePicker");
+var DATERANGEPICKER_INITIAL_MONTH_INVALID = DATEPICKER_INITIAL_MONTH_INVALID.replace("DatePicker", "DateRangePicker");
+var DATERANGEPICKER_MAX_DATE_INVALID = DATEPICKER_MAX_DATE_INVALID.replace("DatePicker", "DateRangePicker");
+var DATERANGEPICKER_VALUE_INVALID = DATEPICKER_VALUE_INVALID.replace("DatePicker", "DateRangePicker");
 
 /*
  * Copyright 2015 Palantir Technologies, Inc. All rights reserved.
@@ -12226,7 +12066,7 @@ var DatePickerCaption = /** @class */ (function (_super) {
         // measure width of text as rendered inside our container element.
         var monthTextWidth = measureTextWidth(this.displayedMonthText, DATEPICKER_CAPTION_MEASURE, this.containerElement);
         var monthSelectWidth = this.containerElement == null ? 0 : this.containerElement.firstElementChild.clientWidth;
-        var rightOffset = Math.max(2, monthSelectWidth - monthTextWidth - Icon.SIZE_STANDARD - 2);
+        var rightOffset = Math.max(2, monthSelectWidth - monthTextWidth - IconSize.STANDARD - 2);
         this.setState({ monthRightOffset: rightOffset });
     };
     DatePickerCaption.prototype.dateChangeHandler = function (updater, handler) {
@@ -12245,7 +12085,7 @@ var DatePickerCaption = /** @class */ (function (_super) {
         };
     };
     DatePickerCaption = __decorate([
-        polyfill$3
+        polyfill
     ], DatePickerCaption);
     return DatePickerCaption;
 }(AbstractPureComponent2));
@@ -12824,16 +12664,16 @@ var DatePicker = /** @class */ (function (_super) {
     DatePicker.prototype.validateProps = function (props) {
         var defaultValue = props.defaultValue, initialMonth = props.initialMonth, maxDate = props.maxDate, minDate = props.minDate, value = props.value;
         if (defaultValue != null && !isDayInRange(defaultValue, [minDate, maxDate])) {
-            throw new Error(DATEPICKER_DEFAULT_VALUE_INVALID);
+            console.error(DATEPICKER_DEFAULT_VALUE_INVALID);
         }
         if (initialMonth != null && !isMonthInRange(initialMonth, [minDate, maxDate])) {
-            throw new Error(DATEPICKER_INITIAL_MONTH_INVALID);
+            console.error(DATEPICKER_INITIAL_MONTH_INVALID);
         }
         if (maxDate != null && minDate != null && maxDate < minDate && !areSameDay(maxDate, minDate)) {
-            throw new Error(DATEPICKER_MAX_DATE_INVALID);
+            console.error(DATEPICKER_MAX_DATE_INVALID);
         }
         if (value != null && !isDayInRange(value, [minDate, maxDate])) {
-            throw new Error(DATEPICKER_VALUE_INVALID);
+            console.error(DATEPICKER_VALUE_INVALID);
         }
     };
     DatePicker.prototype.renderOptionsBar = function () {
@@ -12924,7 +12764,7 @@ var DatePicker = /** @class */ (function (_super) {
     };
     DatePicker.displayName = DISPLAYNAME_PREFIX + ".DatePicker";
     DatePicker = DatePicker_1 = __decorate([
-        polyfill$3
+        polyfill
     ], DatePicker);
     return DatePicker;
 }(AbstractPureComponent2));
@@ -13086,6 +12926,7 @@ var DateInput = /** @class */ (function (_super) {
             _this.safeInvokeInputProp("onBlur", e);
         };
         _this.handleInputKeyDown = function (e) {
+            var _a;
             // HACKHACK: https://github.com/palantir/blueprint/issues/4165
             /* eslint-disable deprecation/deprecation */
             if (e.which === ENTER) {
@@ -13097,7 +12938,7 @@ var DateInput = /** @class */ (function (_super) {
             }
             else if (e.which === ESCAPE) {
                 _this.setState({ isOpen: false });
-                getRef(_this.inputElement).blur();
+                (_a = _this.inputElement) === null || _a === void 0 ? void 0 : _a.blur();
             }
             _this.safeInvokeInputProp("onKeyDown", e);
         };
@@ -13172,13 +13013,12 @@ var DateInput = /** @class */ (function (_super) {
             // If the user presses the TAB key on a DayPicker Day element and the lastTabbableElement is also a DayPicker Day
             // element, the popover should be closed
             onDayKeyDown: function (day, modifiers, e) {
-                var _a, _b;
+                var _a, _b, _c;
                 if (e.key === "Tab" &&
-                    !e.shiftKey &&
-                    _this.lastTabbableElement.classList.contains(DATEPICKER_DAY)) {
+                    !e.shiftKey && ((_a = _this.lastTabbableElement) === null || _a === void 0 ? void 0 : _a.classList.contains(DATEPICKER_DAY))) {
                     _this.setState({ isOpen: false });
                 }
-                (_b = (_a = _this.props.dayPickerProps).onDayKeyDown) === null || _b === void 0 ? void 0 : _b.call(_a, day, modifiers, e);
+                (_c = (_b = _this.props.dayPickerProps).onDayKeyDown) === null || _c === void 0 ? void 0 : _c.call(_b, day, modifiers, e);
             }, 
             // dom elements for the updated month is not available when
             // onMonthChange is called. setTimeout is necessary to wait
@@ -13199,7 +13039,13 @@ var DateInput = /** @class */ (function (_super) {
             react.createElement(InputGroup, __assign({ autoComplete: "off", intent: isErrorState ? Intent.DANGER : Intent.NONE, placeholder: this.props.placeholder, rightElement: this.props.rightElement, type: "text" }, inputProps, { disabled: this.props.disabled, inputRef: this.handleInputRef, onBlur: this.handleInputBlur, onChange: this.handleInputChange, onClick: this.handleInputClick, onFocus: this.handleInputFocus, onKeyDown: this.handleInputKeyDown, value: dateString }))));
     };
     DateInput.prototype.componentDidUpdate = function (prevProps, prevState) {
+        var _a, _b, _c, _d, _e;
         _super.prototype.componentDidUpdate.call(this, prevProps, prevState);
+        if (((_a = prevProps.inputProps) === null || _a === void 0 ? void 0 : _a.inputRef) !== ((_b = this.props.inputProps) === null || _b === void 0 ? void 0 : _b.inputRef)) {
+            setRef((_c = prevProps.inputProps) === null || _c === void 0 ? void 0 : _c.inputRef, null);
+            this.handleInputRef = refHandler(this, "inputElement", (_d = this.props.inputProps) === null || _d === void 0 ? void 0 : _d.inputRef);
+            setRef((_e = this.props.inputProps) === null || _e === void 0 ? void 0 : _e.inputRef, this.inputElement);
+        }
         if (prevProps.value !== this.props.value) {
             this.setState({ value: this.props.value });
         }
@@ -13253,7 +13099,7 @@ var DateInput = /** @class */ (function (_super) {
         reverseMonthAndYearMenus: false,
     };
     DateInput = __decorate([
-        polyfill$3
+        polyfill
     ], DateInput);
     return DateInput;
 }(AbstractPureComponent2));

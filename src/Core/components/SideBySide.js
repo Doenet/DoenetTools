@@ -2001,10 +2001,10 @@ export class Stack extends BlockComponent {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: 'atLeastOneBlock',
-      componentType: '_block',
+      name: 'atLeastZeroChildren',
+      componentType: '_base',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
       setAsBase: true,
     });
 

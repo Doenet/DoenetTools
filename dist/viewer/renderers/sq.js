@@ -7,6 +7,6 @@ export default class Alert extends DoenetRenderer {
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
       name: this.componentName
-    }), "\u2018", this.children, "\u2019");
+    }), "‘", this.children, "’");
   }
 }

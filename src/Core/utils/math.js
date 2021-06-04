@@ -283,7 +283,7 @@ export function isValidVariable(expression) {
 }
 
 export function mathStateVariableFromNumberStateVariable({
-  numberVariableName = "number", mathVariableName = "math", isPublic = "false" } = {}
+  numberVariableName = "number", mathVariableName = "math", isPublic = false } = {}
 ) {
 
   let mathDef = {
@@ -294,11 +294,7 @@ export function mathStateVariableFromNumberStateVariable({
       },
     }),
     definition: function ({ dependencyValues }) {
-      if (Number.isNaN(dependencyValues.number)) {
-        return { newValues: { [mathVariableName]: me.fromAst('\uff3f') } };
-      } else {
-        return { newValues: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
-      }
+      return { newValues: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
     },
     inverseDefinition: function ({ desiredStateVariableValues }) {
 

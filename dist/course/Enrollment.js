@@ -25,11 +25,11 @@ export default function Enrollment(params) {
     reader.readAsText(file[0]);
   }, []);
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop});
-  const [courseId, setCourseId] = useState("");
+  const [driveId, setDriveId] = useState("");
   const [enrollmentTableData, setEnrollmentTableData] = useState([]);
   useEffect(() => {
-    if (courseId !== "") {
-      const payload = {params: {courseId}};
+    if (driveId !== "") {
+      const payload = {params: {driveId}};
       axios.get("/api/getEnrollment.php", payload).then((resp) => {
         let enrollmentArray = resp.data.enrollmentArray;
         setEnrollmentTableData(enrollmentArray);
@@ -38,12 +38,12 @@ export default function Enrollment(params) {
         console.warn(error);
       });
     }
-  }, [courseId]);
+  }, [driveId]);
   if (!params.selectedCourse) {
     return ""(/* @__PURE__ */ React.createElement(React.Fragment, null, " ", /* @__PURE__ */ React.createElement("p", null, "Loading..."), " "));
   } else {
-    if (courseId === "") {
-      setCourseId(params.selectedCourse.courseId);
+    if (driveId === "") {
+      setDriveId(params.selectedCourse.driveId);
     }
   }
   let enrollmentRows = [];
@@ -196,7 +196,7 @@ export default function Enrollment(params) {
         key: "merge",
         callback: () => {
           const payload = {
-            courseId,
+            driveId,
             mergeHeads,
             mergeId,
             mergeFirstName,

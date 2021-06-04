@@ -1,5 +1,4 @@
 import { deepClone } from '../utils/deepFunctions';
-import { processAssignNames } from '../utils/serializedStateProcessing';
 import CompositeComponent from './abstract/CompositeComponent';
 
 export default class Template extends CompositeComponent {
@@ -7,6 +6,7 @@ export default class Template extends CompositeComponent {
 
   static treatAsComponentForRecursiveReplacements = true;
   static includeBlankStringChildren = true;
+  static renderedDefault = false;
 
   static keepChildrenSerialized({ serializedComponent }) {
     if (serializedComponent.children === undefined) {
@@ -21,7 +21,7 @@ export default class Template extends CompositeComponent {
     attributes.rendered = {
       createComponentOfType: "boolean",
       createStateVariable: "rendered",
-      defaultValue: false,
+      defaultValue: this.renderedDefault,
       public: true,
     };
     return attributes;
@@ -93,9 +93,18 @@ export default class Template extends CompositeComponent {
 
   get allPotentialRendererTypes() {
 
-    return this.potentialRendererTypesFromSerializedComponents(
+    let allPotentialRendererTypes = super.allPotentialRendererTypes;
+
+    let additionalRendererTypes = this.potentialRendererTypesFromSerializedComponents(
       this.stateValues.serializedChildren
     );
+    for (let rendererType of additionalRendererTypes) {
+      if (!allPotentialRendererTypes.includes(rendererType)) {
+        allPotentialRendererTypes.push(rendererType);
+      }
+    }
+
+    return allPotentialRendererTypes;
 
   }
 }

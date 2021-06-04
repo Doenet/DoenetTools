@@ -10,7 +10,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
     childLogic.deleteAllLogic();
 
     childLogic.newLeaf({
-      name: "atLeastOneMath",
+      name: "atLeastZeroMaths",
       componentType: 'math',
       comparison: 'atLeast',
       number: 0,
@@ -37,7 +37,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneMath",
+          childLogicName: "atLeastZeroMaths",
           variableNames: ["value"]
         }
       }),

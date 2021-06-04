@@ -29,13 +29,6 @@ export default class SectioningComponent extends BlockComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.delegateCheckWorkToAnswerNumber = {
-      createComponentOfType: "boolean",
-      createStateVariable: "delegateCheckWorkToAnswerNumber",
-      defaultValue: null,
-      forRenderer: true,
-      public: true,
-    };
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.feedbackDefinitions = {
@@ -250,6 +243,7 @@ export default class SectioningComponent extends BlockComponent {
         answerDescendants: {
           dependencyType: "descendant",
           componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
           recurseToMatchedChildren: false,
         }
       }),
@@ -262,10 +256,8 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "descendant",
-          componentTypes: ["answer"],
-          variableNames: ["justSubmitted"],
-          recurseToMatchedChildren: false,
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
         }
       }),
       definition({ dependencyValues }) {
@@ -416,50 +408,73 @@ export default class SectioningComponent extends BlockComponent {
     }
 
 
-    stateVariableDefinitions.selectedVariantInfo = {
+    stateVariableDefinitions.generatedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
       returnDependencies: ({ componentInfoObjects }) => ({
         variantControlChild: {
           dependencyType: "child",
           childLogicName: "atMostOneVariantControl",
-          variableNames: ["selectedVariantNumber"]
+          variableNames: ["selectedVariantIndex", "selectedVariantName"]
         },
         variantDescendants: {
           dependencyType: "descendant",
           componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
           variableNames: [
             "isVariantComponent",
-            "selectedVariantInfo",
+            "generatedVariantInfo",
           ],
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
           definingChildrenFirst: true,
-        }
+        },
+        variants: {
+          dependencyType: "variants",
+        },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
-        let isVariantComponent;
-        let selectedVariantInfo = {};
-        if (dependencyValues.variantControlChild.length === 1) {
-          isVariantComponent = true;
-          selectedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantNumber;
-        } else {
-          isVariantComponent = false;
+        if (dependencyValues.variantControlChild.length === 0) {
+          return {
+            newValues: {
+              generatedVariantInfo: null,
+              isVariantComponent: false
+            }
+          }
         }
 
-        let subvariants = selectedVariantInfo.subvariants = [];
+
+        let subvariantsSpecified = Boolean(
+          dependencyValues.variants.desiredVariant &&
+          dependencyValues.variants.desiredVariant.subvariants
+        );
+
+        let generatedVariantInfo = {
+          index: dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex,
+          name: dependencyValues.variantControlChild[0].stateValues.selectedVariantName,
+          meta: {
+            createdBy: componentName,
+            subvariantsSpecified
+          }
+        }
+
+        let subvariants = generatedVariantInfo.subvariants = [];
 
         for (let descendant of dependencyValues.variantDescendants) {
           if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.selectedVariantInfo)
-          } else if (descendant.stateValues.selectedVariantInfo) {
-            subvariants.push(...descendant.stateValues.selectedVariantInfo.subvariants)
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
-
         }
-        return { newValues: { selectedVariantInfo, isVariantComponent } }
+
+        return {
+          newValues: {
+            generatedVariantInfo,
+            isVariantComponent: true
+          }
+        }
 
       }
     }
@@ -501,121 +516,55 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.createSubmitAllButton = {
       forRenderer: true,
-      additionalStateVariablesDefined: ["createSubmitAllButtonOnAnswer"],
+      additionalStateVariablesDefined: [{
+        variableName: "suppressAnswerSubmitButtons",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         sectionWideCheckWork: {
           dependencyType: "stateVariable",
           variableName: "sectionWideCheckWork"
         },
-        delegateCheckWorkToAnswerNumber: {
-          dependencyType: "stateVariable",
-          variableName: "delegateCheckWorkToAnswerNumber"
-        },
         aggregateScores: {
           dependencyType: "stateVariable",
           variableName: "aggregateScores"
-        },
-        answerDescendants: {
-          dependencyType: "stateVariable",
-          variableName: "answerDescendants"
-        },
-      }),
-      definition({ dependencyValues, componentName }) {
-
-        let createSubmitAllButton = false;
-        let createSubmitAllButtonOnAnswer = null;
-
-        if (dependencyValues.sectionWideCheckWork) {
-          if (!dependencyValues.aggregateScores) {
-            console.warn(`Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`);
-          } else {
-            let chosenAnswer = null;
-            if (dependencyValues.delegateCheckWorkToAnswerNumber > 0) {
-              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber - 1];
-            } else if (dependencyValues.delegateCheckWorkToAnswerNumber < 0) {
-              let answerInd = dependencyValues.answerDescendants.length + dependencyValues.delegateCheckWorkToAnswerNumber;
-              chosenAnswer = dependencyValues.answerDescendants[answerInd];
-            }
-            if (chosenAnswer) {
-              createSubmitAllButtonOnAnswer = chosenAnswer.componentName;
-            } else {
-              createSubmitAllButton = true;
-            }
-
-          }
-        }
-
-        return { newValues: { createSubmitAllButton, createSubmitAllButtonOnAnswer } }
-      }
-    }
-
-    stateVariableDefinitions.suppressAnswerSubmitButtons = {
-      additionalStateVariablesDefined: [
-        "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
-        "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
-      ],
-      forRenderer: true,
-      returnDependencies: () => ({
-        createSubmitAllButton: {
-          dependencyType: "stateVariable",
-          variableName: "createSubmitAllButton"
-        },
-        createSubmitAllButtonOnAnswer: {
-          dependencyType: "stateVariable",
-          variableName: "createSubmitAllButtonOnAnswer"
-        },
-        justSubmitted: {
-          dependencyType: "stateVariable",
-          variableName: "justSubmitted"
-        },
-        creditAchieved: {
-          dependencyType: "stateVariable",
-          variableName: "creditAchieved"
         },
         sectionAncestor: {
           dependencyType: "ancestor",
           componentType: "_sectioningComponent",
           variableNames: [
             "suppressAnswerSubmitButtons",
-            "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
-            "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
+          ]
+        },
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: [
+            "suppressAnswerSubmitButtons",
           ]
         }
       }),
       definition({ dependencyValues, componentName }) {
 
+        let createSubmitAllButton = false;
         let suppressAnswerSubmitButtons = false;
-        let answerDelegatedForSubmitAll = null;
-        let componentNameForSubmitAll = null;
-        let justSubmittedForSubmitAll = null;
-        let creditAchievedForSubmitAll = null;
 
-        if (dependencyValues.createSubmitAllButton || dependencyValues.createSubmitAllButtonOnAnswer) {
-          componentNameForSubmitAll = componentName;
-          suppressAnswerSubmitButtons = true;
-          if (dependencyValues.createSubmitAllButtonOnAnswer) {
-            answerDelegatedForSubmitAll = dependencyValues.createSubmitAllButtonOnAnswer;
-            justSubmittedForSubmitAll = dependencyValues.justSubmitted;
-            creditAchievedForSubmitAll = dependencyValues.creditAchieved;
-          }
-        } else if (dependencyValues.sectionAncestor) {
-          let ancestorStateValues = dependencyValues.sectionAncestor.stateValues;
-          suppressAnswerSubmitButtons = ancestorStateValues.suppressAnswerSubmitButtons;
-          componentNameForSubmitAll = ancestorStateValues.componentNameForSubmitAll;
-          answerDelegatedForSubmitAll = ancestorStateValues.answerDelegatedForSubmitAll;
-          justSubmittedForSubmitAll = ancestorStateValues.justSubmittedForSubmitAll;
-          creditAchievedForSubmitAll = ancestorStateValues.creditAchievedForSubmitAll;
-        }
-
-        return {
-          newValues: {
-            suppressAnswerSubmitButtons,
-            componentNameForSubmitAll,
-            answerDelegatedForSubmitAll,
-            justSubmittedForSubmitAll,
-            creditAchievedForSubmitAll
+        if (
+          dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons ||
+          dependencyValues.sectionAncestor &&
+          dependencyValues.sectionAncestor.stateValues.suppressAnswerSubmitButtons
+        ) {
+          suppressAnswerSubmitButtons = true
+        } else if (dependencyValues.sectionWideCheckWork) {
+          if (dependencyValues.aggregateScores) {
+            createSubmitAllButton = true;
+            suppressAnswerSubmitButtons = true
+          } else {
+            console.warn(`Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`);
           }
         }
+
+        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
       }
     }
 
@@ -642,10 +591,12 @@ export default class SectioningComponent extends BlockComponent {
 
     })
     for (let answer of this.stateValues.answerDescendants) {
-      this.coreFunctions.requestAction({
-        componentName: answer.componentName,
-        actionName: "submitAnswer"
-      })
+      if (!answer.stateValues.justSubmitted) {
+        this.coreFunctions.requestAction({
+          componentName: answer.componentName,
+          actionName: "submitAnswer"
+        })
+      }
     }
   }
 
@@ -689,6 +640,7 @@ export default class SectioningComponent extends BlockComponent {
 
   static setUpVariant({
     serializedComponent, sharedParameters, definingChildrenSoFar,
+    descendantVariantComponents,
     allComponentClasses
   }) {
     let variantcontrolChild;
@@ -698,14 +650,18 @@ export default class SectioningComponent extends BlockComponent {
         break;
       }
     }
-    sharedParameters.variant = variantcontrolChild.state.selectedVariant.value;
-    sharedParameters.variantNumber = variantcontrolChild.state.selectedVariantNumber.value;
+    sharedParameters.variantName = variantcontrolChild.state.selectedVariantName.value;
+    sharedParameters.variantIndex = variantcontrolChild.state.selectedVariantIndex.value;
     sharedParameters.selectRng = variantcontrolChild.state.selectRng.value;
     sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
 
+    // seed rng for random numbers predictably from variant using selectRng
+    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
+    sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
+
     // console.log("****Variant for sectioning component****")
     // console.log("Selected seed: " + variantcontrolChild.state.selectedSeed);
-    console.log("Variant for " + this.componentType + ": " + sharedParameters.variant);
+    // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants
     let desiredVariant = serializedComponent.variants.desiredVariant;
@@ -714,24 +670,23 @@ export default class SectioningComponent extends BlockComponent {
       desiredVariant = {};
     }
 
-    // if subvariants aren't defined but we have uniqueVariants specified
-    // then calculate variant information for the descendant variant component
-    if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-      let variantInfo = this.getUniqueVariant({
-        serializedComponent: serializedComponent,
-        variantNumber: sharedParameters.variantNumber,
-        allComponentClasses: allComponentClasses,
-      })
-      if (variantInfo.success) {
-        Object.assign(desiredVariant, variantInfo.desiredVariant);
-      }
-    }
+    // // if subvariants aren't defined but we have uniqueVariants specified
+    // // then calculate variant information for the descendant variant component
+    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
+    //   let variantInfo = this.getUniqueVariant({
+    //     serializedComponent: serializedComponent,
+    //     variantIndex: sharedParameters.variantIndex,
+    //     allComponentClasses: allComponentClasses,
+    //   })
+    //   if (variantInfo.success) {
+    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
+    //   }
+    // }
 
-    if (desiredVariant !== undefined && desiredVariant.subvariants !== undefined &&
-      serializedComponent.variants.descendantVariantComponents !== undefined) {
+    if (desiredVariant.subvariants && descendantVariantComponents) {
       for (let ind in desiredVariant.subvariants) {
         let subvariant = desiredVariant.subvariants[ind];
-        let variantComponent = serializedComponent.variants.descendantVariantComponents[ind];
+        let variantComponent = descendantVariantComponents[ind];
         if (variantComponent === undefined) {
           break;
         }
@@ -818,7 +773,7 @@ export default class SectioningComponent extends BlockComponent {
 
   }
 
-  static getUniqueVariant({ serializedComponent, variantNumber, allComponentClasses }) {
+  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
     if (serializedComponent.variants === undefined) {
       return { succes: false }
     }
@@ -827,18 +782,18 @@ export default class SectioningComponent extends BlockComponent {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantNumber) || variantNumber < 0 || variantNumber >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
       return { success: false }
     }
 
     let desiredVariant = {
-      index: variantNumber,
+      index: variantIndex,
     }
 
     if (serializedComponent.variants.uniqueVariants) {
 
       let result = getVariantsForDescendants({
-        variantNumber: variantNumber,
+        variantIndex: variantIndex,
         serializedComponent: serializedComponent,
         allComponentClasses: allComponentClasses
       })

@@ -1,9 +1,11 @@
 import React, { useState, lazy, Suspense, useRef } from 'react';
 import {
   atom,
+  selector,
   useSetRecoilState,
   useRecoilValue,
   useRecoilCallback,
+  useRecoilValueLoadable,
 } from 'recoil';
 import styled from 'styled-components';
 import Toast from './Toast';
@@ -58,6 +60,9 @@ export const useToolControlHelper = () => {
     assignmentId,
     attemptNumber,
     userId,
+    driveId,
+    folderId,
+    itemId,
   }) => {
     switch (type.toLowerCase()) {
       case 'gradebookassignmentview':
@@ -86,6 +91,9 @@ export const useToolControlHelper = () => {
           <Editor
             branchId={branchId}
             title={title}
+            driveId={driveId}
+            folderId={folderId}
+            itemId={itemId}
             key={`EditorLayer${old.length + 1}`}
           />,
         ]);
@@ -161,33 +169,41 @@ export const useStackId = () => {
 
 export const ProfileContext = React.createContext({});
 
+export const profileAtom = atom({
+  key: "profileAtom",
+  default: selector({
+      key: "profileAtom/Default",
+      get: async () => {
+          try{
+              const profile = JSON.parse(localStorage.getItem('Profile'));
+              if (profile){
+                return profile;
+              }
+              //It wasn't stored in local storage so load it from server
+              const { data } = await axios.get('/api/loadProfile.php')
+              localStorage.setItem('Profile', JSON.stringify(data.profile));
+              return data.profile
+          }catch(error){
+              console.log("Error loading user profile", error.message);                
+              return {}
+          }
+      }
+  })
+})
+
 export default function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
-  const [, setRefresh] = useState(0);
 
-  const profile = JSON.parse(localStorage.getItem('Profile'));
+  const profile = useRecoilValueLoadable(profileAtom)
 
-  //Need profile before rendering any tools
-  if (!profile) {
-    //If doesn't exist then we need to load the profile from the server
-    axios
-      .get('/api/loadProfile.php', { params: {} })
-      .then((resp) => {
-        if (resp.data.success === '1') {
-          // console.log(">>>resp.data.profile",resp.data.profile)
-          localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
-          setRefresh((was) => was + 1);
-        }
-      })
-      .catch((error) => {
-        throw new Error(`Error occured while loading profile: ${error}`);
-      });
+  if (profile.state === "loading"){ return null;}
+    if (profile.state === "hasError"){ 
+      console.error(profile.contents)
+      return null;}
 
-    return null;
-  }
-
+// console.log(">>>ToolRoot profile.contents",profile.contents)
   return (
-    <ProfileContext.Provider value={profile}>
+    <ProfileContext.Provider value={profile.contents}>
       {/* <GlobalStyle /> */}
 
       {tool}
@@ -200,3 +216,26 @@ export default function ToolRoot({ tool }) {
     </ProfileContext.Provider>
   );
 }
+
+// const [_, setRefresh] = useState(0);
+
+// const profile = JSON.parse(localStorage.getItem('Profile'));
+
+  //Need profile before rendering any tools
+  // if (!profile) {
+    //If doesn't exist then we need to load the profile from the server
+    // axios
+    //   .get('/api/loadProfile.php', { params: {} })
+    //   .then((resp) => {
+    //     if (resp.data.success === '1') {
+    //       // console.log(">>>resp.data.profile",resp.data.profile)
+    //       localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
+    //       setRefresh((was) => was + 1);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     //  Error currently does nothing
+    //   });
+
+  //   return null;
+  // }

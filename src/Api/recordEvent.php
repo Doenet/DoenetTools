@@ -14,7 +14,7 @@ $userId = $jwtArray['userId'];
 $device = $jwtArray['deviceName'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$assignmentId =  mysqli_real_escape_string($conn,$_POST["assignmentId"]);
+$branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
 $contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber =  mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $verb =  mysqli_real_escape_string($conn,$_POST["verb"]);
@@ -28,9 +28,9 @@ $timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
 $success = TRUE;
 $message = "";
 
-if ($assignmentId == ""){
+if ($branchId == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing assignmentId';
+  $message = 'Internal Error: missing branchId';
 }elseif ($contentId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing contentId';
@@ -67,8 +67,8 @@ if ($assignmentId == ""){
 
 
 if ($success){
-  $sql = "INSERT INTO event (userId,deviceName,assignmentId,contentId,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
-  VALUES ('$userId','$device','$assignmentId','$contentId','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
+  $sql = "INSERT INTO event (userId,deviceName,branchId,contentId,attemptNumber,variant,verb,object,result,context,version,timestamp,timestored)
+  VALUES ('$userId','$device','$branchId','$contentId','$attemptNumber','$variant','$verb','$object','$result','$context','$version','$timestamp',NOW())";
 
   $result = $conn->query($sql);
 }

@@ -12,7 +12,7 @@ import {
  * Internal dependencies
  */
 import { 
-  folderDictionarySelector, 
+  folderDictionaryFilterSelector, 
   globalSelectedNodesAtom, 
   folderDictionary, 
   selectedDriveItemsAtom,
@@ -831,10 +831,10 @@ export const useDragShadowCallbacks = () => {
 
 export const useSortFolder = () => {
   const [addToast, ToastType] = useToast();
-  const sortFolder = useRecoilCallback(({set})=> 
+  const sortFolder = useRecoilCallback(({set,snapshot})=> 
     async ({driveIdInstanceIdFolderId, sortKey})=>{
       const {driveId, folderId} = driveIdInstanceIdFolderId;
-      const {contentIds} = await snapshot.getPromise(folderDictionarySelector({driveId, folderId}));
+      const {contentIds} = await snapshot.getPromise(folderDictionaryFilterSelector({driveId, folderId}));
       set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortKey);
       
       // if sortOrder not already cached in folderDictionary
@@ -934,9 +934,8 @@ export const useAssignmentCallbacks = () => {
     set(folderDictionary(driveIdFolderId),(old)=>{
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];          
-      newItemObj.isAssignment = "1";
-      newItemObj.assignment_title = payload?.assignment_title;      
-      newItemObj.assignmentId = payload?.assignmentId;
+      newItemObj.isAssigned = "1";
+      newItemObj.dueDate = payload?.dueDate;
       return newObj;
     })
   }
@@ -951,9 +950,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.assignment_isPublished = "1";
-        newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payload?.assignment_title;
-        newItemObj.assignmentId = payload?.assignmentId;
+        newItemObj.isAssigned = "1";
         return newObj;
       })
     }
@@ -983,8 +980,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
       set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
-        newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payloadAssignment?.assignment_title;     
+        newItemObj.isAssigned = "1";
         newItemObj.assignedDate = payloadAssignment?.assignedDate;
         newItemObj.dueDate = payloadAssignment?.dueDate;
         newItemObj.timeLimit = payloadAssignment?.timeLimit;
@@ -1005,7 +1001,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
       set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];
-        newItemObj.isAssignment = "0";
+        newItemObj.isAssigned = "0";
         return newObj;
       })
 

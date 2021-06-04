@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-import {parse,parseAndCompile,showCursor} from '../../Parser/parser.js';
+import { useRecoilState,RecoilRoot, useRecoilValue } from 'recoil';
+import Drive, {folderDictionaryFilterAtom,folderDictionaryFilterSelector} from '../../_reactComponents/Drive/Drive';
 
 // import axios from 'axios';
 
@@ -84,13 +85,42 @@ import {parse,parseAndCompile,showCursor} from '../../Parser/parser.js';
   // <DynamicLoad />,
 
 
+
+function Demo(props) {
+  const [myAtom,setMyAtom] = useRecoilState(folderDictionaryFilterAtom({driveId:"94Kbcv37ZlVH6qLtQDY9g"}));
+  const [myAtom2,setMyAtom2] = useRecoilState(folderDictionaryFilterAtom({driveId:"rrUE5eriLBarSSGb0OXog"}));
+  const filterValue = useRecoilValue(folderDictionaryFilterSelector({driveId:"94Kbcv37ZlVH6qLtQDY9g",folderId:"94Kbcv37ZlVH6qLtQDY9g"}));
+  const filterValue2 = useRecoilValue(folderDictionaryFilterSelector({driveId:"rrUE5eriLBarSSGb0OXog",folderId:"rrUE5eriLBarSSGb0OXog"}));
+  console.log(">>>contentIds",filterValue.contentIds.defaultOrder);
+  console.log(">>>contentIds2",filterValue2.contentIds.defaultOrder);
+  return (
+    <>
+
+<button onClick={()=>setMyAtom("Released Only")}>set atom</button>
+<p>{myAtom}</p>
+<br />
+<button onClick={()=>setMyAtom2("Released Only")}>set atom 2</button>
+    {/* <Drive driveId="n4Dc63X426CTRpgrG58nq"/> */}
+  <p>{myAtom2}</p>
+
+  </>
+  )
+  ;
+  
+}
 ReactDOM.render(
-  <p>temp</p>,
+      <RecoilRoot>
+        <Suspense fallback={<p>loading...</p>}>
+        <Demo />
+
+        </Suspense>
+      </RecoilRoot>
+  ,
   document.getElementById('root'),
 );
 
 
-const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
+// const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <test attr=\"value\" /> <two />"
 
 // const doenetMl = `
 //   <p> this is a test string 
@@ -99,13 +129,13 @@ const doenetMl = "<p>This is a test string <div> with a nested tag </div></p> <t
 //   <test passed="true" />`
 
 
-let t = parse(doenetMl);
-console.log(t);
-// console.log(t.node.getChildren());
-console.log(showCursor(t));
+// let t = parse(doenetMl);
+// console.log(t);
+// // console.log(t.node.getChildren());
+// console.log(showCursor(t));
 
-let o = parseAndCompile(doenetMl);
-console.log(o)
+// let o = parseAndCompile(doenetMl);
+// console.log(o)
 
 // while(t.next()){
 //   console.log(">>>node type",t.type)

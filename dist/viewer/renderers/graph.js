@@ -1,5 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import DoenetRenderer from "./DoenetRenderer.js";
+import {sizeToCSS} from "./utils/css.js";
 export default class Graph extends DoenetRenderer {
   constructor(props) {
     super(props);
@@ -67,14 +68,40 @@ export default class Graph extends DoenetRenderer {
       let yaxis = this.board.create("axis", [[0, 0], [0, 1]], yaxisOptions);
     }
     this.board.itemsRenderedLowQuality = {};
+    this.board.on("boundingbox", () => {
+      if (!this.settingBoundingBox) {
+        this.previousBoundingbox = this.board.getBoundingBox();
+        let [xmin, ymax, xmax, ymin] = this.previousBoundingbox;
+        this.actions.changeAxisLimits({
+          xmin,
+          xmax,
+          ymin,
+          ymax
+        });
+      }
+    });
     this.doenetPropsForChildren = {board: this.board};
     this.initializeChildren();
     this.previousBoundingbox = boundingbox;
+    this.previousDimensions = {
+      width: parseFloat(sizeToCSS(this.doenetSvData.width)),
+      height: parseFloat(sizeToCSS(this.doenetSvData.height))
+    };
   }
   update() {
+    let currentDimensions = {
+      width: parseFloat(sizeToCSS(this.doenetSvData.width)),
+      height: parseFloat(sizeToCSS(this.doenetSvData.height))
+    };
+    if ((currentDimensions.width !== this.previousDimensions.width || currentDimensions.height !== this.previousDimensions.height) && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)) {
+      this.board.resizeContainer(currentDimensions.width, currentDimensions.height);
+      this.previousDimensions = currentDimensions;
+    }
     let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
     if (boundingbox.some((v, i) => v !== this.previousBoundingbox[i])) {
+      this.settingBoundingBox = true;
       this.board.setBoundingBox(boundingbox);
+      this.settingBoundingBox = false;
       this.board.fullUpdate();
       if (this.board.updateQuality === this.board.BOARD_QUALITY_LOW) {
         this.board.itemsRenderedLowQuality[this.componentName] = this.board;
@@ -128,8 +155,8 @@ export default class Graph extends DoenetRenderer {
   }
   render() {
     const divStyle = {
-      width: this.doenetSvData.numericalWidth,
-      height: this.doenetSvData.numericalHeight
+      width: sizeToCSS(this.doenetSvData.width),
+      height: sizeToCSS(this.doenetSvData.height)
     };
     if (this.doenetSvData.hidden) {
       divStyle.display = "none";

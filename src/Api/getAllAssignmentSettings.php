@@ -10,70 +10,45 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-//TODO: Make sure of instructor or user
 
-$assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
+// $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
+$branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
+$contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
+$versionId =  mysqli_real_escape_string($conn,$_REQUEST["versionId"]);
 
-$sqlA = "SELECT
-ad.assignmentId AS assignmentId,
-ad.title AS assignment_title,
-ad.assignedDate AS assignedDate,
-ad.dueDate AS dueDate,
-ad.timeLimit AS timeLimit,
-ad.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
-ad.attemptAggregation AS attemptAggregation,
-ad.totalPointsOrPercent AS totalPointsOrPercent,
-ad.gradeCategory AS gradeCategory,
-ad.individualize AS individualize,
-ad.multipleAttempts AS multipleAttempts,
-ad.showSolution AS showSolution,
-ad.showFeedback AS showFeedback,
-ad.showHints AS showHints,
-ad.showCorrectness AS showCorrectness,
-ad.proctorMakesAvailable AS proctorMakesAvailable,
-a.isPublished As isPublishedAssignment
-FROM assignment_draft AS ad
-JOIN assignment As a
-ON a.assignmentId = ad.assignmentId
-WHERE a.assignmentId ='$assignmentId'
-";
-$result = $conn->query($sqlA);
 $assignment_arr = array();
 
-if ($result->num_rows > 0){
+$response_arr = array(
+  "assignments" => $assignment_arr
+); 
 
   $sql = "SELECT
-  ad.assignmentId AS assignmentId,
-  ad.title AS assignment_title,
-  ad.assignedDate AS assignedDate,
-  ad.dueDate AS dueDate,
-  ad.timeLimit AS timeLimit,
-  ad.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
-  ad.attemptAggregation AS attemptAggregation,
-  ad.totalPointsOrPercent AS totalPointsOrPercent,
-  ad.gradeCategory AS gradeCategory,
-  ad.individualize AS individualize,
-  ad.multipleAttempts AS multipleAttempts,
-  ad.showSolution AS showSolution,
-  ad.showFeedback AS showFeedback,
-  ad.showHints AS showHints,
-  ad.showCorrectness AS showCorrectness,
-  ad.proctorMakesAvailable AS proctorMakesAvailable,
-  ad.contentId AS contentId,
-  a.isPublished As isPublishedAssignment,
-  dc.isPublished AS isPublished,
-  dc.isAssignment As isAssignment,
-  dc.itemId AS itemId
-  FROM assignment_draft AS ad
-  JOIN drive_content AS dc
-  ON ad.assignmentId = dc.assignmentId 
-  JOIN assignment As a
-  ON a.assignmentId = dc.assignmentId
-  WHERE a.assignmentId ='$assignmentId'
+  a.assignedDate AS assignedDate,
+  a.dueDate AS dueDate,
+  a.timeLimit AS timeLimit,
+  a.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
+  a.attemptAggregation AS attemptAggregation,
+  a.totalPointsOrPercent AS totalPointsOrPercent,
+  a.gradeCategory AS gradeCategory,
+  a.individualize AS individualize,
+  a.multipleAttempts AS multipleAttempts,
+  a.showSolution AS showSolution,
+  a.showFeedback AS showFeedback,
+  a.showHints AS showHints,
+  a.showCorrectness AS showCorrectness,
+  a.proctorMakesAvailable AS proctorMakesAvailable,
+  a.branchId AS branchId,
+  a.driveId AS driveId,
+  c.isAssigned AS isAssigned,
+  c.versionId AS versionId
+  FROM assignment AS a
+  LEFT JOIN content AS c
+  ON a.branchId = c.branchId
+  WHERE c.branchId = '$branchId' 
   ";
   
-  // echo $sql;
   $result = $conn->query($sql);
+  // echo $sql;
   $assignment_arr = array();
   
   if ($result->num_rows > 0){
@@ -94,78 +69,10 @@ if ($result->num_rows > 0){
           "showHints" => $row['showHints'] == '1' ? true : false,
           "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
-          "isPublished" => $row['isPublished'],
-          "isAssignment" => $row['isAssignment'],  
-          "assignmentId" => $row['assignmentId'],
-          "itemId" => $row['itemId'],
-          "contentId" => $row['contentId'],
-          "assignment_isPublished" => $row['isPublishedAssignment']
-  
-  );
-      array_push($assignment_arr,$assignment);
-    } 
-    $response_arr = array(
-        "assignments" => $assignment_arr
-    );  
-  }
-  
-}
-else{
-  $sql = "SELECT
-  ad.assignmentId AS assignmentId,
-  ad.title AS assignment_title,
-  ad.assignedDate AS assignedDate,
-  ad.dueDate AS dueDate,
-  ad.timeLimit AS timeLimit,
-  ad.numberOfAttemptsAllowed AS numberOfAttemptsAllowed,
-  ad.attemptAggregation AS attemptAggregation,
-  ad.totalPointsOrPercent AS totalPointsOrPercent,
-  ad.gradeCategory AS gradeCategory,
-  ad.individualize AS individualize,
-  ad.multipleAttempts AS multipleAttempts,
-  ad.showSolution AS showSolution,
-  ad.showFeedback AS showFeedback,
-  ad.showHints AS showHints,
-  ad.showCorrectness AS showCorrectness,
-  ad.proctorMakesAvailable AS proctorMakesAvailable,
-  ad.contentId AS contentId,
-  dc.isPublished AS isPublished,
-  dc.isAssignment As isAssignment,
-  dc.itemId AS itemId
-  FROM assignment_draft AS ad
-  JOIN drive_content AS dc
-  ON ad.assignmentId = dc.assignmentId
-  WHERE ad.assignmentId ='$assignmentId'
-  ";
-  
-  // echo $sql;
-  $result = $conn->query($sql);
-  $assignment_arr = array();
-  
-  if ($result->num_rows > 0){
-    while($row = $result->fetch_assoc()){
-      $assignment = array(
-          "assignment_title" => $row['assignment_title'],
-          "assignedDate" => $row['assignedDate'],
-          "dueDate" => $row['dueDate'],
-          "timeLimit" => $row['timeLimit'],
-          "numberOfAttemptsAllowed" => $row['numberOfAttemptsAllowed'],
-          "attemptAggregation" => $row['attemptAggregation'],
-          "totalPointsOrPercent" => $row['totalPointsOrPercent'],
-          "gradeCategory" => $row['gradeCategory'],
-          "individualize" => $row['individualize'] == '1' ? true : false,
-          "multipleAttempts" => $row['multipleAttempts']  == '1' ? true : false,
-          "showSolution" => $row['showSolution'] == '1' ? true : false,
-          "showFeedback" => $row['showFeedback'] == '1' ? true : false,
-          "showHints" => $row['showHints'] == '1' ? true : false,
-          "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
-          "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
-          "isPublished" => $row['isPublished'],
-          "isAssignment" => $row['isAssignment'],  
-          "assignmentId" => $row['assignmentId'],
-          "itemId" => $row['itemId'],
-          "contentId" => $row['contentId'],
-          "assignment_isPublished" => "0"
+          "isAssigned" => $row['isAssigned'],  
+          "branchId" => $row['branchId'],
+          "driveId" => $row['driveId'],
+          "versionId" => $row['versionId'],
   
   );
       array_push($assignment_arr,$assignment);
@@ -176,7 +83,6 @@ else{
   }
   
 
-}
 
 
 // set response code - 200 OK

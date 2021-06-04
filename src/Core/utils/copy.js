@@ -76,7 +76,8 @@ export function postProcessCopy({ serializedComponents, componentName,
 
 export function convertAttributesForComponentType({
   attributes, componentType,
-  componentInfoObjects, compositeAttributesObj, compositeCreatesNewNamespace,
+  componentInfoObjects, compositeAttributesObj = {}, 
+  compositeCreatesNewNamespace,
   flags,
 }) {
 

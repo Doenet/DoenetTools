@@ -49,7 +49,8 @@ SELECT
  c.timestamp AS timestamp,
  c.isDraft AS isDraft,
  c.isNamed AS isNamed,
- c.isReleased AS isReleased
+ c.isReleased AS isReleased,
+ c.isAssigned AS isAssigned
  FROM content AS c
 WHERE removedFlag = 0
 AND branchId = '$branchId'
@@ -68,7 +69,8 @@ if ($result->num_rows > 0){
                 "timestamp"=>$row['timestamp'],
                 "isDraft"=>$row['isDraft'],
                 "isNamed"=>$row['isNamed'],
-                "isReleased"=>$row['isReleased']
+                "isReleased"=>$row['isReleased'],
+                "isAssigned"=>$row['isAssigned']
         );
         array_push($versions_arr,$version);
     }

@@ -1,6 +1,7 @@
-import { B as Buffer } from './common/polyfill-node_buffer-f61935e6.js';
-import { g as global } from './common/polyfill-node_global-a90d30ee.js';
+import { B as Buffer } from './common/_polyfill-node:buffer-e7aca6c6.js';
+import { g as global } from './common/_polyfill-node:global-acbc543a.js';
 import { p as process, n as nextTick } from './common/process-e9e98960.js';
+import { b as getDefaultExportFromNamespaceIfNotNamed } from './common/_commonjsHelpers-f5d70792.js';
 
 var domain;
 
@@ -346,6 +347,12 @@ EventEmitter.prototype.removeListener =
 
       return this;
     };
+    
+// Alias for removeListener added in NodeJS 10.0
+// https://nodejs.org/api/events.html#events_emitter_off_eventname_listener
+EventEmitter.prototype.off = function(type, listener){
+    return this.removeListener(type, listener);
+};
 
 EventEmitter.prototype.removeAllListeners =
     function removeAllListeners(type) {
@@ -421,12 +428,12 @@ EventEmitter.listenerCount = function(emitter, type) {
   if (typeof emitter.listenerCount === 'function') {
     return emitter.listenerCount(type);
   } else {
-    return listenerCount$1.call(emitter, type);
+    return listenerCount.call(emitter, type);
   }
 };
 
-EventEmitter.prototype.listenerCount = listenerCount$1;
-function listenerCount$1(type) {
+EventEmitter.prototype.listenerCount = listenerCount;
+function listenerCount(type) {
   var events = this._events;
 
   if (events) {
@@ -523,7 +530,7 @@ function format(f) {
     }
   });
   for (var x = args[i]; i < len; x = args[++i]) {
-    if (isNull(x) || !isObject$1(x)) {
+    if (isNull(x) || !isObject(x)) {
       str += ' ' + x;
     } else {
       str += ' ' + inspect(x);
@@ -939,19 +946,19 @@ function isUndefined(arg) {
 }
 
 function isRegExp(re) {
-  return isObject$1(re) && objectToString(re) === '[object RegExp]';
+  return isObject(re) && objectToString(re) === '[object RegExp]';
 }
 
-function isObject$1(arg) {
+function isObject(arg) {
   return typeof arg === 'object' && arg !== null;
 }
 
 function isDate(d) {
-  return isObject$1(d) && objectToString(d) === '[object Date]';
+  return isObject(d) && objectToString(d) === '[object Date]';
 }
 
 function isError(e) {
-  return isObject$1(e) &&
+  return isObject(e) &&
       (objectToString(e) === '[object Error]' || e instanceof Error);
 }
 
@@ -965,7 +972,7 @@ function objectToString(o) {
 
 function _extend(origin, add) {
   // Don't do anything if add isn't an object
-  if (!add || !isObject$1(add)) return origin;
+  if (!add || !isObject(add)) return origin;
 
   var keys = Object.keys(add);
   var i = keys.length;
@@ -1256,7 +1263,7 @@ function prependListener(emitter, event, fn) {
       emitter._events[event] = [fn, emitter._events[event]];
   }
 }
-function listenerCount (emitter, type) {
+function listenerCount$1 (emitter, type) {
   return emitter.listeners(type).length;
 }
 function ReadableState(options, stream) {
@@ -1744,7 +1751,7 @@ Readable.prototype.pipe = function (dest, pipeOpts) {
     debug('onerror', er);
     unpipe();
     dest.removeListener('error', onerror);
-    if (listenerCount(dest, 'error') === 0) dest.emit('error', er);
+    if (listenerCount$1(dest, 'error') === 0) dest.emit('error', er);
   }
 
   // Make sure our error handler is attached before userland ones.
@@ -2632,7 +2639,7 @@ function onEndNT(self) {
 }
 
 // a transform stream is a readable/writable stream where you do
-inherits$1(Transform$1, Duplex);
+inherits$1(Transform, Duplex);
 
 function TransformState(stream) {
   this.afterTransform = function (er, data) {
@@ -2667,8 +2674,8 @@ function afterTransform(stream, er, data) {
     stream._read(rs.highWaterMark);
   }
 }
-function Transform$1(options) {
-  if (!(this instanceof Transform$1)) return new Transform$1(options);
+function Transform(options) {
+  if (!(this instanceof Transform)) return new Transform(options);
 
   Duplex.call(this, options);
 
@@ -2698,7 +2705,7 @@ function Transform$1(options) {
   });
 }
 
-Transform$1.prototype.push = function (chunk, encoding) {
+Transform.prototype.push = function (chunk, encoding) {
   this._transformState.needTransform = false;
   return Duplex.prototype.push.call(this, chunk, encoding);
 };
@@ -2713,11 +2720,11 @@ Transform$1.prototype.push = function (chunk, encoding) {
 // Call `cb(err)` when you are done with this chunk.  If you pass
 // an error, then that'll put the hurt on the whole operation.  If you
 // never call cb(), then you'll never get another chunk.
-Transform$1.prototype._transform = function (chunk, encoding, cb) {
+Transform.prototype._transform = function (chunk, encoding, cb) {
   throw new Error('Not implemented');
 };
 
-Transform$1.prototype._write = function (chunk, encoding, cb) {
+Transform.prototype._write = function (chunk, encoding, cb) {
   var ts = this._transformState;
   ts.writecb = cb;
   ts.writechunk = chunk;
@@ -2731,7 +2738,7 @@ Transform$1.prototype._write = function (chunk, encoding, cb) {
 // Doesn't matter what the args are here.
 // _transform does all the work.
 // That we got here means that the readable side wants more data.
-Transform$1.prototype._read = function (n) {
+Transform.prototype._read = function (n) {
   var ts = this._transformState;
 
   if (ts.writechunk !== null && ts.writecb && !ts.transforming) {
@@ -2759,11 +2766,11 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-inherits$1(PassThrough, Transform$1);
+inherits$1(PassThrough, Transform);
 function PassThrough(options) {
   if (!(this instanceof PassThrough)) return new PassThrough(options);
 
-  Transform$1.call(this, options);
+  Transform.call(this, options);
 }
 
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
@@ -2774,7 +2781,7 @@ inherits$1(Stream, EventEmitter);
 Stream.Readable = Readable;
 Stream.Writable = Writable;
 Stream.Duplex = Duplex;
-Stream.Transform = Transform$1;
+Stream.Transform = Transform;
 Stream.PassThrough = PassThrough;
 
 // Backwards-compat with node 0.4.x
@@ -2870,13 +2877,13 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-var polyfillNode_stream = /*#__PURE__*/Object.freeze({
+var _polyfillNode_stream = /*#__PURE__*/Object.freeze({
   __proto__: null,
   'default': Stream,
   Readable: Readable,
   Writable: Writable,
   Duplex: Duplex,
-  Transform: Transform$1,
+  Transform: Transform,
   PassThrough: PassThrough,
   Stream: Stream
 });
@@ -2945,6 +2952,8 @@ class ResizeableBuffer{
 
 var ResizeableBuffer_1 = ResizeableBuffer;
 
+var require$$0 = /*@__PURE__*/getDefaultExportFromNamespaceIfNotNamed(_polyfillNode_stream);
+
 /*
 CSV Parse
 
@@ -2952,7 +2961,7 @@ Please look at the [project documentation](https://csv.js.org/parse/) for
 additional information.
 */
 
-const { Transform } = polyfillNode_stream;
+const { Transform: Transform$1 } = require$$0;
 
 
 // white space characters
@@ -2976,7 +2985,7 @@ const boms = {
   'utf16le': Buffer.from([255, 254])
 };
 
-class Parser extends Transform {
+class Parser extends Transform$1 {
   constructor(opts = {}){
     super({...{readableObjectMode: true}, ...opts, encoding: null});
     this.__originalOptions = opts;
@@ -3714,7 +3723,7 @@ class Parser extends Transform {
         ], this.options, this.__context(), {
           record: record,
         });
-      if(relax_column_count === true || 
+      if(relax_column_count === true ||
         (relax_column_count_less === true && recordLength < this.state.expectedRecordLength) ||
         (relax_column_count_more === true && recordLength > this.state.expectedRecordLength) ){
         this.info.invalid_field_length++;
@@ -3744,7 +3753,7 @@ class Parser extends Transform {
         for(let i = 0, l = record.length; i < l; i++){
           if(columns[i] === undefined || columns[i].disabled) continue
           // Turn duplicate columns into an array
-          if (columns_duplicates_to_array === true && obj[columns[i].name]) {
+          if (columns_duplicates_to_array === true && obj[columns[i].name] !== undefined) {
             if (Array.isArray(obj[columns[i].name])) {
               obj[columns[i].name] = obj[columns[i].name].concat(record[i]);
             } else {
@@ -4062,7 +4071,7 @@ const parse = function(){
     const type = typeof argument;
     if(data === undefined && (typeof argument === 'string' || Buffer.isBuffer(argument))){
       data = argument;
-    }else if(options === undefined && isObject(argument)){
+    }else if(options === undefined && isObject$1(argument)){
       options = argument;
     }else if(callback === undefined && type === 'function'){
       callback = argument;
@@ -4137,7 +4146,7 @@ const underscore = function(str){
   })
 };
 
-const isObject = function(obj){
+const isObject$1 = function(obj){
   return (typeof obj === 'object' && obj !== null && !Array.isArray(obj))
 };
 
@@ -4153,7 +4162,7 @@ const normalizeColumnsArray = function(columns){
       normalizedColumns[i] = { disabled: true };
     }else if(typeof column === 'string'){
       normalizedColumns[i] = { name: column };
-    }else if(isObject(column)){
+    }else if(isObject$1(column)){
       if(typeof column.name !== 'string'){
         throw new CsvError('CSV_OPTION_COLUMNS_MISSING_NAME', [
           'Option columns missing name:',
