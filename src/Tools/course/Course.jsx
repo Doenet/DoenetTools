@@ -28,6 +28,7 @@ import Drive, {
 } from '../../_reactComponents/Drive/Drive';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
+import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 // import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'; //TODO
 import DriveCards from '../../_reactComponents/Drive/DriveCards';
 import '../../_reactComponents/Drive/drivecard.css';
@@ -191,6 +192,12 @@ export default function Course(props) {
   if (filter === 'All' && routePathDriveId !== '') {
     return null;
   }
+  let columnsArr = [];
+  if(filter === 'Released Only'){
+    columnsArr.push('Due Date', 'Assigned')
+  }else{
+    columnsArr.push('Due Date')
+  }
   function cleardrivecardSelection() {
     setDrivePath({
       driveId: '',
@@ -230,25 +237,7 @@ export default function Course(props) {
   if (role === 'Instructor') {
     urlClickBehavior = 'select';
   }
-  let responsiveControls = '';
 
-  if (routePathDriveId) {
-    responsiveControls = (
-      <>
-        <Button
-          value={openEnrollment ? 'Close Enrollment' : 'Open Enrollment'}
-          callback={(e) => setEnrollment(e)}
-        ></Button> 
-        <label>View as Student</label>
-
-        <Switch
-          onChange={(e) => setViewAccessToggle(e)}
-          checked={filter === 'Released Only' ? false : true}
-        ></Switch>
-
-      </>
-    );
-  }
 
   const profile = useContext(ProfileContext);
   if (profile.signedIn === '0') {
@@ -313,7 +302,7 @@ export default function Course(props) {
           </div>
         </navPanel>
 
-        <mainPanel responsiveControls={responsiveControls}>
+        <mainPanel>
           <AutoSelect />
           {openEnrollment ? (
             <Enrollment selectedCourse={enrollDriveId} />
@@ -328,8 +317,7 @@ export default function Course(props) {
               >
                 <Container>
                   <Drive
-                    filter={filter}
-                    columnTypes={filter === 'Released Only' ? ['Due Date', 'Assigned'] : ['Due Date'] }
+                    columnTypes={columnsArr}
                     driveId={routePathDriveId}
                     hideUnpublished={hideUnpublished}
                     subTypes={['Administrator']}
@@ -369,15 +357,33 @@ export default function Course(props) {
             </>
           )}
         </mainPanel>
-        {routePathDriveId && (
-          <menuPanel isInitOpen title="Assignment">
-            <VersionInfo route={props.route} />
-            <br />
+       
+          
+            {routePathDriveId && <menuPanel isInitOpen title="Assignment">
+              <VersionInfo route={props.route} />
+              <br />
+              <ItemInfoPanel route={props.route} />
+            </menuPanel>}
 
-            <ItemInfoPanel route={props.route} />
+            { routePathDriveId && <menuPanel title="+Add">
+              <>
+                <Button
+                  value={
+                    openEnrollment ? 'Close Enrollment' : 'Open Enrollment'
+                  }
+                  callback={(e) => setEnrollment(e)}
+                ></Button>
+                <br />
+                <label>View as Student</label>
 
-          </menuPanel>
-        )}
+                <Switch
+                  onChange={(e) => setViewAccessToggle(e)}
+                  checked={filter === 'Released Only' ? false : true}
+                ></Switch>
+              </>
+            </menuPanel>}
+          
+        
       </Tool>
     </>
   );
@@ -435,36 +441,29 @@ const DoenetMLInfoPanel = (props) => {
       event.target.type === 'checkbox'
         ? event.target.checked
         : event.target.value;
+        if (aInfo[`${name}`] != value) {
+          const result = changeSettings({
+            [name]: value,
+            driveIditemIdbranchIdparentFolderId: {
+              driveId: itemInfo.driveId,
+              folderId: itemInfo.parentFolderId,
+              itemId: itemInfo.itemId,
+              branchId: itemInfo.branchId,
+              versionId: selectedVId,
+              contentId: selectedContentId(),
+            },
+          });
 
-    const result = changeSettings({
-      [name]: value,
-      driveIditemIdbranchIdparentFolderId: {
-        driveId: itemInfo.driveId,
-        folderId: itemInfo.parentFolderId,
-        itemId: itemInfo.itemId,
-        branchId: itemInfo.branchId,
-        versionId: selectedVId,
-        contentId: selectedContentId(),
-      },
-    });
-    result
-      .then((resp) => {
-        if (resp.data.success) {
-          // addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
-        } else {
-          // onRenameItemError({errorMessage: resp.data.message});
         }
-      })
-      .catch((e) => {
-        // onRenameItemError({errorMessage: e.message});
-      });
   };
   const handleOnBlur = (e) => {
     e.preventDefault();
     let name = e.target.name;
     let value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-    const result = saveSettings({
+      // console.log(">>>>>> aInfo", aInfo);
+      // console.log(">>>>>> aInfo name", aInfo[`${name}`], value);
+      const result = saveSettings({
       [name]: value,
       driveIditemIdbranchIdparentFolderId: {
         driveId: itemInfo.driveId,
@@ -494,23 +493,23 @@ const DoenetMLInfoPanel = (props) => {
       contentId: itemInfo.contentId,
     });
 
-    result
-      .then((resp) => {
-        if (resp.data.success) {
-          addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
-        } else {
-          onAssignmentError({ errorMessage: resp.data.message });
-        }
-      })
-      .catch((e) => {
-        onAssignmentError({ errorMessage: e.message });
-      });
+        result
+          .then((resp) => {
+            if (resp.data.success) {
+              addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
+            } else {
+              onAssignmentError({ errorMessage: resp.data.message });
+            }
+          })
+          .catch((e) => {
+            onAssignmentError({ errorMessage: e.message });
+          });
+    
   };
 
   // // View Assignment Form
   const checkIsVersionAssigned = () => {
     const selectedVId = useRecoilValue(selectedVersionAtom);
-    // console.log(">>>>>>>>>>>>>>>>>>>>selectedVersionId",selectedVId);
     const assignedArr = props.versionArr.filter(
       (item) => item.versionId === selectedVId,
     );
@@ -526,7 +525,7 @@ const DoenetMLInfoPanel = (props) => {
       <>
         {
           <>
-           <h3>Assignment Info</h3>
+            <h3>Assignment Info</h3>
             <div>
               <label>Assigned Date:</label>
               <input
@@ -565,6 +564,7 @@ const DoenetMLInfoPanel = (props) => {
             </div>
             <div>
               <label>Number Of Attempts:</label>
+              <Increment range={[0, 20]} />
               <input
                 required
                 type="number"
@@ -577,11 +577,19 @@ const DoenetMLInfoPanel = (props) => {
             <div>
               <label>Attempt Aggregation :</label>
               <select name="attemptAggregation" onChange={handleOnBlur}>
-                <option value='m' selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}>Maximum
+                <option
+                  value="m"
+                  selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}
+                >
+                  Maximum
                 </option>
-                <option value='l' selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}>Last Attempt
+                <option
+                  value="l"
+                  selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}
+                >
+                  Last Attempt
                 </option>
-              </select>              
+              </select>
             </div>
             <div>
               <label>Total Points Or Percent: </label>
@@ -607,73 +615,59 @@ const DoenetMLInfoPanel = (props) => {
             </div>
             <div>
               <label>Individualize: </label>
-              <input
-                required
-                type="checkbox"
+              <Switch
                 name="individualize"
-                checked={aInfo ? aInfo?.individualize : false}
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.individualize : false}
+              ></Switch>
             </div>
             <div>
               <label>Multiple Attempts: </label>
-              <input
-                required
-                type="checkbox"
-                name="multipleAttempts"
-                checked={aInfo ? aInfo?.multipleAttempts : false}
+              <Switch
+              name="multipleAttempts"
                 onChange={handleOnBlur}
-              />{' '}
+                checked={aInfo ? aInfo?.multipleAttempts : false}
+              ></Switch>
             </div>
             <div>
               <label>Show solution: </label>
-              <input
-                required
-                type="checkbox"
-                name="showSolution"
-                checked={aInfo ? aInfo?.showSolution : false}
+              <Switch
+              name="showSolution"
                 onChange={handleOnBlur}
-              />{' '}
+                checked={aInfo ? aInfo?.showSolution : false}
+              ></Switch>
             </div>
             <div>
               <label>Show feedback: </label>
-              <input
-                required
-                type="checkbox"
-                name="showFeedback"
-                checked={aInfo ? aInfo?.showFeedback : false}
+              <Switch
+              name="showFeedback"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.showFeedback : false}
+              ></Switch>
             </div>
             <div>
               <label>Show hints: </label>
-              <input
-                required
-                type="checkbox"
-                name="showHints"
-                checked={aInfo ? aInfo?.showHints : false}
+              <Switch
+              name="showHints"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.showHints : false}
+              ></Switch>         
             </div>
             <div>
               <label>Show correctness: </label>
-              <input
-                required
-                type="checkbox"
-                name="showCorrectness"
-                checked={aInfo ? aInfo?.showCorrectness : false}
+              <Switch
+              name="showCorrectness"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.showCorrectness : false}
+              ></Switch> 
             </div>
             <div>
               <label>Proctor make available: </label>
-              <input
-                required
-                type="checkbox"
-                name="proctorMakesAvailable"
-                checked={aInfo ? aInfo?.proctorMakesAvailable : false}
+              <Switch
+              name="proctorMakesAvailable"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.proctorMakesAvailable : false}
+              ></Switch> 
             </div>
             <br />
           </>
@@ -809,7 +803,7 @@ const VersionHistoryInfoPanel = (props) => {
                 try {
                   if (result.success) {
                     addToast(
-                      `Add new assignment 'Untitled assignment'`,
+                      `Add new assignment`,
                       ToastType.SUCCESS,
                     );
                   } else {
@@ -863,7 +857,7 @@ const VersionHistoryInfoPanel = (props) => {
                   .then((resp) => {
                     if (resp.data.success) {
                       addToast(
-                        `'version title' back to '${itemInfo.label}''`,  //TODO update version title
+                        `'UnAssigned ${itemInfo.label}''`, 
                         ToastType.SUCCESS,
                       );
                     } else {
@@ -912,7 +906,6 @@ const VersionHistoryInfoPanel = (props) => {
                   contentId: selectedContentId(),
                   versionId: selectedVId,
                   ...aInfo
-                  // prevAssignedVersionId:prevAssignedVersionId(),
                 });
                 let payload = {
                   ...aInfo,
@@ -940,7 +933,7 @@ const VersionHistoryInfoPanel = (props) => {
                 try {
                   if (result.success) {
                     addToast(
-                      `Switch  assignment 'Untitled assignment'`,
+                      `Switch  assignment`,
                       ToastType.SUCCESS,
                     );
                   } else {
