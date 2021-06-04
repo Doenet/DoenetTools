@@ -665,7 +665,8 @@ function DoenetViewerPanel(){
   let solutionDisplayMode = "button";
   
   return <DoenetViewer
-      key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      // key={"doenetviewer" + viewerDoenetML?.updateNumber}
+      key={"doenetviewer"}
       doenetML={viewerDoenetML?.doenetML}
       flags={{
         showCorrectness: true,
@@ -675,8 +676,12 @@ function DoenetViewerPanel(){
         showHints: true,
       }}
       attemptNumber={attemptNumber}
-      // assignmentId={assignmentId}
-      ignoreDatabase={true}
+      allowLoadPageState={false}
+      allowSavePageState={false}
+      allowLocalPageState={false}
+      allowSaveSubmissions={false}
+      allowSaveEvents={false}
+
       requestedVariant={requestedVariant}
       /> 
 }
