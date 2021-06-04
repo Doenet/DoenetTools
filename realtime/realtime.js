@@ -16,7 +16,7 @@
   const chatSpace = io.of('/chat');
   const { default: axios } = require('axios');
 
-  io.use((socket, next) => {
+  chatSpace.use((socket, next) => {
     axios
       .get('https://doenet.org/api/loadProfile.php', {
         headers: socket.handshake.headers,

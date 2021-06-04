@@ -64,26 +64,29 @@ export default function Chat() {
   );
 
   useEffect(() => {
-    let socket = io('chat.rt.doenet.org:81/chat', { withCredentials: true });
-    socket.on('connect', () => {
-      console.log('socket', socket.id, 'connected');
-      setSocket(socket);
+    let socket = io('chat.rt.doenet.org:81', { withCredentials: true });
+    let chatSocket = io('chat.rt.doenet.org:81/chat', {
+      withCredentials: true,
     });
-    socket.on('connect_error', (e) => {
+    chatSocket.on('connect', () => {
+      console.log('socket', chatSocket.id, 'connected');
+      setSocket(chatSocket);
+    });
+    chatSocket.on('connect_error', (e) => {
       console.log('socket connection error:', e);
     });
 
-    socket.on('chat message', (message) => {
+    chatSocket.on('chat message', (message) => {
       setCL((prev) => [...prev, message]);
       let log = document.getElementById('messageLogContainer');
       log.scrollTop = log.scrollHeight;
     });
 
-    socket.on('disconnect', () => {
+    chatSocket.on('disconnect', () => {
       console.log('socket disconnected');
     });
 
-    return () => socket.disconnect();
+    return () => chatSocket.disconnect();
   }, []);
 
   let messages = chatLog.map((val, i) => (
