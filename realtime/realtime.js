@@ -26,6 +26,7 @@
         if (resp.data.success === '1') {
           if (resp.data.profile.signedIn === '1') {
             socket.data.profile = resp.data.profile;
+            console.log('auth: ', socket.data.profile.screenName);
             next();
           } else {
             next(new Error('Please sign in'));
@@ -41,7 +42,7 @@
 
   chatSpace.on('connection', (socket) => {
     console.log('connecting', socket.id);
-    socket.emit('chat message', {
+    io.to(socket.id).emit('chat message', {
       messageId: -1,
       message: 'Socket.io connection Successful! Try joining a room!',
       screenName: 'Server',
@@ -49,7 +50,7 @@
 
     socket.on('joinRoom', (room, cb) => {
       socket.join(room);
-      io.to(room).emit('chat message', {
+      chatSpace.to(room).emit('chat message', {
         messageId: -1,
         message: `${socket.data.profile.screenName} joined room ${room}`,
         screenName: 'Sever',
@@ -59,7 +60,7 @@
 
     socket.on('leaveRoom', (room) => {
       socket.leave(room);
-      io.to(room).emit('chat message', {
+      chatSpace.to(room).emit('chat message', {
         messageId: -1,
         message: `${socket.data.profile.screenName} left the room`,
         screenName: 'Sever',
@@ -68,7 +69,7 @@
 
     socket.on('chat message', (data) => {
       data.screenName = socket.data.profile.screenName;
-      io.to(data.room).emit('chat message', data);
+      chatSpace.to(data.room).emit('chat message', data);
     });
 
     socket.on('typing', (data) => {
@@ -77,7 +78,7 @@
     });
 
     socket.on('disconnect', () => {
-      io.emit('user disconnected', socket.userId);
+      chatSpace.emit('user disconnected', socket.userId);
     });
   });
 
