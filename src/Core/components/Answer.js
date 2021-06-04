@@ -70,6 +70,12 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.nAwardsCredited = {
+      createComponentOfType: "number",
+      createStateVariable: "nAwardsCredited",
+      defaultValue: false,
+      public: true,
+    }
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
@@ -862,7 +868,7 @@ export default class Answer extends InlineComponent {
     }
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
-      additionalStateVariablesDefined: ["awardUsedIfSubmit", "awardChildren",
+      additionalStateVariablesDefined: ["awardsUsedIfSubmit", "awardChildren",
         "inputUsedIfSubmit"],
       stateVariablesDeterminingDependencies: ["inputChildIndex"],
       returnDependencies: ({ stateValues }) => ({
@@ -878,11 +884,17 @@ export default class Answer extends InlineComponent {
           childIndices: [stateValues.inputChildIndex],
           variablesOptional: true,
         },
+        nAwardsCredited: {
+          dependencyType: "stateVariable",
+          variableName: "nAwardsCredited",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
         let creditAchieved = 0;
-        let awardUsed = null;
+
+        let n = dependencyValues.nAwardsCredited;
+        let awardsUsed = Array(n).fill(null);
         let inputUsed = null;
 
         if (dependencyValues.awardChildren.length === 0) {
@@ -896,26 +908,42 @@ export default class Answer extends InlineComponent {
             }
           }
         } else {
-          // awardUsed with be component name of first award
-          // that gives the maximum credit (which will be creditAchieved)
+          // awardsUsed will be component names of first awards
+          // (up to nAwardsCredited)
+          // that give the maximum credit (which will be creditAchieved)
           // Always process awards if haven't matched an award in case want to
           // use an award with credit=0 to trigger feedback
+          let awardCredits = Array(n).fill(0);
+          let minimumFromAwardCredits = 0;
           for (let child of dependencyValues.awardChildren) {
-            let childMaxCredit = Math.max(0, Math.min(1, child.stateValues.credit))
-            if (childMaxCredit > creditAchieved || awardUsed === null) {
-              let creditFromChild = child.stateValues.creditAchieved;
-              let fractionFromChild = child.stateValues.fractionSatisfied;
-              if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === null)) {
-                creditAchieved = creditFromChild;
-                awardUsed = child.componentName;
+            let creditFromChild = child.stateValues.creditAchieved;
+            if (creditFromChild > minimumFromAwardCredits || awardsUsed[0] === null) {
+              if (child.stateValues.fractionSatisfied > 0) {
+                if (awardsUsed[0] === null) {
+                  awardsUsed[0] = child.componentName;
+                  awardCredits[0] = creditFromChild;
+                } else {
+                  for (let [ind, credit] of awardCredits.entries()) {
+                    if (creditFromChild > credit) {
+                      awardsUsed.splice(ind, 0, child.componentName);
+                      awardsUsed = awardsUsed.slice(0, n)
+                      awardCredits.splice(ind, 0, creditFromChild);
+                      awardCredits = awardCredits.slice(0, n);
+                      break;
+                    }
+                  }
+                }
               }
             }
           }
+
+          creditAchieved = Math.min(1, awardCredits.reduce((a, c) => a + c));
+
         }
         return {
           newValues: {
             creditAchievedIfSubmit: creditAchieved,
-            awardUsedIfSubmit: awardUsed,
+            awardsUsedIfSubmit: awardsUsed,
             awardChildren: dependencyValues.awardChildren,
             inputUsedIfSubmit: inputUsed,
           }
@@ -1145,7 +1173,7 @@ export default class Answer extends InlineComponent {
   submitAnswer() {
 
     let creditAchieved = this.stateValues.creditAchievedIfSubmit;
-    let awardUsed = this.stateValues.awardUsedIfSubmit;
+    let awardsUsed = this.stateValues.awardsUsedIfSubmit;
     let inputUsed = this.stateValues.inputUsedIfSubmit;
 
     // request to update credit
@@ -1202,7 +1230,7 @@ export default class Answer extends InlineComponent {
     })
 
     for (let child of this.stateValues.awardChildren) {
-      let awarded = child.componentName === awardUsed;
+      let awarded = awardsUsed.includes(child.componentName);
       instructions.push({
         updateType: "updateValue",
         componentName: child.componentName,

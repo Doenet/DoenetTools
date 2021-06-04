@@ -41,7 +41,7 @@ export default class Angle extends DoenetRenderer {
 
     let through;
 
-    if (this.doenetSvData.renderAsAcuteAngle && (this.doenetSvData.degrees % 360) > 180) {
+    if (this.doenetSvData.renderAsAcuteAngle && (this.doenetSvData.degrees.evaluate_to_constant() % 360) > 180) {
       through = [
         [...this.doenetSvData.numericalPoints[2]],
         [...this.doenetSvData.numericalPoints[1]],
@@ -109,8 +109,7 @@ export default class Angle extends DoenetRenderer {
     }
 
     let through;
-
-    if (this.doenetSvData.renderAsAcuteAngle && (this.doenetSvData.degrees % 360) > 180) {
+    if (this.doenetSvData.renderAsAcuteAngle && (this.doenetSvData.degrees.evaluate_to_constant() % 360) > 180) {
       through = [
         [...this.doenetSvData.numericalPoints[2]],
         [...this.doenetSvData.numericalPoints[1]],
