@@ -357,7 +357,7 @@ class DoenetViewerChild extends Component {
     callBack,
   }) {
 
-    console.log(">>>submit itemNumber:",itemNumber)
+    // console.log(">>>submit itemNumber:",itemNumber)
 
     if (this.allowSaveSubmissions && this.props.branchId) {
 
@@ -373,7 +373,7 @@ class DoenetViewerChild extends Component {
           attemptNumber: this.attemptNumber
         }
 
-        // axios.post('/api/saveAssignmentWeights.php', payload1) //TODO: Enable this!
+        axios.post('/api/saveAssignmentWeights.php', payload1) 
           // .then(resp => {
           // });
       }
@@ -386,12 +386,12 @@ class DoenetViewerChild extends Component {
         credit: itemCreditAchieved,
         itemNumber,
       }
-      console.log(">>>saveCreditForItem payload",payload2)
+      // console.log(">>>saveCreditForItem payload",payload2)
       axios.post('/api/saveCreditForItem.php', payload2)
-        .then(resp => {
-          console.log('saveCreditForItem-->>>',resp.data);
+        // .then(resp => {
+        //   console.log('saveCreditForItem-->>>',resp.data);
 
-        });
+        // });
     }
 
     callBack("submitResponse callback parameter");
