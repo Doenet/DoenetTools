@@ -4,6 +4,7 @@
     cors: {
       origin: [
         'http://localhost',
+        'http://localhost/chat',
         'https://doenet.org',
         'https://dev.doenet.org',
         'https://chat.rt.doenet.org',
