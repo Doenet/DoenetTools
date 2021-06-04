@@ -350,13 +350,15 @@ class DoenetViewerChild extends Component {
 
   }
 
+  //Need item state?
   submitResponse({
     itemNumber,
     itemCreditAchieved,
     callBack,
   }) {
 
-    
+    console.log(">>>submit itemNumber:",itemNumber)
+
     if (this.allowSaveSubmissions && this.props.branchId) {
 
 
@@ -371,7 +373,7 @@ class DoenetViewerChild extends Component {
           attemptNumber: this.attemptNumber
         }
 
-        axios.post('/api/saveAssignmentWeights.php', payload1)
+        // axios.post('/api/saveAssignmentWeights.php', payload1) //TODO: Enable this!
           // .then(resp => {
           // });
       }
@@ -399,24 +401,28 @@ class DoenetViewerChild extends Component {
   // viewed solution in user_assignment_attempt_item
   recordSolutionView({ itemNumber, scoredComponent, callBack }) {
 
-    console.log(`reveal solution, ${itemNumber}`)
+    // console.log(`reveal solution, ${itemNumber}`)
 
-    if (this.assignmentId) {
-      console.warn(`Need to record solution view in the database!!`);
+    // if (this.assignmentId) {
+    //   console.warn(`Need to record solution view in the database!!`);
 
-      // TODO: is there a condition where we don't allow solution view?
-      // Presumably some setting from course
-      // But, should the condition be checked on the server?
+    //   // TODO: is there a condition where we don't allow solution view?
+    //   // Presumably some setting from course
+    //   // But, should the condition be checked on the server?
 
-      // TODO: call callBack as callBack from php call
-      callBack({ allowView: true, message: "", scoredComponent })
+    //   // TODO: call callBack as callBack from php call
+    //   callBack({ allowView: true, message: "", scoredComponent })
 
-    } else {
+    // } else {
 
-      // if not an assignment, immediately show solution
-      callBack({ allowView: true, message: "", scoredComponent })
+    //   // if not an assignment, immediately show solution
+    //   callBack({ allowView: true, message: "", scoredComponent })
 
-    }
+    // }
+
+    //Temporary until viewed solution is written
+    callBack({ allowView: true, message: "", scoredComponent })
+
 
   }
 
