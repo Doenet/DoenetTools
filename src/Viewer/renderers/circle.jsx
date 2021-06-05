@@ -5,8 +5,6 @@ export default class Circle extends DoenetRenderer {
   constructor(props) {
     super(props)
 
-    this.onDragHandler = this.onDragHandler.bind(this);
-
     if (props.board) {
       this.createGraphicalObject();
 
@@ -49,8 +47,24 @@ export default class Circle extends DoenetRenderer {
     );
 
 
-    this.circleJXG.on('drag', () => this.onDragHandler(true));
-    this.circleJXG.on('up', () => this.onDragHandler(false));
+    this.circleJXG.on('drag', function (e) {
+      this.dragged = true;
+      this.onDragHandler(e);
+    }.bind(this));
+
+    this.circleJXG.on('up', function (e) {
+      if(this.dragged) {
+        this.actions.finalizeCirclePosition();
+      }
+    }.bind(this));
+
+    this.circleJXG.on('down', function (e) {
+      this.dragged = false;
+      this.pointerAtDown = [e.x, e.y];
+      this.centerAtDown = [...this.circleJXG.center.coords.scrCoords];
+      this.radiusAtDown = this.circleJXG.radius;
+      this.throughAnglesAtDown = [...this.doenetSvData.throughAngles];
+    }.bind(this));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
 
@@ -137,13 +151,38 @@ export default class Circle extends DoenetRenderer {
 
   }
 
-  onDragHandler(transient) {
-    if (this.circleJXG !== undefined) {
+
+  onDragHandler(e) {
+
+    if (this.dragged) {
+      let centerCoords = this.calculateCenterPosition(e);
       this.actions.moveCircle({
-        center: [this.circleJXG.center.X(), this.circleJXG.center.Y()],
-        transient
+        center: centerCoords,
+        radius: this.radiusAtDown,
+        throughAngles: this.throughAnglesAtDown,
+        transient: true
       });
     }
+  }
+
+  calculateCenterPosition(e) {
+
+    // the reason we calculate point position with this algorithm,
+    // rather than using .X() and .Y() directly
+    // is so that center doesn't get trapped on an attracting object
+    // if you move the mouse slowly.
+    // The attributes .X() and .Y() are affected by
+    // .setCoordinates functions called in update()
+    // so will get modified to go back to the attracting object
+
+    var o = this.props.board.origin.scrCoords;
+
+    let calculatedX = (this.centerAtDown[1] + e.x - this.pointerAtDown[0]
+      - o[1]) / this.props.board.unitX;
+    let calculatedY = (o[2] -
+      (this.centerAtDown[2] + e.y - this.pointerAtDown[1]))
+      / this.props.board.unitY;
+    return [calculatedX, calculatedY];
   }
 
 
