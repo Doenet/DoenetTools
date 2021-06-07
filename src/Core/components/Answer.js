@@ -73,7 +73,7 @@ export default class Answer extends InlineComponent {
     attributes.nAwardsCredited = {
       createComponentOfType: "number",
       createStateVariable: "nAwardsCredited",
-      defaultValue: false,
+      defaultValue: 1,
       public: true,
     }
     attributes.allowedErrorInNumbers = {
@@ -922,6 +922,7 @@ export default class Answer extends InlineComponent {
                 if (awardsUsed[0] === null) {
                   awardsUsed[0] = child.componentName;
                   awardCredits[0] = creditFromChild;
+                  minimumFromAwardCredits = Math.min(...awardCredits);
                 } else {
                   for (let [ind, credit] of awardCredits.entries()) {
                     if (creditFromChild > credit) {
@@ -929,6 +930,7 @@ export default class Answer extends InlineComponent {
                       awardsUsed = awardsUsed.slice(0, n)
                       awardCredits.splice(ind, 0, creditFromChild);
                       awardCredits = awardCredits.slice(0, n);
+                      minimumFromAwardCredits = Math.min(...awardCredits);
                       break;
                     }
                   }
@@ -937,7 +939,7 @@ export default class Answer extends InlineComponent {
             }
           }
 
-          creditAchieved = Math.min(1, awardCredits.reduce((a, c) => a + c));
+          creditAchieved = Math.min(1, awardCredits.reduce((a, c) => a + c, 0));
 
         }
         return {

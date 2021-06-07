@@ -2142,6 +2142,7 @@ export default class Core {
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
+              firstLevelReplacement: dep.firstLevelReplacement,
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2620,7 +2621,9 @@ export default class Core {
           componentName: targetComponent.componentName,
           variableName: attribute,
         };
-        if ("targetAttributesToIgnore" in compositeComponent.state) {
+        if ("targetAttributesToIgnore" in compositeComponent.state &&
+          redefineDependencies.firstLevelReplacement
+        ) {
           thisDependencies.targetAttributesToIgnore = {
             dependencyType: "stateVariable",
             componentName: compositeComponent.componentName,
