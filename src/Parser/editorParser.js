@@ -1,7 +1,7 @@
-import {parser} from './doenet.js'
-import {foldNodeProp, foldInside, indentNodeProp} from "@codemirror/language"
+import {indentNodeProp, LezerLanguage, LanguageSupport } from "@codemirror/language"
 import {styleTags, tags as t} from "@codemirror/highlight"
 import {indentLess} from "@codemirror/commands"
+import {parser} from './doenet.js'
 
 //A global that keeps the set of tags that need to still be closed (such that closing them decreases the indent)
 let tagsToBeClosed = [];
@@ -39,8 +39,7 @@ let parserWithMetadata = ( view ) => parser.configure({
                 if(index === -1){
                     return context.baseIndent;
                 } else {
-                    //TODO deindent the current line (based off of context.pos (or tagNameNode.from))
-                    //as a temporary work around i'm going to do a lessIndent command, but that might not have the right behavior
+                    //this should have the correct behavior...
                     indentLess({state : context.state, dispatch: view.dispatch });
                     tagsToBeClosed.splice(index,1);
                     return context.baseIndent;
@@ -50,3 +49,15 @@ let parserWithMetadata = ( view ) => parser.configure({
         })
     ]
 })
+
+const doenetLanguage = LezerLanguage.define({
+    parser: parserWithMetadata,
+    //TODO look into languageData (looks like there's more than this (undocumented ofc))
+    languageData: {
+        commentTokens: {block: {open: "<!--", close: "-->"}}
+    }
+})
+
+export function doenet(view) {
+    return new LanguageSupport(doenetLanguage(view), [])
+}

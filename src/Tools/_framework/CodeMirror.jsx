@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { basicSetup } from "@codemirror/basic-setup";
 import { EditorState, Transaction } from "@codemirror/state";
 import { EditorView, keymap  } from "@codemirror/view";
+import {doenet} from "../../Parser/editorParser"
 
 
 export default function CodeMirror(props){
@@ -25,7 +26,6 @@ export default function CodeMirror(props){
         return true;
     }
 
-
     //tab = 2 spaces
     const tab = "  ";
     const tabCommand = ({state,dispatch}) => {
@@ -45,11 +45,10 @@ export default function CodeMirror(props){
             tabExtension,
             //basicSetup also includes comment bindings based on info from a language extension.
             basicSetup,
-            EditorState.changeFilter.of(changeFunc)
+            EditorState.changeFilter.of(changeFunc),
+            doenet(view.current)
         ]
-
     });
-
 
     return (
         <div ref={parent} ></div>
