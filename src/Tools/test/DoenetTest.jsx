@@ -249,7 +249,7 @@ function Test() {
         allowSaveEvents={allowSaveEvents}
         requestedVariant={requestedVariant.current}
         core={coreProp}
-        branchId="branchId"
+        doenetId="doenetId"
       // collaborate={true}
       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
       // functionsSuppliedByChild = {this.functionsSuppliedByChild}

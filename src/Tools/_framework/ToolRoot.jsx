@@ -56,7 +56,7 @@ export const useToolControlHelper = () => {
     title,
     contentId,
     courseId,
-    branchId,
+    doenetId,
     assignmentId,
     attemptNumber,
     userId,
@@ -89,7 +89,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           <Editor
-            branchId={branchId}
+            doenetId={doenetId}
             title={title}
             driveId={driveId}
             folderId={folderId}
@@ -103,7 +103,7 @@ export const useToolControlHelper = () => {
           ...old,
           <Content
             contentId={contentId}
-            branchId={branchId}
+            doenetId={doenetId}
             title={title}
             key={`ContentLayer${old.length + 1}`}
           />,
@@ -113,7 +113,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           <Assignment
-            branchId={branchId}
+            doenetId={doenetId}
             title={title}
             assignmentId={assignmentId}
             courseId={courseId}
@@ -126,7 +126,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           <Calendar
-            branchId={branchId}
+            doenetId={doenetId}
             contentId={contentId}
             key={`CalendarLayer${old.length + 1}`}
           />,
@@ -135,7 +135,7 @@ export const useToolControlHelper = () => {
       case 'image':
         setLayers((old) => [
           ...old,
-          <Image branchId={branchId} key={`ImageLayer${old.length + 1}`} />,
+          <Image doenetId={doenetId} key={`ImageLayer${old.length + 1}`} />,
         ]);
         break;
       default:

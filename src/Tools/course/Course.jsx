@@ -63,10 +63,10 @@ export const selectedVersionAtom = atom({
 export const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
   get:
-    (branchId) =>
+    (doenetId) =>
     async ({ get, set }) => {
       const { data } = await axios.get(
-        `/api/getAllAssignmentSettings.php?branchId=${branchId}`,
+        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
       );
       return data;
     },
@@ -76,23 +76,23 @@ export const assignmentDictionary = atomFamily({
   default: selectorFamily({
     key: 'assignmentDictionary/Default',
     get:
-      (driveIditemIdbranchIdparentFolderId) =>
+      (driveIditemIddoenetIdparentFolderId) =>
       async ({ get }, instructions) => {
         let folderInfoQueryKey = {
-          driveId: driveIditemIdbranchIdparentFolderId.driveId,
-          folderId: driveIditemIdbranchIdparentFolderId.folderId,
+          driveId: driveIditemIddoenetIdparentFolderId.driveId,
+          folderId: driveIditemIddoenetIdparentFolderId.folderId,
         };
         let folderInfo = get(
           folderDictionaryFilterSelector(folderInfoQueryKey),
         );
         const itemObj =
           folderInfo?.contentsDictionary?.[
-            driveIditemIdbranchIdparentFolderId.itemId
+            driveIditemIddoenetIdparentFolderId.itemId
           ];
-        if (driveIditemIdbranchIdparentFolderId.branchId) {
+        if (driveIditemIddoenetIdparentFolderId.doenetId) {
           const aInfo = await get(
             loadAssignmentSelector(
-              driveIditemIdbranchIdparentFolderId.branchId,
+              driveIditemIddoenetIdparentFolderId.doenetId,
             ),
           );
           if (aInfo) {
@@ -105,9 +105,9 @@ export const assignmentDictionary = atomFamily({
 let assignmentDictionarySelector = selectorFamily({
   key: 'assignmentDictionaryNewSelector',
   get:
-    (driveIditemIdbranchIdparentFolderId) =>
+    (driveIditemIddoenetIdparentFolderId) =>
     ({ get }) => {
-      return get(assignmentDictionary(driveIditemIdbranchIdparentFolderId));
+      return get(assignmentDictionary(driveIditemIddoenetIdparentFolderId));
     },
 });
 
@@ -130,7 +130,7 @@ function AutoSelect(props) {
 
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   if(contentInfoLoad.state === "hasValue"){
-    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.branchId))
+    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.doenetId))
 
     if (versionHistory.state === "loading"){ return null;}
     if (versionHistory.state === "hasError"){ 
@@ -338,7 +338,7 @@ export default function Course(props) {
                     doenetMLDoubleClickCallback={(info) => {
                       openOverlay({
                         type: 'content',
-                        branchId: info.item.branchId,
+                        doenetId: info.item.doenetId,
                         title: info.item.label,
                       });
                     }}
@@ -390,7 +390,7 @@ const DoenetMLInfoPanel = (props) => {
 
   const itemInfo = props.contentInfo;
   const versionHistory = useRecoilValueLoadable(
-    itemHistoryAtom(itemInfo.branchId),
+    itemHistoryAtom(itemInfo.doenetId),
   );
 
   const selectedContentId = () => {
@@ -408,7 +408,7 @@ const DoenetMLInfoPanel = (props) => {
       driveId: itemInfo.driveId,
       folderId: itemInfo.parentFolderId,
       itemId: itemInfo.itemId,
-      branchId: itemInfo.branchId,
+      doenetId: itemInfo.doenetId,
       versionId: selectedVId,
       contentId: selectedContentId(),
     }),
@@ -438,11 +438,11 @@ const DoenetMLInfoPanel = (props) => {
 
     const result = changeSettings({
       [name]: value,
-      driveIditemIdbranchIdparentFolderId: {
+      driveIditemIddoenetIdparentFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
-        branchId: itemInfo.branchId,
+        doenetId: itemInfo.doenetId,
         versionId: selectedVId,
         contentId: selectedContentId(),
       },
@@ -466,11 +466,11 @@ const DoenetMLInfoPanel = (props) => {
       e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     const result = saveSettings({
       [name]: value,
-      driveIditemIdbranchIdparentFolderId: {
+      driveIditemIddoenetIdparentFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
         itemId: itemInfo.itemId,
-        branchId: itemInfo.branchId,
+        doenetId: itemInfo.doenetId,
         versionId: selectedVId,
         contentId: selectedContentId(),
       },
@@ -480,7 +480,7 @@ const DoenetMLInfoPanel = (props) => {
       itemId: itemInfo.itemId,
       isAssigned: '1',
       [name]: value,
-      branchId: itemInfo.branchId,
+      doenetId: itemInfo.doenetId,
       contentId: itemInfo.contentId,
     };
     updateAssignmentTitle({
@@ -490,7 +490,7 @@ const DoenetMLInfoPanel = (props) => {
       },
       itemId: itemInfo.itemId,
       payloadAssignment: payload,
-      branchId: itemInfo.branchId,
+      doenetId: itemInfo.doenetId,
       contentId: itemInfo.contentId,
     });
 
@@ -692,7 +692,7 @@ const VersionHistoryInfoPanel = (props) => {
   const setSelectedVersionAtom = useSetRecoilState(selectedVersionAtom);
   const itemInfo = props.contentInfo;
   const versionHistory = useRecoilValueLoadable(
-    itemHistoryAtom(itemInfo.branchId),
+    itemHistoryAtom(itemInfo.doenetId),
   );
   const selectedVersionId = useRecoilValue(versionHistoryReleasedSelectedAtom);
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
@@ -740,7 +740,7 @@ const VersionHistoryInfoPanel = (props) => {
   };
   let aInfo = '';
   const assignmentInfoSettings = useRecoilValueLoadable(
-    loadAssignmentSelector(itemInfo.branchId),
+    loadAssignmentSelector(itemInfo.doenetId),
   );
   if (assignmentInfoSettings?.state === 'hasValue') {
     aInfo = assignmentInfoSettings?.contents?.assignments[0];
@@ -775,15 +775,15 @@ const VersionHistoryInfoPanel = (props) => {
               callback={async () => {
                 setIsAssigned(true);
                 const result = await addContentAssignment({
-                  driveIditemIdbranchIdparentFolderId: {
+                  driveIditemIddoenetIdparentFolderId: {
                     driveId: itemInfo.driveId,
                     folderId: itemInfo.parentFolderId,
                     itemId: itemInfo.itemId,
-                    branchId: itemInfo.branchId,
+                    doenetId: itemInfo.doenetId,
                     contentId: selectedContentId(),
                     versionId: selectedVId,
                   },
-                  branchId: itemInfo.branchId,
+                  doenetId: itemInfo.doenetId,
                   contentId: selectedContentId(),
                   versionId: selectedVId,
                 });
@@ -791,7 +791,7 @@ const VersionHistoryInfoPanel = (props) => {
                   ...aInfo,
                   itemId: itemInfo.itemId,
                   isAssigned: '1',
-                  branchId: itemInfo.branchId,
+                  doenetId: itemInfo.doenetId,
                   contentId: selectedContentId(),
                   driveId: itemInfo.driveId,
                   versionId: selectedVId,
@@ -805,7 +805,7 @@ const VersionHistoryInfoPanel = (props) => {
                   itemId: itemInfo.itemId,
                   payload: payload,
                 });
-                updateVersionHistory(itemInfo.branchId, selectedVId);
+                updateVersionHistory(itemInfo.doenetId, selectedVId);
                 try {
                   if (result.success) {
                     addToast(
@@ -829,15 +829,15 @@ const VersionHistoryInfoPanel = (props) => {
               value="Unassign"
               callback={async () => {
                 assignmentToContent({
-                  driveIditemIdbranchIdparentFolderId: {
+                  driveIditemIddoenetIdparentFolderId: {
                     driveId: itemInfo.driveId,
                     folderId: itemInfo.parentFolderId,
                     itemId: itemInfo.itemId,
-                    branchId: itemInfo.branchId,
+                    doenetId: itemInfo.doenetId,
                     contentId: selectedContentId(),
                     versionId: selectedVId,
                   },
-                  branchId: itemInfo.branchId,
+                  doenetId: itemInfo.doenetId,
                   contentId: version?.contentId,
                   versionId: version?.versionId,
                 });
@@ -848,7 +848,7 @@ const VersionHistoryInfoPanel = (props) => {
                     folderId: itemInfo.parentFolderId,
                   },
                   itemId: itemInfo.itemId,
-                  branchId: itemInfo.branchId,
+                  doenetId: itemInfo.doenetId,
                   contentId: version?.contentId,
                   versionId: version?.versionId,
                 });
@@ -857,7 +857,7 @@ const VersionHistoryInfoPanel = (props) => {
                   contentId: version?.contentId,
                   versionId: version?.versionId,
                   itemId: itemInfo.itemId,
-                  branchId: itemInfo.branchId,
+                  doenetId: itemInfo.doenetId,
                 });
                 result
                   .then((resp) => {
@@ -886,7 +886,7 @@ const VersionHistoryInfoPanel = (props) => {
               callback={() => {
                 openOverlay({
                   type: 'content',
-                  branchId: itemInfo?.branchId,
+                  doenetId: itemInfo?.doenetId,
                   // contentId: itemInfo?.contentId,
                 });
               }}
@@ -900,15 +900,15 @@ const VersionHistoryInfoPanel = (props) => {
               callback={async () => {
                 setIsAssigned(true);
                 const result = await addSwitchAssignment({
-                  driveIditemIdbranchIdparentFolderId: {
+                  driveIditemIddoenetIdparentFolderId: {
                     driveId: itemInfo.driveId,
                     folderId: itemInfo.parentFolderId,
                     itemId: itemInfo.itemId,
-                    branchId: itemInfo.branchId,
+                    doenetId: itemInfo.doenetId,
                     contentId: selectedContentId(),
                     versionId: selectedVId,
                   },
-                  branchId: itemInfo.branchId,
+                  doenetId: itemInfo.doenetId,
                   contentId: selectedContentId(),
                   versionId: selectedVId,
                   ...aInfo
@@ -918,7 +918,7 @@ const VersionHistoryInfoPanel = (props) => {
                   ...aInfo,
                   itemId: itemInfo.itemId,
                   isAssigned: '1',
-                  branchId: itemInfo.branchId,
+                  doenetId: itemInfo.doenetId,
                   contentId: selectedContentId(),
                   driveId: itemInfo.driveId,
                   versionId: selectedVId,
@@ -932,9 +932,9 @@ const VersionHistoryInfoPanel = (props) => {
                   itemId: itemInfo.itemId,
                   payload: payload,
                 });
-                updateVersionHistory(itemInfo.branchId, selectedVId);
+                updateVersionHistory(itemInfo.doenetId, selectedVId);
                 updatePrevVersionHistory(
-                  itemInfo.branchId,
+                  itemInfo.doenetId,
                   prevAssignedVersionId(),
                 );
                 try {
@@ -1058,7 +1058,7 @@ const ItemInfoPanel = (props) => {
   let versionArr = [];
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   const versionHistory = useRecoilValueLoadable(
-    itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.branchId),
+    itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.doenetId),
   );
 
   if (versionHistory.state === 'loading') {

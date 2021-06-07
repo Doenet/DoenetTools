@@ -14,7 +14,7 @@ $device = $jwtArray['deviceName'];
 
 $contentId = mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_REQUEST["attemptNumber"]);
-$branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
 $success = TRUE;
 $message = "";
@@ -24,9 +24,9 @@ $message = 'Internal Error: missing contentId';
 }elseif ($attemptNumber == ""){
 $success = FALSE;
 $message = 'Internal Error: missing attemptNumber';
-}elseif ($branchId == ""){
+}elseif ($doenetId == ""){
 $success = FALSE;
-$message = 'Internal Error: missing branchId';
+$message = 'Internal Error: missing doenetId';
 }elseif ($userId == ""){
 $success = FALSE;
 $message = "You need to be signed in for content interaction information";
@@ -39,7 +39,7 @@ if ($success){
         WHERE userId='$userId'
         AND contentId='$contentId'
         AND attemptNumber='$attemptNumber'
-        AND branchId='$branchId'
+        AND doenetId='$doenetId'
         ORDER BY timestamp DESC, id DESC";
 
   $result = $conn->query($sql);
