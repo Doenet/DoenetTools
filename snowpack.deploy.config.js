@@ -1,4 +1,11 @@
 module.exports = {
+  alias: {
+    '@ToolRoot': './src/Tools/_framework/ToolRoot',
+    '@Tool': './src/Tools/_framework/Tool',
+    '@Toast': './src/Tools/_framework/Toast',
+    'solid-svg': '@fortawesome/free-solid-svg-icons',
+    'react-spring': '@react-spring/web',
+  },
   mount: {
     'src/Tools/accountSettings': '/accountSettings',
     'src/Tools/content': '/content',
@@ -18,7 +25,6 @@ module.exports = {
     'src/_reactComponents': '/_reactComponents',
     'src/_sharedRecoil': '/_sharedRecoil',
     'src/_utils': '/_utils',
-    'src/Api_temp': '/api',
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
@@ -42,7 +48,6 @@ module.exports = {
     knownEntrypoints: ['crypto-js/sha1'],
   },
   buildOptions: {
-    watch: false,
     out: 'dist',
     clean: true,
     // minify: true
