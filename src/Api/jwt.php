@@ -68,6 +68,7 @@ if ($row['minutes'] > 10){
         $path = '/';
         //$domain = $ini_array['dbhost'];
         $domain = $_SERVER["SERVER_NAME"];
+        if ($domain == 'apache'){$domain = 'localhost';}
         $isSecure = true;
         if ($domain=="localhost"){
         $isSecure = false;
