@@ -2008,7 +2008,7 @@ describe('Collect Tag Tests', function () {
 
   });
 
-  it('collect ignores hide by default', () => {
+  it('collect does not ignore hide by default', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2017,8 +2017,8 @@ describe('Collect Tag Tests', function () {
       <text hide>secret</text>
       <text>public</text>
     </section>
-    <p>Revealed by default: <collect componentTypes="text" tname="_section1" /></p>
-    <p>Force to stay hidden: <collect componentTypes="text" tname="_section1" targetAttributesToIgnore="" /></p>
+    <p>Hidden by default: <collect componentTypes="text" tname="_section1" /></p>
+    <p>Force to reveal: <collect componentTypes="text" tname="_section1" targetAttributesToIgnore="hide" /></p>
 
     `}, "*");
     });
@@ -2028,12 +2028,81 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_section1').should('contain.text', 'public');
     cy.get('#\\/_section1').should('not.contain.text', 'secret');
 
+    cy.get('#\\/_p1').should('have.text', 'Hidden by default: public');
+    cy.get('#\\/_p2').should('have.text', 'Force to reveal: secretpublic');
+
+
+  });
+
+  it('collect keeps hidden children hidden', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <section>
+      <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+      <copy tname="theP" assignNames="theP2" />
+      <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
+      <copy tname="theP3" assignNames="theP4" />
+    </section>
+    <collect componentTypes="p" tname="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" tname="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/theP1').should('have.text', 'Hidden text: ')
+    cy.get('#\\/theP2').should('have.text', 'Hidden text: ')
+    cy.get('#\\/theP3').should('not.exist')
+    cy.get('#\\/theP4').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp1').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp2').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp3').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp4').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp5').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp6').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp7').should('not.exist')
+    cy.get('#\\/cp8').should('have.text', 'Hidden paragraph with hidden text: ')
+
+  });
+
+  it('collecting from within a hidden section', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <section hide>
+      <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+      <copy tname="theP" assignNames="theP2" />
+      <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
+      <copy tname="theP3" assignNames="theP4" />
+    </section>
+    <collect componentTypes="p" tname="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" tname="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/theP1').should('not.exist')
+    cy.get('#\\/theP2').should('not.exist')
+    cy.get('#\\/theP3').should('not.exist')
+    cy.get('#\\/theP4').should('not.exist')
+    cy.get('#\\/cp1').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp2').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp3').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp4').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp5').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp6').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp7').should('not.exist')
+    cy.get('#\\/cp8').should('have.text', 'Hidden paragraph with hidden text: ')
+
     cy.get('#\\/_p1').should('have.text', 'Revealed by default: secretpublic');
     cy.get('#\\/_p2').should('have.text', 'Force to stay hidden: public');
 
 
   });
-
 
   it('copies hide dynamically', () => {
     cy.window().then((win) => {
