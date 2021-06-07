@@ -1,6 +1,6 @@
 {
   "contentSeeds" :{
-      "branchId": ["a1branchid", "a2branchid", "a3branchid", "b3branchid", "b2branchid"],
+      "doenetId": ["a1doenetid", "a2doenetid", "a3doenetid", "b3doenetid", "b2doenetid"],
       "contentId": ["a1contentid", "a2contentid", "a3contentid", "b3contentid", "b2contentid"],
       "title": ["a1content", "a2content", "a3content", "b3content", "b2content"],
       "doenetML": [
@@ -22,7 +22,7 @@
       "assignedDate": ["2019-08-21 13:42:56", "2019-08-22 13:42:56", "2019-08-23 13:42:56"],
       "dueDate": ["2019-08-24 13:42:56", "2019-08-23 13:42:56", "2019-08-22 13:42:56"],
       "headingId": "heading_a_id",
-      "branchId": ["a1branchid", "a2branchid", "a3branchid"],
+      "doenetId": ["a1doenetid", "a2doenetid", "a3doenetid"],
       "contentId": ["a1contentid", "a2contentid", "a3contentid"]
     },
     {
@@ -36,7 +36,7 @@
       "assignedDate": ["2019-08-27 13:42:56", "2019-08-28 13:42:56"],
       "dueDate": ["2019-08-29 13:42:56", "2019-08-30 13:42:56"],
       "headingId": "heading_b_id",
-      "branchId": ["b3branchid", "b2branchid"],
+      "doenetId": ["b3doenetid", "b2doenetid"],
       "contentId": ["b3contentid", "b2contentid"]
     }]
 }

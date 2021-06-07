@@ -11,10 +11,10 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $number_content = count($_POST["contentSeeds"]["contentId"]);
 
 for ($i = 0; $i < $number_content; $i++){
-  $branchId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["branchId"][$i]);
+  $doenetId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["doenetId"][$i]);
   $sql = "
   DELETE FROM content_branch
-  WHERE branchId = '$branchId'
+  WHERE doenetId = '$doenetId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -27,7 +27,7 @@ for ($i = 0; $i < $number_content; $i++){
 
   $sql = "
   DELETE FROM content
-  WHERE branchId = '$branchId'
+  WHERE doenetId = '$doenetId'
   ";
   echo $sql;
   $result = $conn->query($sql); 

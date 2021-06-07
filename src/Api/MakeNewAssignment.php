@@ -11,7 +11,7 @@ $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
 $driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
-$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 
 //make assignment 
@@ -54,9 +54,9 @@ else if($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
 $success = TRUE;
 $message = "";
 
-if ($branchId == ""){
+if ($doenetId == ""){
   $success = FALSE;
-  $message = "Internal Error: missing branchId";
+  $message = "Internal Error: missing doenetId";
 }
 else if($driveId == ''){
   $success = FALSE;
@@ -64,11 +64,11 @@ else if($driveId == ''){
 }
 
 if ($success){
-    $sqlnew="SELECT * from assignment WHERE branchId = '$branchId'";
+    $sqlnew="SELECT * from assignment WHERE doenetId = '$doenetId'";
     $resultnew = $conn->query($sqlnew); 
     if ($resultnew->num_rows > 0){
       $sqlUpdate = "UPDATE assignment SET 
-      branchId=$branchId,
+      doenetId=$doenetId,
       driveId=$driveId,
       assignedDate=$assignedDate,
       dueDate=$dueDate,
@@ -84,7 +84,7 @@ if ($success){
       showHints=$showHints,
       showCorrectness=$showCorrectness,
       proctorMakesAvailable=$proctorMakesAvailable
-      WHERE branchId='$branchId'
+      WHERE doenetId='$doenetId'
       ";
           $result = $conn->query($sqlUpdate); 
 
@@ -92,7 +92,7 @@ if ($success){
       $sql="
       INSERT INTO assignment
       (
-      branchId,
+      doenetId,
       driveId,
       assignedDate,
       dueDate,
@@ -110,7 +110,7 @@ if ($success){
       proctorMakesAvailable)
       VALUES
       (
-        '$branchId',
+        '$doenetId',
       '$driveId',
       '$assignedDate',
       '$dueDate',
@@ -134,11 +134,11 @@ if ($success){
 
 }
   // echo $sql;
-$sqlnew="UPDATE drive_content SET isAssigned=1 WHERE branchId='$branchId';";
+$sqlnew="UPDATE drive_content SET isAssigned=1 WHERE doenetId='$doenetId';";
 //  echo $sqlnew;
 $result = $conn->query($sqlnew);
 
-$sql ="UPDATE content SET isAssigned=1 WHERE branchId='$branchId' AND versionId='$versionId';";
+$sql ="UPDATE content SET isAssigned=1 WHERE doenetId='$doenetId' AND versionId='$versionId';";
 $result = $conn->query($sql); 
 
 $response_arr = array(

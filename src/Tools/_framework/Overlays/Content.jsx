@@ -15,11 +15,11 @@ const viewerContentDoenetMLAtom = atom({
   default: { updateNumber: 0, doenetML: '' },
 });
 
-export default function Content({ branchId = '', title }) {
+export default function Content({ doenetId = '', title }) {
   function DoenetViewerPanel() {
 
     const viewerDoenetML = useRecoilValue(viewerContentDoenetMLAtom);
-    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(branchId))
+    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
     if (versionHistory.state === "loading"){ return null;}
     if (versionHistory.state === "hasError"){ 
       console.error(versionHistory.contents)
@@ -49,7 +49,7 @@ export default function Content({ branchId = '', title }) {
           showHints: true,
         }}
         attemptNumber={attemptNumber}
-        branchId={branchId}
+        doenetId={doenetId}
         allowLoadPageState={true}
         allowSavePageState={true}
         allowLocalPageState={true}

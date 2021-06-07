@@ -15,7 +15,7 @@ $response_arr = array(
 
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
@@ -29,7 +29,7 @@ $itemNumber = $itemNumber + 1;
 //**Find attemptAggregation
 $sql = "SELECT attemptAggregation
         FROM assignment
-        WHERE branchId='$branchId'";
+        WHERE doenetId='$doenetId'";
 
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
@@ -39,7 +39,7 @@ $attemptAggregation = $row['attemptAggregation'];
 $sql = "SELECT credit
         FROM user_assignment_attempt_item
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
@@ -57,9 +57,9 @@ $credit_to_store = MAX($previousCredit,$credit);
 
 if ($result->num_rows < 1){
     $sql = "INSERT INTO user_assignment_attempt_item
-    (branchId,contentId,userId,attemptNumber,itemNumber,credit)
+    (doenetId,contentId,userId,attemptNumber,itemNumber,credit)
     VALUES
-    ('$branchId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_to_store')
+    ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_to_store')
     ";
 $result = $conn->query($sql);
 
@@ -69,7 +69,7 @@ $result = $conn->query($sql);
 $sql = "UPDATE user_assignment_attempt_item
         SET credit='$credit_to_store'
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
@@ -82,7 +82,7 @@ $sql = "
         SELECT submissionNumber
         FROM user_assignment_attempt_item_submission
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'
@@ -98,9 +98,9 @@ $submissionNumber++;
 //Insert item submission
 $sql = "
 INSERT INTO user_assignment_attempt_item_submission
-(branchId,contentId,userId,attemptNumber,itemNumber,submissionNumber,credit,submittedDate)
+(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,credit,submittedDate)
 VALUES
-('$branchId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit_to_store',NOW())
+('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit_to_store',NOW())
 ";
 $result = $conn->query($sql);
 
@@ -112,7 +112,7 @@ $result = $conn->query($sql);
 $sql = "SELECT credit,itemNumber,weight
         FROM user_assignment_attempt_item
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         ORDER BY itemNumber
@@ -140,19 +140,19 @@ if ($total_weights > 0){ //Prevent divide by zero
 }
 
 //Test if item is stored in user_assignment_attempt
-$sql = "SELECT branchId
+$sql = "SELECT doenetId
         FROM user_assignment_attempt
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         ";
 $result = $conn->query($sql);
 if ($result->num_rows < 1){
     $sql = "INSERT INTO user_assignment_attempt
-    (branchId,contentId,userId,attemptNumber,credit)
+    (doenetId,contentId,userId,attemptNumber,credit)
     VALUES
-    ('$branchId','$contentId','$userId','$attemptNumber','$credit_to_store')
+    ('$doenetId','$contentId','$userId','$attemptNumber','$credit_to_store')
     ";
 
     $result = $conn->query($sql);
@@ -161,7 +161,7 @@ if ($result->num_rows < 1){
 $sql = "UPDATE user_assignment_attempt
         SET credit='$credit_for_attempt'
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
         ";
@@ -169,10 +169,10 @@ $result = $conn->query($sql);
 }
 
 
-$sql = "SELECT branchId
+$sql = "SELECT doenetId
         FROM user_assignment
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         ";
 $result = $conn->query($sql);
@@ -190,7 +190,7 @@ $sql = "SELECT MAX(credit) AS maxCredit,
         MAX(creditOverride) AS maxCreditOverride
         FROM user_assignment_attempt
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
 ";
 $result = $conn->query($sql);
@@ -202,15 +202,15 @@ if ($USER_ASSIGNMENT_HAS_AN_ENTRY){
     UPDATE user_assignment
     SET credit='$max_credit_for_assignment'
     WHERE userId = '$userId'
-    AND branchId = '$branchId'
+    AND doenetId = '$doenetId'
     AND contentId = '$contentId'
     ";
 $result = $conn->query($sql);
 }else{
     $sql = "INSERT INTO user_assignment
-    (branchId,contentId,userId,credit)
+    (doenetId,contentId,userId,credit)
     VALUES
-    ('$branchId','$contentId','$userId','$max_credit_for_assignment')
+    ('$doenetId','$contentId','$userId','$max_credit_for_assignment')
     ";
 
     $result = $conn->query($sql);
@@ -225,15 +225,15 @@ if ($USER_ASSIGNMENT_HAS_AN_ENTRY){
     UPDATE user_assignment
     SET credit='$credit_for_attempt'
     WHERE userId = '$userId'
-    AND branchId = '$branchId'
+    AND doenetId = '$doenetId'
     AND contentId = '$contentId'
     ";
 $result = $conn->query($sql);
 }else{
     $sql = "INSERT INTO user_assignment
-    (branchId,contentId,userId,credit)
+    (doenetId,contentId,userId,credit)
     VALUES
-    ('$branchId','$contentId','$userId','$credit_for_attempt')
+    ('$doenetId','$contentId','$userId','$credit_for_attempt')
     ";
 
     $result = $conn->query($sql);

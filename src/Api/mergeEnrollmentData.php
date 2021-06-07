@@ -12,29 +12,29 @@ $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
-$mergeHeads = array_map(function($branchId) use($conn) {
-return mysqli_real_escape_string($conn, $branchId);
+$mergeHeads = array_map(function($doenetId) use($conn) {
+return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeHeads']);
-$mergeId = array_map(function($branchId) use($conn) {
-	return mysqli_real_escape_string($conn, $branchId);
+$mergeId = array_map(function($doenetId) use($conn) {
+	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeId']);
-$mergeFirstName = array_map(function($branchId) use($conn) {
-	return mysqli_real_escape_string($conn, $branchId);
+$mergeFirstName = array_map(function($doenetId) use($conn) {
+	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeFirstName']);
-$mergeLastName = array_map(function($branchId) use($conn) {
-	return mysqli_real_escape_string($conn, $branchId);
+$mergeLastName = array_map(function($doenetId) use($conn) {
+	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeLastName']);
-$mergeEmail = array_map(function($branchId) use($conn) {
-	return mysqli_real_escape_string($conn, $branchId);
+$mergeEmail = array_map(function($doenetId) use($conn) {
+	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeEmail']);
-$mergeSection = array_map(function($branchId) use($conn) {
-	return mysqli_real_escape_string($conn, $branchId);
+$mergeSection = array_map(function($doenetId) use($conn) {
+	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeSection']);
-$mergeDropped = array_map(function($branchId) use($conn) {
-	return mysqli_real_escape_string($conn, $branchId);
+$mergeDropped = array_map(function($doenetId) use($conn) {
+	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['mergeDropped']);
-$userIds = array_map(function($branchId) use($conn) {
-	return mysqli_real_escape_string($conn, $branchId);
+$userIds = array_map(function($doenetId) use($conn) {
+	return mysqli_real_escape_string($conn, $doenetId);
 }, $_POST['userIds']);
 
 

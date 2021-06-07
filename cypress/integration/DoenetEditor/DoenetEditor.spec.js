@@ -5,7 +5,7 @@ describe('doenetEditor test', function () {
   2. check if document title is changed based on the title input
   */
   beforeEach(() => {
-    cy.visit('/editor/?branchId=_v6f_8r8-stZd14gT7vkB')
+    cy.visit('/editor/?doenetId=_v6f_8r8-stZd14gT7vkB')
   })
 
   Cypress.on('uncaught:exception', (err, runnable) => {

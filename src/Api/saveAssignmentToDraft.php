@@ -51,7 +51,7 @@ if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
 else if ($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
-$branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
 $role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
@@ -59,9 +59,9 @@ $success = TRUE;
 $message = "";
 
 
-if ($branchId == ""){
+if ($doenetId == ""){
   $success = FALSE;
-  $message = "Internal Error: missing branchId";
+  $message = "Internal Error: missing doenetId";
 }
 if ($success){
 
@@ -80,7 +80,7 @@ showFeedback = '$showFeedback',
 showHints = '$showHints',
 showCorrectness = '$showCorrectness',
 proctorMakesAvailable = '$proctorMakesAvailable'
-WHERE branchId = '$branchId' 
+WHERE doenetId = '$doenetId' 
 ";
 
 $result = $conn->query($sql);

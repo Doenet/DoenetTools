@@ -9,10 +9,10 @@ import {
 export default function Content(props) {
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
   let [contentId,setContentId] = useState(urlParamsObj?.contentId);
-  const branchId = urlParamsObj?.branchId;
+  const doenetId = urlParamsObj?.doenetId;
   let [status,setStatus] = useState("Init");
-  const findContentId = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(branchId)));
+  const findContentId = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     let contentId = null;
     for (let named of versionHistory.named){
       if (named.isReleased === '1'){
@@ -30,11 +30,11 @@ export default function Content(props) {
   // const contentId = urlParamsObj?.contentId;
   let mainPanel = null;
 
-  if (status === "Init" && branchId && !contentId){
-    findContentId(branchId)
+  if (status === "Init" && doenetId && !contentId){
+    findContentId(doenetId)
     return null;
-  }else if(!contentId && !branchId){
-    mainPanel = <p>Need a contentId or branchId to display content...!</p>
+  }else if(!contentId && !doenetId){
+    mainPanel = <p>Need a contentId or doenetId to display content...!</p>
   }else if(status === "No released versions"){
     mainPanel = <p>Sorry! The author hasn't released any content to view at this link.</p>
   }else{
