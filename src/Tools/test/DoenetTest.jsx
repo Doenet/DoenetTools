@@ -6,13 +6,11 @@ import core from '../../Core/Core';
 function Test() {
   // console.log("===Test")
 
-  // const [doenetML,setDoenetML] = useState("");
-  let doenetML = useRef(null);
+  const [doenetML,setDoenetML] = useState(null);
 
   //New DoenetViewer when code changes
   useEffect(() => {
-    doenetML.current = testCodeDoenetML;
-    setRefresh((was)=>was+1)
+    setDoenetML(testCodeDoenetML);
   }, [testCodeDoenetML]);
 
   const defaultTestSettings = {
@@ -61,21 +59,23 @@ function Test() {
   let requestedVariant = useRef(undefined);
 
 
+
   //For Cypress Test Use
   window.onmessage = (e) => {
     if (e.data.doenetML !== undefined) {
-      doenetML.current = e.data.doenetML;
       //Only if defined
       if (e.data.requestedVariant) {
         requestedVariant.current = e.data.requestedVariant;
       }
+      setDoenetML(e.data.doenetML);
     }
   };
 
-
-  if (doenetML === "") {
+  //Don't construct core until we have the doenetML defined
+  if (doenetML === null) {
     return null;
   }
+
   let controls = null;
   let buttonText = 'show';
   if (controlsVisible) {
@@ -221,10 +221,7 @@ function Test() {
     coreProp = null;
   }
 
-  //Don't construct core until we have the doenetML defined
-  if (doenetML.current === null){ 
-    return null;
-  }
+
 
   return (
     <>
@@ -235,7 +232,7 @@ function Test() {
       </div>
       <DoenetViewer
         key={"doenetviewer"+updateNumber}
-        doenetML={doenetML.current}
+        doenetML={doenetML}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{
           showCorrectness,
