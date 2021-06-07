@@ -1818,6 +1818,24 @@ export class DependencyHandler {
                 blockerType: "determineDependencies",
                 blockerCode: dep.upstreamComponentName + "|" + varName + "|" + dependency
               })
+
+              // remove blocker to recalculating the downstream dependencies of all
+              // the dependencies of varName
+              for (let dName in this.downstreamDependencies[dep.upstreamComponentName][varName]) {
+                let otherDep = this.downstreamDependencies[dep.upstreamComponentName][varName][dName];
+                if (otherDep.dependencyType !== "determineDependencies") {
+                  this.deleteFromNeededToResolve({
+                    componentNameBlocked: dep.upstreamComponentName,
+                    typeBlocked: "recalculateDownstreamComponents",
+                    stateVariableBlocked: varName,
+                    dependencyBlocked: dName,
+                    blockerType: "determineDependencies",
+                    blockerCode: dep.upstreamComponentName + "|" + varName + "|" + dependency
+                  })
+      
+                }
+              }
+
             }
             this.resolveIfReady({
               componentName: componentNameNewlyResolved,
@@ -3602,20 +3620,20 @@ class RecursiveDependencyValuesDependency extends Dependency {
       foundNewUpdated = false;
       result = super.getValue();
 
-      if(result.changes.valuesChanged) {
-        if(!changes.valuesChanged) {
+      if (result.changes.valuesChanged) {
+        if (!changes.valuesChanged) {
           changes.valuesChanged = result.changes.valuesChanged;
         } else {
-          for(let ind in result.changes.valuesChanged) {
+          for (let ind in result.changes.valuesChanged) {
             let changeObj = result.changes.valuesChanged[ind];
-            if(!changes.valuesChanged[ind]) {
+            if (!changes.valuesChanged[ind]) {
               changes.valuesChanged[ind] = changeObj;
             } else {
-              for(let depName in changeObj) {
+              for (let depName in changeObj) {
                 changes.valuesChanged[ind][depName] = changeObj[depName];
               }
             }
-          
+
           }
         }
       }
@@ -6259,6 +6277,26 @@ class DetermineDependenciesDependency extends Dependency {
           typeBlocked: "stateVariable",
           stateVariableBlocked: varName,
         });
+
+        // add a blocker to recalculating the downstream dependencies of all
+        // the dependencies of varName
+        for (let depName in this.dependencyHandler.downstreamDependencies[this.upstreamComponentName][varName]) {
+          let dep = this.dependencyHandler.downstreamDependencies[this.upstreamComponentName][varName][depName];
+          if (dep.dependencyType !== "determineDependencies") {
+            this.dependencyHandler.addBlocker({
+              blockerComponentName: this.upstreamComponentName,
+              blockerType: "determineDependencies",
+              blockerStateVariable: varName,
+              blockerDependency: this.dependencyName,
+              componentNameBlocked: this.upstreamComponentName,
+              typeBlocked: "recalculateDownstreamComponents",
+              stateVariableBlocked: varName,
+              dependencyBlocked: depName
+            });
+
+          }
+        }
+
       }
     }
 

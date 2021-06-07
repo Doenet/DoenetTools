@@ -1027,4 +1027,37 @@ describe('Copy Tag Tests', function () {
   })
 
 
+  it('copy of component that changes away from a copy', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="b" />
+
+    <text name="jump" hide>jump</text>
+    
+    <p name="forVerb"><conditionalContent assignNames="(verb)">
+      <case condition="$b"><text>skip</text></case>
+      <else>$jump</else>
+    </conditionalContent></p>
+
+    <copy tname="verb" assignNames="verb2" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/forVerb').should('have.text', 'jump');
+    cy.get('#\\/verb2').should('have.text', 'jump');
+
+    cy.get('#\\/b').click();
+    cy.get('#\\/forVerb').should('have.text', 'skip');
+    cy.get('#\\/verb2').should('have.text', 'skip');
+
+
+
+  });
+
+
 });
