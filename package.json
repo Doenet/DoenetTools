@@ -74,9 +74,11 @@
     "@testing-library/react": "^11.2.7",
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
+    "cypress": "^7.4.0",
     "esbuild": "^0.12.6",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-cypress": "^2.11.3",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.24.0",
@@ -92,6 +94,7 @@
       "plugin:import/errors",
       "plugin:react/recommended",
       "plugin:jsx-a11y/recommended",
+      "plugin:cypress/recommended",
       "prettier"
     ],
     "rules": {
@@ -113,7 +116,8 @@
       "react",
       "import",
       "jsx-a11y",
-      "react-hooks"
+      "react-hooks",
+      "cypress"
     ],
     "overrides": [
       {
