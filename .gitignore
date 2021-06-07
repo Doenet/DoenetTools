@@ -17,7 +17,6 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
-.env
 .env.development
 .env.production
 
@@ -47,3 +46,5 @@ docker\ alp/
 doenet_docker/volumes/db/*
 
 .eslintrc.js
+
+src/API/vendor
