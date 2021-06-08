@@ -582,7 +582,7 @@ const DoenetMLInfoPanel = function(props){
   <Button value="Edit DoenetML" callback={()=>{
     openOverlay({
       type:"editor",
-      branchId:itemInfo.branchId,
+      doenetId:itemInfo.doenetId,
       title:itemInfo.label,
       driveId:itemInfo.driveId,
       folderId:itemInfo.parentFolderId,
@@ -1027,7 +1027,7 @@ export default function Library(props) {
             doenetMLDoubleClickCallback={(info)=>{
               openOverlay({
                 type:"editor",
-                branchId: info.item.branchId,
+                doenetId: info.item.doenetId,
                 title: info.item.label,
                 driveId: info.driveId,
                 folderId: info.item.parentFolderId,
@@ -1071,7 +1071,7 @@ export default function Library(props) {
         doenetMLDoubleClickCallback={(info)=>{
           openOverlay({
             type:"editor",
-            branchId: info.item.branchId,
+            doenetId: info.item.doenetId,
             title: info.item.label,
             driveId: info.driveId,
             folderId: info.item.parentFolderId,

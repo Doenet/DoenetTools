@@ -491,6 +491,34 @@ export const getLexicographicOrder = ({ index, nodeObjs, defaultFolderChildrenId
 
 function DriveHeader(props){
   // console.log("===DriveHeader")
+  let latestWidth = useRef(0);
+
+  function updateNumColumns(width){
+    const maxColumns = props.columnTypes.length + 1;
+    //update number of columns in header
+   const breakpoints = [375,500,650,800];
+   if (width >= breakpoints[3] && props.numColumns !== 5){
+     const numColumns = Math.min(maxColumns,5)
+     if (props.setNumColumns){props.setNumColumns(numColumns)}
+   }else if(width < breakpoints[3] && width >= breakpoints[2] && props.numColumns !== 4){
+     const numColumns = Math.min(maxColumns,4)
+     if (props.setNumColumns){props.setNumColumns(numColumns)}
+   }else if(width < breakpoints[2] && width >= breakpoints[1] && props.numColumns !== 3){
+     const numColumns = Math.min(maxColumns,3)
+     if (props.setNumColumns){props.setNumColumns(numColumns)}
+   }else if(width < breakpoints[1] && width >= breakpoints[0] && props.numColumns !== 2 ){
+     const numColumns = Math.min(maxColumns,2)
+     if (props.setNumColumns){props.setNumColumns(numColumns)}
+   }else if(width < breakpoints[0] && props.numColumns !== 1){
+     if (props.setNumColumns){props.setNumColumns(1)}
+   }
+  }
+
+  //update number of columns shown when the number of columns changes
+  useEffect(()=>{
+    updateNumColumns(latestWidth.current)
+  },[props.columnTypes.length])
+
 
   let columns = '250px repeat(4,1fr)'; //5 columns
   if (props.numColumns === 4){
@@ -504,31 +532,13 @@ function DriveHeader(props){
   }
 
 
-
   return (
     <Measure
     bounds
     onResize={contentRect =>{
       const width = contentRect.bounds.width;
-      // console.log(">>>width",width)
-      const maxColumns = props.columnTypes.length + 1;
-       //update number of columns in header
-      const breakpoints = [375,500,650,800];
-      if (width >= breakpoints[3] && props.numColumns !== 5){
-        const numColumns = Math.min(maxColumns,5)
-        if (props.setNumColumns){props.setNumColumns(numColumns)}
-      }else if(width < breakpoints[3] && width >= breakpoints[2] && props.numColumns !== 4){
-        const numColumns = Math.min(maxColumns,4)
-        if (props.setNumColumns){props.setNumColumns(numColumns)}
-      }else if(width < breakpoints[2] && width >= breakpoints[1] && props.numColumns !== 3){
-        const numColumns = Math.min(maxColumns,3)
-        if (props.setNumColumns){props.setNumColumns(numColumns)}
-      }else if(width < breakpoints[1] && width >= breakpoints[0] && props.numColumns !== 2 ){
-        const numColumns = Math.min(maxColumns,2)
-        if (props.setNumColumns){props.setNumColumns(numColumns)}
-      }else if(width < breakpoints[0] && props.numColumns !== 1){
-        if (props.setNumColumns){props.setNumColumns(1)}
-      }
+      latestWidth.current = width;
+      updateNumColumns(contentRect.bounds.width);
     }}
     >
       {({ measureRef }) => (
@@ -696,9 +706,9 @@ export const fetchDrivesSelector = selector({
          let childContentObjs = duplicateFolder({sourceFolderId:sourceItemId,sourceDriveId,destDriveId,destFolderId:destItemId,destParentFolderId:destFolderId})
           contentObjs = {...contentObjs,...childContentObjs};
         }else if (sourceItem.itemType === 'DoenetML'){
-          let destBranchId = nanoid();
-          contentsDictionary[destItemId].sourceBranchId = sourceItem.branchId;
-          contentsDictionary[destItemId].branchId = destBranchId;
+          let destDoenetId = nanoid();
+          contentsDictionary[destItemId].sourceDoenetId = sourceItem.doenetId;
+          contentsDictionary[destItemId].doenetId = destDoenetId;
         }else if (sourceItem.itemType === 'URL'){
           let desturlId = nanoid();
           contentsDictionary[destItemId].urlId = desturlId;
@@ -1533,7 +1543,7 @@ const selectedDriveItems = selectorFamily({
 function columnJSX(columnType,item){
   // console.log(">>>columnType,item",columnType,item)
       // console.log(">>>item",item)
-      const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.branchId));
+      const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
       let aInfo = '';
       if (assignmentInfoSettings?.state === 'hasValue') {
         aInfo = assignmentInfoSettings?.contents?.assignments[0];

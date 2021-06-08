@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 
 //TODO: Make sure of instructor
 $_POST = json_decode(file_get_contents("php://input"),true);
-$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 
 $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
@@ -116,7 +116,7 @@ $result = $conn->query($sql);
   showCorrectness,
   proctorMakesAvailable,
   isPublished,
-  sourceBranchId)
+  sourceDoenetId)
   VALUES
   ('$assignmentId',
   '$courseId',
@@ -136,7 +136,7 @@ $result = $conn->query($sql);
   '$showCorrectness',
   '$proctorMakesAvailable',
   '$isPublished',
-  '$branchId')
+  '$doenetId')
   ";
   
   $result = $conn->query($sql); 

@@ -58,7 +58,7 @@ if (!isset($_REQUEST["assignmentId"])) {
     LEFT JOIN content AS c
     ON c.contentId = ci.contentId
     LEFT JOIN content_branch as cb
-    ON c.branchId = cb.branchId
+    ON c.doenetId = cb.doenetId
     LEFT JOIN user_assignment AS ua
     ON ua.assignmentId = '$assignmentId'
     AND ua.userId = '$userId'

@@ -17,7 +17,7 @@ export const assignmentDoenetMLAtom = atom({
 });
 
 export default function Assignment({
-  branchId = '',
+  doenetId = '',
   assignmentId = '',
   contentId = '',
   title,
@@ -50,7 +50,7 @@ export default function Assignment({
         }}
         attemptNumber={attemptNumber}
         // contentId={contentId}
-        // branchId={branchId}
+        // doenetId={doenetId}
         allowLoadPageState={true}
         allowSavePageState={true}
         allowLocalPageState={true}
