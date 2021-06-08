@@ -547,7 +547,7 @@ class DoenetViewerChild extends Component {
       if (this.contentId !== this.state.contentId){
           this.needNewCoreFlag = true;
           //Try to load doenetML from local storage
-          this.doenetML = localStorage.getItem(contentId);
+          this.doenetML = localStorage.getItem(this.contentId);
           if (!this.doenetML){
           try {
             //Load the doenetML from the server
