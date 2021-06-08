@@ -134,10 +134,6 @@ export default class CobwebPolyline extends DoenetRenderer {
       this.pointsJXG[i].on('down', x => this.draggedPoint = null);
     }
 
-    // this.polylineJXG.on('drag', x => this.onDragHandler(-1, true));
-    // this.polylineJXG.on('up', x => this.onDragHandler(-1, false));
-    // this.polylineJXG.on('down', x => this.draggedPoint = null);
-
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     this.previousNPoints = this.doenetSvData.nPoints;
 
@@ -288,15 +284,9 @@ export default class CobwebPolyline extends DoenetRenderer {
       return;
     }
 
-    if (i === -1) {
-      let newPointcoords = {};
-      this.polylineJXG.points.forEach((z, i) => newPointcoords[i] = [z.usrCoords[1], z.usrCoords[2]]);
-      this.actions.movePolyline(newPointcoords, transient);
-    } else {
-      let newCoords = {};
-      newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-      this.actions.movePolyline(newCoords, transient, { vertex: i });
-    }
+    let newCoords = {};
+    newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
+    this.actions.movePolyline(newCoords, transient, { vertex: i });
   }
 
 

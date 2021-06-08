@@ -164,6 +164,34 @@ export class Example extends SectioningComponent {
 }
 
 
+export class Setup extends SectioningComponent {
+  static componentType = "setup";
+  static rendererType = "section";
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.hide.defaultValue = true;
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.sectionName.definition = () => ({
+      newValues: { sectionName: "Setup" }
+    });
+
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 3 }
+    });
+
+    return stateVariableDefinitions;
+  }
+
+
+}
+
 export class StandinForFutureLayoutTag extends SectioningComponent {
   static componentType = "standinForFutureLayoutTag";
   static rendererType = "section";

@@ -1527,7 +1527,7 @@ export default class Copy extends CompositeComponent {
             replacementChanges.push(replacementInstruction);
           }
 
-          if(newSerializedReplacements[ind].componentType !== "string") {
+          if (newSerializedReplacements[ind].componentType !== "string") {
             nonStringInd++;
           }
 
@@ -1572,7 +1572,7 @@ export default class Copy extends CompositeComponent {
   }
 
 
-  static recreateReplacements({ component, sourceNum, 
+  static recreateReplacements({ component, sourceNum,
     numReplacementsSoFar, numNonStringReplacementsSoFar,
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, compositeAttributesObj, componentInfoObjects,
@@ -1581,7 +1581,7 @@ export default class Copy extends CompositeComponent {
   }) {
 
     let results = this.createReplacementForSource({
-      component, sourceNum, numReplacementsSoFar, numNonStringReplacementsSoFar, 
+      component, sourceNum, numReplacementsSoFar, numNonStringReplacementsSoFar,
       components, uniqueIdentifiersUsed,
       compositeAttributesObj, componentInfoObjects, nComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions

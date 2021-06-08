@@ -4,16 +4,16 @@ import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
 import { convertValueToMathExpression } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
-  constructor(args) {
-    super(args);
-    this.moveVector = this.moveVector.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
-    this.actions = {
-      moveVector: this.moveVector,
-    }
-  }
   static componentType = "vector";
+
+  actions = {
+    moveVector: this.moveVector.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    finalizeVectorPosition: this.finalizeVectorPosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    )
+  }
 
   // used when referencing this component without prop
   // reference via the head/tail/displacement plus keep track of how defined
@@ -1870,5 +1870,17 @@ export default class Vector extends GraphicalComponent {
     }
 
   }
+
+  finalizeVectorPosition() {
+    // trigger a moveVector 
+    // to send the final values with transient=false
+    // so that the final position will be recorded
+
+    this.actions.moveVector({
+      tailcoords: this.stateValues.numericalEndpoints[0],
+      headcoords: this.stateValues.numericalEndpoints[1],
+    });
+  }
+
 
 }

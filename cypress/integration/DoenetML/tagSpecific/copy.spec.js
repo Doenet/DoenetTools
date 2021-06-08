@@ -614,6 +614,32 @@ describe('Copy Tag Tests', function () {
 
   });
 
+
+  it('copy keeps hidden children hidden', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+    <p name="pReveal">Revealed: $(theP/hidden)</p>
+    <copy tname="theP" assignNames="theP2" />
+    <p name="pReveal2">Revealed 2: $(theP2/hidden)</p>
+
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/theP').should('have.text', 'Hidden text: ');
+    cy.get('#\\/pReveal').should('have.text', 'Revealed: secret');
+    cy.get('#\\/theP2').should('have.text', 'Hidden text: ');
+    cy.get('#\\/pReveal2').should('have.text', 'Revealed 2: secret');
+
+
+  });
+
   it('copies hide dynamically', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -999,6 +1025,39 @@ describe('Copy Tag Tests', function () {
 
 
   })
+
+
+  it('copy of component that changes away from a copy', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="b" />
+
+    <text name="jump" hide>jump</text>
+    
+    <p name="forVerb"><conditionalContent assignNames="(verb)">
+      <case condition="$b"><text>skip</text></case>
+      <else>$jump</else>
+    </conditionalContent></p>
+
+    <copy tname="verb" assignNames="verb2" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/forVerb').should('have.text', 'jump');
+    cy.get('#\\/verb2').should('have.text', 'jump');
+
+    cy.get('#\\/b').click();
+    cy.get('#\\/forVerb').should('have.text', 'skip');
+    cy.get('#\\/verb2').should('have.text', 'skip');
+
+
+
+  });
 
 
 });

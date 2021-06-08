@@ -2,7 +2,8 @@ import { getUniqueIdentifierFromBase } from "./naming";
 import { applyMacros, componentFromAttribute } from "./serializedStateProcessing";
 
 export function postProcessCopy({ serializedComponents, componentName,
-  addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = ""
+  addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
+  init = true
 }) {
 
   // recurse through serializedComponents
@@ -25,6 +26,9 @@ export function postProcessCopy({ serializedComponents, componentName,
             compositeName: componentName,
           }]
         };
+        if(init) {
+          downDep[component.originalName][0].firstLevelReplacement = true;
+        }
         if (component.state) {
           let stateVariables = Object.keys(component.state);
           downDep[component.originalName].downstreamStateVariables = stateVariables;
@@ -46,6 +50,7 @@ export function postProcessCopy({ serializedComponents, componentName,
       serializedComponents: component.children,
       componentName,
       addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+      init: false
     });
 
     for (let attr in component.attributes) {
@@ -56,6 +61,7 @@ export function postProcessCopy({ serializedComponents, componentName,
             serializedComponents: [attrComp],
             componentName,
             addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+            init: false,
           })[0];
       }
     }
@@ -65,6 +71,7 @@ export function postProcessCopy({ serializedComponents, componentName,
         serializedComponents: component.replacements,
         componentName,
         addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+        init: false
       });
     }
 
