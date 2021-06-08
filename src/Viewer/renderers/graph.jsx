@@ -56,7 +56,7 @@ export default class Graph extends DoenetRenderer {
         xaxisOptions.ticks.drawZero = true;
       }
 
-      let xaxis = this.board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
+      this.xaxis = this.board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
 
     }
 
@@ -84,7 +84,7 @@ export default class Graph extends DoenetRenderer {
         yaxisOptions.ticks.drawZero = true;
       }
 
-      let yaxis = this.board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
+      this.yaxis = this.board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
     }
 
     this.board.itemsRenderedLowQuality = {};
@@ -117,6 +117,21 @@ export default class Graph extends DoenetRenderer {
 
   update() {
 
+    if (this.doenetSvData.displayXAxis) {
+      this.xaxis.name = this.doenetSvData.xlabel;
+      if (this.xaxis.hasLabel) {
+        this.xaxis.label.needsUpdate = true;
+        this.xaxis.label.update();
+      }
+    }
+
+    if (this.doenetSvData.displayYAxis) {
+      this.yaxis.name = this.doenetSvData.ylabel;
+      if (this.yaxis.hasLabel) {
+        this.yaxis.label.needsUpdate = true;
+        this.yaxis.label.update();
+      }
+    }
     let currentDimensions = {
       width: parseFloat(sizeToCSS(this.doenetSvData.width)),
       height: parseFloat(sizeToCSS(this.doenetSvData.height)),

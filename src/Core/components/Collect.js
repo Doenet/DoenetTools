@@ -45,7 +45,7 @@ export default class Collect extends CompositeComponent {
     attributes.targetAttributesToIgnore = {
       createComponentOfType: "textList",
       createStateVariable: "targetAttributesToIgnore",
-      defaultValue: ["hide"],
+      defaultValue: [],
       public: true,
     };
 
