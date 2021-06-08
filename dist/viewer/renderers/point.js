@@ -97,7 +97,7 @@ export default class Point extends DoenetRenderer {
       this.pointJXG.visProp.showinfobox = false;
       this.pointJXG.visProp.fixed = true;
     }
-    if (this.componentName in sourceOfUpdate.sourceInformation) {
+    if (sourceOfUpdate && sourceOfUpdate.sourceInformation && this.componentName in sourceOfUpdate.sourceInformation) {
       this.props.board.updateInfobox(this.pointJXG);
     }
     this.pointJXG.name = this.doenetSvData.label;

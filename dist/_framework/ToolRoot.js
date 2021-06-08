@@ -1,9 +1,11 @@
 import React, {useState, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
 import {
   atom,
+  selector,
   useSetRecoilState,
   useRecoilValue,
-  useRecoilCallback
+  useRecoilCallback,
+  useRecoilValueLoadable
 } from "../_snowpack/pkg/recoil.js";
 import styled from "../_snowpack/pkg/styled-components.js";
 import Toast from "./Toast.js";
@@ -50,7 +52,7 @@ export const useToolControlHelper = () => {
     title,
     contentId,
     courseId,
-    branchId,
+    doenetId,
     assignmentId,
     attemptNumber,
     userId,
@@ -83,7 +85,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Editor, {
-            branchId,
+            doenetId,
             title,
             driveId,
             folderId,
@@ -97,7 +99,7 @@ export const useToolControlHelper = () => {
           ...old,
           /* @__PURE__ */ React.createElement(Content, {
             contentId,
-            branchId,
+            doenetId,
             title,
             key: `ContentLayer${old.length + 1}`
           })
@@ -107,7 +109,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Assignment, {
-            branchId,
+            doenetId,
             title,
             assignmentId,
             courseId,
@@ -120,7 +122,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Calendar, {
-            branchId,
+            doenetId,
             contentId,
             key: `CalendarLayer${old.length + 1}`
           })
@@ -130,7 +132,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Image, {
-            branchId,
+            doenetId,
             key: `ImageLayer${old.length + 1}`
           })
         ]);
@@ -161,23 +163,39 @@ export const useStackId = () => {
   return stackId;
 };
 export const ProfileContext = React.createContext({});
+export const profileAtom = atom({
+  key: "profileAtom",
+  default: selector({
+    key: "profileAtom/Default",
+    get: async () => {
+      try {
+        const profile = JSON.parse(localStorage.getItem("Profile"));
+        if (profile) {
+          return profile;
+        }
+        const {data} = await axios.get("/api/loadProfile.php");
+        localStorage.setItem("Profile", JSON.stringify(data.profile));
+        return data.profile;
+      } catch (error) {
+        console.log("Error loading user profile", error.message);
+        return {};
+      }
+    }
+  })
+});
 export default function ToolRoot({tool}) {
   const overlays = useRecoilValue(layerStackAtom);
-  const [_, setRefresh] = useState(0);
-  const profile = JSON.parse(localStorage.getItem("Profile"));
-  if (!profile) {
-    axios.get("/api/loadProfile.php", {params: {}}).then((resp) => {
-      if (resp.data.success === "1") {
-        localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
-        setRefresh((was) => was + 1);
-      }
-    }).catch((error) => {
-    });
+  const profile = useRecoilValueLoadable(profileAtom);
+  if (profile.state === "loading") {
+    return null;
+  }
+  if (profile.state === "hasError") {
+    console.error(profile.contents);
     return null;
   }
   return /* @__PURE__ */ React.createElement(ProfileContext.Provider, {
-    value: profile
-  }, /* @__PURE__ */ React.createElement(Suspense, {
-    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
-  }, tool, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null));
+    value: profile.contents
+  }, tool, /* @__PURE__ */ React.createElement(Suspense, {
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "Loading...")
+  }, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null));
 }

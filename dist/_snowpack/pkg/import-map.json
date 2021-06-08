@@ -6,6 +6,7 @@
     "@fortawesome/free-regular-svg-icons": "./@fortawesome/free-regular-svg-icons.js",
     "@fortawesome/free-solid-svg-icons": "./@fortawesome/free-solid-svg-icons.js",
     "@fortawesome/react-fontawesome": "./@fortawesome/react-fontawesome.js",
+    "@react-spring/web": "./@react-spring/web.js",
     "axios": "./axios.js",
     "codemirror/lib/codemirror.css": "./codemirror/lib/codemirror.css",
     "codemirror/mode/xml/xml": "./codemirror/mode/xml/xml.js",
@@ -29,11 +30,12 @@
     "react-mathquill": "./react-mathquill.js",
     "react-measure": "./react-measure.js",
     "react-router-dom": "./react-router-dom.js",
-    "react-spring": "./react-spring.js",
+    "react-spring": "./@react-spring/web.js",
     "react-table": "./react-table.js",
     "react-use-gesture": "./react-use-gesture.js",
     "react-visibility-sensor": "./react-visibility-sensor.js",
     "recoil": "./recoil.js",
+    "solid-svg": "./@fortawesome/free-solid-svg-icons.js",
     "styled-components": "./styled-components.js"
   }
 }

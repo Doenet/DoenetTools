@@ -7,10 +7,10 @@ const viewerContentDoenetMLAtom = atom({
   key: "viewerContentDoenetMLAtom",
   default: {updateNumber: 0, doenetML: ""}
 });
-export default function Content({branchId = "", title}) {
+export default function Content({doenetId = "", title}) {
   function DoenetViewerPanel() {
     const viewerDoenetML = useRecoilValue(viewerContentDoenetMLAtom);
-    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(branchId));
+    const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId));
     if (versionHistory.state === "loading") {
       return null;
     }
@@ -29,7 +29,7 @@ export default function Content({branchId = "", title}) {
     let assignmentId = "myassignmentid";
     let solutionDisplayMode = "button";
     return /* @__PURE__ */ React.createElement(DoenetViewer, {
-      key: "doenetviewer" + viewerDoenetML?.updateNumber,
+      key: "doenetviewer",
       doenetML: viewerDoenetML?.doenetML,
       contentId,
       flags: {
@@ -40,7 +40,12 @@ export default function Content({branchId = "", title}) {
         showHints: true
       },
       attemptNumber,
-      ignoreDatabase: true,
+      doenetId,
+      allowLoadPageState: true,
+      allowSavePageState: true,
+      allowLocalPageState: true,
+      allowSaveSubmissions: true,
+      allowSaveEvents: true,
       requestedVariant
     });
   }

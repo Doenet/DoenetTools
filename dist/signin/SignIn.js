@@ -35,6 +35,7 @@ export default function SignIn() {
       } else {
       }
     }).catch((error) => {
+      console.log(error);
     });
     return null;
   }

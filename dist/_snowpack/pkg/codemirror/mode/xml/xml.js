@@ -1,5 +1,5 @@
 import { c as createCommonjsModule } from '../../../common/_commonjsHelpers-f5d70792.js';
-import { c as codemirror } from '../../../common/codemirror-648db781.js';
+import { c as codemirror } from '../../../common/codemirror-4e82a42b.js';
 
 var xml = createCommonjsModule(function (module, exports) {
 // CodeMirror, copyright (c) by Marijn Haverbeke and others

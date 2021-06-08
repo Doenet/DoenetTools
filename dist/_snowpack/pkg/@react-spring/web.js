@@ -3,42 +3,61 @@ import { r as reactDom } from '../common/index-89dd978b.js';
 import '../common/_commonjsHelpers-f5d70792.js';
 
 let updateQueue = makeQueue();
-const raf = (fn) => schedule(fn, updateQueue);
+const raf = fn => schedule(fn, updateQueue);
 let writeQueue = makeQueue();
-raf.write = (fn) => schedule(fn, writeQueue);
+
+raf.write = fn => schedule(fn, writeQueue);
+
 let onStartQueue = makeQueue();
-raf.onStart = (fn) => schedule(fn, onStartQueue);
+
+raf.onStart = fn => schedule(fn, onStartQueue);
+
 let onFrameQueue = makeQueue();
-raf.onFrame = (fn) => schedule(fn, onFrameQueue);
+
+raf.onFrame = fn => schedule(fn, onFrameQueue);
+
 let onFinishQueue = makeQueue();
-raf.onFinish = (fn) => schedule(fn, onFinishQueue);
+
+raf.onFinish = fn => schedule(fn, onFinishQueue);
+
 let timeouts = [];
+
 raf.setTimeout = (handler, ms) => {
   let time = raf.now() + ms;
+
   let cancel = () => {
-    let i = timeouts.findIndex((t) => t.cancel == cancel);
-    if (~i)
-      timeouts.splice(i, 1);
+    let i = timeouts.findIndex(t => t.cancel == cancel);
+    if (~i) timeouts.splice(i, 1);
     __raf.count -= ~i ? 1 : 0;
   };
-  let timeout = {time, handler, cancel};
+
+  let timeout = {
+    time,
+    handler,
+    cancel
+  };
   timeouts.splice(findTimeout(time), 0, timeout);
   __raf.count += 1;
   start();
   return timeout;
 };
-let findTimeout = (time) => ~(~timeouts.findIndex((t) => t.time > time) || ~timeouts.length);
-raf.cancel = (fn) => {
+
+let findTimeout = time => ~(~timeouts.findIndex(t => t.time > time) || ~timeouts.length);
+
+raf.cancel = fn => {
   updateQueue.delete(fn);
   writeQueue.delete(fn);
 };
-raf.sync = (fn) => {
+
+raf.sync = fn => {
   sync = true;
   raf.batchedUpdates(fn);
   sync = false;
 };
-raf.throttle = (fn) => {
+
+raf.throttle = fn => {
   let lastArgs;
+
   function queuedFn() {
     try {
       fn(...lastArgs);
@@ -46,25 +65,44 @@ raf.throttle = (fn) => {
       lastArgs = null;
     }
   }
+
   function throttled(...args) {
     lastArgs = args;
     raf.onStart(queuedFn);
   }
+
   throttled.handler = fn;
+
   throttled.cancel = () => {
     onStartQueue.delete(queuedFn);
     lastArgs = null;
   };
+
   return throttled;
 };
-let nativeRaf = typeof window != "undefined" ? window.requestAnimationFrame : () => {
-};
-raf.use = (impl) => nativeRaf = impl;
-raf.now = typeof performance != "undefined" ? () => performance.now() : Date.now;
-raf.batchedUpdates = (fn) => fn();
+
+let nativeRaf = typeof window != 'undefined' ? window.requestAnimationFrame : () => {};
+
+raf.use = impl => nativeRaf = impl;
+
+raf.now = typeof performance != 'undefined' ? () => performance.now() : Date.now;
+
+raf.batchedUpdates = fn => fn();
+
 raf.catch = console.error;
+raf.frameLoop = 'always';
+
+raf.advance = () => {
+  if (raf.frameLoop !== 'demand') {
+    console.warn('Cannot call the manual advancement of rafz whilst frameLoop is not set as demand');
+  } else {
+    update();
+  }
+};
+
 let ts = -1;
 let sync = false;
+
 function schedule(fn, queue) {
   if (sync) {
     queue.delete(fn);
@@ -74,32 +112,41 @@ function schedule(fn, queue) {
     start();
   }
 }
+
 function start() {
   if (ts < 0) {
     ts = 0;
-    nativeRaf(loop);
+
+    if (raf.frameLoop !== 'demand') {
+      nativeRaf(loop);
+    }
   }
 }
+
 function loop() {
   if (~ts) {
     nativeRaf(loop);
     raf.batchedUpdates(update);
   }
 }
+
 function update() {
   let prevTs = ts;
   ts = raf.now();
   let count = findTimeout(ts);
+
   if (count) {
-    eachSafely(timeouts.splice(0, count), (t) => t.handler());
+    eachSafely(timeouts.splice(0, count), t => t.handler());
     __raf.count -= count;
   }
+
   onStartQueue.flush();
   updateQueue.flush(prevTs ? Math.min(64, ts - prevTs) : 16.667);
   onFrameQueue.flush();
   writeQueue.flush();
   onFinishQueue.flush();
 }
+
 function makeQueue() {
   let next = new Set();
   let current = next;
@@ -108,23 +155,27 @@ function makeQueue() {
       __raf.count += current == next && !next.has(fn) ? 1 : 0;
       next.add(fn);
     },
+
     delete(fn) {
       __raf.count -= current == next && next.has(fn) ? 1 : 0;
       return next.delete(fn);
     },
+
     flush(arg) {
       if (current.size) {
         next = new Set();
         __raf.count -= current.size;
-        eachSafely(current, (fn) => fn(arg) && next.add(fn));
+        eachSafely(current, fn => fn(arg) && next.add(fn));
         __raf.count += next.size;
         current = next;
       }
     }
+
   };
 }
+
 function eachSafely(values, each) {
-  values.forEach((value) => {
+  values.forEach(value => {
     try {
       each(value);
     } catch (e) {
@@ -132,8 +183,10 @@ function eachSafely(values, each) {
     }
   });
 }
+
 const __raf = {
   count: 0,
+
   clear() {
     ts = -1;
     timeouts = [];
@@ -144,6 +197,7 @@ const __raf = {
     onFinishQueue = makeQueue();
     __raf.count = 0;
   }
+
 };
 
 function noop() {}
@@ -195,6 +249,7 @@ const assign = globals => {
   if (globals.requestAnimationFrame) raf.use(globals.requestAnimationFrame);
   if (globals.batchedUpdates) raf.batchedUpdates = globals.batchedUpdates;
   if (globals.willAdvance) willAdvance = globals.willAdvance;
+  if (globals.frameLoop) raf.frameLoop = globals.frameLoop;
 };
 
 var globals = /*#__PURE__*/Object.freeze({
@@ -658,6 +713,9 @@ function callFluidObservers(target, event) {
 
 class FluidValue {
   constructor(get) {
+    this[$get] = void 0;
+    this[$observers] = void 0;
+
     if (!get && !(get = this.get)) {
       throw Error('Unknown getter');
     }
@@ -847,6 +905,7 @@ const setAnimated = (owner, node) => defineHidden(owner, $node, node);
 const getPayload = owner => owner && owner[$node] && owner[$node].getPayload();
 class Animated {
   constructor() {
+    this.payload = void 0;
     setAnimated(this, this);
   }
 
@@ -860,6 +919,10 @@ class AnimatedValue extends Animated {
   constructor(_value) {
     super();
     this.done = true;
+    this.elapsedTime = void 0;
+    this.lastPosition = void 0;
+    this.lastVelocity = void 0;
+    this.v0 = void 0;
     this.durationProgress = 0;
     this._value = _value;
 
@@ -922,6 +985,7 @@ class AnimatedString extends AnimatedValue {
   constructor(value) {
     super(0);
     this._string = null;
+    this._toString = void 0;
     this._toString = createInterpolator({
       output: [value, value]
     });
@@ -1041,7 +1105,7 @@ class AnimatedArray extends AnimatedObject {
     const payload = this.getPayload();
 
     if (source.length == payload.length) {
-      return payload.some((node, i) => node.setValue(source[i]));
+      return payload.map((node, i) => node.setValue(source[i])).some(Boolean);
     }
 
     super.setValue(source.map(makeAnimated));
@@ -1258,6 +1322,7 @@ class FrameValue extends FluidValue {
   constructor(...args) {
     super(...args);
     this.id = nextId$1++;
+    this.key = void 0;
     this._priority = 0;
   }
 
@@ -1341,11 +1406,12 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   return target;
 }
 
-const SpringContext = (_ref) => {
+const _excluded$3 = ["children"];
+const SpringContext = _ref => {
   let {
     children
   } = _ref,
-      props = _objectWithoutPropertiesLoose(_ref, ["children"]);
+      props = _objectWithoutPropertiesLoose(_ref, _excluded$3);
 
   const inherited = react.useContext(ctx);
   const pause = props.pause || !!inherited.pause,
@@ -1384,7 +1450,9 @@ let TransitionPhase;
 class Interpolation extends FrameValue {
   constructor(source, args) {
     super();
+    this.key = void 0;
     this.idle = true;
+    this.calc = void 0;
     this._active = new Set();
     this.source = source;
     this.calc = createInterpolator(...args);
@@ -1523,6 +1591,7 @@ function _objectWithoutPropertiesLoose$1(source, excluded) {
   return target;
 }
 
+const _excluded$2 = ["style", "children", "scrollTop", "scrollLeft"];
 const isCustomPropRE = /^--/;
 
 function dangerousStyleValue(name, value) {
@@ -1546,7 +1615,7 @@ function applyAnimatedValues(instance, props) {
     scrollTop,
     scrollLeft
   } = _ref,
-        attributes = _objectWithoutPropertiesLoose$1(_ref, ["style", "children", "scrollTop", "scrollLeft"]);
+        attributes = _objectWithoutPropertiesLoose$1(_ref, _excluded$2);
 
   const values = Object.values(attributes);
   const names = Object.keys(attributes).map(name => isFilterElement || instance.hasAttribute(name) ? name : attributeCache[name] || (attributeCache[name] = name.replace(/([A-Z])/g, n => '-' + n.toLowerCase())));
@@ -1630,6 +1699,7 @@ isUnitlessNumber = Object.keys(isUnitlessNumber).reduce((acc, prop) => {
   return acc;
 }, isUnitlessNumber);
 
+const _excluded$1 = ["x", "y", "z"];
 const domTransforms = /^(matrix|translate|scale|rotate|skew)/;
 const pxTransforms = /^(translate)/;
 const degTransforms = /^(rotate|skew)/;
@@ -1645,7 +1715,7 @@ class AnimatedStyle extends AnimatedObject {
       y,
       z
     } = _ref,
-        style = _objectWithoutPropertiesLoose$1(_ref, ["x", "y", "z"]);
+        style = _objectWithoutPropertiesLoose$1(_ref, _excluded$1);
 
     const inputs = [];
     const transforms = [];
@@ -1721,6 +1791,7 @@ class FluidTransform extends FluidValue {
 
 const primitives = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'big', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'menu', 'menuitem', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr', 'circle', 'clipPath', 'defs', 'ellipse', 'foreignObject', 'g', 'image', 'line', 'linearGradient', 'mask', 'path', 'pattern', 'polygon', 'polyline', 'radialGradient', 'rect', 'stop', 'svg', 'text', 'tspan'];
 
+const _excluded = ["scrollTop", "scrollLeft"];
 globals.assign({
   batchedUpdates: reactDom.unstable_batchedUpdates,
   createStringInterpolator,
@@ -1729,8 +1800,8 @@ globals.assign({
 const host = createHost(primitives, {
   applyAnimatedValues,
   createAnimatedStyle: style => new AnimatedStyle(style),
-  getComponentProps: (_ref) => {
-    let props = _objectWithoutPropertiesLoose$1(_ref, ["scrollTop", "scrollLeft"]);
+  getComponentProps: _ref => {
+    let props = _objectWithoutPropertiesLoose$1(_ref, _excluded);
 
     return props;
   }

@@ -16,7 +16,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
 $contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
 $versionId =  mysqli_real_escape_string($conn,$_POST["versionId"]);
-$branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $label =  mysqli_real_escape_string($conn,$_POST["label"]);
 
 $success = TRUE;
@@ -34,7 +34,7 @@ if ($success){
 
 $sql = "UPDATE drive_content SET
 isAssigned = '0'
-WHERE branchId = '$branchId'
+WHERE doenetId = '$doenetId'
 ";
 
 $result = $conn->query($sql);
