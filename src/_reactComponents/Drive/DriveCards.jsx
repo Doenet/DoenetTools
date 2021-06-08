@@ -9,20 +9,26 @@ import {
 import { useMenuPanelController } from "../../Tools/_framework/Panels/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../../Tools/library/Library";
 import {
-  // atom,
+  atom,
+  atomFamily,
   useSetRecoilState,
-  useRecoilValue,useRecoilState,
+  useRecoilValue,
+  useRecoilState,
   useRecoilValueLoadable,
+  useRecoilCallback,
 } from "recoil";
 import { 
   fetchDrivesSelector,drivePathSyncFamily
 } from "./Drive";
 
+export const roleType = atom({
+  key: 'roleType',
+  default: ''
+});
 
 const DriveCards = (props) => {
 
   const { driveDoubleClickCallback, isOneDriveSelect, subTypes,types,drivePathSyncKey} = props;
-
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let driveInfo = [];
   if (drivesInfo.state === "hasValue") {
@@ -57,6 +63,8 @@ const DriveCards = (props) => {
    )
 };
 
+
+
 const DriveCardWrapper = (props) => {
   const { driveDoubleClickCallback , isOneDriveSelect, subTypes ,driveInfo, drivePathSyncKey, types} = props;
  
@@ -64,6 +72,12 @@ const DriveCardWrapper = (props) => {
   const setOpenMenuPanel = useMenuPanelController();
   const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
 
+  const setRole = useSetRecoilState(roleType);
+
+  const setTypeRole = (props) => {
+
+    setRole(props[0]);
+  }
 
   let driveCardItems =[];
   let heights = [];
@@ -223,6 +237,7 @@ const DriveCardWrapper = (props) => {
   return availableCard.length > 0 ? true : false;
  }
 
+
   return (
     <div className="drivecardContainer">
          <Measure
@@ -268,6 +283,7 @@ const DriveCardWrapper = (props) => {
                   e.stopPropagation();
                   setDrivecardSelection([]);
                   setRecoilDrivePath(item.driveId)
+                  setTypeRole(subTypes);
                   // if (driveDoubleClickCallback) {
                   //   driveDoubleClickCallback({ item });
                   // }

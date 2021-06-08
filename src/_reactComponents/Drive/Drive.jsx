@@ -62,6 +62,8 @@ import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
 import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import {loadAssignmentSelector} from '../../Tools/course/Course';
+import {roleType} from '../../_reactComponents/Drive/DriveCards';
+
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
   default: selectorFamily({
@@ -1541,6 +1543,8 @@ const selectedDriveItems = selectorFamily({
 })
 
 function columnJSX(columnType,item){
+  const subTypeRole = useRecoilValue(roleType);
+
   // console.log(">>>columnType,item",columnType,item)
       // console.log(">>>item",item)
       const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));

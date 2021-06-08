@@ -30,7 +30,7 @@ import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 // import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'; //TODO
-import DriveCards from '../../_reactComponents/Drive/DriveCards';
+import DriveCards, {roleType} from '../../_reactComponents/Drive/DriveCards';
 import '../../_reactComponents/Drive/drivecard.css';
 import '../../_utils/util.css';
 import GlobalFont from '../../_utils/GlobalFont';
@@ -163,6 +163,7 @@ export default function Course(props) {
   const [openEnrollment, setEnrollmentView] = useState(false);
   const role = useRecoilValue(roleAtom);
   const setDrivePath = useSetRecoilState(drivePathSyncFamily('main'));
+  const subTypeRole = useRecoilValue(roleType);
 
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId, routePathFolderId, pathItemId, itemType] =
@@ -360,26 +361,34 @@ export default function Course(props) {
        
           
             {routePathDriveId && <menuPanel isInitOpen title="Assignment">
+          
+                <>
               <VersionInfo route={props.route} />
               <br />
               <ItemInfoPanel route={props.route} />
+              </>
+          
             </menuPanel>}
 
             { routePathDriveId && <menuPanel title="+Add">
-              <>
-                <Button
-                  value={
-                    openEnrollment ? 'Close Enrollment' : 'Open Enrollment'
-                  }
-                  callback={(e) => setEnrollment(e)}
-                ></Button>
-                <br />
-                <label>View as Student</label>
+             <>
+             {subTypeRole === 'Administrator' ?(
+               <><Button
+               value={
+                 openEnrollment ? 'Close Enrollment' : 'Open Enrollment'
+               }
+               callback={(e) => setEnrollment(e)}
+             ></Button>
+             <br />
+             <label>View as Student</label>
 
-                <Switch
-                  onChange={(e) => setViewAccessToggle(e)}
-                  checked={filter === 'Released Only' ? false : true}
-                ></Switch>
+             <Switch
+               onChange={(e) => setViewAccessToggle(e)}
+               checked={filter === 'Released Only' ? false : true}
+             ></Switch>
+               </>
+             ) : '' } 
+                
               </>
             </menuPanel>}
           
@@ -441,7 +450,7 @@ const DoenetMLInfoPanel = (props) => {
       event.target.type === 'checkbox'
         ? event.target.checked
         : event.target.value;
-        if (aInfo[`${name}`] != value) {
+        // if (aInfo[`${name}`] != value) {
           const result = changeSettings({
             [name]: value,
             driveIditemIdbranchIdparentFolderId: {
@@ -454,7 +463,7 @@ const DoenetMLInfoPanel = (props) => {
             },
           });
 
-        }
+        // }
   };
   const handleOnBlur = (e) => {
     e.preventDefault();
@@ -678,6 +687,38 @@ const DoenetMLInfoPanel = (props) => {
 
   return <>{assignmentForm}</>;
 };
+const StudentViewInfoPanel = (props) =>{
+  console.log(">>> StudentViewInfoPanelprops",props.contentInfo);
+  let itemInfo = props.contentInfo;
+  const assignmentInfoSettings = useRecoilValueLoadable(
+    assignmentDictionarySelector({
+      driveId: itemInfo.driveId,
+      folderId: itemInfo.parentFolderId,
+      itemId: itemInfo.itemId,
+      doenetId: itemInfo.doenetId,
+      // versionId: selectedVId,
+      // contentId: selectedContentId(),
+    }),
+  );
+
+  let aInfo = '';
+
+  if (assignmentInfoSettings?.state === 'hasValue') {
+    aInfo = assignmentInfoSettings?.contents;
+  }
+
+  return (
+    <>
+      {aInfo ? <div>
+        <p>Due: {aInfo?.dueDate}</p>
+        <p>Time Limit: {aInfo?.timeLimit}</p>
+        <p>Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
+        <p>Points: {aInfo?.totalPointsOrPercent}</p>
+      </div> : ''}
+      
+    </>
+  );
+}
 const FolderInfoPanel = () => {
   return <h1>Folder Info</h1>;
 };
@@ -1048,6 +1089,8 @@ const VersionHistoryInfoPanel = (props) => {
 };
 
 const ItemInfoPanel = (props) => {
+  const subTypeRole = useRecoilValue(roleType);
+
   let versionArr = [];
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   const versionHistory = useRecoilValueLoadable(
@@ -1080,7 +1123,7 @@ const ItemInfoPanel = (props) => {
       </>
     );
   } else if (contentInfoLoad.contents?.number === 1) {
-    if (contentInfo?.itemType === 'DoenetML') {
+    if (contentInfo?.itemType === 'DoenetML' && subTypeRole === 'Administrator') {
       return (
         <DoenetMLInfoPanel
           key={`DoenetMLInfoPanel${contentInfo.itemId}`}
@@ -1096,11 +1139,21 @@ const ItemInfoPanel = (props) => {
           contentInfo={contentInfo}
         />
       );
+    }else if (contentInfo?.itemType === 'DoenetML' && subTypeRole === 'Student') {
+      return (
+        <StudentViewInfoPanel
+        key={`StudentViewInfoPanel${contentInfo.itemId}`}
+        contentInfo={contentInfo}
+        props={props}
+        />
+      );
     }
   }
   return null;
 };
 const VersionInfo = (props) => {
+  const subTypeRole = useRecoilValue(roleType);
+
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   if (contentInfoLoad.state === 'loading') {
     return null;
@@ -1118,7 +1171,7 @@ const VersionInfo = (props) => {
       </>
     );
   } else if (contentInfoLoad.contents?.number === 1) {
-    if (contentInfo?.itemType === 'DoenetML') {
+    if (contentInfo?.itemType === 'DoenetML' && subTypeRole === 'Administrator') {
       return (
         <VersionHistoryInfoPanel
           key={`VersionHistoryInfoPanel${contentInfo.itemId}`}
@@ -1133,17 +1186,18 @@ const VersionInfo = (props) => {
 
 //Student view info panel
 
-// <div>
-//       {
-//         itemInfo.assignment_isPublished ===
-//           '1'(
-//             <div>
-//               <p>Due: {aInfo?.dueDate}</p>
-//               <p>Time Limit: {aInfo?.timeLimit}</p>
-//               <p>
-//                 Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}
-//               </p>
-//               <p>Points: {aInfo?.totalPointsOrPercent}</p>
-//             </div>,
-//           )}
-//     </div>
+
+{/* <div>
+      {
+        itemInfo.assignment_isPublished ===
+          '1'(
+            <div>
+              <p>Due: {aInfo?.dueDate}</p>
+              <p>Time Limit: {aInfo?.timeLimit}</p>
+              <p>
+                Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}
+              </p>
+              <p>Points: {aInfo?.totalPointsOrPercent}</p>
+            </div>,
+          )}
+    </div> */}
