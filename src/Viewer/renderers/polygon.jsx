@@ -101,23 +101,63 @@ export default class Polygon extends DoenetRenderer {
 
     let polygonJXG = this.polygonJXG;
     let newPointcoords;
+    let board = this.props.board;
+    let borderPointsAtDown;
+    let pointerAtDown;
 
-    function onDragBorder(i) {
+    function onDownBorder(e) {
+
+      pointerAtDown = [e.x, e.y];
+
+      borderPointsAtDown = [[...this.point1.coords.scrCoords], [...this.point2.coords.scrCoords]];
+
+      newPointcoords = undefined;
+      offsets = [];
+      // calculate offsets for all vertices not on given border segment
+      for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
+        let vertex = polygonJXG.vertices[j];
+        if (vertex !== this.point1 && vertex !== this.point2) {
+          // found a vertex not on given border segment
+          // record offset from first point on border segment
+          let pointInfo = {
+            id: vertex.id,
+            offset: [vertex.X() - this.point1.X(),
+            vertex.Y() - this.point1.Y()],
+          };
+          offsets.push(pointInfo);
+        }
+      }
+    }
+
+    function onDragBorder(i, e) {
+
+      let o = board.origin.scrCoords;
 
       // create update instructions for moving entire polygon
       newPointcoords = {};
+
       let border = polygonJXG.borders[i];
+
+      let borderPointCoords = [];
+      for (let i = 0; i < 2; i++) {
+        let calculatedX = (borderPointsAtDown[i][1] + e.x - pointerAtDown[0]
+          - o[1]) / board.unitX;
+        let calculatedY = (o[2] -
+          (borderPointsAtDown[i][2] + e.y - pointerAtDown[1]))
+          / board.unitY;
+        borderPointCoords.push([calculatedX, calculatedY]);
+      }
 
       for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
         let point = polygonJXG.vertices[j];
-        let item = offsets.find(x => x.id === point.id);
-        if (item === undefined) {
-          // vertex is on border segment dragged, so records its position
-          newPointcoords[j] = [point.X(), point.Y()];
-        }
-        else {
+        if (point === border.point1) {
+          newPointcoords[j] = borderPointCoords[0]
+        } else if (point === border.point2) {
+          newPointcoords[j] = borderPointCoords[1]
+        } else {
           // for remaining vertices, set to offset from
           // first point of segment dragged
+          let item = offsets.find(x => x.id === point.id);
           newPointcoords[j] = [
             border.point1.X() + item.offset[0],
             border.point1.Y() + item.offset[1]
@@ -129,7 +169,6 @@ export default class Polygon extends DoenetRenderer {
     }
 
     function onUpBorder() {
-
       if (newPointcoords) {
         renderer.actions.movePolygon(newPointcoords, false);
       }
@@ -138,27 +177,9 @@ export default class Polygon extends DoenetRenderer {
     for (let i = 0; i < this.polygonJXG.borders.length; i++) {
       let border = this.polygonJXG.borders[i];
 
-      border.on('drag', () => onDragBorder(i))
+      border.on('drag', (e) => onDragBorder(i, e))
       border.on('up', onUpBorder)
-
-      border.on('down', function () {
-        newPointcoords = undefined;
-        offsets = [];
-        // calculate offsets for all vertices not on given border segment
-        for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
-          let vertex = polygonJXG.vertices[j];
-          if (vertex !== this.point1 && vertex !== this.point2) {
-            // found a vertex not on given border segment
-            // record offset from first point on border segment
-            let pointInfo = {
-              id: vertex.id,
-              offset: [vertex.X() - this.point1.X(),
-              vertex.Y() - this.point1.Y()],
-            };
-            offsets.push(pointInfo);
-          }
-        }
-      });
+      border.on('down', onDownBorder);
     }
   }
 

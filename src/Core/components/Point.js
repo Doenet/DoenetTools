@@ -1026,8 +1026,24 @@ export default class Point extends GraphicalComponent {
 
   }
 
+  finalizePointPosition() {
+    // trigger a movePointe 
+    // to send the final values with transient=false
+    // so that the final position will be recorded
+
+    this.actions.movePoint({
+      x: this.stateValues.numericalXs[0],
+      y: this.stateValues.numericalXs[1],
+      z: this.stateValues.numericalXs[2],
+      transient: false,
+    })
+  }
+
   actions = {
     movePoint: this.movePoint.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    finalizePointPosition: this.finalizePointPosition.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     )
   };
