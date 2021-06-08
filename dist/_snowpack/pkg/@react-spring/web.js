@@ -3220,6 +3220,16 @@ let TransitionPhase;
   TransitionPhase["LEAVE"] = "leave";
 })(TransitionPhase || (TransitionPhase = {}));
 
+const _excluded$2 = ["children"];
+function Spring(_ref) {
+  let {
+    children
+  } = _ref,
+      props = _objectWithoutPropertiesLoose(_ref, _excluded$2);
+
+  return children(useSpring(props));
+}
+
 class Interpolation extends FrameValue {
   constructor(source, args) {
     super();
@@ -3364,7 +3374,7 @@ function _objectWithoutPropertiesLoose$1(source, excluded) {
   return target;
 }
 
-const _excluded$2 = ["style", "children", "scrollTop", "scrollLeft"];
+const _excluded$2$1 = ["style", "children", "scrollTop", "scrollLeft"];
 const isCustomPropRE = /^--/;
 
 function dangerousStyleValue(name, value) {
@@ -3388,7 +3398,7 @@ function applyAnimatedValues(instance, props) {
     scrollTop,
     scrollLeft
   } = _ref,
-        attributes = _objectWithoutPropertiesLoose$1(_ref, _excluded$2);
+        attributes = _objectWithoutPropertiesLoose$1(_ref, _excluded$2$1);
 
   const values = Object.values(attributes);
   const names = Object.keys(attributes).map(name => isFilterElement || instance.hasAttribute(name) ? name : attributeCache[name] || (attributeCache[name] = name.replace(/([A-Z])/g, n => '-' + n.toLowerCase())));
@@ -3581,4 +3591,4 @@ const host = createHost(primitives, {
 });
 const animated = host.animated;
 
-export { animated, useSpring };
+export { Spring, animated as a, animated, useSpring, useSprings };
