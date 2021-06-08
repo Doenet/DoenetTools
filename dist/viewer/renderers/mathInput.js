@@ -204,7 +204,8 @@ export default class MathInput extends DoenetRenderer {
     }, /* @__PURE__ */ React.createElement(EditableMathField, {
       latex: this.latexValue,
       config: {
-        autoCommands: "sqrt pi theta integral",
+        autoCommands: "sqrt pi theta integral infinity",
+        autoOperatorNames: "arg deg det dim exp gcd hom ker lg lim ln log max min Pr sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth sin cos tan sec cosec csc cotan cot ctg arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg sinh cosh tanh sech cosech csch cotanh coth ctgh arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh",
         handlers: {
           enter: this.handlePressEnter
         }

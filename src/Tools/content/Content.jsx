@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Tool from '../_framework/Tool';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
-// import { useRecoilCallback } from 'recoil';
-// import { 
-//   itemHistoryAtom
-// } from '../../_sharedRecoil/content'
+import { useRecoilCallback } from 'recoil';
+import { 
+  itemHistoryAtom
+} from '../../_sharedRecoil/content'
 
 export default function Content(props) {
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
@@ -60,7 +60,6 @@ export default function Content(props) {
     attemptNumber={attemptNumber}
     requestedVariant={requestedVariant}
   /> 
-  // const mainPanel = <p>{contentId}</p>
   // }
 
   

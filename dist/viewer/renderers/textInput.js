@@ -3,6 +3,7 @@ import ReactDOM from "../../_snowpack/pkg/react-dom.js";
 import DoenetRenderer from "./DoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {sizeToCSS} from "./utils/css.js";
 export default class TextInput extends DoenetRenderer {
   constructor(props) {
     super(props);
@@ -164,29 +165,52 @@ export default class TextInput extends DoenetRenderer {
         }
       }
     }
+    let input;
+    if (this.doenetSvData.expanded) {
+      input = /* @__PURE__ */ React.createElement("textarea", {
+        key: inputKey,
+        id: inputKey,
+        value: this.currentValue,
+        disabled: this.doenetSvData.disabled,
+        onChange: this.onChangeHandler,
+        onKeyPress: this.handleKeyPress,
+        onKeyDown: this.handleKeyDown,
+        onBlur: this.handleBlur,
+        onFocus: this.handleFocus,
+        style: {
+          width: sizeToCSS(this.doenetSvData.width),
+          height: sizeToCSS(this.doenetSvData.height),
+          fontSize: "14px",
+          borderWidth: "1px",
+          padding: "4px"
+        }
+      });
+    } else {
+      input = /* @__PURE__ */ React.createElement("input", {
+        key: inputKey,
+        id: inputKey,
+        value: this.currentValue,
+        disabled: this.doenetSvData.disabled,
+        onChange: this.onChangeHandler,
+        onKeyPress: this.handleKeyPress,
+        onKeyDown: this.handleKeyDown,
+        onBlur: this.handleBlur,
+        onFocus: this.handleFocus,
+        style: {
+          width: `${this.doenetSvData.size * 10}px`,
+          height: "22px",
+          fontSize: "14px",
+          borderWidth: "1px",
+          borderColor: surroundingBorderColor,
+          padding: "4px"
+        }
+      });
+    }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
       name: this.componentName
     }), /* @__PURE__ */ React.createElement("span", {
       className: "textInputSurroundingBox",
       id: this.componentName
-    }, /* @__PURE__ */ React.createElement("input", {
-      key: inputKey,
-      id: inputKey,
-      value: this.currentValue,
-      disabled: this.doenetSvData.disabled,
-      onChange: this.onChangeHandler,
-      onKeyPress: this.handleKeyPress,
-      onKeyDown: this.handleKeyDown,
-      onBlur: this.handleBlur,
-      onFocus: this.handleFocus,
-      style: {
-        width: `${this.doenetSvData.size * 10}px`,
-        height: "22px",
-        fontSize: "14px",
-        borderWidth: "1px",
-        borderColor: surroundingBorderColor,
-        padding: "4px"
-      }
-    }), checkWorkButton));
+    }, input, checkWorkButton));
   }
 }

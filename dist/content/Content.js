@@ -1,6 +1,10 @@
 import React, {useState} from "../_snowpack/pkg/react.js";
 import Tool from "../_framework/Tool.js";
 import DoenetViewer from "../viewer/DoenetViewer.js";
+import {useRecoilCallback} from "../_snowpack/pkg/recoil.js";
+import {
+  itemHistoryAtom
+} from "../_sharedRecoil/content.js";
 export default function Content(props) {
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
   const contentId = urlParamsObj?.contentId;
