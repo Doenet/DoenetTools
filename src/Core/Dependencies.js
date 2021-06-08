@@ -963,6 +963,18 @@ export class DependencyHandler {
               variablesJustResolved[dep.upstreamComponentName][varName] = true;
             }
           }
+        } else {
+          for (let varName of dep.upstreamVariableNames) {
+            this.addBlocker({
+              blockerComponentName: dep.upstreamComponentName,
+              blockerType: "recalculateDownstreamComponents",
+              blockerStateVariable: varName,
+              blockerDependency: dep.dependencyName,
+              componentNameBlocked: dep.upstreamComponentName,
+              typeBlocked: "stateVariable",
+              stateVariableBlocked: varName,
+            });
+          }
         }
 
       }
@@ -1691,8 +1703,11 @@ export class DependencyHandler {
     if (typeNewlyResolved === "stateVariable") {
       let component = this._components[componentNameNewlyResolved];
       if (component) {
-        component.state[stateVariableNewlyResolved].isResolved = true;
-        component.state[stateVariableNewlyResolved].initiallyResolved = true;
+        let stateVarObj = component.state[stateVariableNewlyResolved];
+        if (stateVarObj) {
+          component.state[stateVariableNewlyResolved].isResolved = true;
+          component.state[stateVariableNewlyResolved].initiallyResolved = true;
+        }
       }
     } else if (typeNewlyResolved === "componentIdentity") {
 
@@ -1714,7 +1729,7 @@ export class DependencyHandler {
         } catch (e) { }
 
         if (dep) {
-          let result = dep.recalculateDownstreamComponents();
+          let result = dep.recalculateDownstreamComponents({ force });
 
           if (!(result.success || force)) {
             return result;
@@ -1811,31 +1826,12 @@ export class DependencyHandler {
           // as they all had their dependencies updated
           for (let varName of dep.upstreamVariableNames) {
             for (let dependency of determineDepsDependencies) {
-              this.deleteFromNeededToResolve({
-                componentNameBlocked: dep.upstreamComponentName,
-                typeBlocked: "stateVariable",
-                stateVariableBlocked: varName,
+              this.deleteFromResolveBlockedBy({
+                blockerComponentName: dep.upstreamComponentName,
                 blockerType: "determineDependencies",
-                blockerCode: dep.upstreamComponentName + "|" + varName + "|" + dependency
+                blockerStateVariable: varName,
+                blockerDependency: dependency,
               })
-
-              // remove blocker to recalculating the downstream dependencies of all
-              // the dependencies of varName
-              for (let dName in this.downstreamDependencies[dep.upstreamComponentName][varName]) {
-                let otherDep = this.downstreamDependencies[dep.upstreamComponentName][varName][dName];
-                if (otherDep.dependencyType !== "determineDependencies") {
-                  this.deleteFromNeededToResolve({
-                    componentNameBlocked: dep.upstreamComponentName,
-                    typeBlocked: "recalculateDownstreamComponents",
-                    stateVariableBlocked: varName,
-                    dependencyBlocked: dName,
-                    blockerType: "determineDependencies",
-                    blockerCode: dep.upstreamComponentName + "|" + varName + "|" + dependency
-                  })
-      
-                }
-              }
-
             }
             this.resolveIfReady({
               componentName: componentNameNewlyResolved,
@@ -2098,13 +2094,15 @@ export class DependencyHandler {
     let stateVarObj;
     if (type === "stateVariable" && this._components[componentName]) {
       stateVarObj = this._components[componentName].state[stateVariable];
-      stateVarObj.currentlyResolving = true;
+      if (stateVarObj) {
+        stateVarObj.currentlyResolving = true;
+      }
     }
 
     while (Object.keys(neededForItem).length > 0) {
       for (let blockerType in neededForItem) {
         if (blockerType === "determineDependencies") {
-          throw Error(`Shouldn't have determine dependencies blocker after determining dependencies`);
+          throw Error(`Shouldn't have determine dependencies blocker after determining dependencies: ${componentName}, ${type}, ${stateVariable}, ${dependency}`);
         }
 
         // shallow copy, as items may be deleted as resolve items
@@ -2992,9 +2990,9 @@ class Dependency {
     }
   }
 
-  recalculateDownstreamComponents() {
+  recalculateDownstreamComponents({ force = false } = {}) {
 
-    let newDownComponents = this.determineDownstreamComponents();
+    let newDownComponents = this.determineDownstreamComponents({ force });
 
 
     // this.downstreamComponentNames = newDownComponents.downstreamComponentNames;
@@ -3420,14 +3418,15 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
   }
 
-  determineDownstreamComponents() {
+  determineDownstreamComponents({ force = false } = {}) {
 
     this.missingComponents = [];
     this.originalDownstreamVariableNamesByComponent = [];
 
     let result = this.getRecursiveDependencyVariables({
       componentName: this.componentName,
-      variableNames: this.startingVariableNames
+      variableNames: this.startingVariableNames,
+      force
     })
 
 
@@ -3457,7 +3456,7 @@ class RecursiveDependencyValuesDependency extends Dependency {
 
   }
 
-  getRecursiveDependencyVariables({ componentName, variableNames, components = {} }) {
+  getRecursiveDependencyVariables({ componentName, variableNames, force, components = {} }) {
 
     let component = this.dependencyHandler._components[componentName];
 
@@ -3540,30 +3539,35 @@ class RecursiveDependencyValuesDependency extends Dependency {
         if (stateVarObj) {
 
           if (!stateVarObj.isResolved) {
+            if (force) {
+              stateVarObj.value;
+            } else {
 
-            for (let vName of this.upstreamVariableNames) {
-              this.dependencyHandler.addBlocker({
-                blockerComponentName: componentName,
-                blockerType: "stateVariable",
-                blockerStateVariable: varName,
-                componentNameBlocked: this.upstreamComponentName,
-                typeBlocked: "recalculateDownstreamComponents",
-                stateVariableBlocked: vName,
-                dependencyBlocked: this.dependencyName
-              });
+              for (let vName of this.upstreamVariableNames) {
+                this.dependencyHandler.addBlocker({
+                  blockerComponentName: componentName,
+                  blockerType: "stateVariable",
+                  blockerStateVariable: varName,
+                  componentNameBlocked: this.upstreamComponentName,
+                  typeBlocked: "recalculateDownstreamComponents",
+                  stateVariableBlocked: vName,
+                  dependencyBlocked: this.dependencyName
+                });
 
-              this.dependencyHandler.addBlocker({
-                blockerComponentName: this.upstreamComponentName,
-                blockerType: "recalculateDownstreamComponents",
-                blockerStateVariable: vName,
-                blockerDependency: this.dependencyName,
-                componentNameBlocked: this.upstreamComponentName,
-                typeBlocked: "stateVariable",
-                stateVariableBlocked: vName,
-              });
+                this.dependencyHandler.addBlocker({
+                  blockerComponentName: this.upstreamComponentName,
+                  blockerType: "recalculateDownstreamComponents",
+                  blockerStateVariable: vName,
+                  blockerDependency: this.dependencyName,
+                  componentNameBlocked: this.upstreamComponentName,
+                  typeBlocked: "stateVariable",
+                  stateVariableBlocked: vName,
+                });
+              }
+              return { success: false };
+
             }
 
-            return { success: false };
           }
 
           let downDeps = this.dependencyHandler.downstreamDependencies[component.componentName][varName];
@@ -3578,6 +3582,7 @@ class RecursiveDependencyValuesDependency extends Dependency {
               let result = this.getRecursiveDependencyVariables({
                 componentName: cName,
                 variableNames: varNames,
+                force,
                 components,
               });
 

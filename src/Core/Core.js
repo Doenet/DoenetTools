@@ -7662,9 +7662,13 @@ export default class Core {
     if (Object.keys(this.unsatisfiedChildLogic).length > 0) {
       let childLogicMessage = "";
       for (let componentName in this.unsatisfiedChildLogic) {
-        childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+        if (!this._components[componentName].isShadow) {
+          childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+        }
       }
-      console.warn(childLogicMessage)
+      if(childLogicMessage) {
+        console.warn(childLogicMessage)
+      }
     }
 
 

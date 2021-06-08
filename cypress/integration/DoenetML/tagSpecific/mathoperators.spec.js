@@ -5597,38 +5597,41 @@ describe('Math Operator Tag Tests', function () {
       <text>a</text>
       <p>original expression: <math name="expr" functionSymbols="f g">f(x)+g(y,z)+h(q)</math></p>
       <p>Operator: <extractMathOperator name="operator">$expr</extractMathOperator></p>
-      <p>First operand: <extractMathOperand name="operand1" >$expr</extractMathOperand></p>
-      <p>First operand again: <extractMathOperand operandNumber="1" name="operand1a">$expr</extractMathOperand></p>
-      <p>Second operand: <extractMathOperand operandNumber="2" name="operand2">$expr</extractMathOperand></p>
-      <p>Third operand: <extractMathOperand operandNumber="3" name="operand3">$expr</extractMathOperand></p>
-      <p>No fourth operand: <extractMathOperand operandNumber="4" name="blank1">$expr</extractMathOperand></p>
-      <p>Function from first operand: <extractMathFunction name="f">$operand1</extractMathFunction></p>
-      <p>Function from second operand: <extractMathFunction name="g">$operand2</extractMathFunction></p>
-      <p>No function from third operand: <extractMathFunction name="blank2">$operand3</extractMathFunction></p>
-      <p>Function argument from first operand: <extractFunctionArgument name="farg1">$operand1</extractFunctionArgument></p>
-      <p>Function argument from first operand again: <extractFunctionArgument argumentNumber="1" name="farg1a">$operand1</extractFunctionArgument></p>
-      <p>No second function argument from first operand: <extractFunctionArgument argumentNumber="2" name="blank3">$operand1</extractFunctionArgument></p>
-      <p>All function arguments from second operand: <extractFunctionArgument name="gargAll">$operand2</extractFunctionArgument></p>
-      <p>First function argument from second operand: <extractFunctionArgument argumentNumber="1" name="garg1">$operand2</extractFunctionArgument></p>
-      <p>Second function argument from second operand: <extractFunctionArgument argumentNumber="2" name="garg2">$operand2</extractFunctionArgument></p>
-      <p>No third function argument from second operand: <extractFunctionArgument argumentNumber="3" name="blank4">$operand2</extractFunctionArgument></p>
-      <p>No function argument from third operand: <extractFunctionArgument name="blank5">$operand3</extractFunctionArgument></p>
+      <p>Number of operands: <extractMath type="numberOfOperands" name="numOperands">$expr</extractMath></p>
+      <p>First operand: <extractMath type="Operand" name="operand1" operandNumber="1">$expr</extractMath></p>
+      <p>Second operand: <extractMath type="Operand" name="operand2" operandNumber="2">$expr</extractMath></p>
+      <p>Third operand: <extractMath type="Operand" name="operand3" operandNumber="3">$expr</extractMath></p>
+      <p>No fourth operand: <extractMath type="Operand" name="blank1" operandNumber="4">$expr</extractMath></p>
+      <p>Function from first operand: <extractMath type="function" name="f">$operand1</extractMath></p>
+      <p>Function from second operand: <extractMath type="function" name="g">$operand2</extractMath></p>
+      <p>No function from third operand: <extractMath type="function" name="blank2">$operand3</extractMath></p>
+      <p>Function argument from first operand: <extractMath type="functionArgument" name="farg1">$operand1</extractMath></p>
+      <p>Function argument from first operand again: <extractMath type="functionArgument" argumentNumber="1" name="farg1a">$operand1</extractMath></p>
+      <p>No second function argument from first operand: <extractMath type="functionArgument" argumentNumber="2" name="blank3">$operand1</extractMath></p>
+      <p>All function arguments from second operand: <extractMath type="functionArgument" name="gargAll">$operand2</extractMath></p>
+      <p>First function argument from second operand: <extractMath type="functionArgument" argumentNumber="1" name="garg1">$operand2</extractMath></p>
+      <p>Second function argument from second operand: <extractMath type="functionArgument" argumentNumber="2" name="garg2">$operand2</extractMath></p>
+      <p>No third function argument from second operand: <extractMath type="functionArgument" argumentNumber="3" name="blank4">$operand2</extractMath></p>
+      <p>No function argument from third operand: <extractMath type="functionArgument" name="blank5">$operand3</extractMath></p>
+      <p>Number of operands from first operand: <extractMath type="numberofoperands" name="numOperands1">$operand1</extractMath></p>
+      <p>First operand from first operand: <extractMath type="operand" operandNumber="1" name="operand11">$operand1</extractMath></p>
+
 
       <p>Pick operand number: <mathinput name="nOperand" prefill="1" /></p>
-      <p>Resulting operand: <extractMathOperand operandNumber="$nOperand" name="operandN">$expr</extractMathOperand></p>
-      <p>Function of resulting operand: <extractMathFunction name="functionN">$operandN</extractMathFunction></p>
+      <p>Resulting operand: <extractMath type="operand" operandNumber="$nOperand" name="operandN">$expr</extractMath></p>
+      <p>Function of resulting operand: <extractMath type="function" name="functionN">$operandN</extractMath></p>
       <p>Pick argument number: <mathinput name="nArgument" prefill="1" /></p>
-      <p>Resulting argument: <extractFunctionArgument argumentNumber="$nArgument" name="argumentN">$operandN</extractFunctionArgument></p>
+      <p>Resulting argument: <extractMath type="functionArgument" argumentNumber="$nArgument" name="argumentN">$operandN</extractMath></p>
       `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
     cy.get('#\\/operator').should('have.text', '+')
-    cy.get('#\\/operand1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('f(x)')
+    cy.get('#\\/numOperands').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
     });
-    cy.get('#\\/operand1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/operand1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)')
     });
     cy.get('#\\/operand2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5673,6 +5676,12 @@ describe('Math Operator Tag Tests', function () {
     cy.get('#\\/blank5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     });
+    cy.get('#\\/numOperands1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/operand11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f(x)')
+    });
     cy.get('#\\/operandN').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(x)')
     });
@@ -5686,8 +5695,8 @@ describe('Math Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components['/operator'].stateValues.value).eq('+')
+      expect(components['/numOperands'].stateValues.value.tree).eq(3)
       expect(components['/operand1'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
-      expect(components['/operand1a'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
       expect(components['/operand2'].stateValues.value.tree).eqls(['apply', 'g', ["tuple",'y',"z"]])
       expect(components['/operand3'].stateValues.value.tree).eqls(['*', 'h', 'q'])
       expect(components['/blank1'].stateValues.value.tree).eqls('＿')
@@ -5702,6 +5711,8 @@ describe('Math Operator Tag Tests', function () {
       expect(components['/garg2'].stateValues.value.tree).eqls('z')
       expect(components['/blank4'].stateValues.value.tree).eqls('＿')
       expect(components['/blank5'].stateValues.value.tree).eqls('＿')
+      expect(components['/numOperands1'].stateValues.value.tree).eq(1)
+      expect(components['/operand11'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
 
       expect(components['/operandN'].stateValues.value.tree).eqls(['apply', 'f', 'x'])
       expect(components['/functionN'].stateValues.value.tree).eqls('f')

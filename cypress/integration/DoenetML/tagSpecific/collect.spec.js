@@ -2040,8 +2040,8 @@ describe('Collect Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <section>
-      <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy tname="theP" assignNames="theP2" />
+      <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+      <copy tname="theP1" assignNames="theP2" />
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
       <copy tname="theP3" assignNames="theP4" />
     </section>
@@ -2058,11 +2058,11 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/theP4').should('have.text', 'Hidden paragraph with hidden text: ')
     cy.get('#\\/cp1').should('have.text', 'Hidden text: ')
     cy.get('#\\/cp2').should('have.text', 'Hidden text: ')
-    cy.get('#\\/cp3').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp3').should('not.exist')
     cy.get('#\\/cp4').should('have.text', 'Hidden paragraph with hidden text: ')
     cy.get('#\\/cp5').should('have.text', 'Hidden text: ')
     cy.get('#\\/cp6').should('have.text', 'Hidden text: ')
-    cy.get('#\\/cp7').should('not.exist')
+    cy.get('#\\/cp7').should('have.text', 'Hidden paragraph with hidden text: ')
     cy.get('#\\/cp8').should('have.text', 'Hidden paragraph with hidden text: ')
 
   });
@@ -2073,8 +2073,8 @@ describe('Collect Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <section hide>
-      <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy tname="theP" assignNames="theP2" />
+      <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+      <copy tname="theP1" assignNames="theP2" />
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
       <copy tname="theP3" assignNames="theP4" />
     </section>
@@ -2091,16 +2091,12 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/theP4').should('not.exist')
     cy.get('#\\/cp1').should('have.text', 'Hidden text: ')
     cy.get('#\\/cp2').should('have.text', 'Hidden text: ')
-    cy.get('#\\/cp3').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp3').should('not.exist')
     cy.get('#\\/cp4').should('have.text', 'Hidden paragraph with hidden text: ')
     cy.get('#\\/cp5').should('have.text', 'Hidden text: ')
     cy.get('#\\/cp6').should('have.text', 'Hidden text: ')
-    cy.get('#\\/cp7').should('not.exist')
+    cy.get('#\\/cp7').should('have.text', 'Hidden paragraph with hidden text: ')
     cy.get('#\\/cp8').should('have.text', 'Hidden paragraph with hidden text: ')
-
-    cy.get('#\\/_p1').should('have.text', 'Revealed by default: secretpublic');
-    cy.get('#\\/_p2').should('have.text', 'Force to stay hidden: public');
-
 
   });
 
