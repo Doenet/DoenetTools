@@ -1425,6 +1425,47 @@ function replaceRef(ctrl, ref) {
   }
 }
 
+function useChain(refs, timeSteps, timeFrame = 1000) {
+  useLayoutEffect(() => {
+    if (timeSteps) {
+      let prevDelay = 0;
+      each(refs, (ref, i) => {
+        const controllers = ref.current;
+
+        if (controllers.length) {
+          let delay = timeFrame * timeSteps[i];
+          if (isNaN(delay)) delay = prevDelay;else prevDelay = delay;
+          each(controllers, ctrl => {
+            each(ctrl.queue, props => {
+              const memoizedDelayProp = props.delay;
+
+              props.delay = key => delay + callProp(memoizedDelayProp || 0, key);
+            });
+            ctrl.start();
+          });
+        }
+      });
+    } else {
+      let p = Promise.resolve();
+      each(refs, ref => {
+        const controllers = ref.current;
+
+        if (controllers.length) {
+          const queues = controllers.map(ctrl => {
+            const q = ctrl.queue;
+            ctrl.queue = [];
+            return q;
+          });
+          p = p.then(() => {
+            each(controllers, (ctrl, i) => each(queues[i] || [], update => ctrl.queue.push(update)));
+            return ref.start();
+          });
+        }
+      });
+    }
+  });
+}
+
 const config = {
   default: {
     tension: 170,
@@ -3220,6 +3261,263 @@ let TransitionPhase;
   TransitionPhase["LEAVE"] = "leave";
 })(TransitionPhase || (TransitionPhase = {}));
 
+function useTransition(data, props, deps) {
+  const propsFn = is.fun(props) && props;
+  const {
+    reset,
+    sort,
+    trail = 0,
+    expires = true,
+    onDestroyed,
+    ref: propsRef,
+    config: propsConfig
+  } = propsFn ? propsFn() : props;
+  const ref = react.useMemo(() => propsFn || arguments.length == 3 ? SpringRef() : void 0, []);
+  const items = toArray(data);
+  const transitions = [];
+  const usedTransitions = react.useRef(null);
+  const prevTransitions = reset ? null : usedTransitions.current;
+  useLayoutEffect(() => {
+    usedTransitions.current = transitions;
+  });
+  useOnce(() => () => each(usedTransitions.current, t => {
+    if (t.expired) {
+      clearTimeout(t.expirationId);
+    }
+
+    detachRefs(t.ctrl, ref);
+    t.ctrl.stop(true);
+  }));
+  const keys = getKeys(items, propsFn ? propsFn() : props, prevTransitions);
+  const expired = reset && usedTransitions.current || [];
+  useLayoutEffect(() => each(expired, ({
+    ctrl,
+    item,
+    key
+  }) => {
+    detachRefs(ctrl, ref);
+    callProp(onDestroyed, item, key);
+  }));
+  const reused = [];
+  if (prevTransitions) each(prevTransitions, (t, i) => {
+    if (t.expired) {
+      clearTimeout(t.expirationId);
+      expired.push(t);
+    } else {
+      i = reused[i] = keys.indexOf(t.key);
+      if (~i) transitions[i] = t;
+    }
+  });
+  each(items, (item, i) => {
+    if (!transitions[i]) {
+      transitions[i] = {
+        key: keys[i],
+        item,
+        phase: TransitionPhase.MOUNT,
+        ctrl: new Controller()
+      };
+      transitions[i].ctrl.item = item;
+    }
+  });
+
+  if (reused.length) {
+    let i = -1;
+    const {
+      leave
+    } = propsFn ? propsFn() : props;
+    each(reused, (keyIndex, prevIndex) => {
+      const t = prevTransitions[prevIndex];
+
+      if (~keyIndex) {
+        i = transitions.indexOf(t);
+        transitions[i] = _extends$2({}, t, {
+          item: items[keyIndex]
+        });
+      } else if (leave) {
+        transitions.splice(++i, 0, t);
+      }
+    });
+  }
+
+  if (is.fun(sort)) {
+    transitions.sort((a, b) => sort(a.item, b.item));
+  }
+
+  let delay = -trail;
+  const forceUpdate = useForceUpdate();
+  const defaultProps = getDefaultProps(props);
+  const changes = new Map();
+  each(transitions, (t, i) => {
+    const key = t.key;
+    const prevPhase = t.phase;
+    const p = propsFn ? propsFn() : props;
+    let to;
+    let phase;
+    let propsDelay = callProp(p.delay || 0, key);
+
+    if (prevPhase == TransitionPhase.MOUNT) {
+      to = p.enter;
+      phase = TransitionPhase.ENTER;
+    } else {
+      const isLeave = keys.indexOf(key) < 0;
+
+      if (prevPhase != TransitionPhase.LEAVE) {
+        if (isLeave) {
+          to = p.leave;
+          phase = TransitionPhase.LEAVE;
+        } else if (to = p.update) {
+          phase = TransitionPhase.UPDATE;
+        } else return;
+      } else if (!isLeave) {
+        to = p.enter;
+        phase = TransitionPhase.ENTER;
+      } else return;
+    }
+
+    to = callProp(to, t.item, i);
+    to = is.obj(to) ? inferTo(to) : {
+      to
+    };
+
+    if (!to.config) {
+      const config = propsConfig || defaultProps.config;
+      to.config = callProp(config, t.item, i, phase);
+    }
+
+    delay += trail;
+
+    const payload = _extends$2({}, defaultProps, {
+      delay: propsDelay + delay,
+      ref: propsRef,
+      reset: false
+    }, to);
+
+    if (phase == TransitionPhase.ENTER && is.und(payload.from)) {
+      const _p = propsFn ? propsFn() : props;
+
+      const from = is.und(_p.initial) || prevTransitions ? _p.from : _p.initial;
+      payload.from = callProp(from, t.item, i);
+    }
+
+    const {
+      onResolve
+    } = payload;
+
+    payload.onResolve = result => {
+      callProp(onResolve, result);
+      const transitions = usedTransitions.current;
+      const t = transitions.find(t => t.key === key);
+      if (!t) return;
+
+      if (result.cancelled && t.phase != TransitionPhase.UPDATE) {
+        return;
+      }
+
+      if (t.ctrl.idle) {
+        const idle = transitions.every(t => t.ctrl.idle);
+
+        if (t.phase == TransitionPhase.LEAVE) {
+          const expiry = callProp(expires, t.item);
+
+          if (expiry !== false) {
+            const expiryMs = expiry === true ? 0 : expiry;
+            t.expired = true;
+
+            if (!idle && expiryMs > 0) {
+              if (expiryMs <= 0x7fffffff) t.expirationId = setTimeout(forceUpdate, expiryMs);
+              return;
+            }
+          }
+        }
+
+        if (idle && transitions.some(t => t.expired)) {
+          forceUpdate();
+        }
+      }
+    };
+
+    const springs = getSprings(t.ctrl, payload);
+    changes.set(t, {
+      phase,
+      springs,
+      payload
+    });
+  });
+  const context = react.useContext(SpringContext);
+  const prevContext = usePrev(context);
+  const hasContext = context !== prevContext && hasProps(context);
+  useLayoutEffect(() => {
+    if (hasContext) each(transitions, t => {
+      t.ctrl.start({
+        default: context
+      });
+    });
+  }, [context]);
+  useLayoutEffect(() => {
+    each(changes, ({
+      phase,
+      payload
+    }, t) => {
+      const {
+        ctrl
+      } = t;
+      t.phase = phase;
+      ref == null ? void 0 : ref.add(ctrl);
+
+      if (hasContext && phase == TransitionPhase.ENTER) {
+        ctrl.start({
+          default: context
+        });
+      }
+
+      if (payload) {
+        replaceRef(ctrl, payload.ref);
+
+        if (ctrl.ref) {
+          ctrl.update(payload);
+        } else {
+          ctrl.start(payload);
+        }
+      }
+    });
+  }, reset ? void 0 : deps);
+
+  const renderTransitions = render => react.createElement(react.Fragment, null, transitions.map((t, i) => {
+    const {
+      springs
+    } = changes.get(t) || t.ctrl;
+    const elem = render(_extends$2({}, springs), t.item, t, i);
+    return elem && elem.type ? react.createElement(elem.type, _extends$2({}, elem.props, {
+      key: is.str(t.key) || is.num(t.key) ? t.key : t.ctrl.id,
+      ref: elem.ref
+    })) : elem;
+  }));
+
+  return ref ? [renderTransitions, ref] : renderTransitions;
+}
+let nextKey = 1;
+
+function getKeys(items, {
+  key,
+  keys = key
+}, prevTransitions) {
+  if (keys === null) {
+    const reused = new Set();
+    return items.map(item => {
+      const t = prevTransitions && prevTransitions.find(t => t.item === item && t.phase !== TransitionPhase.LEAVE && !reused.has(t));
+
+      if (t) {
+        reused.add(t);
+        return t.key;
+      }
+
+      return nextKey++;
+    });
+  }
+
+  return is.und(keys) ? items : is.fun(keys) ? items.map(keys) : toArray(keys);
+}
+
 const _excluded$2 = ["children"];
 function Spring(_ref) {
   let {
@@ -3591,4 +3889,4 @@ const host = createHost(primitives, {
 });
 const animated = host.animated;
 
-export { Spring, animated as a, animated, useSpring, useSprings };
+export { Spring, animated as a, animated, useChain, useSpring, useSprings, useTransition };
