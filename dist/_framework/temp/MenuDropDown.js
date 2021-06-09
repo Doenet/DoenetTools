@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {animated, useSpring, useTransition, useChain} from "../../_snowpack/pkg/react-spring.js";
+import {animated, useSpring, useTransition, useChain} from "../../_snowpack/pkg/@react-spring/web.js";
 import {faChevronDown} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const DropDown = styled(animated.div)`

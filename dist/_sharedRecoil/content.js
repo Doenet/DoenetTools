@@ -16,15 +16,15 @@ export const itemHistoryAtom = atomFamily({
   key:"itemHistoryAtom",
   default: selectorFamily({
     key:"itemHistoryAtom/Default",
-    get:(branchId)=> async ()=>{
+    get:(doenetId)=> async ()=>{
       let draft = {};
       let named = [];
       let autoSaves = [];
-      if (!branchId){
+      if (!doenetId){
         return {draft,named,autoSaves};
       }
       const { data } = await axios.get(
-        `/api/loadVersions.php?branchId=${branchId}`
+        `/api/loadVersions.php?doenetId=${doenetId}`
       );
         
       draft = data.versions[0];

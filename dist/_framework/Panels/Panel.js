@@ -1,12 +1,9 @@
 import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {animated, useSpring} from "../../_snowpack/pkg/react-spring.js";
+import {animated, useSpring} from "../../_snowpack/pkg/@react-spring/web.js";
 import {useGesture} from "../../_snowpack/pkg/react-use-gesture.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {
-  faGripLinesVertical,
-  faGripLines
-} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faGripLinesVertical, faGripLines} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {useRecoilState, atomFamily} from "../../_snowpack/pkg/recoil.js";
 export const handleDirection = {
   LEFT: {

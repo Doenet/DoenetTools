@@ -15,7 +15,7 @@ $response_arr = array(
 
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $weights = array_map(function($item) use($conn) {
@@ -27,7 +27,7 @@ $weights = array_map(function($item) use($conn) {
 $sql = "SELECT userId
         FROM  user_assignment_attempt_item
         WHERE userId = '$userId'
-        AND branchId = '$branchId'
+        AND doenetId = '$doenetId'
         AND contentId = '$contentId'
         AND attemptNumber = '$attemptNumber'
 ";
@@ -41,9 +41,9 @@ if ($result->num_rows < 1){
     //Store Item  weights
     $weight = $weights[($itemNumber -1)];
     $sql = "INSERT INTO user_assignment_attempt_item 
-    (userId,branchId,contentId,attemptNumber,itemNumber,weight)
+    (userId,doenetId,contentId,attemptNumber,itemNumber,weight)
     values
-    ('$userId','$branchId','$contentId','$attemptNumber','$itemNumber','$weight')
+    ('$userId','$doenetId','$contentId','$attemptNumber','$itemNumber','$weight')
     ";
   $result = $conn->query($sql);
 

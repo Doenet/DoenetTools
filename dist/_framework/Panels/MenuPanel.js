@@ -26,7 +26,7 @@ const MenuHeaderButton = styled.button`
   border-top: ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "8px solid #1A5A99" : "none"};
   background-color: hsl(0, 0%, 99%);
   border-bottom: 2px solid
-    ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "#f6f8ff" : "black"};
+    ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "#white" : "black"};
   width: 100%;
   height: 100%;
 `;

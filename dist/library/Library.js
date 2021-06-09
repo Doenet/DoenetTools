@@ -25,9 +25,9 @@ import axios from "../_snowpack/pkg/axios.js";
 import "../_snowpack/pkg/codemirror/lib/codemirror.css.proxy.js";
 import "../_snowpack/pkg/codemirror/theme/material.css.proxy.js";
 import Drive, {
-  folderDictionarySelector,
   globalSelectedNodesAtom,
   folderDictionary,
+  folderDictionaryFilterSelector,
   clearDriveAndItemSelections,
   fetchDrivesSelector,
   encodeParams,
@@ -83,7 +83,7 @@ export const selectedInformation = selector({
     const driveId = globalSelected[0].driveId;
     const folderId = globalSelected[0].parentFolderId;
     const driveInstanceId = globalSelected[0].driveInstanceId;
-    let folderInfo = get(folderDictionary({driveId, folderId}));
+    let folderInfo = get(folderDictionaryFilterSelector({driveId, folderId}));
     const itemId = globalSelected[0].itemId;
     let itemInfo = {...folderInfo.contentsDictionary[itemId]};
     itemInfo["driveId"] = driveId;
@@ -405,7 +405,7 @@ const DriveInfoPanel = function(props) {
 };
 const FolderInfoPanel = function(props) {
   const itemInfo = props.itemInfo;
-  const setFolder = useSetRecoilState(folderDictionarySelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
   const {deleteItem, onDeleteItemError} = useDeleteItem();
   const {renameItem, onRenameItemError} = useRenameItem();
   const [addToast, ToastType] = useToast();
@@ -472,7 +472,7 @@ const FolderInfoPanel = function(props) {
 };
 const DoenetMLInfoPanel = function(props) {
   const itemInfo = props.itemInfo;
-  const setFolder = useSetRecoilState(folderDictionarySelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
   const {deleteItem, onDeleteItemError} = useDeleteItem();
   const [addToast, ToastType] = useToast();
   const {renameItem, onRenameItemError} = useRenameItem();
@@ -522,7 +522,7 @@ const DoenetMLInfoPanel = function(props) {
     callback: () => {
       openOverlay({
         type: "editor",
-        branchId: itemInfo.branchId,
+        doenetId: itemInfo.doenetId,
         title: itemInfo.label,
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
@@ -656,7 +656,7 @@ function AddMenuPanel(props) {
     path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
   }
   let [driveId, folderId] = path.split(":");
-  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}));
+  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}));
   const {addItem, onAddItemError} = useAddItem();
   const [addToast, ToastType] = useToast();
   let addDrives = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Suspense, {
@@ -825,7 +825,7 @@ export default function Library(props) {
     doenetMLDoubleClickCallback: (info) => {
       openOverlay({
         type: "editor",
-        branchId: info.item.branchId,
+        doenetId: info.item.doenetId,
         title: info.item.label,
         driveId: info.driveId,
         folderId: info.item.parentFolderId,
@@ -849,7 +849,7 @@ export default function Library(props) {
     doenetMLDoubleClickCallback: (info) => {
       openOverlay({
         type: "editor",
-        branchId: info.item.branchId,
+        doenetId: info.item.doenetId,
         title: info.item.label,
         driveId: info.driveId,
         folderId: info.item.parentFolderId,

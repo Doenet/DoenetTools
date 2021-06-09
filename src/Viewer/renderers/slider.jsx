@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 import styled from "styled-components";
-import {Spring} from 'react-spring';
+import {Spring} from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 
