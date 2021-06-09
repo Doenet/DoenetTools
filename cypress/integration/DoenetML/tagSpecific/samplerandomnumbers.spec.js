@@ -1421,13 +1421,13 @@ describe('SampleRandomNumbers Tag Tests', function () {
     <p>Specified from <mathinput name="specifiedFrom" prefill="0" /></p>
     <p>Specified to <mathinput name="specifiedTo" prefill="1" /></p>
     <p>Specified step <mathinput name="specifiedStep" prefill="1" /></p>
-    <p>Actual type: <copy prop="type" tname="samples" propFromComposite assignNames="actualType" /></p>
-    <p>Actual from: <copy prop="from" tname="samples" propFromComposite assignNames="actualFrom" /></p>
-    <p>Actual to: <copy prop="to" tname="samples" propFromComposite assignNames="actualTo" /></p>
-    <p>Actual step: <copy prop="step" tname="samples" propFromComposite assignNames="actualStep" /></p>
-    <p>Expected mean: <copy prop="mean" tname="samples" propFromComposite assignNames="expectedMean" /></p>
-    <p>Expected variance: <copy prop="variance" tname="samples" propFromComposite assignNames="expectedVariance" /></p>
-    <p>Expected standard deviation: <copy prop="standardDeviation" tname="samples" propFromComposite assignNames="expectedStandardDeviation" /></p>
+    <p>Actual type: <copy prop="type" tname="samples" obtainPropFromComposite assignNames="actualType" /></p>
+    <p>Actual from: <copy prop="from" tname="samples" obtainPropFromComposite assignNames="actualFrom" /></p>
+    <p>Actual to: <copy prop="to" tname="samples" obtainPropFromComposite assignNames="actualTo" /></p>
+    <p>Actual step: <copy prop="step" tname="samples" obtainPropFromComposite assignNames="actualStep" /></p>
+    <p>Expected mean: <copy prop="mean" tname="samples" obtainPropFromComposite assignNames="expectedMean" /></p>
+    <p>Expected variance: <copy prop="variance" tname="samples" obtainPropFromComposite assignNames="expectedVariance" /></p>
+    <p>Expected standard deviation: <copy prop="standardDeviation" tname="samples" obtainPropFromComposite assignNames="expectedStandardDeviation" /></p>
     <p>Resulting mean: <mean name="resultingMean">$samples</mean></p>
     <p>Resulting variance: <variance name="resultingVariance">$samples</variance></p>
     <p>Resulting standard deviation: <standardDeviation name="resultingStandardDeviation">$samples</standardDeviation></p>
