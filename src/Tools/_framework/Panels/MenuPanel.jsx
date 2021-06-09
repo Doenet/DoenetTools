@@ -17,11 +17,15 @@ const ButtonsWrapper = styled.div`
   display: flex;
 `;
 
-const PanelsWrapper = styled.div`
-  grid-area: sections;
+const MenuPanelsWrapper = styled.div`
+  grid-area: menuPanel;
   display: flex;
   flex-direction: column;
   overflow: auto;
+  justify-content: flex-start;
+  background: white;
+  height: 100%;
+  width: 240px;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -48,44 +52,49 @@ export const useMenuPanelController = () => {
 };
 
 export default function MenuPanel({ children, isInitOpen }) {
-  const stackId = useStackId();
-  const [activePanel, setActivePanel] = useRecoilState(
-    activeMenuPanel(stackId),
-  );
-  const [panels, setPanels] = useState([]);
+  // const stackId = useStackId();
+  // const [activePanel, setActivePanel] = useRecoilState(
+  //   activeMenuPanel(stackId),
+  // );
+  // const [panels, setPanels] = useState([]);
 
   // console.log(">>>Loading Menu w/ Child");
 
-  useEffect(() => {
-    setPanels(children.map((panel) => panel)); //swap this to only render buttons once (store in state)
-  }, [children]);
+  // useEffect(() => {
+  //   setPanels(children.map((panel) => panel)); //swap this to only render buttons once (store in state)
+  // }, [children]);
+  console.log(">>>children",children)
 
   return (
-    <DragPanel
-      gridArea={'menuPanel'}
-      direction={handleDirection.LEFT}
-      id={`menuPanel${stackId}`}
-      isInitOpen={isInitOpen}
-    >
-      <Wrapper>
-        <ButtonsWrapper>
-          {panels.map((panel, idx) => {
-            return (
-              <MenuHeaderButton
-                key={`headerB${idx}`}
-                onClick={() => {
-                  activePanel !== idx ? setActivePanel(idx) : null;
-                }}
-                linkedPanel={idx}
-                activePanel={activePanel}
-              >
-                {panel.props.title}
-              </MenuHeaderButton>
-            );
-          })}
-        </ButtonsWrapper>
-        <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
-      </Wrapper>
-    </DragPanel>
+    <MenuPanelsWrapper>
+    <p>menu panels here</p>
+
+    </MenuPanelsWrapper>
+    // <DragPanel
+    //   gridArea={'menuPanel'}
+    //   direction={handleDirection.LEFT}
+    //   id={`menuPanel${stackId}`}
+    //   isInitOpen={isInitOpen}
+    // >
+    //   <Wrapper>
+    //     <ButtonsWrapper>
+    //       {panels.map((panel, idx) => {
+    //         return (
+    //           <MenuHeaderButton
+    //             key={`headerB${idx}`}
+    //             onClick={() => {
+    //               activePanel !== idx ? setActivePanel(idx) : null;
+    //             }}
+    //             linkedPanel={idx}
+    //             activePanel={activePanel}
+    //           >
+    //             {panel.props.title}
+    //           </MenuHeaderButton>
+    //         );
+    //       })}
+    //     </ButtonsWrapper>
+    //     <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
+    //   </Wrapper>
+    // </DragPanel>
   );
 }
