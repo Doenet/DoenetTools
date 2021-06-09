@@ -5,18 +5,9 @@ import { processAssignNames } from '../utils/serializedStateProcessing';
 export default class SelectByCondition extends CompositeComponent {
   static componentType = "selectByCondition";
 
-  // assign name to else child
-  // static assignNewNamespaceToAllChildrenExcept = ["case", ...Object.keys(this.createAttributesObject({})).map(x => x.toLowerCase())];
-  // static preserveOriginalNamesWhenAssignChildrenNewNamespace = true;
-  // static passArrayAssignNamesToChildren = [["case", "else"]];
-
   static assignNamesToReplacements = true;
 
-  static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
-
-  // used when referencing this component without prop
-  // static useChildrenForReference = false;
-  // static get stateVariablesShadowedForReference() { return ["selectedIndices"] };
+  static createsVariants = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -26,17 +17,18 @@ export default class SelectByCondition extends CompositeComponent {
       defaultValue: null,
       public: true,
     }
+
     return attributes;
   }
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atLeastOneCase = childLogic.newLeaf({
-      name: "atLeastOneCase",
+    let atLeastZeroCases = childLogic.newLeaf({
+      name: "atLeastZeroCases",
       componentType: 'case',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
     });
 
     let atMostOneElse = childLogic.newLeaf({
@@ -49,13 +41,12 @@ export default class SelectByCondition extends CompositeComponent {
     childLogic.newOperator({
       name: "casesAndElse",
       operator: "and",
-      propositions: [atLeastOneCase, atMostOneElse],
-      setAsBase: true,
+      propositions: [atLeastZeroCases, atMostOneElse],
+      setAsBase: true
     });
 
     return childLogic;
   }
-
 
 
   static returnStateVariableDefinitions() {
@@ -67,7 +58,7 @@ export default class SelectByCondition extends CompositeComponent {
       returnDependencies: () => ({
         caseChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneCase",
+          childLogicName: "atLeastZeroCases",
         },
       }),
       definition({ dependencyValues }) {
@@ -96,12 +87,12 @@ export default class SelectByCondition extends CompositeComponent {
       }
     }
 
-
     stateVariableDefinitions.selectedIndices = {
+      immutable: true,
       returnDependencies: () => ({
         caseChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneCase",
+          childLogicName: "atLeastZeroCases",
           variableNames: ["conditionSatisfied"]
         },
         elseChild: {
@@ -111,10 +102,39 @@ export default class SelectByCondition extends CompositeComponent {
         maximumNumberToSelect: {
           dependencyType: "stateVariable",
           variableName: "maximumNumberToSelect"
-        }
+        },
+        variants: {
+          dependencyType: "variants",
+        },
       }),
       definition({ dependencyValues }) {
+
+        // if desiredIndices is specfied, use those
+        if (dependencyValues.variants && dependencyValues.variants.desiredVariant !== undefined) {
+          let desiredIndices = dependencyValues.variants.desiredVariant.indices;
+          if (desiredIndices !== undefined) {
+            desiredIndices = desiredIndices.map(Number);
+            if (!desiredIndices.every(Number.isInteger)) {
+              throw Error("All indices specified for select must be integers");
+            }
+            let n = dependencyValues.caseChildren.length;
+            if (dependencyValues.elseChild) {
+              n++;
+            }
+
+            desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
+
+            return {
+              makeEssential: { selectedIndices: true },
+              newValues: {
+                selectedIndices: desiredIndices,
+              },
+            }
+          }
+        }
+
         let selectedIndices = [];
+
         for (let [ind, child] of dependencyValues.caseChildren.entries()) {
           if (child.stateValues.conditionSatisfied) {
             selectedIndices.push(ind);
@@ -137,6 +157,54 @@ export default class SelectByCondition extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ componentInfoObjects }) => ({
+        selectedIndices: {
+          dependencyType: "stateVariable",
+          variableName: "selectedIndices"
+        },
+        variantDescendants: {
+          dependencyType: "descendant",
+          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          variableNames: [
+            "isVariantComponent",
+            "generatedVariantInfo",
+          ],
+          useReplacementsForComposites: true,
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfMatchedComposites: true,
+          definingChildrenFirst: true,
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          indices: dependencyValues.selectedIndices,
+          meta: { createdBy: componentName }
+        };
+
+        let subvariants = generatedVariantInfo.subvariants = [];
+
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+          }
+
+        }
+        return { newValues: { generatedVariantInfo } }
+
+      }
+    }
+
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({
         selectedIndices: {
@@ -151,39 +219,10 @@ export default class SelectByCondition extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.needsReplacementsUpdatedWhenStale = {
-      returnDependencies: () => ({
-        selectedIndices: {
-          dependencyType: "stateVariable",
-          variableName: "selectedIndices"
-        }
-      }),
-      // the whole point of this state variable is to return updateReplacements
-      // on mark stale
-      markStale: () => ({ updateReplacements: true }),
-      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
-    }
-
-
-
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
-
-    let replacements = this.getReplacements(component, components, componentInfoObjects);
-
-    workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
-
-    // console.log(`replacements for ${component.componentName}`)
-    // console.log(JSON.parse(JSON.stringify(replacements)));
-    // console.log(replacements);
-
-    return { replacements };
-
-  }
-
-  static getReplacements(component, components, componentInfoObjects) {
+  static createSerializedReplacements({ component, components, componentInfoObjects }) {
 
     let replacements = [];
 
@@ -226,55 +265,9 @@ export default class SelectByCondition extends CompositeComponent {
     });
 
 
-    return processResult.serializedComponents;
+    return { replacements: processResult.serializedComponents };
 
   }
 
-  static calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
-
-    // console.log(`calculate replacement changes for selectByCondition`)
-    // console.log(workspace.previousSelectedIndices);
-    // console.log(component.stateValues.selectedIndices);
-
-    if (workspace.previousSelectedIndices.length === component.stateValues.selectedIndices.length
-      && workspace.previousSelectedIndices.every((v, i) => v === component.stateValues.selectedIndices[i])
-    ) {
-      return [];
-    }
-
-
-    // delete previous replacements and create new ones
-    // TODO: could we find a way to withhold old ones?
-    // Either change order of replacements or allow to withhold latter replacements
-
-    let replacementChanges = [];
-
-    let replacements = this.getReplacements(component, components, componentInfoObjects);
-
-    let replacementInstruction = {
-      changeType: "add",
-      changeTopLevelReplacements: true,
-      firstReplacementInd: 0,
-      numberReplacementsToReplace: component.replacements.length,
-      serializedReplacements: replacements,
-      replacementsToWithhold: 0,
-    };
-
-    replacementChanges.push(replacementInstruction);
-
-    workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
-
-    return replacementChanges;
-
-    // let replacementChanges = processChangesForReplacements({
-    //   componentChanges: componentChanges,
-    //   componentName: component.componentName,
-    //   downstreamDependencies: component.downstreamDependencies,
-    //   components
-    // })
-    // // console.log(`replacementChanges for group ${component.componentName}`);
-    // // console.log(replacementChanges);
-    // return replacementChanges;
-  }
 
 }

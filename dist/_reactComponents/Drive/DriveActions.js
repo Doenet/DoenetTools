@@ -1,12 +1,10 @@
-import React from "../../_snowpack/pkg/react.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {
-  useRecoilCallback,
-  useRecoilValue
+  useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
 import {
-  folderDictionarySelector,
+  folderDictionaryFilterSelector,
   globalSelectedNodesAtom,
   folderDictionary,
   selectedDriveItemsAtom,
@@ -26,14 +24,14 @@ const formatDate = (dt) => {
 };
 export const useAddItem = () => {
   const [addToast, ToastType] = useToast();
-  const addItem = useRecoilCallback(({snapshot: snapshot2, set}) => async ({driveIdFolderId, label, itemType, selectedItemId = null, url = null}) => {
+  const addItem = useRecoilCallback(({snapshot, set}) => async ({driveIdFolderId, label, itemType, selectedItemId = null, url = null}) => {
     const dt = new Date();
     const creationDate = formatDate(dt);
     const itemId = nanoid();
-    const branchId = nanoid();
+    const doenetId = nanoid();
     const newItem = {
       assignmentId: null,
-      branchId,
+      doenetId,
       contentId: null,
       creationDate,
       isPublished: "0",
@@ -46,7 +44,7 @@ export const useAddItem = () => {
       urlId: null,
       sortOrder: ""
     };
-    const fInfo = await snapshot2.getPromise(folderDictionary(driveIdFolderId));
+    const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
     let newObj = JSON.parse(JSON.stringify(fInfo));
     let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
     let index = newDefaultOrder.indexOf(selectedItemId);
@@ -64,7 +62,7 @@ export const useAddItem = () => {
       driveId: driveIdFolderId.driveId,
       parentFolderId: driveIdFolderId.folderId,
       itemId,
-      branchId,
+      doenetId,
       versionId,
       label,
       type: itemType,
@@ -95,15 +93,15 @@ export const useAddItem = () => {
 };
 export const useDeleteItem = () => {
   const [addToast, ToastType] = useToast();
-  const deleteItem = useRecoilCallback(({snapshot: snapshot2, set}) => async ({driveIdFolderId, driveInstanceId = null, itemId}) => {
-    const fInfo = await snapshot2.getPromise(folderDictionary(driveIdFolderId));
-    const globalSelectedNodes = await snapshot2.getPromise(globalSelectedNodesAtom);
+  const deleteItem = useRecoilCallback(({snapshot, set}) => async ({driveIdFolderId, driveInstanceId = null, itemId}) => {
+    const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
+    const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
     const item = {
       driveId: driveIdFolderId.driveId,
       driveInstanceId,
       itemId
     };
-    const selectedDriveItems = await snapshot2.getPromise(selectedDriveItemsAtom(item));
+    const selectedDriveItems = await snapshot.getPromise(selectedDriveItemsAtom(item));
     if (selectedDriveItems) {
       set(selectedDriveItemsAtom(item), false);
       let newGlobalItems = [];
@@ -144,8 +142,8 @@ export const useDeleteItem = () => {
 };
 export const useMoveItems = () => {
   const [addToast, ToastType] = useToast();
-  const moveItems = useRecoilCallback(({snapshot: snapshot2, set}) => async ({targetDriveId, targetFolderId, index}) => {
-    const globalSelectedNodes = await snapshot2.getPromise(globalSelectedNodesAtom);
+  const moveItems = useRecoilCallback(({snapshot, set}) => async ({targetDriveId, targetFolderId, index}) => {
+    const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
     if (globalSelectedNodes.length === 0) {
       throw "No items selected";
     }
@@ -154,7 +152,7 @@ export const useMoveItems = () => {
         throw "Cannot move folder into itself";
       }
     }
-    let destinationFolderObj = await snapshot2.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
+    let destinationFolderObj = await snapshot.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
     let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
     let editedCache = {};
     let driveIdChanged = [];
@@ -167,7 +165,7 @@ export const useMoveItems = () => {
         itemId: gItem.itemId
       };
       set(selectedDriveItemsAtom(selectedItem), false);
-      const oldSourceFInfo = await snapshot2.getPromise(folderDictionary({driveId: gItem.driveId, folderId: gItem.parentFolderId}));
+      const oldSourceFInfo = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: gItem.parentFolderId}));
       let newSourceFInfo = editedCache[gItem.driveId]?.[gItem.parentFolderId];
       if (!newSourceFInfo)
         newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
@@ -192,7 +190,7 @@ export const useMoveItems = () => {
       newDestinationFolderObj["contentsDictionary"][gItem.itemId].parentFolderId = targetFolderId;
       newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId);
       if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
-        const gItemFolderInfoObj = await snapshot2.getPromise(folderDictionary({driveId: gItem.driveId, folderId: gItem.itemId}));
+        const gItemFolderInfoObj = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: gItem.itemId}));
         set(folderDictionary({driveId: targetDriveId, folderId: gItem.itemId}), () => {
           let newFolderInfo = {...gItemFolderInfoObj};
           newFolderInfo.folderInfo = {...gItemFolderInfoObj.folderInfo};
@@ -209,11 +207,11 @@ export const useMoveItems = () => {
             let size = queue.length;
             for (let i = 0; i < size; i++) {
               let currentNodeId = queue.shift();
-              const folderInfoObj = await snapshot2.getPromise(folderDictionary({driveId: gItem.driveId, folderId: currentNodeId}));
+              const folderInfoObj = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: currentNodeId}));
               gItemChildIds.push(currentNodeId);
               for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
                 if (folderInfoObj?.contentsDictionary[childId].itemType === "Folder") {
-                  const childFolderInfoObj = await snapshot2.getPromise(folderDictionary({driveId: gItem.driveId, folderId: childId}));
+                  const childFolderInfoObj = await snapshot.getPromise(folderDictionary({driveId: gItem.driveId, folderId: childId}));
                   set(folderDictionary({driveId: targetDriveId, folderId: childId}), childFolderInfoObj);
                   queue.push(childId);
                 } else {
@@ -262,11 +260,11 @@ export const useMoveItems = () => {
 };
 export const useCopyItems = () => {
   const [addToast, ToastType] = useToast();
-  const copyItems = useRecoilCallback(({snapshot: snapshot2, set}) => async ({items = [], targetDriveId, targetFolderId, index}) => {
+  const copyItems = useRecoilCallback(({snapshot, set}) => async ({items = [], targetDriveId, targetFolderId, index}) => {
     if (items.length === 0) {
       throw "No items to be copied";
     }
-    let destinationFolderObj = await snapshot2.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
+    let destinationFolderObj = await snapshot.getPromise(folderDictionary({driveId: targetDriveId, folderId: targetFolderId}));
     let newDestinationFolderObj = JSON.parse(JSON.stringify(destinationFolderObj));
     const insertIndex = index ?? 0;
     let newSortOrder = "";
@@ -284,7 +282,7 @@ export const useCopyItems = () => {
       };
       set(selectedDriveItemsAtom(selectedItem), false);
       const {newItemId, newItem} = await cloneItem({
-        snapshot: snapshot2,
+        snapshot,
         globalDictionary,
         globalContentIds,
         creationTimestamp,
@@ -310,23 +308,23 @@ export const useCopyItems = () => {
     let promises = [];
     for (let newItemId of Object.keys(globalDictionary)) {
       let newItem = globalDictionary[newItemId];
-      const data = {
+      const addItemsParams = {
         driveId: targetDriveId,
         parentFolderId: newItem.parentFolderId,
         itemId: newItemId,
-        branchId: newItem.branchId,
-        versionId: nanoid(),
+        doenetId: newItem.doenetId,
+        versionId: newItem.versionId,
         label: newItem.label,
         type: newItem.itemType,
-        sortOrder: newItem.sortOrder
+        sortOrder: newItem.sortOrder,
+        isNewCopy: "1"
       };
       if (newItem.itemType === "DoenetML") {
         const newDoenetML = cloneDoenetML({item: newItem, timestamp: creationTimestamp});
         promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
-        data["branchId"] = newDoenetML?.branchId;
       }
       const payload = {
-        params: data
+        params: addItemsParams
       };
       const result2 = axios.get("/api/addItem.php", payload);
       promises.push(result2);
@@ -371,16 +369,17 @@ export const useCopyItems = () => {
     const result = await Promise.allSettled(promises);
     return result;
   });
-  const cloneItem = async ({snapshot: snapshot2, globalDictionary = {}, globalContentIds = {}, creationTimestamp, item, targetDriveId, targetFolderId}) => {
-    const itemParentFolder = await snapshot2.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
+  const cloneItem = async ({snapshot, globalDictionary = {}, globalContentIds = {}, creationTimestamp, item, targetDriveId, targetFolderId}) => {
+    const itemParentFolder = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.parentFolderId}));
     const itemInfo = itemParentFolder["contentsDictionary"][item.itemId];
     const newItem = {...itemInfo};
     const newItemId = nanoid();
-    const newBranchId = nanoid();
     newItem.itemId = newItemId;
-    newItem.branchId = newBranchId;
+    newItem.doenetId = nanoid();
+    newItem.versionId = nanoid();
+    newItem.previousDoenetId = itemInfo.doenetId;
     if (itemInfo.itemType === "Folder") {
-      const {contentIds} = await snapshot2.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
+      const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
       globalContentIds[newItemId] = [];
       for (let contentId of contentIds[sortOptions.DEFAULT]) {
         let subItem = {
@@ -389,7 +388,7 @@ export const useCopyItems = () => {
           itemId: contentId
         };
         let result = await cloneItem({
-          snapshot: snapshot2,
+          snapshot,
           globalDictionary,
           globalContentIds,
           creationTimestamp,
@@ -409,13 +408,15 @@ export const useCopyItems = () => {
   const cloneDoenetML = ({item, timestamp}) => {
     let newVersion = {
       title: item.label,
-      branchId: nanoid(),
+      doenetId: item.doenetId,
       contentId: item.contentId,
-      versionId: nanoid(),
+      versionId: item.versionId,
       timestamp,
       isDraft: "0",
       isNamed: "1",
-      doenetML: item.doenetML
+      isNewCopy: "1",
+      doenetML: item.doenetML,
+      previousDoenetId: item.previousDoenetId
     };
     return newVersion;
   };
@@ -425,17 +426,17 @@ export const useCopyItems = () => {
   return {copyItems, onCopyItemsError};
 };
 export const useDragShadowCallbacks = () => {
-  const replaceDragShadow = useRecoilCallback(({snapshot: snapshot2}) => async () => {
+  const replaceDragShadow = useRecoilCallback(({snapshot}) => async () => {
     const {
       dragShadowDriveId,
       dragShadowParentId
-    } = await snapshot2.getPromise(dragStateAtom);
-    const globalSelectedNodes = await snapshot2.getPromise(globalSelectedNodesAtom);
+    } = await snapshot.getPromise(dragStateAtom);
+    const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
     if (!dragShadowDriveId || !dragShadowParentId)
       return;
     let dragShadowParentFolderInfoObj = null;
     if (dragShadowDriveId && dragShadowParentId)
-      dragShadowParentFolderInfoObj = await snapshot2.getPromise(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
+      dragShadowParentFolderInfoObj = await snapshot.getPromise(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
     ;
     let dragShadowParentDefaultOrder = dragShadowParentFolderInfoObj?.contentIds[sortOptions.DEFAULT];
     let insertIndex = dragShadowParentDefaultOrder?.indexOf(dragShadowId);
@@ -449,20 +450,20 @@ export const useDragShadowCallbacks = () => {
       numItems: globalSelectedNodes.length
     };
   });
-  const insertDragShadow = useRecoilCallback(({snapshot: snapshot2, set}) => async ({driveIdFolderId, position, parentId, itemId}) => {
+  const insertDragShadow = useRecoilCallback(({snapshot, set}) => async ({driveIdFolderId, position, parentId, itemId}) => {
     const {
       dragShadowDriveId,
       dragShadowParentId,
       draggedItemsId,
       copyMode
-    } = await snapshot2.getPromise(dragStateAtom);
+    } = await snapshot.getPromise(dragStateAtom);
     if (!copyMode && draggedItemsId && draggedItemsId?.has(itemId)) {
       removeDragShadow();
       return;
     }
     const dragShadow = {
       assignmentId: null,
-      branchId: null,
+      doenetId: null,
       contentId: null,
       creationDate: "",
       isPublished: "0",
@@ -478,7 +479,7 @@ export const useDragShadowCallbacks = () => {
     const dropTargetParentId = parentId;
     let dragShadowParentFolderInfoObj = null;
     if (dragShadowDriveId && dragShadowParentId)
-      dragShadowParentFolderInfoObj = await snapshot2.getPromise(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
+      dragShadowParentFolderInfoObj = await snapshot.getPromise(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
     ;
     if (dragShadowParentFolderInfoObj) {
       set(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}), (old) => {
@@ -565,11 +566,11 @@ export const useDragShadowCallbacks = () => {
       }
     }
   });
-  const removeDragShadow = useRecoilCallback(({snapshot: snapshot2, set}) => async () => {
+  const removeDragShadow = useRecoilCallback(({snapshot, set}) => async () => {
     const {
       dragShadowDriveId,
       dragShadowParentId
-    } = await snapshot2.getPromise(dragStateAtom);
+    } = await snapshot.getPromise(dragStateAtom);
     if (!dragShadowDriveId || !dragShadowParentId)
       return;
     set(folderDictionary({driveId: dragShadowDriveId, folderId: dragShadowParentId}), (old) => {
@@ -588,16 +589,16 @@ export const useDragShadowCallbacks = () => {
       };
     });
   });
-  const cleanUpDragShadow = useRecoilCallback(({snapshot: snapshot2, set}) => async () => {
+  const cleanUpDragShadow = useRecoilCallback(({snapshot, set}) => async () => {
     const {
       dragShadowDriveId,
       dragShadowParentId,
       openedFoldersInfo
-    } = await snapshot2.getPromise(dragStateAtom);
+    } = await snapshot.getPromise(dragStateAtom);
     let openedFolders = [...openedFoldersInfo];
     let filteredOpenedFolders = [];
     if (dragShadowDriveId && dragShadowParentId) {
-      let foldersOnPath = await snapshot2.getPromise(nodePathSelector({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
+      let foldersOnPath = await snapshot.getPromise(nodePathSelector({driveId: dragShadowDriveId, folderId: dragShadowParentId}));
       let folderOnPathSet = new Set(foldersOnPath.map((obj) => obj.folderId));
       for (let openedFolder of openedFolders) {
         const notFolderOnPath = !(openedFolder.driveId === dragShadowDriveId && folderOnPathSet.has(openedFolder.itemId));
@@ -616,9 +617,9 @@ export const useDragShadowCallbacks = () => {
 };
 export const useSortFolder = () => {
   const [addToast, ToastType] = useToast();
-  const sortFolder = useRecoilCallback(({set}) => async ({driveIdInstanceIdFolderId, sortKey}) => {
+  const sortFolder = useRecoilCallback(({set, snapshot}) => async ({driveIdInstanceIdFolderId, sortKey}) => {
     const {driveId, folderId} = driveIdInstanceIdFolderId;
-    const {contentIds} = await snapshot.getPromise(folderDictionarySelector({driveId, folderId}));
+    const {contentIds} = await snapshot.getPromise(folderDictionaryFilterSelector({driveId, folderId}));
     set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortKey);
     if (!contentIds[sortKey]) {
       set(folderDictionary({driveId, folderId}), (old) => {
@@ -648,8 +649,8 @@ export const useSortFolder = () => {
 };
 export const useRenameItem = () => {
   const [addToast, ToastType] = useToast();
-  const renameItem = useRecoilCallback(({snapshot: snapshot2, set}) => async ({driveIdFolderId, itemId, itemType, newLabel}) => {
-    const fInfo = await snapshot2.getPromise(folderDictionary(driveIdFolderId));
+  const renameItem = useRecoilCallback(({snapshot, set}) => async ({driveIdFolderId, itemId, itemType, newLabel}) => {
+    const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
     let newFInfo = {...fInfo};
     newFInfo["contentsDictionary"] = {...fInfo.contentsDictionary};
     newFInfo["contentsDictionary"][itemId] = {...fInfo.contentsDictionary[itemId]};
@@ -690,9 +691,8 @@ export const useAssignmentCallbacks = () => {
     set(folderDictionary(driveIdFolderId), (old) => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
-      newItemObj.isAssignment = "1";
-      newItemObj.assignment_title = payload?.assignment_title;
-      newItemObj.assignmentId = payload?.assignmentId;
+      newItemObj.isAssigned = "1";
+      newItemObj.dueDate = payload?.dueDate;
       return newObj;
     });
   });
@@ -704,9 +704,7 @@ export const useAssignmentCallbacks = () => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
       newItemObj.assignment_isPublished = "1";
-      newItemObj.isAssignment = "1";
-      newItemObj.assignment_title = payload?.assignment_title;
-      newItemObj.assignmentId = payload?.assignmentId;
+      newItemObj.isAssigned = "1";
       return newObj;
     });
   });
@@ -728,9 +726,13 @@ export const useAssignmentCallbacks = () => {
     set(folderDictionary(driveIdFolderId), (old) => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
-      newItemObj.isAssignment = "1";
-      newItemObj.assignment_title = payloadAssignment?.assignment_title;
-      newItemObj.assignmentId = payloadAssignment?.assignmentId;
+      newItemObj.isAssigned = "1";
+      newItemObj.assignedDate = payloadAssignment?.assignedDate;
+      newItemObj.dueDate = payloadAssignment?.dueDate;
+      newItemObj.timeLimit = payloadAssignment?.timeLimit;
+      newItemObj.numberOfAttemptsAllowed = payloadAssignment?.numberOfAttemptsAllowed;
+      newItemObj.totalPointsOrPercent = payloadAssignment?.totalPointsOrPercent;
+      newItemObj.gradeCategory = payloadAssignment?.gradeCategory;
       return newObj;
     });
   });
@@ -741,7 +743,7 @@ export const useAssignmentCallbacks = () => {
     set(folderDictionary(driveIdFolderId), (old) => {
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];
-      newItemObj.isAssignment = "0";
+      newItemObj.isAssigned = "0";
       return newObj;
     });
   });

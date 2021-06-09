@@ -21,6 +21,31 @@ export class Term extends InlineRenderInlineChildren {
   static rendererType = "alert";
 }
 
-export class c extends InlineRenderInlineChildren {
+export class C extends InlineRenderInlineChildren {
   static componentType = "c";
+}
+
+export class Tag extends InlineRenderInlineChildren {
+  static componentType = "tag";
+  static rendererType = "tag";
+}
+
+export class Tage extends InlineRenderInlineChildren {
+  static componentType = "tage";
+  static rendererType = "tag";
+
+  static returnStateVariableDefinitions() {
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    stateVariableDefinitions.selfClosed = {
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { selfClosed: true } })
+    }
+    return stateVariableDefinitions;
+  }
+}
+
+export class Attr extends InlineRenderInlineChildren {
+  static componentType = "attr";
+  static rendererType = "c";
 }

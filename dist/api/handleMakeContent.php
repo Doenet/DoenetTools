@@ -14,21 +14,52 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 
 
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
+$contentId =  mysqli_real_escape_string($conn,$_POST["contentId"]);
+$versionId =  mysqli_real_escape_string($conn,$_POST["versionId"]);
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $label =  mysqli_real_escape_string($conn,$_POST["label"]);
 
+$success = TRUE;
+$message = "";
 
+if ($contentId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing contentId";
+}else if($versionId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing versionId";
+}
+
+if ($success){
 
 $sql = "UPDATE drive_content SET
-isAssignment = '0'
-WHERE itemId = '$itemId'
+isAssigned = '0'
+WHERE doenetId = '$doenetId'
 ";
 
 $result = $conn->query($sql);
+
+$sql = "UPDATE content SET
+isAssigned = '0'
+WHERE contentId = '$contentId' AND versionId = '$versionId'
+";
+
+$result = $conn->query($sql);
+}
 // echo $sql;
+// set response code - 200 OK
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
+
+
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
-echo json_encode(200);
+echo json_encode($response_arr);
 
-$conn->close();
+  
+  $conn->close();
+?>

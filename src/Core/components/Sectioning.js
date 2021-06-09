@@ -164,44 +164,33 @@ export class Example extends SectioningComponent {
 }
 
 
-export class AnswerSet extends SectioningComponent {
-  static componentType = "answerSet";
+export class Setup extends SectioningComponent {
+  static componentType = "setup";
   static rendererType = "section";
-
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    attributes.aggregateScores.defaultValue = true;
-    attributes.sectionWideCheckWork = {
-      createComponentOfType: "boolean",
-      createStateVariable: "sectionWideCheckWork",
-      defaultValue: true,
-      public: true,
-      forRenderer: true,
-      ignorePropagationFromAncestors: true
-    };
-
+    attributes.hide.defaultValue = true;
     return attributes;
   }
-
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: null }
+    stateVariableDefinitions.sectionName.definition = () => ({
+      newValues: { sectionName: "Setup" }
     });
 
-    stateVariableDefinitions.containerTag.definition = () => ({
-      newValues: { containerTag: "none" }
+    stateVariableDefinitions.level.definition = () => ({
+      newValues: { level: 3 }
     });
 
     return stateVariableDefinitions;
   }
 
-}
 
+}
 
 export class StandinForFutureLayoutTag extends SectioningComponent {
   static componentType = "standinForFutureLayoutTag";

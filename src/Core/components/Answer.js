@@ -1,29 +1,9 @@
 import InlineComponent from './abstract/InlineComponent';
-import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
-import { createUniqueName, getNamespaceFromName } from '../utils/naming';
 import { deepCompare } from '../utils/deepFunctions';
 // import sha1 from 'crypto-js/sha1';
 // import Base64 from 'crypto-js/enc-base64';
 
 export default class Answer extends InlineComponent {
-  constructor(args) {
-    super(args);
-
-    //Complex because the stateValues isn't defined until later
-    Object.defineProperty(this.actions, 'submitAllAnswers', {
-      get: function () {
-        if (this.stateValues.submitAllAnswersAtAncestor !== null) {
-          return () => this.coreFunctions.requestAction({
-            componentName: this.stateValues.submitAllAnswersAtAncestor,
-            actionName: "submitAllAnswers"
-          })
-        } else {
-          return () => null
-        }
-      }.bind(this)
-    });
-
-  }
   static componentType = "answer";
 
   static renderChildren = true;
@@ -73,13 +53,6 @@ export default class Answer extends InlineComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.forceFullCheckworkButton = {
-      createComponentOfType: "boolean",
-      createStateVariable: "forceFullCheckworkButton",
-      defaultValue: false,
-      public: true,
-      propagateToDescendants: true
-    };
     attributes.simplifyOnCompare = {
       createComponentOfType: "text",
       createStateVariable: "simplifyOnCompare",
@@ -97,6 +70,12 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.nAwardsCredited = {
+      createComponentOfType: "number",
+      createStateVariable: "nAwardsCredited",
+      defaultValue: 1,
+      public: true,
+    }
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
@@ -834,7 +813,6 @@ export default class Answer extends InlineComponent {
         [
           "delegateCheckWorkToInput",
           "delegateCheckWorkToAncestor",
-          { variableName: "submitAllAnswersAtAncestor", forRenderer: true }
         ],
       forRenderer: true,
       returnDependencies: () => ({
@@ -851,10 +829,13 @@ export default class Answer extends InlineComponent {
           componentType: "_sectioningComponent",
           variableNames: [
             "suppressAnswerSubmitButtons",
-            "componentNameForSubmitAll",
-            "answerDelegatedForSubmitAll",
-            "justSubmittedForSubmitAll",
-            "creditAchievedForSubmitAll"
+          ]
+        },
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: [
+            "suppressAnswerSubmitButtons",
           ]
         }
       }),
@@ -862,16 +843,13 @@ export default class Answer extends InlineComponent {
         let delegateCheckWorkToAncestor = false;
         let delegateCheckWorkToInput = false;
         let delegateCheckWork = false;
-        let submitAllAnswersAtAncestor = null;
 
-        if (dependencyValues.sectionAncestor) {
+        if (dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons) {
+          delegateCheckWorkToAncestor = delegateCheckWork = true;
+        } else if (dependencyValues.sectionAncestor) {
           let ancestorState = dependencyValues.sectionAncestor.stateValues;
           if (ancestorState.suppressAnswerSubmitButtons) {
-            if (ancestorState.answerDelegatedForSubmitAll === componentName) {
-              submitAllAnswersAtAncestor = ancestorState.componentNameForSubmitAll;
-            } else {
-              delegateCheckWorkToAncestor = delegateCheckWork = true;
-            }
+            delegateCheckWorkToAncestor = delegateCheckWork = true;
           }
         }
 
@@ -883,14 +861,14 @@ export default class Answer extends InlineComponent {
         return {
           newValues: {
             delegateCheckWork, delegateCheckWorkToAncestor,
-            delegateCheckWorkToInput, submitAllAnswersAtAncestor
+            delegateCheckWorkToInput
           }
         };
       }
     }
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
-      additionalStateVariablesDefined: ["awardUsedIfSubmit", "awardChildren",
+      additionalStateVariablesDefined: ["awardsUsedIfSubmit", "awardChildren",
         "inputUsedIfSubmit"],
       stateVariablesDeterminingDependencies: ["inputChildIndex"],
       returnDependencies: ({ stateValues }) => ({
@@ -906,11 +884,17 @@ export default class Answer extends InlineComponent {
           childIndices: [stateValues.inputChildIndex],
           variablesOptional: true,
         },
+        nAwardsCredited: {
+          dependencyType: "stateVariable",
+          variableName: "nAwardsCredited",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
         let creditAchieved = 0;
-        let awardUsed = null;
+
+        let n = dependencyValues.nAwardsCredited;
+        let awardsUsed = Array(n).fill(null);
         let inputUsed = null;
 
         if (dependencyValues.awardChildren.length === 0) {
@@ -924,26 +908,44 @@ export default class Answer extends InlineComponent {
             }
           }
         } else {
-          // awardUsed with be component name of first award
-          // that gives the maximum credit (which will be creditAchieved)
+          // awardsUsed will be component names of first awards
+          // (up to nAwardsCredited)
+          // that give the maximum credit (which will be creditAchieved)
           // Always process awards if haven't matched an award in case want to
           // use an award with credit=0 to trigger feedback
+          let awardCredits = Array(n).fill(0);
+          let minimumFromAwardCredits = 0;
           for (let child of dependencyValues.awardChildren) {
-            let childMaxCredit = Math.max(0, Math.min(1, child.stateValues.credit))
-            if (childMaxCredit > creditAchieved || awardUsed === null) {
-              let creditFromChild = child.stateValues.creditAchieved;
-              let fractionFromChild = child.stateValues.fractionSatisfied;
-              if (fractionFromChild > 0 && (creditFromChild > creditAchieved || awardUsed === null)) {
-                creditAchieved = creditFromChild;
-                awardUsed = child.componentName;
+            let creditFromChild = child.stateValues.creditAchieved;
+            if (creditFromChild > minimumFromAwardCredits || awardsUsed[0] === null) {
+              if (child.stateValues.fractionSatisfied > 0) {
+                if (awardsUsed[0] === null) {
+                  awardsUsed[0] = child.componentName;
+                  awardCredits[0] = creditFromChild;
+                  minimumFromAwardCredits = Math.min(...awardCredits);
+                } else {
+                  for (let [ind, credit] of awardCredits.entries()) {
+                    if (creditFromChild > credit) {
+                      awardsUsed.splice(ind, 0, child.componentName);
+                      awardsUsed = awardsUsed.slice(0, n)
+                      awardCredits.splice(ind, 0, creditFromChild);
+                      awardCredits = awardCredits.slice(0, n);
+                      minimumFromAwardCredits = Math.min(...awardCredits);
+                      break;
+                    }
+                  }
+                }
               }
             }
           }
+
+          creditAchieved = Math.min(1, awardCredits.reduce((a, c) => a + c, 0));
+
         }
         return {
           newValues: {
             creditAchievedIfSubmit: creditAchieved,
-            awardUsedIfSubmit: awardUsed,
+            awardsUsedIfSubmit: awardsUsed,
             awardChildren: dependencyValues.awardChildren,
             inputUsedIfSubmit: inputUsed,
           }
@@ -1069,52 +1071,6 @@ export default class Answer extends InlineComponent {
       },
     }
 
-    stateVariableDefinitions.creditAchievedForSubmitButton = {
-      additionalStateVariablesDefined:
-        [{ variableName: "justSubmittedForSubmitButton", forRenderer: true }],
-      forRenderer: true,
-      returnDependencies: () => ({
-        creditAchieved: {
-          dependencyType: "stateVariable",
-          variableName: "creditAchieved"
-        },
-        justSubmitted: {
-          dependencyType: "stateVariable",
-          variableName: "justSubmitted"
-        },
-        submitAllAnswersAtAncestor: {
-          dependencyType: "stateVariable",
-          variableName: "submitAllAnswersAtAncestor"
-        },
-        sectionAncestor: {
-          dependencyType: "ancestor",
-          componentType: "_sectioningComponent",
-          variableNames: [
-            "justSubmittedForSubmitAll",
-            "creditAchievedForSubmitAll"
-          ]
-        }
-      }),
-      definition({ dependencyValues }) {
-
-        if (dependencyValues.submitAllAnswersAtAncestor) {
-          let ancestorState = dependencyValues.sectionAncestor.stateValues;
-          return {
-            newValues: {
-              creditAchievedForSubmitButton: ancestorState.creditAchievedForSubmitAll,
-              justSubmittedForSubmitButton: ancestorState.justSubmittedForSubmitAll
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              creditAchievedForSubmitButton: dependencyValues.creditAchieved,
-              justSubmittedForSubmitButton: dependencyValues.justSubmitted
-            }
-          }
-        }
-      }
-    }
 
     stateVariableDefinitions.allFeedbacks = {
       returnDependencies: () => ({
@@ -1219,7 +1175,7 @@ export default class Answer extends InlineComponent {
   submitAnswer() {
 
     let creditAchieved = this.stateValues.creditAchievedIfSubmit;
-    let awardUsed = this.stateValues.awardUsedIfSubmit;
+    let awardsUsed = this.stateValues.awardsUsedIfSubmit;
     let inputUsed = this.stateValues.inputUsedIfSubmit;
 
     // request to update credit
@@ -1276,7 +1232,7 @@ export default class Answer extends InlineComponent {
     })
 
     for (let child of this.stateValues.awardChildren) {
-      let awarded = child.componentName === awardUsed;
+      let awarded = awardsUsed.includes(child.componentName);
       instructions.push({
         updateType: "updateValue",
         componentName: child.componentName,

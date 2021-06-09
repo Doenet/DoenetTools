@@ -7,12 +7,13 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
+
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
 //TODO: Make sure of instructor
 $_POST = json_decode(file_get_contents("php://input"),true);
-$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 
 $assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
 $title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
@@ -54,10 +55,21 @@ $sqlAssigmentCheck = "SELECT * FROM assignment where assignmentId='$assignmentId
 $resultCheck = $conn->query($sqlAssigmentCheck); 
 $responseAssignment = 0;
 
-if ($resultCheck->num_rows > 0){
-  $responseAssignment = 1;
-    
+$success = TRUE;
+$message = "";
+
+if ($assignmentId == ""){
+  $success = FALSE;
+  $message = "Internal Error: missing assignmentId";
 }
+
+if ($success){
+  if ($resultCheck->num_rows > 0){
+    $responseAssignment = 1;
+  }
+  
+
+
 // if assignment is published already update row
 if($responseAssignment === 1)
 {
@@ -83,9 +95,7 @@ WHERE assignmentId = '$assignmentId'
 ";
 
 $result = $conn->query($sql);
-}
-else
-{
+}else{
   $sql="
   INSERT INTO assignment
   (assignmentId,
@@ -106,7 +116,7 @@ else
   showCorrectness,
   proctorMakesAvailable,
   isPublished,
-  sourceBranchId)
+  sourceDoenetId)
   VALUES
   ('$assignmentId',
   '$courseId',
@@ -126,16 +136,28 @@ else
   '$showCorrectness',
   '$proctorMakesAvailable',
   '$isPublished',
-  '$branchId')
+  '$doenetId')
   ";
   
   $result = $conn->query($sql); 
 }
-// echo $sql;
+}
+
+
+
+$response_arr = array(
+  "success"=>$success,
+  "message"=>$message
+  );
+
+
 // set response code - 200 OK
 http_response_code(200);
 
 // make it json format
 echo json_encode($response_arr);
 
-$conn->close();
+  
+  $conn->close();
+
+?>

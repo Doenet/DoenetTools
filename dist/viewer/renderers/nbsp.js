@@ -5,6 +5,6 @@ export default class Nbsp extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, "\xA0");
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, " ");
   }
 }

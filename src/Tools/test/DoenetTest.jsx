@@ -6,24 +6,50 @@ import core from '../../Core/Core';
 function Test() {
   // console.log("===Test")
 
-  // const [doenetML,setDoenetML] = useState("");
-  let doenetML = useRef("");
+  const [doenetML,setDoenetML] = useState(null);
 
   //New DoenetViewer when code changes
   useEffect(() => {
-    doenetML.current = testCodeDoenetML;
-    setUpdateNumber((was) => was + 1)
+    setDoenetML(testCodeDoenetML);
   }, [testCodeDoenetML]);
 
+  const defaultTestSettings = {
+    updateNumber:0,
+    attemptNumber:1,
+    controlsVisible:false,
+    showCorrectness:true,
+    readOnly:false,
+    showFeedback:true,
+    showHints:true,
+    bundledCore:false,
+    allowLoadPageState:false,
+    allowSavePageState:false,
+    allowLocalPageState:false,
+    allowSaveSubmissions:false,
+    allowSaveEvents:false,
+  }
+  let testSettings = JSON.parse(localStorage.getItem("test settings")) 
+  if (!testSettings){
+    testSettings = defaultTestSettings;
+    localStorage.setItem("test settings",JSON.stringify(defaultTestSettings))
+  }
+  
 
-  const [attemptNumber, setAttemptNumber] = useState(1);
-  const [controlsVisible, setControlsVisible] = useState(false);
-  const [showCorrectness, setShowCorrectness] = useState(true);
-  const [readOnly, setReadOnly] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(true);
-  const [showHints, setShowHints] = useState(true);
-  const [ignoreDatabase, setIgnoreDatabase] = useState(true);
-  const [bundledCore, setBundledCore] = useState(false);
+  const [updateNumber, setUpdateNumber] = useState(testSettings.updateNumber);
+  const [attemptNumber, setAttemptNumber] = useState(testSettings.attemptNumber);
+  const [controlsVisible, setControlsVisible] = useState(testSettings.controlsVisible);
+  const [showCorrectness, setShowCorrectness] = useState(testSettings.showCorrectness);
+  const [readOnly, setReadOnly] = useState(testSettings.readOnly);
+  const [showFeedback, setShowFeedback] = useState(testSettings.showFeedback);
+  const [showHints, setShowHints] = useState(testSettings.showHints);
+
+  const [bundledCore, setBundledCore] = useState(testSettings.bundledCore);
+  const [allowLoadPageState, setAllowLoadPageState] = useState(testSettings.allowLoadPageState);
+  const [allowSavePageState, setAllowSavePageState] = useState(testSettings.allowSavePageState);
+  const [allowLocalPageState, setAllowLocalPageState] = useState(testSettings.allowLocalPageState);
+  const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(testSettings.allowSaveSubmissions);
+  const [allowSaveEvents, setAllowSaveEvents] = useState(testSettings.allowSaveEvents);
+  const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
   // let requestedVariant = useRef({ index: 0 });
@@ -32,43 +58,57 @@ function Test() {
   // unless get a message (from cypress) to select a particular variant
   let requestedVariant = useRef(undefined);
 
-  const [updateNumber, setUpdateNumber] = useState(1);
+
 
   //For Cypress Test Use
   window.onmessage = (e) => {
     if (e.data.doenetML !== undefined) {
-      doenetML.current = e.data.doenetML;
       //Only if defined
       if (e.data.requestedVariant) {
         requestedVariant.current = e.data.requestedVariant;
       }
-      setUpdateNumber((was) => was + 1)
+      setDoenetML(e.data.doenetML);
     }
   };
 
-
-  if (doenetML === "") {
+  //Don't construct core until we have the doenetML defined
+  if (doenetML === null) {
     return null;
   }
+
   let controls = null;
   let buttonText = 'show';
   if (controlsVisible) {
     buttonText = 'hide';
-    controls = <div>
+    controls = <div style={{padding:"8px"}}>
+      <div><button onClick={()=>{
+        localStorage.setItem("test settings",JSON.stringify(defaultTestSettings))
+        location.href = '/test';
+      }}>Reset</button></div>
+      <hr />
       <div>
         <label>Attempt Number: {attemptNumber} <button onClick={
           () => {
+            testSettings.attemptNumber = testSettings.attemptNumber + 1;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setAttemptNumber(was => was + 1)
-            setUpdateNumber(was => was + 1)
           }
-        }>New Attempt</button></label>
+        }>New Attempt</button> <button onClick={
+          () => {
+            testSettings.attemptNumber = 1;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
+            setAttemptNumber(1)
+          }
+        }>Reset Attempt Number</button></label>
       </div>
-
       <div>
         <label> <input type='checkbox' checked={showCorrectness} onChange={
           () => {
+            testSettings.showCorrectness = !testSettings.showCorrectness;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setShowCorrectness(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
 
           }
         } />Show Correctness</label>
@@ -76,40 +116,100 @@ function Test() {
       <div>
         <label> <input type='checkbox' checked={readOnly} onChange={
           () => {
+            testSettings.readOnly = !testSettings.readOnly;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setReadOnly(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Read Only</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={showFeedback} onChange={
           () => {
+            testSettings.showFeedback = !testSettings.showFeedback;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setShowFeedback(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Show Feedback</label>
       </div>
       <div>
         <label> <input type='checkbox' checked={showHints} onChange={
           () => {
+            testSettings.showHints = !testSettings.showHints;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setShowHints(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
+
           }
         } />Show Hints</label>
       </div>
+     <hr />
       <div>
-        <label> <input type='checkbox' checked={ignoreDatabase} onChange={
+        <label> <input type='checkbox' checked={allowLoadPageState} onChange={
           () => {
-            setIgnoreDatabase(was => !was)
-            setUpdateNumber((was) => was + 1)
+            testSettings.allowLoadPageState = !testSettings.allowLoadPageState;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
+            setAllowLoadPageState(was => !was)
+            setUpdateNumber(was => was+1)
+
           }
-        } />Ignore Database</label>
+        } />Allow Load Page State</label>
       </div>
+      <div>
+        <label> <input type='checkbox' checked={allowSavePageState} onChange={
+          () => {
+            testSettings.allowSavePageState = !testSettings.allowSavePageState;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
+            setAllowSavePageState(was => !was)
+            setUpdateNumber(was => was+1)
+
+          }
+        } />Allow Save Page State</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={allowLocalPageState} onChange={
+          () => {
+            testSettings.allowLocalPageState = !testSettings.allowLocalPageState;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
+            setAllowLocalPageState(was => !was)
+            setUpdateNumber(was => was+1)
+
+          }
+        } />Allow Local Page State</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={allowSaveSubmissions} onChange={
+          () => {
+            testSettings.allowSaveSubmissions = !testSettings.allowSaveSubmissions;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
+            setAllowSaveSubmissions(was => !was)
+            setUpdateNumber(was => was+1)
+
+          }
+        } />Allow Save Submissions</label>
+      </div>
+      <div>
+        <label> <input type='checkbox' checked={allowSaveEvents} onChange={
+          () => {
+            testSettings.allowSaveEvents = !testSettings.allowSaveEvents;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
+            setAllowSaveEvents(was => !was)
+            setUpdateNumber(was => was+1)
+
+          }
+        } />Allow Save Events</label>
+      </div>
+     <hr />
       <div>
         <label> <input type='checkbox' checked={bundledCore} onChange={
           () => {
+            testSettings.bundledCore = !testSettings.bundledCore;
+            localStorage.setItem("test settings",JSON.stringify(testSettings))
             setBundledCore(was => !was)
-            setUpdateNumber((was) => was + 1)
+            setUpdateNumber(was => was+1)
           }
         } />Bundled Core</label>
       </div>
@@ -121,6 +221,8 @@ function Test() {
     coreProp = null;
   }
 
+
+
   return (
     <>
       <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
@@ -129,8 +231,8 @@ function Test() {
         {controls}
       </div>
       <DoenetViewer
-        key={"doenetviewer" + updateNumber}
-        doenetML={doenetML.current}
+        key={"doenetviewer"+updateNumber}
+        doenetML={doenetML}
         // contentId={"185fd09b6939d867d4faee82393d4a879a2051196b476acdca26140864bc967a"}
         flags={{
           showCorrectness,
@@ -140,9 +242,14 @@ function Test() {
           showHints,
         }}
         attemptNumber={attemptNumber}
-        ignoreDatabase={ignoreDatabase}
+        allowLoadPageState={allowLoadPageState}
+        allowSavePageState={allowSavePageState}
+        allowLocalPageState={allowLocalPageState}
+        allowSaveSubmissions={allowSaveSubmissions}
+        allowSaveEvents={allowSaveEvents}
         requestedVariant={requestedVariant.current}
         core={coreProp}
+        doenetId="doenetId"
       // collaborate={true}
       // viewerExternalFunctions = {{ allAnswersSubmitted: this.setAnswersSubmittedTrueCallback}}
       // functionsSuppliedByChild = {this.functionsSuppliedByChild}

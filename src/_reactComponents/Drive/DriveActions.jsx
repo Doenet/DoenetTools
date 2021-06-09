@@ -12,7 +12,7 @@ import {
  * Internal dependencies
  */
 import { 
-  folderDictionarySelector, 
+  folderDictionaryFilterSelector, 
   globalSelectedNodesAtom, 
   folderDictionary, 
   selectedDriveItemsAtom,
@@ -49,10 +49,10 @@ export const useAddItem = () => {
       const dt = new Date();
       const creationDate = formatDate(dt);
       const itemId = nanoid();
-      const branchId = nanoid();
+      const doenetId = nanoid();
       const newItem = {
         assignmentId: null,
-        branchId,
+        doenetId,
         contentId: null,
         creationDate,
         isPublished: "0",
@@ -85,7 +85,7 @@ export const useAddItem = () => {
         driveId: driveIdFolderId.driveId,
         parentFolderId: driveIdFolderId.folderId,
         itemId,
-        branchId,
+        doenetId,
         versionId,
         label: label,
         type: itemType,
@@ -432,8 +432,8 @@ export const useCopyItems = () => {
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          branchId: newItem.branchId,
-          // branchId: nanoid(),
+          doenetId: newItem.doenetId,
+          // doenetId: nanoid(),
           versionId: newItem.versionId,
           // versionId: nanoid(),
           label: newItem.label,
@@ -449,8 +449,8 @@ export const useCopyItems = () => {
           
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
-          // Unify new branchId
-          // addItemsParams["branchId"] = newDoenetML?.branchId;
+          // Unify new doenetId
+          // addItemsParams["doenetId"] = newDoenetML?.doenetId;
         }
 
 
@@ -526,9 +526,9 @@ export const useCopyItems = () => {
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
     newItem.itemId = newItemId;
-    newItem.branchId = nanoid();
+    newItem.doenetId = nanoid();
     newItem.versionId = nanoid();
-    newItem.previousBranchId = itemInfo.branchId;
+    newItem.previousDoenetId = itemInfo.doenetId;
    
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
@@ -565,8 +565,8 @@ export const useCopyItems = () => {
 
     let newVersion = {
       title: item.label,
-      branchId: item.branchId,
-      // branchId: nanoid(),
+      doenetId: item.doenetId,
+      // doenetId: nanoid(),
       contentId: item.contentId,
       versionId: item.versionId,
       timestamp,
@@ -574,7 +574,7 @@ export const useCopyItems = () => {
       isNamed: '1',
       isNewCopy: '1',
       doenetML: item.doenetML,
-      previousBranchId: item.previousBranchId,
+      previousDoenetId: item.previousDoenetId,
     }
     return newVersion;
   }
@@ -631,7 +631,7 @@ export const useDragShadowCallbacks = () => {
 
       const dragShadow = {
         assignmentId: null,
-        branchId: null,
+        doenetId: null,
         contentId: null,
         creationDate: "",
         isPublished: "0",
@@ -831,10 +831,10 @@ export const useDragShadowCallbacks = () => {
 
 export const useSortFolder = () => {
   const [addToast, ToastType] = useToast();
-  const sortFolder = useRecoilCallback(({set})=> 
+  const sortFolder = useRecoilCallback(({set,snapshot})=> 
     async ({driveIdInstanceIdFolderId, sortKey})=>{
       const {driveId, folderId} = driveIdInstanceIdFolderId;
-      const {contentIds} = await snapshot.getPromise(folderDictionarySelector({driveId, folderId}));
+      const {contentIds} = await snapshot.getPromise(folderDictionaryFilterSelector({driveId, folderId}));
       set(folderSortOrderAtom(driveIdInstanceIdFolderId), sortKey);
       
       // if sortOrder not already cached in folderDictionary
@@ -934,9 +934,8 @@ export const useAssignmentCallbacks = () => {
     set(folderDictionary(driveIdFolderId),(old)=>{
       let newObj = JSON.parse(JSON.stringify(old));
       let newItemObj = newObj.contentsDictionary[itemId];          
-      newItemObj.isAssignment = "1";
-      newItemObj.assignment_title = payload?.assignment_title;      
-      newItemObj.assignmentId = payload?.assignmentId;
+      newItemObj.isAssigned = "1";
+      newItemObj.dueDate = payload?.dueDate;
       return newObj;
     })
   }
@@ -951,9 +950,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
         newItemObj.assignment_isPublished = "1";
-        newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payload?.assignment_title;
-        newItemObj.assignmentId = payload?.assignmentId;
+        newItemObj.isAssigned = "1";
         return newObj;
       })
     }
@@ -983,8 +980,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
       set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];          
-        newItemObj.isAssignment = "1";
-        newItemObj.assignment_title = payloadAssignment?.assignment_title;     
+        newItemObj.isAssigned = "1";
         newItemObj.assignedDate = payloadAssignment?.assignedDate;
         newItemObj.dueDate = payloadAssignment?.dueDate;
         newItemObj.timeLimit = payloadAssignment?.timeLimit;
@@ -1005,7 +1001,7 @@ const onmakeAssignmentError = ({errorMessage=null}) => {
       set(folderDictionary(driveIdFolderId),(old)=>{
         let newObj = JSON.parse(JSON.stringify(old));
         let newItemObj = newObj.contentsDictionary[itemId];
-        newItemObj.isAssignment = "0";
+        newItemObj.isAssigned = "0";
         return newObj;
       })
 

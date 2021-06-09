@@ -12,16 +12,16 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $number_content = count($_POST["contentSeeds"]["contentId"]);
 
 for ($i = 0; $i < $number_content; $i++){
-  $branchId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["branchId"][$i]);
+  $doenetId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["doenetId"][$i]);
   $title =  mysqli_real_escape_string($conn,$_POST["contentSeeds"]["title"][$i]);
   $doenetML = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["doenetML"][$i]);
   $contentId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["contentId"][$i]);
 
   $sql = "
   INSERT INTO content_branch
-  (branchId,title,doenetML,updateDate,creationDate,latestContentId)
+  (doenetId,title,doenetML,updateDate,creationDate,latestContentId)
   VALUES
-  ('$branchId','$title','$doenetML',NOW(),NOW(),'$contentId')
+  ('$doenetId','$title','$doenetML',NOW(),NOW(),'$contentId')
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -34,9 +34,9 @@ for ($i = 0; $i < $number_content; $i++){
 
   $sql = "
   INSERT INTO content
-  (doenetML,branchId,title,contentId,timestamp,draft)
+  (doenetML,doenetId,title,contentId,timestamp,draft)
   VALUES
-  ('$doenetML','$branchId','$title','$contentId',NOW(),1)
+  ('$doenetML','$doenetId','$title','$contentId',NOW(),1)
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -131,7 +131,7 @@ for ($i = 0; $i < $number_seeds; $i++){
   for ($j = 0; $j < $number_assignments; $j++){
     $documentName =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["documentName"][$j]);
     $assignmentId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["assignmentId"][$j]);
-    $branchId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["branchId"][$j]);
+    $doenetId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["doenetId"][$j]);
     $contentId =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["contentId"][$j]);
     $creationDate =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["creationDate"][$j]);
     $assignedDate =  mysqli_real_escape_string($conn,$_POST["assignmentSeeds"][$i]["assignedDate"][$j]);
@@ -142,7 +142,7 @@ for ($i = 0; $i < $number_seeds; $i++){
     courseHeadingId='$headingId',
     assignmentName='$documentName',
     courseId='$courseId',
-    sourceBranchId='$branchId',
+    sourceDoenetId='$doenetId',
     contentId='$contentId',
     sortOrder='$sortOrder',
     assignedDate = '$assignedDate',

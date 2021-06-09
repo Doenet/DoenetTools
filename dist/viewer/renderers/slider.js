@@ -1,7 +1,8 @@
 import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {Spring} from "../../_snowpack/pkg/react-spring.js";
+import {Spring} from "../../_snowpack/pkg/@react-spring/web.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 const SliderContainer = styled.div`
     width: fit-content;
     height: ${(props) => props.labeled && props.noTicked ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px"};
@@ -125,15 +126,17 @@ export default function Slider(props) {
       ref: containerRef
     }, /* @__PURE__ */ React.createElement("div", {
       style: {height: SVs.showControls || SVs.label ? "20px" : "0px"}
-    }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
+    }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+      value: "Next",
       style: {float: "right", userSelect: "none"},
       onClick: handleNext,
       disabled: true
-    }, "Next"), /* @__PURE__ */ React.createElement("button", {
+    }), /* @__PURE__ */ React.createElement(Button, {
+      value: "Prev",
       style: {float: "right", userSelect: "none"},
       onClick: handlePrevious,
       disabled: true
-    }, "Prev")) : null), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
+    })) : null), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
       width: `${500}px`
     }, /* @__PURE__ */ React.createElement(StyledThumb, {
       disabled: true,
@@ -225,24 +228,32 @@ export default function Slider(props) {
     noTicked: SVs.showTicks === false
   }, /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.showControls || SVs.label ? "20px" : "0px"}
-  }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
+  }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null, SVs.showControls ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+    value: "Next",
     style: {float: "right", userSelect: "none"},
-    onClick: handleNext
-  }, "Next"), /* @__PURE__ */ React.createElement("button", {
+    onClick: handleNext,
+    "data-cy": "nextbutton"
+  }), /* @__PURE__ */ React.createElement(Button, {
+    value: "Prev",
     style: {float: "right", userSelect: "none"},
-    onClick: handlePrevious
-  }, "Prev")) : null), /* @__PURE__ */ React.createElement(SubContainer2, {
+    onClick: handlePrevious,
+    "data-cy": "prevbutton"
+  })) : null), /* @__PURE__ */ React.createElement(SubContainer2, {
     onMouseDown: handleDragEnter,
     onMouseUp: handleDragExit,
     onMouseMove: handleDragThrough,
     onMouseLeave: handleDragExit
   }, /* @__PURE__ */ React.createElement(StyledSlider, {
-    width: `${500}px`
+    width: `${500}px`,
+    "data-cy": "slider1"
   }, /* @__PURE__ */ React.createElement(Spring, {
     to: {x: thumbXPos}
-  }, (props2) => /* @__PURE__ */ React.createElement(StyledThumb, {
-    style: {left: `${props2.x - 3}px`}
-  })), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))));
+  }, (styles) => {
+    return /* @__PURE__ */ React.createElement(StyledThumb, {
+      style: {left: `${thumbXPos - 3}px`},
+      "data-cy": "slider1-handle"
+    });
+  }), SVs.showTicks === false ? null : SVs.sliderType === "text" ? generateTextLabels(SVs.items, divisionWidth) : generateNumericLabels(SVs.items, divisionWidth, startValue))));
 }
 {
 }

@@ -1,6 +1,6 @@
 {
   "contentSeeds" : {
-      "branchId": ["testContentBranchId"],
+      "doenetId": ["testContentDoenetId"],
       "contentId": ["testContentContentId"],
       "title": ["testContent"],
       "doenetML": [

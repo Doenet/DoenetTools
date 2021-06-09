@@ -50,14 +50,13 @@ export default class Line extends DoenetRenderer {
 
     this.lineJXG.on('drag', function (e) {
       this.dragged = true;
-
-      //board.suspendUpdate();
-      this.onDragHandler(e, true);
-      //board.unsuspendUpdate();
+      this.onDragHandler(e);
     }.bind(this));
 
     this.lineJXG.on('up', function (e) {
-      this.onDragHandler(e, false);
+      if (this.dragged) {
+        this.actions.finalizeLinePosition();
+      }
     }.bind(this));
 
     this.lineJXG.on('down', function (e) {
@@ -157,17 +156,13 @@ export default class Line extends DoenetRenderer {
 
   }
 
-  onDragHandler(e, transient) {
-
-    if (this.dragged) {
-      let pointCoords = this.calculatePointPositions(e);
-
-      this.actions.moveLine({
-        point1coords: pointCoords[0],
-        point2coords: pointCoords[1],
-        transient
-      });
-    }
+  onDragHandler(e) {
+    let pointCoords = this.calculatePointPositions(e);
+    this.actions.moveLine({
+      point1coords: pointCoords[0],
+      point2coords: pointCoords[1],
+      transient: true
+    });
   }
 
   calculatePointPositions(e) {

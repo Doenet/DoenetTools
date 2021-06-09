@@ -15,11 +15,18 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 // $escapedCID = hash('sha256',$escapedDoenetML);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $dangerousDoenetML = $_POST["doenetML"];
-$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
+$newDraftVersionId = mysqli_real_escape_string($conn,$_POST["newDraftVersionId"]);
+$newDraftContentId = mysqli_real_escape_string($conn,$_POST["newDraftContentId"]);
 $isDraft = mysqli_real_escape_string($conn,$_POST["isDraft"]);
 $isNamed = mysqli_real_escape_string($conn,$_POST["isNamed"]);
+$isReleased = mysqli_real_escape_string($conn,$_POST["isReleased"]);
 $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
+$isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
+$isSetAsCurrent = mysqli_real_escape_string($conn,$_POST["isSetAsCurrent"]);
+$isNewToggleRelease = mysqli_real_escape_string($conn,$_POST["isNewToggleRelease"]);
+$previousDoenetId = mysqli_real_escape_string($conn,$_POST["previousDoenetId"]);
 
 
 $success = TRUE;
@@ -28,15 +35,18 @@ $message = "";
 if ($title == ""){
     $success = FALSE;
     $message = 'Internal Error: missing title';
-  }elseif ($branchId == ""){
+  }elseif ($doenetId == ""){
     $success = FALSE;
-    $message = 'Internal Error: missing branchId';
+    $message = 'Internal Error: missing doenetId';
   }elseif ($versionId == ""){
     $success = FALSE;
     $message = 'Internal Error: missing versionId';
   }elseif ($isDraft == ""){
     $success = FALSE;
     $message = 'Internal Error: missing isDraft';
+  }elseif ($isReleased == ""){
+    $success = FALSE;
+    $message = 'Internal Error: missing isReleased';
 }elseif ($isNamed == ""){
     $success = FALSE;
     $message = 'Internal Error: missing isNamed';
@@ -49,10 +59,10 @@ if ($title == ""){
   }
 
 //Add new version to content table
-//TODO: Update draft version (Overwrite BranchId named file)
+//TODO: Update draft version (Overwrite DoenetId named file)
 
 
-//Test if we have permission to save to branchId
+//Test if we have permission to save to doenetId
 if ($success){
     $sql = "
     SELECT canAddItemsAndFolders
@@ -73,26 +83,95 @@ if ($success){
 //save to file as contentid
 $contentId = hash('sha256', $dangerousDoenetML);
 
-
-if ($isDraft){
+if ($isDraft == '1' and $isSetAsCurrent != '1'){
     $sql = "UPDATE content 
-    SET timestamp=NOW()
+    SET timestamp=NOW(), contentId='$contentId'
     WHERE isDraft='1'
-    AND branchId='$branchId'
+    AND doenetId='$doenetId'
     ";
 
     $result = $conn->query($sql);
-    saveDoenetML($branchId,$dangerousDoenetML);
+    saveDoenetML($contentId,$dangerousDoenetML);
+
+}elseif($isSetAsCurrent == '1'){
+
+  //Add draft as autosave
+    $sql = "SELECT
+    contentId,
+    versionId
+    FROM content
+    WHERE isDraft='1'
+    AND doenetId='$doenetId'
+    ";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+
+    $oldDraftContentId = $row['contentId'];
+    $oldDraftVersionId = $row['versionId'];
+
+    //Update draft to new versionId and content
+    //After this we are missing the old draft info
+    $sql = "UPDATE content 
+    SET timestamp=NOW(), 
+    contentId='$newDraftContentId',
+    versionId='$newDraftVersionId'
+    WHERE isDraft='1'
+    AND doenetId='$doenetId'
+    ";
+    $result = $conn->query($sql);
+
+    //Save the old draft info as an autosave
+    $sql = "INSERT INTO content 
+    SET doenetId='$doenetId',
+    contentId='$oldDraftContentId', 
+    versionId='$oldDraftVersionId', 
+    title='Autosave (was draft)',
+    timestamp=NOW(),
+    isDraft='0',
+    isNamed='0',
+    isReleased='0'
+    ";
+
+    $result = $conn->query($sql);
+    
 
 }elseif($isNewTitle == '1'){
+
         $sql = "
         UPDATE content
         SET title='$title',isNamed='1'
-        WHERE branchId='$branchId'
+        WHERE doenetId='$doenetId'
         AND versionId='$versionId'
         ";
         $result = $conn->query($sql);
-    
+}elseif($isNewToggleRelease == '1'){
+  $sql = "
+  UPDATE content
+  SET isReleased='$isReleased'
+  WHERE doenetId='$doenetId'
+  AND versionId='$versionId'
+  ";
+  $result = $conn->query($sql);
+  //TODO: update drive_content isReleased if necessary
+  $sql = "
+  SELECT isReleased
+  FROM content
+  WHERE doenetId='$doenetId'
+  AND isNamed='1'
+  AND isReleased='1'
+  ";
+  $result = $conn->query($sql);
+  $doenetIsReleased = '0';
+  if ($result->num_rows > 0){
+    $doenetIsReleased = '1';
+  }
+  $sql = "
+  UPDATE drive_content
+  SET isReleased='$doenetIsReleased'
+  WHERE doenetId='$doenetId'
+  ";
+  $result = $conn->query($sql);
+
 }else{
 
     //Protect against duplicate versionId's
@@ -107,16 +186,42 @@ if ($isDraft){
 
 
     if($versionId == $row['versionId']){
-        $response_arr = array(
-            "success"=> false,
-            "versionId"=> $versionId
-        );
+      $success = FALSE;
+      $message = "Internal Error: Duplicate VersionId $versionId";
+
+    }elseif($isNewCopy == '1'){
+      //New Copy!
+
+      //Find previous contentId of draft
+      $sql = "SELECT contentId
+        FROM content
+        WHERE doenetId='$previousDoenetId'
+        AND isDraft='1'
+      ";
+        $result = $conn->query($sql);
+        $row = $result->fetch_assoc();
+        $contentId = $row['contentId']; //Overwrite contentId with draft
+      
+      //Safe the draft for the new content
+      $sql = "INSERT INTO content 
+        SET doenetId='$doenetId',
+        contentId='$contentId', 
+        versionId='$versionId', 
+        title='Draft',
+        timestamp=NOW(),
+        isDraft='1',
+        isNamed='0'
+        ";
+    
+        $result = $conn->query($sql);
+     
+
     }else{
 
         saveDoenetML($contentId,$dangerousDoenetML);
     
         $sql = "INSERT INTO content 
-        SET branchId='$branchId',
+        SET doenetId='$doenetId',
         contentId='$contentId', 
         versionId='$versionId', 
         title='$title',
@@ -134,7 +239,7 @@ if ($isDraft){
 
 function saveDoenetML($fileName,$dangerousDoenetML){
     // $fileName = $contentId;
-    // if ($isDraft){$fileName = $branchId;}
+    // if ($isDraft){$fileName = $doenetId;}
     //TODO: Config file needed for server
     $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
     fwrite($newfile, $dangerousDoenetML);

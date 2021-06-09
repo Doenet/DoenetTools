@@ -11,12 +11,25 @@ export default class Answer extends DoenetRenderer {
     if (this.doenetSvData.submitAllAnswersAtAncestor) {
       submitAnswer = this.actions.submitAllAnswers;
     }
+    let inputChildToRender = null;
+    if (this.doenetSvData.inputChild) {
+      if (this.doenetSvData.inputChild) {
+        let inputChildInd;
+        for (let [ind, child] of this.children.entries()) {
+          if (child.props.componentInstructions.componentName === this.doenetSvData.inputChild.componentName) {
+            inputChildInd = ind;
+            break;
+          }
+        }
+        inputChildToRender = this.children[inputChildInd];
+      }
+    }
     if (!this.doenetSvData.delegateCheckWork) {
       let validationState = "unvalidated";
-      if (this.doenetSvData.justSubmittedForSubmitButton) {
-        if (this.doenetSvData.creditAchievedForSubmitButton === 1) {
+      if (this.doenetSvData.justSubmitted) {
+        if (this.doenetSvData.creditAchieved === 1) {
           validationState = "correct";
-        } else if (this.doenetSvData.creditAchievedForSubmitButton === 0) {
+        } else if (this.doenetSvData.creditAchieved === 0) {
           validationState = "incorrect";
         } else {
           validationState = "partialcorrect";
@@ -51,7 +64,7 @@ export default class Answer extends DoenetRenderer {
       }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
         icon: faLevelDownAlt,
         transform: {rotate: 90}
-      }), "\xA0", checkWorkText);
+      }), " ", checkWorkText);
       if (this.doenetSvData.showCorrectness) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
@@ -60,7 +73,7 @@ export default class Answer extends DoenetRenderer {
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCheck
-          }), "\xA0 Correct");
+          }), "  Correct");
         } else if (validationState === "incorrect") {
           checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
           checkworkComponent = /* @__PURE__ */ React.createElement("span", {
@@ -68,10 +81,10 @@ export default class Answer extends DoenetRenderer {
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faTimes
-          }), "\xA0 Incorrect");
+          }), "  Incorrect");
         } else if (validationState === "partialcorrect") {
           checkWorkStyle.backgroundColor = "#efab34";
-          let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+          let percent = Math.round(this.doenetSvData.creditAchieved * 100);
           let partialCreditContents = `${percent}% Correct`;
           checkworkComponent = /* @__PURE__ */ React.createElement("span", {
             id: this.componentName + "_partial",
@@ -86,20 +99,20 @@ export default class Answer extends DoenetRenderer {
             style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faCloud
-          }), "\xA0 Response Saved");
+          }), "  Response Saved");
         }
       }
       return /* @__PURE__ */ React.createElement("span", {
         id: this.componentName
       }, /* @__PURE__ */ React.createElement("a", {
         name: this.componentName
-      }), this.children, checkworkComponent);
+      }), inputChildToRender, checkworkComponent);
     } else {
       return /* @__PURE__ */ React.createElement("span", {
         id: this.componentName
       }, /* @__PURE__ */ React.createElement("a", {
         name: this.componentName
-      }), this.children);
+      }), inputChildToRender);
     }
   }
 }

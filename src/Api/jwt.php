@@ -9,7 +9,7 @@ include 'db_connection.php';
 
 use Firebase\JWT\JWT;
 // require_once "/var/www/html/vendor/autoload.php";
-require_once 'vendor/autoload.php';
+require_once "vendor/autoload.php";
 $key = $ini_array['key'];
 
 $emailaddress = mysqli_real_escape_string($conn, $_REQUEST['emailaddress']);
@@ -64,7 +64,8 @@ if ($row['minutes'] > 10) {
 
         $path = '/';
         //$domain = $ini_array['dbhost'];
-        $domain = $_SERVER['SERVER_NAME'];
+        $domain = $_SERVER["SERVER_NAME"];
+        if ($domain == 'apache'){$domain = 'localhost';}
         $isSecure = true;
         if ($domain == 'apache') {
             $domain = 'localhost';

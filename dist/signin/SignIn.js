@@ -35,8 +35,17 @@ export default function SignIn() {
       } else {
       }
     }).catch((error) => {
+      console.log(error);
     });
     return null;
+  }
+  if (window.Cypress) {
+    let emailaddress = "devuser@example.com";
+    let deviceName2 = "Cacao tree";
+    let cookieSettingsObj = {path: "/", expires: 24e3, sameSite: "strict"};
+    Cookies.set("Device", deviceName2, cookieSettingsObj);
+    Cookies.set("Stay", 1, cookieSettingsObj);
+    location.href = `/api/jwt.php?emailaddress=${encodeURIComponent(emailaddress)}&nineCode=${encodeURIComponent("123456789")}&deviceName=${deviceName2}&newAccount=${"0"}&stay=${"1"}`;
   }
   if (signInStage === "check code") {
     const data = {

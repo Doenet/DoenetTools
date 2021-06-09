@@ -1,9 +1,9 @@
 import { _ as _inheritsLoose, a as _objectWithoutPropertiesLoose, b as _extends } from './common/inheritsLoose-adbe5217.js';
-import { r as react } from './common/index-678ccbe9.js';
-import { p as propTypes } from './common/index-ad697a84.js';
-import { i as index } from './common/ResizeObserver.es-696c4793.js';
-import './common/_commonjsHelpers-4f955397.js';
-import './common/polyfill-node_global-a90d30ee.js';
+import { r as react } from './common/index-f66788ca.js';
+import { p as propTypes } from './common/index-4bda1d4e.js';
+import { i as index } from './common/ResizeObserver.es-a52566ff.js';
+import './common/_commonjsHelpers-f5d70792.js';
+import './common/_polyfill-node:global-acbc543a.js';
 
 var types = ['client', 'offset', 'scroll', 'bounds', 'margin'];
 function getTypes(props) {
@@ -188,10 +188,10 @@ function withContentRect(types) {
       };
 
       _proto.render = function render() {
-        var _this$props = this.props;
-            _this$props.innerRef;
-            _this$props.onResize;
-            var props = _objectWithoutPropertiesLoose(_this$props, ["innerRef", "onResize"]);
+        var _this$props = this.props,
+            innerRef = _this$props.innerRef,
+            onResize = _this$props.onResize,
+            props = _objectWithoutPropertiesLoose(_this$props, ["innerRef", "onResize"]);
 
         return react.createElement(WrappedComponent, _extends({}, props, {
           measureRef: this._handleRef,

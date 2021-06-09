@@ -1944,71 +1944,71 @@ describe('Collect Tag Tests', function () {
       let group2reps = group2.stateValues.fullRecursiveReplacements
         .map(x => components[x.componentName]);
 
-      expect(components['/_group1'].replacements.length).eq(6);
+      expect(components['/_group1'].replacements.length).eq(13);
       expect(components['/_collect1'].replacements.length).eq(6);
       expect(collect2.replacements.length).eq(6);
       expect(group2.replacements.length).eq(1);
-      expect(group2reps.length).eq(6);
+      expect(group2reps.length).eq(13);
 
-      expect(components['/_group1'].replacements[0].componentType).eq("mathInput");
-      expect(components['/_group1'].replacements[0].stateValues.value.tree).eq('x');
+      expect(components['/_group1'].replacements[1].componentType).eq("mathInput");
+      expect(components['/_group1'].replacements[1].stateValues.value.tree).eq('x');
       expect(components['/_collect1'].replacements[0].componentType).eq("mathInput");
       expect(components['/_collect1'].replacements[0].stateValues.value.tree).eq('x');
       expect(collect2.replacements[0].componentType).eq("math");
       expect(collect2.replacements[0].stateValues.value.tree).eq('x');
-      expect(group2reps[0].componentType).eq("mathInput");
-      expect(group2reps[0].stateValues.value.tree).eq('x');
+      expect(group2reps[1].componentType).eq("mathInput");
+      expect(group2reps[1].stateValues.value.tree).eq('x');
 
-      expect(components['/_group1'].replacements[1].componentType).eq("textInput");
-      expect(components['/_group1'].replacements[1].stateValues.value).eq('hello');
+      expect(components['/_group1'].replacements[3].componentType).eq("textInput");
+      expect(components['/_group1'].replacements[3].stateValues.value).eq('hello');
       expect(components['/_collect1'].replacements[1].componentType).eq("textInput");
       expect(components['/_collect1'].replacements[1].stateValues.value).eq('hello');
       expect(collect2.replacements[1].componentType).eq("text");
       expect(collect2.replacements[1].stateValues.value).eq('hello');
-      expect(group2reps[1].componentType).eq("textInput");
-      expect(group2reps[1].stateValues.value).eq('hello');
+      expect(group2reps[3].componentType).eq("textInput");
+      expect(group2reps[3].stateValues.value).eq('hello');
 
-      expect(components['/_group1'].replacements[2].componentType).eq("booleanInput");
-      expect(components['/_group1'].replacements[2].stateValues.value).eq(false);
+      expect(components['/_group1'].replacements[5].componentType).eq("booleanInput");
+      expect(components['/_group1'].replacements[5].stateValues.value).eq(false);
       expect(components['/_collect1'].replacements[2].componentType).eq("booleanInput");
       expect(components['/_collect1'].replacements[2].stateValues.value).eq(false);
       expect(collect2.replacements[2].componentType).eq("boolean");
       expect(collect2.replacements[2].stateValues.value).eq(false);
-      expect(group2reps[2].componentType).eq("booleanInput");
-      expect(group2reps[2].stateValues.value).eq(false);
+      expect(group2reps[5].componentType).eq("booleanInput");
+      expect(group2reps[5].stateValues.value).eq(false);
 
-      expect(components['/_group1'].replacements[3].componentType).eq("math");
-      expect(components['/_group1'].replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(components['/_group1'].replacements[7].componentType).eq("math");
+      expect(components['/_group1'].replacements[7].stateValues.value.tree).eqls(["*", 2, "x"]);
       expect(components['/_collect1'].replacements[3].componentType).eq("math");
       expect(components['/_collect1'].replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
       expect(collect2.replacements[3].componentType).eq("math");
       expect(collect2.replacements[3].stateValues.value.tree).eqls(["*", 2, "x"]);
-      expect(group2reps[3].componentType).eq("math");
-      expect(group2reps[3].stateValues.value.tree).eqls(["*", 2, "x"]);
+      expect(group2reps[7].componentType).eq("math");
+      expect(group2reps[7].stateValues.value.tree).eqls(["*", 2, "x"]);
 
-      expect(components['/_group1'].replacements[4].componentType).eq("text");
-      expect(components['/_group1'].replacements[4].stateValues.value).eq('hello there');
+      expect(components['/_group1'].replacements[9].componentType).eq("text");
+      expect(components['/_group1'].replacements[9].stateValues.value).eq('hello there');
       expect(components['/_collect1'].replacements[4].componentType).eq("text");
       expect(components['/_collect1'].replacements[4].stateValues.value).eq('hello there');
       expect(collect2.replacements[4].componentType).eq("text");
       expect(collect2.replacements[4].stateValues.value).eq('hello there');
-      expect(group2reps[4].componentType).eq("text");
-      expect(group2reps[4].stateValues.value).eq('hello there');
+      expect(group2reps[9].componentType).eq("text");
+      expect(group2reps[9].stateValues.value).eq('hello there');
 
-      expect(components['/_group1'].replacements[5].componentType).eq("boolean");
-      expect(components['/_group1'].replacements[5].stateValues.value).eq(true);
+      expect(components['/_group1'].replacements[11].componentType).eq("boolean");
+      expect(components['/_group1'].replacements[11].stateValues.value).eq(true);
       expect(components['/_collect1'].replacements[5].componentType).eq("boolean");
       expect(components['/_collect1'].replacements[5].stateValues.value).eq(true);
       expect(collect2.replacements[5].componentType).eq("boolean");
       expect(collect2.replacements[5].stateValues.value).eq(true);
-      expect(group2reps[5].componentType).eq("boolean");
-      expect(group2reps[5].stateValues.value).eq(true);
+      expect(group2reps[11].componentType).eq("boolean");
+      expect(group2reps[11].stateValues.value).eq(true);
 
     })
 
   });
 
-  it('collect ignores hide by default', () => {
+  it('collect does not ignore hide by default', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2017,8 +2017,8 @@ describe('Collect Tag Tests', function () {
       <text hide>secret</text>
       <text>public</text>
     </section>
-    <p>Revealed by default: <collect componentTypes="text" tname="_section1" /></p>
-    <p>Force to stay hidden: <collect componentTypes="text" tname="_section1" targetAttributesToIgnore="" /></p>
+    <p>Hidden by default: <collect componentTypes="text" tname="_section1" /></p>
+    <p>Force to reveal: <collect componentTypes="text" tname="_section1" targetAttributesToIgnore="hide" /></p>
 
     `}, "*");
     });
@@ -2028,12 +2028,77 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/_section1').should('contain.text', 'public');
     cy.get('#\\/_section1').should('not.contain.text', 'secret');
 
-    cy.get('#\\/_p1').should('have.text', 'Revealed by default: secretpublic');
-    cy.get('#\\/_p2').should('have.text', 'Force to stay hidden: public');
+    cy.get('#\\/_p1').should('have.text', 'Hidden by default: public');
+    cy.get('#\\/_p2').should('have.text', 'Force to reveal: secretpublic');
 
 
   });
 
+  it('collect keeps hidden children hidden', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <section>
+      <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+      <copy tname="theP1" assignNames="theP2" />
+      <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
+      <copy tname="theP3" assignNames="theP4" />
+    </section>
+    <collect componentTypes="p" tname="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" tname="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/theP1').should('have.text', 'Hidden text: ')
+    cy.get('#\\/theP2').should('have.text', 'Hidden text: ')
+    cy.get('#\\/theP3').should('not.exist')
+    cy.get('#\\/theP4').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp1').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp2').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp3').should('not.exist')
+    cy.get('#\\/cp4').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp5').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp6').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp7').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp8').should('have.text', 'Hidden paragraph with hidden text: ')
+
+  });
+
+  it('collecting from within a hidden section', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <section hide>
+      <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+      <copy tname="theP1" assignNames="theP2" />
+      <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
+      <copy tname="theP3" assignNames="theP4" />
+    </section>
+    <collect componentTypes="p" tname="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" tname="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/theP1').should('not.exist')
+    cy.get('#\\/theP2').should('not.exist')
+    cy.get('#\\/theP3').should('not.exist')
+    cy.get('#\\/theP4').should('not.exist')
+    cy.get('#\\/cp1').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp2').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp3').should('not.exist')
+    cy.get('#\\/cp4').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp5').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp6').should('have.text', 'Hidden text: ')
+    cy.get('#\\/cp7').should('have.text', 'Hidden paragraph with hidden text: ')
+    cy.get('#\\/cp8').should('have.text', 'Hidden paragraph with hidden text: ')
+
+  });
 
   it('copies hide dynamically', () => {
     cy.window().then((win) => {

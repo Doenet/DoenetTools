@@ -77,7 +77,7 @@ export default function DoenetExampleTool() {
             openOverlay({
               type: 'calendar',
               title: 'Cal',
-              branchId: 'fdsa',
+              doenetId: 'fdsa',
             });
           }}
         >

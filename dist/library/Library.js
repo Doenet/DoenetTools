@@ -25,9 +25,9 @@ import axios from "../_snowpack/pkg/axios.js";
 import "../_snowpack/pkg/codemirror/lib/codemirror.css.proxy.js";
 import "../_snowpack/pkg/codemirror/theme/material.css.proxy.js";
 import Drive, {
-  folderDictionarySelector,
   globalSelectedNodesAtom,
   folderDictionary,
+  folderDictionaryFilterSelector,
   clearDriveAndItemSelections,
   fetchDrivesSelector,
   encodeParams,
@@ -83,7 +83,7 @@ export const selectedInformation = selector({
     const driveId = globalSelected[0].driveId;
     const folderId = globalSelected[0].parentFolderId;
     const driveInstanceId = globalSelected[0].driveInstanceId;
-    let folderInfo = get(folderDictionary({driveId, folderId}));
+    let folderInfo = get(folderDictionaryFilterSelector({driveId, folderId}));
     const itemId = globalSelected[0].itemId;
     let itemInfo = {...folderInfo.contentsDictionary[itemId]};
     itemInfo["driveId"] = driveId;
@@ -360,7 +360,9 @@ const DriveInfoPanel = function(props) {
       }
     }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, dIcon, " ", panelDriveLabel), /* @__PURE__ */ React.createElement("label", null, "Course Name", /* @__PURE__ */ React.createElement("input", {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
+    "data-cy": "infoPanelItemLabel"
+  }, dIcon, " ", panelDriveLabel), /* @__PURE__ */ React.createElement("label", null, "Course Name", /* @__PURE__ */ React.createElement("input", {
     type: "text",
     value: driveLabel,
     onChange: (e) => setDriveLabel(e.target.value),
@@ -403,7 +405,7 @@ const DriveInfoPanel = function(props) {
 };
 const FolderInfoPanel = function(props) {
   const itemInfo = props.itemInfo;
-  const setFolder = useSetRecoilState(folderDictionarySelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
   const {deleteItem, onDeleteItemError} = useDeleteItem();
   const {renameItem, onRenameItemError} = useRenameItem();
   const [addToast, ToastType] = useToast();
@@ -428,19 +430,27 @@ const FolderInfoPanel = function(props) {
       onRenameItemError({errorMessage: e.message});
     });
   };
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, fIcon, " ", itemInfo.label), /* @__PURE__ */ React.createElement("label", null, "Folder Label", /* @__PURE__ */ React.createElement("input", {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
+    "data-cy": "infoPanelItemLabel"
+  }, fIcon, " ", itemInfo.label), /* @__PURE__ */ React.createElement("label", null, "Folder Label", /* @__PURE__ */ React.createElement("input", {
     type: "text",
+    "data-cy": "infoPanelItemLabelInput",
     value: label,
     onChange: (e) => setLabel(e.target.value),
     onKeyDown: (e) => {
       if (e.key === "Enter") {
-        renameItemCallback(label);
+        if (itemInfo.label !== label) {
+          renameItemCallback(label);
+        }
       }
     },
     onBlur: () => {
-      renameItemCallback(label);
+      if (itemInfo.label !== label) {
+        renameItemCallback(label);
+      }
     }
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+    "data-cy": "deleteFolderButton",
     value: "Delete Folder",
     callback: () => {
       const result = deleteItem({
@@ -462,7 +472,7 @@ const FolderInfoPanel = function(props) {
 };
 const DoenetMLInfoPanel = function(props) {
   const itemInfo = props.itemInfo;
-  const setFolder = useSetRecoilState(folderDictionarySelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
   const {deleteItem, onDeleteItemError} = useDeleteItem();
   const [addToast, ToastType] = useToast();
   const {renameItem, onRenameItemError} = useRenameItem();
@@ -488,24 +498,39 @@ const DoenetMLInfoPanel = function(props) {
       onRenameItemError({errorMessage: e.message});
     });
   };
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, dIcon, " ", itemInfo.label), /* @__PURE__ */ React.createElement("label", null, "DoenetML Label", /* @__PURE__ */ React.createElement("input", {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
+    "data-cy": "infoPanelItemLabel"
+  }, dIcon, " ", itemInfo.label), /* @__PURE__ */ React.createElement("label", null, "DoenetML Label", /* @__PURE__ */ React.createElement("input", {
     type: "text",
+    "data-cy": "infoPanelItemLabelInput",
     value: label,
     onChange: (e) => setLabel(e.target.value),
     onKeyDown: (e) => {
       if (e.key === "Enter") {
-        renameItemCallback(label);
+        if (itemInfo.label !== label) {
+          renameItemCallback(label);
+        }
       }
     },
     onBlur: () => {
-      renameItemCallback(label);
+      if (itemInfo.label !== label) {
+        renameItemCallback(label);
+      }
     }
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     value: "Edit DoenetML",
     callback: () => {
-      openOverlay({type: "editor", branchId: itemInfo.branchId, title: itemInfo.label});
+      openOverlay({
+        type: "editor",
+        doenetId: itemInfo.doenetId,
+        title: itemInfo.label,
+        driveId: itemInfo.driveId,
+        folderId: itemInfo.parentFolderId,
+        itemId: itemInfo.itemId
+      });
     }
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+    "data-cy": "deleteDoenetMLButton",
     value: "Delete DoenetML",
     callback: () => {
       const result = deleteItem({
@@ -564,17 +589,16 @@ const ItemInfo = function() {
         itemInfo
       });
     }
+    x;
   }
 };
-function AddCourseDriveButton(props) {
-  const history = useHistory();
+function AddCourseDriveButton() {
   const [addToast, ToastType] = useToast();
-  const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"));
-  const createNewDrive = useRecoilCallback(({set}) => async ({label, newDriveId, newCourseId, image, color}) => {
+  const createNewDrive = useRecoilCallback(({set}) => async ({label, newDriveId, image, color}) => {
     let newDrive = {
-      courseId: newCourseId,
       driveId: newDriveId,
       isShared: "0",
+      isPublic: "0",
       label,
       type: "course",
       image,
@@ -583,7 +607,7 @@ function AddCourseDriveButton(props) {
     };
     const payload = {params: {
       driveId: newDriveId,
-      courseId: newCourseId,
+      isPublic: "0",
       label,
       type: "new course drive",
       image,
@@ -601,33 +625,19 @@ function AddCourseDriveButton(props) {
     });
     return result;
   });
-  const deleteNewDrive = useRecoilCallback(({snapshot, set}) => async (newDriveId) => {
-    console.log(">>>deleting newDriveId", newDriveId);
-    set(fetchDrivesQuery, (oldDrivesInfo) => {
-      let newDrivesInfo = {...oldDrivesInfo};
-      let newDriveIdsAndLabels = [];
-      for (let driveAndLabel of oldDrivesInfo.driveIdsAndLabels) {
-        if (driveAndLabel.driveId !== newDriveId) {
-          newDriveIdsAndLabels.push(driveAndLabel);
-        }
-      }
-      newDrivesInfo.driveIdsAndLabels = newDriveIdsAndLabels;
-      return newDrivesInfo;
-    });
-  });
   function onError({errorMessage}) {
     addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
   }
   return /* @__PURE__ */ React.createElement(Button, {
     value: "Create a New Course",
+    "data-cy": "createNewCourseButton",
     callback: () => {
       let driveId = null;
       let newDriveId = nanoid();
-      let newCourseId = nanoid();
       let label = "Untitled";
       let image = driveImages[Math.floor(Math.random() * driveImages.length)];
       let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-      const result = createNewDrive({label, driveId, newDriveId, newCourseId, image, color});
+      const result = createNewDrive({label, driveId, newDriveId, image, color});
       result.then((resp) => {
         if (resp.data.success) {
           addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
@@ -636,12 +646,6 @@ function AddCourseDriveButton(props) {
         }
       }).catch((e) => {
         onError({errorMessage: e.message});
-      });
-      setDrivePath({
-        driveId: ":",
-        parentFolderId: ":",
-        itemId: ":",
-        type: ""
       });
     }
   });
@@ -652,19 +656,18 @@ function AddMenuPanel(props) {
     path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
   }
   let [driveId, folderId] = path.split(":");
-  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionarySelector({driveId, folderId}));
+  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}));
   const {addItem, onAddItemError} = useAddItem();
   const [addToast, ToastType] = useToast();
   let addDrives = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("p", null, "Failed to make add course drive button")
-  }, /* @__PURE__ */ React.createElement(AddCourseDriveButton, {
-    route: props.route
-  })));
+  }, /* @__PURE__ */ React.createElement(AddCourseDriveButton, null)));
   if (driveId === "") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, addDrives);
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h3", null, "Course"), addDrives);
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h3", null, "Course"), addDrives, /* @__PURE__ */ React.createElement("h3", null, "Folder"), /* @__PURE__ */ React.createElement(Button, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h3", null, "Folder"), /* @__PURE__ */ React.createElement(Button, {
     value: "Add Folder",
+    "data-cy": "addFolderButton",
     callback: () => {
       const result = addItem({
         driveIdFolderId: {driveId, folderId},
@@ -672,10 +675,10 @@ function AddMenuPanel(props) {
         itemType: "Folder"
       });
       result.then((resp) => {
-        if (resp.data.success) {
+        if (resp.data?.success) {
           addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
         } else {
-          onAddItemError({errorMessage: resp.data.message});
+          onAddItemError({errorMessage: resp.data});
         }
       }).catch((e) => {
         onAddItemError({errorMessage: e.message});
@@ -683,6 +686,7 @@ function AddMenuPanel(props) {
     }
   }), /* @__PURE__ */ React.createElement("h3", null, "DoenetML"), /* @__PURE__ */ React.createElement(Button, {
     value: "Add DoenetML",
+    "data-cy": "addDoenetMLButton",
     callback: () => {
       const result = addItem({
         driveIdFolderId: {driveId, folderId},
@@ -693,7 +697,7 @@ function AddMenuPanel(props) {
         if (resp.data.success) {
           addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
         } else {
-          onAddItemError({errorMessage: resp.data.message});
+          onAddItemError({errorMessage: resp.data});
         }
       }).catch((e) => {
         onAddItemError({errorMessage: e.message});
@@ -711,7 +715,7 @@ function AutoSelect(props) {
   }
   return null;
 }
-function URLPathSync(props) {
+export function URLPathSync(props) {
   const [drivePath, setDrivePath] = useRecoilState(drivePathSyncFamily("main"));
   const history = useHistory();
   const init = useRef(true);
@@ -766,7 +770,7 @@ export default function Library(props) {
   }, []);
   const history = useHistory();
   const profile = useContext(ProfileContext);
-  if (profile.signedIn === "0") {
+  if (profile.signedIn === "0" && !window.Cypress) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
       title: "Library"
     }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
@@ -791,30 +795,13 @@ export default function Library(props) {
   let supportBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
     drivePathSyncKey: "support"
   });
-  const setDrivecardMainPath = useSetRecoilState(drivePathSyncFamily("main"));
-  const setDrivecardsupportPath = useSetRecoilState(drivePathSyncFamily("support"));
-  const mainDriveCardSelection = ({item}) => {
-    setDrivecardMainPath({
-      driveId: item.driveId,
-      parentFolderId: item.driveId,
-      itemId: item.driveId,
-      type: "Drive"
-    });
-  };
-  const supportDriveCardSelection = ({item}) => {
-    setDrivecardsupportPath({
-      driveId: item.driveId,
-      parentFolderId: item.driveId,
-      itemId: item.driveId,
-      type: "Drive"
-    });
-  };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(URLPathSync, {
     route: props.route
   }), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("navPanel", {
     isInitOpen: true
   }, /* @__PURE__ */ React.createElement("div", {
     style: {height: "100vh"},
+    "data-cy": "navPanel",
     onClick: () => useOutsideDriveSelector(setDrivePath)
   }, /* @__PURE__ */ React.createElement("div", {
     style: {paddingBottom: "40px"}
@@ -828,32 +815,46 @@ export default function Library(props) {
     onClick: () => {
       clearSelections();
     },
+    "data-cy": "mainPanel",
     className: routePathDriveId ? "mainPanelStyle" : ""
   }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
     types: ["content", "course"],
+    columnTypes: ["Released", "Public"],
     drivePathSyncKey: "main",
     urlClickBehavior: "select",
     doenetMLDoubleClickCallback: (info) => {
-      openOverlay({type: "editor", branchId: info.item.branchId, title: info.item.label});
+      openOverlay({
+        type: "editor",
+        doenetId: info.item.doenetId,
+        title: info.item.label,
+        driveId: info.driveId,
+        folderId: info.item.parentFolderId,
+        itemId: info.item.itemId
+      });
     }
   }))), /* @__PURE__ */ React.createElement("div", {
     onClick: cleardrivecardSelection,
+    "data-cy": "mainPanel",
     tabIndex: 0,
     className: routePathDriveId ? "" : "mainPanelStyle"
   }, /* @__PURE__ */ React.createElement(DriveCards, {
     drivePathSyncKey: "main",
     types: ["course"],
-    subTypes: ["Administrator"],
-    routePathDriveId,
-    driveDoubleClickCallback: ({item}) => {
-      mainDriveCardSelection({item});
-    }
+    subTypes: ["Administrator"]
   }))), /* @__PURE__ */ React.createElement("supportPanel", null, supportBreadcrumbContainer, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
     drivePathSyncKey: "support",
     types: ["content", "course"],
+    columnTypes: ["Released", "Public"],
     urlClickBehavior: "select",
     doenetMLDoubleClickCallback: (info) => {
-      openOverlay({type: "editor", branchId: info.item.branchId, title: info.item.label});
+      openOverlay({
+        type: "editor",
+        doenetId: info.item.doenetId,
+        title: info.item.label,
+        driveId: info.driveId,
+        folderId: info.item.parentFolderId,
+        itemId: info.item.itemId
+      });
     }
   })), /* @__PURE__ */ React.createElement("div", {
     onClick: cleardrivecardSelection,
@@ -862,11 +863,7 @@ export default function Library(props) {
   }, /* @__PURE__ */ React.createElement(DriveCards, {
     drivePathSyncKey: "support",
     types: ["course"],
-    subTypes: ["Administrator"],
-    routePathDriveId,
-    driveDoubleClickCallback: ({item}) => {
-      supportDriveCardSelection({item});
-    }
+    subTypes: ["Administrator"]
   }))), /* @__PURE__ */ React.createElement("menuPanel", {
     title: "Selected",
     isInitOpen: true

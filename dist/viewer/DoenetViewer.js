@@ -35,38 +35,21 @@ class DoenetViewerChild extends Component {
     this.update = this.update.bind(this);
     this.coreReady = this.coreReady.bind(this);
     this.createCore = this.createCore.bind(this);
-    this.haveDoenetML = this.haveDoenetML.bind(this);
     this.loadState = this.loadState.bind(this);
-    this.loadDoenetML = this.loadDoenetML.bind(this);
     this.localStateChanged = this.localStateChanged.bind(this);
     this.submitResponse = this.submitResponse.bind(this);
     this.recordSolutionView = this.recordSolutionView.bind(this);
     this.recordEvent = this.recordEvent.bind(this);
     this.rendererUpdateMethods = {};
     this.cumulativeStateVariableChanges = {};
-    this.attemptNumber = props.attemptNumber;
-    if (this.attemptNumber === void 0) {
-      this.attemptNumber = 1;
-    }
-    this.assignmentId = props.assignmentId;
-    this.requestedVariant = props.requestedVariant;
-    if (this.requestedVariant === void 0) {
-      this.requestedVariant = {index: 0};
-    }
-    this.documentRenderer = /* @__PURE__ */ React.createElement(React.Fragment, null, "Loading...");
-    if (props.contentId === void 0) {
-      let doenetML = props.doenetML;
-      this.contentId = sha256(JSON.stringify(doenetML)).toString(CryptoJS.enc.Hex);
-      this.haveDoenetML({contentId: this.contentId, doenetML});
-    } else {
-      this.contentId = props.contentId;
-      this.loadDoenetML(props.contentId, this.haveDoenetML);
-    }
-  }
-  haveDoenetML({contentId, doenetML}) {
-    this.contentId = contentId;
-    this.doenetML = doenetML;
-    this.loadState(this.createCore);
+    this.needNewCoreFlag = false;
+    this.weightsStored = false;
+    this.state = {
+      doenetML: null,
+      attemptNumber: null,
+      contentId: null,
+      errMsg: null
+    };
   }
   createCore({stateVariables, variant}) {
     if (stateVariables === void 0) {
@@ -88,7 +71,8 @@ class DoenetViewerChild extends Component {
           localStateChanged: this.localStateChanged,
           submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent
+          recordEvent: this.recordEvent,
+          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant
@@ -102,7 +86,8 @@ class DoenetViewerChild extends Component {
           localStateChanged: this.localStateChanged,
           submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
-          recordEvent: this.recordEvent
+          recordEvent: this.recordEvent,
+          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant
@@ -110,7 +95,7 @@ class DoenetViewerChild extends Component {
     }
   }
   coreReady() {
-    this.resultingVariant = this.core.document.state.selectedVariantInfo.value;
+    this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
     if (this.cumulativeStateVariableChanges) {
       let nFailures = Infinity;
       while (nFailures > 0) {
@@ -124,20 +109,6 @@ class DoenetViewerChild extends Component {
       }
     } else {
       this.cumulativeStateVariableChanges = {};
-    }
-    if (this.assignmentId && !this.props.ignoreDatabase) {
-      const payload = {
-        weights: this.core.scoredItemWeights,
-        contentId: this.contentId,
-        assignmentId: this.assignmentId,
-        attemptNumber: this.attemptNumber
-      };
-      console.log(">>>this.assignmentId", this.assignmentId);
-      console.log(">>>this.props.ignoreDatabase", this.props.ignoreDatabase);
-      console.log("core ready payload:", payload);
-      axios.post("/api/saveAssignmentWeights.php", payload).then((resp) => {
-        console.log("saveAssignmentWeights-->>", resp.data);
-      });
     }
     let renderPromises = [];
     let rendererClassNames = [];
@@ -156,7 +127,12 @@ class DoenetViewerChild extends Component {
         rendererUpdateMethods: this.rendererUpdateMethods,
         flags: this.props.flags
       });
-      this.forceUpdate();
+      this.needNewCoreFlag = false;
+      this.setState({
+        doenetML: this.doenetML,
+        attemptNumber: this.attemptNumber,
+        contentId: this.contentId
+      });
     });
     if (this.props.onCoreReady) {
       this.props.onCoreReady();
@@ -164,11 +140,11 @@ class DoenetViewerChild extends Component {
   }
   localStateChanged({
     newStateVariableValues,
-    contentId,
+    contentId: contentId2,
     sourceOfUpdate,
     transient = false
   }) {
-    if (transient || this.props.ignoreDatabase) {
+    if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
       return;
     }
     for (let componentName in newStateVariableValues) {
@@ -185,54 +161,63 @@ class DoenetViewerChild extends Component {
       }
     }
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
-    let variantString = JSON.stringify(this.resultingVariant, serializedComponentsReplacer);
-    const phpUrl = "/api/recordContentInteraction.php";
+    let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
     const data = {
-      contentId,
+      contentId: contentId2,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
-      assignmentId: this.assignmentId,
+      doenetId: this.props.doenetId,
       variant: variantString
     };
-    axios.post(phpUrl, data).then((resp) => {
-      console.log("save", resp.data);
-    });
-  }
-  loadDoenetML(contentId, callback) {
-    axios.get(`/media/${contentId}.doenet`).then((resp) => {
-      if (callback) {
-        callback({
-          contentId,
-          doenetML: resp.data
-        });
-      }
-    });
+    if (this.allowLocalPageState) {
+      localStorage.setItem(`${contentId2}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({stateVariables: changeString, variant: variantString}));
+    }
+    if (!this.allowSavePageState) {
+      return;
+    }
+    axios.post("/api/recordContentInteraction.php", data);
   }
   loadState(callback) {
-    if (this.props.ignoreDatabase) {
+    if (!this.allowLoadPageState && !this.allowLocalPageState) {
       callback({
         stateVariables: null,
         variant: null
       });
       return;
     }
-    const phpUrl = "/api/loadContentInteractions.php";
-    const data = {
-      contentId: this.contentId,
-      attemptNumber: this.attemptNumber,
-      assignmentId: this.assignmentId
-    };
+    if (this.allowLocalPageState) {
+      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`));
+      let stateVariables = null;
+      let variant = null;
+      if (stateVarVariant) {
+        stateVariables = stateVarVariant.stateVariables;
+        variant = stateVarVariant.variant;
+      }
+      callback({
+        stateVariables,
+        variant
+      });
+      return;
+    }
     const payload = {
-      params: data
+      params: {
+        contentId: this.contentId,
+        attemptNumber: this.attemptNumber,
+        doenetId: this.props.doenetId
+      }
     };
-    axios.get(phpUrl, payload).then((resp) => {
-      console.log("load ci", resp.data);
+    axios.get("/api/loadContentInteractions.php", payload).then((resp) => {
+      if (!resp.data.success) {
+        throw new Error(resp.data.message);
+      }
       if (callback) {
         callback({
           stateVariables: resp.data.stateVariables,
           variant: resp.data.variant
         });
       }
+    }).catch((errMsg) => {
+      this.setState({errMsg: errMsg.message});
     });
   }
   update(instructions) {
@@ -260,36 +245,40 @@ class DoenetViewerChild extends Component {
     itemCreditAchieved,
     callBack
   }) {
-    if (this.assignmentId) {
-      const payload = {
-        assignmentId: this.assignmentId,
+    if (this.allowSaveSubmissions && this.props.doenetId) {
+      if (!this.weightsStored) {
+        this.weightsStored = true;
+        const payload1 = {
+          weights: this.core.scoredItemWeights,
+          contentId: this.contentId,
+          doenetId: this.props.doenetId,
+          attemptNumber: this.attemptNumber
+        };
+        axios.post("/api/saveAssignmentWeights.php", payload1);
+      }
+      const payload2 = {
+        doenetId: this.props.doenetId,
+        contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
         itemNumber
       };
-      axios.post("/api/saveCreditForItem.php", payload).then((resp) => {
-      });
+      axios.post("/api/saveCreditForItem.php", payload2);
     }
     callBack("submitResponse callback parameter");
   }
   recordSolutionView({itemNumber, scoredComponent, callBack}) {
-    console.log(`reveal solution, ${itemNumber}`);
-    if (this.assignmentId) {
-      console.warn(`Need to record solution view in the database!!`);
-      callBack({allowView: true, message: "", scoredComponent});
-    } else {
-      callBack({allowView: true, message: "", scoredComponent});
-    }
+    callBack({allowView: true, message: "", scoredComponent});
   }
   recordEvent(event) {
-    if (this.props.ignoreDatabase) {
+    if (!this.allowSaveEvents) {
       return;
     }
     const payload = {
-      assignmentId: this.assignmentId,
+      doenetId: this.props.doenetId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
-      variant: JSON.stringify(this.resultingVariant, serializedComponentsReplacer),
+      variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
       verb: event.verb,
       object: JSON.stringify(event.object, serializedComponentsReplacer),
       result: JSON.stringify(event.result, serializedComponentsReplacer),
@@ -297,10 +286,107 @@ class DoenetViewerChild extends Component {
       timestamp: event.timestamp,
       version: "0.1.0"
     };
-    axios.post("/api/recordEvent.php", payload).then((resp) => {
+    axios.post("/api/recordEvent.php", payload);
+  }
+  contentIdsToDoenetMLs({contentIds, callBack}) {
+    let promises = [];
+    let newDoenetMLs = {};
+    let newContentIds = contentIds;
+    for (let contentId2 of contentIds) {
+      promises.push(axios.get(`/media/${contentId2}.doenet`));
+    }
+    Promise.all(promises).then((resps) => {
+      newDoenetMLs = resps.map((x) => x.data);
+      callBack({
+        newDoenetMLs,
+        newContentIds,
+        success: true
+      });
+    }).catch((err) => {
+      let message;
+      if (newContentIds.length === 1) {
+        message = `Could not retrieve contentId ${newContentIds[0]}`;
+      } else {
+        message = `Could not retrieve contentIds ${newContentIds.join(",")}`;
+      }
+      callBack({
+        success: false,
+        message,
+        newDoenetMLs: [],
+        newContentIds: []
+      });
     });
   }
   render() {
+    if (this.state.errMsg !== null) {
+      return /* @__PURE__ */ React.createElement("div", null, this.state.errMsg);
+    }
+    this.allowLoadPageState = true;
+    if (this.props.allowLoadPageState === false) {
+      this.allowLoadPageState = false;
+    }
+    this.allowSavePageState = true;
+    if (this.props.allowSavePageState === false) {
+      this.allowSavePageState = false;
+    }
+    this.allowLocalPageState = true;
+    if (this.props.allowLocalPageState === false) {
+      this.allowLocalPageState = false;
+    }
+    this.allowSaveSubmissions = true;
+    if (this.props.allowSaveSubmissions === false) {
+      this.allowSaveSubmissions = false;
+    }
+    this.allowSaveEvents = true;
+    if (this.props.allowSaveEvents === false) {
+      this.allowSaveEvents = false;
+    }
+    this.attemptNumber = this.props.attemptNumber;
+    if (this.attemptNumber === void 0) {
+      this.attemptNumber = 1;
+    }
+    this.requestedVariant = this.props.requestedVariant;
+    if (this.requestedVariant === void 0) {
+      this.requestedVariant = {index: this.attemptNumber - 1};
+    }
+    if (this.props.doenetML && !this.props.contentId) {
+      this.doenetML = this.props.doenetML;
+      if (this.doenetML !== this.state.doenetML) {
+        this.contentId = sha256(this.props.doenetML).toString(CryptoJS.enc.Hex);
+        this.needNewCoreFlag = true;
+      }
+    } else if (!this.props.doenetML && this.props.contentId) {
+      this.contentId = this.props.contentId;
+      if (this.contentId !== this.state.contentId) {
+        this.needNewCoreFlag = true;
+        this.doenetML = localStorage.getItem(this.contentId);
+        if (!this.doenetML) {
+          try {
+            axios.get(`/media/${contentId}.doenet`).then((resp) => {
+              this.doenetML = resp.data;
+              localStorage.setItem(this.contentId, this.doenetML);
+              this.forceUpdate();
+            });
+          } catch (err) {
+            return "Error Loading";
+          }
+          return null;
+        }
+      }
+    } else if (this.props.doenetML && this.props.contentId) {
+      this.doenetML = this.props.doenetML;
+      this.contentId = this.props.contentId;
+      if (this.contentId !== this.state.contentId) {
+        this.needNewCoreFlag = true;
+      }
+    }
+    if (this.attemptNumber !== this.state.attemptNumber) {
+      this.needNewCoreFlag = true;
+    }
+    if (this.needNewCoreFlag) {
+      this.loadState(this.createCore);
+      return null;
+    }
     return this.documentRenderer;
   }
 }

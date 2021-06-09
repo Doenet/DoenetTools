@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Tool from "../Tool";
 import { useToolControlHelper } from "../ToolRoot";
 
-export default function Calendar({ contentId, branchId }) {
+export default function Calendar({ contentId, doenetId }) {
   useEffect(() => {
     //init code here
     // console.log(">>>Cal Init");
@@ -14,7 +14,7 @@ export default function Calendar({ contentId, branchId }) {
       <headerPanel></headerPanel>
 
       <mainPanel>
-        This is the calendar on branch: {branchId} with content: {contentId}
+        This is the calendar on doenetId: {doenetId} with content: {contentId}
       </mainPanel>
 
       <supportPanel></supportPanel>

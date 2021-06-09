@@ -4,12 +4,7 @@ import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import me from 'math-expressions';
-// TODO: dynamic loading of renderers fails if we don't load HotTable
-// even though we don't use HotTable anywhere
-// What is the cause of this dependency?
-// import { HotTable } from '@handsontable/react';
 
-// import { serializedComponentsReplacer, serializedComponentsReviver } from '../Core/utils/serializedStateProcessing';
 
 export function serializedComponentsReplacer(key, value) {
   if (value !== value) {
@@ -41,16 +36,16 @@ export function serializedComponentsReviver(key, value) {
   return me.reviver(key, nanInfinityReviver(key, value))
 }
 
-
 class DoenetViewerChild extends Component {
+
   constructor(props) {
+  // console.log("===DoenetViewerChild constructor")
+
     super(props);
     this.update = this.update.bind(this);
     this.coreReady = this.coreReady.bind(this);
     this.createCore = this.createCore.bind(this);
-    this.haveDoenetML = this.haveDoenetML.bind(this);
     this.loadState = this.loadState.bind(this);
-    this.loadDoenetML = this.loadDoenetML.bind(this);
     this.localStateChanged = this.localStateChanged.bind(this);
     this.submitResponse = this.submitResponse.bind(this);
     this.recordSolutionView = this.recordSolutionView.bind(this);
@@ -60,47 +55,17 @@ class DoenetViewerChild extends Component {
 
     this.cumulativeStateVariableChanges = {};
 
-    this.attemptNumber = props.attemptNumber;
-    if (this.attemptNumber === undefined) {
-      this.attemptNumber = 1;
+    this.needNewCoreFlag = false;
+    this.weightsStored = false;
+
+    //Track if viewer should update with:
+    //this.state.doenetML, this.state.attemptNumber, and this.state.contentId
+    this.state = {
+      doenetML:null,
+      attemptNumber:null,
+      contentId:null,
+      errMsg:null
     }
-
-    this.assignmentId = props.assignmentId;
-
-    // TODO: should we be giving viewer both attemptNumber and requestedVariant?
-    // for now, attemptNumber is used for requestedVariant if not specified
-    this.requestedVariant = props.requestedVariant;
-    if (this.requestedVariant === undefined) {
-      this.requestedVariant = { index: this.attemptNumber - 1 };
-    }
-
-    this.documentRenderer = <>Loading...</>
-
-    if (props.contentId === undefined) {
-      // use doenetML given via props
-      let doenetML = props.doenetML;
-
-      // calculate contentId from doenetML
-      this.contentId = sha256(JSON.stringify(doenetML)).toString(CryptoJS.enc.Hex);
-
-      this.haveDoenetML({ contentId: this.contentId, doenetML });
-
-    } else {
-      this.contentId = props.contentId;
-      // load doenetML from database using contentId
-      this.loadDoenetML(props.contentId, this.haveDoenetML)  //TODO: Does this work?
-    }
-  }
-
-  haveDoenetML({ contentId, doenetML }) {
-
-
-    this.contentId = contentId;
-    this.doenetML = doenetML;
-
-    // load statevariables/variant if in database from contentId, assignmentId, attemptNumber
-
-    this.loadState(this.createCore);
   }
 
 
@@ -127,7 +92,6 @@ class DoenetViewerChild extends Component {
     // Best option: viewer and the function passed in to retrieve content 
     // should verify hash
 
-
     if (this.props.core) {
       this.core = new this.props.core({
         coreReadyCallback: this.coreReady,
@@ -138,6 +102,7 @@ class DoenetViewerChild extends Component {
           submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
+          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant,
@@ -152,6 +117,7 @@ class DoenetViewerChild extends Component {
           submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
+          contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant,
@@ -163,7 +129,6 @@ class DoenetViewerChild extends Component {
     // this.databaseItemsToReload = props.databaseItemsToReload;
 
   }
-
 
   coreReady() {
 
@@ -197,23 +162,7 @@ class DoenetViewerChild extends Component {
 
 
     //TODO: Handle if number of items changed. Handle if weights changed
-
-    if (this.assignmentId && !this.props.ignoreDatabase) {
-      const payload = {
-        weights: this.core.scoredItemWeights,
-        contentId: this.contentId,
-        assignmentId: this.assignmentId,
-        attemptNumber: this.attemptNumber
-      }
-      console.log(">>>this.assignmentId", this.assignmentId)
-      console.log(">>>this.props.ignoreDatabase", this.props.ignoreDatabase)
-      console.log("core ready payload:", payload)
-      axios.post('/api/saveAssignmentWeights.php', payload)
-        .then(resp => {
-          console.log('saveAssignmentWeights-->>', resp.data);
-
-        });
-    }
+    
 
     let renderPromises = [];
     let rendererClassNames = [];
@@ -221,7 +170,6 @@ class DoenetViewerChild extends Component {
     // console.log(this.core.rendererTypesInDocument);
     for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
-      // console.log(`>>>dynamic import '${rendererClassName}'`)
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
 
@@ -241,10 +189,18 @@ class DoenetViewerChild extends Component {
         }
       )
 
-      this.forceUpdate();
+      // this.forceUpdate();
+      this.needNewCoreFlag = false;
+
+      this.setState({
+        doenetML:this.doenetML,
+        attemptNumber:this.attemptNumber,
+        contentId:this.contentId
+      })
     });
 
-    //Let viewer know we are ready
+    //Let the calling tool know we are ready
+    //TODO: Move this to renderer
     if (this.props.onCoreReady) {
       this.props.onCoreReady();
     }
@@ -255,8 +211,9 @@ class DoenetViewerChild extends Component {
     contentId, sourceOfUpdate, transient = false
   }) {
 
+   
     // TODO: what should we do with transient updates?
-    if (transient || this.props.ignoreDatabase) {
+    if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
       return;
     }
 
@@ -288,47 +245,34 @@ class DoenetViewerChild extends Component {
     // maybe that's shown when enroll in class, and you cannot turn it off
     // without disenrolling from class
 
-
-
-    // if (assignmentId) {
-    //   //Save Assignment Info
-    //   console.log('assignment')
-    // }
-
-    const phpUrl = '/api/recordContentInteraction.php';
+ 
     const data = {
       contentId,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
-      assignmentId: this.assignmentId,
+      doenetId: this.props.doenetId,
       variant: variantString,
     }
 
-    axios.post(phpUrl, data)
-      .then(resp => {
-        console.log('save', resp.data);
-      });
+    if (this.allowLocalPageState){
+      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`,JSON.stringify({stateVariables:changeString,variant:variantString}))
+    }
+
+    if (!this.allowSavePageState){
+      return;
+    }
+
+    axios.post('/api/recordContentInteraction.php', data)
+      // .then(resp => {
+      // });
 
 
-
-  }
-
-  loadDoenetML(contentId, callback) {
-
-    axios.get(`/media/${contentId}.doenet`)
-      .then(resp => {
-        if (callback) {
-          callback({
-            contentId, doenetML: resp.data,
-          })
-        }
-      });
 
   }
 
   loadState(callback) {
 
-    if (this.props.ignoreDatabase) {
+    if (!this.allowLoadPageState && !this.allowLocalPageState) {
       callback({
         stateVariables: null,
         variant: null
@@ -336,26 +280,46 @@ class DoenetViewerChild extends Component {
       return;
     }
 
-    const phpUrl = '/api/loadContentInteractions.php';
-    const data = {
-      contentId: this.contentId,
-      attemptNumber: this.attemptNumber,
-      assignmentId: this.assignmentId,
-    }
-    const payload = {
-      params: data
+    if (this.allowLocalPageState){
+
+      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`)) 
+      let stateVariables = null;
+      let variant = null;
+      
+       if (stateVarVariant){
+         stateVariables = stateVarVariant.stateVariables;
+         variant = stateVarVariant.variant
+       }
+      callback({
+        stateVariables,
+        variant
+      });
+      return;
     }
 
-    axios.get(phpUrl, payload)
+    const payload = {
+      params: {
+        contentId: this.contentId,
+        attemptNumber: this.attemptNumber,
+        doenetId: this.props.doenetId,
+      }
+    }
+
+    axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
-        console.log("load ci", resp.data)
+        if (!resp.data.success){
+          throw new Error(resp.data.message)
+        }
         if (callback) {
           callback({
             stateVariables: resp.data.stateVariables,
             variant: resp.data.variant
           })
         }
-      });
+      })
+      .catch(errMsg => {
+        this.setState({errMsg:errMsg.message})
+      })
 
   }
 
@@ -386,68 +350,90 @@ class DoenetViewerChild extends Component {
 
   }
 
+  //Need item state?
   submitResponse({
     itemNumber,
     itemCreditAchieved,
     callBack,
   }) {
-    // console.log('CALLED!',
-    //   itemNumber,
-    //   itemCreditAchieved
-    // )
-    //
-    if (this.assignmentId) {
-      const payload = {
-        assignmentId: this.assignmentId,
+
+    // console.log(">>>submit itemNumber:",itemNumber)
+
+    if (this.allowSaveSubmissions && this.props.doenetId) {
+
+
+      if (!this.weightsStored){
+        this.weightsStored = true;
+        //TODO: Test if weights dynamically changed then store updates
+        //FOR NOW: Only call once
+        const payload1 = {
+          weights: this.core.scoredItemWeights,
+          contentId: this.contentId,
+          doenetId: this.props.doenetId,
+          attemptNumber: this.attemptNumber
+        }
+
+        axios.post('/api/saveAssignmentWeights.php', payload1) 
+          // .then(resp => {
+          // });
+      }
+      
+
+      const payload2 = {
+        doenetId: this.props.doenetId,
+        contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
         itemNumber,
       }
-      axios.post('/api/saveCreditForItem.php', payload)
-        .then(resp => {
-          // console.log('saveCreditForItem-->>>',resp.data);
+      // console.log(">>>saveCreditForItem payload",payload2)
+      axios.post('/api/saveCreditForItem.php', payload2)
+        // .then(resp => {
+        //   console.log('saveCreditForItem-->>>',resp.data);
 
-        });
+        // });
     }
 
     callBack("submitResponse callback parameter");
   }
 
-
   // TODO: if assignmentId, then need to record fact that student
   // viewed solution in user_assignment_attempt_item
   recordSolutionView({ itemNumber, scoredComponent, callBack }) {
 
-    console.log(`reveal solution, ${itemNumber}`)
+    // console.log(`reveal solution, ${itemNumber}`)
 
-    if (this.assignmentId) {
-      console.warn(`Need to record solution view in the database!!`);
+    // if (this.assignmentId) {
+    //   console.warn(`Need to record solution view in the database!!`);
 
-      // TODO: is there a condition where we don't allow solution view?
-      // Presumably some setting from course
-      // But, should the condition be checked on the server?
+    //   // TODO: is there a condition where we don't allow solution view?
+    //   // Presumably some setting from course
+    //   // But, should the condition be checked on the server?
 
-      // TODO: call callBack as callBack from php call
-      callBack({ allowView: true, message: "", scoredComponent })
+    //   // TODO: call callBack as callBack from php call
+    //   callBack({ allowView: true, message: "", scoredComponent })
 
-    } else {
+    // } else {
 
-      // if not an assignment, immediately show solution
-      callBack({ allowView: true, message: "", scoredComponent })
+    //   // if not an assignment, immediately show solution
+    //   callBack({ allowView: true, message: "", scoredComponent })
 
-    }
+    // }
+
+    //Temporary until viewed solution is written
+    callBack({ allowView: true, message: "", scoredComponent })
+
 
   }
 
-
   recordEvent(event) {
 
-    if (this.props.ignoreDatabase) {
+    if (!this.allowSaveEvents) {
       return;
     }
 
     const payload = {
-      assignmentId: this.assignmentId,
+      doenetId: this.props.doenetId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
       variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
@@ -460,21 +446,167 @@ class DoenetViewerChild extends Component {
     }
 
     axios.post('/api/recordEvent.php', payload)
-      .then(resp => {
-        // console.log('recordEvent-->>>',resp.data);
-      });
+      // .then(resp => {
+      // });
 
   }
 
+
+  contentIdsToDoenetMLs({ contentIds, callBack }) {
+    let promises = [];
+    let newDoenetMLs = {};
+    let newContentIds = contentIds;
+  
+    for (let contentId of contentIds) {
+      promises.push(axios.get(`/media/${contentId}.doenet`))
+  
+    }
+  
+    Promise.all(promises).then((resps) => {
+      // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
+      newDoenetMLs = resps.map(x=>x.data);
+
+      callBack({
+        newDoenetMLs,
+        newContentIds,
+        success: true
+      })
+    }).catch(err => {
+
+      let message;
+      if(newContentIds.length === 1) {
+        message = `Could not retrieve contentId ${newContentIds[0]}`
+      } else {
+        message = `Could not retrieve contentIds ${newContentIds.join(',')}`
+      }
+
+      callBack({
+        success: false,
+        message,
+        newDoenetMLs: [],
+        newContentIds: []
+      })
+    })
+  
+  }
+
+
   render() {
+
+    if (this.state.errMsg !== null){
+      return <div>{this.state.errMsg}</div>
+    }
+
+    this.allowLoadPageState = true;
+    if (this.props.allowLoadPageState === false){
+      this.allowLoadPageState = false;
+    }
+    this.allowSavePageState = true;
+    if (this.props.allowSavePageState === false){
+      this.allowSavePageState = false;
+    }
+    this.allowLocalPageState = true;
+    if (this.props.allowLocalPageState === false){
+      this.allowLocalPageState = false;
+    }
+    this.allowSaveSubmissions = true;
+    if (this.props.allowSaveSubmissions === false){
+      this.allowSaveSubmissions = false;
+    }
+    this.allowSaveEvents = true;
+    if (this.props.allowSaveEvents === false){
+      this.allowSaveEvents = false;
+    }
+
+    //If no attemptNumber prop then set to 1
+    this.attemptNumber = this.props.attemptNumber;
+    if (this.attemptNumber === undefined) {
+      this.attemptNumber = 1;
+    }
+
+    // TODO: should we be giving viewer both attemptNumber and requestedVariant?
+    // for now, attemptNumber is used for requestedVariant if not specified
+    this.requestedVariant = this.props.requestedVariant;
+    if (this.requestedVariant === undefined) {
+      this.requestedVariant = { index: this.attemptNumber - 1 };
+    }
+
+    
+
+    if (this.props.doenetML && !this.props.contentId){
+      //*** Define this.contentId if not prop
+      this.doenetML = this.props.doenetML;
+      if (this.doenetML !== this.state.doenetML){
+        this.contentId = sha256(this.props.doenetML).toString(CryptoJS.enc.Hex);
+        this.needNewCoreFlag = true;
+      }
+    }else if (!this.props.doenetML && this.props.contentId){
+      //*** Define this.doenetML if not prop
+      this.contentId = this.props.contentId;
+      //If contentId is different load the corresponding contentId
+      if (this.contentId !== this.state.contentId){
+          this.needNewCoreFlag = true;
+          //Try to load doenetML from local storage
+          this.doenetML = localStorage.getItem(this.contentId);
+          if (!this.doenetML){
+          try {
+            //Load the doenetML from the server
+            axios.get(`/media/${contentId}.doenet`)
+            .then(resp => {
+              this.doenetML = resp.data;
+              localStorage.setItem(this.contentId,this.doenetML)
+              this.forceUpdate();
+            })
+          } catch (err) {
+            //TODO: Handle 404
+            return "Error Loading";
+          }
+          return null;
+
+        }
+
+      }
+      
+    }else if (this.props.doenetML && this.props.contentId){
+      //*** Have this.doenetML and this.contentId if not prop
+      this.doenetML = this.props.doenetML;
+      this.contentId = this.props.contentId;
+
+      //Content changed, so need new core
+      if (this.contentId !== this.state.contentId){
+        this.needNewCoreFlag = true;
+      }
+    }
+
+    if (this.attemptNumber !== this.state.attemptNumber){
+      //TODO: Change attempt number without needing a new core
+      this.needNewCoreFlag = true;
+    }
+
+
+    if (this.needNewCoreFlag){
+      this.loadState(this.createCore);
+      return null;
+    }
+    
+    
     return this.documentRenderer;
   }
 
 }
 
+    //TODO: too blunt eliminate ignoreDatabase
+    //Propose: 
+    //props.AllowLoadPageState (ContentInteractions) (Turn off only for automated testing)
+    //props.AllowSavePageState (ContentInteractions) (Saves where you were)
+    //props.AllowSavePageStateLocally (Give user this option save only to device not Doenet)
+    //props.AllowSaveSubmissions (grades)
+    //props.AllowSaveEvents
+
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       hasError: false,
       errorMsg: ""

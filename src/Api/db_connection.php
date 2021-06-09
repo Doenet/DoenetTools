@@ -5,14 +5,9 @@ $remoteuser = 'devuser';
 // $remoteuser = $_SERVER[ 'REMOTE_USER' ];
 // $db_temp = "cse_doenet";
 
-if (
-    $_SERVER['HTTP_HOST'] == 'localhost' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:3000' ||
-    $_SERVER['HTTP_HOST'] == 'apache' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:81'
-) {
-    $env_path = 'env.ini';
-    $remoteuser = 'devuser';
+if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == 'localhost:3000' ||  $_SERVER['HTTP_HOST'] == 'apache' ){
+  $env_path = "env.ini";
+  $remoteuser = "devuser";
 }
 
 $ini_array = parse_ini_file($env_path);
@@ -22,13 +17,9 @@ $username = $ini_array['username'];
 $password = $ini_array['password'];
 $database = $ini_array['database'];
 
-if (
-    $_SERVER['HTTP_HOST'] == 'localhost' ||
-    $_SERVER['HTTP_HOST'] == 'apache' ||
-    $_SERVER['HTTP_HOST'] == 'localhost:81'
-) {
-    $database = 'doenet_local';
-    $dbhost = 'mysql';
+if ($_SERVER['HTTP_HOST'] == 'localhost' ||  $_SERVER['HTTP_HOST'] == 'apache'){
+  $database = "doenet_local";
+  $dbhost = "mysql";
 }
 
 if ($_SERVER['HTTP_HOST'] == 'localhost:3000') {

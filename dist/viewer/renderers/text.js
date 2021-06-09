@@ -10,6 +10,6 @@ export default class Text extends DoenetRenderer {
       name: this.componentName
     }), /* @__PURE__ */ React.createElement("span", {
       id: this.componentName
-    }, this.doenetSvData.value));
+    }, this.doenetSvData.text));
   }
 }

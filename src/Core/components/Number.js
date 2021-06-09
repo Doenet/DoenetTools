@@ -1,13 +1,14 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
 import { mathStateVariableFromNumberStateVariable, roundForDisplay, textToAst } from '../utils/math';
+import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic';
 
 export default class NumberComponent extends InlineComponent {
   static componentType = "number";
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value"] };
+  static get stateVariablesShadowedForReference() { return ["value", "convertBoolean"] };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -36,18 +37,23 @@ export default class NumberComponent extends InlineComponent {
       public: true,
       forRenderer: true,
     }
+    attributes.convertBoolean = {
+      createPrimitiveOfType: "boolean",
+      defaultValue: false,
+    }
     return attributes;
   }
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
+    // if not convertBoolean, then
     // add math around multiple children
-    // math will be adapted to a number
+    // so that can invert value
     sugarInstructions.push({
       childrenRegex: /..+/,
-      replacementFunction: ({ matchedChildren }) => ({
-        success: true,
+      replacementFunction: ({ matchedChildren, componentAttributes }) => ({
+        success: !componentAttributes.convertBoolean,
         newChildren: [{ componentType: "math", children: matchedChildren }],
       })
     });
@@ -59,23 +65,53 @@ export default class NumberComponent extends InlineComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atMostOneString = childLogic.newLeaf({
-      name: "atMostOneString",
+    let atLeastZeroStrings = childLogic.newLeaf({
+      name: "atLeastZeroStrings",
       componentType: 'string',
-      comparison: 'atMost',
-      number: 1,
-    });
-    let exactlyOneNumber = childLogic.newLeaf({
-      name: "exactlyOneNumber",
-      componentType: 'number',
-      number: 1,
+      comparison: 'atLeast',
+      number: 0,
     });
 
+    let atLeastZeroNumbers = childLogic.newLeaf({
+      name: "atLeastZeroNumbers",
+      componentType: 'number',
+      comparison: 'atLeast',
+      number: 0,
+    });
+
+    let atLeastZeroMaths = childLogic.newLeaf({
+      name: "atLeastZeroMaths",
+      componentType: 'math',
+      comparison: 'atLeast',
+      number: 0
+    });
+
+    let atLeastZeroTexts = childLogic.newLeaf({
+      name: "atLeastZeroTexts",
+      componentType: 'text',
+      comparison: 'atLeast',
+      number: 0
+    });
+
+    let atLeastZeroBooleans = childLogic.newLeaf({
+      name: "atLeastZeroBooleans",
+      componentType: "boolean",
+      comparison: "atLeast",
+      number: 0,
+    });
+
+
     childLogic.newOperator({
-      name: "stringXorNumberXorSugar",
-      operator: 'xor',
-      propositions: [exactlyOneNumber, atMostOneString],
-      setAsBase: true,
+      name: "stringsNumbersMathsTextsAndBooleans",
+      operator: "and",
+      propositions: [
+        atLeastZeroStrings,
+        atLeastZeroNumbers,
+        atLeastZeroMaths,
+        atLeastZeroTexts,
+        atLeastZeroBooleans,
+      ],
+      setAsBase: true
     })
 
     return childLogic;
@@ -86,41 +122,357 @@ export default class NumberComponent extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.value = {
-      public: true,
-      componentType: this.componentType,
+    stateVariableDefinitions.convertBoolean = {
       returnDependencies: () => ({
-        numberChild: {
+        convertBooleanAttr: {
+          dependencyType: "attribute",
+          attributeName: "convertBoolean"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { convertBoolean: dependencyValues.convertBooleanAttr } }
+      }
+    }
+
+    stateVariableDefinitions.singleNumberOrStringChild = {
+      additionalStateVariablesDefined: ["singleMathChild"],
+      returnDependencies: () => ({
+        numberChildren: {
           dependencyType: "child",
-          childLogicName: "exactlyOneNumber",
-          variableNames: ["value", "canBeModified"],
+          childLogicName: "atLeastZeroNumbers",
         },
-        stringChild: {
+        stringChildren: {
           dependencyType: "child",
-          childLogicName: "atMostOneString",
-          variableNames: ["value"],
+          childLogicName: "atLeastZeroStrings",
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroMaths",
+        },
+        booleanChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroBooleans",
+        },
+        textChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroTexts",
         },
       }),
-      defaultValue: NaN,
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.numberChild.length === 0) {
-          if (dependencyValues.stringChild.length === 0) {
-            return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
+      definition({ dependencyValues }) {
+
+        let nNumberStrings = dependencyValues.numberChildren.length +
+          dependencyValues.stringChildren.length;
+        let nMaths = dependencyValues.mathChildren.length;
+        let nOthers = dependencyValues.booleanChildren.length +
+          dependencyValues.textChildren.length;
+
+        let singleNumberOrStringChild = nNumberStrings <= 1 && nMaths + nOthers === 0;
+        let singleMathChild = nMaths === 1 && nNumberStrings + nOthers === 0;
+
+        return { newValues: { singleNumberOrStringChild, singleMathChild } };
+      }
+    }
+
+
+    stateVariableDefinitions.parsedExpression = {
+      additionalStateVariablesDefined: [
+        "codePre"
+      ],
+      returnDependencies: () => ({
+        stringMathTextBooleanChildren: {
+          dependencyType: "child",
+          childLogicName: "stringsNumbersMathsTextsAndBooleans",
+        },
+        stringChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroStrings",
+          variableNames: ["value"]
+        }
+      }),
+      definition: buildParsedExpression
+    };
+
+
+    stateVariableDefinitions.mathChildrenByCode = {
+      additionalStateVariablesDefined: [
+        "textChildrenByCode", "numberChildrenByCode",
+        "booleanChildrenByCode",
+      ],
+      returnDependencies: () => ({
+        stringMathTextBooleanChildren: {
+          dependencyType: "child",
+          childLogicName: "stringsNumbersMathsTextsAndBooleans",
+          variableNames: ["value", "texts", "maths", "booleans"],
+          variablesOptional: true,
+        },
+        codePre: {
+          dependencyType: "stateVariable",
+          variableName: "codePre"
+        }
+      }),
+      definition({ dependencyValues, componentInfoObjects }) {
+
+        let mathChildrenByCode = {};
+        let numberChildrenByCode = {};
+        let textChildrenByCode = {};
+        let booleanChildrenByCode = {};
+        let subnum = 0;
+
+        let codePre = dependencyValues.codePre;
+
+        for (let child of dependencyValues.stringMathTextBooleanChildren) {
+          if (child.componentType !== "string") {
+            // a math, mathList, text, textList, boolean, or booleanList
+            let code = codePre + subnum;
+
+            if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "math"
+            })) {
+              mathChildrenByCode[code] = child;
+            } else if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "number"
+            })) {
+              numberChildrenByCode[code] = child;
+            } else if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "text"
+            })) {
+              textChildrenByCode[code] = child;
+            } else {
+              booleanChildrenByCode[code] = child;
+            }
+            subnum += 1;
+
           }
-          let number = Number(dependencyValues.stringChild[0].stateValues.value);
-          if (Number.isNaN(number)) {
-            try {
-              number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0].stateValues.value)).evaluate_to_constant();
-              if (number === null) {
+        }
+
+        return {
+          newValues: {
+            mathChildrenByCode,
+            numberChildrenByCode,
+            textChildrenByCode,
+            booleanChildrenByCode,
+          }
+        }
+      }
+
+    }
+
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: "number",
+      stateVariablesDeterminingDependencies: ["singleNumberOrStringChild"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.singleNumberOrStringChild) {
+          return {
+            singleNumberOrStringChild: {
+              dependencyType: "stateVariable",
+              variableName: "singleNumberOrStringChild"
+            },
+            convertBoolean: {
+              dependencyType: "stateVariable",
+              variableName: "convertBoolean"
+            },
+            numberChild: {
+              dependencyType: "child",
+              childLogicName: "atLeastZeroNumbers",
+              variableNames: ["value", "canBeModified"],
+            },
+            stringChild: {
+              dependencyType: "child",
+              childLogicName: "atLeastZeroStrings",
+              variableNames: ["value"],
+            },
+          }
+        } else {
+
+          return {
+            singleNumberOrStringChild: {
+              dependencyType: "stateVariable",
+              variableName: "singleNumberOrStringChild"
+            },
+            singleMathChild: {
+              dependencyType: "stateVariable",
+              variableName: "singleMathChild"
+            },
+            convertBoolean: {
+              dependencyType: "stateVariable",
+              variableName: "convertBoolean"
+            },
+            parsedExpression: {
+              dependencyType: "stateVariable",
+              variableName: "parsedExpression",
+            },
+            stringMathTextBooleanChildren: {
+              dependencyType: "child",
+              childLogicName: "stringsNumbersMathsTextsAndBooleans",
+              variableNames: ["value", "texts", "maths", "unordered"],
+              variablesOptional: true,
+            },
+            booleanChildrenByCode: {
+              dependencyType: "stateVariable",
+              variableName: "booleanChildrenByCode",
+            },
+            textChildrenByCode: {
+              dependencyType: "stateVariable",
+              variableName: "textChildrenByCode",
+            },
+            mathChildrenByCode: {
+              dependencyType: "stateVariable",
+              variableName: "mathChildrenByCode",
+            },
+            numberChildrenByCode: {
+              dependencyType: "stateVariable",
+              variableName: "numberChildrenByCode",
+            },
+          }
+        }
+      },
+      defaultValue: NaN,
+      definition({ dependencyValues, componentInfoObjects }) {
+
+        if (dependencyValues.singleNumberOrStringChild) {
+          if (dependencyValues.numberChild.length === 0) {
+            if (dependencyValues.stringChild.length === 0) {
+              return { useEssentialOrDefaultValue: { value: { variablesToCheck: ["value"] } } }
+            }
+            let number = Number(dependencyValues.stringChild[0].stateValues.value);
+            if (Number.isNaN(number)) {
+              try {
+                number = me.fromAst(textToAst.convert(dependencyValues.stringChild[0].stateValues.value)).evaluate_to_constant();
+
+                if (typeof number === "boolean") {
+                  if (dependencyValues.convertBoolean) {
+                    number = number ? 1 : 0;
+                  } else {
+                    number = NaN;
+                  }
+                } else if (number === null || Number.isNaN(number)) {
+
+                  if (dependencyValues.convertBoolean) {
+                    let parsedExpression = buildParsedExpression({
+                      dependencyValues: {
+                        stringChildren: dependencyValues.stringChild,
+                        stringMathTextBooleanChildren: dependencyValues.stringChild
+                      },
+                      componentInfoObjects
+                    }).newValues.parsedExpression;
+
+                    number = evaluateLogic({
+                      logicTree: parsedExpression.tree,
+                      dependencyValues: {
+                        booleanChildrenByCode: {},
+                        booleanListChildrenByCode: {},
+                        textChildrenByCode: {},
+                        textListChildrenByCode: {},
+                        mathChildrenByCode: {},
+                        mathListChildrenByCode: {},
+                        numberChildrenByCode: {}
+                      },
+                      valueOnInvalid: NaN
+                    })
+                  } else {
+                    number = NaN;
+                  }
+
+                }
+              } catch (e) {
                 number = NaN;
               }
+            }
+            return { newValues: { value: number } };
+          } else {
+            return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
+          }
+        } else {
+
+          if (dependencyValues.parsedExpression === null) {
+            // if don't have parsed expression
+            // (which could occur if have invalid form)
+            // return NaN
+            return {
+              newValues: { value: NaN }
+            }
+          }
+
+          if (Object.keys(dependencyValues.textChildrenByCode).length === 0
+            && Object.keys(dependencyValues.booleanChildrenByCode).length === 0
+          ) {
+            // just have strings, numbers, and math, evaluate expression
+
+
+            let replaceMath = function (tree) {
+              if (typeof tree === "string") {
+                let child = dependencyValues.mathChildrenByCode[tree];
+                if (child !== undefined) {
+                  return child.stateValues.value.tree;
+                }
+                child = dependencyValues.numberChildrenByCode[tree];
+                if (child !== undefined) {
+                  return child.stateValues.value;
+                }
+                return tree;
+              }
+              if (!Array.isArray(tree)) {
+                return tree;
+              }
+              return [tree[0], ...tree.slice(1).map(replaceMath)]
+            }
+
+            let number;
+
+            try {
+              number = me.fromAst(replaceMath(dependencyValues.parsedExpression.tree)).evaluate_to_constant();
             } catch (e) {
               number = NaN;
             }
+
+            if (Number.isFinite(number)) {
+              return { newValues: { value: number } };
+
+            }
+
+
           }
-          return { newValues: { value: number } };
-        } else {
-          return { newValues: { value: dependencyValues.numberChild[0].stateValues.value } }
+
+          if (!dependencyValues.convertBoolean) {
+            return { newValues: { value: NaN } }
+          }
+
+          let unorderedCompare = false;
+
+          // if compare attributes haven't been explicitly prescribed by <if>
+          // or one of its ancestors
+          // then any of the attributes can be turned on if there is a
+          // child with the comparable property
+
+          // check all children for an unordered property
+          for (let child of dependencyValues.stringMathTextBooleanChildren) {
+            if (child.stateValues.unordered) {
+              unorderedCompare = true;
+            }
+          }
+
+          dependencyValues = Object.assign({}, dependencyValues);
+          dependencyValues.mathListChildrenByCode = {};
+          dependencyValues.textListChildrenByCode = {};
+          dependencyValues.booleanListChildrenByCode = {};
+
+          let fractionSatisfied = evaluateLogic({
+            logicTree: dependencyValues.parsedExpression.tree,
+            unorderedCompare: unorderedCompare,
+            dependencyValues,
+            valueOnInvalid: NaN,
+          });
+
+          // fractionSatisfied will be either 0 or 1 as have not
+          // specified matchPartial
+
+          return { newValues: { value: fractionSatisfied } }
+
         }
       },
       set: function (value) {
@@ -141,7 +493,10 @@ export default class NumberComponent extends InlineComponent {
         }
         return number;
       },
-      inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, stateValues, overrideFixed }) {
+      inverseDefinition: function ({ desiredStateVariableValues,
+        dependencyValues, stateValues, overrideFixed,
+      }) {
+
 
         if (!stateValues.canBeModified && !overrideFixed) {
           return { success: false };
@@ -156,6 +511,26 @@ export default class NumberComponent extends InlineComponent {
         } else {
           desiredValue = Number(desiredValue);
         }
+
+        if (!dependencyValues.singleNumberOrStringChild) {
+          // invert only if have just a single math child
+          if (dependencyValues.singleMathChild) {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "stringMathTextBooleanChildren",
+                desiredValue: me.fromAst(desiredValue),
+                childIndex: 0,
+                variableIndex: 0,
+              }]
+            }
+          } else {
+            // for any other combination that isn't single number or string,
+            // we can't invert
+            return { success: false };
+          }
+        }
+
 
         let instructions;
 
@@ -247,18 +622,15 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.math = mathStateVariableFromNumberStateVariable({
       numberVariableName: "value",
       mathVariableName: "math",
-      public: true
+      isPublic: true
     });
 
 
-    // Note: don't need canBeModified for number logic, as core will already
-    // be able to determine from modifyIndirectly and fixed that it cannot be modified
-    // However, include this state variable for case when number is included in math
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({
         numberChildModifiable: {
           dependencyType: "child",
-          childLogicName: "exactlyOneNumber",
+          childLogicName: "atLeastZeroNumbers",
           variableNames: ["canBeModified"],
         },
         modifyIndirectly: {
@@ -269,9 +641,18 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "fixed",
         },
+        singleNumberOrStringChild: {
+          dependencyType: "stateVariable",
+          variableName: "singleNumberOrStringChild",
+        },
+        singleMathChild: {
+          dependencyType: "stateVariable",
+          variableName: "singleMathChild",
+        },
       }),
       definition: function ({ dependencyValues }) {
-        if (!dependencyValues.modifyIndirectly || dependencyValues.fixed) {
+        if (!dependencyValues.modifyIndirectly || dependencyValues.fixed
+          || !(dependencyValues.singleNumberOrStringChild || dependencyValues.singleMathChild)) {
           return { newValues: { canBeModified: false } };
         }
 

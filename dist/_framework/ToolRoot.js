@@ -6,15 +6,27 @@ import React, {
 } from '../_snowpack/pkg/react.js';
 import {
   atom,
+  selector,
   useSetRecoilState,
   useRecoilValue,
   useRecoilCallback,
-} from '../_snowpack/pkg/recoil.js';
-import Toast from './Toast.js';
-import { useMenuPanelController } from './Panels/MenuPanel.js';
-import { useSupportDividerController } from './Panels/ContentPanel.js';
-import axios from '../_snowpack/pkg/axios.js';
-
+  useRecoilValueLoadable
+} from "../_snowpack/pkg/recoil.js";
+import styled from "../_snowpack/pkg/styled-components.js";
+import Toast from "./Toast.js";
+import {useMenuPanelController} from "./Panels/MenuPanel.js";
+import {useSupportDividerController} from "./Panels/ContentPanel.js";
+import axios from "../_snowpack/pkg/axios.js";
+const LoadingFallback = styled.div`
+  background-color: hsl(0, 0%, 99%);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  width: 100vw;
+  height: 100vh;
+`;
 const layerStackAtom = atom({
   key: 'layerStackAtom',
   default: [],
@@ -45,10 +57,13 @@ export const useToolControlHelper = () => {
     title,
     contentId,
     courseId,
-    branchId,
+    doenetId,
     assignmentId,
     attemptNumber,
     userId,
+    driveId,
+    folderId,
+    itemId
   }) => {
     switch (type.toLowerCase()) {
       case 'gradebookassignmentview':
@@ -75,10 +90,13 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Editor, {
-            branchId,
+            doenetId,
             title,
-            key: `EditorLayer${old.length + 1}`,
-          }),
+            driveId,
+            folderId,
+            itemId,
+            key: `EditorLayer${old.length + 1}`
+          })
         ]);
         break;
       case 'content':
@@ -86,7 +104,7 @@ export const useToolControlHelper = () => {
           ...old,
           /* @__PURE__ */ React.createElement(Content, {
             contentId,
-            branchId,
+            doenetId,
             title,
             key: `ContentLayer${old.length + 1}`,
           }),
@@ -96,7 +114,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Assignment, {
-            branchId,
+            doenetId,
             title,
             assignmentId,
             courseId,
@@ -109,7 +127,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Calendar, {
-            branchId,
+            doenetId,
             contentId,
             key: `CalendarLayer${old.length + 1}`,
           }),
@@ -119,13 +137,12 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(Image, {
-            branchId,
-            key: `ImageLayer${old.length + 1}`,
-          }),
+            doenetId,
+            key: `ImageLayer${old.length + 1}`
+          })
         ]);
         break;
       default:
-        console.error('Unknown Overlay Name');
     }
   };
   const close = () => {
@@ -151,47 +168,39 @@ export const useStackId = () => {
   return stackId;
 };
 export const ProfileContext = React.createContext({});
-export default function ToolRoot({ tool }) {
-  const overlays = useRecoilValue(layerStackAtom);
-  const [, setRefresh] = useState(0);
-  const profile = JSON.parse(localStorage.getItem('Profile'));
-  if (!profile) {
-    axios
-      .get('/api/loadProfile.php', { params: {} })
-      .then((resp) => {
-        if (resp.data.success === '1') {
-          localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
-          setRefresh((was) => was + 1);
+export const profileAtom = atom({
+  key: "profileAtom",
+  default: selector({
+    key: "profileAtom/Default",
+    get: async () => {
+      try {
+        const profile = JSON.parse(localStorage.getItem("Profile"));
+        if (profile) {
+          return profile;
         }
-      })
-      .catch((error) => {
-        throw new Error(`failed to load profile: ${error}`);
-      });
+        const {data} = await axios.get("/api/loadProfile.php");
+        localStorage.setItem("Profile", JSON.stringify(data.profile));
+        return data.profile;
+      } catch (error) {
+        console.log("Error loading user profile", error.message);
+        return {};
+      }
+    }
+  })
+});
+export default function ToolRoot({tool}) {
+  const overlays = useRecoilValue(layerStackAtom);
+  const profile = useRecoilValueLoadable(profileAtom);
+  if (profile.state === "loading") {
     return null;
   }
-  return /* @__PURE__ */ React.createElement(
-    React.Fragment,
-    null,
-    /* @__PURE__ */ React.createElement(
-      ProfileContext.Provider,
-      {
-        value: profile,
-      },
-      tool,
-      /* @__PURE__ */ React.createElement(
-        Suspense,
-        {
-          fallback: /* @__PURE__ */ React.createElement(
-            'div',
-            null,
-            'loading...',
-          ),
-        },
-        overlays.map((layer, idx) =>
-          idx == overlays.length - 1 ? layer : null,
-        ),
-      ),
-      /* @__PURE__ */ React.createElement(Toast, null),
-    ),
-  );
+  if (profile.state === "hasError") {
+    console.error(profile.contents);
+    return null;
+  }
+  return /* @__PURE__ */ React.createElement(ProfileContext.Provider, {
+    value: profile.contents
+  }, tool, /* @__PURE__ */ React.createElement(Suspense, {
+    fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "Loading...")
+  }, overlays.map((layer, idx) => idx == overlays.length - 1 ? layer : null)), /* @__PURE__ */ React.createElement(Toast, null));
 }

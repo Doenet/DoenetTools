@@ -1,149 +1,46 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useContext } from "react";
 import {
-    atom,
-    RecoilRoot,
-    useSetRecoilState,
-    useRecoilState,
-    useRecoilValue,
-    selector,
-    atomFamily,
-    selectorFamily,
-    useRecoilValueLoadable,
-    useRecoilStateLoadable,
     useRecoilCallback,
   } from "recoil";
 import styled from "styled-components";
 import Tool from '../_framework/Tool';
-import { useToolControlHelper } from '../_framework/ToolRoot';
-
-
+import { profileAtom, ProfileContext } from '../_framework/ToolRoot';
+import { a } from '@react-spring/web'
+import InfiniteSlider from '../_framework/temp/InfiniteSlider'
 import "../_framework/doenet.css";
 import Textinput from "../_framework/Textinput";
 import Switch from "../_framework/Switch";
-import Cookies from 'js-cookie';
+import GlobalFont from '../../_utils/GlobalFont';
 import axios from "axios";
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 let SectionHeader = styled.h2`
   margin-top: 2em;
   margin-bottom: 2em;
-`;
+`
 
-let ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url("/media/profile_pictures/${props => props.pic}.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
+const Content = styled.div`
+  width: 100%;
+  height: 100%;
+`
+
+const Image = styled(a.div)`
+  width: 100%;
+  height: 100%;
   background-size: cover;
-  width: 5em;
-  height: 5em;
-  color: rgba(0, 0, 0, 0);
-  font-size: 2em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: 100px;
-  border-radius: 50%;
-  border-style:none;
-  user-select: none;
-  &:hover, &:focus {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-      url("/media/profile_pictures/${props => props.pic}.jpg");
-    color: rgba(255, 255, 255, 1);
-  }
-`;
+  background-position: center center;
+`
 
-const PictureBox = styled.button`
-  width: 40px;
-  height: 40px;
-  background-image: url("/media/profile_pictures/${(props) => props.pic}.jpg");
-  background-size: contain;
-  margin: 3px;
-  border: none;
-  border-radius: 3px;
-`;
 
-const DropDown = styled.div`
-  text-align: right;
-  width: 150px;
-  z-index: 2;
-  position: absolute;
-  margin-right: 100px;
-`;
-
-const ListContainer = styled.ul`
-  /* max-width: 80px; */
-  padding: 4px;
-  list-style-type: none;
-  /* border: 1px solid #505050; */
-  border-radius: 3px;
-  box-shadow: 3px 3px 7px #888888;
-  background: #ffffff;
-  margin: 0 auto;
-  text-align: left;
-`;
-
-const ListItem = styled.li`
-  display: inline-block;
-  vertical-align: top;
-`;
-
-const PROFILE_PICTURES = ['anonymous', 'bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle'];
-
-const getProfileQuerry = atom({
-  key: "getProfileQuerry",
-  default: selector({
-      key: "getProfileQuerry/Default",
-      get: async () => {
-          try{
-              const { data } = await axios.get('/api/loadProfile.php')
-              return data.profile
-          }catch(error){
-              console.log("Error loading user profile", error.message);                
-              return {}
-          }
-      }
-  })
+const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle', 'anonymous'];
+const picture_items = PROFILE_PICTURES.map(picture => {
+  let path = `/media/profile_pictures/${picture}.jpg`
+  let url = `url("${path}")`
+  return {css: url}
 })
 
-const PictureSelector = (props) => {
-  //let [selectedPic, setSelectedPic] = useState();
 
-  var list = props.list.map((item, i) => (
-    <ListItem key={i}>
-      <PictureBox
-        value={item}
-        pic={item}
-        onClick={(e) => {
-          props.callBack(e.target.value);
-        }}
-      />
-    </ListItem>
-  ));
-
-  return (
-    <DropDown onBlur = {props.onblur}>
-      <ListContainer>{list}</ListContainer>
-    </DropDown>
-  );
-}
-
-const getProfile = selector({
-  key: 'getProfile',
-  get: ({get}) => {
-      let data = get(getProfileQuerry)
-      return data;   
-  },
-  // set: ({set, get}, newProfile)=>{
-  //   //console.log("New Value: ", newValue);
-  //   const url = '/api/saveProfile.php'
-  //   //console.log(">>> ", newProfile)
-  //   const data = {
-  //     ...newProfile
-  //   }
-  //   set(getProfileQuerry,  data)
-  //   axios.post(url, data)
-  // }
-})
 
 const boolToString = (bool) => {
   if(bool){
@@ -153,6 +50,8 @@ const boolToString = (bool) => {
   }
 }
 
+const translateArray = (arr, k) => arr.concat(arr).slice(k, k+arr.length)
+
 export default function DoenetProfile(props) {
 
     const setProfile = useRecoilCallback(
@@ -161,61 +60,141 @@ export default function DoenetProfile(props) {
         const data = {
           ...newProfile
         }
-        set(getProfileQuerry,  data)
+        localStorage.setItem('Profile', JSON.stringify(data));
+        set(profileAtom,  data)
         await axios.post(url, data);
         //console.log(">>> ", newProfile);
       }
     )
 
-    //let [profile, setProfile] = useRecoilStateLoadable(getProfile);
-    let profile = useRecoilValueLoadable(getProfile);
+    const profile = useContext(ProfileContext);
+    const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
 
-    let [expand, setExpand] = useState(false);
+    //console.log(">>> init photo", initPhoto)
 
-    // if(profile.state == 'hasValue'){
-    //   console.log(profile.contents);
-    //   let data = {...profile.contents.profile}
-    //   data.firstName = 'DevMod'
-    //   setProfile(data)
+    let [editMode, setEditMode] = useState(false);
+    let [pic, setPic] = useState(0);
+
+    //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
+
+    const translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
+
+    // if(initPhoto){
+    //   translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
     // }
+
+    const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
+
+    if (profile.signedIn === '0') {
+      return (
+        <>
+          <GlobalFont />
+          <Tool>
+            <headerPanel title="Account Settings"></headerPanel>
+  
+            <mainPanel>
+              <div
+                style={{
+                  border: '1px solid grey',
+                  borderRadius: '20px',
+                  margin: 'auto',
+                  marginTop: '10%',
+                  padding: '10px',
+                  width: '50%',
+                }}
+              >
+                <div
+                  style={{
+                    textAlign: 'center',
+                    alignItems: 'center',
+                    marginBottom: '20px',
+                  }}
+                >
+                  <h2>You are not signed in</h2>
+                  <h2>Account Settings currently requires sign in for use</h2>
+                  <button style={{ background: '#1a5a99', borderRadius: '5px' }}>
+                    <a
+                      href="/signin"
+                      style={{ color: 'white', textDecoration: 'none' }}
+                    >
+                      Sign in with this link
+                    </a>
+                  </button>
+                </div>
+              </div>
+            </mainPanel>
+          </Tool>
+        </>
+      );
+    }
+
     return (
         <Tool>
             <headerPanel title="Account Settings" />
-            {profile.state == 'hasValue' ? 
+            
             <mainPanel>
               <div style = {{margin: "auto", width: "70%"}}>
                 <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
-                  <ProfilePicture
-                      pic={profile.contents.profilePicture}
-                      onClick={e => {
-                        setExpand(!expand)
-                      }}
-                      name="changeProfilePicture"
-                      id="changeProfilePicture"
-                  >
-                  </ProfilePicture>
-                  {expand? <div style = {{}}><PictureSelector onblur = {e => {
-                    setExpand(false)
-                  }} list = {PROFILE_PICTURES} 
-                    callBack = {(newPicture) => {
-                      let data = {...profile.contents}
-                      data.profilePicture = newPicture
-                      setProfile(data)
-                  }}/></div> : null}
+                  <div style = {{width: "150px", height: "150px", margin: "auto"}}>
+                  {/* {editMode ?
+                  <>
+                  <div style = {{float: "right"}}><FontAwesomeIcon onClick = {e => {
+                    let data = {...profile}
+                    data.profilePicture = pic
+                    setProfile(data)
+                    setEditMode(false)
+                  }} style = {{color: "#444", position: "absolute", zIndex: "2", textAlign: "right"}} icon={faTimes}/></div>
+                  <InfiniteSlider items={translateArray(picture_items, PROFILE_PICTURES.indexOf(profile.profilePicture))} showButtons={editMode} showCounter={false} callBack = {(i) => {
+                    setPic(translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(profile.profilePicture))[i-1])
+                  }}>
+                    {({ css }, i) => {
+                      // console.log(">>> pic index ", i);
+                      
+                      // setPicIndex(i)
+                      return (
+                        <Content>
+                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
+                        </Content>
+                      )
+                    }}
+                  </InfiniteSlider></> : 
+                    <Content onClick = {e => setEditMode(true)}>
+                      <Image style={{ backgroundImage: `url('/media/profile_pictures/${profile.profilePicture}.jpg')`, borderRadius: '50%' }} />
+                    </Content>
+                  } */}
+                  <InfiniteSlider fileNames = {translateditems} showButtons={true} showCounter={false} callBack = {(i) => {
+                    //console.log(translatednames[i])
+                    let data = {...profile}
+                    data.profilePicture = translatednames[i]
+                    setProfile(data)
+                    //setPic(translatednames[i])
+                  }}>
+                    {({ css }, i) => {
+                      // console.log(">>> pic index ", i);
+                      
+                      // setPicIndex(i)
+                      return (
+                        <Content>
+                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
+                        </Content>
+                      )
+                    }}
+                  </InfiniteSlider>
+                  </div>
                   <Textinput
                       style={{ width: '300px' }}
                       id="screen name"
                       label="Screen Name"
-                      value = {profile.contents.screenName}
+                      value = {profile.screenName}
                       onChange = {e => {}}
                       onBlur = {e => {
-                        let data = {...profile.contents}
+                        let data = {...profile}
                         data.screenName = e.target.value
                         setProfile(data)
                       }}
                       onKeyDown = {e => {
                         if(e.key === 'Enter'){
-                          let data = {...profile.contents}
+                          let data = {...profile}
                           data.screenName = e.target.value
                           setProfile(data)
                         }
@@ -225,17 +204,17 @@ export default function DoenetProfile(props) {
                     style={{ width: '300px' }}
                     id="firstName"
                     label="First Name"
-                    value = {profile.contents.firstName}
+                    value = {profile.firstName}
                     onChange = {e => {}}
                     onBlur={e => {
-                      let data = {...profile.contents}
+                      let data = {...profile}
                       data.firstName = e.target.value
                       setProfile(data)
                     }}
                     onKeyDown = {e => {
                       if(e.key === 'Enter'){
-                        let data = {...profile.contents}
-                        data.screenName = e.target.value
+                        let data = {...profile}
+                        data.firstName = e.target.value
                         setProfile(data)
                       }
                     }}
@@ -246,17 +225,17 @@ export default function DoenetProfile(props) {
                     style={{ width: '300px' }}
                     id="lastName"
                     label="Last Name"
-                    value = {profile.contents.lastName}
+                    value = {profile.lastName}
                     onChange = {e => {}}
                     onBlur={e => {
-                      let data = {...profile.contents}
+                      let data = {...profile}
                       data.lastName = e.target.value
                       setProfile(data)
                     }}
                     onKeyDown = {e => {
                       if(e.key === 'Enter'){
-                        let data = {...profile.contents}
-                        data.screenName = e.target.value
+                        let data = {...profile}
+                        data.lastName = e.target.value
                         setProfile(data)
                       }
                     }}
@@ -265,16 +244,16 @@ export default function DoenetProfile(props) {
                   </Textinput>
                 </div>
 
-                <p>Email Address: {profile.contents.email}</p>
+                <p>Email Address: {profile.email}</p>
 
                 <Switch
                   id="trackingConsent"
                   onChange={e => {
-                    let data = {...profile.contents}
+                    let data = {...profile}
                     data.trackingConsent = boolToString(e.target.checked)
                     setProfile(data)
                   }}
-                  checked={profile.contents.trackingConsent}
+                  checked={profile.trackingConsent}
                 >
                 </Switch>
                 <p>I consent to the use of tracking technologies.</p>
@@ -297,43 +276,144 @@ export default function DoenetProfile(props) {
                 <Switch
                   id="student"
                   onChange={e => {
-                    let data = {...profile.contents}
+                    let data = {...profile}
                     data.roleStudent= boolToString(e.target.checked)
                     setProfile(data)
                   }} // updates immediately
-                  checked={profile.contents.roleStudent}
+                  checked={profile.roleStudent}
                 >
                 </Switch>
                 <p>Student</p>
                 <Switch
                   id="instructor"
                   onChange={e => {
-                    let data = {...profile.contents}
+                    let data = {...profile}
                     data.roleInstructor= boolToString(e.target.checked)
                     setProfile(data)
                   }} // updates immediately
-                  checked={profile.contents.roleInstructor}
+                  checked={profile.roleInstructor}
                 >
                 </Switch>
                 <p>Instructor</p>
                 <Switch
                   id="course_designer"
                   onChange={e => {
-                    let data = {...profile.contents}
+                    let data = {...profile}
                     data.roleCourseDesigner= boolToString(e.target.checked)
                     setProfile(data)
                   }}
-                  checked={profile.contents.roleCourseDesigner}
+                  checked={profile.roleCourseDesigner}
                 >
                 </Switch>
                 <p>Course Designer</p>
               </div>
-          </mainPanel> : <p>Loading...</p>
-          }
+          </mainPanel> 
+          
         </Tool>
     )
 }
 
+
+
+// console.log(picture_items);
+
+// const getProfileQuerry = atom({
+//   key: "getProfileQuerry",
+//   default: selector({
+//       key: "getProfileQuerry/Default",
+//       get: async () => {
+//           try{
+//               const { data } = await axios.get('/api/loadProfile.php')
+//               return data.profile
+//           }catch(error){
+//               console.log("Error loading user profile", error.message);                
+//               return {}
+//           }
+//       }
+//   })
+// })
+
+// const PictureSelector = (props) => {
+//   //let [selectedPic, setSelectedPic] = useState();
+
+//   var list = props.list.map((item, i) => (
+//     <ListItem key={i}>
+//       <PictureBox
+//         value={item}
+//         pic={item}
+//         onClick={(e) => {
+//           props.callBack(e.target.value);
+//         }}
+//       />
+//     </ListItem>
+//   ));
+
+//   return (
+//     <DropDown onBlur = {props.onblur}>
+//       <ListContainer>{list}</ListContainer>
+//     </DropDown>
+//   );
+// }
+
+
+// let ProfilePicture = styled.button`
+//   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+//     url("/media/profile_pictures/${props => props.pic}.jpg");
+//   background-position: center;
+//   background-repeat: no-repeat;
+//   background-size: cover;
+//   width: 5em;
+//   height: 5em;
+//   color: rgba(0, 0, 0, 0);
+//   font-size: 2em;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   margin-left: 100px;
+//   border-radius: 50%;
+//   border-style:none;
+//   user-select: none;
+//   &:hover, &:focus {
+//     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+//       url("/media/profile_pictures/${props => props.pic}.jpg");
+//     color: rgba(255, 255, 255, 1);
+//   }
+// `;
+
+// const PictureBox = styled.button`
+//   width: 40px;
+//   height: 40px;
+//   background-image: url("/media/profile_pictures/${(props) => props.pic}.jpg");
+//   background-size: contain;
+//   margin: 3px;
+//   border: none;
+//   border-radius: 3px;
+// `;
+
+// const DropDown = styled.div`
+//   text-align: right;
+//   width: 150px;
+//   z-index: 2;
+//   position: absolute;
+//   margin-right: 100px;
+// `;
+
+// const ListContainer = styled.ul`
+//   /* max-width: 80px; */
+//   padding: 4px;
+//   list-style-type: none;
+//   /* border: 1px solid #505050; */
+//   border-radius: 3px;
+//   box-shadow: 3px 3px 7px #888888;
+//   background: #ffffff;
+//   margin: 0 auto;
+//   text-align: left;
+// `;
+
+// const ListItem = styled.li`
+//   display: inline-block;
+//   vertical-align: top;
+// `;
 
 // import React, { useState, useRef } from "react";
 // import {

@@ -13,9 +13,7 @@ $userId = $jwtArray['userId'];
 //TODO: Make sure of instructor
 $_POST = json_decode(file_get_contents("php://input"),true);
 
-$assignmentId = mysqli_real_escape_string($conn,$_POST["assignmentId"]);
-$title = mysqli_real_escape_string($conn,$_POST["assignment_title"]);
-if($title == ''){$title = 'Untitled Assignment';}
+
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
 if ($dueDate == ''){ $dueDate = '0001-01-01 01:01:01';}
 $assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
@@ -53,22 +51,21 @@ if ($proctorMakesAvailable == ''){ $proctorMakesAvailable = '0';}
 else if ($proctorMakesAvailable){ $proctorMakesAvailable = '1';}
 $makeContent =  mysqli_real_escape_string($conn,$_POST["makeContent"]);
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $submitted =  mysqli_real_escape_string($conn,$_POST["isSubmitted"]);
-$courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
 $role =  mysqli_real_escape_string($conn,$_POST["role"]);
 
 $success = TRUE;
 $message = "";
 
 
-if ($assignmentId == ""){
+if ($doenetId == ""){
   $success = FALSE;
-  $message = "Internal Error: missing assignmentId";
+  $message = "Internal Error: missing doenetId";
 }
 if ($success){
 
-$sql = "UPDATE assignment_draft SET
-title = '$title',
+$sql = "UPDATE assignment SET
 assignedDate = '$assignedDate',
 dueDate = '$dueDate',
 timeLimit = '$timeLimit',
@@ -83,7 +80,7 @@ showFeedback = '$showFeedback',
 showHints = '$showHints',
 showCorrectness = '$showCorrectness',
 proctorMakesAvailable = '$proctorMakesAvailable'
-WHERE assignmentId = '$assignmentId'
+WHERE doenetId = '$doenetId' 
 ";
 
 $result = $conn->query($sql);

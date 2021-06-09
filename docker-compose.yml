@@ -62,3 +62,5 @@ volumes:
 
 networks:
   dev_net:
+
+      - ./src/media:/usr/local/apache2/htdocs/media

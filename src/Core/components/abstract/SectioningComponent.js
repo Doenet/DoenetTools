@@ -29,13 +29,6 @@ export default class SectioningComponent extends BlockComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.delegateCheckWorkToAnswerNumber = {
-      createComponentOfType: "boolean",
-      createStateVariable: "delegateCheckWorkToAnswerNumber",
-      defaultValue: null,
-      forRenderer: true,
-      public: true,
-    };
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.feedbackDefinitions = {
@@ -250,6 +243,7 @@ export default class SectioningComponent extends BlockComponent {
         answerDescendants: {
           dependencyType: "descendant",
           componentTypes: ["answer"],
+          variableNames: ["justSubmitted"],
           recurseToMatchedChildren: false,
         }
       }),
@@ -262,10 +256,8 @@ export default class SectioningComponent extends BlockComponent {
       forRenderer: true,
       returnDependencies: () => ({
         answerDescendants: {
-          dependencyType: "descendant",
-          componentTypes: ["answer"],
-          variableNames: ["justSubmitted"],
-          recurseToMatchedChildren: false,
+          dependencyType: "stateVariable",
+          variableName: "answerDescendants"
         }
       }),
       definition({ dependencyValues }) {
@@ -441,20 +433,30 @@ export default class SectioningComponent extends BlockComponent {
           dependencyType: "variants",
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
 
-        let isVariantComponent;
-        let generatedVariantInfo = {};
-        if (dependencyValues.variantControlChild.length === 1) {
-          isVariantComponent = true;
-          generatedVariantInfo.index = dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex;
-          generatedVariantInfo.name = dependencyValues.variantControlChild[0].stateValues.selectedVariantName;
-          generatedVariantInfo.subvariantsSpecified = Boolean(
-            dependencyValues.variants.desiredVariant &&
-            dependencyValues.variants.desiredVariant.subvariants
-          )
-        } else {
-          isVariantComponent = false;
+        if (dependencyValues.variantControlChild.length === 0) {
+          return {
+            newValues: {
+              generatedVariantInfo: null,
+              isVariantComponent: false
+            }
+          }
+        }
+
+
+        let subvariantsSpecified = Boolean(
+          dependencyValues.variants.desiredVariant &&
+          dependencyValues.variants.desiredVariant.subvariants
+        );
+
+        let generatedVariantInfo = {
+          index: dependencyValues.variantControlChild[0].stateValues.selectedVariantIndex,
+          name: dependencyValues.variantControlChild[0].stateValues.selectedVariantName,
+          meta: {
+            createdBy: componentName,
+            subvariantsSpecified
+          }
         }
 
         let subvariants = generatedVariantInfo.subvariants = [];
@@ -465,9 +467,14 @@ export default class SectioningComponent extends BlockComponent {
           } else if (descendant.stateValues.generatedVariantInfo) {
             subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
           }
-
         }
-        return { newValues: { generatedVariantInfo, isVariantComponent } }
+
+        return {
+          newValues: {
+            generatedVariantInfo,
+            isVariantComponent: true
+          }
+        }
 
       }
     }
@@ -509,121 +516,55 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.createSubmitAllButton = {
       forRenderer: true,
-      additionalStateVariablesDefined: ["createSubmitAllButtonOnAnswer"],
+      additionalStateVariablesDefined: [{
+        variableName: "suppressAnswerSubmitButtons",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         sectionWideCheckWork: {
           dependencyType: "stateVariable",
           variableName: "sectionWideCheckWork"
         },
-        delegateCheckWorkToAnswerNumber: {
-          dependencyType: "stateVariable",
-          variableName: "delegateCheckWorkToAnswerNumber"
-        },
         aggregateScores: {
           dependencyType: "stateVariable",
           variableName: "aggregateScores"
-        },
-        answerDescendants: {
-          dependencyType: "stateVariable",
-          variableName: "answerDescendants"
-        },
-      }),
-      definition({ dependencyValues, componentName }) {
-
-        let createSubmitAllButton = false;
-        let createSubmitAllButtonOnAnswer = null;
-
-        if (dependencyValues.sectionWideCheckWork) {
-          if (!dependencyValues.aggregateScores) {
-            console.warn(`Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`);
-          } else {
-            let chosenAnswer = null;
-            if (dependencyValues.delegateCheckWorkToAnswerNumber > 0) {
-              chosenAnswer = dependencyValues.answerDescendants[dependencyValues.delegateCheckWorkToAnswerNumber - 1];
-            } else if (dependencyValues.delegateCheckWorkToAnswerNumber < 0) {
-              let answerInd = dependencyValues.answerDescendants.length + dependencyValues.delegateCheckWorkToAnswerNumber;
-              chosenAnswer = dependencyValues.answerDescendants[answerInd];
-            }
-            if (chosenAnswer) {
-              createSubmitAllButtonOnAnswer = chosenAnswer.componentName;
-            } else {
-              createSubmitAllButton = true;
-            }
-
-          }
-        }
-
-        return { newValues: { createSubmitAllButton, createSubmitAllButtonOnAnswer } }
-      }
-    }
-
-    stateVariableDefinitions.suppressAnswerSubmitButtons = {
-      additionalStateVariablesDefined: [
-        "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
-        "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
-      ],
-      forRenderer: true,
-      returnDependencies: () => ({
-        createSubmitAllButton: {
-          dependencyType: "stateVariable",
-          variableName: "createSubmitAllButton"
-        },
-        createSubmitAllButtonOnAnswer: {
-          dependencyType: "stateVariable",
-          variableName: "createSubmitAllButtonOnAnswer"
-        },
-        justSubmitted: {
-          dependencyType: "stateVariable",
-          variableName: "justSubmitted"
-        },
-        creditAchieved: {
-          dependencyType: "stateVariable",
-          variableName: "creditAchieved"
         },
         sectionAncestor: {
           dependencyType: "ancestor",
           componentType: "_sectioningComponent",
           variableNames: [
             "suppressAnswerSubmitButtons",
-            "answerDelegatedForSubmitAll", "componentNameForSubmitAll",
-            "justSubmittedForSubmitAll", "creditAchievedForSubmitAll"
+          ]
+        },
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: [
+            "suppressAnswerSubmitButtons",
           ]
         }
       }),
       definition({ dependencyValues, componentName }) {
 
+        let createSubmitAllButton = false;
         let suppressAnswerSubmitButtons = false;
-        let answerDelegatedForSubmitAll = null;
-        let componentNameForSubmitAll = null;
-        let justSubmittedForSubmitAll = null;
-        let creditAchievedForSubmitAll = null;
 
-        if (dependencyValues.createSubmitAllButton || dependencyValues.createSubmitAllButtonOnAnswer) {
-          componentNameForSubmitAll = componentName;
-          suppressAnswerSubmitButtons = true;
-          if (dependencyValues.createSubmitAllButtonOnAnswer) {
-            answerDelegatedForSubmitAll = dependencyValues.createSubmitAllButtonOnAnswer;
-            justSubmittedForSubmitAll = dependencyValues.justSubmitted;
-            creditAchievedForSubmitAll = dependencyValues.creditAchieved;
-          }
-        } else if (dependencyValues.sectionAncestor) {
-          let ancestorStateValues = dependencyValues.sectionAncestor.stateValues;
-          suppressAnswerSubmitButtons = ancestorStateValues.suppressAnswerSubmitButtons;
-          componentNameForSubmitAll = ancestorStateValues.componentNameForSubmitAll;
-          answerDelegatedForSubmitAll = ancestorStateValues.answerDelegatedForSubmitAll;
-          justSubmittedForSubmitAll = ancestorStateValues.justSubmittedForSubmitAll;
-          creditAchievedForSubmitAll = ancestorStateValues.creditAchievedForSubmitAll;
-        }
-
-        return {
-          newValues: {
-            suppressAnswerSubmitButtons,
-            componentNameForSubmitAll,
-            answerDelegatedForSubmitAll,
-            justSubmittedForSubmitAll,
-            creditAchievedForSubmitAll
+        if (
+          dependencyValues.documentAncestor.stateValues.suppressAnswerSubmitButtons ||
+          dependencyValues.sectionAncestor &&
+          dependencyValues.sectionAncestor.stateValues.suppressAnswerSubmitButtons
+        ) {
+          suppressAnswerSubmitButtons = true
+        } else if (dependencyValues.sectionWideCheckWork) {
+          if (dependencyValues.aggregateScores) {
+            createSubmitAllButton = true;
+            suppressAnswerSubmitButtons = true
+          } else {
+            console.warn(`Cannot create submit all button for ${componentName} because it doesn't aggegrate scores`);
           }
         }
+
+        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
       }
     }
 
@@ -650,10 +591,12 @@ export default class SectioningComponent extends BlockComponent {
 
     })
     for (let answer of this.stateValues.answerDescendants) {
-      this.coreFunctions.requestAction({
-        componentName: answer.componentName,
-        actionName: "submitAnswer"
-      })
+      if (!answer.stateValues.justSubmitted) {
+        this.coreFunctions.requestAction({
+          componentName: answer.componentName,
+          actionName: "submitAnswer"
+        })
+      }
     }
   }
 
@@ -713,7 +656,7 @@ export default class SectioningComponent extends BlockComponent {
     sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
 
     // seed rng for random numbers predictably from variant using selectRng
-    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng()*1000000).toString()
+    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
     sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
 
     // console.log("****Variant for sectioning component****")

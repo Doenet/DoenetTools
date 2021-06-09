@@ -72,16 +72,46 @@ export default class Polygon extends DoenetRenderer {
     let renderer = this;
     let polygonJXG = this.polygonJXG;
     let newPointcoords;
-    function onDragBorder(i) {
-      console.log(`on drag border: ${i}`);
+    let board = this.props.board;
+    let borderPointsAtDown;
+    let pointerAtDown;
+    function onDownBorder(e) {
+      pointerAtDown = [e.x, e.y];
+      borderPointsAtDown = [[...this.point1.coords.scrCoords], [...this.point2.coords.scrCoords]];
+      newPointcoords = void 0;
+      offsets = [];
+      for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
+        let vertex = polygonJXG.vertices[j];
+        if (vertex !== this.point1 && vertex !== this.point2) {
+          let pointInfo = {
+            id: vertex.id,
+            offset: [
+              vertex.X() - this.point1.X(),
+              vertex.Y() - this.point1.Y()
+            ]
+          };
+          offsets.push(pointInfo);
+        }
+      }
+    }
+    function onDragBorder(i, e) {
+      let o = board.origin.scrCoords;
       newPointcoords = {};
       let border = polygonJXG.borders[i];
+      let borderPointCoords = [];
+      for (let i2 = 0; i2 < 2; i2++) {
+        let calculatedX = (borderPointsAtDown[i2][1] + e.x - pointerAtDown[0] - o[1]) / board.unitX;
+        let calculatedY = (o[2] - (borderPointsAtDown[i2][2] + e.y - pointerAtDown[1])) / board.unitY;
+        borderPointCoords.push([calculatedX, calculatedY]);
+      }
       for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
         let point = polygonJXG.vertices[j];
-        let item = offsets.find((x) => x.id === point.id);
-        if (item === void 0) {
-          newPointcoords[j] = [point.X(), point.Y()];
+        if (point === border.point1) {
+          newPointcoords[j] = borderPointCoords[0];
+        } else if (point === border.point2) {
+          newPointcoords[j] = borderPointCoords[1];
         } else {
+          let item = offsets.find((x) => x.id === point.id);
           newPointcoords[j] = [
             border.point1.X() + item.offset[0],
             border.point1.Y() + item.offset[1]
@@ -97,25 +127,9 @@ export default class Polygon extends DoenetRenderer {
     }
     for (let i = 0; i < this.polygonJXG.borders.length; i++) {
       let border = this.polygonJXG.borders[i];
-      border.on("drag", () => onDragBorder(i));
+      border.on("drag", (e) => onDragBorder(i, e));
       border.on("up", onUpBorder);
-      border.on("down", function() {
-        newPointcoords = void 0;
-        offsets = [];
-        for (let j = 0; j < renderer.doenetSvData.nVertices; j++) {
-          let vertex = polygonJXG.vertices[j];
-          if (vertex !== this.point1 && vertex !== this.point2) {
-            let pointInfo = {
-              id: vertex.id,
-              offset: [
-                vertex.X() - this.point1.X(),
-                vertex.Y() - this.point1.Y()
-              ]
-            };
-            offsets.push(pointInfo);
-          }
-        }
-      });
+      border.on("down", onDownBorder);
     }
   }
   deleteGraphicalObject() {

@@ -32,6 +32,9 @@ export default class Copy extends CompositeComponent {
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
+    attributes.propFromComposite = {
+      createPrimitiveOfType: "boolean",
+    };
     attributes.componentType = {
       createPrimitiveOfType: "string",
     };
@@ -330,7 +333,7 @@ export default class Copy extends CompositeComponent {
         }
         let childrenOfContent = externalContentChild.stateValues.serializedChildren;
         let serializedComponentsForContentId = {
-          componentType: "externalcontent",
+          componentType: "externalContent",
           state: { rendered: true },
           children: childrenOfContent,
           originalName: externalContentChild.componentName,
@@ -358,6 +361,19 @@ export default class Copy extends CompositeComponent {
       }
     }
 
+    stateVariableDefinitions.propFromComposite = {
+      returnDependencies: () => ({
+        propFromComposite: {
+          dependencyType: "attribute",
+          attributeName: "propFromComposite"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { newValues: { propFromComposite: dependencyValues.propFromComposite } }
+      }
+    }
+
+
 
     stateVariableDefinitions.isPlainMacro = {
       returnDependencies: () => ({
@@ -373,7 +389,7 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.replacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "componentIndex",
+        "targetComponent", "componentIndex", "propName", "propFromComposite"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
@@ -381,10 +397,13 @@ export default class Copy extends CompositeComponent {
 
         if (stateValues.targetComponent !== null) {
 
-          if (componentInfoObjects.isCompositeComponent({
-            componentType: stateValues.targetComponent.componentType,
-            includeNonStandard: false
-          })) {
+          if (
+            componentInfoObjects.isCompositeComponent({
+              componentType: stateValues.targetComponent.componentType,
+              includeNonStandard: false
+            })
+            && !(stateValues.propName && stateValues.propFromComposite)
+          ) {
             dependencies.targets = {
               dependencyType: "replacement",
               compositeName: stateValues.targetComponent.componentName,
@@ -587,7 +606,7 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent"
+        "targetComponent", "propName", "propFromComposite"
       ],
       returnDependencies({ stateValues, componentInfoObjects }) {
 
@@ -613,10 +632,13 @@ export default class Copy extends CompositeComponent {
           //   variableName: "propName",
           // },
         };
-        if (stateValues.targetComponent && componentInfoObjects.isCompositeComponent({
-          componentType: stateValues.targetComponent.componentType,
-          includeNonStandard: false
-        })) {
+        if (
+          stateValues.targetComponent && componentInfoObjects.isCompositeComponent({
+            componentType: stateValues.targetComponent.componentType,
+            includeNonStandard: false
+          })
+          && !(stateValues.propName && stateValues.propFromComposite)
+        ) {
           dependencies.targetReadyToExpandWhenResolved = {
             dependencyType: "stateVariable",
             componentName: stateValues.targetComponent.componentName,
@@ -637,6 +659,7 @@ export default class Copy extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "replacementSourceIdentities", "effectivePropNameBySource",
+        "propName", "propFromComposite"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
@@ -695,6 +718,7 @@ export default class Copy extends CompositeComponent {
             componentType: stateValues.targetComponent.componentType,
             includeNonStandard: false
           })
+          && !(stateValues.propName && stateValues.propFromComposite)
         ) {
 
           // Include identities of all replacements (and inactive target variable)
@@ -739,6 +763,7 @@ export default class Copy extends CompositeComponent {
 
 
     workspace.numReplacementsBySource = [];
+    workspace.numNonStringReplacementsBySource = [];
     workspace.propVariablesCopiedBySource = [];
     workspace.sourceNames = [];
     workspace.uniqueIdentifiersUsedBySource = {};
@@ -845,7 +870,9 @@ export default class Copy extends CompositeComponent {
     let replacements = [];
 
     let numReplacementsBySource = [];
+    let numNonStringReplacementsBySource = [];
     let numReplacementsSoFar = 0;
+    let numNonStringReplacementsSoFar = 0;
 
     for (let sourceNum in component.stateValues.replacementSourceIdentities) {
 
@@ -871,6 +898,7 @@ export default class Copy extends CompositeComponent {
         sourceNum,
         components,
         numReplacementsSoFar,
+        numNonStringReplacementsSoFar,
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
@@ -882,11 +910,14 @@ export default class Copy extends CompositeComponent {
 
       let sourceReplacements = results.serializedReplacements;
       numReplacementsBySource[sourceNum] = sourceReplacements.length;
-      numReplacementsSoFar += sourceReplacements.length;
+      numNonStringReplacementsBySource[sourceNum] = sourceReplacements.filter(x => x.componentType !== "string").length;
+      numReplacementsSoFar += numReplacementsBySource[sourceNum];
+      numNonStringReplacementsSoFar += numNonStringReplacementsBySource[sourceNum];
       replacements.push(...sourceReplacements);
     }
 
     workspace.numReplacementsBySource = numReplacementsBySource;
+    workspace.numNonStringReplacementsBySource = numNonStringReplacementsBySource;
     workspace.sourceNames = component.stateValues.replacementSourceIdentities.map(x => x.componentName)
 
     let verificationResult = this.verifyReplacementsMatchSpecifiedType({
@@ -982,6 +1013,7 @@ export default class Copy extends CompositeComponent {
 
       // since clearing out all replacements, reset all workspace variables
       workspace.numReplacementsBySource = [];
+      workspace.numNonStringReplacementsBySource = [];
       workspace.propVariablesCopiedBySource = [];
       workspace.sourceNames = [];
       workspace.uniqueIdentifiersUsedBySource = {};
@@ -1019,6 +1051,7 @@ export default class Copy extends CompositeComponent {
       replacements = processResult.serializedComponents;
 
       workspace.numReplacementsBySource.push(replacements.length)
+      workspace.numNonStringReplacementsBySource.push(replacements.filter(x => x.componentType !== "string").length)
 
       if (replacementChanges) {
         replacementChanges = [];
@@ -1052,6 +1085,7 @@ export default class Copy extends CompositeComponent {
     sourceNum,
     components,
     numReplacementsSoFar,
+    numNonStringReplacementsSoFar,
     uniqueIdentifiersUsed,
     compositeAttributesObj,
     componentInfoObjects,
@@ -1077,6 +1111,7 @@ export default class Copy extends CompositeComponent {
         replacementSource,
         propName: component.stateValues.effectivePropNameBySource[sourceNum],
         numReplacementsSoFar,
+        numNonStringReplacementsSoFar,
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
@@ -1089,7 +1124,7 @@ export default class Copy extends CompositeComponent {
         serializedComponents: results.serializedReplacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: component.attributes.newNamespace,
-        indOffset: numReplacementsSoFar,
+        indOffset: numNonStringReplacementsSoFar,
         componentInfoObjects,
       });
 
@@ -1138,7 +1173,7 @@ export default class Copy extends CompositeComponent {
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       parentCreatesNewNamespace: component.attributes.newNamespace,
-      indOffset: numReplacementsSoFar,
+      indOffset: numNonStringReplacementsSoFar,
       componentInfoObjects,
     });
 
@@ -1183,6 +1218,7 @@ export default class Copy extends CompositeComponent {
       }
       workspace.sourceNames = [];
       workspace.numReplacementsBySource = [];
+      workspace.numNonStringReplacementsBySource = [];
       workspace.propVariablesCopiedBySource = [];
 
       let verificationResult = this.verifyReplacementsMatchSpecifiedType({
@@ -1234,8 +1270,10 @@ export default class Copy extends CompositeComponent {
 
 
     let numReplacementsSoFar = 0;
+    let numNonStringReplacementsSoFar = 0;
 
     let numReplacementsBySource = [];
+    let numNonStringReplacementsBySource = [];
     let propVariablesCopiedBySource = [];
 
     let maxSourceLength = Math.max(component.stateValues.replacementSourceIdentities.length, workspace.numReplacementsBySource.length);
@@ -1286,6 +1324,8 @@ export default class Copy extends CompositeComponent {
             // so that don't attempt to delete again
             workspace.numReplacementsBySource.slice(sourceNum)
               .forEach((v, i) => workspace.numReplacementsBySource[i] = 0)
+            workspace.numNonStringReplacementsBySource.slice(sourceNum)
+              .forEach((v, i) => workspace.numNonStringReplacementsBySource[i] = 0)
 
           }
 
@@ -1294,6 +1334,7 @@ export default class Copy extends CompositeComponent {
         }
 
         numReplacementsBySource[sourceNum] = 0;
+        numNonStringReplacementsBySource[sourceNum] = 0;
         propVariablesCopiedBySource.push([]);
 
         continue;
@@ -1340,6 +1381,7 @@ export default class Copy extends CompositeComponent {
           component,
           sourceNum,
           numReplacementsSoFar,
+          numNonStringReplacementsSoFar,
           numReplacementsToDelete,
           components,
           uniqueIdentifiersUsed,
@@ -1350,8 +1392,10 @@ export default class Copy extends CompositeComponent {
         });
 
         numReplacementsSoFar += results.numReplacements;
+        numNonStringReplacementsSoFar += results.numNonStringReplacements;
 
         numReplacementsBySource[sourceNum] = results.numReplacements;
+        numNonStringReplacementsBySource[sourceNum] = results.numNonStringReplacements;
 
         propVariablesCopiedBySource[sourceNum] = results.propVariablesCopiedByReplacement;
 
@@ -1374,6 +1418,8 @@ export default class Copy extends CompositeComponent {
             // so that don't attempt to delete again
             workspace.numReplacementsBySource.slice(sourceNum)
               .forEach((v, i) => workspace.numReplacementsBySource[i] = 0)
+            workspace.numNonStringReplacementsBySource.slice(sourceNum)
+              .forEach((v, i) => workspace.numNonStringReplacementsBySource[i] = 0)
 
           }
         }
@@ -1391,14 +1437,18 @@ export default class Copy extends CompositeComponent {
           if (workspace.numReplacementsBySource[sourceNum] === 0) {
             // no changes
             numReplacementsSoFar += workspace.numReplacementsBySource[sourceNum];
+            numNonStringReplacementsSoFar += workspace.numNonStringReplacementsBySource[sourceNum];
             numReplacementsBySource[sourceNum] = workspace.numReplacementsBySource[sourceNum];
+            numNonStringReplacementsBySource[sourceNum] = workspace.numNonStringReplacementsBySource[sourceNum];
             continue;
           }
         } else if (workspace.numReplacementsBySource[sourceNum] > 0) {
           // if previously had replacements and target still isn't inactive
           // then don't check for changes if don't have a propName
           numReplacementsSoFar += workspace.numReplacementsBySource[sourceNum];
+          numNonStringReplacementsSoFar += workspace.numNonStringReplacementsBySource[sourceNum];
           numReplacementsBySource[sourceNum] = workspace.numReplacementsBySource[sourceNum];
+          numNonStringReplacementsBySource[sourceNum] = workspace.numNonStringReplacementsBySource[sourceNum];
           continue;
         }
       }
@@ -1413,6 +1463,7 @@ export default class Copy extends CompositeComponent {
         sourceNum,
         components,
         numReplacementsSoFar,
+        numNonStringReplacementsSoFar,
         uniqueIdentifiersUsed,
         compositeAttributesObj,
         componentInfoObjects,
@@ -1441,7 +1492,7 @@ export default class Copy extends CompositeComponent {
           firstReplacementInd: numReplacementsSoFar,
           numberReplacementsToReplace: numberReplacementsLeft,
           serializedReplacements: newSerializedReplacements,
-          assignNamesOffset: numReplacementsSoFar,
+          assignNamesOffset: numNonStringReplacementsSoFar,
         };
 
         replacementChanges.push(replacementInstruction);
@@ -1452,10 +1503,13 @@ export default class Copy extends CompositeComponent {
         // so that don't attempt to delete again
         workspace.numReplacementsBySource.slice(sourceNum)
           .forEach((v, i) => workspace.numReplacementsBySource[i] = 0)
+        workspace.numNonStringReplacementsBySource.slice(sourceNum)
+          .forEach((v, i) => workspace.numNonStringReplacementsBySource[i] = 0)
 
 
       } else {
 
+        let nonStringInd = 0;
         for (let ind = 0; ind < nNewReplacements; ind++) {
           if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedBySource[sourceNum][ind].length ||
             workspace.propVariablesCopiedBySource[sourceNum][ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i]) ||
@@ -1468,18 +1522,28 @@ export default class Copy extends CompositeComponent {
               firstReplacementInd: numReplacementsSoFar + ind,
               numberReplacementsToReplace: 1,
               serializedReplacements: [newSerializedReplacements[ind]],
-              assignNamesOffset: numReplacementsSoFar + ind,
+              assignNamesOffset: numNonStringReplacementsSoFar + nonStringInd,
             };
             replacementChanges.push(replacementInstruction);
           }
+
+          if (newSerializedReplacements[ind].componentType !== "string") {
+            nonStringInd++;
+          }
+
         }
 
 
       }
 
+
+      let nNewNonStrings = newSerializedReplacements.filter(x => x.componentType !== "string").length;
+
       numReplacementsSoFar += nNewReplacements;
+      numNonStringReplacementsSoFar += nNewNonStrings;
 
       numReplacementsBySource[sourceNum] = nNewReplacements;
+      numNonStringReplacementsBySource[sourceNum] = nNewNonStrings;
 
       propVariablesCopiedBySource[sourceNum] = propVariablesCopiedByReplacement;
 
@@ -1487,6 +1551,7 @@ export default class Copy extends CompositeComponent {
 
 
     workspace.numReplacementsBySource = numReplacementsBySource;
+    workspace.numNonStringReplacementsBySource = numNonStringReplacementsBySource;
     workspace.sourceNames = component.stateValues.replacementSourceIdentities.map(x => x.componentName)
     workspace.propVariablesCopiedBySource = propVariablesCopiedBySource;
 
@@ -1507,7 +1572,8 @@ export default class Copy extends CompositeComponent {
   }
 
 
-  static recreateReplacements({ component, sourceNum, numReplacementsSoFar,
+  static recreateReplacements({ component, sourceNum,
+    numReplacementsSoFar, numNonStringReplacementsSoFar,
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, compositeAttributesObj, componentInfoObjects,
     nComponentsForSource,
@@ -1515,7 +1581,8 @@ export default class Copy extends CompositeComponent {
   }) {
 
     let results = this.createReplacementForSource({
-      component, sourceNum, numReplacementsSoFar, components, uniqueIdentifiersUsed,
+      component, sourceNum, numReplacementsSoFar, numNonStringReplacementsSoFar,
+      components, uniqueIdentifiersUsed,
       compositeAttributesObj, componentInfoObjects, nComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions
     });
@@ -1530,11 +1597,12 @@ export default class Copy extends CompositeComponent {
       firstReplacementInd: numReplacementsSoFar,
       numberReplacementsToReplace: numReplacementsToDelete,
       serializedReplacements: newSerializedChildren,
-      assignNamesOffset: numReplacementsSoFar,
+      assignNamesOffset: numNonStringReplacementsSoFar,
     };
 
     return {
       numReplacements: newSerializedChildren.length,
+      numNonStringReplacements: newSerializedChildren.filter(x => x.componentType !== "string").length,
       propVariablesCopiedByReplacement,
       replacementInstruction
     }
@@ -1988,7 +2056,7 @@ export function replacementFromProp({ component, components,
 
   } else {
 
-    if(stateVarObj.hasVariableComponentType) {
+    if (stateVarObj.hasVariableComponentType) {
       // evaluate stateVarObj to make sure componentType is calculated and up-to-date
       stateVarObj.value;
     }

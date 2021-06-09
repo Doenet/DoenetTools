@@ -11,9 +11,9 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
   updateValidationState() {
     this.validationState = "unvalidated";
     if (this.doenetSvData.valueHasBeenValidated) {
-      if (this.doenetSvData.creditAchievedForSubmitButton === 1) {
+      if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
-      } else if (this.doenetSvData.creditAchievedForSubmitButton === 0) {
+      } else if (this.doenetSvData.creditAchieved === 0) {
         this.validationState = "incorrect";
       } else {
         this.validationState = "partialcorrect";
@@ -82,7 +82,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
                 icon: faCheck
               }));
             } else if (this.validationState === "partialcorrect") {
-              let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+              let percent = Math.round(this.doenetSvData.creditAchieved * 100);
               let partialCreditContents = `${percent} %`;
               checkWorkStyle.width = "50px";
               checkWorkStyle.backgroundColor = "#efab34";
@@ -166,7 +166,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
             icon: faLevelDownAlt,
             transform: {rotate: 90}
-          }), "\xA0", checkWorkText);
+          }), " ", checkWorkText);
         } else {
           if (this.doenetSvData.showCorrectness) {
             if (this.validationState === "correct") {
@@ -176,7 +176,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
                 style: checkWorkStyle
               }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
                 icon: faCheck
-              }), "\xA0 Correct");
+              }), "  Correct");
             } else if (this.validationState === "incorrect") {
               checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
               checkworkComponent = /* @__PURE__ */ React.createElement("span", {
@@ -184,10 +184,10 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
                 style: checkWorkStyle
               }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
                 icon: faTimes
-              }), "\xA0 Incorrect");
+              }), "  Incorrect");
             } else if (this.validationState === "partialcorrect") {
               checkWorkStyle.backgroundColor = "#efab34";
-              let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+              let percent = Math.round(this.doenetSvData.creditAchieved * 100);
               let partialCreditContents = `${percent}% Correct`;
               checkworkComponent = /* @__PURE__ */ React.createElement("span", {
                 id: this.componentName + "_partial",
@@ -201,7 +201,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
               style: checkWorkStyle
             }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
               icon: faCloud
-            }), "\xA0 Response Saved");
+            }), "  Response Saved");
           }
         }
       }

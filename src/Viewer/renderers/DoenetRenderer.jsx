@@ -10,6 +10,10 @@ export default class DoenetRenderer extends Component {
     this.swapChildren = this.swapChildren.bind(this);
     this.update = this.update.bind(this);
 
+    // BADBADBAD: this.childrenToCreate gets updated indirectly by Core
+    // in updateRendererInstructions, where it modifies componentInstructions.children,
+    // and that change is assumed in addChildren, below.
+    // Very confusing!
     this.childrenToCreate = props.componentInstructions.children;
     this.componentName = props.componentInstructions.componentName;
 
@@ -29,7 +33,7 @@ export default class DoenetRenderer extends Component {
       swapChildren: this.swapChildren,
     }
 
-    if(this.constructor.initializeChildrenOnConstruction) {
+    if (this.constructor.initializeChildrenOnConstruction) {
       this.initializeChildren();
     }
 
@@ -92,7 +96,13 @@ export default class DoenetRenderer extends Component {
     if (this.doenetPropsForChildren) {
       Object.assign(propsForChild, this.doenetPropsForChildren);
     }
-    let child = React.createElement(this.props.rendererClasses[childInstructions.rendererType], propsForChild);
+    let rendererClass = this.props.rendererClasses[childInstructions.rendererType];
+
+    if (!rendererClass) {
+      throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
+    }
+
+    let child = React.createElement(rendererClass, propsForChild);
     return child;
   }
 }

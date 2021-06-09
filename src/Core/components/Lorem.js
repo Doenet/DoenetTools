@@ -122,7 +122,7 @@ export default class Lorem extends CompositeComponent {
         max: component.stateValues.maxWordsPerSentence,
         min: component.stateValues.minWordsPerSentence
       },
-      random: component.sharedParameters.selectRng
+      random: component.sharedParameters.rng
     });
 
     let replacements = [];

@@ -614,6 +614,32 @@ describe('Copy Tag Tests', function () {
 
   });
 
+
+  it('copy keeps hidden children hidden', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
+    <p name="pReveal">Revealed: $(theP/hidden)</p>
+    <copy tname="theP" assignNames="theP2" />
+    <p name="pReveal2">Revealed 2: $(theP2/hidden)</p>
+
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/theP').should('have.text', 'Hidden text: ');
+    cy.get('#\\/pReveal').should('have.text', 'Revealed: secret');
+    cy.get('#\\/theP2').should('have.text', 'Hidden text: ');
+    cy.get('#\\/pReveal2').should('have.text', 'Revealed 2: secret');
+
+
+  });
+
   it('copies hide dynamically', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -648,5 +674,390 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/c2').should('have.text', 'copy 2: ')
 
   })
+
+  it('copy uri two problems', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <title>Two problems</title>
+
+    <copy assignNames="problem1" uri="doenet:contentId=dfeabf5fd89afc1f13d5b5adc15880cb11e41361e8a42119931bded23ab7b199" />
+    
+    <copy assignNames="problem2" uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'Two problems');  // to wait for page to load
+
+    let problem1Version;
+    let animalOptions = ["cat", "dog", "mouse", "fish"];
+    let soundOptions = ["meow", "woof", "squeak", "blub"]
+
+    cy.get(cesc('#/problem1/_p1')).invoke('text').then(text => {
+      let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
+      problem1Version = titleOptions.indexOf(text);
+      expect(problem1Version).not.eq(-1)
+    })
+
+    cy.log(`select correct answer for problem 1`).then(() => {
+      let animal = animalOptions[problem1Version];
+      let sound = soundOptions[problem1Version]
+      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc('#/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc('#/problem1/_feedback2')).should('not.exist');
+
+    })
+
+    cy.log(`select incorrect answer for problem 1`).then(() => {
+      let incorrectInd = (problem1Version + 1) % 4;
+      let sound = soundOptions[incorrectInd]
+      cy.get(cesc('#/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc('#/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc('#/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc('#/problem1/_feedback2')).should('have.text', `Try again.`)
+
+    })
+
+
+    cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      console.log(components)
+      let mathinputName = components['/problem2/derivativeProblem/_answer1'].stateValues.inputChild.componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.log(`enter incorrect answer for problem 2`);
+      cy.get(mathinputAnchor).type('2y{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('not.exist')
+      cy.get(mathinputIncorrectAnchor).should('be.visible')
+
+      cy.log(`enter correct answer for problem 2`);
+      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+      cy.get(mathinputIncorrectAnchor).should('not.exist')
+
+
+    })
+
+  })
+
+  it('copy uri containing copy uri of two problems', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <title>Four problems</title>
+
+    <copy assignNames="problem12" uri="doenet:contentId=ee95cf03ded86c2fb1d27043ed1ab219a1e6d876e17d1ec9cb0b023fad6f351f" />
+    
+    <copy assignNames="problem34" newNamespace name="set2" uri="doenet:contentId=ee95cf03ded86c2fb1d27043ed1ab219a1e6d876e17d1ec9cb0b023fad6f351f" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'Four problems');  // to wait for page to load
+
+    let problem1Version;
+    let animalOptions = ["cat", "dog", "mouse", "fish"];
+    let soundOptions = ["meow", "woof", "squeak", "blub"]
+
+    cy.get(cesc('#/problem12/problem1/_p1')).invoke('text').then(text => {
+      let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
+      problem1Version = titleOptions.indexOf(text);
+      expect(problem1Version).not.eq(-1)
+    })
+
+    cy.log(`select correct answer for problem 1`).then(() => {
+      let animal = animalOptions[problem1Version];
+      let sound = soundOptions[problem1Version]
+      cy.get(cesc('#/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/problem12/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc('#/problem12/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc('#/problem12/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc('#/problem12/problem1/_feedback2')).should('not.exist');
+
+    })
+
+    cy.log(`select incorrect answer for problem 1`).then(() => {
+      let incorrectInd = (problem1Version + 1) % 4;
+      let sound = soundOptions[incorrectInd]
+      cy.get(cesc('#/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/problem12/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc('#/problem12/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc('#/problem12/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc('#/problem12/problem1/_feedback2')).should('have.text', `Try again.`)
+
+    })
+
+
+    cy.get(cesc('#/problem12/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/problem12/problem2/derivativeProblem/_answer1'].stateValues.inputChild.componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.log(`enter incorrect answer for problem 2`);
+      cy.get(mathinputAnchor).type('2y{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('not.exist')
+      cy.get(mathinputIncorrectAnchor).should('be.visible')
+
+      cy.log(`enter correct answer for problem 2`);
+      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+      cy.get(mathinputIncorrectAnchor).should('not.exist')
+
+
+    })
+
+
+    cy.get(cesc('#/set2/problem34/problem1/_p1')).invoke('text').then(text => {
+      let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
+      problem1Version = titleOptions.indexOf(text);
+      expect(problem1Version).not.eq(-1)
+    })
+
+    cy.log(`select correct answer for problem 1`).then(() => {
+      let animal = animalOptions[problem1Version];
+      let sound = soundOptions[problem1Version]
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc('#/set2/problem34/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc('#/set2/problem34/problem1/_feedback2')).should('not.exist');
+
+    })
+
+    cy.log(`select incorrect answer for problem 1`).then(() => {
+      let incorrectInd = (problem1Version + 1) % 4;
+      let sound = soundOptions[incorrectInd]
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc('#/set2/problem34/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc('#/set2/problem34/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc('#/set2/problem34/problem1/_feedback2')).should('have.text', `Try again.`)
+
+    })
+
+
+    cy.get(cesc('#/set2/problem34/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/set2/problem34/problem2/derivativeProblem/_answer1'].stateValues.inputChild.componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.log(`enter incorrect answer for problem 2`);
+      cy.get(mathinputAnchor).type('2y{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('not.exist')
+      cy.get(mathinputIncorrectAnchor).should('be.visible')
+
+      cy.log(`enter correct answer for problem 2`);
+      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+      cy.get(mathinputIncorrectAnchor).should('not.exist')
+
+
+    })
+
+
+  })
+
+  // this triggered an error not caught with the other order
+  it('copy uri containing copy uri of two problems, newNamespace first', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <title>Four problems</title>
+
+    <copy assignNames="problem12" newNamespace name="set1" uri="doenet:contentId=ee95cf03ded86c2fb1d27043ed1ab219a1e6d876e17d1ec9cb0b023fad6f351f" />
+    
+    <copy assignNames="problem34" uri="doenet:contentId=ee95cf03ded86c2fb1d27043ed1ab219a1e6d876e17d1ec9cb0b023fad6f351f" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_title1').should('have.text', 'Four problems');  // to wait for page to load
+
+    let problem1Version;
+    let animalOptions = ["cat", "dog", "mouse", "fish"];
+    let soundOptions = ["meow", "woof", "squeak", "blub"]
+
+    cy.get(cesc('#/set1/problem12/problem1/_p1')).invoke('text').then(text => {
+      let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
+      problem1Version = titleOptions.indexOf(text);
+      expect(problem1Version).not.eq(-1)
+    })
+
+    cy.log(`select correct answer for problem 1`).then(() => {
+      let animal = animalOptions[problem1Version];
+      let sound = soundOptions[problem1Version]
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc('#/set1/problem12/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc('#/set1/problem12/problem1/_feedback2')).should('not.exist');
+
+    })
+
+    cy.log(`select incorrect answer for problem 1`).then(() => {
+      let incorrectInd = (problem1Version + 1) % 4;
+      let sound = soundOptions[incorrectInd]
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc('#/set1/problem12/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc('#/set1/problem12/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc('#/set1/problem12/problem1/_feedback2')).should('have.text', `Try again.`)
+
+    })
+
+
+    cy.get(cesc('#/set1/problem12/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/set1/problem12/problem2/derivativeProblem/_answer1'].stateValues.inputChild.componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.log(`enter incorrect answer for problem 2`);
+      cy.get(mathinputAnchor).type('2y{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('not.exist')
+      cy.get(mathinputIncorrectAnchor).should('be.visible')
+
+      cy.log(`enter correct answer for problem 2`);
+      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+      cy.get(mathinputIncorrectAnchor).should('not.exist')
+
+
+    })
+
+
+    cy.get(cesc('#/problem34/problem1/_p1')).invoke('text').then(text => {
+      let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
+      problem1Version = titleOptions.indexOf(text);
+      expect(problem1Version).not.eq(-1)
+    })
+
+    cy.log(`select correct answer for problem 1`).then(() => {
+      let animal = animalOptions[problem1Version];
+      let sound = soundOptions[problem1Version]
+      cy.get(cesc('#/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/problem34/problem1/_choiceinput1_correct')).should('be.visible');
+      cy.get(cesc('#/problem34/problem1/_choiceinput1_incorrect')).should('not.exist');
+      cy.get(cesc('#/problem34/problem1/_feedback1')).should('have.text', `That's right, the ${animal} goes ${sound}!`)
+      cy.get(cesc('#/problem34/problem1/_feedback2')).should('not.exist');
+
+    })
+
+    cy.log(`select incorrect answer for problem 1`).then(() => {
+      let incorrectInd = (problem1Version + 1) % 4;
+      let sound = soundOptions[incorrectInd]
+      cy.get(cesc('#/problem34/problem1/_choiceinput1')).contains(sound).click({ force: true });
+      cy.get(cesc('#/problem34/problem1/_choiceinput1_submit')).click();
+      cy.get(cesc('#/problem34/problem1/_choiceinput1_correct')).should('not.exist');
+      cy.get(cesc('#/problem34/problem1/_choiceinput1_incorrect')).should('be.visible');
+      cy.get(cesc('#/problem34/problem1/_feedback1')).should('not.exist');
+      cy.get(cesc('#/problem34/problem1/_feedback2')).should('have.text', `Try again.`)
+
+    })
+
+
+    cy.get(cesc('#/problem34/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = components['/problem34/problem2/derivativeProblem/_answer1'].stateValues.inputChild.componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.log(`enter incorrect answer for problem 2`);
+      cy.get(mathinputAnchor).type('2y{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('not.exist')
+      cy.get(mathinputIncorrectAnchor).should('be.visible')
+
+      cy.log(`enter correct answer for problem 2`);
+      cy.get(mathinputAnchor).type('{end}{backspace}x{enter}', { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist')
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+      cy.get(mathinputIncorrectAnchor).should('not.exist')
+
+
+    })
+
+
+  })
+
+
+  it('copy of component that changes away from a copy', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="b" />
+
+    <text name="jump" hide>jump</text>
+    
+    <p name="forVerb"><conditionalContent assignNames="(verb)">
+      <case condition="$b"><text>skip</text></case>
+      <else>$jump</else>
+    </conditionalContent></p>
+
+    <copy tname="verb" assignNames="verb2" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/forVerb').should('have.text', 'jump');
+    cy.get('#\\/verb2').should('have.text', 'jump');
+
+    cy.get('#\\/b').click();
+    cy.get('#\\/forVerb').should('have.text', 'skip');
+    cy.get('#\\/verb2').should('have.text', 'skip');
+
+
+
+  });
+
 
 });

@@ -260,7 +260,7 @@ function makePeriodic({ value, lowerValue, upperValue }) {
   if (numericValue instanceof me.class) {
     numericValue = numericValue.evaluate_to_constant();
   }
-  
+
   if (!Number.isFinite(numericValue)) {
     return me.fromAst(NaN);
   }
@@ -871,4 +871,202 @@ export class Mod extends MathBaseOperator {
     return stateVariableDefinitions;
 
   }
+}
+
+
+export class ExtractMath extends MathBaseOperatorOneInput {
+  static componentType = "extractMath";
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.type = {
+      createComponentOfType: "text",
+      createStateVariable: "type",
+      defaultValue: null,
+      toLowerCase: true,
+      validValues: ["operand", "function", "functionargument", "numberofoperands"]
+
+    }
+    attributes.operandNumber = {
+      createComponentOfType: "number",
+      createStateVariable: "operandNumber",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.argumentNumber = {
+      createComponentOfType: "number",
+      createStateVariable: "argumentNumber",
+      defaultValue: null,
+      public: true,
+    };
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.mathOperator = {
+      returnDependencies: () => ({
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        operandNumber: {
+          dependencyType: "stateVariable",
+          variableName: "operandNumber"
+        },
+        argumentNumber: {
+          dependencyType: "stateVariable",
+          variableName: "argumentNumber"
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        if (dependencyValues.type === "operand") {
+          if (dependencyValues.operandNumber === null) {
+            console.warn(`Must specify a operandNumber when extracting a math operand`)
+            return {
+              newValues: {
+                mathOperator: _ => me.fromAst('\uff3f')
+              }
+            }
+          }
+          return {
+            newValues: {
+              mathOperator: function (value) {
+
+                let tree = value.tree;
+
+                if (!Array.isArray(tree)) {
+                  if (dependencyValues.operandNumber === 1) {
+                    return value;
+                  } else {
+                    return me.fromAst('\uff3f')
+                  }
+                }
+
+                let operator = tree[0];
+
+                if (operator === "apply") {
+                  if (dependencyValues.operandNumber === 1) {
+                    return value;
+                  } else {
+                    return me.fromAst('\uff3f')
+                  }
+                }
+
+                let operand = tree[dependencyValues.operandNumber];
+
+                if (operand === undefined) {
+                  return me.fromAst('\uff3f')
+                } else {
+                  return me.fromAst(operand);
+                }
+
+              }
+            }
+          }
+        } else if (dependencyValues.type === "function") {
+          return {
+            newValues: {
+              mathOperator: function (value) {
+
+                let tree = value.tree;
+
+                if (!Array.isArray(tree)) {
+                  return me.fromAst('\uff3f')
+                }
+
+                let operator = tree[0];
+
+                if (operator !== "apply") {
+                  return me.fromAst('\uff3f')
+                }
+
+                return me.fromAst(tree[1]);
+
+              }
+            }
+          }
+        } else if (dependencyValues.type === "functionargument") {
+          return {
+            newValues: {
+              mathOperator: function (value) {
+
+                let tree = value.tree;
+
+                if (!Array.isArray(tree)) {
+                  return me.fromAst('\uff3f')
+                }
+
+                let operator = tree[0];
+
+                if (operator !== "apply") {
+                  return me.fromAst('\uff3f')
+                }
+
+                let allArgs = tree[2];
+
+                if (dependencyValues.argumentNumber === null) {
+                  return me.fromAst(allArgs);
+                } else if (dependencyValues.argumentNumber === 1) {
+                  if (!(Array.isArray(allArgs) && allArgs[0] === "tuple")) {
+                    return me.fromAst(allArgs);
+                  } else {
+                    return me.fromAst(allArgs[1]);
+                  }
+                } else {
+                  if (!(Array.isArray(allArgs) && allArgs[0] === "tuple")) {
+                    return me.fromAst('\uff3f')
+                  } else {
+                    let theArg = allArgs[dependencyValues.argumentNumber];
+                    if (theArg === undefined) {
+                      return me.fromAst('\uff3f')
+
+                    } else {
+                      return me.fromAst(theArg);
+                    }
+                  }
+                }
+
+              }
+            }
+          }
+        } else if (dependencyValues.type === "numberofoperands") {
+          return {
+            newValues: {
+              mathOperator: function (value) {
+
+                let tree = value.tree;
+
+                if (!Array.isArray(tree)) {
+                  return me.fromAst(1)
+                }
+
+                let operator = tree[0];
+
+                if (operator === "apply") {
+                  return me.fromAst(1)
+                }
+
+                return me.fromAst(tree.length - 1);
+
+              }
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              mathOperator: _ => me.fromAst('_')
+            }
+          }
+        }
+      }
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
 }

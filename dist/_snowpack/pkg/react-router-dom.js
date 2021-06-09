@@ -1,9 +1,9 @@
 import { b as _extends, _ as _inheritsLoose, a as _objectWithoutPropertiesLoose } from './common/inheritsLoose-adbe5217.js';
-import { r as react } from './common/index-678ccbe9.js';
-import { p as propTypes } from './common/index-ad697a84.js';
-import { g as global } from './common/polyfill-node_global-a90d30ee.js';
-import { c as createCommonjsModule } from './common/_commonjsHelpers-4f955397.js';
-import './common/hoist-non-react-statics.cjs-1eea6c75.js';
+import { r as react } from './common/index-f66788ca.js';
+import { p as propTypes } from './common/index-4bda1d4e.js';
+import { g as global } from './common/_polyfill-node:global-acbc543a.js';
+import { c as createCommonjsModule } from './common/_commonjsHelpers-f5d70792.js';
+import './common/hoist-non-react-statics.cjs-fd576625.js';
 
 function isAbsolute(pathname) {
   return pathname.charAt(0) === '/';
@@ -89,7 +89,7 @@ function invariant(condition, message) {
     }
 }
 
-function addLeadingSlash$1(path) {
+function addLeadingSlash(path) {
   return path.charAt(0) === '/' ? path : '/' + path;
 }
 function stripLeadingSlash(path) {
@@ -98,7 +98,7 @@ function stripLeadingSlash(path) {
 function hasBasename(path, prefix) {
   return path.toLowerCase().indexOf(prefix.toLowerCase()) === 0 && '/?#'.indexOf(path.charAt(prefix.length)) !== -1;
 }
-function stripBasename$1(path, prefix) {
+function stripBasename(path, prefix) {
   return hasBasename(path, prefix) ? path.substr(prefix.length) : path;
 }
 function stripTrailingSlash(path) {
@@ -327,7 +327,7 @@ function createBrowserHistory(props) {
     props = {};
   }
 
-  !canUseDOM ? invariant(false) : void 0;
+  !canUseDOM ?  invariant(false) : void 0;
   var globalHistory = window.history;
   var canUseHistory = supportsHistory();
   var needsHashChangeListener = !supportsPopStateOnHashChange();
@@ -338,7 +338,7 @@ function createBrowserHistory(props) {
       getUserConfirmation = _props$getUserConfirm === void 0 ? getConfirmation : _props$getUserConfirm,
       _props$keyLength = _props.keyLength,
       keyLength = _props$keyLength === void 0 ? 6 : _props$keyLength;
-  var basename = props.basename ? stripTrailingSlash(addLeadingSlash$1(props.basename)) : '';
+  var basename = props.basename ? stripTrailingSlash(addLeadingSlash(props.basename)) : '';
 
   function getDOMLocation(historyState) {
     var _ref = historyState || {},
@@ -350,7 +350,7 @@ function createBrowserHistory(props) {
         search = _window$location.search,
         hash = _window$location.hash;
     var path = pathname + search + hash;
-    if (basename) path = stripBasename$1(path, basename);
+    if (basename) path = stripBasename(path, basename);
     return createLocation(path, state, key);
   }
 
@@ -573,11 +573,11 @@ var HashPathCoders = {
   },
   noslash: {
     encodePath: stripLeadingSlash,
-    decodePath: addLeadingSlash$1
+    decodePath: addLeadingSlash
   },
   slash: {
-    encodePath: addLeadingSlash$1,
-    decodePath: addLeadingSlash$1
+    encodePath: addLeadingSlash,
+    decodePath: addLeadingSlash
   }
 };
 
@@ -607,22 +607,22 @@ function createHashHistory(props) {
     props = {};
   }
 
-  !canUseDOM ? invariant(false) : void 0;
+  !canUseDOM ?  invariant(false) : void 0;
   var globalHistory = window.history;
-  supportsGoWithoutReloadUsingHash();
+  var canGoWithoutReload = supportsGoWithoutReloadUsingHash();
   var _props = props,
       _props$getUserConfirm = _props.getUserConfirmation,
       getUserConfirmation = _props$getUserConfirm === void 0 ? getConfirmation : _props$getUserConfirm,
       _props$hashType = _props.hashType,
       hashType = _props$hashType === void 0 ? 'slash' : _props$hashType;
-  var basename = props.basename ? stripTrailingSlash(addLeadingSlash$1(props.basename)) : '';
+  var basename = props.basename ? stripTrailingSlash(addLeadingSlash(props.basename)) : '';
   var _HashPathCoders$hashT = HashPathCoders[hashType],
       encodePath = _HashPathCoders$hashT.encodePath,
       decodePath = _HashPathCoders$hashT.decodePath;
 
   function getDOMLocation() {
     var path = decodePath(getHashPath());
-    if (basename) path = stripBasename$1(path, basename);
+    if (basename) path = stripBasename(path, basename);
     return createLocation(path);
   }
 
@@ -1629,7 +1629,7 @@ var reactIs_production_min = {
 	typeOf: typeOf
 };
 
-createCommonjsModule(function (module) {
+var reactIs = createCommonjsModule(function (module) {
 
 {
   module.exports = reactIs_production_min;
@@ -1745,8 +1745,9 @@ function (_React$Component) {
  * The public API for a <Router> that stores location in memory.
  */
 
+var MemoryRouter =
 /*#__PURE__*/
-(function (_React$Component) {
+function (_React$Component) {
   _inheritsLoose(MemoryRouter, _React$Component);
 
   function MemoryRouter() {
@@ -1771,10 +1772,11 @@ function (_React$Component) {
   };
 
   return MemoryRouter;
-})(react.Component);
+}(react.Component);
 
+var Lifecycle =
 /*#__PURE__*/
-(function (_React$Component) {
+function (_React$Component) {
   _inheritsLoose(Lifecycle, _React$Component);
 
   function Lifecycle() {
@@ -1800,7 +1802,7 @@ function (_React$Component) {
   };
 
   return Lifecycle;
-})(react.Component);
+}(react.Component);
 
 var cache$1 = {};
 var cacheLimit$1 = 10000;
@@ -1901,7 +1903,7 @@ function (_React$Component) {
     var _this = this;
 
     return react.createElement(context.Consumer, null, function (context$1) {
-      !context$1 ? invariant(false) : void 0;
+      !context$1 ?  invariant(false) : void 0;
       var location = _this.props.location || context$1.location;
       var match = _this.props.computedMatch ? _this.props.computedMatch // <Switch> already computed the match for us
       : _this.props.path ? matchPath(location.pathname, _this.props) : context$1.match;
@@ -1923,27 +1925,27 @@ function (_React$Component) {
 
       return react.createElement(context.Provider, {
         value: props
-      }, props.match ? children ? typeof children === "function" ? children(props) : children : component ? react.createElement(component, props) : render ? render(props) : null : typeof children === "function" ? children(props) : null);
+      }, props.match ? children ? typeof children === "function" ?  children(props) : children : component ? react.createElement(component, props) : render ? render(props) : null : typeof children === "function" ?  children(props) : null);
     });
   };
 
   return Route;
 }(react.Component);
 
-function addLeadingSlash(path) {
+function addLeadingSlash$1(path) {
   return path.charAt(0) === "/" ? path : "/" + path;
 }
 
 function addBasename(basename, location) {
   if (!basename) return location;
   return _extends({}, location, {
-    pathname: addLeadingSlash(basename) + location.pathname
+    pathname: addLeadingSlash$1(basename) + location.pathname
   });
 }
 
-function stripBasename(basename, location) {
+function stripBasename$1(basename, location) {
   if (!basename) return location;
-  var base = addLeadingSlash(basename);
+  var base = addLeadingSlash$1(basename);
   if (location.pathname.indexOf(base) !== 0) return location;
   return _extends({}, location, {
     pathname: location.pathname.substr(base.length)
@@ -1956,7 +1958,7 @@ function createURL(location) {
 
 function staticHandler(methodName) {
   return function () {
-     invariant(false) ;
+      invariant(false) ;
   };
 }
 
@@ -1969,8 +1971,9 @@ function noop() {}
  */
 
 
+var StaticRouter =
 /*#__PURE__*/
-(function (_React$Component) {
+function (_React$Component) {
   _inheritsLoose(StaticRouter, _React$Component);
 
   function StaticRouter() {
@@ -2026,10 +2029,10 @@ function noop() {}
 
     var history = {
       createHref: function createHref(path) {
-        return addLeadingSlash(basename + createURL(path));
+        return addLeadingSlash$1(basename + createURL(path));
       },
       action: "POP",
-      location: stripBasename(basename, createLocation(location)),
+      location: stripBasename$1(basename, createLocation(location)),
       push: this.handlePush,
       replace: this.handleReplace,
       go: staticHandler(),
@@ -2045,7 +2048,7 @@ function noop() {}
   };
 
   return StaticRouter;
-})(react.Component);
+}(react.Component);
 
 /**
  * The public API for rendering the first <Route> that matches.
@@ -2066,7 +2069,7 @@ function (_React$Component) {
     var _this = this;
 
     return react.createElement(context.Consumer, null, function (context) {
-      !context ? invariant(false) : void 0;
+      !context ?  invariant(false) : void 0;
       var location = _this.props.location || context.location;
       var element, match; // We use React.Children.forEach instead of React.Children.toArray().find()
       // here because toArray adds keys to all child elements and we do not want
@@ -2096,10 +2099,6 @@ var useContext = react.useContext;
 function useHistory() {
 
   return useContext(historyContext);
-}
-function useLocation() {
-
-  return useContext(context).location;
 }
 
 /**
@@ -2242,7 +2241,7 @@ var Link = forwardRef(function (_ref2, forwardedRef) {
       rest = _objectWithoutPropertiesLoose(_ref2, ["component", "replace", "to", "innerRef"]);
 
   return react.createElement(context.Consumer, null, function (context) {
-    !context ? invariant(false) : void 0;
+    !context ?  invariant(false) : void 0;
     var history = context.history;
     var location = normalizeToLocation(resolveToLocation(to, context.location), context.location);
     var href = location ? history.createHref(location) : "";
@@ -2291,7 +2290,7 @@ function joinClassnames() {
  */
 
 
-forwardRef$1(function (_ref, forwardedRef) {
+var NavLink = forwardRef$1(function (_ref, forwardedRef) {
   var _ref$ariaCurrent = _ref["aria-current"],
       ariaCurrent = _ref$ariaCurrent === void 0 ? "page" : _ref$ariaCurrent,
       _ref$activeClassName = _ref.activeClassName,
@@ -2309,7 +2308,7 @@ forwardRef$1(function (_ref, forwardedRef) {
       rest = _objectWithoutPropertiesLoose(_ref, ["aria-current", "activeClassName", "activeStyle", "className", "exact", "isActive", "location", "sensitive", "strict", "style", "to", "innerRef"]);
 
   return react.createElement(context.Consumer, null, function (context) {
-    !context ? invariant(false) : void 0;
+    !context ?  invariant(false) : void 0;
     var currentLocation = locationProp || context.location;
     var toLocation = normalizeToLocation(resolveToLocation(to, currentLocation), currentLocation);
     var path = toLocation.pathname; // Regex taken from: https://github.com/pillarjs/path-to-regexp/blob/master/index.js#L202
@@ -2343,4 +2342,4 @@ forwardRef$1(function (_ref, forwardedRef) {
   });
 });
 
-export { BrowserRouter, HashRouter, Link, Route, Switch, useHistory, useLocation };
+export { BrowserRouter, HashRouter, Link, Route, Switch, useHistory };

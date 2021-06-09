@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import styled from 'styled-components';
-import { animated } from 'react-spring';
+import { animated } from '@react-spring/web';
 import ContentPanel from './Panels/ContentPanel';
 // import NavPanel from './Panels/NavPanel';
 import { useStackId } from './ToolRoot';
@@ -14,7 +14,7 @@ const ToolContainer = styled(animated.div)`
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
-  background-color: hsl(227, 22%, 80%);
+  background-color: #e2e2e2;
   position: fixed;
   top: 0;
   left: 0;

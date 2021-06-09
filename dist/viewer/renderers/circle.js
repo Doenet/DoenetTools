@@ -3,7 +3,6 @@ import DoenetRenderer from "./DoenetRenderer.js";
 export default class Circle extends DoenetRenderer {
   constructor(props) {
     super(props);
-    this.onDragHandler = this.onDragHandler.bind(this);
     if (props.board) {
       this.createGraphicalObject();
       this.doenetPropsForChildren = {board: this.props.board};
@@ -30,8 +29,22 @@ export default class Circle extends DoenetRenderer {
       jsxCircleAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
     this.circleJXG = this.props.board.create("circle", [[...this.doenetSvData.numericalCenter], this.doenetSvData.numericalRadius], jsxCircleAttributes);
-    this.circleJXG.on("drag", () => this.onDragHandler(true));
-    this.circleJXG.on("up", () => this.onDragHandler(false));
+    this.circleJXG.on("drag", function(e) {
+      this.dragged = true;
+      this.onDragHandler(e);
+    }.bind(this));
+    this.circleJXG.on("up", function(e) {
+      if (this.dragged) {
+        this.actions.finalizeCirclePosition();
+      }
+    }.bind(this));
+    this.circleJXG.on("down", function(e) {
+      this.dragged = false;
+      this.pointerAtDown = [e.x, e.y];
+      this.centerAtDown = [...this.circleJXG.center.coords.scrCoords];
+      this.radiusAtDown = this.circleJXG.radius;
+      this.throughAnglesAtDown = [...this.doenetSvData.throughAngles];
+    }.bind(this));
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     return this.circleJXG;
   }
@@ -83,13 +96,22 @@ export default class Circle extends DoenetRenderer {
     }
     this.props.board.updateRenderer();
   }
-  onDragHandler(transient) {
-    if (this.circleJXG !== void 0) {
+  onDragHandler(e) {
+    if (this.dragged) {
+      let centerCoords = this.calculateCenterPosition(e);
       this.actions.moveCircle({
-        center: [this.circleJXG.center.X(), this.circleJXG.center.Y()],
-        transient
+        center: centerCoords,
+        radius: this.radiusAtDown,
+        throughAngles: this.throughAnglesAtDown,
+        transient: true
       });
     }
+  }
+  calculateCenterPosition(e) {
+    var o = this.props.board.origin.scrCoords;
+    let calculatedX = (this.centerAtDown[1] + e.x - this.pointerAtDown[0] - o[1]) / this.props.board.unitX;
+    let calculatedY = (o[2] - (this.centerAtDown[2] + e.y - this.pointerAtDown[1])) / this.props.board.unitY;
+    return [calculatedX, calculatedY];
   }
   render() {
     if (this.props.board) {

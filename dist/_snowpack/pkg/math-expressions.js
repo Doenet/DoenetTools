@@ -1,5 +1,5 @@
-import { g as global } from './common/polyfill-node_global-a90d30ee.js';
-import { B as Buffer } from './common/polyfill-node_buffer-f61935e6.js';
+import { g as global } from './common/_polyfill-node:global-acbc543a.js';
+import { B as Buffer } from './common/_polyfill-node:buffer-e7aca6c6.js';
 import { p as process } from './common/process-e9e98960.js';
 
 const get_tree = function (expr_or_tree) {
@@ -859,15 +859,15 @@ exports.isFactory = function (object) {
   return object && typeof object.factory === 'function';
 };
 });
-object.clone;
-object.map;
-object.extend;
-object.deepExtend;
-object.deepEqual;
-object.canDefineProperty;
-object.lazy;
-object.traverse;
-object.isFactory;
+var object_1 = object.clone;
+var object_2 = object.map;
+var object_3 = object.extend;
+var object_4 = object.deepExtend;
+var object_5 = object.deepEqual;
+var object_6 = object.canDefineProperty;
+var object_7 = object.lazy;
+var object_8 = object.traverse;
+var object_9 = object.isFactory;
 
 var typedFunction = createCommonjsModule(function (module, exports) {
 
@@ -2752,19 +2752,19 @@ exports.nearlyEqual = function(x, y, epsilon) {
   return false;
 };
 });
-number.isNumber;
-number.isInteger;
-number.sign;
-number.format;
-number.splitNumber;
-number.toEngineering;
+var number_1 = number.isNumber;
+var number_2 = number.isInteger;
+var number_3 = number.sign;
+var number_4 = number.format;
+var number_5 = number.splitNumber;
+var number_6 = number.toEngineering;
 var number_7 = number.toFixed;
 var number_8 = number.toExponential;
-number.toPrecision;
-number.roundDigits;
-number.digits;
-number.DBL_EPSILON;
-number.nearlyEqual;
+var number_9 = number.toPrecision;
+var number_10 = number.roundDigits;
+var number_11 = number.digits;
+var number_12 = number.DBL_EPSILON;
+var number_13 = number.nearlyEqual;
 
 /**
  * Test whether a value is a Matrix
@@ -8554,7 +8554,7 @@ var decimal = createCommonjsModule(function (module) {
 
 
   // AMD.
-  if (module.exports) {
+  if ( module.exports) {
     module.exports = Decimal;
 
   // Browser.
@@ -9011,9 +9011,9 @@ exports.toFixed = function (value, precision) {
   return value.toFixed(precision);
 };
 });
-formatter.format;
-formatter.toExponential;
-formatter.toFixed;
+var formatter_1 = formatter.format;
+var formatter_2 = formatter.toExponential;
+var formatter_3 = formatter.toFixed;
 
 var string = createCommonjsModule(function (module, exports) {
 
@@ -9226,11 +9226,11 @@ function looksLikeFraction (value) {
       typeof value.d === 'number') || false;
 }
 });
-string.isString;
-string.endsWith;
-string.format;
-string.stringify;
-string.escape;
+var string_1 = string.isString;
+var string_2 = string.endsWith;
+var string_3 = string.format;
+var string_4 = string.stringify;
+var string_5 = string.escape;
 
 var format = string.format;
 var lazy$1 = object.lazy;
@@ -11265,11 +11265,11 @@ exports.toSymbol = function (name, isUnit) {
   return exports.escape(name);
 };
 });
-latex.symbols;
-latex.operators;
-latex.defaultTemplate;
-latex.escape;
-latex.toSymbol;
+var latex_1 = latex.symbols;
+var latex_2 = latex.operators;
+var latex_3 = latex.defaultTemplate;
+var latex_4 = latex.escape;
+var latex_5 = latex.toSymbol;
 
 function factory$8 (type, config, load, typed) {
   var latex$$1 = latex;
@@ -12947,22 +12947,22 @@ exports.generalize = function(a) {
  */
 exports.isArray = Array.isArray;
 });
-array.size;
-array.validate;
-array.validateIndex;
-array.resize;
-array.reshape;
-array.squeeze;
-array.unsqueeze;
-array.flatten;
-array.map;
-array.forEach;
-array.filter;
-array.filterRegExp;
-array.join;
-array.identify;
-array.generalize;
-array.isArray;
+var array_1 = array.size;
+var array_2 = array.validate;
+var array_3 = array.validateIndex;
+var array_4 = array.resize;
+var array_5 = array.reshape;
+var array_6 = array.squeeze;
+var array_7 = array.unsqueeze;
+var array_8 = array.flatten;
+var array_9 = array.map;
+var array_10 = array.forEach;
+var array_11 = array.filter;
+var array_12 = array.filterRegExp;
+var array_13 = array.join;
+var array_14 = array.identify;
+var array_15 = array.generalize;
+var array_16 = array.isArray;
 
 /**
  * Test whether value is a boolean
@@ -13053,11 +13053,11 @@ exports.object = object;
 exports.string = string;
 exports.emitter = emitter;
 });
-utils.array;
-utils.number;
-utils.object;
-utils.string;
-utils.emitter;
+var utils_1 = utils.array;
+var utils_2 = utils.number;
+var utils_3 = utils.object;
+var utils_4 = utils.string;
+var utils_5 = utils.emitter;
 
 var string$1 = utils.string;
 
@@ -16311,8 +16311,8 @@ var algorithm10 = {
 	factory: factory_1$19
 };
 
-var string$4 = utils.string;
-    string$4.isString;
+var string$4 = utils.string,
+    isString$3 = string$4.isString;
 
 function factory$20 (type, config, load, typed) {
 
@@ -19093,10 +19093,10 @@ function hasher (args) {
   return args[0].precision;
 }
 });
-constants.e;
-constants.phi;
-constants.pi;
-constants.tau;
+var constants_1 = constants.e;
+var constants_2 = constants.phi;
+var constants_3 = constants.pi;
+var constants_4 = constants.tau;
 
 function factory$38 (type, config, load, typed, math) {
   // listen for changed in the configuration, automatically reload
@@ -24430,7 +24430,7 @@ var getSafeProperty$3 = customs.getSafeProperty;
 
 function factory$45 (type, config, load, typed) {
   var Node$$1 = load(Node);
-  load(IndexNode);
+  var IndexNode$$1 = load(IndexNode);
   var access$$1 = load(access);
 
   /**
@@ -33588,7 +33588,7 @@ var string$8 = utils.string;
 
 function factory$87 (type, config, load, typed) {
   var matrix$$1 = load(matrix);
-  load(add);
+  var add$$1 = load(add);
   var subtract = load(subtract$1);
   var multiply = load(multiply$1);
   var unaryMinus = load(unaryMinus$1);
@@ -35360,11 +35360,11 @@ var isNumeric$1 = {
 	factory: factory_1$100
 };
 
-number.digits;
+var digits$1 = number.digits;
 // TODO this could be improved by simplifying seperated constants under associative and commutative operators
 function factory$102(type, config, load, typed, math) {
   var util$$1 = load(util);
-  load(isNumeric$1);
+  var isNumeric = load(isNumeric$1);
   var isCommutative = util$$1.isCommutative;
   var isAssociative = util$$1.isAssociative;
   var allChildren = util$$1.allChildren;
@@ -35915,7 +35915,7 @@ var pow$1 = {
 function factory$105(type, config, load, typed, math) {
   var equal = load(equal$1);
   var isZero = load(isZero$1);
-  load(isNumeric$1);
+  var isNumeric = load(isNumeric$1);
   var add$$1 = load(add);
   var subtract = load(subtract$1);
   var multiply = load(multiply$1);
@@ -36172,7 +36172,7 @@ function factory$107 (type, config, load, typed, math) {
   var OperatorNode$$1 = load(OperatorNode);
   var ParenthesisNode$$1 = load(ParenthesisNode);
   var SymbolNode$$1 = load(SymbolNode);
-  load(Node);
+  var Node$$1 = load(Node);
   var simplifyConstant$$1 = load(simplifyConstant);
   var simplifyCore$$1 = load(simplifyCore);
   var resolve$$1 = load(resolve);
@@ -38845,13 +38845,13 @@ function factory$117 (type, config, load, typed) {
   var matrix$$1 = load(matrix);
   var zeros = load(zeros$1);
   var eye = load(eye$1);
-  load(clone$5);
+  var clone = load(clone$5);
   
   var isZero = load(isZero$1);
-  load(isPositive$1);
+  var isPositive = load(isPositive$1);
   var unequal = load(unequal$1);
     
-  load(abs$1);
+  var abs = load(abs$1);
   var sign = load(sign$1);
   var sqrt = load(sqrt$1);
   var conj = load(conj$1);
@@ -44692,8 +44692,8 @@ function factory$166 (type, config, load, typed) {
   var larger$$1      = load(larger);
   var smaller$$1     = load(smaller);
   var matrix$$1      = load(matrix);
-  load(trace$1);
-  load(transpose$1);
+  var trace       = load(trace$1);
+  var transpose   = load(transpose$1);
 
 
   /**
@@ -48129,7 +48129,7 @@ var intersect$1 = {
 };
 
 function factory$192 (type, config, load, typed) {
-  load(matrix);
+  var matrix$$1 = load(matrix);
   var add = load(addScalar);
   var subtract = load(subtract$1);
   var multiply = load(multiplyScalar);
@@ -48523,7 +48523,7 @@ function factory$194 (type, config, load, typed) {
   var matrix$$1 = load(matrix);
   var zeros = load(zeros$1);
   var not = load(not$1);
-  load(isZero$1);
+  var isZero = load(isZero$1);
 
   var algorithm02$$1 = load(algorithm02);
   var algorithm06$$1 = load(algorithm06);
@@ -49040,7 +49040,7 @@ var cross$1 = {
 	factory: factory_1$196
 };
 
-object.clone;
+var clone$8     = object.clone;
 var isInteger$23 = number.isInteger;
 
 function factory$198 (type, config, load, typed) {
@@ -51031,10 +51031,10 @@ var sort$1 = {
 };
 
 function factory$214(type, config, load, typed) {
-  load(matrix);
+  var matrix$$1   = load(matrix);
   var abs      = load(abs$1);
   var add$$1      = load(add);
-  load(divide$1);
+  var divide   = load(divide$1);
   var multiply = load(multiply$1);
   var sqrt     = load(sqrt$1);
   var subtract = load(subtract$1);
@@ -51603,7 +51603,7 @@ module.exports = function(seed, options) {
   var key = [];
 
   // Flatten the seed string or build one from local entropy if needed.
-  mixkey(flatten(
+  var shortseed = mixkey(flatten(
     use_entropy ? [seed, tostring(pool)] :
     0 in arguments ? seed : autoseed(), 3), key);
 
@@ -51743,7 +51743,7 @@ function tostring(a) {
 //
 mixkey(Math.random(), pool);
 });
-seedRandom.resetGlobal;
+var seedRandom_1 = seedRandom.resetGlobal;
 
 // create a random seed here to prevent an infinite loop from seed-random
 // inside the factory. Reason is that math.random is defined as a getter/setter
@@ -55035,7 +55035,7 @@ var asec$1 = {
 };
 
 function factory$256 (type, config, load, typed) {
-  typed.find(load(acosh$1), ['Complex']);
+  var acosh = typed.find(load(acosh$1), ['Complex']);
 
   /**
    * Calculate the hyperbolic arcsecant of a value,
@@ -56859,7 +56859,7 @@ numeric.imageURL = function imageURL(img) {
                      0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF, 
                      0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D];
      
-        var crc = -1, y = 0; a.length;var i;
+        var crc = -1, y = 0, n = a.length,i;
 
         for (i = from; i < to; i++) {
             y = (crc ^ a[i]) & 0xFF;
@@ -57084,7 +57084,7 @@ numeric.dotMMbig = function dotMMbig(x,y){
 };
 
 numeric.dotMV = function dotMV(x,y) {
-    var p = x.length; y.length;var i;
+    var p = x.length, q = y.length,i;
     var ret = Array(p), dotVV = numeric.dotVV;
     for(i=p-1;i>=0;i--) { ret[i] = dotVV(x[i],y); }
     return ret;
@@ -57662,7 +57662,7 @@ numeric.T = function T(x,y) { this.x = x; this.y = y; };
 numeric.t = function t(x,y) { return new numeric.T(x,y); };
 
 numeric.Tbinop = function Tbinop(rr,rc,cr,cc,setup) {
-    numeric.indexOf;
+    var io = numeric.indexOf;
     if(typeof setup !== "string") {
         var k;
         setup = '';
@@ -58031,7 +58031,7 @@ numeric.epsilon = 2.220446049250313e-16;
 numeric.QRFrancis = function(H,maxiter) {
     if(typeof maxiter === "undefined") { maxiter = 10000; }
     H = numeric.clone(H);
-    numeric.clone(H);
+    var H0 = numeric.clone(H);
     var s = numeric.dim(H),m=s[0],x,v,a,b,c,d,det,tr, Hloc, Q = numeric.identity(m), Qi, Hi, B, C, Ci,i,j,k,iter;
     if(m<3) { return {Q:Q, B:[ [0,m-1] ]}; }
     var epsilon = numeric.epsilon;
@@ -58304,7 +58304,7 @@ numeric.ccsDFS.prototype.dfs = function dfs(J,Ai,Aj,x,xj,Pinv) {
     }
 };
 numeric.ccsLPSolve = function ccsLPSolve(A,B,x,xj,I,Pinv,dfs) {
-    var Ai = A[0], Aj = A[1], Av = A[2];Ai.length-1;
+    var Ai = A[0], Aj = A[1], Av = A[2],m = Ai.length-1;
     var Bi = B[0], Bj = B[1], Bv = B[2];
     
     var i,i0,i1,j,j0,j1,k,l,a;
@@ -58411,7 +58411,7 @@ numeric.ccsDFS0.prototype.dfs = function dfs(J,Ai,Aj,x,xj,Pinv,P) {
     }
 };
 numeric.ccsLPSolve0 = function ccsLPSolve0(A,B,y,xj,I,Pinv,P,dfs) {
-    var Ai = A[0], Aj = A[1], Av = A[2];Ai.length-1;
+    var Ai = A[0], Aj = A[1], Av = A[2],m = Ai.length-1;
     var Bi = B[0], Bj = B[1], Bv = B[2];
     
     var i,i0,i1,j,j0,j1,k,l,a;
@@ -58521,7 +58521,7 @@ numeric.ccsDot = function ccsDot(A,B) {
     var Ai = A[0], Aj = A[1], Av = A[2];
     var Bi = B[0], Bj = B[1], Bv = B[2];
     var sA = numeric.ccsDim(A), sB = numeric.ccsDim(B);
-    var m = sA[0]; sA[1]; var o = sB[1];
+    var m = sA[0], n = sA[1], o = sB[1];
     var x = numeric.rep([m],0), flags = numeric.rep([m],0), xj = Array(m);
     var Ci = numeric.rep([o],0), Cj = [], Cv = [], C = [Ci,Cj,Cv];
     var i,j,k,j0,j1,i0,i1,l,p,a,b;
@@ -58561,7 +58561,7 @@ numeric.ccsDot = function ccsDot(A,B) {
 };
 
 numeric.ccsLUPSolve = function ccsLUPSolve(LUP,B) {
-    var L = LUP.L, U = LUP.U; LUP.P;
+    var L = LUP.L, U = LUP.U, P = LUP.P;
     var Bi = B[0];
     var flag = false;
     if(typeof Bi !== "object") { B = [[0,B.length],numeric.linspace(0,B.length-1),B]; Bi = B[0]; flag = true; }
@@ -58746,7 +58746,7 @@ numeric.sdiag = function diag(d) {
 numeric.sidentity = function identity(n) { return numeric.sdiag(numeric.rep([n],1)); };
 
 numeric.stranspose = function transpose(A) {
-    var ret = []; A.length; var i,j,Ai;
+    var ret = [], n = A.length, i,j,Ai;
     for(i in A) {
         if(!(A.hasOwnProperty(i))) continue;
         Ai = A[i];
@@ -58764,7 +58764,7 @@ numeric.sLUP = function LUP(A,tol) {
 };
 
 numeric.sdotMM = function dotMM(A,B) {
-    var p = A.length; B.length; var BT = numeric.stranspose(B), r = BT.length, Ai, BTk;
+    var p = A.length, q = B.length, BT = numeric.stranspose(B), r = BT.length, Ai, BTk;
     var i,j,k,accum;
     var ret = Array(p),reti;
     for(i=p-1;i>=0;i--) {
@@ -58947,7 +58947,7 @@ numeric.cLUsolve = function LUsolve(lu,b) {
     var L = lu.L, U = lu.U, ret = numeric.clone(b);
     var Li = L[0], Lj = L[1], Lv = L[2];
     var Ui = U[0], Uj = U[1], Uv = U[2];
-    var p = Ui.length; Li.length;
+    var p = Ui.length, q = Li.length;
     var m = ret.length,i,k;
     k = 0;
     for(i=0;i<m;i++) {
@@ -59364,7 +59364,7 @@ numeric.gradient = function gradient(f,x) {
     if(isNaN(f0)) throw new Error('gradient: f(x) is a NaN!');
     var max = Math.max;
     var i,x0 = numeric.clone(x),f1,f2, J = Array(n);
-    numeric.div; numeric.sub;var errest,max = Math.max,eps = 1e-3,abs = Math.abs, min = Math.min;
+    var div = numeric.div, sub = numeric.sub,errest,max = Math.max,eps = 1e-3,abs = Math.abs, min = Math.min;
     var t0,t1,t2,it=0,d1,d2,N;
     for(i=0;i<n;i++) {
         var h = max(1e-6*f0,1e-8);
@@ -59405,7 +59405,7 @@ numeric.uncmin = function uncmin(f,x0,tol,gradient,maxit,callback,options) {
     var max = Math.max, norm2 = numeric.norm2;
     tol = max(tol,numeric.epsilon);
     var step,g0,g1,H1 = options.Hinv || numeric.identity(n);
-    var dot = numeric.dot; numeric.inv; var sub = numeric.sub, add = numeric.add, ten = numeric.tensor, div = numeric.div, mul = numeric.mul;
+    var dot = numeric.dot, inv = numeric.inv, sub = numeric.sub, add = numeric.add, ten = numeric.tensor, div = numeric.div, mul = numeric.mul;
     var all = numeric.all, isfinite = numeric.isFinite, neg = numeric.neg;
     var it=0,s,x1,y,Hy,ys,t,nstep;
     var msg = "";
@@ -59469,7 +59469,7 @@ numeric.Dopri.prototype._at = function _at(xi,j) {
     var ys = sol.y;
     var k1 = sol.f;
     var ymid = sol.ymid;
-    xs.length;
+    var n = xs.length;
     var x0,x1,xh,y0,y1,yh,xi;
     var h;
     var c = 0.5;
@@ -59537,7 +59537,7 @@ numeric.dopri = function dopri(x0,x1,y0,f,tol,maxit,event) {
     var it = 0;
     var add = numeric.add, mul = numeric.mul, y1,erinf;
     var min = Math.min, abs = Math.abs, norminf = numeric.norminf,pow = Math.pow;
-    var any = numeric.any, lt = numeric.lt, and = numeric.and; numeric.sub;
+    var any = numeric.any, lt = numeric.lt, and = numeric.and, sub = numeric.sub;
     var e0, e1, ev;
     var ret = new numeric.Dopri(xs,ys,k1,ymid,-1,"");
     if(typeof event === "function") e0 = event(x0,y0);
@@ -59747,15 +59747,15 @@ numeric.echelonize = function echelonize(A) {
 };
 
 numeric.__solveLP = function __solveLP(c,A,b,tol,maxit,x,flag) {
-    var sum = numeric.sum; numeric.log; var mul = numeric.mul, sub = numeric.sub, dot = numeric.dot, div = numeric.div, add = numeric.add;
+    var sum = numeric.sum, log = numeric.log, mul = numeric.mul, sub = numeric.sub, dot = numeric.dot, div = numeric.div, add = numeric.add;
     var m = c.length, n = b.length,y;
     var unbounded = false, i0=0;
     var alpha = 1.0;
-    numeric.transpose(A); numeric.svd;var transpose = numeric.transpose;numeric.leq; var sqrt = Math.sqrt, abs = Math.abs;
-    numeric.muleq;
-    numeric.norminf; numeric.any;var min = Math.min;
+    var AT = numeric.transpose(A), svd = numeric.svd,transpose = numeric.transpose,leq = numeric.leq, sqrt = Math.sqrt, abs = Math.abs;
+    var muleq = numeric.muleq;
+    var norm = numeric.norminf, any = numeric.any,min = Math.min;
     var all = numeric.all, gt = numeric.gt;
-    var p = Array(m), A0 = Array(n);numeric.rep([n],1); var H;
+    var p = Array(m), A0 = Array(n),e=numeric.rep([n],1), H;
     var solve = numeric.solve, z = sub(b,dot(A,x)),count;
     var dotcc = dot(c,c);
     var g;
@@ -59794,7 +59794,7 @@ numeric.__solveLP = function __solveLP(c,A,b,tol,maxit,x,flag) {
 
 numeric._solveLP = function _solveLP(c,A,b,tol,maxit) {
     var m = c.length, n = b.length,y;
-    numeric.sum; numeric.log; numeric.mul; var sub = numeric.sub, dot = numeric.dot; numeric.div; numeric.add;
+    var sum = numeric.sum, log = numeric.log, mul = numeric.mul, sub = numeric.sub, dot = numeric.dot, div = numeric.div, add = numeric.add;
     var c0 = numeric.rep([m],0).concat([1]);
     var J = numeric.rep([n,1],-1);
     var A0 = numeric.blockMatrix([[A                   ,   J  ]]);
@@ -61312,7 +61312,7 @@ var underscore = createCommonjsModule(function (module, exports) {
   // backwards-compatibility for the old `require()` API. If we're in
   // the browser, add `_` as a global object.
   {
-    if (module.exports) {
+    if ( module.exports) {
       exports = module.exports = _;
     }
     exports._ = _;
@@ -62798,7 +62798,7 @@ var underscore = createCommonjsModule(function (module, exports) {
   };
 }.call(commonjsGlobal));
 });
-underscore._;
+var underscore_1 = underscore._;
 
 function handleNaNInfinityStringify(key, value) {
   if (value !== value) {
@@ -72078,7 +72078,7 @@ function substitute$1(pattern, bindings) {
 
 function substitute_component(pattern, component, value) {
   let pattern_tree = get_tree(pattern);
-  get_tree(value);
+  let value_tree = get_tree(value);
 
   if(typeof component === "number") {
     component = [component];
@@ -75822,7 +75822,7 @@ if (module && module.exports) {
 
 })(
   commonjsGlobal,
-  module,    // present in node.js
+   module,    // present in node.js
   (typeof undefined) == 'function'    // present with an AMD loader
 );
 });
@@ -75904,7 +75904,7 @@ if (module && module.exports) {
 
 })(
   commonjsGlobal,
-  module,    // present in node.js
+   module,    // present in node.js
   (typeof undefined) == 'function'    // present with an AMD loader
 );
 });
@@ -75991,7 +75991,7 @@ if (module && module.exports) {
 
 })(
   commonjsGlobal,
-  module,    // present in node.js
+   module,    // present in node.js
   (typeof undefined) == 'function'    // present with an AMD loader
 );
 });
@@ -76090,7 +76090,7 @@ if (module && module.exports) {
 
 })(
   commonjsGlobal,
-  module,    // present in node.js
+   module,    // present in node.js
   (typeof undefined) == 'function'    // present with an AMD loader
 );
 });
@@ -76238,7 +76238,7 @@ if (module && module.exports) {
 
 })(
   commonjsGlobal,                                     // window object or global
-  module,    // present in node.js
+   module,    // present in node.js
   (typeof undefined) == 'function'    // present with an AMD loader
 );
 });
@@ -76341,7 +76341,7 @@ if (module && module.exports) {
 
 })(
   commonjsGlobal,
-  module,    // present in node.js
+   module,    // present in node.js
   (typeof undefined) == 'function'    // present with an AMD loader
 );
 });
@@ -76579,7 +76579,7 @@ mixkey(math.random(), pool);
 // Nodejs and AMD support: export the implementation as a module using
 // either convention.
 //
-if (module.exports) {
+if ( module.exports) {
   module.exports = seedrandom;
   // When in node.js, try using crypto package for autoseeding.
   try {
@@ -81136,14 +81136,14 @@ function coerce(val) {
   return val;
 }
 });
-debug.coerce;
-debug.disable;
-debug.enable;
-debug.enabled;
-debug.humanize;
-debug.names;
-debug.skips;
-debug.formatters;
+var debug_1 = debug.coerce;
+var debug_2 = debug.disable;
+var debug_3 = debug.enable;
+var debug_4 = debug.enabled;
+var debug_5 = debug.humanize;
+var debug_6 = debug.names;
+var debug_7 = debug.skips;
+var debug_8 = debug.formatters;
 
 var browser = createCommonjsModule(function (module, exports) {
 /**
@@ -81332,13 +81332,13 @@ function localstorage() {
   } catch (e) {}
 }
 });
-browser.log;
-browser.formatArgs;
-browser.save;
-browser.load;
-browser.useColors;
-browser.storage;
-browser.colors;
+var browser_1 = browser.log;
+var browser_2 = browser.formatArgs;
+var browser_3 = browser.save;
+var browser_4 = browser.load;
+var browser_5 = browser.useColors;
+var browser_6 = browser.storage;
+var browser_7 = browser.colors;
 
 // MIT lisence
 // from https://github.com/substack/tty-browserify/blob/1ba769a6429d242f36226538835b4034bf6b7886/index.js
@@ -81363,7 +81363,8 @@ var tty = {
 
 // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
 var performance = global.performance || {};
-performance.now        ||
+var performanceNow =
+  performance.now        ||
   performance.mozNow     ||
   performance.msNow      ||
   performance.oNow       ||
@@ -81464,7 +81465,7 @@ var debugs = {};
 var debugEnviron;
 function debuglog(set) {
   if (isUndefined(debugEnviron))
-    debugEnviron = '';
+    debugEnviron =  '';
   set = set.toUpperCase();
   if (!debugs[set]) {
     if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
@@ -82193,14 +82194,14 @@ function init (debug$$1) {
 
 exports.enable(load());
 });
-node$2.init;
-node$2.log;
-node$2.formatArgs;
-node$2.save;
-node$2.load;
-node$2.useColors;
-node$2.colors;
-node$2.inspectOpts;
+var node_1 = node$2.init;
+var node_2 = node$2.log;
+var node_3 = node$2.formatArgs;
+var node_4 = node$2.save;
+var node_5 = node$2.load;
+var node_6 = node$2.useColors;
+var node_7 = node$2.colors;
+var node_8 = node$2.inspectOpts;
 
 var src = createCommonjsModule(function (module) {
 /**

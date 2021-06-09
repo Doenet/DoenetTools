@@ -17,8 +17,9 @@ $itemId = mysqli_real_escape_string($conn,$_REQUEST["itemId"]);
 $versionId = mysqli_real_escape_string($conn,$_REQUEST["versionId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
-$branchId = mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $sortOrder = mysqli_real_escape_string($conn,$_REQUEST["sortOrder"]);
+$isNewCopy = mysqli_real_escape_string($conn,$_REQUEST["isNewCopy"]);
 
 $success = TRUE;
 $message = "";
@@ -42,9 +43,9 @@ if ($driveId == ""){
 }elseif ($type == ""){
   $success = FALSE;
   $message = 'Internal Error: missing type';
-}elseif ($branchId == ""){
+}elseif ($doenetId == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing branchId';
+  $message = 'Internal Error: missing doenetId';
 }elseif ($userId == ""){
   $success = FALSE;
   $message = "You need to be signed in to create a $type";
@@ -80,7 +81,7 @@ if ($success){
   if ($type == 'Folder'){
     $sql="
   INSERT INTO drive_content
-  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId,sortOrder)
+  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,doenetId,sortOrder)
   VALUES
   ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL,'$sortOrder')
   ";
@@ -90,7 +91,7 @@ if ($success){
   }else if ($type == 'Url'){
     $sql="
   INSERT INTO drive_content
-  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId,sortOrder)
+  (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,doenetId,sortOrder)
   VALUES
   ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type',NULL,'$sortOrder')
   ";
@@ -98,27 +99,32 @@ if ($success){
   $result = $conn->query($sql); 
 
   }else if ($type == 'DoenetML'){
-    $fileName = $branchId;
-    //TODO: Config file needed for server
-    $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
-    fwrite($newfile, "");
-    fclose($newfile);
+    if ($isNewCopy != '1'){
+      $emptyContentId = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+      $fileName = $emptyContentId;
+      //TODO: Config file needed for server
+      $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
+      fwrite($newfile, "");
+      fclose($newfile);
+    }
 
     $sql="
     INSERT INTO drive_content
-    (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,branchId,sortOrder)
+    (driveId,itemId,parentFolderId,label,creationDate,isDeleted,itemType,doenetId,sortOrder)
     VALUES
-    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$branchId','$sortOrder')
+    ('$driveId','$itemId','$parentFolderId','$label',NOW(),'0','$type','$doenetId','$sortOrder')
     ";
     
-    $result = $conn->query($sql); 
-    $sql="
-    INSERT INTO content
-    (branchId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
-    VALUES
-    ('$branchId','$versionId','$branchId','Draft',NOW(),'1','0','1')
-    ";
-    
+    if ($isNewCopy != '1'){
+      $result = $conn->query($sql); 
+      $sql="
+      INSERT INTO content
+      (doenetId,versionId,contentId,title,timestamp,isDraft,removedFlag,public)
+      VALUES
+      ('$doenetId','$versionId','$emptyContentId','Draft',NOW(),'1','0','1')
+      ";
+    }
+
     $result = $conn->query($sql); 
   }else{
     $success = FALSE;

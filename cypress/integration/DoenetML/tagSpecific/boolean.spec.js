@@ -41,6 +41,15 @@ describe('Boolean Tag Tests', function () {
     <boolean name="t25"><text>hello</text> = hello</boolean>
     <boolean name="t26"><boolean>1</boolean> = true</boolean>
     <boolean name="t27"><boolean>0</boolean> = false</boolean>
+    <boolean name="t28"><number>0/0</number> = <number>0/0</number></boolean>
+    <boolean name="t29"><number>-0/0</number> = <number>0/0</number></boolean>
+    <boolean name="t30"><number>3/0</number> = <number>4/0</number></boolean>
+    <boolean name="t31"><number>3/0</number> = <number>-4/-0</number></boolean>
+    <boolean name="t32"><number>3/-0</number> = <number>-4/0</number></boolean>
+    <boolean name="t33"><number>5</number> = <math>5</math></boolean>
+    <boolean name="t34"><number>0/0</number> = <math simplify>0/0</math></boolean>
+    <boolean name="t35"><number>3/0</number> = <math simplify>4/0</math></boolean>
+    <boolean name="t36"><number>3/-0</number> = <math simplify>-4/0</math></boolean>
 
     </p>
 
@@ -72,6 +81,9 @@ describe('Boolean Tag Tests', function () {
     <boolean name="f25"><boolean>0</boolean> != false</boolean>
     <boolean name="f26"><text>true</text></boolean>
     <boolean name="f27"><math>true</math></boolean>
+    <boolean name="f28"><number>3/-0</number> = <number>3/0</number></boolean>
+    <boolean name="f29"><number>3/0</number> = <number>0/0</number></boolean>
+    <boolean name="f30"><number>3/-0</number> = <number>0/0</number></boolean>
     </p>
 
     `}, "*");
@@ -80,7 +92,7 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/_text1').should('contain.text', 'a')
 
     
-    let nTrues = 27, nFalses = 27;
+    let nTrues = 36, nFalses = 30;
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
     }

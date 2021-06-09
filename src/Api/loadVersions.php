@@ -10,14 +10,14 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
+$doenetId =  mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
 $success = TRUE;
 $message = "";
 
-if ($branchId == ""){
+if ($doenetId == ""){
     $success = FALSE;
-    $message = 'Internal Error: missing branchId';
+    $message = 'Internal Error: missing doenetId';
 }elseif ($userId == ""){
     $success = FALSE;
     $message = "You need to be signed in to load versions";
@@ -49,10 +49,11 @@ SELECT
  c.timestamp AS timestamp,
  c.isDraft AS isDraft,
  c.isNamed AS isNamed,
- c.isReleased AS isReleased
+ c.isReleased AS isReleased,
+ c.isAssigned AS isAssigned
  FROM content AS c
 WHERE removedFlag = 0
-AND branchId = '$branchId'
+AND doenetId = '$doenetId'
 ORDER BY isDraft DESC, isNamed DESC, c.timestamp DESC
 ";
 
@@ -68,7 +69,8 @@ if ($result->num_rows > 0){
                 "timestamp"=>$row['timestamp'],
                 "isDraft"=>$row['isDraft'],
                 "isNamed"=>$row['isNamed'],
-                "isReleased"=>$row['isReleased']
+                "isReleased"=>$row['isReleased'],
+                "isAssigned"=>$row['isAssigned']
         );
         array_push($versions_arr,$version);
     }
