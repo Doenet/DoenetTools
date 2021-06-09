@@ -15,7 +15,9 @@ describe('factor polynomial tests', function () {
     <p><text>a</text></p>
     <setup>
       <math name="poly">x^2-1</math>
-      <math name="ansSimplify"  simplify>$ans</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
       <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
       <text name="minus">-</text>
       <text name="mult">*</text>
@@ -37,14 +39,14 @@ describe('factor polynomial tests', function () {
       </conditionalContent>
     </setup>
   
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check">
+    <answer name="check" symbolicEquality>
       <award>
         <when>
-          $ans = $poly
+          $ansExpandSimplify = $polyExpandSimplify
           and
           $numeratorOperator = $mult
           and
@@ -62,6 +64,9 @@ describe('factor polynomial tests', function () {
         </when>
       </award>
     </answer>
+    <p>$ansExpandSimplify</p>
+    <p>$polyExpandSimplify</p>
+    <p>$ansSimplify</p>
     `}, "*");
     });
 
@@ -166,6 +171,20 @@ describe('factor polynomial tests', function () {
     cy.get('#\\/check_submit').click();
     cy.get('#\\/check_correct').should('be.visible')
 
+    cy.log('sqrt(x^2-1)^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtx^2{rightArrow}-1{rightArrow}^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
+
+    cy.log('sqrt(2x^2-2)sqrt((x^2-1)/2)')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrt2x^2{rightArrow}-2{rightArrow}sqrt(x^2{rightArrow}-1)/2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
+
+    cy.log('sqrt(4x^2-4)sqrt(x^2-1)/4')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrt4x^2{rightArrow}-4{rightArrow}sqrt(x^2{rightArrow}-1)/4{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
 
   });
 
@@ -176,7 +195,9 @@ describe('factor polynomial tests', function () {
     <p><text>a</text></p>
     <setup>
       <math name="poly">4x^2-4</math>
-      <math name="ansSimplify"  simplify>$ans</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
       <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
       <text name="minus">-</text>
       <text name="mult">*</text>
@@ -198,14 +219,14 @@ describe('factor polynomial tests', function () {
       </conditionalContent>
     </setup>
   
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check">
+    <answer name="check" symbolicEquality>
       <award>
         <when>
-          $ans = $poly
+          $ansExpandSimplify = $polyExpandSimplify
           and
           $numeratorOperator = $mult
           and
@@ -299,7 +320,9 @@ describe('factor polynomial tests', function () {
     <p><text>a</text></p>
     <setup>
       <math name="poly">(6z-4)(5z+10)</math>
-      <math name="ansSimplify"  simplify>$ans</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
       <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
       <text name="minus">-</text>
       <text name="mult">*</text>
@@ -321,14 +344,14 @@ describe('factor polynomial tests', function () {
       </conditionalContent>
     </setup>
   
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check">
+    <answer name="check" symbolicEquality>
       <award>
         <when>
-          $ans = $poly
+          $ansExpandSimplify = $polyExpandSimplify
           and
           $numeratorOperator = $mult
           and
@@ -395,7 +418,9 @@ describe('factor polynomial tests', function () {
     <p><text>a</text></p>
     <setup>
       <math name="poly">(3q+2r)(6s+8t)</math>
-      <math name="ansSimplify"  simplify>$ans</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
       <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
       <text name="minus">-</text>
       <text name="mult">*</text>
@@ -417,14 +442,14 @@ describe('factor polynomial tests', function () {
       </conditionalContent>
     </setup>
   
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check">
+    <answer name="check" symbolicEquality>
       <award>
         <when>
-          $ans = $poly
+          $ansExpandSimplify = $polyExpandSimplify
           and
           $numeratorOperator = $mult
           and
