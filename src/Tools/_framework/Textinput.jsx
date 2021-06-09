@@ -12,7 +12,7 @@ Note: you can pass any additional properties if you wish, these props will be pa
 */
 
 import React, { useState, useEffect } from "react";
-import { useSpring, animated } from "react-spring";
+import { useSpring, animated } from '@react-spring/web';
 import styled from "styled-components";
 import { doenetComponentForegroundActive } from './temp/theme'
 

@@ -54,6 +54,7 @@ import {
 import {IsNavContext} from "../../_framework/Panels/NavPanel.js";
 import {useToast} from "../../_framework/Toast.js";
 import useKeyPressedListener from "../KeyPressedListener/useKeyPressedListener.js";
+import {loadAssignmentSelector} from "../../course/Course.js";
 const fetchDriveUsersQuery = atomFamily({
   key: "fetchDriveUsersQuery",
   default: selectorFamily({
@@ -319,11 +320,39 @@ export const folderDictionary = atomFamily({
     }
   })
 });
-export const folderDictionarySelector = selectorFamily({
+export const folderDictionaryFilterAtom = atomFamily({
+  key: "folderDictionaryFilterAtom",
+  default: selectorFamily({
+    key: "folderDictionaryFilterAtom/Default",
+    get: (driveId) => () => {
+      return "All";
+    }
+  })
+});
+export const folderDictionaryFilterSelector = selectorFamily({
   get: (driveIdFolderId) => ({get}) => {
-    return get(folderDictionary(driveIdFolderId));
-  },
-  set: (driveIdFolderId) => async ({set, get}, instructions) => {
+    const filter = get(folderDictionaryFilterAtom({driveId: driveIdFolderId.driveId}));
+    const fD = get(folderDictionary(driveIdFolderId));
+    let fDreturn = {...fD};
+    fDreturn.contentIds = {...fD.contentIds};
+    if (filter === "Released Only") {
+      let newDefaultOrder = [];
+      for (let contentId of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[contentId].isReleased === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
+          newDefaultOrder.push(contentId);
+        }
+      }
+      fDreturn.contentIds.defaultOrder = newDefaultOrder;
+    } else if (filter === "Assigned Only") {
+      let newDefaultOrder = [];
+      for (let contentId of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[contentId].isAssigned === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
+          newDefaultOrder.push(contentId);
+        }
+      }
+      fDreturn.contentIds.defaultOrder = newDefaultOrder;
+    }
+    return fDreturn;
   }
 });
 export const folderSortOrderAtom = atomFamily({
@@ -337,7 +366,7 @@ export const folderCacheDirtyAtom = atomFamily({
 export const folderInfoSelector = selectorFamily({
   get: (driveIdInstanceIdFolderId) => ({get}) => {
     const {driveId, folderId} = driveIdInstanceIdFolderId;
-    const {folderInfo, contentsDictionary, contentIds} = get(folderDictionarySelector({driveId, folderId}));
+    const {folderInfo, contentsDictionary, contentIds} = get(folderDictionaryFilterSelector({driveId, folderId}));
     const folderSortOrder = get(folderSortOrderAtom(driveIdInstanceIdFolderId));
     let contentIdsArr = contentIds[folderSortOrder] ?? [];
     const sortedContentIdsNotInCache = !contentIdsArr.length && contentIds[sortOptions.DEFAULT].length;
@@ -403,6 +432,39 @@ export const getLexicographicOrder = ({index, nodeObjs, defaultFolderChildrenIds
   return sortOrder;
 };
 function DriveHeader(props) {
+  let latestWidth = useRef(0);
+  function updateNumColumns(width) {
+    const maxColumns = props.columnTypes.length + 1;
+    const breakpoints = [375, 500, 650, 800];
+    if (width >= breakpoints[3] && props.numColumns !== 5) {
+      const numColumns = Math.min(maxColumns, 5);
+      if (props.setNumColumns) {
+        props.setNumColumns(numColumns);
+      }
+    } else if (width < breakpoints[3] && width >= breakpoints[2] && props.numColumns !== 4) {
+      const numColumns = Math.min(maxColumns, 4);
+      if (props.setNumColumns) {
+        props.setNumColumns(numColumns);
+      }
+    } else if (width < breakpoints[2] && width >= breakpoints[1] && props.numColumns !== 3) {
+      const numColumns = Math.min(maxColumns, 3);
+      if (props.setNumColumns) {
+        props.setNumColumns(numColumns);
+      }
+    } else if (width < breakpoints[1] && width >= breakpoints[0] && props.numColumns !== 2) {
+      const numColumns = Math.min(maxColumns, 2);
+      if (props.setNumColumns) {
+        props.setNumColumns(numColumns);
+      }
+    } else if (width < breakpoints[0] && props.numColumns !== 1) {
+      if (props.setNumColumns) {
+        props.setNumColumns(1);
+      }
+    }
+  }
+  useEffect(() => {
+    updateNumColumns(latestWidth.current);
+  }, [props.columnTypes.length]);
   let columns = "250px repeat(4,1fr)";
   if (props.numColumns === 4) {
     columns = "250px repeat(3,1fr)";
@@ -417,33 +479,8 @@ function DriveHeader(props) {
     bounds: true,
     onResize: (contentRect) => {
       const width = contentRect.bounds.width;
-      const maxColumns = props.columnTypes.length + 1;
-      const breakpoints = [375, 500, 650, 800];
-      if (width >= breakpoints[3] && props.numColumns !== 5) {
-        const numColumns = Math.min(maxColumns, 5);
-        if (props.setNumColumns) {
-          props.setNumColumns(numColumns);
-        }
-      } else if (width < breakpoints[3] && width >= breakpoints[2] && props.numColumns !== 4) {
-        const numColumns = Math.min(maxColumns, 4);
-        if (props.setNumColumns) {
-          props.setNumColumns(numColumns);
-        }
-      } else if (width < breakpoints[2] && width >= breakpoints[1] && props.numColumns !== 3) {
-        const numColumns = Math.min(maxColumns, 3);
-        if (props.setNumColumns) {
-          props.setNumColumns(numColumns);
-        }
-      } else if (width < breakpoints[1] && width >= breakpoints[0] && props.numColumns !== 2) {
-        const numColumns = Math.min(maxColumns, 2);
-        if (props.setNumColumns) {
-          props.setNumColumns(numColumns);
-        }
-      } else if (width < breakpoints[0] && props.numColumns !== 1) {
-        if (props.setNumColumns) {
-          props.setNumColumns(1);
-        }
-      }
+      latestWidth.current = width;
+      updateNumColumns(contentRect.bounds.width);
     }
   }, ({measureRef}) => /* @__PURE__ */ React.createElement("div", {
     ref: measureRef,
@@ -519,10 +556,6 @@ function DriveRouted(props) {
       columnTypes
     });
   }
-  let viewAccess = props?.viewAccess;
-  if (!viewAccess) {
-    viewAccess = "all";
-  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(Folder, {
     driveId: props.driveId,
     folderId: rootFolderId,
@@ -539,7 +572,6 @@ function DriveRouted(props) {
     doenetMLDoubleClickCallback: props.doenetMLDoubleClickCallback,
     numColumns,
     columnTypes,
-    viewAccess,
     drivePathSyncKey: props.drivePathSyncKey
   }), /* @__PURE__ */ React.createElement(WithDropTarget, {
     key: DropTargetsConstant.INVALID_DROP_AREA_ID,
@@ -578,7 +610,7 @@ export const fetchDrivesSelector = selector({
     let newDrive;
     function duplicateFolder({sourceFolderId, sourceDriveId, destDriveId, destFolderId, destParentFolderId}) {
       let contentObjs = {};
-      const sourceFolder = get(folderDictionary({driveId: sourceDriveId, folderId: sourceFolderId}));
+      const sourceFolder = get(folderDictionaryFilterSelector({driveId: sourceDriveId, folderId: sourceFolderId}));
       if (destFolderId === void 0) {
         destFolderId = destDriveId;
         destParentFolderId = destDriveId;
@@ -599,9 +631,9 @@ export const fetchDrivesSelector = selector({
           let childContentObjs = duplicateFolder({sourceFolderId: sourceItemId, sourceDriveId, destDriveId, destFolderId: destItemId, destParentFolderId: destFolderId});
           contentObjs = {...contentObjs, ...childContentObjs};
         } else if (sourceItem.itemType === "DoenetML") {
-          let destBranchId = nanoid();
-          contentsDictionary[destItemId].sourceBranchId = sourceItem.branchId;
-          contentsDictionary[destItemId].branchId = destBranchId;
+          let destDoenetId = nanoid();
+          contentsDictionary[destItemId].sourceDoenetId = sourceItem.doenetId;
+          contentsDictionary[destItemId].doenetId = destDoenetId;
         } else if (sourceItem.itemType === "URL") {
           let desturlId = nanoid();
           contentsDictionary[destItemId].urlId = desturlId;
@@ -677,7 +709,7 @@ const folderOpenSelector = selectorFamily({
   set: (driveInstanceIdDriveIdItemId) => ({get, set}) => {
     const isOpen = get(folderOpenAtom(driveInstanceIdDriveIdItemId));
     if (isOpen) {
-      const folder = get(folderDictionarySelector({driveId: driveInstanceIdDriveIdItemId.driveId, folderId: driveInstanceIdDriveIdItemId.itemId}));
+      const folder = get(folderDictionaryFilterSelector({driveId: driveInstanceIdDriveIdItemId.driveId, folderId: driveInstanceIdDriveIdItemId.itemId}));
       const itemIds = folder.contentIds.defaultOrder;
       const globalItemsSelected = get(globalSelectedNodesAtom);
       let newGlobalSelected = [];
@@ -795,11 +827,6 @@ function Folder(props) {
     return null;
   }
   let {folderInfo, contentsDictionary, contentIdsArr} = folderInfoObj.contents;
-  if (props.viewAccess === "released") {
-    contentIdsArr = contentIdsArr.filter((id) => contentsDictionary[id].itemType === "Folder" || (contentsDictionary[id].isReleased === "1" || contentsDictionary[id].isAssigned === "1"));
-  } else if (props.viewAccess === "assigned") {
-    contentIdsArr = contentIdsArr.filter((id) => contentsDictionary[id].itemType === "Folder" || contentsDictionary[id].isAssigned === "1");
-  }
   let openCloseText = isOpen ? /* @__PURE__ */ React.createElement("span", {
     "data-cy": "folderToggleCloseIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -1201,7 +1228,7 @@ const selectedDriveItems = selectorFamily({
     const {driveId, driveInstanceId, itemId} = driveIdDriveInstanceIdItemId;
     let lastSelectedItem = globalSelected[globalSelected.length - 1];
     function buildItemIdsAndParentIds({parentFolderId, driveInstanceId: driveInstanceId2, driveId: driveId2, itemIdArr = [], parentFolderIdArr = []}) {
-      const folderObj = get(folderDictionary({driveId: driveId2, folderId: parentFolderId}));
+      const folderObj = get(folderDictionaryFilterSelector({driveId: driveId2, folderId: parentFolderId}));
       for (let itemId2 of folderObj.contentIds.defaultOrder) {
         itemIdArr.push(itemId2);
         parentFolderIdArr.push(parentFolderId);
@@ -1304,6 +1331,11 @@ const selectedDriveItems = selectorFamily({
   }
 });
 function columnJSX(columnType, item) {
+  const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
+  let aInfo = "";
+  if (assignmentInfoSettings?.state === "hasValue") {
+    aInfo = assignmentInfoSettings?.contents?.assignments[0];
+  }
   if (columnType === "Released" && item.isReleased === "1") {
     return /* @__PURE__ */ React.createElement("span", {
       style: {textAlign: "center"}
@@ -1322,11 +1354,10 @@ function columnJSX(columnType, item) {
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faCheck
     }));
-  } else if (columnType === "Due Date") {
-    let date = item.creationDate.slice(0, 10);
+  } else if (columnType === "Due Date" && item.isAssigned === "1") {
     return /* @__PURE__ */ React.createElement("span", {
       style: {textAlign: "center"}
-    }, date);
+    }, aInfo?.dueDate);
   }
   return /* @__PURE__ */ React.createElement("span", null);
 }
@@ -1652,7 +1683,7 @@ export const nodePathSelector = selectorFamily({
     let path = [];
     let currentNode = folderId;
     while (currentNode && currentNode !== driveId) {
-      const folderInfoObj = get(folderDictionarySelector({driveId, folderId: currentNode}));
+      const folderInfoObj = get(folderDictionaryFilterSelector({driveId, folderId: currentNode}));
       path.push({folderId: currentNode, label: folderInfoObj.folderInfo.label});
       currentNode = folderInfoObj.folderInfo.parentFolderId;
     }
@@ -1671,7 +1702,7 @@ const nodeChildrenSelector = selectorFamily({
       let size = queue.length;
       for (let i = 0; i < size; i++) {
         let currentNodeId = queue.shift();
-        const folderInfoObj = get(folderDictionarySelector({driveId, folderId: currentNodeId}));
+        const folderInfoObj = get(folderDictionaryFilterSelector({driveId, folderId: currentNodeId}));
         children.push(currentNodeId);
         for (let childId of folderInfoObj?.contentIds?.[sortOptions.DEFAULT]) {
           queue.push(childId);
