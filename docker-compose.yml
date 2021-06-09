@@ -28,6 +28,7 @@ services:
     image: lyanthropos/doenet_test:php-dev
     volumes:
       - ./src/api:/usr/local/apache2/htdocs/api
+      - ./src/media:/usr/local/apache2/htdocs/media
       - vendor:/usr/local/apache2/htdocs/api/vendor
     networks:
       - dev_net
@@ -62,5 +63,3 @@ volumes:
 
 networks:
   dev_net:
-
-      - ./src/media:/usr/local/apache2/htdocs/media
