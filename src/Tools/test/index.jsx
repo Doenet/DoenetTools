@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import DoenetTest from './DoenetTest.jsx';
 import axios from 'axios';
+import { RecoilRoot } from 'recoil';
 
 
 // function DoenetTest(props){
@@ -12,7 +13,9 @@ import axios from 'axios';
 // }
 
 ReactDOM.render(
-  <DoenetTest />,
+  <RecoilRoot>
+    <DoenetTest />
+  </RecoilRoot>,
   document.getElementById('root'),
 );
 
