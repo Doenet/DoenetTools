@@ -14,8 +14,10 @@ const ControlsWrapper = styled.div`
   grid-area: supportControls;
   display: flex;
   gap: 4px;
-  background-color: hsl(0, 0%, 89%);
+  background-color: hsl(0, 0%, 99%);
   border-radius: 4px 4px 0 0;
+  border-bottom: 2px solid #e3e3e3;
+
 `;
 
 export default function SupportPanel({ children, responsiveControls }) {
