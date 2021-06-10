@@ -3,7 +3,7 @@ import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { useStackId } from '../ToolRoot';
 import DragPanel, { handleDirection } from './Panel';
-import ProfileContext from '../ToolRoot';
+import { ProfileContext } from '../ToolRoot';
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -109,6 +109,7 @@ export default function MenuPanel({ children }) {
   const profile = useContext(ProfileContext)
   //WHY IS profile UNDEFINED???????
   console.log(">>>profile",profile)
+  console.log(">>>ProfileContext",ProfileContext)
   //USE profile TO DEFINE profilePicName
   let profilePicName = "quokka";
 
@@ -131,6 +132,7 @@ export default function MenuPanel({ children }) {
           <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
           <CloseButton onClick={()=>console.log('>>>close menu panels')}>x</CloseButton>
           </span>
+          {/* {anchor} */}
       </MenuPanelsCap>
     {panels}
     <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
