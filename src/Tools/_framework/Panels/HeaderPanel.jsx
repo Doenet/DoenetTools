@@ -42,7 +42,7 @@ export default function HeaderPanel({ title, children }) {
   const stackId = useStackId();
 
   const profile = useContext(ProfileContext)
-  // console.log(">>>Header profile",profile)
+  console.log(">>>Header profile",profile)
 
   let userProfile = <p>Loading</p> //TODO: update this to blank circle svg
   if (Object.keys(profile).length > 0){
