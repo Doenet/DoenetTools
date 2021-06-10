@@ -8,6 +8,9 @@ export default class LineSegment extends GraphicalComponent {
   actions = {
     moveLineSegment: this.moveLineSegment.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    finalizeLineSegmentPosition: this.finalizeLineSegmentPosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -443,6 +446,18 @@ export default class LineSegment extends GraphicalComponent {
       });
     }
 
+  }
+
+  finalizeLineSegmentPosition() {
+    // trigger a moveLine 
+    // to send the final values with transient=false
+    // so that the final position will be recorded
+
+    this.actions.moveLineSegment({
+      point1coords: this.stateValues.numericalEndpoints[0],
+      point2coords: this.stateValues.numericalEndpoints[1],
+      transient: false,
+    });
   }
 
 }

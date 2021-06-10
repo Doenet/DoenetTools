@@ -12,9 +12,9 @@ export default class BooleanInput extends DoenetRenderer {
   updateValidationState() {
     this.validationState = "unvalidated";
     if (this.doenetSvData.valueHasBeenValidated) {
-      if (this.doenetSvData.creditAchievedForSubmitButton === 1) {
+      if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
-      } else if (this.doenetSvData.creditAchievedForSubmitButton === 0) {
+      } else if (this.doenetSvData.creditAchieved === 0) {
         this.validationState = "incorrect";
       } else {
         this.validationState = "partialcorrect";
@@ -80,7 +80,7 @@ export default class BooleanInput extends DoenetRenderer {
               icon: faCheck
             }));
           } else if (this.validationState === "partialcorrect") {
-            let percent = Math.round(this.doenetSvData.creditAchievedForSubmitButton * 100);
+            let percent = Math.round(this.doenetSvData.creditAchieved * 100);
             let partialCreditContents = `${percent} %`;
             checkWorkStyle.width = "50px";
             checkWorkStyle.backgroundColor = "#efab34";

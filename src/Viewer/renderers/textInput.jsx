@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import DoenetRenderer from './DoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
+import { sizeToCSS } from './utils/css';
 
 
 export default class TextInput extends DoenetRenderer {
@@ -39,7 +40,7 @@ export default class TextInput extends DoenetRenderer {
   handleKeyPress(e) {
     if (e.key === "Enter") {
       this.valueToRevertTo = this.doenetSvData.value;
-      if(this.doenetSvData.value !== this.doenetSvData.immediateValue) {
+      if (this.doenetSvData.value !== this.doenetSvData.immediateValue) {
         this.actions.updateValue();
       }
       if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
@@ -66,7 +67,7 @@ export default class TextInput extends DoenetRenderer {
   handleBlur(e) {
     this.focused = false;
     this.valueToRevertTo = this.doenetSvData.immediateValue;
-    if(this.doenetSvData.immediateValue !== this.doenetSvData.value) {
+    if (this.doenetSvData.immediateValue !== this.doenetSvData.value) {
       this.actions.updateValue();
     }
 
@@ -183,28 +184,54 @@ export default class TextInput extends DoenetRenderer {
       }
     }
 
+    let input;
+    if (this.doenetSvData.expanded) {
+      input = <textarea
+        key={inputKey}
+        id={inputKey}
+        value={this.currentValue}
+        disabled={this.doenetSvData.disabled}
+        onChange={this.onChangeHandler}
+        onKeyPress={this.handleKeyPress}
+        onKeyDown={this.handleKeyDown}
+        onBlur={this.handleBlur}
+        onFocus={this.handleFocus}
+        style={{
+          width: sizeToCSS(this.doenetSvData.width),
+          height: sizeToCSS(this.doenetSvData.height),
+          fontSize: "14px",
+          borderWidth: "1px",
+          // borderColor: surroundingBorderColor,
+          padding: "4px",
+        }}
+      />
+    } else {
+      input = <input
+        key={inputKey}
+        id={inputKey}
+        value={this.currentValue}
+        disabled={this.doenetSvData.disabled}
+        onChange={this.onChangeHandler}
+        onKeyPress={this.handleKeyPress}
+        onKeyDown={this.handleKeyDown}
+        onBlur={this.handleBlur}
+        onFocus={this.handleFocus}
+        style={{
+          width: `${this.doenetSvData.size * 10}px`,
+          height: "22px",
+          fontSize: "14px",
+          borderWidth: "1px",
+          borderColor: surroundingBorderColor,
+          padding: "4px",
+        }}
+      />
+    }
+
+
     return <React.Fragment>
       <a name={this.componentName} />
       <span className="textInputSurroundingBox" id={this.componentName}>
-        <input
-          key={inputKey}
-          id={inputKey}
-          value={this.currentValue}
-          disabled={this.doenetSvData.disabled}
-          onChange={this.onChangeHandler}
-          onKeyPress={this.handleKeyPress}
-          onKeyDown={this.handleKeyDown}
-          onBlur={this.handleBlur}
-          onFocus={this.handleFocus}
-          style={{
-            width: `${this.doenetSvData.size * 10}px`,
-            height: "22px",
-            fontSize: "14px",
-            borderWidth: "1px",
-            borderColor: surroundingBorderColor,
-            padding: "4px",
-          }}
-        />
+        {input}
         {checkWorkButton}
       </span>
 

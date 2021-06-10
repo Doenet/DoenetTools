@@ -6,13 +6,18 @@ import {
   itemHistoryAtom
 } from '../../_sharedRecoil/content'
 
+
 export default function Content(props) {
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
   let [contentId,setContentId] = useState(urlParamsObj?.contentId);
-  const branchId = urlParamsObj?.branchId;
+  
+  //just has contentId if it's a parameter.  
+  //If doenetId then find latest release's contentId
+  const doenetId = urlParamsObj?.doenetId;
   let [status,setStatus] = useState("Init");
-  const findContentId = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(branchId)));
+  const findContentId = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
+
     let contentId = null;
     for (let named of versionHistory.named){
       if (named.isReleased === '1'){
@@ -27,16 +32,16 @@ export default function Content(props) {
       setStatus("No released versions")
     }
   })
-  // const contentId = urlParamsObj?.contentId;
-  let mainPanel = null;
 
-  if (status === "Init" && branchId && !contentId){
-    findContentId(branchId)
+  let viewer = null;
+
+  if (status === "Init" && doenetId && !contentId){
+    findContentId(doenetId)
     return null;
-  }else if(!contentId && !branchId){
-    mainPanel = <p>Need a contentId or branchId to display content...!</p>
+  }else if(!contentId && !doenetId){
+    viewer = <p>Need a contentId or doenetId to display content...!</p>
   }else if(status === "No released versions"){
-    mainPanel = <p>Sorry! The author hasn't released any content to view at this link.</p>
+    viewer = <p>Sorry! The author hasn't released any content to view at this link.</p>
   }else{
     const attemptNumber = 1;
     const showCorrectness = true;
@@ -44,9 +49,8 @@ export default function Content(props) {
     const solutionDisplayMode = "button";
     const showFeedback = true;
     const showHints = true;
-    const ignoreDatabase = true;
     const requestedVariant = {index:1}; 
-    mainPanel = <DoenetViewer
+    viewer = <DoenetViewer
     key='doenetviewer'
     contentId={contentId}
     flags={{
@@ -57,7 +61,6 @@ export default function Content(props) {
       showHints,
     }}
     attemptNumber={attemptNumber}
-    ignoreDatabase={ignoreDatabase}
     requestedVariant={requestedVariant}
   /> 
   }
@@ -71,7 +74,7 @@ export default function Content(props) {
 
       </headerPanel>
        <mainPanel>
-         {mainPanel}
+         {viewer}
        </mainPanel>
     </Tool>
 

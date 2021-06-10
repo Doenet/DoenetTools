@@ -1,14 +1,14 @@
-// import React, { useRef } from "react";
-// import {
-//   atom,
-//   useRecoilValue,
-//   useSetRecoilState,
-//   useRecoilCallback,
-// } from "recoil";
-// import styled from "styled-components";
-// import { animated, useSpring } from "react-spring";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import React, { useRef } from "react";
+import {
+  atom,
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilCallback,
+} from "recoil";
+import styled from "styled-components";
+import { animated, useSpring } from '@react-spring/web';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 // const ToastContainer = styled.div`
 //   position: fixed;

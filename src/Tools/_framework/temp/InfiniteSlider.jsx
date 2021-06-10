@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react'
 import { useDrag, useGesture } from 'react-use-gesture'
-import { useSprings, a, useSpring } from 'react-spring'
+import { useSprings, a, useSpring } from '@react-spring/web'
 import debounce from 'lodash.debounce'
 
 const styles = {

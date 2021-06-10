@@ -5,7 +5,7 @@ import {
 import styled from "styled-components";
 import Tool from '../_framework/Tool';
 import { profileAtom, ProfileContext } from '../_framework/ToolRoot';
-import { a } from 'react-spring'
+import { a } from '@react-spring/web'
 import InfiniteSlider from '../_framework/temp/InfiniteSlider'
 import "../_framework/doenet.css";
 import Textinput from "../_framework/Textinput";

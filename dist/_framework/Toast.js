@@ -6,7 +6,7 @@ import {
   useRecoilCallback
 } from "../_snowpack/pkg/recoil.js";
 import styled from "../_snowpack/pkg/styled-components.js";
-import {animated, useSpring} from "../_snowpack/pkg/react-spring.js";
+import {animated, useSpring} from "../_snowpack/pkg/@react-spring/web.js";
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faTimes} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 const ToastContainer = styled.div`
@@ -33,9 +33,10 @@ const Message = styled(animated.div)`
   border-radius: 4px;
 `;
 const Content = styled("div")`
-  color: white;
-  background: ${({type}) => type?.background};
+  color: black;
+  /* background:  */
   /* opacity: 0.9; */
+  background: white;
   padding: 12px 22px;
   font-size: 1em;
   display: grid;
@@ -44,6 +45,9 @@ const Content = styled("div")`
   overflow: hidden;
   height: auto;
   border-radius: 3px;
+  border: 2px solid #e2e2e2;
+  border-left: 12px solid;
+  border-left-color: ${({type}) => type?.background};
 `;
 const Life = styled(animated.div)`
   position: absolute;
@@ -65,21 +69,22 @@ const Button = styled("button")`
   margin: 0;
   padding: 0;
   padding-bottom: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  :hover {
-    color: rgba(255, 255, 255, 0.9);
-  }
+  // color: rgba(255, 255, 255, 0.7);
+  // :hover {
+  //   color: rgba(255, 255, 255, 0.9);
+  // }
+  color: black;
   font-size: 1em;
 `;
 const ToastType = {
   ERROR: {
     timeout: -1,
-    background: "rgba(193, 41, 46, 0.6)",
+    background: "rgba(193, 41, 46, 1)",
     gradientEnd: "rgba()"
   },
   ALERT: {
     timeout: -1,
-    background: "rgba(255, 230, 0, 0.6)"
+    background: "rgba(255, 230, 0, 1)"
   },
   ACTION: {
     timeout: -1,
@@ -87,15 +92,15 @@ const ToastType = {
   },
   INFO: {
     timeout: 3e3,
-    background: "rgba(26, 90, 153,0.6)"
+    background: "rgba(26, 90, 153,1)"
   },
   SUCCESS: {
     timeout: 3e3,
-    background: "rgba(0, 222, 41,0.6)"
+    background: "rgba(41, 193, 67,  1)"
   },
   CONFIRMATION: {
     timeout: 5e3,
-    background: "rgba(26,90,153,0.6)"
+    background: "rgba(26,90,153,1)"
   }
 };
 const toastStack = atom({

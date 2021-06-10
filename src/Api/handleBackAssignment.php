@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 $_POST = json_decode(file_get_contents("php://input"),true);
 
 $itemId =  mysqli_real_escape_string($conn,$_POST["itemId"]);
-$branchId =  mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 
 $success = TRUE;
 $message = "";
@@ -28,7 +28,7 @@ if ($success){
 $sql = "UPDATE drive_content SET
 isAssigned = '1'
 WHERE itemId = '$itemId'
-AND branchId = '$branchId'
+AND doenetId = '$doenetId'
 ";
 
 $result = $conn->query($sql);

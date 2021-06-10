@@ -2142,6 +2142,7 @@ export default class Core {
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
+              firstLevelReplacement: dep.firstLevelReplacement,
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2620,7 +2621,9 @@ export default class Core {
           componentName: targetComponent.componentName,
           variableName: attribute,
         };
-        if ("targetAttributesToIgnore" in compositeComponent.state) {
+        if ("targetAttributesToIgnore" in compositeComponent.state &&
+          redefineDependencies.firstLevelReplacement
+        ) {
           thisDependencies.targetAttributesToIgnore = {
             dependencyType: "stateVariable",
             componentName: compositeComponent.componentName,
@@ -7659,9 +7662,13 @@ export default class Core {
     if (Object.keys(this.unsatisfiedChildLogic).length > 0) {
       let childLogicMessage = "";
       for (let componentName in this.unsatisfiedChildLogic) {
-        childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+        if (!this._components[componentName].isShadow) {
+          childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+        }
       }
-      console.warn(childLogicMessage)
+      if(childLogicMessage) {
+        console.warn(childLogicMessage)
+      }
     }
 
 

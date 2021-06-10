@@ -105,7 +105,7 @@ if ($success && $init == 'true'){
   dc.isAssigned as isAssigned,
   dc.isPublic as isPublic,
   dc.itemType as itemType,
-  dc.branchId as branchId,
+  dc.doenetId as doenetId,
   dc.sortOrder as sortOrder
   FROM drive_content AS dc
   WHERE dc.driveId = '$driveId'
@@ -132,7 +132,7 @@ if ($success && $init == 'true'){
     "isAssigned"=>$row['isAssigned'],
     "isPublic"=>$row['isPublic'],
     "itemType"=>$row['itemType'],
-    "branchId"=>$row['branchId'],
+    "doenetId"=>$row['doenetId'],
     "sortOrder"=>$row['sortOrder']
   );
   array_push($results_arr,$item);

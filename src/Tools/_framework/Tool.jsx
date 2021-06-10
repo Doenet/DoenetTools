@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense, useRef } from 'react';
 import styled from 'styled-components';
-import { animated } from 'react-spring';
+import { animated } from '@react-spring/web';
 import ContentPanel from './Panels/ContentPanel';
 // import NavPanel from './Panels/NavPanel';
 import { useStackId } from './ToolRoot';

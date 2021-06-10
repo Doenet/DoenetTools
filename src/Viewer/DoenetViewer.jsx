@@ -250,12 +250,12 @@ class DoenetViewerChild extends Component {
       contentId,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
-      branchId: this.props.branchId,
+      doenetId: this.props.doenetId,
       variant: variantString,
     }
 
     if (this.allowLocalPageState){
-      localStorage.setItem(`${contentId}${this.props.branchId}${this.attemptNumber}`,JSON.stringify({stateVariables:changeString,variant:variantString}))
+      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`,JSON.stringify({stateVariables:changeString,variant:variantString}))
     }
 
     if (!this.allowSavePageState){
@@ -282,7 +282,7 @@ class DoenetViewerChild extends Component {
 
     if (this.allowLocalPageState){
 
-      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.branchId}${this.attemptNumber}`)) 
+      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`)) 
       let stateVariables = null;
       let variant = null;
       
@@ -301,7 +301,7 @@ class DoenetViewerChild extends Component {
       params: {
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
-        branchId: this.props.branchId,
+        doenetId: this.props.doenetId,
       }
     }
 
@@ -359,7 +359,7 @@ class DoenetViewerChild extends Component {
 
     // console.log(">>>submit itemNumber:",itemNumber)
 
-    if (this.allowSaveSubmissions && this.props.branchId) {
+    if (this.allowSaveSubmissions && this.props.doenetId) {
 
 
       if (!this.weightsStored){
@@ -369,7 +369,7 @@ class DoenetViewerChild extends Component {
         const payload1 = {
           weights: this.core.scoredItemWeights,
           contentId: this.contentId,
-          branchId: this.props.branchId,
+          doenetId: this.props.doenetId,
           attemptNumber: this.attemptNumber
         }
 
@@ -380,7 +380,7 @@ class DoenetViewerChild extends Component {
       
 
       const payload2 = {
-        branchId: this.props.branchId,
+        doenetId: this.props.doenetId,
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
@@ -433,7 +433,7 @@ class DoenetViewerChild extends Component {
     }
 
     const payload = {
-      branchId: this.props.branchId,
+      doenetId: this.props.doenetId,
       contentId: this.contentId,
       attemptNumber: this.attemptNumber,
       variant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
@@ -547,7 +547,7 @@ class DoenetViewerChild extends Component {
       if (this.contentId !== this.state.contentId){
           this.needNewCoreFlag = true;
           //Try to load doenetML from local storage
-          this.doenetML = localStorage.getItem(contentId);
+          this.doenetML = localStorage.getItem(this.contentId);
           if (!this.doenetML){
           try {
             //Load the doenetML from the server

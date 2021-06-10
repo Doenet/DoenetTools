@@ -1,21 +1,21 @@
 {
   "scripts": {
-    "start": "docker compose up",
+    "start": "docker-compose up",
     "start:ci": "docker-compose up -d",
     "start:dev": "npm install && npx snowpack dev",
-    "dev:cmd": "docker compose exec dev",
-    "dev:restart": "docker compose restart dev",
-    "dev:install": "docker compose exec dev npm install",
-    "dev:uninstall": "docker compose exec dev npm uninstall",
-    "build": "snowpack build --config snowpack.deploy.config.js",
+    "dev:cmd": "docker-compose exec dev",
+    "dev:restart": "docker-compose restart dev",
+    "dev:install": "docker-compose exec dev npm install",
+    "dev:uninstall": "docker-compose exec dev npm uninstall",
+    "build": "docker exec -i doenet_dev_1 npx snowpack build --config snowpack.deploy.config.js",
     "build:ci": "snowpack build --out dist_ci --no-watch",
     "build:clean": "snowpack build --clean --reload --config snowpack.deploy.config.js",
-    "build:docker": "docker compose build",
+    "build:docker": "docker-compose build",
     "build:core": "node package.core.js",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
-    "publish_db": "docker compose up -d mysql && docker compose exec --privileged -w /var/lib/mysql mysql mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
-    "reset_db": "docker compose exec mysql sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql",
+    "publish_db": "docker-compose up -d mysql && docker exec --privileged -w /var/lib/mysql mysql mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
+    "reset_db": "docker exec -i doenet_mysql_1 sh -c 'mysql -u root -phelloworld doenet_local' < ./doenet_docker/volumes/db_init/db_template.sql",
     "reset_volumes": "docker volume rm doenet_node_modules doenet_vendor",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\"",
     "lint": "eslint \"src/**/*.{js,jsx}\""
@@ -28,7 +28,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@handsontable/react": "^5.0.0",
-    "@react-spring/web": "^9.1.2",
+    "@react-spring/web": "^9.2.2",
     "axios": "^0.21.1",
     "codemirror": "^5.61.1",
     "compromise": "^13.11.2",
@@ -66,7 +66,7 @@
     "styled-components": "^5.3.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.14.3",
+    "@babel/eslint-parser": "^7.14.4",
     "@babel/plugin-syntax-class-properties": "^7.12.13",
     "@prettier/plugin-php": "^0.16.3",
     "@snowpack/plugin-dotenv": "^2.1.0",
@@ -75,16 +75,18 @@
     "@testing-library/react": "^11.2.7",
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
-    "esbuild": "^0.12.1",
-    "eslint": "^7.26.0",
+    "cypress": "^7.4.0",
+    "esbuild": "^0.12.6",
+    "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.2.0",
-    "eslint-plugin-import": "^2.23.2",
+    "eslint-plugin-cypress": "^2.11.3",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy": "^1.18.1",
-    "prettier": "^2.3.0",
-    "snowpack": "^3.4.0",
+    "prettier": "^2.3.1",
+    "snowpack": "^3.5.5",
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {
@@ -93,6 +95,7 @@
       "plugin:import/errors",
       "plugin:react/recommended",
       "plugin:jsx-a11y/recommended",
+      "plugin:cypress/recommended",
       "prettier"
     ],
     "rules": {
@@ -114,7 +117,8 @@
       "react",
       "import",
       "jsx-a11y",
-      "react-hooks"
+      "react-hooks",
+      "cypress"
     ],
     "overrides": [
       {

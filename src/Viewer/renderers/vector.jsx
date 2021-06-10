@@ -86,7 +86,11 @@ export default class Vector extends DoenetRenderer {
     this.vectorJXG.on('drag', e => this.onDragHandler(e, -1, true));
     this.point1JXG.on('up', e => this.onDragHandler(e, 0, false));
     this.point2JXG.on('up', e => this.onDragHandler(e, 1, false));
-    this.vectorJXG.on('up', e => this.onDragHandler(e, -1, false));
+    this.vectorJXG.on('up', e => {
+      if(this.headBeingDragged && this.tailBeingDragged) {
+        this.actions.finalizeVectorPosition();
+      }
+    });
 
     this.point1JXG.on('down', function (e) {
       this.headBeingDragged = false;

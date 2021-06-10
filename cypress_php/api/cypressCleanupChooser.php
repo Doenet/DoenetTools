@@ -8,13 +8,13 @@ header("Access-Control-Allow-Credentials: true");
 include "db_connection.php";
 
 $_POST = json_decode(file_get_contents("php://input"),true);
-$number_content = count($_POST["contentSeeds"]["branchId"]);
+$number_content = count($_POST["contentSeeds"]["doenetId"]);
 
 for ($i = 0; $i < $number_content; $i++){
-  $branchId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["branchId"][$i]);
+  $doenetId = mysqli_real_escape_string($conn,$_POST["contentSeeds"]["doenetId"][$i]);
   $sql = "
   DELETE FROM content_branch
-  WHERE branchId = '$branchId'
+  WHERE doenetId = '$doenetId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -27,7 +27,7 @@ for ($i = 0; $i < $number_content; $i++){
 
   $sql = "
   DELETE FROM content
-  WHERE branchId = '$branchId'
+  WHERE doenetId = '$doenetId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -40,7 +40,7 @@ for ($i = 0; $i < $number_content; $i++){
 
   $sql = "
   DELETE FROM user_content
-  WHERE branchId = '$branchId'
+  WHERE doenetId = '$doenetId'
   ";
   echo $sql;
   $result = $conn->query($sql); 
@@ -53,7 +53,7 @@ for ($i = 0; $i < $number_content; $i++){
 
   $sql = "
   DELETE FROM folder_content
-  WHERE childId = '$branchId'
+  WHERE childId = '$doenetId'
   ";
   echo $sql;
   $result = $conn->query($sql); 

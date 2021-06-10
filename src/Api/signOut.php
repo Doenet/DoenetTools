@@ -22,15 +22,20 @@ http_response_code(200);
 $path = '/';
 // $domain = $ini_array['dbhost'];
 $domain = $_SERVER["SERVER_NAME"];
+if ($domain == 'apache'){$domain = 'localhost';}
+
 $isSecure = true;
 if ($domain=="localhost"){
   $isSecure = false;
 }
 $isHttpOnly = true;
 $expirationTime = time() - 3600;
-setcookie("JWT", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
-setcookie("JWT_JS", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
-setcookie("TrackingConsent", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
+
+setcookie("JWT", $value, $expirationTime, $path, $domain, $isSecure, $isHttpOnly);
+setcookie("JWT_JS", 1, $expirationTime, $path, $domain, $isSecure, false);
+// setcookie("JWT", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>$isHttpOnly, "samesite"=>"strict"));
+// setcookie("JWT_JS", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
+// setcookie("TrackingConsent", "", array("expires"=>$expirationTime, "path"=>$path, "domain"=>$domain, "secure"=>$isSecure, "httponly"=>false, "samesite"=>"strict"));
 // make it json format
 // echo json_encode($response_arr);
 
