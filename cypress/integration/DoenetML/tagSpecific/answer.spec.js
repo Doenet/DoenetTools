@@ -7355,6 +7355,129 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('consider as responses', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Enter two 2D points, where second to upward and to the right of the first:
+         <mathinput name="P" /> <mathinput name="Q" /></p>
+        
+        <setup>
+          <point name="PP" coords="$P" />
+          <point name="QQ" coords="$Q" />
+        </setup>
+
+        <answer name="a">
+          <considerAsResponses>$P $Q</considerAsResponses>
+         <award><when>$(QQ{prop='x'}) > $(PP{prop='x'}) and $(QQ{prop='y'}) > $(PP{prop='y'})</when></award>
+        </answer>
+        
+        <p>Current responses <aslist><copy name="cr" prop="currentResponses" tname="a" componentType="math" nComponents="2" /></aslist></p>
+        <p>Submitted responses <aslist><copy name="sr" prop="submittedResponses" tname="a" componentType="math" nComponents="2" /></aslist></p>
+        <p>Credit: <copy name="ca" prop="creditAchieved" tname="a" /></p>
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let cr1Anchor = cesc('#' + components['/cr'].replacements[0].componentName);
+      let cr2Anchor = cesc('#' + components['/cr'].replacements[1].componentName);
+      let sr1Anchor = cesc('#' + components['/sr'].replacements[0].componentName);
+      let sr2Anchor = cesc('#' + components['/sr'].replacements[1].componentName);
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.window().then((win) => {
+        expect(components["/a"].stateValues.nResponses).eq(2)
+      });
+
+      cy.get('#\\/P textarea').type("(2,3){enter}", {force: true})
+      cy.get('#\\/Q textarea').type("(3,4){enter}", {force: true})
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+
+      cy.get('#\\/P textarea').type("{home}{rightArrow}{rightArrow}{backspace}5{enter}", {force: true})
+      cy.get('#\\/Q textarea').type("{end}{leftArrow}{backspace}1{enter}", {force: true})
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+    })
+  });
+
   it('immediate value used for submit button', () => {
     cy.window().then((win) => {
       win.postMessage({

@@ -273,7 +273,7 @@ export default class Core {
 
       // remove blank string children after applying macros,
       // as applying macros could create additional blank string children
-      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
+      serializeFunctions.removeBlankStringChildren(serializedComponents, this.componentInfoObjects)
 
       serializeFunctions.decodeXMLEntities(serializedComponents);
 
@@ -1481,7 +1481,7 @@ export default class Core {
     // If a class is not supposed to have blank string children,
     // it is still possible that it received blank string children from a composite.
     // Hence filter out any blank string children that it might have
-    if (!parent.constructor.includeBlankStringChildren) {
+    if (!parent.constructor.includeBlankStringChildren || parent.constructor.removeBlankStringChildrenPostSugar) {
       let activeChildren = [];
       let foundBlank = false;
       let ind = 0;

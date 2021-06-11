@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { getCustomFromText, getCustomFromLatex, roundForDisplay, } from '../utils/math';
+import { getFromText, getFromLatex, roundForDisplay, } from '../utils/math';
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -361,7 +361,7 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
 
   let expression;
   if (format === "latex") {
-    let fromLatex = getCustomFromLatex({
+    let fromLatex = getFromLatex({
       functionSymbols
     });
     try {
@@ -371,7 +371,7 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
       expression = me.fromAst('\uFF3F');
     }
   } else if (format === "text") {
-    let fromText = getCustomFromText({
+    let fromText = getFromText({
       functionSymbols
     });
     try {

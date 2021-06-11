@@ -1172,5 +1172,33 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
+  it('number sequence, excludes with operators from macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <number name="n1">2</number>
+    <number name="n2">6</number>
+    <p><aslist><sequence from="0" to="8" exclude="$n1 $n2-$n1 $n2/$n1 $n2+1" /></aslist></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let nums = [0, 1, 5, 6, 8];
+
+    cy.get('#\\/_p1').should('have.text', nums.join(', '))
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let children = components['/_aslist1'].activeChildren;
+      expect(children.length).eq(nums.length);
+      for (let [ind, child] of children.entries()) {
+        expect(child.stateValues.value).eq(nums[ind]);
+      }
+    })
+  });
+
 });
 
