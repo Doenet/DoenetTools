@@ -134,6 +134,10 @@ class DoenetViewerChild extends Component {
 
     this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
 
+    if (this.props.generatedVariantCallback){
+      this.props.generatedVariantCallback(this.generatedVariant);
+    }
+
     if (this.cumulativeStateVariableChanges) {
       // continue to try setting the state variables to cummulativeStateVariableChanges
       // while there are a positive number of failures

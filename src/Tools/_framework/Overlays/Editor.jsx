@@ -653,16 +653,53 @@ function TempEditorHeaderBar(props){
   </div>
 }
 
+const variantInfoAtom = atom({
+  key:"variantInfoAtom",
+  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:0}}
+})
+ 
 function DoenetViewerPanel(){
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
-
+  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
+  // const [requestedVariant,setRequestedVariant] = useState({index:0});
   if (!editorInit){ return null; }
 
   let attemptNumber = 1;
-  let requestedVariant = { index: attemptNumber }
+  // let requestedVariant = { index: attemptNumber }
   let solutionDisplayMode = "button";
+
+
+  console.log(">>>DoenetViewerPanel variantInfo",variantInfo)
+
+  if (variantInfo.lastUpdatedIndexOrName === 'Index'){
+    setVariantInfo((was)=>{
+      let newObj = {...was}; 
+      newObj.lastUpdatedIndexOrName = null; 
+      newObj.requestedVariant = {index:variantInfo.index};
+    return newObj})
+
+  }else if (variantInfo.lastUpdatedIndexOrName === 'Name'){
+    setVariantInfo((was)=>{
+      let newObj = {...was}; 
+      newObj.lastUpdatedIndexOrName = null; 
+      newObj.requestedVariant = {name:variantInfo.name};
+    return newObj})
+
+  }
+
+
+  function tempCallback(generatedVariantInfo){
+    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
+    cleanGeneratedVariant.lastUpdatedIndexOrName = null 
+    console.log(">>>cleanGeneratedVariant",cleanGeneratedVariant)
+    setVariantInfo((was)=>{
+      let newObj = {...was}
+      Object.assign(newObj,cleanGeneratedVariant)
+      return newObj;
+    });
+  }
   
   return <DoenetViewer
       // key={"doenetviewer" + viewerDoenetML?.updateNumber}
@@ -681,11 +718,50 @@ function DoenetViewerPanel(){
       allowLocalPageState={false}
       allowSaveSubmissions={false}
       allowSaveEvents={false}
-
-      requestedVariant={requestedVariant}
+      generatedVariantCallback={tempCallback}
+      requestedVariant={variantInfo.requestedVariant}
       /> 
 }
 
+function VariantPanel(){
+  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
+  // console.log(">>>VariantPanel variantInfo",variantInfo)
+  const [variantIndex,setVariantIndex] = useState(variantInfo.index)
+  const [variantName,setVariantName] = useState(variantInfo.name)
+
+  function updateVariantInfoAtom(source){
+    //Prevent calling when it didn't change
+    if (source === 'Index'){
+      if (variantIndex === variantInfo.index){
+        return;
+      }
+    }
+    if (source === 'Name'){
+      if (variantName === variantInfo.name){
+        return;
+      }
+    }
+    setVariantInfo((was)=>{
+      let newObj = {...was};
+      newObj.index = variantIndex;
+      newObj.name = variantName;
+      newObj.lastUpdatedIndexOrName = source;
+    console.log(">>>update!!!! newObj",newObj);
+
+      return newObj;
+    })
+  }
+
+  return <>
+  <div><label>Index <input type="text" value={variantIndex} onKeyDown={(e)=>{
+    if (e.key ==='Enter'){ updateVariantInfoAtom('Index') }
+    }} onBlur={()=>updateVariantInfoAtom('Index')} onChange={(e)=>{setVariantIndex(e.target.value)}}/></label></div>
+  <div><label>Variant Name <input type="text" value={variantName} onKeyDown={(e)=>{
+    if (e.key ==='Enter'){ updateVariantInfoAtom('Name') }
+    }} onBlur={()=>updateVariantInfoAtom('Name')} onChange={(e)=>{setVariantName(e.target.value)}}/></label></div>
+  </>
+}
+ 
 const editorInitAtom = atom({
   key:"editorInit",
   default:false
@@ -742,6 +818,9 @@ export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
       </menuPanel>
       <menuPanel title="Version history">
         <VersionHistoryPanel doenetId={doenetId} driveId={driveId} folderId={folderId} itemId={itemId}/>
+      </menuPanel>
+      <menuPanel title="Variant">
+        <VariantPanel  />
       </menuPanel>
       
     </Tool>
