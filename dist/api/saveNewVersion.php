@@ -15,7 +15,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 // $escapedCID = hash('sha256',$escapedDoenetML);
 $title =  mysqli_real_escape_string($conn,$_POST["title"]);
 $dangerousDoenetML = $_POST["doenetML"];
-$branchId = mysqli_real_escape_string($conn,$_POST["branchId"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
 $newDraftVersionId = mysqli_real_escape_string($conn,$_POST["newDraftVersionId"]);
 $newDraftContentId = mysqli_real_escape_string($conn,$_POST["newDraftContentId"]);
@@ -26,7 +26,7 @@ $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
 $isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
 $isSetAsCurrent = mysqli_real_escape_string($conn,$_POST["isSetAsCurrent"]);
 $isNewToggleRelease = mysqli_real_escape_string($conn,$_POST["isNewToggleRelease"]);
-$previousBranchId = mysqli_real_escape_string($conn,$_POST["previousBranchId"]);
+$previousDoenetId = mysqli_real_escape_string($conn,$_POST["previousDoenetId"]);
 
 
 $success = TRUE;
@@ -35,9 +35,9 @@ $message = "";
 if ($title == ""){
     $success = FALSE;
     $message = 'Internal Error: missing title';
-  }elseif ($branchId == ""){
+  }elseif ($doenetId == ""){
     $success = FALSE;
-    $message = 'Internal Error: missing branchId';
+    $message = 'Internal Error: missing doenetId';
   }elseif ($versionId == ""){
     $success = FALSE;
     $message = 'Internal Error: missing versionId';
@@ -59,10 +59,10 @@ if ($title == ""){
   }
 
 //Add new version to content table
-//TODO: Update draft version (Overwrite BranchId named file)
+//TODO: Update draft version (Overwrite DoenetId named file)
 
 
-//Test if we have permission to save to branchId
+//Test if we have permission to save to doenetId
 if ($success){
     $sql = "
     SELECT canAddItemsAndFolders
@@ -87,7 +87,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     $sql = "UPDATE content 
     SET timestamp=NOW(), contentId='$contentId'
     WHERE isDraft='1'
-    AND branchId='$branchId'
+    AND doenetId='$doenetId'
     ";
 
     $result = $conn->query($sql);
@@ -101,7 +101,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     versionId
     FROM content
     WHERE isDraft='1'
-    AND branchId='$branchId'
+    AND doenetId='$doenetId'
     ";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
@@ -116,13 +116,13 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     contentId='$newDraftContentId',
     versionId='$newDraftVersionId'
     WHERE isDraft='1'
-    AND branchId='$branchId'
+    AND doenetId='$doenetId'
     ";
     $result = $conn->query($sql);
 
     //Save the old draft info as an autosave
     $sql = "INSERT INTO content 
-    SET branchId='$branchId',
+    SET doenetId='$doenetId',
     contentId='$oldDraftContentId', 
     versionId='$oldDraftVersionId', 
     title='Autosave (was draft)',
@@ -140,7 +140,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
         $sql = "
         UPDATE content
         SET title='$title',isNamed='1'
-        WHERE branchId='$branchId'
+        WHERE doenetId='$doenetId'
         AND versionId='$versionId'
         ";
         $result = $conn->query($sql);
@@ -148,7 +148,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
   $sql = "
   UPDATE content
   SET isReleased='$isReleased'
-  WHERE branchId='$branchId'
+  WHERE doenetId='$doenetId'
   AND versionId='$versionId'
   ";
   $result = $conn->query($sql);
@@ -156,7 +156,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
   $sql = "
   SELECT isReleased
   FROM content
-  WHERE branchId='$branchId'
+  WHERE doenetId='$doenetId'
   AND isNamed='1'
   AND isReleased='1'
   ";
@@ -168,7 +168,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
   $sql = "
   UPDATE drive_content
   SET isReleased='$doenetIsReleased'
-  WHERE branchId='$branchId'
+  WHERE doenetId='$doenetId'
   ";
   $result = $conn->query($sql);
 
@@ -195,7 +195,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
       //Find previous contentId of draft
       $sql = "SELECT contentId
         FROM content
-        WHERE branchId='$previousBranchId'
+        WHERE doenetId='$previousDoenetId'
         AND isDraft='1'
       ";
         $result = $conn->query($sql);
@@ -204,7 +204,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
       
       //Safe the draft for the new content
       $sql = "INSERT INTO content 
-        SET branchId='$branchId',
+        SET doenetId='$doenetId',
         contentId='$contentId', 
         versionId='$versionId', 
         title='Draft',
@@ -221,7 +221,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
         saveDoenetML($contentId,$dangerousDoenetML);
     
         $sql = "INSERT INTO content 
-        SET branchId='$branchId',
+        SET doenetId='$doenetId',
         contentId='$contentId', 
         versionId='$versionId', 
         title='$title',
@@ -239,7 +239,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
 
 function saveDoenetML($fileName,$dangerousDoenetML){
     // $fileName = $contentId;
-    // if ($isDraft){$fileName = $branchId;}
+    // if ($isDraft){$fileName = $doenetId;}
     //TODO: Config file needed for server
     $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
     fwrite($newfile, $dangerousDoenetML);

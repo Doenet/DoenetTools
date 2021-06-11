@@ -1,6 +1,6 @@
 import React, {useState, useEffect, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
 import styled from "../_snowpack/pkg/styled-components.js";
-import {animated} from "../_snowpack/pkg/react-spring.js";
+import {animated} from "../_snowpack/pkg/@react-spring/web.js";
 import ContentPanel from "./Panels/ContentPanel.js";
 import {useStackId} from "./ToolRoot.js";
 const ToolContainer = styled(animated.div)`
@@ -12,7 +12,7 @@ const ToolContainer = styled(animated.div)`
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
-  background-color: hsl(227, 22%, 80%);
+  background-color: #e2e2e2;
   position: fixed;
   top: 0;
   left: 0;

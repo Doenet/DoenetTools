@@ -241,19 +241,26 @@ export function doenetMLToSerializedComponents(doenetML, init = true) {
   return json;
 }
 
-export function removeBlankStringChildren(serializedComponents, standardComponentClasses) {
+export function removeBlankStringChildren(serializedComponents, componentInfoObjects) {
 
   for (let component of serializedComponents) {
     if (component.children) {
-      let componentClass = standardComponentClasses[component.componentType];
+      let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
       if (componentClass && !componentClass.includeBlankStringChildren) {
         component.children = component.children.filter(
           x => x.componentType !== "string" || x.state.value.trim() !== ""
         )
       }
 
-      removeBlankStringChildren(component.children, standardComponentClasses)
+      removeBlankStringChildren(component.children, componentInfoObjects)
 
+    }
+
+    for (let attr in component.attributes) {
+      let comp = component.attributes[attr];
+      if (comp.children) {
+        removeBlankStringChildren([comp], componentInfoObjects)
+      }
     }
   }
 
@@ -999,14 +1006,14 @@ export function decodeXMLEntities(serializedComponents) {
 export function applySugar({ serializedComponents, parentParametersFromSugar = {},
   parentAttributes = {},
   componentInfoObjects,
-  parentUniqueId = ""
+  parentUniqueId = "",
+  isAttributeComponent = false,
 }) {
 
   for (let [componentInd, component] of serializedComponents.entries()) {
     let componentType = component.componentType;
     let componentClass = componentInfoObjects.allComponentClasses[componentType];
     if (!componentClass) {
-      console.log(componentInfoObjects.allComponentClasses)
       throw Error(`Unrecognized component type ${componentType}`)
     }
     let uniqueId = parentUniqueId + '|' + componentType + componentInd;
@@ -1026,100 +1033,107 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
       let newParentParametersFromSugar = {};
 
-      for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
+      if (!component.skipSugar) {
 
-        if (component.children.length === 0) {
-          break;
-        }
+        for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
 
-        let childTypes = component.children
-          .map(x => x.componentType === "string" ? "s" : "n")
-          .join("");
-
-        if (sugarInstruction.childrenRegex) {
-          let match = childTypes.match(sugarInstruction.childrenRegex);
-
-          if (!match || match[0].length !== component.children.length) {
-            // sugar pattern didn't match all children
-            // so don't apply sugar
-
-            continue;
+          if (component.children.length === 0) {
+            break;
           }
 
-        }
+          let childTypes = component.children
+            .map(x => x.componentType === "string" ? "s" : "n")
+            .join("");
 
+          if (sugarInstruction.childrenRegex) {
+            let match = childTypes.match(sugarInstruction.childrenRegex);
 
-        let matchedChildren = deepClone(component.children);
+            if (!match || match[0].length !== component.children.length) {
+              // sugar pattern didn't match all children
+              // so don't apply sugar
 
-        let nNonStrings = 0;
-        for (let child of matchedChildren) {
-          if (child.componentType !== "string") {
-            child.preSugarInd = nNonStrings;
-            nNonStrings++;
-          }
-        }
-
-        let sugarResults = sugarInstruction.replacementFunction({
-          matchedChildren,
-          parentParametersFromSugar,
-          parentAttributes,
-          componentAttributes,
-          uniqueId: uniqueId + '|sugar' + sugarInd,
-          componentInfoObjects
-        });
-
-        // console.log("sugarResults")
-        // console.log(sugarResults)
-
-        if (sugarResults.success) {
-
-          if (sugarResults.newChildren) {
-            let newChildren = sugarResults.newChildren;
-            let preSugarIndsFound = findPreSugarIndsAndMarkFromSugar(newChildren);
-
-            if (preSugarIndsFound.length !== nNonStrings ||
-              !preSugarIndsFound.every((v, i) => v === i)
-            ) {
-              console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
-            } else {
-
-              component.children = newChildren;
-
-              if (sugarResults.parametersForChildrenSugar) {
-                Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
-              }
-            }
-          } else if (sugarResults.newAttributes) {
-            let newAttributes = sugarResults.newAttributes;
-
-            let preSugarIndsFound = [];
-
-            for (let attr in newAttributes) {
-              preSugarIndsFound.push(...findPreSugarIndsAndMarkFromSugar(newAttributes[attr].children));
-            }
-
-            if (preSugarIndsFound.length !== nNonStrings ||
-              !preSugarIndsFound.sort().every((v, i) => v === i)
-            ) {
-              console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
-            } else {
-
-              if (!component.attributes) {
-                component.attributes = {}
-              }
-              Object.assign(component.attributes, newAttributes)
-              component.children = [];
-
-              if (sugarResults.parametersForChildrenSugar) {
-                Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
-              }
+              continue;
             }
 
           }
 
-        }
 
+          let matchedChildren = deepClone(component.children);
+
+          let nNonStrings = 0;
+          for (let child of matchedChildren) {
+            if (child.componentType !== "string") {
+              child.preSugarInd = nNonStrings;
+              nNonStrings++;
+            }
+          }
+
+          let sugarResults = sugarInstruction.replacementFunction({
+            matchedChildren,
+            parentParametersFromSugar,
+            parentAttributes,
+            componentAttributes,
+            uniqueId: uniqueId + '|sugar' + sugarInd,
+            componentInfoObjects,
+            isAttributeComponent: isAttributeComponent
+          });
+
+          // console.log("sugarResults")
+          // console.log(sugarResults)
+
+          if (sugarResults.success) {
+
+            if (sugarResults.newChildren) {
+              let newChildren = sugarResults.newChildren;
+              let preSugarIndsFound = findPreSugarIndsAndMarkFromSugar(newChildren);
+
+              if (preSugarIndsFound.length !== nNonStrings ||
+                !preSugarIndsFound.every((v, i) => v === i)
+              ) {
+                console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
+              } else {
+
+                component.children = newChildren;
+
+                if (sugarResults.parametersForChildrenSugar) {
+                  Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
+                }
+              }
+            } else if (sugarResults.newAttributes) {
+              let newAttributes = sugarResults.newAttributes;
+
+              let preSugarIndsFound = [];
+
+              for (let attr in newAttributes) {
+                preSugarIndsFound.push(...findPreSugarIndsAndMarkFromSugar(newAttributes[attr].children));
+              }
+
+              if (preSugarIndsFound.length !== nNonStrings ||
+                !preSugarIndsFound.sort().every((v, i) => v === i)
+              ) {
+                console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
+              } else {
+
+                if (!component.attributes) {
+                  component.attributes = {}
+                }
+                Object.assign(component.attributes, newAttributes)
+                component.children = [];
+
+                if (sugarResults.parametersForChildrenSugar) {
+                  Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
+                }
+              }
+
+            }
+
+          }
+
+        }
       }
+
+      // Note: don't pass in isAttributeComponent
+      // as that flag should be set just for the top level attribute component
 
       applySugar({
         serializedComponents: component.children,
@@ -1141,6 +1155,7 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             parentAttributes: componentAttributes,
             componentInfoObjects,
             parentUniqueId: uniqueId,
+            isAttributeComponent: true,
           })
         }
       }

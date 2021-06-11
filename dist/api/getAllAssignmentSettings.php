@@ -12,7 +12,7 @@ $userId = $jwtArray['userId'];
 
 
 // $assignmentId =  mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
-$branchId =  mysqli_real_escape_string($conn,$_REQUEST["branchId"]);
+$doenetId =  mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 $contentId =  mysqli_real_escape_string($conn,$_REQUEST["contentId"]);
 $versionId =  mysqli_real_escape_string($conn,$_REQUEST["versionId"]);
 
@@ -23,7 +23,6 @@ $response_arr = array(
 ); 
 
   $sql = "SELECT
-  a.title AS assignment_title,
   a.assignedDate AS assignedDate,
   a.dueDate AS dueDate,
   a.timeLimit AS timeLimit,
@@ -38,15 +37,14 @@ $response_arr = array(
   a.showHints AS showHints,
   a.showCorrectness AS showCorrectness,
   a.proctorMakesAvailable AS proctorMakesAvailable,
-  a.contentId AS contentId,
-  dc.isAssigned AS isAssigned,
-  c.isAssigned AS versionIsAssigned
+  a.doenetId AS doenetId,
+  a.driveId AS driveId,
+  c.isAssigned AS isAssigned,
+  c.versionId AS versionId
   FROM assignment AS a
-  LEFT JOIN drive_content AS dc
-  ON a.driveId = dc.driveId
   LEFT JOIN content AS c
-  ON a.contentId = c.contentId
-  WHERE c.branchId = '$branchId' AND c.contentId = '$contentId'
+  ON a.doenetId = c.doenetId
+  WHERE c.doenetId = '$doenetId' 
   ";
   
   $result = $conn->query($sql);
@@ -72,10 +70,9 @@ $response_arr = array(
           "showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
           "proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
           "isAssigned" => $row['isAssigned'],  
-          "contentId" => $row['contentId'],
-          "branchId" => $row['branchId'],
+          "doenetId" => $row['doenetId'],
           "driveId" => $row['driveId'],
-          "versionId" => $row['versionId']
+          "versionId" => $row['versionId'],
   
   );
       array_push($assignment_arr,$assignment);

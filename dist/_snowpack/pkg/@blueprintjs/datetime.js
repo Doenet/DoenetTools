@@ -6516,9 +6516,7 @@ var Portal = /** @class */ (function (_super) {
     Portal.prototype.componentDidUpdate = function (prevProps) {
         // update className prop on portal DOM element
         if (this.portalElement != null && prevProps.className !== this.props.className) {
-            if (prevProps.className !== undefined) {
-                this.portalElement.classList.remove(prevProps.className);
-            }
+            maybeRemoveClass(this.portalElement.classList, prevProps.className);
             maybeAddClass(this.portalElement.classList, this.props.className);
         }
         if (cannotCreatePortal) {
@@ -6556,6 +6554,11 @@ var Portal = /** @class */ (function (_super) {
     };
     return Portal;
 }(react.Component));
+function maybeRemoveClass(classList, className) {
+    if (className != null && className !== "") {
+        classList.remove.apply(classList, className.split(" "));
+    }
+}
 function maybeAddClass(classList, className) {
     if (className != null && className !== "") {
         classList.add.apply(classList, className.split(" "));

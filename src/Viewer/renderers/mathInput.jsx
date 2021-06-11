@@ -83,7 +83,7 @@ export default class MathInput extends DoenetRenderer {
     let expression;
 
     text = substituteUnicodeInLatexString(text);
-    let fromLatex = getCustomFromLatex({
+    let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
     });
     try {
@@ -331,6 +331,13 @@ export default class MathInput extends DoenetRenderer {
         }
       }
     }
+
+    // TODO: remove inf and sup from the autoOperatorNames so that
+    // the autoCommand infinity will work.  Is there a better way
+    // so that could still use inf?
+    // Also, just copied the list of autoCommands from MathQuill.
+    // Should change it to match the functions that <math> understand,
+    // i.e., import from the util/math.js in Core
     return <React.Fragment>
       <a name={this.componentName} />
 
@@ -361,7 +368,15 @@ export default class MathInput extends DoenetRenderer {
           <EditableMathField
             latex={this.latexValue}
             config={{
-              autoCommands: "sqrt pi theta integral",
+              autoCommands: "sqrt pi theta integral infinity",
+              autoOperatorNames: 'arg deg det dim exp gcd hom ker lg lim ln log max min'
+              + ' Pr'
+              + ' sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth'
+              + ' sin cos tan sec cosec csc cotan cot ctg'
+              + ' arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg'
+              + ' sinh cosh tanh sech cosech csch cotanh coth ctgh'
+              + ' arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh'
+              + ' arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh',
               handlers: {
                 enter: this.handlePressEnter
               }
@@ -444,7 +459,7 @@ var appliedFunctionSymbols = [
   'count', 'mod'
 ];
 
-function getCustomFromLatex({ functionSymbols }) {
+function getFromLatex({ functionSymbols }) {
   return x => me.fromAst((new me.converters.latexToAstObj({
     appliedFunctionSymbols, functionSymbols
   })).convert(x))

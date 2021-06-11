@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {Spring} from "../../_snowpack/pkg/react-spring.js";
+import {Spring} from "../../_snowpack/pkg/@react-spring/web.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 const SliderContainer = styled.div`

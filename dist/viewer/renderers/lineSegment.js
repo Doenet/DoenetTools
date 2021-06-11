@@ -50,13 +50,24 @@ export default class LineSegment extends DoenetRenderer {
     this.lineSegmentJXG = this.props.board.create("segment", [this.point1JXG, this.point2JXG], jsxSegmentAttributes);
     this.point1JXG.on("drag", () => this.onDragHandler(1, true));
     this.point2JXG.on("drag", () => this.onDragHandler(2, true));
-    this.lineSegmentJXG.on("drag", () => this.onDragHandler(0, true));
+    this.lineSegmentJXG.on("drag", (e) => this.onDragHandler(0, true, e));
     this.point1JXG.on("up", () => this.onDragHandler(1, false));
     this.point2JXG.on("up", () => this.onDragHandler(2, false));
-    this.lineSegmentJXG.on("up", () => this.onDragHandler(0, false));
+    this.lineSegmentJXG.on("up", function(e) {
+      if (this.draggedPoint === 0) {
+        this.actions.finalizeLineSegmentPosition();
+      }
+    }.bind(this));
     this.point1JXG.on("down", () => this.draggedPoint = null);
     this.point2JXG.on("down", () => this.draggedPoint = null);
-    this.lineSegmentJXG.on("down", () => this.draggedPoint = null);
+    this.lineSegmentJXG.on("down", function(e) {
+      this.draggedPoint = null;
+      this.pointerAtDown = [e.x, e.y];
+      this.pointsAtDown = [
+        [...this.point1JXG.coords.scrCoords],
+        [...this.point2JXG.coords.scrCoords]
+      ];
+    }.bind(this));
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     return this.lineSegmentJXG;
   }
@@ -125,7 +136,7 @@ export default class LineSegment extends DoenetRenderer {
     this.point2JXG.update();
     this.props.board.updateRenderer();
   }
-  onDragHandler(i, transient) {
+  onDragHandler(i, transient, e) {
     if (transient) {
       this.draggedPoint = i;
     } else if (this.draggedPoint !== i) {
@@ -142,12 +153,23 @@ export default class LineSegment extends DoenetRenderer {
         transient
       });
     } else {
+      let pointCoords = this.calculatePointPositions(e);
       this.actions.moveLineSegment({
-        point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
-        point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
-        transient
+        point1coords: pointCoords[0],
+        point2coords: pointCoords[1],
+        transient: true
       });
     }
+  }
+  calculatePointPositions(e) {
+    var o = this.props.board.origin.scrCoords;
+    let pointCoords = [];
+    for (let i = 0; i < 2; i++) {
+      let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0] - o[1]) / this.props.board.unitX;
+      let calculatedY = (o[2] - (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1])) / this.props.board.unitY;
+      pointCoords.push([calculatedX, calculatedY]);
+    }
+    return pointCoords;
   }
   render() {
     if (this.props.board) {

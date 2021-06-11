@@ -54,18 +54,14 @@ export default class Point extends DoenetRenderer {
 
     this.pointJXG.on('drag', function (e) {
       this.dragged = true;
-      //board.suspendUpdate();
-      this.onDragHandler(e, true);
-      //board.unsuspendUpdate();
+      this.onDragHandler(e);
     }.bind(this));
 
     this.pointJXG.on('up', function (e) {
-      this.onDragHandler(e, false);
+      if (this.dragged) {
+        this.actions.finalizePointPosition();
+      }
     }.bind(this));
-
-    // this.pointJXG.on('down', function () {
-    //   this.dragged = false;
-    // }.bind(this));
 
     this.pointJXG.on('down', function (e) {
       this.dragged = false;
@@ -171,17 +167,14 @@ export default class Point extends DoenetRenderer {
 
   }
 
-  onDragHandler(e, transient) {
+  onDragHandler(e) {
     if (this.dragged) {
       let pointCoords = this.calculatePointPosition(e);
-
       this.actions.movePoint({
         x: pointCoords[0],
         y: pointCoords[1],
-        transient
+        transient: true
       });
-      // this.actions.movePoint({ x: this.pointJXG.X(), y: this.pointJXG.Y(), transient });
-
     }
   }
 
@@ -190,20 +183,26 @@ export default class Point extends DoenetRenderer {
     // the reason we calculate point position with this algorithm,
     // rather than using .X() and .Y() directly
     // is that attributes .X() and .Y() are affected by the
-    // .setCoordinates function called in update(),
-    // for the .up event.
+    // .setCoordinates function called in update().
     // Due to this dependence, the location of .X() and .Y()
-    // can be affected by constaints of objects that the points depends on,
+    // can be affected by constraints of objects that the points depends on,
     // leading to a different location on up than on drag
     // (as dragging uses the mouse location)
 
+    // TODO: find an example where need this this additional complexity
+
     var o = this.props.board.origin.scrCoords;
+
+    let [xmin, ymax, xmax, ymin] = this.props.board.getBoundingBox();
 
     let calculatedX = (this.pointAtDown[1] + e.x - this.pointerAtDown[0]
       - o[1]) / this.props.board.unitX;
+    calculatedX = Math.min(xmax, Math.max(xmin, calculatedX));
+
     let calculatedY = (o[2] -
       (this.pointAtDown[2] + e.y - this.pointerAtDown[1]))
       / this.props.board.unitY;
+    calculatedY = Math.min(ymax, Math.max(ymin, calculatedY))
 
     return [calculatedX, calculatedY]
   }
