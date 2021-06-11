@@ -36,6 +36,7 @@ import {
   useRecoilStateLoadable,
   useRecoilState,
   useRecoilValue,
+  useRecoilCallback,
 } from 'recoil';
 
 /**
@@ -62,7 +63,6 @@ import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
 import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import {loadAssignmentSelector} from '../../Tools/course/Course';
-import {roleType} from '../../_reactComponents/Drive/DriveCards';
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
@@ -307,7 +307,7 @@ export default function Drive(props){
   }
 }
 
-let loadDriveInfoQuery = selectorFamily({
+export const loadDriveInfoQuery = selectorFamily({
   key:"loadDriveInfoQuery",
   get: (driveId) => async ({get,set})=>{
     const { data } = await axios.get(
@@ -1543,19 +1543,25 @@ const selectedDriveItems = selectorFamily({
 })
 
 function columnJSX(columnType,item){
-  const subTypeRole = useRecoilValue(roleType);
+  let courseRole = '';
+  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(item.parentFolderId))
+  if (drivesInfo?.state === 'hasValue') {
+     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
+      }
 
   // console.log(">>>columnType,item",columnType,item)
       // console.log(">>>item",item)
-      const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
+      // const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
       let aInfo = '';
-      if (assignmentInfoSettings?.state === 'hasValue') {
-        aInfo = assignmentInfoSettings?.contents?.assignments[0];
-      }
+      // if (assignmentInfoSettings?.state === 'hasValue') {
+      //   // aInfo = assignmentInfoSettings?.contents?.assignments[0];
+        
+      // }
       
   if (columnType === 'Released' && item.isReleased === '1'){
     return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
-  }else if (columnType === 'Assigned' && item.isAssigned === '1'){
+  // }else if (columnType === 'Assigned' && item.isAssigned === '1' && courseRole){
+  }else if (columnType === 'Assigned' && item.isAssigned === '1' ){
     return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>
   }else if (columnType === 'Public' && item.isPublic === '1'){
     return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>

@@ -25,17 +25,18 @@ import Drive, {
   clearDriveAndItemSelections,
   drivePathSyncFamily,
   folderDictionaryFilterAtom,
+  loadDriveInfoQuery
 } from '../../_reactComponents/Drive/Drive';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 // import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'; //TODO
-import DriveCards, {roleType} from '../../_reactComponents/Drive/DriveCards';
+import DriveCards from '../../_reactComponents/Drive/DriveCards';
 import '../../_reactComponents/Drive/drivecard.css';
 import '../../_utils/util.css';
 import GlobalFont from '../../_utils/GlobalFont';
 import Tool from '../_framework/Tool';
-import Switch from "../_framework/Switch";
+import Switch from '../_framework/Switch';
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
 import { useToast } from '../_framework/Toast';
 import { URLPathSync } from '../library/Library';
@@ -104,7 +105,7 @@ export const assignmentDictionary = atomFamily({
   }),
 });
 let assignmentDictionarySelector = selectorFamily({
-  key: 'assignmentDictionaryNewSelector',
+  key: 'assignmentDictionarySelector',
   get:
     (driveIditemIddoenetIdparentFolderId) =>
     ({ get }) => {
@@ -163,7 +164,6 @@ export default function Course(props) {
   const [openEnrollment, setEnrollmentView] = useState(false);
   const role = useRecoilValue(roleAtom);
   const setDrivePath = useSetRecoilState(drivePathSyncFamily('main'));
-  const subTypeRole = useRecoilValue(roleType);
 
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId, routePathFolderId, pathItemId, itemType] =
@@ -172,6 +172,13 @@ export default function Course(props) {
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId] = urlParamsObj.path.split(':');
   }
+  let courseRole = '';
+  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(routePathDriveId))
+  if (drivesInfo?.state === 'hasValue') {
+     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
+
+    //  courseRole = drivesInfo?.contents?.perms['canViewUnassignedItemsAndFolders'] ;
+      }
   // const [init,setInit]  = useState(false)
   // const setFilteredDrive = useSetRecoilState(folderDictionaryFilterAtom({driveId:routePathDriveId}));
   const [filter, setFilteredDrive] = useRecoilState(
@@ -336,63 +343,53 @@ export default function Course(props) {
               </div>
 
               <div onClick={cleardrivecardSelection} tabIndex={0}>
-                {!routePathDriveId && <h2>Admin</h2>}
                 <DriveCards
                   routePathDriveId={routePathDriveId}
                   isOneDriveSelect={true}
                   types={['course']}
                   drivePathSyncKey="main"
-                  subTypes={['Administrator']}
                 />
 
-                {!routePathDriveId && <h2>Student</h2>}
-                <DriveCards
-                  isOneDriveSelect={true}
-                  routePathDriveId={routePathDriveId}
-                  isOneDriveSelect={true}
-                  types={['course']}
-                  drivePathSyncKey="main"
-                  subTypes={['Student']}
-                />
               </div>
             </>
           )}
         </mainPanel>
-       
-          
-            {routePathDriveId && <menuPanel isInitOpen title="Assignment">
-          
-                <>
+
+        {routePathDriveId && (
+          <menuPanel isInitOpen title="Assignment">
+            <>
               <VersionInfo route={props.route} />
               <br />
               <ItemInfoPanel route={props.route} />
-              </>
-          
-            </menuPanel>}
+            </>
+          </menuPanel>
+        )}
 
-            { routePathDriveId && <menuPanel title="+Add">
-             <>
-             {subTypeRole === 'Administrator' ?(
-               <><Button
-               value={
-                 openEnrollment ? 'Close Enrollment' : 'Open Enrollment'
-               }
-               callback={(e) => setEnrollment(e)}
-             ></Button>
-             <br />
-             <label>View as Student</label>
+        {routePathDriveId && (
+          <menuPanel title="+Add">
+            <>
+              
+              {/* {( courseRole */}
+              {(
+                <>
+                  <Button
+                    value={
+                      openEnrollment ? 'Close Enrollment' : 'Open Enrollment'
+                    }
+                    callback={(e) => setEnrollment(e)}
+                  ></Button>
+                  <br />
+                  <label>View as Student</label>
 
-             <Switch
-               onChange={(e) => setViewAccessToggle(e)}
-               checked={filter === 'Released Only' ? false : true}
-             ></Switch>
-               </>
-             ) : '' } 
-                
-              </>
-            </menuPanel>}
-          
-        
+                  <Switch
+                    onChange={(e) => setViewAccessToggle(e)}
+                    checked={filter === 'Released Only' ? false : true}
+                  ></Switch>
+                </>
+              ) }
+            </>
+          </menuPanel>
+        )}
       </Tool>
     </>
   );
@@ -407,7 +404,11 @@ const DoenetMLInfoPanel = (props) => {
   const versionHistory = useRecoilValueLoadable(
     itemHistoryAtom(itemInfo.doenetId),
   );
+  // const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(contentInfo?.driveId))
+  // if (drivesInfo?.state === 'hasValue') {
+  //    courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
 
+  //     }
   const selectedContentId = () => {
     const assignedArr = versionHistory.contents.named.filter(
       (item) => item.versionId === selectedVId,
@@ -450,29 +451,27 @@ const DoenetMLInfoPanel = (props) => {
       event.target.type === 'checkbox'
         ? event.target.checked
         : event.target.value;
-        // if (aInfo[`${name}`] != value) {
-          const result = changeSettings({
-            [name]: value,
-            driveIditemIdbranchIdparentFolderId: {
-              driveId: itemInfo.driveId,
-              folderId: itemInfo.parentFolderId,
-              itemId: itemInfo.itemId,
-              branchId: itemInfo.branchId,
-              versionId: selectedVId,
-              contentId: selectedContentId(),
-            },
-          });
+    // if (aInfo[`${name}`] != value) {
+    const result = changeSettings({
+      [name]: value,
+      driveIditemIddoenetIdparentFolderId: {
+        driveId: itemInfo.driveId,
+        folderId: itemInfo.parentFolderId,
+        itemId: itemInfo.itemId,
+        doenetId: itemInfo.doenetId,
+        versionId: selectedVId,
+        contentId: selectedContentId(),
+      },
+    });
 
-        // }
+    // }
   };
   const handleOnBlur = (e) => {
     e.preventDefault();
     let name = e.target.name;
     let value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-      // console.log(">>>>>> aInfo", aInfo);
-      // console.log(">>>>>> aInfo name", aInfo[`${name}`], value);
-      const result = saveSettings({
+    const result = saveSettings({
       [name]: value,
       driveIditemIddoenetIdparentFolderId: {
         driveId: itemInfo.driveId,
@@ -529,7 +528,8 @@ const DoenetMLInfoPanel = (props) => {
     }
   };
 
-  if (itemInfo.isAssigned === '1') {
+  // if (itemInfo.isAssigned === '1' && courseRole) {
+    if (itemInfo.isAssigned === '1' ) {
     assignmentForm = (
       <>
         {
@@ -688,7 +688,6 @@ const DoenetMLInfoPanel = (props) => {
   return <>{assignmentForm}</>;
 };
 const StudentViewInfoPanel = (props) =>{
-  console.log(">>> StudentViewInfoPanelprops",props.contentInfo);
   let itemInfo = props.contentInfo;
   const assignmentInfoSettings = useRecoilValueLoadable(
     assignmentDictionarySelector({
@@ -696,29 +695,42 @@ const StudentViewInfoPanel = (props) =>{
       folderId: itemInfo.parentFolderId,
       itemId: itemInfo.itemId,
       doenetId: itemInfo.doenetId,
-      // versionId: selectedVId,
-      // contentId: selectedContentId(),
+      versionId: selectedVId,
+      contentId: selectedContentId(),
     }),
   );
 
   let aInfo = '';
+  let courseRole = '';
+  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(itemInfo?.driveId))
+  if (drivesInfo?.state === 'hasValue') {
+     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
 
+      }
   if (assignmentInfoSettings?.state === 'hasValue') {
     aInfo = assignmentInfoSettings?.contents;
   }
+  // const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(contentInfo?.driveId))
+  // if (drivesInfo?.state === 'hasValue') {
+  //    courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
 
+  //     }
   return (
     <>
-      {aInfo ? <div>
-        <p>Due: {aInfo?.dueDate}</p>
-        <p>Time Limit: {aInfo?.timeLimit}</p>
-        <p>Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
-        <p>Points: {aInfo?.totalPointsOrPercent}</p>
-      </div> : ''}
-      
+      {/* {aInfo && !courseRole ? ( */}
+      {aInfo  ? (
+        <div>
+          <p>Due: {aInfo?.dueDate}</p>
+          <p>Time Limit: {aInfo?.timeLimit}</p>
+          <p>Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+      ) : (
+        ''
+      )}
     </>
   );
-}
+};
 const FolderInfoPanel = () => {
   return <h1>Folder Info</h1>;
 };
@@ -773,13 +785,18 @@ const VersionHistoryInfoPanel = (props) => {
       return '';
     }
   };
+  let courseRole = '';
+  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(itemInfo?.driveId))
+  if (drivesInfo?.state === 'hasValue') {
+     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
+
+      }
   let aInfo = '';
   const assignmentInfoSettings = useRecoilValueLoadable(
     loadAssignmentSelector(itemInfo.doenetId),
   );
   if (assignmentInfoSettings?.state === 'hasValue') {
-    aInfo = assignmentInfoSettings?.contents?.assignments[0];
-
+    aInfo = assignmentInfoSettings?.contents?.assignments;
   }
 
   if (versionHistory.state === 'loading') {
@@ -1075,21 +1092,24 @@ const VersionHistoryInfoPanel = (props) => {
   return (
     <>
       {assigned}
+      {/* { courseRole && assigned} */}
 
       <br />
       <br />
-      {itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton}
-      {itemInfo.isAssigned == '1' && checkIfAssigned() && unAssignButton}
+      {/* { courseRole && itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton} */}
+      {  itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton}
+      {itemInfo.isAssigned == '1' && checkIfAssigned() && unAssignButton }
+      {/* {itemInfo.isAssigned == '1' && checkIfAssigned() && unAssignButton && courseRole} */}
       {itemInfo.isAssigned == '1' &&
         checkAssignArrItemAssigned() &&
-        !checkIfAssigned() &&
+        // !checkIfAssigned() && courseRole && 
+        !checkIfAssigned()  && 
         switchAssignmentButton}
     </>
   );
 };
 
 const ItemInfoPanel = (props) => {
-  const subTypeRole = useRecoilValue(roleType);
 
   let versionArr = [];
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
@@ -1123,7 +1143,7 @@ const ItemInfoPanel = (props) => {
       </>
     );
   } else if (contentInfoLoad.contents?.number === 1) {
-    if (contentInfo?.itemType === 'DoenetML' && subTypeRole === 'Administrator') {
+   if (contentInfo?.itemType === 'DoenetML') {
       return (
         <DoenetMLInfoPanel
           key={`DoenetMLInfoPanel${contentInfo.itemId}`}
@@ -1139,7 +1159,9 @@ const ItemInfoPanel = (props) => {
           contentInfo={contentInfo}
         />
       );
-    }else if (contentInfo?.itemType === 'DoenetML' && subTypeRole === 'Student') {
+    } else if (
+      contentInfo?.itemType === 'DoenetML' 
+    ) {
       return (
         <StudentViewInfoPanel
         key={`StudentViewInfoPanel${contentInfo.itemId}`}
@@ -1152,7 +1174,6 @@ const ItemInfoPanel = (props) => {
   return null;
 };
 const VersionInfo = (props) => {
-  const subTypeRole = useRecoilValue(roleType);
 
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   if (contentInfoLoad.state === 'loading') {
@@ -1171,7 +1192,7 @@ const VersionInfo = (props) => {
       </>
     );
   } else if (contentInfoLoad.contents?.number === 1) {
-    if (contentInfo?.itemType === 'DoenetML' && subTypeRole === 'Administrator') {
+    if (contentInfo?.itemType === 'DoenetML') {
       return (
         <VersionHistoryInfoPanel
           key={`VersionHistoryInfoPanel${contentInfo.itemId}`}
@@ -1184,20 +1205,4 @@ const VersionInfo = (props) => {
   return null;
 };
 
-//Student view info panel
 
-
-{/* <div>
-      {
-        itemInfo.assignment_isPublished ===
-          '1'(
-            <div>
-              <p>Due: {aInfo?.dueDate}</p>
-              <p>Time Limit: {aInfo?.timeLimit}</p>
-              <p>
-                Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}
-              </p>
-              <p>Points: {aInfo?.totalPointsOrPercent}</p>
-            </div>,
-          )}
-    </div> */}
