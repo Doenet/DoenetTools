@@ -287,6 +287,7 @@ const DriveCardWrapper = (props) => {
                     color={item.color}
                     label={item.label}
                     isSelected={isSelected}
+                    role={item.role}
                   />
               </div>
             </div>
