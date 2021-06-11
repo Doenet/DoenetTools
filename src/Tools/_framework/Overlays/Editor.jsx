@@ -694,10 +694,14 @@ function DoenetViewerPanel(){
   }
 
 
-  function variantCallback(generatedVariantInfo){
+  function variantCallback(generatedVariantInfo, allPossibleVariants){
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
     cleanGeneratedVariant.lastUpdatedIndexOrName = null 
-    setVariantPanel({index:cleanGeneratedVariant.index,name:cleanGeneratedVariant.name});
+    setVariantPanel({
+      index:cleanGeneratedVariant.index,
+      name:cleanGeneratedVariant.name,
+      allPossibleVariants
+    });
     setVariantInfo((was)=>{
       let newObj = {...was}
       Object.assign(newObj,cleanGeneratedVariant)

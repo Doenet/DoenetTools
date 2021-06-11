@@ -246,9 +246,18 @@ export default class VariantControl extends BaseComponent {
         if (dependencyValues.variantsObject !== undefined) {
           if (dependencyValues.variantsObject.desiredVariantIndex !== undefined) {
             let desiredVariantIndex = Number(dependencyValues.variantsObject.desiredVariantIndex);
-            if (!Number.isInteger(desiredVariantIndex)) {
-              throw Error("Variant index " + dependencyValues.variantsObject.desiredVariantIndex + " must be an integer");
+            if (!Number.isFinite(desiredVariantIndex)) {
+              console.warn("Variant index " + dependencyValues.variantsObject.desiredVariantIndex + " must be a number");
+              return {
+                makeEssential: { selectedVariantIndex: true },
+                newValues: { selectedVariantIndex: 0 }
+              }
             } else {
+              if (!Number.isInteger(desiredVariantIndex)) {
+                console.warn("Variant index " + dependencyValues.variantsObject.desiredVariantIndex + " must be an integer");
+                desiredVariantIndex = Math.round(desiredVariantIndex);
+              }
+
               let selectedVariantIndex = desiredVariantIndex % dependencyValues.nVariantsSpecified;
               if (selectedVariantIndex < 0) {
                 selectedVariantIndex += dependencyValues.nVariantsSpecified;
@@ -274,7 +283,11 @@ export default class VariantControl extends BaseComponent {
                 }
               }
             }
-            throw Error("Variant name " + dependencyValues.variantsObject.desiredVariantName + " is not valid");
+            console.warn("Variant name " + dependencyValues.variantsObject.desiredVariantName + " is not valid");
+            return {
+              makeEssential: { selectedVariantIndex: true },
+              newValues: { selectedVariantIndex: 0 }
+            }
           }
         }
 
