@@ -44,6 +44,7 @@ if ($success){
   $sql = "
   SELECT 
   du.canDeleteDrive AS owner,
+  du.role As role,
   u.screenName AS screenName,
   u.email AS email,
   u.userId AS userId
@@ -75,7 +76,8 @@ if ($result->num_rows > 0){
       "email"=>$email,
       "screenName"=>$row['screenName'],
       "userId"=>$row['userId'],
-      "isUser"=>$isUser
+      "isUser"=>$isUser,
+      "role"=>$row['role']
     );
 
     if ($row['owner'] == '1'){
