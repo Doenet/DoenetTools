@@ -134,6 +134,10 @@ class DoenetViewerChild extends Component {
 
     this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
 
+    if (this.props.generatedVariantCallback){
+      this.props.generatedVariantCallback(this.generatedVariant);
+    }
+
     if (this.cumulativeStateVariableChanges) {
       // continue to try setting the state variables to cummulativeStateVariableChanges
       // while there are a positive number of failures
@@ -526,12 +530,14 @@ class DoenetViewerChild extends Component {
 
     // TODO: should we be giving viewer both attemptNumber and requestedVariant?
     // for now, attemptNumber is used for requestedVariant if not specified
+  
+    if(JSON.stringify(this.requestedVariant) !== JSON.stringify(this.props.requestedVariant)){
+      this.needNewCoreFlag = true;
+    }
     this.requestedVariant = this.props.requestedVariant;
     if (this.requestedVariant === undefined) {
       this.requestedVariant = { index: this.attemptNumber - 1 };
     }
-
-    
 
     if (this.props.doenetML && !this.props.contentId){
       //*** Define this.contentId if not prop
