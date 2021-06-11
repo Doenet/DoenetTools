@@ -1942,6 +1942,7 @@ export function replacementFromProp({ component, components,
               children,
               attributes,
               uniqueIdentifier,
+              skipSugar: true,
             }]
             if (typeof wrapCs[ind] === "object") {
               if (wrapCs[ind].doenetAttributes) {

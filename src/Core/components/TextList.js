@@ -1,9 +1,13 @@
 import InlineComponent from './abstract/InlineComponent';
+import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
 
 export default class TextList extends InlineComponent {
   static componentType = "textList";
   static rendererType = "asList";
   static renderChildren = true;
+
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
 
   // when another component has a attribute that is a textList,
   // use the texts state variable to populate that attribute
@@ -33,35 +37,17 @@ export default class TextList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-
-    let breakStringsIntoTextsBySpaces = function ({ matchedChildren }) {
-
-      // break any string by white space and wrap pieces with text
-
-      let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
-          return [
-            ...a,
-            ...c.state.value.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
-                componentType: "text",
-                children: [{ componentType: "string", state: { value: s } }]
-              }))
-          ]
-        } else {
-          return [...a, c]
-        }
-      }, []);
-
-      return {
-        success: true,
-        newChildren: newChildren,
-      }
-    }
+    let groupIntoTextsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({componentType: "text"});
+    let breakStringsIntoTextsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({componentType: "text"});
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoTextsBySpaces
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false }) {
+        if (isAttributeComponent) {
+          return groupIntoTextsSeparatedBySpaces({ matchedChildren });
+        } else {
+          return breakStringsIntoTextsBySpaces({ matchedChildren })
+        }
+      }
     });
 
     return sugarInstructions;

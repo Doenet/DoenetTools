@@ -1,9 +1,17 @@
 import InlineComponent from './abstract/InlineComponent';
+import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
 
 export default class BooleanList extends InlineComponent {
   static componentType = "booleanList";
   static rendererType = "asList";
   static renderChildren = true;
+
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
+  // when another component has a attribute that is a booleanList,
+  // use the booleans state variable to populate that attribute
+  static stateVariableForAttributeValue = "booleans";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -25,35 +33,17 @@ export default class BooleanList extends InlineComponent {
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
-
-    let breakStringsIntoBooleansBySpaces = function ({ matchedChildren }) {
-
-      // break any string by white space and wrap pieces with boolean
-
-      let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
-          return [
-            ...a,
-            ...c.state.value.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
-                componentType: "boolean",
-                children: [{ componentType: "string", state: { value: s } }]
-              }))
-          ]
-        } else {
-          return [...a, c]
-        }
-      }, []);
-
-      return {
-        success: true,
-        newChildren: newChildren,
-      }
-    }
+    let groupIntoBooleansSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({componentType: "boolean"});
+    let breakStringsIntoBooleansBySpaces = returnBreakStringsIntoComponentTypeBySpaces({componentType: "boolean"});
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoBooleansBySpaces
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false }) {
+        if (isAttributeComponent) {
+          return groupIntoBooleansSeparatedBySpaces({ matchedChildren });
+        } else {
+          return breakStringsIntoBooleansBySpaces({ matchedChildren })
+        }
+      }
     });
 
     return sugarInstructions;

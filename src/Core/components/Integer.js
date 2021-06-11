@@ -1,6 +1,5 @@
 import NumberComponent from './Number';
 import me from 'math-expressions';
-import { textToAst } from '../utils/math';
 import { renameStateVariable } from '../utils/stateVariables';
 
 export default class Integer extends NumberComponent {

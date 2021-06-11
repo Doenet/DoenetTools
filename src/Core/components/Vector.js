@@ -114,7 +114,8 @@ export default class Vector extends GraphicalComponent {
         result.newAttributes = {
           xs: {
             componentType: "mathList",
-            children: result.newChildren
+            children: result.newChildren,
+            skipSugar: true,
           }
         },
           delete result.newChildren;

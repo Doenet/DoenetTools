@@ -1,10 +1,14 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
 
 export default class MathList extends InlineComponent {
   static componentType = "mathList";
   static rendererType = "asList";
   static renderChildren = true;
+
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
 
   // when another component has a attribute that is a mathList,
   // use the maths state variable to populate that attribute
@@ -49,35 +53,17 @@ export default class MathList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringsIntoMathsBySpaces = function ({ matchedChildren }) {
-
-      // break any string by white space and wrap pieces with math
-
-      let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
-          return [
-            ...a,
-            ...c.state.value.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
-                componentType: "math",
-                children: [{ componentType: "string", state: { value: s } }]
-              }))
-          ]
-        } else {
-          return [...a, c]
-        }
-      }, []);
-
-      return {
-        success: true,
-        newChildren: newChildren,
-      }
-    }
-
+    let groupIntoMathsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({componentType: "math"});
+    let breakStringsIntoMathsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({componentType: "math"});
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoMathsBySpaces
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false }) {
+        if (isAttributeComponent) {
+          return groupIntoMathsSeparatedBySpaces({ matchedChildren });
+        } else {
+          return breakStringsIntoMathsBySpaces({ matchedChildren })
+        }
+      }
     });
 
     return sugarInstructions;
