@@ -15,15 +15,32 @@ $userId = $jwtArray['userId'];
 $success = TRUE;
 $message = "";
 $driveIdsAndLabels = array();
+$newRoleData = array();
 
 if ($userId == ""){
   $success = FALSE;
   $message = "You need to be signed in to view drives";
 }
+$driveIdArr = array();
+
 
 if ($success){
   //Gather matching drive ids for author
-  
+  $sqlnew = " SELECT DISTINCT 
+  d.driveId AS driveId
+   FROM drive AS d
+  LEFT JOIN drive_user AS du
+  ON d.driveId = du.driveId
+  WHERE du.userId='devuserid'  AND d.isDeleted = '0'
+  ";
+
+$result = $conn->query($sqlnew);
+
+
+while($row = $result->fetch_assoc()){
+  $newdriveId = $row['driveId'];
+  array_push($driveIdArr,$newdriveId);
+
   $sql = "
   SELECT
   d.driveId AS driveId,
@@ -32,67 +49,91 @@ if ($success){
   d.isShared AS isShared,
   d.isPublic AS isPublic,
   d.image AS image,
-  d.color AS color
+  d.color AS color,
+  du.role AS role
   FROM drive AS d
   LEFT JOIN drive_user AS du
   ON d.driveId = du.driveId
-  WHERE du.userId='$userId'
+  WHERE du.userId='$userId' AND du.driveId = '$newdriveId'
   AND d.isDeleted = '0'
   ";
+  $resultnew = $conn->query($sql);
+        while($rownew = $resultnew->fetch_assoc()){ 
+          $driveAndLabel = array(
+            "driveId"=>$rownew['driveId'],
+            "label"=>$rownew['label'],
+            "type"=>$rownew['driveType'],
+            "subType"=>"Administrator",
+            "isShared"=>$rownew['isShared'],
+            "isPublic"=>$rownew['isPublic'],
+            "image"=>$rownew['image'],
+            "color"=>$rownew['color'],
+            "role"=>$rownew['role']
 
-  $result = $conn->query($sql);
-  while($row = $result->fetch_assoc()){
-    $driveAndLabel = array(
-      "driveId"=>$row['driveId'],
-      "label"=>$row['label'],
-      "type"=>$row['driveType'],
-      "subType"=>"Administrator",
-      "isShared"=>$row['isShared'],
-      "isPublic"=>$row['isPublic'],
-      "image"=>$row['image'],
-      "color"=>$row['color'],
+          );
+        array_push($driveIdsAndLabels,$driveAndLabel);
+      }
+ 
 
-    );
-    array_push($driveIdsAndLabels,$driveAndLabel);
+
   }
 
-  $sql = "
-  SELECT 
-  d.driveId AS driveId,
-  d.label AS label,
-  d.driveType AS driveType,
-  d.isShared AS isShared,
-  d.isPublic AS isPublic,
-  d.image AS image,
-  d.color AS color
-  FROM enrollment AS e
-  LEFT JOIN drive AS d
-  ON d.driveId = e.driveId
-  WHERE e.userId='$userId'
-  AND d.isDeleted = '0'
-  ";
+for($x=0; $x<count($driveIdArr); $x++){
+  $dId = $driveIdArr[$x]; 
+  $newDriveIdArr = array_filter($driveIdsAndLabels
+  // ,
+  
+  // function ($value,$key) use ($dId) {return $value;},ARRAY_FILTER_USE_BOTH)
+);
+  
+    array_push($newRoleData,$newDriveIdArr);
+  
+  
+  // }
+} 
 
-  $result = $conn->query($sql);
-  while($row = $result->fetch_assoc()){
-    $driveAndLabel = array(
-      "driveId"=>$row['driveId'],
-      "label"=>$row['label'],
-      "type"=>$row['driveType'],
-      "subType"=>"Student",
-      "isShared"=>$row['isShared'],
-      "isPublic"=>$row['isPublic'],
-      "image"=>$row['image'],
-      "color"=>$row['color'],
 
-    );
-    array_push($driveIdsAndLabels,$driveAndLabel);
-  }
+
+  // $sql = "
+  // SELECT 
+  // d.driveId AS driveId,
+  // d.label AS label,
+  // d.driveType AS driveType,
+  // d.isShared AS isShared,
+  // d.isPublic AS isPublic,
+  // d.image AS image,
+  // d.color AS color
+  // FROM enrollment AS e
+  // LEFT JOIN drive AS d
+  // ON d.driveId = e.driveId
+  // WHERE e.userId='$userId'
+  // AND d.isDeleted = '0'
+  // ";
+
+  // $result = $conn->query($sql);
+  // while($row = $result->fetch_assoc()){
+  //   $driveAndLabel = array(
+  //     "driveId"=>$row['driveId'],
+  //     "label"=>$row['label'],
+  //     "type"=>$row['driveType'],
+  //     "subType"=>"Student",
+  //     "isShared"=>$row['isShared'],
+  //     "isPublic"=>$row['isPublic'],
+  //     "image"=>$row['image'],
+  //     "color"=>$row['color'],
+
+  //   );
+  //   array_push($driveIdsAndLabels,$driveAndLabel);
+  // }
 
 }
+
+
 $response_arr = array(
   "success"=>$success,
   "driveIdsAndLabels"=>$driveIdsAndLabels,
-  "message"=>$message
+  "message"=>$message,
+  
   );
 
 
