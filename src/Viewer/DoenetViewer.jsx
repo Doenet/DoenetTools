@@ -530,12 +530,14 @@ class DoenetViewerChild extends Component {
 
     // TODO: should we be giving viewer both attemptNumber and requestedVariant?
     // for now, attemptNumber is used for requestedVariant if not specified
+  
+    if(JSON.stringify(this.requestedVariant) !== JSON.stringify(this.props.requestedVariant)){
+      this.needNewCoreFlag = true;
+    }
     this.requestedVariant = this.props.requestedVariant;
     if (this.requestedVariant === undefined) {
       this.requestedVariant = { index: this.attemptNumber - 1 };
     }
-
-    
 
     if (this.props.doenetML && !this.props.contentId){
       //*** Define this.contentId if not prop

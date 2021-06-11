@@ -657,12 +657,18 @@ const variantInfoAtom = atom({
   key:"variantInfoAtom",
   default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:0}}
 })
+
+const variantPanelAtom = atom({
+  key:"variantPanelAtom",
+  default:{index:null,name:null}
+})
  
 function DoenetViewerPanel(){
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
+  const setVariantPanel = useSetRecoilState(variantPanelAtom);
   // const [requestedVariant,setRequestedVariant] = useState({index:0});
   if (!editorInit){ return null; }
 
@@ -670,8 +676,6 @@ function DoenetViewerPanel(){
   // let requestedVariant = { index: attemptNumber }
   let solutionDisplayMode = "button";
 
-
-  console.log(">>>DoenetViewerPanel variantInfo",variantInfo)
 
   if (variantInfo.lastUpdatedIndexOrName === 'Index'){
     setVariantInfo((was)=>{
@@ -690,10 +694,10 @@ function DoenetViewerPanel(){
   }
 
 
-  function tempCallback(generatedVariantInfo){
+  function variantCallback(generatedVariantInfo){
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
     cleanGeneratedVariant.lastUpdatedIndexOrName = null 
-    console.log(">>>cleanGeneratedVariant",cleanGeneratedVariant)
+    setVariantPanel({index:cleanGeneratedVariant.index,name:cleanGeneratedVariant.name});
     setVariantInfo((was)=>{
       let newObj = {...was}
       Object.assign(newObj,cleanGeneratedVariant)
@@ -718,47 +722,53 @@ function DoenetViewerPanel(){
       allowLocalPageState={false}
       allowSaveSubmissions={false}
       allowSaveEvents={false}
-      generatedVariantCallback={tempCallback}
+      generatedVariantCallback={variantCallback}
       requestedVariant={variantInfo.requestedVariant}
       /> 
 }
 
 function VariantPanel(){
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
-  // console.log(">>>VariantPanel variantInfo",variantInfo)
-  const [variantIndex,setVariantIndex] = useState(variantInfo.index)
-  const [variantName,setVariantName] = useState(variantInfo.name)
+  const [variantPanel,setVariantPanel] = useRecoilState(variantPanelAtom);
 
   function updateVariantInfoAtom(source){
     //Prevent calling when it didn't change
     if (source === 'Index'){
-      if (variantIndex === variantInfo.index){
+      if (variantPanel.index === variantInfo.index){
         return;
       }
     }
     if (source === 'Name'){
-      if (variantName === variantInfo.name){
+      if (variantPanel.name === variantInfo.name){
         return;
       }
     }
     setVariantInfo((was)=>{
       let newObj = {...was};
-      newObj.index = variantIndex;
-      newObj.name = variantName;
+      newObj.index = Number.isFinite(Number(variantPanel.index)) ? Number(variantPanel.index) : 0;
+      newObj.name = variantPanel.name;
       newObj.lastUpdatedIndexOrName = source;
-    console.log(">>>update!!!! newObj",newObj);
-
       return newObj;
     })
   }
 
+
+
   return <>
-  <div><label>Index <input type="text" value={variantIndex} onKeyDown={(e)=>{
+  <div><label>Index <input type="text" value={variantPanel.index} onKeyDown={(e)=>{
     if (e.key ==='Enter'){ updateVariantInfoAtom('Index') }
-    }} onBlur={()=>updateVariantInfoAtom('Index')} onChange={(e)=>{setVariantIndex(e.target.value)}}/></label></div>
-  <div><label>Variant Name <input type="text" value={variantName} onKeyDown={(e)=>{
+    }} onBlur={()=>updateVariantInfoAtom('Index')} onChange={(e)=>{setVariantPanel(
+      (was)=>{
+      let newObj = {...was}
+      newObj.index = e.target.value;
+      return newObj; })}}/></label></div>
+  <div><label>Variant Name <input type="text" value={variantPanel.name} onKeyDown={(e)=>{
     if (e.key ==='Enter'){ updateVariantInfoAtom('Name') }
-    }} onBlur={()=>updateVariantInfoAtom('Name')} onChange={(e)=>{setVariantName(e.target.value)}}/></label></div>
+    }} onBlur={()=>updateVariantInfoAtom('Name')} onChange={(e)=>{setVariantPanel(
+      (was)=>{
+      let newObj = {...was}
+      newObj.name = e.target.value;
+      return newObj; })}}/></label></div>
   </>
 }
  
