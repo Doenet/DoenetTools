@@ -83,6 +83,7 @@ class DoenetViewerChild extends Component {
     // then use that variant rather than requestedVariant from props
     if (variant !== null) {
       this.requestedVariant = JSON.parse(variant, serializedComponentsReviver);
+      this.requestedVariantFromDatabase = true;
     }
 
     // TODO: who is responsible for verifying that a contentId matches hash?
@@ -538,7 +539,9 @@ class DoenetViewerChild extends Component {
     // TODO: should we be giving viewer both attemptNumber and requestedVariant?
     // for now, attemptNumber is used for requestedVariant if not specified
 
-    if (JSON.stringify(this.requestedVariant) !== JSON.stringify(adjustedRequestedVariantFromProp)) {
+    if (!this.requestedVariantFromDatabase &&
+      JSON.stringify(this.requestedVariant) !== JSON.stringify(adjustedRequestedVariantFromProp)
+    ) {
       this.needNewCoreFlag = true;
     }
     this.requestedVariant = adjustedRequestedVariantFromProp;
