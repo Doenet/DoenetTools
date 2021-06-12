@@ -269,7 +269,6 @@ export function removeBlankStringChildren(serializedComponents, componentInfoObj
 export function findContentCopies({ serializedComponents }) {
 
   let contentIdComponents = {};
-  let contentNameComponents = {};
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "copy") {
       if (serializedComponent.attributes) {
@@ -291,20 +290,13 @@ export function findContentCopies({ serializedComponents }) {
 
           if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
 
-            let uriEnd = uri.substring(7);
-
-            if (uriEnd.substring(0, 10).toLowerCase() === "contentid=") {
-              let contentId = uriEnd.substring(10);
+            let result = uri.match(/[:&]contentid=([^&]+)/i);
+            if (result) {
+              let contentId = result[1];
               if (contentIdComponents[contentId] === undefined) {
                 contentIdComponents[contentId] = [];
               }
               contentIdComponents[contentId].push(serializedComponent);
-            } else if (uriEnd.substring(0, 12).toLowerCase() === "contentname=") {
-              let contentName = uriEnd.substring(12);
-              if (contentNameComponents[contentName] === undefined) {
-                contentNameComponents[contentName] = [];
-              }
-              contentNameComponents[contentName].push(serializedComponent);
             }
 
           }
@@ -314,23 +306,17 @@ export function findContentCopies({ serializedComponents }) {
       if (serializedComponent.children !== undefined) {
         let results = findContentCopies({ serializedComponents: serializedComponent.children })
 
-        // append results on to contentIdComponents and contentNameComponents
+        // append results on to contentIdComponents
         for (let contentId in results.contentIdComponents) {
           if (contentIdComponents[contentId] === undefined) {
             contentIdComponents[contentId] = [];
           }
           contentIdComponents[contentId].push(...results.contentIdComponents[contentId]);
         }
-        for (let contentName in results.contentNameComponents) {
-          if (contentNameComponents[contentName] === undefined) {
-            contentNameComponents[contentName] = [];
-          }
-          contentNameComponents[contentName].push(...results.contentNameComponents[contentName]);
-        }
       }
     }
   }
-  return { contentIdComponents, contentNameComponents };
+  return { contentIdComponents };
 }
 
 export function addDocumentIfItsMissing(serializedComponents) {

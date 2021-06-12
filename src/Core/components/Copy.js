@@ -272,7 +272,7 @@ export default class Copy extends CompositeComponent {
     };
 
     stateVariableDefinitions.contentId = {
-      additionalStateVariablesDefined: ["contentName"],
+      additionalStateVariablesDefined: ["doenetId"],
       returnDependencies: () => ({
         uri: {
           dependencyType: "stateVariable",
@@ -284,21 +284,22 @@ export default class Copy extends CompositeComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            newValues: { contentId: null, contentName: null }
+            newValues: { contentId: null, doenetId: null }
           }
         }
 
-        let uriEnd = dependencyValues.uri.substring(7);
+        let contentId = null, doenetId = null;
 
-        let contentId = null, contentName = null;
-
-        if (uriEnd.substring(0, 10).toLowerCase() === "contentid=") {
-          contentId = uriEnd.substring(10);
-        } else if (uriEnd.substring(0, 12).toLowerCase() === "contentname=") {
-          contentName = uriEnd.substring(12);
+        let result = dependencyValues.uri.match(/[:&]contentid=([^&]+)/i);
+        if (result) {
+          contentId = result[1];
+        }
+        result = dependencyValues.uri.match(/[:&]doenetid=([^&]+)/i);
+        if (result) {
+          doenetId = result[1];
         }
 
-        return { newValues: { contentId, contentName } };
+        return { newValues: { contentId, doenetId } };
       },
     };
 
@@ -309,10 +310,6 @@ export default class Copy extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "contentId"
         },
-        contentName: {
-          dependencyType: "stateVariable",
-          variableName: "contentName"
-        },
         externalContentChild: {
           dependencyType: "child",
           childLogicName: "atMostOneExternalContent",
@@ -320,7 +317,7 @@ export default class Copy extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (!(dependencyValues.contentId || dependencyValues.contentName)) {
+        if (!dependencyValues.contentId) {
           return {
             newValues: { serializedComponentsForContentId: null }
           }

@@ -676,14 +676,15 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy uri two problems', () => {
+    cy.wait(1000);  // TODO: remove once fix viewer bug
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <title>Two problems</title>
 
-    <copy assignNames="problem1" uri="doenet:contentId=dfeabf5fd89afc1f13d5b5adc15880cb11e41361e8a42119931bded23ab7b199" />
+    <copy assignNames="problem1" uri="doenet:conTentId=dfeabf5fd89afc1f13d5b5adc15880cb11e41361e8a42119931bded23ab7b199&DoenEtiD=abcdefg" />
     
-    <copy assignNames="problem2" uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" />
+    <copy assignNames="problem2" uri="doenet:doeneTiD=hijklmnop&contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" />
     `}, "*");
     });
 
@@ -697,6 +698,13 @@ describe('Copy Tag Tests', function () {
       let titleOptions = animalOptions.map(x => `What does the ${x} say?`)
       problem1Version = titleOptions.indexOf(text);
       expect(problem1Version).not.eq(-1)
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components["/_copy1"].stateValues.contentId).eq("dfeabf5fd89afc1f13d5b5adc15880cb11e41361e8a42119931bded23ab7b199")
+        expect(components["/_copy1"].stateValues.doenetId).eq("abcdefg")
+        expect(components["/_copy2"].stateValues.contentId).eq("64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a")
+        expect(components["/_copy2"].stateValues.doenetId).eq("hijklmnop")
+      })
     })
 
     cy.log(`select correct answer for problem 1`).then(() => {
@@ -729,7 +737,6 @@ describe('Copy Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      console.log(components)
       let mathinputName = components['/problem2/derivativeProblem/_answer1'].stateValues.inputChild.componentName
       let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
@@ -754,6 +761,7 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy uri containing copy uri of two problems', () => {
+    cy.wait(1000);  // TODO: remove once fix viewer bug
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -891,6 +899,7 @@ describe('Copy Tag Tests', function () {
 
   // this triggered an error not caught with the other order
   it('copy uri containing copy uri of two problems, newNamespace first', () => {
+    cy.wait(1000);  // TODO: remove once fix viewer bug
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
