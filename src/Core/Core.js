@@ -1008,6 +1008,10 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
+    if(componentClass.descendantCompositesMustHaveAReplacement) {
+      sharedParameters.compositesMustHaveAReplacement = true;
+      sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
+    }
 
     // check if component has any attributes to propagate to descendants
     let attributesPropagated = this.propagateAncestorProps({

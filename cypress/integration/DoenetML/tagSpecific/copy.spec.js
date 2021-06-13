@@ -1035,7 +1035,6 @@ describe('Copy Tag Tests', function () {
 
   })
 
-
   it('copy of component that changes away from a copy', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1068,5 +1067,35 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('copy of invalid target gives math in boolean and math', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>We can't see $invalid in paragraph <text>or $invisible in text</text>.</p>
+
+    <p>In math, we can: <math>$bad + $nothing</math></p>
+
+    <p>And in boolean as well: <boolean>not ($missing = x)</boolean></p>.
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_p1').should('have.text', "We can't see  in paragraph or  in text.")
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿+＿')
+    })
+
+    cy.get('#\\/_boolean1').should('have.text', "true");
+
+
+
+
+  });
 
 });

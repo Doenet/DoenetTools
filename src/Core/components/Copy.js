@@ -935,10 +935,11 @@ export default class Copy extends CompositeComponent {
     workspace, componentInfoObjects, compositeAttributesObj
   }) {
 
-    let resetReplacements = false;
+    if (!component.attributes.componentType &&
+      !component.sharedParameters.compositesMustHaveAReplacement
+    ) {
 
-    if (!component.attributes.componentType) {
-      return { resetReplacements: false, replacements, replacementChanges }
+      return { replacements, replacementChanges }
     }
 
     let replacementsToWithhold = component.replacementsToWithhold;
@@ -1003,8 +1004,31 @@ export default class Copy extends CompositeComponent {
       replacementTypes = replacementTypes.slice(0, replacementTypes.length - replacementsToWithhold);
     }
 
-    if (replacementTypes.length !== component.stateValues.nComponentsSpecified ||
-      !replacementTypes.every(x => x === component.attributes.componentType)) {
+    if (!component.attributes.componentType &&
+      component.sharedParameters.compositesMustHaveAReplacement
+      && replacementTypes.length > 0
+    ) {
+      // no changes since only reason we got this far was that
+      // composites must have a replacement
+      // and we have at least one replacement
+      return { replacements, replacementChanges }
+    }
+
+    let requiredComponentType = component.attributes.componentType;
+    let requiredLength = component.stateValues.nComponentsSpecified;
+
+    if(!requiredComponentType) {
+      // must have be here due to composites needing a replacement
+      requiredComponentType = component.sharedParameters.compositesDefaultReplacementType;
+      if(!requiredComponentType) {
+        throw Error(`A component class specified descendantCompositesMustHaveAReplacement but didn't specify descendantCompositesDefaultReplacementType`)
+      }
+      requiredLength = 1;
+    }
+
+
+    if (replacementTypes.length !== requiredLength ||
+      !replacementTypes.every(x => x === requiredComponentType)) {
 
       // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
 
@@ -1018,19 +1042,19 @@ export default class Copy extends CompositeComponent {
       let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
 
       replacements = []
-      for (let i = 0; i < component.stateValues.nComponentsSpecified; i++) {
+      for (let i = 0; i < requiredLength; i++) {
 
         let attributesFromComposite = convertAttributesForComponentType({
           attributes: component.attributes,
-          componentType: component.attributes.componentType,
+          componentType: requiredComponentType,
           componentInfoObjects, compositeAttributesObj,
           compositeCreatesNewNamespace: component.attributes.newNamespace
         });
 
-        let uniqueIdentifierBase = component.attributes.componentType + "|empty" + i;
+        let uniqueIdentifierBase = requiredComponentType + "|empty" + i;
         let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
         replacements.push({
-          componentType: component.attributes.componentType,
+          componentType: requiredComponentType,
           attributes: attributesFromComposite,
           uniqueIdentifier,
         });
@@ -1074,7 +1098,7 @@ export default class Copy extends CompositeComponent {
       }
     }
 
-    return { resetReplacements, replacements, replacementChanges }
+    return { replacements, replacementChanges }
   }
 
   static createReplacementForSource({
