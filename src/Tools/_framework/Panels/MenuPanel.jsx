@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useStackId } from '../ToolRoot';
 import DragPanel, { handleDirection } from './Panel';
 import { ProfileContext } from '../ToolRoot';
+// import logo from './src/Media/Doenet_Logo_cloud_only.png';
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -56,26 +57,32 @@ const ProfilePicture = styled.button`
   background-size: cover;
   transition: 300ms;
   color: #333333;
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   display: inline;
   color: rgba(0, 0, 0, 0);
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   border-style: none;
-  margin: 3px;
+  margin-right: 3px;
 `;
 const CloseButton = styled.button`
-background-color: blue;
+background-color: #1A5A99;
 height: 25px;
 width: 20px;
+color: white;
+border: none
 `;
 
 const EditMenuPanels = styled.button`
-background-color: blue;
+background-color: #1A5A99;
 height: 35px;
 width: 35px;
+border: none;
+color: white;
+border-radius: 17.5px;
+font-size: 24px
 `;
 
 const MenuPanelTitle = styled.button`
@@ -86,8 +93,9 @@ display: flex;
 justify-content: center;
 align-items: center;
 border: 0px solid white;
-border-top: 1px solid black;
-border-bottom: ${props => props.isOpen ? '2px solid black' : '1px solid black'} ;
+// border-top: 1px solid black;
+border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
+margin-top: 2px;
 `
 
 function MenuPanelInstance(props){
@@ -101,7 +109,12 @@ function MenuPanelInstance(props){
   }
   return <>
     <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}>{props.title}</MenuPanelTitle>
-    <div style={{padding:"4px", backgroundColor:"white"}}>{body}</div>
+    <div style={{
+      // paddingTop: "0px", 
+      paddingBottom: "4px", 
+      paddingLeft: "4px",
+      paddingRight: "4px",
+      backgroundColor:"white"}}>{body}</div>
   </>
 }
 
@@ -125,13 +138,16 @@ export default function MenuPanel({ children }) {
     <MenuPanelsWrapper>
       <MenuPanelsCap>
         <span>
-        <span style={{marginLeft:'6px',marginRight:'6px'}}>Logo</span>
+        <span style={{marginLeft:'6px',marginRight:'6px'}}>
+          Logo
+          {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
+        </span>
         <span>Doenet</span>
         </span>
         <span>
           <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
           <CloseButton onClick={()=>console.log('>>>close menu panels')}>x</CloseButton>
-          </span>
+        </span>
           {/* {anchor} */}
       </MenuPanelsCap>
     {panels}
