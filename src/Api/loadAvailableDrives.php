@@ -16,6 +16,7 @@ $success = TRUE;
 $message = "";
 $driveIdsAndLabels = array();
 $newRoleData = array();
+$newDriveIdArr = array();
 
 if ($userId == ""){
   $success = FALSE;
@@ -80,19 +81,33 @@ while($row = $result->fetch_assoc()){
 
 for($x=0; $x<count($driveIdArr); $x++){
   $dId = $driveIdArr[$x]; 
-  $newDriveIdArr = array_filter($driveIdsAndLabels
-  // ,
+  $roleArr = array();
+for($y = 0; $y < count($driveIdsAndLabels); $y++){
+  if($driveIdsAndLabels[$y]['driveId'] == $dId){
+
+    array_push($roleArr,$driveIdsAndLabels[$y]['role']);
+
+
+      // echo count($newDriveIdArr);
+      $roleArrUpdate = $driveIdsAndLabels[$y];
+      $roleArrUpdate['role'] = $roleArr;
+      // echo '12345'.array_search(`$dId`, $newDriveIdArr, true);
+      array_push($newDriveIdArr,$roleArrUpdate);
+
+
+  }
+}
+
   
-  // function ($value,$key) use ($dId) {return $value;},ARRAY_FILTER_USE_BOTH)
-);
   
-    array_push($newRoleData,$newDriveIdArr);
-  
-  
-  // }
 } 
 
+// for($z=0;$z < count($newDriveIdArr); $z++){
 
+//   array_push($newRoleData,$newDriveIdArr);
+
+
+// }
 
   // $sql = "
   // SELECT 
@@ -131,7 +146,7 @@ for($x=0; $x<count($driveIdArr); $x++){
 
 $response_arr = array(
   "success"=>$success,
-  "driveIdsAndLabels"=>$driveIdsAndLabels,
+  "driveIdsAndLabels"=>$newDriveIdArr,
   "message"=>$message,
   
   );
