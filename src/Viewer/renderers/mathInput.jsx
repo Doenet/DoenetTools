@@ -103,6 +103,8 @@ export default function MathInput(props){
       mathField.write(text.split(" ")[1]);
     }else if(text.split(" ")[0] == "keystroke"){
       mathField.keystroke(text.split(" ")[1]);
+    }else if(text.split(" ")[0] == "type"){
+      mathField.typedText(text.split(" ")[1]);
     }
   }
 
@@ -125,17 +127,17 @@ export default function MathInput(props){
 
   const handleFocus = (e) => {
     setFocus(true);
-    console.log(">>> ", mathField);
+    //console.log(">>> ", mathField);
     setFocusedField(() => handleVirtualKeyboardClick);
   }
 
   const handleBlur = (e) => {
     if (containerRef.current && containerRef.current.contains(e.relatedTarget)) {
-      console.log(">>> clicked inside the panel")
+      //console.log(">>> clicked inside the panel")
     }else if (toggleButtonRef.current && toggleButtonRef.current.contains(e.relatedTarget)) {
-      console.log(">>> clicked inside the button")
+      //console.log(">>> clicked inside the button")
     }else if (functionTabRef.current && functionTabRef.current.contains(e.relatedTarget)) {
-      console.log(">>> clicked inside the panel functional panel")
+      //console.log(">>> clicked inside the panel functional panel")
     }else{
       valueToRevertTo = SVs.immediateValue;
       valueForDisplayToRevertTo = mathExpression;
@@ -145,7 +147,7 @@ export default function MathInput(props){
       }
 
       setFocus(false);
-      console.log(">>>", e.target, e.currentTarget, e.relatedTarget);
+      //console.log(">>>", e.target, e.currentTarget, e.relatedTarget);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
     }
   }
@@ -312,7 +314,7 @@ export default function MathInput(props){
             onBlur={handleBlur}
             onFocus={handleFocus}
             mathquillDidMount = {(mf) => {
-              console.log(">>> MathQuilMounted")
+              //console.log(">>> MathQuilMounted")
               setMathField(mf)}}
           />
           {/* <p>{this.mathExpression.toLatex()}</p> */}

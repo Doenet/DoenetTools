@@ -11,7 +11,7 @@ import {
 
 export const focusedMathField = atom({
     key: 'focusedMathField',
-    default: () => console.log(">>> default func"),
+    default: () => {},
 });
 
 export const palletRef = atom({
