@@ -428,7 +428,7 @@ export default class Core {
 
       parent = this._components[parentName];
       if (!parent) {
-        console.warn(`Cannot add children to parent ${parenetName} as ${parentName} does not exist`)
+        console.warn(`Cannot add children to parent ${parentName} as ${parentName} does not exist`)
         return [];
       }
 
@@ -1083,7 +1083,7 @@ export default class Core {
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
-            child.createdComponent && components[child.componentName].componentType === "variantControl"
+            child.createdComponent && this._components[child.componentName].componentType === "variantControl"
           )) {
             variantControlInd = ind;
             variantControlChild = child;
