@@ -625,7 +625,11 @@ function VariantPanel() {
       return newObj;
     });
   }
-  let optionsList = variantPanel.allPossibleVariants.map(function(s, i) {
+  let allPossibleVariants = [];
+  if (variantPanel.allPossibleVariants) {
+    allPossibleVariants = variantPanel.allPossibleVariants;
+  }
+  let optionsList = allPossibleVariants.map(function(s, i) {
     return /* @__PURE__ */ React.createElement("option", {
       key: i + 1,
       value: s
