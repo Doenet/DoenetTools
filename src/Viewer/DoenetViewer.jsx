@@ -533,7 +533,7 @@ class DoenetViewerChild extends Component {
 
     let adjustedRequestedVariantFromProp = this.props.requestedVariant;
     if (adjustedRequestedVariantFromProp === undefined) {
-      adjustedRequestedVariantFromProp = { index: this.attemptNumber - 1 };
+      adjustedRequestedVariantFromProp = { index: this.attemptNumber };
     }
 
     // TODO: should we be giving viewer both attemptNumber and requestedVariant?
