@@ -36,7 +36,7 @@ export default class Line extends DoenetRenderer {
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
     };
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+      this.jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
     this.jsxPointAttributes = Object.assign({}, this.jsxPolylineAttributes);
     Object.assign(this.jsxPointAttributes, {

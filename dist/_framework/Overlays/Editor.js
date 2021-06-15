@@ -536,15 +536,53 @@ function TempEditorHeaderBar(props) {
     doenetId: props.doenetId
   }));
 }
+const variantInfoAtom = atom({
+  key: "variantInfoAtom",
+  default: {index: null, name: null, lastUpdatedIndexOrName: null, requestedVariant: {index: 0}}
+});
+const variantPanelAtom = atom({
+  key: "variantPanelAtom",
+  default: {index: null, name: null}
+});
 function DoenetViewerPanel() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(variantInfoAtom);
+  const setVariantPanel = useSetRecoilState(variantPanelAtom);
   if (!editorInit) {
     return null;
   }
   let attemptNumber = 1;
-  let requestedVariant = {index: attemptNumber};
   let solutionDisplayMode = "button";
+  if (variantInfo.lastUpdatedIndexOrName === "Index") {
+    setVariantInfo((was) => {
+      let newObj = {...was};
+      newObj.lastUpdatedIndexOrName = null;
+      newObj.requestedVariant = {index: variantInfo.index};
+      return newObj;
+    });
+  } else if (variantInfo.lastUpdatedIndexOrName === "Name") {
+    setVariantInfo((was) => {
+      let newObj = {...was};
+      newObj.lastUpdatedIndexOrName = null;
+      newObj.requestedVariant = {name: variantInfo.name};
+      return newObj;
+    });
+  }
+  function variantCallback(generatedVariantInfo, allPossibleVariants) {
+    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo));
+    cleanGeneratedVariant.lastUpdatedIndexOrName = null;
+    setVariantPanel({
+      index: cleanGeneratedVariant.index,
+      name: cleanGeneratedVariant.name,
+      allPossibleVariants
+    });
+    setVariantInfo((was) => {
+      let newObj = {...was};
+      Object.assign(newObj, cleanGeneratedVariant);
+      return newObj;
+    });
+  }
   return /* @__PURE__ */ React.createElement(DoenetViewer, {
     key: "doenetviewer",
     doenetML: viewerDoenetML?.doenetML,
@@ -561,8 +599,65 @@ function DoenetViewerPanel() {
     allowLocalPageState: false,
     allowSaveSubmissions: false,
     allowSaveEvents: false,
-    requestedVariant
+    generatedVariantCallback: variantCallback,
+    requestedVariant: variantInfo.requestedVariant
   });
+}
+function VariantPanel() {
+  const [variantInfo, setVariantInfo] = useRecoilState(variantInfoAtom);
+  const [variantPanel, setVariantPanel] = useRecoilState(variantPanelAtom);
+  function updateVariantInfoAtom(source) {
+    if (source === "Index") {
+      if (variantPanel.index === variantInfo.index) {
+        return;
+      }
+    }
+    if (source === "Name") {
+      if (variantPanel.name === variantInfo.name) {
+        return;
+      }
+    }
+    setVariantInfo((was) => {
+      let newObj = {...was};
+      newObj.index = Number.isFinite(Number(variantPanel.index)) ? Number(variantPanel.index) : 0;
+      newObj.name = variantPanel.name;
+      newObj.lastUpdatedIndexOrName = source;
+      return newObj;
+    });
+  }
+  let optionsList = variantPanel.allPossibleVariants.map(function(s, i) {
+    return /* @__PURE__ */ React.createElement("option", {
+      key: i + 1,
+      value: s
+    }, s);
+  });
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Variant Index ", /* @__PURE__ */ React.createElement("input", {
+    type: "text",
+    value: variantPanel.index,
+    onKeyDown: (e) => {
+      if (e.key === "Enter") {
+        updateVariantInfoAtom("Index");
+      }
+    },
+    onBlur: () => updateVariantInfoAtom("Index"),
+    onChange: (e) => {
+      setVariantPanel((was) => {
+        let newObj = {...was};
+        newObj.index = e.target.value;
+        return newObj;
+      });
+    }
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Variant Name", /* @__PURE__ */ React.createElement("select", {
+    value: variantPanel.name,
+    onChange: (e) => {
+      setVariantInfo((was) => {
+        let newObj = {...was};
+        newObj.name = e.target.value;
+        newObj.lastUpdatedIndexOrName = "Name";
+        return newObj;
+      });
+    }
+  }, optionsList))));
 }
 const editorInitAtom = atom({
   key: "editorInit",
@@ -616,5 +711,7 @@ export default function Editor({doenetId, title, driveId, folderId, itemId}) {
     driveId,
     folderId,
     itemId
-  })));
+  })), /* @__PURE__ */ React.createElement("menuPanel", {
+    title: "Variant"
+  }, /* @__PURE__ */ React.createElement(VariantPanel, null)));
 }
