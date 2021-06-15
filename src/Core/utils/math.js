@@ -1,6 +1,6 @@
 import me from 'math-expressions';
 
-export var appliedFunctionSymbols = [
+export var appliedFunctionSymbolsDefault = [
   "abs", "exp", "log", "ln", "log10", "sign", "sqrt", "erf",
   "acos", "acosh", "acot", "acoth", "acsc", "acsch", "asec",
   "asech", "asin", "asinh", "atan", "atanh",
@@ -15,22 +15,30 @@ export var appliedFunctionSymbols = [
 ];
 
 export var textToAst = new me.converters.textToAstObj({
-  appliedFunctionSymbols
+  appliedFunctionSymbols: appliedFunctionSymbolsDefault
 });
 
-export function getCustomFromText({ functionSymbols }) {
+export function getFromText({
+  functionSymbols,
+  appliedFunctionSymbols = appliedFunctionSymbolsDefault,
+  splitSymbols = true,
+}) {
   return x => me.fromAst((new me.converters.textToAstObj({
-    appliedFunctionSymbols, functionSymbols
+    appliedFunctionSymbols, functionSymbols, splitSymbols,
   })).convert(x))
 }
 
 export var latexToAst = new me.converters.latexToAstObj({
-  appliedFunctionSymbols
+  appliedFunctionSymbols: appliedFunctionSymbolsDefault
 });
 
-export function getCustomFromLatex({ functionSymbols }) {
+export function getFromLatex({
+  functionSymbols,
+  appliedFunctionSymbols = appliedFunctionSymbolsDefault,
+  splitSymbols = true,
+}) {
   return x => me.fromAst((new me.converters.latexToAstObj({
-    appliedFunctionSymbols, functionSymbols
+    appliedFunctionSymbols, functionSymbols, splitSymbols,
   })).convert(x))
 }
 

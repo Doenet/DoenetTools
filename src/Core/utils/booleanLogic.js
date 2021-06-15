@@ -1,13 +1,13 @@
 import checkEquality from './checkEquality';
 import me from 'math-expressions';
-import { textToAst, appliedFunctionSymbols } from './math';
+import { textToAst, getFromText, appliedFunctionSymbolsDefault } from './math';
 
 const appliedFunctionSymbolsWithBooleanOperators = [
-  ...appliedFunctionSymbols,
+  ...appliedFunctionSymbolsDefault,
   "isnumber", "isinteger"
 ]
 
-var textToAstUnsplit = new me.converters.textToAstObj({
+var fromTextUnsplit = getFromText({
   splitSymbols: false,
   appliedFunctionSymbols: appliedFunctionSymbolsWithBooleanOperators
 });
@@ -76,7 +76,7 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
   let parsedExpression = null;
 
   try {
-    parsedExpression = me.fromAst(textToAstUnsplit.convert(inputString));
+    parsedExpression = fromTextUnsplit(inputString);
   } catch (e) {
   }
 

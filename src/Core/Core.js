@@ -273,7 +273,7 @@ export default class Core {
 
       // remove blank string children after applying macros,
       // as applying macros could create additional blank string children
-      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
+      serializeFunctions.removeBlankStringChildren(serializedComponents, this.componentInfoObjects)
 
       serializeFunctions.decodeXMLEntities(serializedComponents);
 
@@ -428,7 +428,7 @@ export default class Core {
 
       parent = this._components[parentName];
       if (!parent) {
-        console.warn(`Cannot add children to parent ${parenetName} as ${parentName} does not exist`)
+        console.warn(`Cannot add children to parent ${parentName} as ${parentName} does not exist`)
         return [];
       }
 
@@ -1083,7 +1083,7 @@ export default class Core {
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
-            child.createdComponent && components[child.componentName].componentType === "variantControl"
+            child.createdComponent && this._components[child.componentName].componentType === "variantControl"
           )) {
             variantControlInd = ind;
             variantControlChild = child;
@@ -1481,7 +1481,7 @@ export default class Core {
     // If a class is not supposed to have blank string children,
     // it is still possible that it received blank string children from a composite.
     // Hence filter out any blank string children that it might have
-    if (!parent.constructor.includeBlankStringChildren) {
+    if (!parent.constructor.includeBlankStringChildren || parent.constructor.removeBlankStringChildrenPostSugar) {
       let activeChildren = [];
       let foundBlank = false;
       let ind = 0;
@@ -2142,6 +2142,7 @@ export default class Core {
               arrayKey: dep.arrayKey,
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
+              firstLevelReplacement: dep.firstLevelReplacement,
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2620,7 +2621,9 @@ export default class Core {
           componentName: targetComponent.componentName,
           variableName: attribute,
         };
-        if ("targetAttributesToIgnore" in compositeComponent.state) {
+        if ("targetAttributesToIgnore" in compositeComponent.state &&
+          redefineDependencies.firstLevelReplacement
+        ) {
           thisDependencies.targetAttributesToIgnore = {
             dependencyType: "stateVariable",
             componentName: compositeComponent.componentName,
@@ -7659,9 +7662,13 @@ export default class Core {
     if (Object.keys(this.unsatisfiedChildLogic).length > 0) {
       let childLogicMessage = "";
       for (let componentName in this.unsatisfiedChildLogic) {
-        childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+        if (!this._components[componentName].isShadow) {
+          childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+        }
       }
-      console.warn(childLogicMessage)
+      if(childLogicMessage) {
+        console.warn(childLogicMessage)
+      }
     }
 
 

@@ -8,7 +8,7 @@ export const assignmentDoenetMLAtom = atom({
   default: {updateNumber: 0, doenetML: "", attemptnumber: 0}
 });
 export default function Assignment({
-  branchId = "",
+  doenetId = "",
   assignmentId = "",
   contentId = "",
   title
@@ -27,7 +27,7 @@ export default function Assignment({
     let requestedVariant = {index: attemptNumber};
     let solutionDisplayMode = "button";
     return /* @__PURE__ */ React.createElement(DoenetViewer, {
-      key: "doenetviewer" + assignmentDoenetML?.updateNumber,
+      key: "doenetviewer",
       doenetML: assignmentDoenetML?.doenetML,
       flags: {
         showCorrectness: true,
@@ -37,9 +37,11 @@ export default function Assignment({
         showHints: true
       },
       attemptNumber,
-      contentId: contentId ? contentId : branchId,
-      assignmentId: assignmentId ? assignmentId : contentId,
-      ignoreDatabase: true,
+      allowLoadPageState: true,
+      allowSavePageState: true,
+      allowLocalPageState: true,
+      allowSaveSubmissions: true,
+      allowSaveEvents: true,
       requestedVariant
     });
   }

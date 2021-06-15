@@ -99,7 +99,7 @@ export default class DoenetRenderer extends Component {
     let rendererClass = this.props.rendererClasses[childInstructions.rendererType];
 
     if (!rendererClass) {
-      throw Error(`Cannot render component ${childInstructions.componentName} as have not loaderer renderer type ${childInstructions.rendererType}`)
+      throw Error(`Cannot render component ${childInstructions.componentName} as have not loaded renderer type ${childInstructions.rendererType}`)
     }
 
     let child = React.createElement(rendererClass, propsForChild);

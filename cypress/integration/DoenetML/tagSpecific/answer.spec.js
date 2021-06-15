@@ -7355,6 +7355,129 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('consider as responses', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Enter two 2D points, where second to upward and to the right of the first:
+         <mathinput name="P" /> <mathinput name="Q" /></p>
+        
+        <setup>
+          <point name="PP" coords="$P" />
+          <point name="QQ" coords="$Q" />
+        </setup>
+
+        <answer name="a">
+          <considerAsResponses>$P $Q</considerAsResponses>
+         <award><when>$(QQ{prop='x'}) > $(PP{prop='x'}) and $(QQ{prop='y'}) > $(PP{prop='y'})</when></award>
+        </answer>
+        
+        <p>Current responses <aslist><copy name="cr" prop="currentResponses" tname="a" componentType="math" nComponents="2" /></aslist></p>
+        <p>Submitted responses <aslist><copy name="sr" prop="submittedResponses" tname="a" componentType="math" nComponents="2" /></aslist></p>
+        <p>Credit: <copy name="ca" prop="creditAchieved" tname="a" /></p>
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let cr1Anchor = cesc('#' + components['/cr'].replacements[0].componentName);
+      let cr2Anchor = cesc('#' + components['/cr'].replacements[1].componentName);
+      let sr1Anchor = cesc('#' + components['/sr'].replacements[0].componentName);
+      let sr2Anchor = cesc('#' + components['/sr'].replacements[1].componentName);
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.window().then((win) => {
+        expect(components["/a"].stateValues.nResponses).eq(2)
+      });
+
+      cy.get('#\\/P textarea').type("(2,3){enter}", {force: true})
+      cy.get('#\\/Q textarea').type("(3,4){enter}", {force: true})
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+
+      cy.get('#\\/P textarea').type("{home}{rightArrow}{rightArrow}{backspace}5{enter}", {force: true})
+      cy.get('#\\/Q textarea').type("{end}{leftArrow}{backspace}1{enter}", {force: true})
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+    })
+  });
+
   it('immediate value used for submit button', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -7634,6 +7757,755 @@ describe('Answer Tag Tests', function () {
 
     }
   });
+
+  it('number of awards credited', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Number of awards credited: <mathinput name="nawards" prefill="1" /></p>
+        <p>Credit for combined award: <mathinput name="creditForCombined" prefill="1" /></p>
+        <p>Distinct numbers greater than 3:
+        <mathinput name="mi1" />
+        <mathinput name="mi2" />
+        <answer nAwardsCredited="$nawards" name="a">
+          <award feedbackText="First is  " credit="0.4" targetsAreResponses="mi1"><when>$mi1 > 3</when></award>
+          <award feedbackText="Second is  " credit="0.4" targetsAreResponses="mi2"><when>$mi2 > 3</when></award>
+          <award feedbackText="Distinct and  " credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
+          <award feedbackText="At least the first is a number" credit="0"><when><isNumber>$mi1</isNumber></when></award>
+          <award feedbackText="At least the second is a number" credit="0"><when>isnumber($mi2)</when></award>
+        </answer>
+        </p>
+
+        <copy prop="feedbacks" tname="a" assignNames="fb1 fb2 fb3 fb4 fb5" />
+
+        <p>Current responses: <aslist><copy prop="currentResponses" tname="a" componentType="math" nComponents="2" assignNames="cr1 cr2" /></aslist></p>
+        <p>Submitted response: <aslist><copy prop="submittedResponses" tname="a" componentType="math" nComponents="2" assignNames="sr1 sr2" /></aslist></p>
+        <p>Credit: <copy assignNames="ca" prop="creditAchieved" tname="a" /></p>
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    let submitAnchor = cesc('#/a_submit');
+    let correctAnchor = cesc('#/a_correct');
+    let incorrectAnchor = cesc('#/a_incorrect');
+    let partialAnchor = cesc('#/a_partial');
+
+    cy.get(submitAnchor).should('be.visible');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get("#\\/ca").should('have.text', '0')
+
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi2 textarea").type("1{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'At least the second is a number')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi1 textarea").type("0{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'At least the first is a number')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/nawards textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'At least the first is a number')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('40% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get("#\\/ca").should('have.text', '0.4')
+
+
+    cy.get("#\\/nawards textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('40% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    });
+    cy.get("#\\/ca").should('have.text', '0.4')
+
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('40% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get("#\\/ca").should('have.text', '0.4')
+
+
+
+    cy.get("#\\/nawards textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('80% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get("#\\/ca").should('have.text', '0.8')
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}5{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb3').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get("#\\/ca").should('have.text', '1')
+
+
+    cy.get("#\\/nawards textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get("#\\/ca").should('have.text', '1')
+
+
+    cy.get("#\\/creditForCombined textarea").type("{end}{backspace}0.2{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('40% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get("#\\/ca").should('have.text', '0.4')
+
+
+    cy.get("#\\/nawards textarea").type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('80% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get("#\\/ca").should('have.text', '0.8')
+
+
+    cy.get("#\\/nawards textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb3').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+    cy.get('#\\/cr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/cr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    });
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    });
+    cy.get("#\\/ca").should('have.text', '1')
+
+
+
+  });
+
+  it('number of awards credited 2', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>
+        <mathinput name="mi1" />
+        <mathinput name="mi2" />
+        <mathinput name="mi3" />
+        <answer nAwardsCredited="3" name="a">
+          <award feedbackText="First is positive" credit="0.2" targetsAreResponses="mi1"><when>$mi1 > 0</when></award>
+          <award feedbackText="Second is positive" credit="0.2" targetsAreResponses="mi2"><when>$mi2 > 0</when></award>
+          <award feedbackText="Third is positive" credit="0.2" targetsAreResponses="mi3"><when>$mi3 > 0</when></award>
+          <award feedbackText="First is larger than second" credit="0.1"><when>$mi1 > $mi2</when></award>
+          <award feedbackText="First is larger than third" credit="0.1"><when>$mi1 > $mi3</when></award>
+          <award feedbackText="Second is larger than third" credit="0.1"><when>$mi2 > $mi3</when></award>
+          <award feedbackText="Sum of first two is larger than 5!" credit="0.35"><when>$mi1 + $mi2 > 5</when></award>
+          <award feedbackText="Sum of first and third is larger than 5!" credit="0.35"><when>$mi1 + $mi3 > 5</when></award>
+          <award feedbackText="Sum of second and third is larger than 5!" credit="0.35"><when>$mi2 + $mi3 > 5</when></award>
+          <award feedbackText="The first should be a number" credit="0"><when><not><isNumber>$mi1</isNumber></not></when></award>
+          <award feedbackText="The second should be a number" credit="0"><when>not isnumber($mi2)</when></award>
+          <award feedbackText="The third should be a number" credit="0"><when><not>isnumber($mi3)</not></when></award>
+          </answer>
+        </p>
+
+        <copy prop="feedbacks" tname="a" assignNames="fb1 fb2 fb3 fb4 fb5" />
+
+        <p>Credit: <copy assignNames="ca" prop="creditAchieved" tname="a" /></p>
+
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    let submitAnchor = cesc('#/a_submit');
+    let correctAnchor = cesc('#/a_correct');
+    let incorrectAnchor = cesc('#/a_incorrect');
+    let partialAnchor = cesc('#/a_partial');
+
+    cy.get(submitAnchor).should('be.visible');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+
+
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'The first should be a number')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi1 textarea").type("-5{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'The second should be a number')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi2 textarea").type("-5{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'The third should be a number')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+    cy.get("#\\/mi3 textarea").type("-5{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('be.visible');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('not.exist')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0')
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('10% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'Second is larger than third')
+    cy.get('#\\/fb2').should('not.exist')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.1')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('20% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is larger than third')
+    cy.get('#\\/fb2').should('have.text', 'Second is larger than third')
+    cy.get('#\\/fb3').should('not.exist')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.2')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('30% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is larger than second')
+    cy.get('#\\/fb2').should('have.text', 'First is larger than third')
+    cy.get('#\\/fb3').should('have.text', 'Second is larger than third')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.3')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}{backspace}8{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('40% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is positive')
+    cy.get('#\\/fb2').should('have.text', 'First is larger than second')
+    cy.get('#\\/fb3').should('have.text', 'First is larger than third')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.4')
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}{backspace}-2{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('65% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is positive')
+    cy.get('#\\/fb2').should('have.text', 'First is larger than second')
+    cy.get('#\\/fb3').should('have.text', 'Sum of first two is larger than 5!')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.65')
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}{backspace}9{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is positive')
+    cy.get('#\\/fb2').should('have.text', 'Second is positive')
+    cy.get('#\\/fb3').should('have.text', 'Sum of first two is larger than 5!')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.75')
+
+
+    cy.get("#\\/mi2 textarea").type("{end}{backspace}{backspace}11{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('not.exist');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('90% correct')
+    })
+
+    cy.get('#\\/fb1').should('have.text', 'First is positive')
+    cy.get('#\\/fb2').should('have.text', 'Sum of first two is larger than 5!')
+    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '0.9')
+
+
+    cy.get("#\\/mi3 textarea").type("{end}{backspace}{backspace}-1{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Sum of first two is larger than 5!')
+    cy.get('#\\/fb2').should('have.text', 'Sum of first and third is larger than 5!')
+    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '1')
+
+
+    cy.get("#\\/mi3 textarea").type("{end}{backspace}{backspace}6{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Sum of first two is larger than 5!')
+    cy.get('#\\/fb2').should('have.text', 'Sum of first and third is larger than 5!')
+    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '1')
+
+
+    cy.get("#\\/mi1 textarea").type("{end}{backspace}{backspace}15{enter}", { force: true });
+    cy.get('#\\/a_submit').click();
+
+    cy.get(submitAnchor).should('not.exist');
+    cy.get(correctAnchor).should('be.visible');
+    cy.get(incorrectAnchor).should('not.exist');
+    cy.get(partialAnchor).should('not.exist');
+
+    cy.get('#\\/fb1').should('have.text', 'Sum of first two is larger than 5!')
+    cy.get('#\\/fb2').should('have.text', 'Sum of first and third is larger than 5!')
+    cy.get('#\\/fb3').should('have.text', 'Sum of second and third is larger than 5!')
+    cy.get('#\\/fb4').should('not.exist')
+    cy.get('#\\/fb5').should('not.exist')
+    cy.get("#\\/ca").should('have.text', '1')
+
+
+  });
+
 
 
 })

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "../_snowpack/pkg/react.js";
-import {useSpring, animated} from "../_snowpack/pkg/react-spring.js";
+import {useSpring, animated} from "../_snowpack/pkg/@react-spring/web.js";
 import styled from "../_snowpack/pkg/styled-components.js";
 import {doenetComponentForegroundActive} from "./temp/theme.js";
 const LABELCOLOR = "#1a5a99";

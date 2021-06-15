@@ -706,9 +706,9 @@ export const fetchDrivesSelector = selector({
          let childContentObjs = duplicateFolder({sourceFolderId:sourceItemId,sourceDriveId,destDriveId,destFolderId:destItemId,destParentFolderId:destFolderId})
           contentObjs = {...contentObjs,...childContentObjs};
         }else if (sourceItem.itemType === 'DoenetML'){
-          let destBranchId = nanoid();
-          contentsDictionary[destItemId].sourceBranchId = sourceItem.branchId;
-          contentsDictionary[destItemId].branchId = destBranchId;
+          let destDoenetId = nanoid();
+          contentsDictionary[destItemId].sourceDoenetId = sourceItem.doenetId;
+          contentsDictionary[destItemId].doenetId = destDoenetId;
         }else if (sourceItem.itemType === 'URL'){
           let desturlId = nanoid();
           contentsDictionary[destItemId].urlId = desturlId;
@@ -1543,7 +1543,7 @@ const selectedDriveItems = selectorFamily({
 function columnJSX(columnType,item){
   // console.log(">>>columnType,item",columnType,item)
       // console.log(">>>item",item)
-      const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.branchId));
+      const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
       let aInfo = '';
       if (assignmentInfoSettings?.state === 'hasValue') {
         aInfo = assignmentInfoSettings?.contents?.assignments[0];

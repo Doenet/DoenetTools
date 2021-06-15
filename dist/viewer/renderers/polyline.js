@@ -65,9 +65,17 @@ export default class Line extends DoenetRenderer {
       this.pointsJXG[i].on("up", (x2) => this.onDragHandler(i, false));
       this.pointsJXG[i].on("down", (x2) => this.draggedPoint = null);
     }
-    this.polylineJXG.on("drag", (x2) => this.onDragHandler(-1, true));
-    this.polylineJXG.on("up", (x2) => this.onDragHandler(-1, false));
-    this.polylineJXG.on("down", (x2) => this.draggedPoint = null);
+    this.polylineJXG.on("drag", (e) => this.onDragHandler(-1, true, e));
+    this.polylineJXG.on("up", function(e) {
+      if (this.draggedPoint === -1) {
+        this.actions.finalizePolylinePosition();
+      }
+    }.bind(this));
+    this.polylineJXG.on("down", function(e) {
+      this.draggedPoint = null;
+      this.pointerAtDown = [e.x, e.y];
+      this.pointsAtDown = this.polylineJXG.points.map((x2) => [...x2.scrCoords]);
+    }.bind(this));
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     this.previousNVertices = this.doenetSvData.nVertices;
     return this.polylineJXG;
@@ -117,6 +125,7 @@ export default class Line extends DoenetRenderer {
       this.polylineJXG.dataX.length = this.doenetSvData.nVertices;
     }
     this.previousNVertices = this.doenetSvData.nVertices;
+    this.polylineJXG.updateTransformMatrix();
     let shiftX = this.polylineJXG.transformMat[1][0];
     let shiftY = this.polylineJXG.transformMat[2][0];
     for (let i = 0; i < this.doenetSvData.nVertices; i++) {
@@ -154,21 +163,30 @@ export default class Line extends DoenetRenderer {
     }
     this.props.board.updateRenderer();
   }
-  onDragHandler(i, transient) {
+  onDragHandler(i, transient, e) {
     if (transient) {
       this.draggedPoint = i;
     } else if (this.draggedPoint !== i) {
       return;
     }
     if (i === -1) {
-      let newPointcoords = {};
-      this.polylineJXG.points.forEach((z, i2) => newPointcoords[i2] = [z.usrCoords[1], z.usrCoords[2]]);
-      this.actions.movePolyline(newPointcoords, transient);
+      let pointCoords = this.calculatePointPositions(e);
+      this.actions.movePolyline(pointCoords, transient);
     } else {
       let newCoords = {};
       newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
       this.actions.movePolyline(newCoords, transient, {vertex: i});
     }
+  }
+  calculatePointPositions(e) {
+    var o = this.props.board.origin.scrCoords;
+    let pointCoords = [];
+    for (let i = 0; i < this.polylineJXG.points.length; i++) {
+      let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0] - o[1]) / this.props.board.unitX;
+      let calculatedY = (o[2] - (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1])) / this.props.board.unitY;
+      pointCoords.push([calculatedX, calculatedY]);
+    }
+    return pointCoords;
   }
   render() {
     if (this.props.board) {

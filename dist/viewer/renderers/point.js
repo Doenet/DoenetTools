@@ -41,10 +41,12 @@ export default class Point extends DoenetRenderer {
     this.pointJXG = this.props.board.create("point", coords, jsxPointAttributes);
     this.pointJXG.on("drag", function(e) {
       this.dragged = true;
-      this.onDragHandler(e, true);
+      this.onDragHandler(e);
     }.bind(this));
     this.pointJXG.on("up", function(e) {
-      this.onDragHandler(e, false);
+      if (this.dragged) {
+        this.actions.finalizePointPosition();
+      }
     }.bind(this));
     this.pointJXG.on("down", function(e) {
       this.dragged = false;
@@ -97,7 +99,7 @@ export default class Point extends DoenetRenderer {
       this.pointJXG.visProp.showinfobox = false;
       this.pointJXG.visProp.fixed = true;
     }
-    if (this.componentName in sourceOfUpdate.sourceInformation) {
+    if (sourceOfUpdate && sourceOfUpdate.sourceInformation && this.componentName in sourceOfUpdate.sourceInformation) {
       this.props.board.updateInfobox(this.pointJXG);
     }
     this.pointJXG.name = this.doenetSvData.label;
@@ -114,20 +116,23 @@ export default class Point extends DoenetRenderer {
     }
     this.props.board.updateRenderer();
   }
-  onDragHandler(e, transient) {
+  onDragHandler(e) {
     if (this.dragged) {
       let pointCoords = this.calculatePointPosition(e);
       this.actions.movePoint({
         x: pointCoords[0],
         y: pointCoords[1],
-        transient
+        transient: true
       });
     }
   }
   calculatePointPosition(e) {
     var o = this.props.board.origin.scrCoords;
+    let [xmin, ymax, xmax, ymin] = this.props.board.getBoundingBox();
     let calculatedX = (this.pointAtDown[1] + e.x - this.pointerAtDown[0] - o[1]) / this.props.board.unitX;
+    calculatedX = Math.min(xmax, Math.max(xmin, calculatedX));
     let calculatedY = (o[2] - (this.pointAtDown[2] + e.y - this.pointerAtDown[1])) / this.props.board.unitY;
+    calculatedY = Math.min(ymax, Math.max(ymin, calculatedY));
     return [calculatedX, calculatedY];
   }
   componentDidMount() {

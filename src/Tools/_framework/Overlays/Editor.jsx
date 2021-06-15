@@ -82,9 +82,9 @@ const getSHAofContent = (doenetML)=>{
   
 function ReturnToEditingButton(props){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
-  const returnToEditing = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+  const returnToEditing = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     set(versionHistoryActiveAtom,"")
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(branchId)));
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     const contentId = versionHistory.draft.contentId;
  
     let doenetML = await snapshot.getPromise(fileByContentId(contentId));
@@ -98,13 +98,13 @@ function ReturnToEditingButton(props){
 
   if (activeVersionId === ""){ return null; }
 
-  return <Button callback={()=> returnToEditing(props.branchId) } value="Return to current version" />
+  return <Button callback={()=> returnToEditing(props.doenetId) } value="Return to current version" />
 }
 
 function EditorInfoPanel(props){
   const [addToast, ToastType] = useToast();
 
-  const link = `http://${window.location.host}/content/#/?branchId=${props.branchId}`
+  const link = `http://${window.location.host}/content/#/?doenetId=${props.doenetId}`
 
   return <div style={{margin:"6px"}}>
   <div>DonetML Name (soon)</div>
@@ -126,16 +126,16 @@ function EditorInfoPanel(props){
 }
 
 //Required props:
-//branchId
+//doenetId
 //versionId
 //title --Original Title
 function RenameVersionControl(props){
   let [textFieldFlag,setTextFieldFlag] = useState(false);
   let [currentTitle,setCurrentTitle] = useState(props.title);
 
-  const renameVersion = useRecoilCallback(({snapshot,set})=> async (branchId,versionId,newTitle)=>{
-    // console.log(">>>",{branchId,versionId,newTitle})
-      set(itemHistoryAtom(branchId),(was)=>{
+  const renameVersion = useRecoilCallback(({snapshot,set})=> async (doenetId,versionId,newTitle)=>{
+    // console.log(">>>",{doenetId,versionId,newTitle})
+      set(itemHistoryAtom(doenetId),(was)=>{
         let newHistory = {...was}
         newHistory.named = [...was.named];
         let newVersion;
@@ -148,7 +148,7 @@ function RenameVersionControl(props){
         }
         let newDBVersion = {...newVersion,
           isNewTitle:'1',
-          branchId
+          doenetId
         }
            axios.post("/api/saveNewVersion.php",newDBVersion)
             // .then((resp)=>{console.log(">>>resp saveNamedVersion",resp.data)})
@@ -160,7 +160,7 @@ function RenameVersionControl(props){
     function renameIfChanged(){
       setTextFieldFlag(false)
       if (props.title !== currentTitle){
-        renameVersion(props.branchId,props.versionId,currentTitle);
+        renameVersion(props.doenetId,props.versionId,currentTitle);
       }
     }
 
@@ -203,14 +203,14 @@ function ClipboardLinkButtons(props){
 
 function VersionHistoryPanel(props){
   
-  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.branchId))
+  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(props.doenetId))
   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
-  const toggleReleaseNamed = useRecoilCallback(({set})=> async (branchId,versionId,driveId,folderId)=>{
+  const toggleReleaseNamed = useRecoilCallback(({set})=> async (doenetId,versionId,driveId,folderId)=>{
     let doenetIsReleased = false;
     
-    set(itemHistoryAtom(branchId),(was)=>{
+    set(itemHistoryAtom(doenetId),(was)=>{
       let newHistory = {...was}
       newHistory.named = [...was.named];
       let newVersion;
@@ -239,7 +239,7 @@ function VersionHistoryPanel(props){
       }
       let newDBVersion = {...newVersion,
         isNewToggleRelease:'1',
-        branchId
+        doenetId
       }
       // console.log(">>>newDBVersion",newDBVersion);
          axios.post("/api/saveNewVersion.php",newDBVersion)
@@ -271,11 +271,11 @@ function VersionHistoryPanel(props){
       return newObj});
   })
 
-  const setAsCurrent = useRecoilCallback(({snapshot,set})=> async (branchId,version)=>{
-    // console.log(">>>sac",branchId,version)
+  const setAsCurrent = useRecoilCallback(({snapshot,set})=> async (doenetId,version)=>{
+    // console.log(">>>sac",doenetId,version)
     //current to autosave
     const newDraftVersionId = nanoid();
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
     let autoSaveWasDraft = {...oldVersions.draft}
     autoSaveWasDraft.isDraft = "0";
@@ -287,7 +287,7 @@ function VersionHistoryPanel(props){
     newDraft.isDraft = "1";
     newDraft.versionId = newDraftVersionId;
     newVersions.draft = newDraft;
-    set(itemHistoryAtom(branchId),newVersions)
+    set(itemHistoryAtom(doenetId),newVersions)
     //set viewer's and text editor's doenetML
     let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
     set(editorDoenetMLAtom,doenetML);
@@ -301,7 +301,7 @@ function VersionHistoryPanel(props){
         isSetAsCurrent:'1',
         newDraftVersionId,
         newDraftContentId:newDraft.contentId,
-        branchId
+        doenetId
       }
       // console.log(">>>newDBVersion",newDBVersion)
       axios.post("/api/saveNewVersion.php",newDBVersion)
@@ -345,14 +345,14 @@ if (selectedVersionId){
     releaseButtonText = "Retract"
   }
 
-    const releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.branchId,version.versionId,props.driveId,props.folderId)} >{releaseButtonText}</button></div>
+    const releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(props.doenetId,version.versionId,props.driveId,props.folderId)} >{releaseButtonText}</button></div>
 
   controls = <>
   <div>Name: {version.title}</div>
   <ClipboardLinkButtons contentId={version.contentId} />
-        <div><RenameVersionControl key={version.versionId} branchId={props.branchId} title={version.title} versionId={version.versionId} /></div>
+        <div><RenameVersionControl key={version.versionId} doenetId={props.doenetId} title={version.title} versionId={version.versionId} /></div>
        <div><button onClick={()=>versionHistoryActive(version)} >View</button></div> 
-       <div><button onClick={()=>setAsCurrent(props.branchId,version)} >Set As Current</button></div> 
+       <div><button onClick={()=>setAsCurrent(props.doenetId,version)} >Set As Current</button></div> 
         {releaseButton}
   </>
 }
@@ -379,9 +379,9 @@ function TextEditor(props){
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
   const [activeVersionId,setactiveVersionId]  = useRecoilState(versionHistoryActiveAtom);
 
-  const saveDraft = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+  const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.doenetId));
 
     let newVersion = {...oldVersions.draft};
   
@@ -392,7 +392,7 @@ function TextEditor(props){
 
     let oldVersionsReplacement = {...oldVersions};
     oldVersionsReplacement.draft = newVersion;
-    set(itemHistoryAtom(props.branchId),oldVersionsReplacement)
+    set(itemHistoryAtom(props.doenetId),oldVersionsReplacement)
     set(fileByContentId(contentId),doenetML)
     // set(fileByContentId(contentId),{data:doenetML})
 
@@ -401,7 +401,7 @@ function TextEditor(props){
 
     let newDBVersion = {...newVersion,
       doenetML,
-      branchId:props.branchId
+      doenetId:props.doenetId
     }
        axios.post("/api/saveNewVersion.php",newDBVersion)
 // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})  
@@ -424,13 +424,13 @@ function TextEditor(props){
     }
     let newDBVersion = {...newVersion,
       doenetML,
-      branchId:props.branchId
+      doenetId:props.doenetId
     }
 
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.branchId));
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.doenetId));
     let newVersions = {...oldVersions}
     newVersions.autoSaves = [newVersion,...oldVersions.autoSaves]
-      set(itemHistoryAtom(props.branchId),newVersions)
+      set(itemHistoryAtom(props.doenetId),newVersions)
       // set(fileByContentId(newVersion.contentId),{data:doenetML});
       set(fileByContentId(newVersion.contentId),doenetML);
   
@@ -448,7 +448,7 @@ function TextEditor(props){
     if (timeout.current !== null){
       clearTimeout(timeout.current)
       timeout.current = null;
-      saveDraft(props.branchId);
+      saveDraft(props.doenetId);
     }
     if (autosavetimeout.current !== null){
       clearTimeout(autosavetimeout.current)
@@ -573,7 +573,7 @@ function TextEditor(props){
       setEditorDoenetML(value);
       if (timeout.current === null){
         timeout.current = setTimeout(function(){
-          saveDraft(props.branchId);
+          saveDraft(props.doenetId);
           timeout.current = null;
         },3000)
       }
@@ -608,7 +608,7 @@ function DoenetViewerUpdateButton(){
 }
 
 function NameCurrentVersionControl(props){
-  const saveVersion = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
+  const saveVersion = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
     const timestamp = buildTimestamp();
     const contentId = getSHAofContent(doenetML);
@@ -625,14 +625,14 @@ function NameCurrentVersionControl(props){
     }
     let newDBVersion = {...newVersion,
       doenetML,
-      branchId
+      doenetId
     }
 
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(branchId));
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
     newVersions.named = [newVersion,...oldVersions.named];
 
-    set(itemHistoryAtom(branchId),newVersions)
+    set(itemHistoryAtom(doenetId),newVersions)
     // set(fileByContentId(contentId),{data:doenetML});
     set(fileByContentId(contentId),doenetML);
     
@@ -644,25 +644,70 @@ function NameCurrentVersionControl(props){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Save Version" callback={()=>saveVersion(props.branchId)} />
+  return <Button value="Save Version" callback={()=>saveVersion(props.doenetId)} />
 }
 
 function TempEditorHeaderBar(props){
   return <div style={{height:"24px"}}>
-    <NameCurrentVersionControl branchId={props.branchId} />
+    <NameCurrentVersionControl doenetId={props.doenetId} />
   </div>
 }
 
+const variantInfoAtom = atom({
+  key:"variantInfoAtom",
+  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:0}}
+})
+
+const variantPanelAtom = atom({
+  key:"variantPanelAtom",
+  default:{index:null,name:null}
+})
+ 
 function DoenetViewerPanel(){
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
-
+  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
+  const setVariantPanel = useSetRecoilState(variantPanelAtom);
+  // const [requestedVariant,setRequestedVariant] = useState({index:0});
   if (!editorInit){ return null; }
 
   let attemptNumber = 1;
-  let requestedVariant = { index: attemptNumber }
+  // let requestedVariant = { index: attemptNumber }
   let solutionDisplayMode = "button";
+
+
+  if (variantInfo.lastUpdatedIndexOrName === 'Index'){
+    setVariantInfo((was)=>{
+      let newObj = {...was}; 
+      newObj.lastUpdatedIndexOrName = null; 
+      newObj.requestedVariant = {index:variantInfo.index};
+    return newObj})
+
+  }else if (variantInfo.lastUpdatedIndexOrName === 'Name'){
+    setVariantInfo((was)=>{
+      let newObj = {...was}; 
+      newObj.lastUpdatedIndexOrName = null; 
+      newObj.requestedVariant = {name:variantInfo.name};
+    return newObj})
+
+  }
+
+
+  function variantCallback(generatedVariantInfo, allPossibleVariants){
+    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
+    cleanGeneratedVariant.lastUpdatedIndexOrName = null 
+    setVariantPanel({
+      index:cleanGeneratedVariant.index,
+      name:cleanGeneratedVariant.name,
+      allPossibleVariants
+    });
+    setVariantInfo((was)=>{
+      let newObj = {...was}
+      Object.assign(newObj,cleanGeneratedVariant)
+      return newObj;
+    });
+  }
   
   return <DoenetViewer
       // key={"doenetviewer" + viewerDoenetML?.updateNumber}
@@ -681,21 +726,76 @@ function DoenetViewerPanel(){
       allowLocalPageState={false}
       allowSaveSubmissions={false}
       allowSaveEvents={false}
-
-      requestedVariant={requestedVariant}
+      generatedVariantCallback={variantCallback}
+      requestedVariant={variantInfo.requestedVariant}
       /> 
 }
 
+function VariantPanel(){
+  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
+  const [variantPanel,setVariantPanel] = useRecoilState(variantPanelAtom);
+  
+
+  function updateVariantInfoAtom(source){
+    // console.log(">>>updateVariantInfoAtom")
+    //Prevent calling when it didn't change
+    if (source === 'Index'){
+      if (variantPanel.index === variantInfo.index){
+        return;
+      }
+    }
+    if (source === 'Name'){
+      if (variantPanel.name === variantInfo.name){
+        return;
+      }
+    }
+    setVariantInfo((was)=>{
+      let newObj = {...was};
+      newObj.index = Number.isFinite(Number(variantPanel.index)) ? Number(variantPanel.index) : 0;
+      newObj.name = variantPanel.name;
+      newObj.lastUpdatedIndexOrName = source;
+      return newObj;
+    })
+  }
+
+  let optionsList = variantPanel.allPossibleVariants.map(function (s, i) {
+    return <option key={i + 1} value={s}>{s}</option>
+  });
+
+  return <>
+  <div><label>Variant Index <input type="text" value={variantPanel.index} onKeyDown={(e)=>{
+    if (e.key ==='Enter'){ updateVariantInfoAtom('Index') }
+    }} onBlur={()=>updateVariantInfoAtom('Index')} onChange={(e)=>{setVariantPanel(
+      (was)=>{
+      let newObj = {...was}
+      newObj.index = e.target.value;
+      return newObj; })}}/></label></div>
+
+      <div><label>Variant Name 
+      <select value={variantPanel.name} onChange={(e)=>{
+        setVariantInfo((was)=>{
+          let newObj = {...was};
+          newObj.name = e.target.value;
+          newObj.lastUpdatedIndexOrName = 'Name';
+          return newObj;
+        })
+     
+      }}>
+      {optionsList}
+        </select></label></div>
+  </>
+}
+ 
 const editorInitAtom = atom({
   key:"editorInit",
   default:false
 })
 
-export default function Editor({ branchId, title, driveId, folderId, itemId }) {
+export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
   // console.log("===Editor!");
 
-  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (branchId)=>{
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(branchId)));
+  let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     const contentId = versionHistory.draft.contentId;
     
     let response = await snapshot.getPromise(fileByContentId(contentId));
@@ -714,7 +814,7 @@ export default function Editor({ branchId, title, driveId, folderId, itemId }) {
   const setEditorInit = useSetRecoilState(editorInitAtom);
 
   useEffect(() => {
-    initDoenetML(branchId)
+    initDoenetML(doenetId)
     return () => {
       setEditorInit(false);
     }
@@ -724,7 +824,7 @@ export default function Editor({ branchId, title, driveId, folderId, itemId }) {
   return (
     <Tool>
       <headerPanel title={title}>
-        <ReturnToEditingButton branchId={branchId} />
+        <ReturnToEditingButton doenetId={doenetId} />
       </headerPanel>
 
       <mainPanel>
@@ -733,15 +833,18 @@ export default function Editor({ branchId, title, driveId, folderId, itemId }) {
       </mainPanel>
 
       <supportPanel isInitOpen>
-      <TempEditorHeaderBar branchId={branchId} />
-          <TextEditor  branchId={branchId}/>
+      <TempEditorHeaderBar doenetId={doenetId} />
+          <TextEditor  doenetId={doenetId}/>
       </supportPanel>
 
       <menuPanel title="Info">
-        <EditorInfoPanel branchId={branchId} driveId={driveId} folderId={folderId} itemId={itemId}/>
+        <EditorInfoPanel doenetId={doenetId} driveId={driveId} folderId={folderId} itemId={itemId}/>
       </menuPanel>
       <menuPanel title="Version history">
-        <VersionHistoryPanel branchId={branchId} driveId={driveId} folderId={folderId} itemId={itemId}/>
+        <VersionHistoryPanel doenetId={doenetId} driveId={driveId} folderId={folderId} itemId={itemId}/>
+      </menuPanel>
+      <menuPanel title="Variant">
+        <VariantPanel  />
       </menuPanel>
       
     </Tool>

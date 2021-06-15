@@ -10,6 +10,9 @@ export default class Circle extends Curve {
   actions = {
     moveCircle: this.moveCircle.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    finalizeCirclePosition: this.finalizeCirclePosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -1442,6 +1445,9 @@ export default class Circle extends Curve {
     }
 
     stateVariableDefinitions.throughAngles = {
+      // send to renderer just so it can try to preserve original angles
+      // when dragging circle based on points with constraints
+      forRenderer: true,
       defaultValue: [],
       returnDependencies: () => ({
         haveNumericalEntries: {
@@ -2081,35 +2087,51 @@ export default class Circle extends Curve {
   }
 
 
-  moveCircle({ center, transient }) {
+  moveCircle({ center, radius, throughAngles, transient }) {
 
-    let instructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "numericalCenter",
-      value: center
-    }]
+    let instructions = [];
 
+    if (this.stateValues.nThroughPoints <= 1 || this.stateValues.numericalPrescribedCenter !== null) {
+      instructions.push({
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "numericalCenter",
+        value: center
+      })
+    }
 
-    if (this.stateValues.nThroughPoints === 1
-      && this.stateValues.numericalPrescribedCenter !== null
-      && this.stateValues.numericalPrescribedRadius === null
-    ) {
+    if (this.stateValues.nThroughPoints >= 1) {
+      // set numerical through points for two reasons
+      // 1. if have cricle prescribed by center and one point
+      //    need to move the point to preserve the radius
+      // 2. if have through points that are constrained/attracted
+      //    to objects, set through points to attempt to keep their relative
+      //    positions constant even as they get adjusted by the constraints
 
-      // Case of a circle prescribed by center and one point.
-      // Need to move the point to preserve the radius
+      let numericalThroughPoints = [];
 
-      let theta = this.stateValues.throughAngles[0]
-      let pt = [
-        center[0] + this.stateValues.numericalRadius * Math.cos(theta),
-        center[1] + this.stateValues.numericalRadius * Math.sin(theta)
-      ]
+      if(throughAngles === undefined) {
+        throughAngles = this.stateValues.throughAngles
+      }
+      if(radius === undefined) {
+        radius = this.stateValues.numericalRadius
+      }
+
+      for (let i = 0; i < this.stateValues.nThroughPoints; i++) {
+        let theta = throughAngles[i]
+        let pt = [
+          center[0] + radius * Math.cos(theta),
+          center[1] + radius * Math.sin(theta)
+        ]
+        numericalThroughPoints.push(pt);
+      }
+
 
       instructions.push({
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "numericalThroughPoints",
-        value: [pt]
+        value: numericalThroughPoints
       })
 
     }
@@ -2135,9 +2157,17 @@ export default class Circle extends Curve {
       });
     }
 
-
   }
 
+  finalizeCirclePosition() {
+    // trigger a moveCircle 
+    // to send the final values with transient=false
+    // so that the final position will be recorded
+    this.actions.moveCircle({ 
+      center: this.stateValues.numericalCenter,
+      transient: false
+     });
+  }
 }
 
 function circleFromTwoNumericalPoints({ point1, point2 }) {

@@ -49,10 +49,10 @@ export const useAddItem = () => {
       const dt = new Date();
       const creationDate = formatDate(dt);
       const itemId = nanoid();
-      const branchId = nanoid();
+      const doenetId = nanoid();
       const newItem = {
         assignmentId: null,
-        branchId,
+        doenetId,
         contentId: null,
         creationDate,
         isPublished: "0",
@@ -85,7 +85,7 @@ export const useAddItem = () => {
         driveId: driveIdFolderId.driveId,
         parentFolderId: driveIdFolderId.folderId,
         itemId,
-        branchId,
+        doenetId,
         versionId,
         label: label,
         type: itemType,
@@ -432,8 +432,8 @@ export const useCopyItems = () => {
           driveId: targetDriveId,
           parentFolderId: newItem.parentFolderId,
           itemId: newItemId,
-          branchId: newItem.branchId,
-          // branchId: nanoid(),
+          doenetId: newItem.doenetId,
+          // doenetId: nanoid(),
           versionId: newItem.versionId,
           // versionId: nanoid(),
           label: newItem.label,
@@ -449,8 +449,8 @@ export const useCopyItems = () => {
           
           promises.push(axios.post("/api/saveNewVersion.php", newDoenetML));
 
-          // Unify new branchId
-          // addItemsParams["branchId"] = newDoenetML?.branchId;
+          // Unify new doenetId
+          // addItemsParams["doenetId"] = newDoenetML?.doenetId;
         }
 
 
@@ -526,9 +526,9 @@ export const useCopyItems = () => {
     const newItem = { ...itemInfo };
     const newItemId = nanoid();
     newItem.itemId = newItemId;
-    newItem.branchId = nanoid();
+    newItem.doenetId = nanoid();
     newItem.versionId = nanoid();
-    newItem.previousBranchId = itemInfo.branchId;
+    newItem.previousDoenetId = itemInfo.doenetId;
    
     if (itemInfo.itemType === "Folder") {
       const {contentIds} = await snapshot.getPromise(folderDictionary({driveId: item.driveId, folderId: item.itemId}));
@@ -565,8 +565,8 @@ export const useCopyItems = () => {
 
     let newVersion = {
       title: item.label,
-      branchId: item.branchId,
-      // branchId: nanoid(),
+      doenetId: item.doenetId,
+      // doenetId: nanoid(),
       contentId: item.contentId,
       versionId: item.versionId,
       timestamp,
@@ -574,7 +574,7 @@ export const useCopyItems = () => {
       isNamed: '1',
       isNewCopy: '1',
       doenetML: item.doenetML,
-      previousBranchId: item.previousBranchId,
+      previousDoenetId: item.previousDoenetId,
     }
     return newVersion;
   }
@@ -631,7 +631,7 @@ export const useDragShadowCallbacks = () => {
 
       const dragShadow = {
         assignmentId: null,
-        branchId: null,
+        doenetId: null,
         contentId: null,
         creationDate: "",
         isPublished: "0",

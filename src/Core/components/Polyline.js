@@ -7,6 +7,9 @@ export default class Polyline extends GraphicalComponent {
   actions = {
     movePolyline: this.movePolyline.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    finalizePolylinePosition: this.finalizePolylinePosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -487,6 +490,17 @@ export default class Polyline extends GraphicalComponent {
       });
     }
 
+  }
+
+  finalizePolylinePosition() {
+    // trigger a movePolyline 
+    // to send the final values with transient=false
+    // so that the final position will be recorded
+
+    this.actions.movePolyline(
+      this.stateValues.numericalVertices,
+      false
+     );
   }
 
 

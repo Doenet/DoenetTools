@@ -8,6 +8,9 @@ export default class Line extends GraphicalComponent {
   actions = {
     moveLine: this.moveLine.bind(
       new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    finalizeLinePosition: this.finalizeLinePosition.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
     )
   };
 
@@ -810,6 +813,11 @@ export default class Line extends GraphicalComponent {
         let numericalPoints = {};
         for (let arrayKey of arrayKeys) {
           let point = dependencyValuesByKey[arrayKey].point;
+          // if we are in 1 dimensions,
+          // point isn't an array, so make it an array
+          if(!Array.isArray(point)) {
+            point = [point];
+          }
           let numericalP = [];
           for (let ind = 0; ind < globalDependencyValues.nDimensions; ind++) {
             let val = point[ind].evaluate_to_constant();
@@ -1071,6 +1079,19 @@ export default class Line extends GraphicalComponent {
       });
     }
 
+  }
+
+
+  finalizeLinePosition() {
+    // trigger a moveLine 
+    // to send the final values with transient=false
+    // so that the final position will be recorded
+
+    this.actions.moveLine({
+      point1coords: this.stateValues.numericalPoints[0],
+      point2coords: this.stateValues.numericalPoints[1],
+      transient: false,
+    });
   }
 
 

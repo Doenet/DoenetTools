@@ -539,6 +539,10 @@ export default class AnimateFromSequence extends BaseComponent {
 
   findIndexFromTarget() {
 
+    if (this.stateValues.targets === null) {
+      return this.stateValues.selectedIndex;
+    }
+    
     let target = this.stateValues.targets[0];
 
     let stateVariable = Object.keys(target.stateValues)[0];

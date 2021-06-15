@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { animated, useSpring } from 'react-spring';
+import { animated, useSpring } from '@react-spring/web';
 import { useGesture } from 'react-use-gesture';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGripLinesVertical, faGripLines } from 'solid-svg';
+import { faGripLinesVertical, faGripLines } from '@fortawesome/free-solid-svg-icons';
 import { useRecoilState, atomFamily } from 'recoil';
 
 export const handleDirection = {
