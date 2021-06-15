@@ -835,4 +835,54 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('split symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math>xyz</math></p>
+  <p><math splitSymbols="false">xyz</math></p>
+  <p><math splitSymbols="true">xyz</math></p>
+  <p><math simplify>xyx</math></p>
+  <p><math simplify splitSymbols="false">xyx</math></p>
+  <p><math simplify splitSymbols="true">xyx</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/_math5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyx')
+    })
+    cy.get('#\\/_math6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_math1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/_math2'].stateValues.value.tree).eqls("xyz");
+      expect(components['/_math3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/_math4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(components['/_math5'].stateValues.value.tree).eqls("xyx");
+      expect(components['/_math6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+
+    });
+
+  });
+
 })

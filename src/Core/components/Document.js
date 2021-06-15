@@ -582,9 +582,14 @@ export default class Document extends BaseComponent {
       if (desiredVariant !== undefined) {
         if (desiredVariant.index !== undefined) {
           let desiredVariantIndex = Number(desiredVariant.index);
-          if (!Number.isInteger(desiredVariantIndex)) {
-            throw Error("Variant index " + desiredVariant.index + " must be an integer");
+          if (!Number.isFinite(desiredVariantIndex)) {
+            console.warn("Variant index " + desiredVariant.index + " must be a number");
+            variantIndex = 0;
           } else {
+            if (!Number.isInteger(desiredVariantIndex)) {
+              console.warn("Variant index " + desiredVariant.index + " must be an integer");
+              desiredVariantIndex = Math.round(desiredVariantIndex);
+            }
             variantIndex = desiredVariantIndex % nVariants;
             if (variantIndex < 0) {
               variantIndex += nVariants;
@@ -599,7 +604,8 @@ export default class Document extends BaseComponent {
             }
           }
           if (variantIndex === undefined) {
-            throw Error("Variant name " + desiredVariant.name + " is not valid")
+            console.warn("Variant name " + desiredVariant.name + " is not valid");
+            variantIndex = 0;
           }
         }
       }

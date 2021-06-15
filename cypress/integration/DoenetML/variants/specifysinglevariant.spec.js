@@ -694,6 +694,109 @@ describe('Specifying single variant document tests', function () {
       })
     })
 
+
+    cy.log(`invalid index gives variant 0`)
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>
+      <text>u</text>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: "bad" },
+      }, "*");
+    });
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `u`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        meta: {
+          subvariantsSpecified: false,
+          createdBy: "/_document1"
+        },
+        subvariants: [{
+          indices: [nWithIndex0 - 1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+    })
+
+    
+    cy.log(`invalid name gives variant 0`)
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>
+      <text>v</text>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { name: "bad" },
+      }, "*");
+    });
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `v`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'a',
+        meta: {
+          subvariantsSpecified: false,
+          createdBy: "/_document1"
+        },
+        subvariants: [{
+          indices: [nWithIndex0 - 1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+    })
+
+
+    cy.log(`round variant index to nearest integer`)
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>
+      <text>w</text>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 94.48 },
+      }, "*");
+    });
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `w`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/n'].stateValues.value).eq(nWithIndex94);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 94,
+        name: 'cq',
+        meta: {
+          subvariantsSpecified: false,
+          createdBy: "/_document1"
+        },
+        subvariants: [{
+          indices: [nWithIndex94 - 1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+    })
+
+
   });
 
   it('document with variant control specifying variants', () => {
@@ -1055,6 +1158,162 @@ describe('Specifying single variant document tests', function () {
         },
         subvariants: [{
           indices: [4],
+          subvariants: [],
+          meta: { createdBy: "/_select1" }
+        }]
+      })
+    })
+
+
+    cy.log("invalid variant index gives index 0")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>7</text>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <p>Selected variable:
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
+    </select>
+    </p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    `,
+        requestedVariant: { index: 'wrong' },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `7`)
+
+    cy.window().then((win) => {
+      let expectedx = 'a';
+
+      let components = Object.assign({}, win.state.components);
+      let x = components['/x'].stateValues.value.tree;
+      expect(x).eq(expectedx);
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(xorig).eq(expectedx);
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
+      expect(x2).eq(expectedx);
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'avocado',
+        meta: {
+          subvariantsSpecified: false,
+          createdBy: "/_document1"
+        },
+        subvariants: [{
+          indices: [3],
+          subvariants: [],
+          meta: { createdBy: "/_select1" }
+        }]
+      })
+    })
+
+
+    cy.log("invalid variant name gives index 0")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>8</text>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <p>Selected variable:
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
+    </select>
+    </p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    `,
+        requestedVariant: { name: 'rotten' },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `8`)
+
+    cy.window().then((win) => {
+      let expectedx = 'a';
+
+      let components = Object.assign({}, win.state.components);
+      let x = components['/x'].stateValues.value.tree;
+      expect(x).eq(expectedx);
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(xorig).eq(expectedx);
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
+      expect(x2).eq(expectedx);
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 0,
+        name: 'avocado',
+        meta: {
+          subvariantsSpecified: false,
+          createdBy: "/_document1"
+        },
+        subvariants: [{
+          indices: [3],
+          subvariants: [],
+          meta: { createdBy: "/_select1" }
+        }]
+      })
+    })
+
+
+    cy.log("round non-integer variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>9</text>
+    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <p>Selected variable:
+    <select assignnames="(x)">
+      <option selectForVariants="Dill"><math>d</math></option>
+      <option selectForVariants="carrot"><math>c</math></option>
+      <option selectForVariants="eggplant"><math>e</math></option>
+      <option selectForVariants="avocado"><math>a</math></option>
+      <option selectForVariants="broccoli"><math>b</math></option>
+    </select>
+    </p>
+    <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
+    <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
+    `,
+        requestedVariant: { index: 3.5 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `9`)
+
+    cy.window().then((win) => {
+      let expectedx = 'e';
+
+      let components = Object.assign({}, win.state.components);
+      let x = components['/x'].stateValues.value.tree;
+      expect(x).eq(expectedx);
+      let xorig = components['/_select1'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(xorig).eq(expectedx);
+      let x2 = components['/x2'].replacements[0].stateValues.value.tree;
+      expect(x2).eq(expectedx);
+      let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
+      expect(x3).eq(expectedx);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 4,
+        name: 'eggplant',
+        meta: {
+          subvariantsSpecified: false,
+          createdBy: "/_document1"
+        },
+        subvariants: [{
+          indices: [2],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
