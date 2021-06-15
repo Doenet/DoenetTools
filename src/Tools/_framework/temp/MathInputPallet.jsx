@@ -353,7 +353,7 @@ export default function VirtualKeyboard() {
           toggleCase ? (
             <Panel tabIndex = "0" ref = {containerRef}>
               <LettersSection>
-              <LetterButton onClick = {() => callback('write Q')}>X</LetterButton>
+              <LetterButton onClick = {() => callback('write Q')}>Q</LetterButton>
                 <LetterButton onClick = {() => callback('write W')}>W</LetterButton>
                 <LetterButton onClick = {() => callback('write E')}>E</LetterButton>
                 <LetterButton onClick = {() => callback('write R')}>R</LetterButton>
@@ -482,7 +482,7 @@ export default function VirtualKeyboard() {
                   <MathJax.Node inline formula={"y"} />
                 
               </Button>
-              <Button onClick = {() => callback('write x')}>
+              <Button onClick = {() => callback('type ^2')}>
                 
                   <MathJax.Node inline formula={"a^2"} />
                 
@@ -512,7 +512,7 @@ export default function VirtualKeyboard() {
                   <MathJax.Node inline formula={">"} />
                 
               </Button>
-              <Button onClick = {() => callback('write |')}>
+              <Button onClick = {() => callback('cmd |')}>
                 
                   <MathJax.Node inline formula={"|a|"} />
                 

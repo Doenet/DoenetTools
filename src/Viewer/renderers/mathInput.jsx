@@ -754,7 +754,7 @@ var appliedFunctionSymbols = [
   'count', 'mod'
 ];
 
-function getFromLatex({ functionSymbols }) {
+function getCustomFromLatex({ functionSymbols }) {
   return x => me.fromAst((new me.converters.latexToAstObj({
     appliedFunctionSymbols, functionSymbols
   })).convert(x))
