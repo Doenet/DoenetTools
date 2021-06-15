@@ -352,7 +352,7 @@ class DoenetViewerChild extends Component {
     }
     let adjustedRequestedVariantFromProp = this.props.requestedVariant;
     if (adjustedRequestedVariantFromProp === void 0) {
-      adjustedRequestedVariantFromProp = {index: this.attemptNumber - 1};
+      adjustedRequestedVariantFromProp = {index: this.attemptNumber};
     }
     if (!this.requestedVariantFromDatabase && JSON.stringify(this.requestedVariant) !== JSON.stringify(adjustedRequestedVariantFromProp)) {
       this.needNewCoreFlag = true;
