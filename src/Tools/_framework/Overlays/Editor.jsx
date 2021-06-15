@@ -734,8 +734,10 @@ function DoenetViewerPanel(){
 function VariantPanel(){
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const [variantPanel,setVariantPanel] = useRecoilState(variantPanelAtom);
+  
 
   function updateVariantInfoAtom(source){
+    // console.log(">>>updateVariantInfoAtom")
     //Prevent calling when it didn't change
     if (source === 'Index'){
       if (variantPanel.index === variantInfo.index){
@@ -756,23 +758,31 @@ function VariantPanel(){
     })
   }
 
-
+  let optionsList = variantPanel.allPossibleVariants.map(function (s, i) {
+    return <option key={i + 1} value={s}>{s}</option>
+  });
 
   return <>
-  <div><label>Index <input type="text" value={variantPanel.index} onKeyDown={(e)=>{
+  <div><label>Variant Index <input type="text" value={variantPanel.index} onKeyDown={(e)=>{
     if (e.key ==='Enter'){ updateVariantInfoAtom('Index') }
     }} onBlur={()=>updateVariantInfoAtom('Index')} onChange={(e)=>{setVariantPanel(
       (was)=>{
       let newObj = {...was}
       newObj.index = e.target.value;
       return newObj; })}}/></label></div>
-  <div><label>Variant Name <input type="text" value={variantPanel.name} onKeyDown={(e)=>{
-    if (e.key ==='Enter'){ updateVariantInfoAtom('Name') }
-    }} onBlur={()=>updateVariantInfoAtom('Name')} onChange={(e)=>{setVariantPanel(
-      (was)=>{
-      let newObj = {...was}
-      newObj.name = e.target.value;
-      return newObj; })}}/></label></div>
+
+      <div><label>Variant Name 
+      <select value={variantPanel.name} onChange={(e)=>{
+        setVariantInfo((was)=>{
+          let newObj = {...was};
+          newObj.name = e.target.value;
+          newObj.lastUpdatedIndexOrName = 'Name';
+          return newObj;
+        })
+     
+      }}>
+      {optionsList}
+        </select></label></div>
   </>
 }
  
