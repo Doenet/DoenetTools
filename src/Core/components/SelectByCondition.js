@@ -122,7 +122,7 @@ export default class SelectByCondition extends CompositeComponent {
               n++;
             }
 
-            desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
+            desiredIndices = desiredIndices.map(x => ((((x - 1) % n) + n) % n) + 1);
 
             return {
               makeEssential: { selectedIndices: true },
@@ -137,11 +137,11 @@ export default class SelectByCondition extends CompositeComponent {
 
         for (let [ind, child] of dependencyValues.caseChildren.entries()) {
           if (child.stateValues.conditionSatisfied) {
-            selectedIndices.push(ind);
+            selectedIndices.push(ind + 1);
           }
         }
         if (selectedIndices.length === 0 && dependencyValues.elseChild) {
-          selectedIndices.push(dependencyValues.caseChildren.length);
+          selectedIndices.push(dependencyValues.caseChildren.length + 1);
         }
 
         if (dependencyValues.maximumNumberToSelect !== null && selectedIndices.length > dependencyValues.maximumNumberToSelect) {
@@ -229,8 +229,8 @@ export default class SelectByCondition extends CompositeComponent {
     for (let selectedIndex of component.stateValues.selectedIndices) {
 
       let selectedChildName, childComponentType;
-      if (selectedIndex < component.stateValues.nCases) {
-        selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
+      if (selectedIndex <= component.stateValues.nCases) {
+        selectedChildName = component.stateValues.caseChildren[selectedIndex - 1].componentName;
         childComponentType = "case";
 
       } else {
