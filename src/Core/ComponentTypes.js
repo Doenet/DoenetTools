@@ -17,6 +17,7 @@ import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
 import * as SideBySide from './components/SideBySide';
 import * as Indexing from './components/Indexing';
+import * as Divisions from './components/Divisions';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -112,7 +113,6 @@ import Solution from './components/Solution';
 import IntComma from './components/IntComma';
 import Pluralize from './components/Pluralize';
 import Feedback from './components/Feedback';
-import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
@@ -123,6 +123,7 @@ import Lorem from './components/Lorem';
 import UpdateValue from './components/UpdateValue';
 import CallAction from './components/CallAction';
 import TriggerSet from './components/TriggerSet';
+import FunctionIterates from './components/FunctionIterates';
 
 
 //Extended
@@ -165,6 +166,7 @@ const componentTypeArray = [
   ...Object.values(SideBySide),
   ...Object.values(ComponentWithSelectableType),
   ...Object.values(Indexing),
+  ...Object.values(Divisions),
   Document,
   StringComponent,
   Text, TextList,
@@ -236,7 +238,6 @@ const componentTypeArray = [
   IntComma,
   Pluralize,
   Feedback,
-  Container,
   CollaborateGroups,
   CollaborateGroupSetup,
   ConsiderAsResponses,
@@ -247,6 +248,7 @@ const componentTypeArray = [
   UpdateValue,
   CallAction,
   TriggerSet,
+  FunctionIterates,
 
   BaseComponent,
   InlineComponent,

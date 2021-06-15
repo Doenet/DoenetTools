@@ -136,6 +136,7 @@ export default class BooleanInput extends DoenetRenderer {
             id={inputKey}
             checked={this.doenetSvData.value}
             onChange={this.onChangeHandler}
+            disabled={this.doenetSvData.disabled}
           />
           {this.doenetSvData.label}
         </label>

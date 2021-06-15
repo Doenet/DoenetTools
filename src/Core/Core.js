@@ -259,7 +259,6 @@ export default class Core {
 
     let arrayOfSerializedComponents = [];
     let contentIdComponents = {};
-    let contentNameComponents = {};
 
     for (let doenetML of doenetMLs) {
 
@@ -289,19 +288,12 @@ export default class Core {
         }
         contentIdComponents[contentId].push(...newContentComponents.contentIdComponents[contentId])
       }
-      for (let contentName in newContentComponents.contentNameComponents) {
-        if (contentNameComponents[contentName] === undefined) {
-          contentNameComponents[contentName] = []
-        }
-        contentNameComponents[contentName].push(...newContentComponents.contentNameComponents[contentName])
-      }
     }
 
     let contentIdList = Object.keys(contentIdComponents);
-    let contentNameList = Object.keys(contentNameComponents);
-    if (contentIdList.length + contentNameList.length > 0) {
-      // found copies with contentIds or contentNames
-      // so look up those contentIds/contentNames,
+    if (contentIdList.length > 0) {
+      // found copies with contentIds 
+      // so look up those contentIds
       // convert to doenetMLs, and recurse on those doenetMLs
 
       let mergeContentIdNameSerializedComponentsIntoCopy = function ({
@@ -324,21 +316,6 @@ export default class Core {
           }
         }
 
-        for (let [ind, contentName] of contentNameList.entries()) {
-          // results from content names immediately follow those from content ids
-          let serializedComponentsForContentName = fullSerializedComponents[ind + contentIdList.length];
-          for (let originalCopyWithUri of contentNameComponents[contentName]) {
-            if (originalCopyWithUri.children === undefined) {
-              originalCopyWithUri.children = [];
-            }
-            originalCopyWithUri.children.push({
-              componentType: "externalContent",
-              children: JSON.parse(JSON.stringify(serializedComponentsForContentName)),
-              attributes: { newNamespace: true },
-              doenetAttributes: { createUniqueName: true }
-            });
-          }
-        }
 
         // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedComponents
         // so we call it with the contentIds and serializedComponents from that context
@@ -365,7 +342,7 @@ export default class Core {
         }
 
         // check to see if the doenetMLs hash to the contentIds
-        let expectedN = contentIdList.length + contentNameList.length;
+        let expectedN = contentIdList.length;
         for (let ind = 0; ind < expectedN; ind++) {
           let contentId = newContentIds[ind];
           if (contentId) {
@@ -376,11 +353,7 @@ export default class Core {
             }
           } else {
             // wasn't able to retrieve content
-            if (ind < contentIdList.length) {
               console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
-            } else {
-              console.warn(`Unable to retrieve content with contentName = ${contentNameList[ind - contentIdList.length]}`)
-            }
             newDoenetMLs[ind] = "";
           }
         }
@@ -394,7 +367,6 @@ export default class Core {
 
       this.externalFunctions.contentIdsToDoenetMLs({
         contentIds: contentIdList,
-        contentNames: contentNameList,
         callBack: recurseToAdditionalDoenetMLs
       });
 
@@ -1036,6 +1008,10 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
+    if(componentClass.descendantCompositesMustHaveAReplacement) {
+      sharedParameters.compositesMustHaveAReplacement = true;
+      sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
+    }
 
     // check if component has any attributes to propagate to descendants
     let attributesPropagated = this.propagateAncestorProps({
@@ -7666,7 +7642,7 @@ export default class Core {
           childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
         }
       }
-      if(childLogicMessage) {
+      if (childLogicMessage) {
         console.warn(childLogicMessage)
       }
     }

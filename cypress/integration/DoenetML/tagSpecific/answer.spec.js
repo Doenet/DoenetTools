@@ -7408,8 +7408,8 @@ describe('Answer Tag Tests', function () {
         expect(components["/a"].stateValues.nResponses).eq(2)
       });
 
-      cy.get('#\\/P textarea').type("(2,3){enter}", {force: true})
-      cy.get('#\\/Q textarea').type("(3,4){enter}", {force: true})
+      cy.get('#\\/P textarea').type("(2,3){enter}", { force: true })
+      cy.get('#\\/Q textarea').type("(3,4){enter}", { force: true })
 
       cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,3)')
@@ -7442,8 +7442,8 @@ describe('Answer Tag Tests', function () {
       cy.get(caAnchor).should('have.text', '1')
 
 
-      cy.get('#\\/P textarea').type("{home}{rightArrow}{rightArrow}{backspace}5{enter}", {force: true})
-      cy.get('#\\/Q textarea').type("{end}{leftArrow}{backspace}1{enter}", {force: true})
+      cy.get('#\\/P textarea').type("{home}{rightArrow}{rightArrow}{backspace}5{enter}", { force: true })
+      cy.get('#\\/Q textarea').type("{end}{leftArrow}{backspace}1{enter}", { force: true })
 
       cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(5,3)')
@@ -8506,6 +8506,127 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('nSubmissions', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer>
+    <award><math>x+y</math></award>
+  </answer></p>
+  <p><answer type="text">hello</answer></p>
+  <p>Number of submissions 1: <copy tname="_answer1" prop="nSubmissions" assignNames="nsubs1" /></p>
+  <p>Number of submissions 2: <copy tname="_answer2" prop="nSubmissions" assignNames="nsubs2" /></p>
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/nsubs1').should('have.text', 0);
+    cy.get('#\\/nsubs2').should('have.text', 0);
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/_answer1"].stateValues.nSubmissions).eq(0);
+      expect(components["/nsubs1"].stateValues.value).eq(0);
+      expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+      expect(components["/nsubs2"].stateValues.value).eq(0);
+
+      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+
+      let textinputName = components['/_answer2'].stateValues.inputChild.componentName
+      let textinputAnchor = cesc('#' + textinputName+ "_input");
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+
+      cy.get(mathinputAnchor).type("x+y{enter}", { force: true });
+
+
+      cy.get('#\\/nsubs1').should('have.text', 1)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs1"].stateValues.value).eq(1);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+      cy.get(mathinputAnchor).type("{end}{backspace}{backspace}", { force: true });
+      
+      cy.get('#\\/nsubs1').should('have.text', 1)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs1"].stateValues.value).eq(1);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+      cy.get(textinputAnchor).type("h").blur();
+      cy.get('#\\/nsubs1').should('have.text', 1)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs1"].stateValues.value).eq(1);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+
+      cy.get(mathinputSubmitAnchor).click()
+
+      cy.get('#\\/nsubs1').should('have.text', 2)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs1"].stateValues.value).eq(2);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+      cy.get(textinputSubmitAnchor).click()
+
+      cy.get('#\\/nsubs1').should('have.text', 2)
+      cy.get('#\\/nsubs2').should('have.text', 1).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs1"].stateValues.value).eq(2);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs2"].stateValues.value).eq(1);
+      })
+
+
+      cy.get(textinputAnchor).clear().type("hello").blur();
+      cy.get(mathinputAnchor).type("{end}+y", { force: true }).blur();
+
+      cy.get('#\\/nsubs1').should('have.text', 2)
+      cy.get('#\\/nsubs2').should('have.text', 1).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs1"].stateValues.value).eq(2);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs2"].stateValues.value).eq(1);
+      })
+
+
+      cy.get(mathinputSubmitAnchor).click()
+      cy.get('#\\/nsubs1').should('have.text', 3)
+      cy.get('#\\/nsubs2').should('have.text', 1).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(components["/nsubs1"].stateValues.value).eq(3);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs2"].stateValues.value).eq(1);
+      })
+
+      cy.get(textinputSubmitAnchor).click()
+      cy.get('#\\/nsubs1').should('have.text', 3)
+      cy.get('#\\/nsubs2').should('have.text', 2).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(components["/nsubs1"].stateValues.value).eq(3);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs2"].stateValues.value).eq(2);
+      })
+
+
+    })
+  });
 
 
 })
