@@ -123,6 +123,7 @@ import Lorem from './components/Lorem';
 import UpdateValue from './components/UpdateValue';
 import CallAction from './components/CallAction';
 import TriggerSet from './components/TriggerSet';
+import FunctionIterates from './components/FunctionIterates';
 
 
 //Extended
@@ -247,6 +248,7 @@ const componentTypeArray = [
   UpdateValue,
   CallAction,
   TriggerSet,
+  FunctionIterates,
 
   BaseComponent,
   InlineComponent,
