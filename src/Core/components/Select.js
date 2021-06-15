@@ -192,7 +192,7 @@ export default class Select extends CompositeComponent {
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];
             }
-            availableVariants[variantLower].push(ind);
+            availableVariants[variantLower].push(ind + 1);
           }
         }
 
@@ -293,7 +293,7 @@ export default class Select extends CompositeComponent {
               throw Error("All indices specified for select must be integers");
             }
             let n = dependencyValues.nOptions
-            desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
+            desiredIndices = desiredIndices.map(x => ((((x - 1) % n) + n) % n) + 1);
 
             return {
               makeEssential: { selectedIndices: true },
@@ -351,7 +351,7 @@ export default class Select extends CompositeComponent {
 
         //https://stackoverflow.com/a/44081700
         let cumulativeWeights = selectWeightByChild.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-        let indsRemaining = [...Array(cumulativeWeights.length).keys()];
+        let indsRemaining = [...Array(cumulativeWeights.length).keys()].map(x => x + 1);
 
         for (let ind = 0; ind < dependencyValues.numberToSelect; ind++) {
 
@@ -470,7 +470,7 @@ export default class Select extends CompositeComponent {
     for (let selectedIndex of component.stateValues.selectedIndices) {
 
 
-      let selectedChildName = component.stateValues.optionChildren[selectedIndex].componentName;
+      let selectedChildName = component.stateValues.optionChildren[selectedIndex - 1].componentName;
 
       let selectedChild = components[selectedChildName];
 

@@ -18,26 +18,26 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `1`)
 
-    let nWithIndex0;
+    let nWithIndex1;
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithIndex0 = components['/n'].stateValues.value;
+      nWithIndex1 = components['/n'].stateValues.value;
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -54,23 +54,23 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `a`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -85,7 +85,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     });
 
@@ -93,16 +93,16 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `b`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -117,7 +117,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     });
     // to wait for page to load
@@ -126,16 +126,16 @@ describe('Specifying single variant document tests', function () {
     let generatedVariantInfo;
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -159,22 +159,22 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `d`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: true,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Number changes for index 1");
+    cy.log("Number changes for index 2");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -184,27 +184,27 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariant: { index: 2 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `e`)
 
-    let nWithIndex1;
+    let nWithIndex2;
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithIndex1 = components['/n'].stateValues.value;
-      expect(nWithIndex1).not.eq(nWithIndex0);
+      nWithIndex2 = components['/n'].stateValues.value;
+      expect(nWithIndex2).not.eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -220,23 +220,23 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariant: { index: 2 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `f`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -251,29 +251,29 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 1 },
+        requestedVariant: { index: 2 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `g`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Index 101 same as index 1");
+    cy.log("Index 102 same as index 2");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -283,23 +283,23 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 101 },
+        requestedVariant: { index: 102 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `g`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -313,36 +313,30 @@ describe('Specifying single variant document tests', function () {
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
-    expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-      index: 0,
-      subvariants: [{
-        indices: [nWithIndex1 - 1]
-      }]
-    })
     `,
-        requestedVariant: { index: 101 },
+        requestedVariant: { index: 102 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `h`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Index -299 same as index 1");
+    cy.log("Index -298 same as index 2");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -352,23 +346,23 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: -299 },
+        requestedVariant: { index: -298 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `i`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -383,29 +377,29 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: -299 },
+        requestedVariant: { index: -298 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `j`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Index 83057200 same as index 0");
+    cy.log("Index 83057201 same as index 1");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -415,23 +409,23 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 83057200 },
+        requestedVariant: { index: 83057201 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `k`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -446,29 +440,29 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 83057200 },
+        requestedVariant: { index: 83057201 },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `l`)
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Variant 'a' same as index 0");
+    cy.log("Variant 'a' same as index 1");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -485,16 +479,16 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `m`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -516,22 +510,22 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `n`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Variant 'b' same as index 1");
+    cy.log("Variant 'b' same as index 2");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -548,16 +542,16 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `o`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -579,22 +573,22 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `q`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex1);
+      expect(components['/n'].stateValues.value).eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex1 - 1],
+          indices: [nWithIndex2],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Index '300' same as index 0");
+    cy.log("Index '301' same as index 1");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -604,29 +598,29 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '300' },
+        requestedVariant: { index: '301' },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `r`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    cy.log("Variant 'cQ' and index '94' are the same");
+    cy.log("Variant 'cQ' and index '95' are the same");
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -636,28 +630,28 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '94' },
+        requestedVariant: { index: '95' },
       }, "*");
     });
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', `s`);
 
-    let nWithIndex94;
+    let nWithIndex95;
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      nWithIndex94 = components['/n'].stateValues.value;
-      expect(nWithIndex94).not.eq(nWithIndex0);
-      expect(nWithIndex94).not.eq(nWithIndex1);
+      nWithIndex95 = components['/n'].stateValues.value;
+      expect(nWithIndex95).not.eq(nWithIndex1);
+      expect(nWithIndex95).not.eq(nWithIndex2);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 94,
+        index: 95,
         name: 'cq',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex94 - 1],
+          indices: [nWithIndex95],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -679,23 +673,23 @@ describe('Specifying single variant document tests', function () {
     cy.get('#\\/_text1').should('have.text', `t`);
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex94);
+      expect(components['/n'].stateValues.value).eq(nWithIndex95);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 94,
+        index: 95,
         name: 'cq',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex94 - 1],
+          indices: [nWithIndex95],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
 
-    cy.log(`invalid index gives variant 0`)
+    cy.log(`invalid index gives variant 1`)
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -713,23 +707,23 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
     })
 
-    
-    cy.log(`invalid name gives variant 0`)
+
+    cy.log(`invalid name gives variant 1`)
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -747,16 +741,16 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex0);
+      expect(components['/n'].stateValues.value).eq(nWithIndex1);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex0 - 1],
+          indices: [nWithIndex1],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -773,7 +767,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 94.48 },
+        requestedVariant: { index: 95.48 },
       }, "*");
     });
     // to wait for page to load
@@ -781,16 +775,16 @@ describe('Specifying single variant document tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/n'].stateValues.value).eq(nWithIndex94);
+      expect(components['/n'].stateValues.value).eq(nWithIndex95);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 94,
+        index: 95,
         name: 'cq',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [nWithIndex94 - 1],
+          indices: [nWithIndex95],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -819,7 +813,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     })
     // to wait for page to load
@@ -838,14 +832,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'avocado',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [3],
+          indices: [4],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -870,7 +864,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
-        requestedVariant: { index: 2 },
+        requestedVariant: { index: 3 },
       }, "*");
     })
     // to wait for page to load
@@ -889,14 +883,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
+        index: 3,
         name: 'carrot',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [1],
+          indices: [2],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -942,14 +936,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'broccoli',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [4],
+          indices: [5],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -995,14 +989,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'broccoli',
         meta: {
           subvariantsSpecified: true,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [4],
+          indices: [5],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -1046,14 +1040,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 3,
+        index: 4,
         name: 'dill',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [0],
+          indices: [1],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -1079,7 +1073,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
-        requestedVariant: { index: 20582309 },
+        requestedVariant: { index: 20582310 },
       }, "*");
     })
     // to wait for page to load
@@ -1098,14 +1092,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 4,
+        index: 5,
         name: 'eggplant',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [2],
+          indices: [3],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -1131,7 +1125,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
-        requestedVariant: { index: '-20582309' },
+        requestedVariant: { index: '-20582308' },
       }, "*");
     })
     // to wait for page to load
@@ -1150,14 +1144,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'broccoli',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [4],
+          indices: [5],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -1165,7 +1159,7 @@ describe('Specifying single variant document tests', function () {
     })
 
 
-    cy.log("invalid variant index gives index 0")
+    cy.log("invalid variant index gives index 1")
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1202,14 +1196,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'avocado',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [3],
+          indices: [4],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -1254,14 +1248,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'avocado',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [3],
+          indices: [4],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -1287,7 +1281,7 @@ describe('Specifying single variant document tests', function () {
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
     <p>Selected variable repeated again: <copy name="x3" tname="_select1" /></p>
     `,
-        requestedVariant: { index: 3.5 },
+        requestedVariant: { index: 4.5 },
       }, "*");
     })
     // to wait for page to load
@@ -1306,14 +1300,14 @@ describe('Specifying single variant document tests', function () {
       let x3 = components['/x3'].replacements[0].replacements[0].stateValues.value.tree;
       expect(x3).eq(expectedx);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 4,
+        index: 5,
         name: 'eggplant',
         meta: {
           subvariantsSpecified: false,
           createdBy: "/_document1"
         },
         subvariants: [{
-          indices: [2],
+          indices: [3],
           subvariants: [],
           meta: { createdBy: "/_select1" }
         }]
@@ -1335,7 +1329,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     })
     // to wait for page to load
@@ -1347,14 +1341,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       nWithSeed50283 = components['/n'].stateValues.value;
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed50283 - 1],
+          indices: [nWithSeed50283],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1370,7 +1364,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     })
     // to wait for page to load
@@ -1380,14 +1374,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed50283);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed50283 - 1],
+          indices: [nWithSeed50283],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1404,7 +1398,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 124081 },
+        requestedVariant: { index: 124082 },
       }, "*");
     })
     // to wait for page to load
@@ -1417,14 +1411,14 @@ describe('Specifying single variant document tests', function () {
       nWithSeed25018 = components['/n'].stateValues.value;
       expect(nWithSeed25018).not.eq(nWithSeed50283);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed25018 - 1],
+          indices: [nWithSeed25018],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1440,7 +1434,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 124081 },
+        requestedVariant: { index: 124082 },
       }, "*");
     })
     // to wait for page to load
@@ -1449,14 +1443,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed25018);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed25018 - 1],
+          indices: [nWithSeed25018],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1487,14 +1481,14 @@ describe('Specifying single variant document tests', function () {
       expect(nWithSeed52018).not.eq(nWithSeed50283);
       expect(nWithSeed52018).not.eq(nWithSeed25018);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
+        index: 3,
         name: 'c',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed52018 - 1],
+          indices: [nWithSeed52018],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1519,14 +1513,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed52018);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
+        index: 3,
         name: 'c',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed52018 - 1],
+          indices: [nWithSeed52018],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1543,7 +1537,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '820572308' },
+        requestedVariant: { index: '820572309' },
       }, "*");
     })
     // to wait for page to load
@@ -1558,14 +1552,14 @@ describe('Specifying single variant document tests', function () {
       expect(nWithSeed2917392).not.eq(nWithSeed25018);
       expect(nWithSeed2917392).not.eq(nWithSeed52018);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 3,
+        index: 4,
         name: 'd',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed2917392 - 1],
+          indices: [nWithSeed2917392],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1581,7 +1575,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '820572308' },
+        requestedVariant: { index: '820572309' },
       }, "*");
     })
     // to wait for page to load
@@ -1590,14 +1584,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 3,
+        index: 4,
         name: 'd',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed2917392 - 1],
+          indices: [nWithSeed2917392],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1615,7 +1609,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '-820572306' },
+        requestedVariant: { index: '-820572305' },
       }, "*");
     })
     // to wait for page to load
@@ -1631,14 +1625,14 @@ describe('Specifying single variant document tests', function () {
       expect(nWithSeed603962).not.eq(nWithSeed52018);
       expect(nWithSeed603962).not.eq(nWithSeed2917392);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 4,
+        index: 5,
         name: 'e',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed603962 - 1],
+          indices: [nWithSeed603962],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1655,7 +1649,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>1
     `,
-        requestedVariant: { index: '-820572306' },
+        requestedVariant: { index: '-820572305' },
       }, "*");
     })
     // to wait for page to load
@@ -1664,14 +1658,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed603962);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 4,
+        index: 5,
         name: 'e',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed603962 - 1],
+          indices: [nWithSeed603962],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1699,14 +1693,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed603962);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 4,
+        index: 5,
         name: 'e',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: true,
         },
         subvariants: [{
-          indices: [nWithSeed603962 - 1],
+          indices: [nWithSeed603962],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1726,7 +1720,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     })
     // to wait for page to load
@@ -1736,14 +1730,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed2917392 - 1],
+          indices: [nWithSeed2917392],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1759,7 +1753,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     })
     // to wait for page to load
@@ -1768,14 +1762,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed2917392);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed2917392 - 1],
+          indices: [nWithSeed2917392],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1792,7 +1786,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: 124081 },
+        requestedVariant: { index: 124082 },
       }, "*");
     })
     // to wait for page to load
@@ -1802,14 +1796,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed52018);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 1,
+        index: 2,
         name: 'b',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed52018 - 1],
+          indices: [nWithSeed52018],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1837,14 +1831,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed603962);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 2,
+        index: 3,
         name: 'c',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed603962 - 1],
+          indices: [nWithSeed603962],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1861,7 +1855,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '820572308' },
+        requestedVariant: { index: '820572309' },
       }, "*");
     })
     // to wait for page to load
@@ -1871,14 +1865,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed50283);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 3,
+        index: 4,
         name: 'd',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed50283 - 1],
+          indices: [nWithSeed50283],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1895,7 +1889,7 @@ describe('Specifying single variant document tests', function () {
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
     `,
-        requestedVariant: { index: '-820572306' },
+        requestedVariant: { index: '-820572305' },
       }, "*");
     })
     // to wait for page to load
@@ -1905,14 +1899,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/n'].stateValues.value).eq(nWithSeed25018);
       expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-        index: 4,
+        index: 5,
         name: 'e',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [nWithSeed25018 - 1],
+          indices: [nWithSeed25018],
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
@@ -1934,7 +1928,7 @@ describe('Specifying single variant document tests', function () {
     let originalSecondValue;
 
     cy.log("Test a bunch of variants")
-    for (let ind = 0; ind < 20; ind++) {
+    for (let ind = 1; ind <= 20; ind++) {
 
       // show values don't change for same variant
       for (let ind2 = 0; ind2 < 2; ind2++) {
@@ -1978,7 +1972,7 @@ describe('Specifying single variant document tests', function () {
 
           generatedVariantInfo = {
             index: ind,
-            name: numberToLetters(ind + 1, true),
+            name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
               subvariantsSpecified: false,
@@ -1995,10 +1989,10 @@ describe('Specifying single variant document tests', function () {
             let i = ["red", "orange", "green", "white", "chartreuse"].indexOf(secondChild.stateValues.value)
             expect(i).not.eq(-1);
             generatedVariantInfo.subvariants.push({
-              indices: [0],
+              indices: [1],
               meta: { createdBy: "/_select1" },
               subvariants: [{
-                indices: [i],
+                indices: [i + 1],
                 meta: { createdBy: "/p/_select1" },
                 subvariants: []
               }]
@@ -2010,13 +2004,13 @@ describe('Specifying single variant document tests', function () {
               expect(num).gte(1000);
               expect(num).lte(2000);
               generatedVariantInfo.subvariants.push({
-                indices: [1],
+                indices: [2],
                 meta: { createdBy: "/_select1" },
                 subvariants: [{
-                  indices: [0],
+                  indices: [1],
                   meta: { createdBy: "/p/_select1" },
                   subvariants: [{
-                    indices: [num - 1000],
+                    indices: [num - 999],
                     meta: { createdBy: "/p/s" }
                   }]
                 }]
@@ -2025,13 +2019,13 @@ describe('Specifying single variant document tests', function () {
               expect(num).gte(-1000);
               expect(num).lte(-900)
               generatedVariantInfo.subvariants.push({
-                indices: [1],
+                indices: [2],
                 meta: { createdBy: "/_select1" },
                 subvariants: [{
                   meta: { createdBy: "/p/_select1" },
-                  indices: [1],
+                  indices: [2],
                   subvariants: [{
-                    indices: [num + 1000],
+                    indices: [num + 1001],
                     meta: { createdBy: "/p/s" }
                   }]
                 }]
@@ -2041,10 +2035,10 @@ describe('Specifying single variant document tests', function () {
             let i = ["a", "b", "c", "d", "e", "f", "g"].indexOf(secondChild.stateValues.value);
             expect(i).not.eq(-1);
             generatedVariantInfo.subvariants.push({
-              indices: [2],
+              indices: [3],
               meta: { createdBy: "/_select1" },
               subvariants: [{
-                indices: [i],
+                indices: [i + 1],
                 meta: { createdBy: "/p/_selectfromsequence1" },
               }]
             })
@@ -2052,10 +2046,10 @@ describe('Specifying single variant document tests', function () {
             let i = ["u", "v", "w", "x", "z", "y"].indexOf(secondChild.stateValues.value);
             expect(i).not.eq(-1);
             generatedVariantInfo.subvariants.push({
-              indices: [3],
+              indices: [4],
               meta: { createdBy: "/_select1" },
               subvariants: [{
-                indices: [i],
+                indices: [i + 1],
                 meta: { createdBy: "/p/_select1" },
                 subvariants: []
               }]
@@ -2120,8 +2114,8 @@ describe('Specifying single variant document tests', function () {
       let p = components['/p'];
 
       generatedVariantInfo = {
-        index: 19,
-        name: numberToLetters(19 + 1, true),
+        index: 20,
+        name: numberToLetters(20, true),
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: true,
@@ -2138,10 +2132,10 @@ describe('Specifying single variant document tests', function () {
         let i = ["red", "orange", "green", "white", "chartreuse"].indexOf(secondChild.stateValues.value)
         expect(i).not.eq(-1);
         generatedVariantInfo.subvariants.push({
-          indices: [0],
+          indices: [1],
           meta: { createdBy: "/_select1" },
           subvariants: [{
-            indices: [i],
+            indices: [i + 1],
             meta: { createdBy: "/p/_select1" },
             subvariants: []
           }]
@@ -2153,13 +2147,13 @@ describe('Specifying single variant document tests', function () {
           expect(num).gte(1000);
           expect(num).lte(2000);
           generatedVariantInfo.subvariants.push({
-            indices: [1],
+            indices: [2],
             meta: { createdBy: "/_select1" },
             subvariants: [{
-              indices: [0],
+              indices: [1],
               meta: { createdBy: "/p/_select1" },
               subvariants: [{
-                indices: [num - 1000],
+                indices: [num - 999],
                 meta: { createdBy: "/p/s" }
               }]
             }]
@@ -2168,13 +2162,13 @@ describe('Specifying single variant document tests', function () {
           expect(num).gte(-1000);
           expect(num).lte(-900)
           generatedVariantInfo.subvariants.push({
-            indices: [1],
+            indices: [2],
             meta: { createdBy: "/_select1" },
             subvariants: [{
               meta: { createdBy: "/p/_select1" },
-              indices: [1],
+              indices: [2],
               subvariants: [{
-                indices: [num + 1000],
+                indices: [num + 1001],
                 meta: { createdBy: "/p/s" }
               }]
             }]
@@ -2184,10 +2178,10 @@ describe('Specifying single variant document tests', function () {
         let i = ["a", "b", "c", "d", "e", "f", "g"].indexOf(secondChild.stateValues.value);
         expect(i).not.eq(-1);
         generatedVariantInfo.subvariants.push({
-          indices: [2],
+          indices: [3],
           meta: { createdBy: "/_select1" },
           subvariants: [{
-            indices: [i],
+            indices: [i + 1],
             meta: { createdBy: "/p/_selectfromsequence1" },
           }]
         })
@@ -2195,10 +2189,10 @@ describe('Specifying single variant document tests', function () {
         let i = ["u", "v", "w", "x", "z", "y"].indexOf(secondChild.stateValues.value);
         expect(i).not.eq(-1);
         generatedVariantInfo.subvariants.push({
-          indices: [3],
+          indices: [4],
           meta: { createdBy: "/_select1" },
           subvariants: [{
-            indices: [i],
+            indices: [i + 1],
             meta: { createdBy: "/p/_select1" },
             subvariants: []
           }]
@@ -2221,8 +2215,8 @@ describe('Specifying single variant document tests', function () {
   it('selected problems', () => {
 
     let titlesToInd = {
-      "A word problem": 0,
-      "A number problem": 1,
+      "A word problem": 1,
+      "A number problem": 2,
     }
 
     let variantOfProblemsFound = {
@@ -2236,7 +2230,7 @@ describe('Specifying single variant document tests', function () {
     let generatedVariantInfo;
 
     cy.log("Test a bunch of variants")
-    for (let ind = 0; ind < 10; ind++) {
+    for (let ind = 1; ind <= 10; ind++) {
 
       // show values don't change for same variant
       for (let ind2 = 0; ind2 < 2; ind2++) {
@@ -2278,7 +2272,7 @@ describe('Specifying single variant document tests', function () {
 
           generatedVariantInfo = {
             index: ind,
-            name: numberToLetters(ind + 1, true),
+            name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
               subvariantsSpecified: false,
@@ -2304,20 +2298,20 @@ describe('Specifying single variant document tests', function () {
 
             let p = problem.activeChildren[4];
 
-            if (variantInd === 0) {
+            if (variantInd === 1) {
               expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
-              let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value);
-              expect(problemVariantInd).not.eq(-1)
+              let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
+              expect(problemVariantInd).not.eq(0)
               if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
                 variantOfProblemsFound[0].push(problemVariantInd);
               }
               expect(problemVariantInd).eq(problem.stateValues.generatedVariantInfo.index)
 
-              let selectVariantInd = ["bad", "angry", "drab", "excoriated", "churlish"].indexOf(p.activeChildren[1].stateValues.value);
+              let selectVariantInd = ["bad", "angry", "drab", "excoriated", "churlish"].indexOf(p.activeChildren[1].stateValues.value) + 1;
 
               generatedVariantInfo.subvariants[0].subvariants.push({
                 index: problemVariantInd,
-                name: numberToLetters(problemVariantInd + 1, true),
+                name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
                   subvariantsSpecified: false,
@@ -2342,13 +2336,13 @@ describe('Specifying single variant document tests', function () {
               }
               generatedVariantInfo.subvariants[0].subvariants.push({
                 index: problemVariantInd,
-                name: numberToLetters(problemVariantInd + 1, true),
+                name: numberToLetters(problemVariantInd, true),
                 meta: {
                   createdBy: `/problem${i}`,
                   subvariantsSpecified: false,
                 },
                 subvariants: [{
-                  indices: [num - 1],
+                  indices: [num],
                   meta: {
                     createdBy: `/problem${i}/_selectfromsequence1`,
                   },
@@ -2419,8 +2413,8 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
 
       generatedVariantInfo = {
-        index: 9,
-        name: numberToLetters(9 + 1, true),
+        index: 10,
+        name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: true,
@@ -2446,20 +2440,20 @@ describe('Specifying single variant document tests', function () {
 
         let p = problem.activeChildren[4];
 
-        if (variantInd === 0) {
+        if (variantInd === 1) {
           expect(p.activeChildren[0].stateValues.value.trim()).eq("Word:")
-          let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value);
-          expect(problemVariantInd).not.eq(-1)
+          let problemVariantInd = ["angry", "bad", "churlish", "drab", "excoriated"].indexOf(p.activeChildren[1].stateValues.value) + 1;
+          expect(problemVariantInd).not.eq(0)
           if (!variantOfProblemsFound[0].includes(problemVariantInd)) {
             variantOfProblemsFound[0].push(problemVariantInd);
           }
           expect(problemVariantInd).eq(problem.stateValues.generatedVariantInfo.index)
 
-          let selectVariantInd = ["bad", "angry", "drab", "excoriated", "churlish"].indexOf(p.activeChildren[1].stateValues.value);
+          let selectVariantInd = ["bad", "angry", "drab", "excoriated", "churlish"].indexOf(p.activeChildren[1].stateValues.value) + 1;
 
           generatedVariantInfo.subvariants[0].subvariants.push({
             index: problemVariantInd,
-            name: numberToLetters(problemVariantInd + 1, true),
+            name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
               subvariantsSpecified: true,
@@ -2484,13 +2478,13 @@ describe('Specifying single variant document tests', function () {
           }
           generatedVariantInfo.subvariants[0].subvariants.push({
             index: problemVariantInd,
-            name: numberToLetters(problemVariantInd + 1, true),
+            name: numberToLetters(problemVariantInd, true),
             meta: {
               createdBy: `/problem${i}`,
               subvariantsSpecified: true,
             },
             subvariants: [{
-              indices: [num - 1],
+              indices: [num],
               meta: {
                 createdBy: `/problem${i}/_selectfromsequence1`,
               },
@@ -2517,8 +2511,8 @@ describe('Specifying single variant document tests', function () {
 
 
     cy.log('make sure all problem variants were selected at least once').then(() => {
-      expect(variantOfProblemsFound[0].sort()).eqls([0, 1, 2, 3, 4]);
-      expect(variantOfProblemsFound[1].sort()).eqls([0, 1, 2, 3, 4, 5]);
+      expect(variantOfProblemsFound[0].sort()).eqls([1, 2, 3, 4, 5]);
+      expect(variantOfProblemsFound[1].sort()).eqls([1, 2, 3, 4, 5, 6]);
     })
 
   });
@@ -2529,7 +2523,7 @@ describe('Specifying single variant document tests', function () {
     let originalNumbers;
 
     cy.log("Test a bunch of variants")
-    for (let ind = 0; ind < 10; ind++) {
+    for (let ind = 1; ind <= 10; ind++) {
 
       // show values don't change for same variant
       for (let ind2 = 0; ind2 < 2; ind2++) {
@@ -2562,7 +2556,7 @@ describe('Specifying single variant document tests', function () {
 
           generatedVariantInfo = {
             index: ind,
-            name: numberToLetters(ind + 1, true),
+            name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
               subvariantsSpecified: false,
@@ -2623,8 +2617,8 @@ describe('Specifying single variant document tests', function () {
       let valuesS4 = components["/s4"].stateValues.sampledValues;
 
       generatedVariantInfo = {
-        index: 9,
-        name: numberToLetters(9 + 1, true),
+        index: 10,
+        name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: true,
@@ -2658,7 +2652,7 @@ describe('Specifying single variant document tests', function () {
     let originalChoiceTexts;
 
     cy.log("Test a bunch of variants")
-    for (let ind = 0; ind < 10; ind++) {
+    for (let ind = 1; ind <= 10; ind++) {
 
       // show values don't change for same variant
       for (let ind2 = 0; ind2 < 2; ind2++) {
@@ -2715,7 +2709,7 @@ describe('Specifying single variant document tests', function () {
 
           generatedVariantInfo = {
             index: ind,
-            name: numberToLetters(ind + 1, true),
+            name: numberToLetters(ind, true),
             meta: {
               createdBy: "/_document1",
               subvariantsSpecified: false,
@@ -2812,8 +2806,8 @@ describe('Specifying single variant document tests', function () {
       let orderC4 = components["/c4"].stateValues.choiceOrder;
 
       generatedVariantInfo = {
-        index: 9,
-        name: numberToLetters(9 + 1, true),
+        index: 10,
+        name: numberToLetters(10, true),
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: true,
@@ -2861,7 +2855,7 @@ describe('Specifying single variant document tests', function () {
           <else><text>bye</text></else>
         </selectByCondition></p>
         `,
-        requestedVariant: { index: 0 },
+        requestedVariant: { index: 1 },
       }, "*");
     })
     // to wait for page to load
@@ -2871,14 +2865,14 @@ describe('Specifying single variant document tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let generatedVariantInfo = {
-        index: 0,
+        index: 1,
         name: 'a',
         meta: {
           createdBy: "/_document1",
           subvariantsSpecified: false,
         },
         subvariants: [{
-          indices: [0],
+          indices: [1],
           subvariants: [],
           meta: { createdBy: "/s" }
         }]
