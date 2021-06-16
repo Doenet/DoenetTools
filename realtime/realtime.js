@@ -4,10 +4,8 @@
     cors: {
       origin: [
         'http://localhost',
-        'http://localhost/chat',
         'https://doenet.org',
         'https://dev.doenet.org',
-        'https://chat.rt.doenet.org',
       ],
       methods: ['GET', 'POST'],
       allowedHeaders: ['access'],
@@ -114,6 +112,49 @@
       //   });
       console.log('func done for', data.name);
       // driveSpace.to(data.driveId).emit('rename_item', data);
+    });
+
+    socket.on('add_drive', ({ driveId, label, image, color }, cb) => {
+      console.log('>>>recived add_drive');
+    });
+    socket.on(
+      'add_folder',
+      (
+        {
+          driveId,
+          parentFolderId,
+          itemId,
+          doenetId,
+          versionId,
+          label,
+          type,
+          sortOrder,
+        },
+        cb,
+      ) => {
+        console.log('>>>recived add_folder');
+      },
+    );
+    socket.on(
+      'add_doenetML',
+      (
+        {
+          driveId,
+          parentFolderId,
+          itemId,
+          doenetId,
+          versionId,
+          label,
+          type,
+          sortOrder,
+        },
+        cb,
+      ) => {
+        console.log('>>>recived add_doenetML');
+      },
+    );
+    socket.on('add_user', ({ driveId, email, userId }, cb) => {
+      console.log('>>>recived add_user');
     });
   });
   console.log('sever ready!');
