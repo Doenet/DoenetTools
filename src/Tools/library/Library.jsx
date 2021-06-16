@@ -686,7 +686,7 @@ function AddCourseDriveButton(){
       image,
       color,
       subType:"Administrator",
-      role:'Owner'
+      role:["Owner"]
     }
     const payload = { params:{
       driveId:newDriveId,

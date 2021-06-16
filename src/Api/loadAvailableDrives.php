@@ -1,34 +1,33 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
-include "db_connection.php";
+include 'db_connection.php';
 
-$jwtArray = include "jwtArray.php";
+$jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
 // $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 
-$success = TRUE;
-$message = "";
-$driveIdsAndLabels = array();
-$newRoleData = array();
-$newDriveIdArr = array();
+$success = true;
+$message = '';
+$driveIdsAndLabels = [];
+$newRoleData = [];
+$newDriveIdArr = [];
 $finalDrivesArray = [];
+$driveIdArr = [];
 
-if ($userId == ""){
-  $success = FALSE;
-  $message = "You need to be signed in to view drives";
+if ($userId == '') {
+    $success = false;
+    $message = 'You need to be signed in to view drives';
 }
-$driveIdArr = array();
 
-
-if ($success){
-  //Gather matching drive ids for author
-  $sqlnew = " SELECT DISTINCT 
+if ($success) {
+    //Gather matching drive ids for author
+    $sqlnew = " SELECT DISTINCT 
   d.driveId AS driveId
    FROM drive AS d
   LEFT JOIN drive_user AS du
@@ -36,14 +35,13 @@ if ($success){
   WHERE du.userId='devuserid'  AND d.isDeleted = '0'
   ";
 
-$result = $conn->query($sqlnew);
+    $result = $conn->query($sqlnew);
 
+    while ($row = $result->fetch_assoc()) {
+        $newdriveId = $row['driveId'];
+        array_push($driveIdArr, $newdriveId);
 
-while($row = $result->fetch_assoc()){
-  $newdriveId = $row['driveId'];
-  array_push($driveIdArr,$newdriveId);
-
-  $sql = "
+        $sql = "
   SELECT
   d.driveId AS driveId,
   d.label AS label,
@@ -59,72 +57,52 @@ while($row = $result->fetch_assoc()){
   WHERE du.userId='$userId' AND du.driveId = '$newdriveId'
   AND d.isDeleted = '0'
   ";
-  $resultnew = $conn->query($sql);
-        while($rownew = $resultnew->fetch_assoc()){ 
-          $driveAndLabel = array(
-            "driveId"=>$rownew['driveId'],
-            "label"=>$rownew['label'],
-            "type"=>$rownew['driveType'],
-            "subType"=>"Administrator",
-            "isShared"=>$rownew['isShared'],
-            "isPublic"=>$rownew['isPublic'],
-            "image"=>$rownew['image'],
-            "color"=>$rownew['color'],
-            "role"=>$rownew['role']
+        $resultnew = $conn->query($sql);
+        while ($rownew = $resultnew->fetch_assoc()) {
+            $driveAndLabel = [
+                'driveId' => $rownew['driveId'],
+                'label' => $rownew['label'],
+                'type' => $rownew['driveType'],
+                'subType' => 'Administrator',
+                'isShared' => $rownew['isShared'],
+                'isPublic' => $rownew['isPublic'],
+                'image' => $rownew['image'],
+                'color' => $rownew['color'],
+                'role' => $rownew['role'],
+            ];
+            array_push($driveIdsAndLabels, $driveAndLabel);
+        }
+    }
 
-          );
-        array_push($driveIdsAndLabels,$driveAndLabel);
-      }
- 
+    for ($x = 0; $x < count($driveIdArr); $x++) {
+        $dId = $driveIdArr[$x];
+        $roleArr = [];
+        for ($y = 0; $y < count($driveIdsAndLabels); $y++) {
+            if ($driveIdsAndLabels[$y]['driveId'] == $dId) {
+                array_push($roleArr, $driveIdsAndLabels[$y]['role']);
 
+                $roleArrUpdate = $driveIdsAndLabels[$y];
+                $roleArrUpdate['role'] = $roleArr;
+                for($k = 0; $k < count($newDriveIdArr); $k++){
+                    if($newDriveIdArr[$k]['driveId'] == $dId){
+                      array_splice($newDriveIdArr,$k,1);
+                    }
+                }
 
-  }
+                array_push($newDriveIdArr, $roleArrUpdate);
+            }
+        }
+    }
+            
 
-for($x=0; $x<count($driveIdArr); $x++){
-  $dId = $driveIdArr[$x]; 
-  $roleArr = [];
-for($y = 0; $y < count($driveIdsAndLabels); $y++){
-  if($driveIdsAndLabels[$y]['driveId'] == $dId){
-
-    array_push($roleArr,$driveIdsAndLabels[$y]['role']);
-
-
-
-      $roleArrUpdate = $driveIdsAndLabels[$y];
-      $roleArrUpdate['role'] = $roleArr;
-
-      array_push($newDriveIdArr,$roleArrUpdate);
-
-
-  }
-}
-
-  
-  
-} 
-              // for ($z = 0; $z < count($newDriveIdArr); $z++) {
-             $filterDriveIdArr = [];             
-                  foreach ($newDriveIdArr as $key => $value) {
-                      if ($value['driveId'] === $newDriveIdArr[$key]['driveId']) {
-                          unset($filterDriveIdArr[$key]);
-                          array_push($filterDriveIdArr, $newDriveIdArr[$key]);
-                      } 
-                  } 
-              // }
-      // $finalDriveIdsandLabelsArr = [];
-      //         for($s = 0; $s < count($finalDrivesArray); $s++){
-      //           echo $finalDrivesArray[$s];
-      //             array_push($finalDriveIdsandLabelsArr, $finalDrivesArray[$s]);
-      //         }
 
 }
 
 $response_arr = array(
     'success' => $success,
-    'driveIdsAndLabels' => $filterDriveIdArr,
+    'driveIdsAndLabels' => $newDriveIdArr,
     'message' => $message,
 );
-
 
 // set response code - 200 OK
 http_response_code(200);
