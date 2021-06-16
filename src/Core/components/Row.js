@@ -3,12 +3,17 @@ import { normalizeIndex } from '../utils/table';
 
 export default class Row extends BaseComponent {
   static componentType = "row";
-  static rendererType = "container";
+  static rendererType = "row";
   static renderChildren = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    attributes.rowNum = { default: null };
+    attributes.rowNum = {
+      createComponentOfType: "integer",
+      createStateVariable: "rowNum",
+      defaultValue: null,
+      public: true,
+    };
     return attributes;
   }
 
