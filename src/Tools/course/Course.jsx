@@ -25,7 +25,8 @@ import Drive, {
   clearDriveAndItemSelections,
   drivePathSyncFamily,
   folderDictionaryFilterAtom,
-  loadDriveInfoQuery
+  loadDriveInfoQuery,
+  fetchDrivesSelector
 } from '../../_reactComponents/Drive/Drive';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
@@ -172,13 +173,14 @@ export default function Course(props) {
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId] = urlParamsObj.path.split(':');
   }
-  let courseRole = '';
-  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(routePathDriveId))
-  if (drivesInfo?.state === 'hasValue') {
-     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
-
-    //  courseRole = drivesInfo?.contents?.perms['canViewUnassignedItemsAndFolders'] ;
-      }
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+  let driveInfo = [];
+  let courseRole = [];
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == routePathDriveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
   // const [init,setInit]  = useState(false)
   // const setFilteredDrive = useSetRecoilState(folderDictionaryFilterAtom({driveId:routePathDriveId}));
   const [filter, setFilteredDrive] = useRecoilState(
