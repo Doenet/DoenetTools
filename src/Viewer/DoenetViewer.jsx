@@ -565,7 +565,7 @@ class DoenetViewerChild extends Component {
         if (!this.doenetML) {
           try {
             //Load the doenetML from the server
-            axios.get(`/media/${contentId}.doenet`)
+            axios.get(`/media/${this.contentId}.doenet`)
               .then(resp => {
                 this.doenetML = resp.data;
                 localStorage.setItem(this.contentId, this.doenetML)
