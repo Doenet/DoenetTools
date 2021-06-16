@@ -126,7 +126,8 @@ export default class BooleanInput extends DoenetRenderer {
       key: inputKey,
       id: inputKey,
       checked: this.doenetSvData.value,
-      onChange: this.onChangeHandler
+      onChange: this.onChangeHandler,
+      disabled: this.doenetSvData.disabled
     }), this.doenetSvData.label), checkWorkButton));
   }
 }
