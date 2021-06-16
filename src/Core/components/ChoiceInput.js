@@ -449,7 +449,7 @@ export default class Choiceinput extends Input {
           let desiredText = "";
           if (desiredStateVariableValues.allSelectedIndices.length > 0) {
             let ind = desiredStateVariableValues.allSelectedIndices[0] - 1;
-            let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i-1]);
+            let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
             let selectedChild = choiceChildrenOrdered[ind];
             if (selectedChild) {
               desiredText = selectedChild.stateValues.text;
@@ -685,7 +685,7 @@ export default class Choiceinput extends Input {
       definition({ dependencyValues }) {
 
         let submittedIndices = [];
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i-1]);
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
 
         for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
           if (choiceChild.stateValues.submitted) {
@@ -699,12 +699,12 @@ export default class Choiceinput extends Input {
 
         let instructions = [];
 
-        for (let [ind, childIndex] of dependencyValues.choiceOrder.entries()) {
+        for (let [ind, choiceInd] of dependencyValues.choiceOrder.entries()) {
           instructions.push({
             setDependency: "choiceChildren",
             desiredValue: desiredStateVariableValues.submittedIndices.includes(ind + 1),
             variableIndex: 0,
-            childIndex
+            childIndex: choiceInd - 1
           })
         }
 
@@ -735,7 +735,7 @@ export default class Choiceinput extends Input {
       }),
       definition({ dependencyValues }) {
 
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i-1]);
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
 
         let feedbacks = [];
 
