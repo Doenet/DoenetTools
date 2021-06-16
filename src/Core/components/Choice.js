@@ -93,7 +93,7 @@ export default class Choice extends InlineComponent {
       definition({ dependencyValues }) {
 
         let selected = dependencyValues.childIndicesSelected.includes(
-          dependencyValues.countAmongSiblings - 1
+          dependencyValues.countAmongSiblings
         );
 
         return { newValues: { selected } }

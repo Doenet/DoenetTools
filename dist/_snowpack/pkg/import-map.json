@@ -27,6 +27,7 @@
     "react-copy-to-clipboard": "./react-copy-to-clipboard.js",
     "react-dom": "./react-dom.js",
     "react-dropzone": "./react-dropzone.js",
+    "react-mathjax": "./react-mathjax.js",
     "react-mathquill": "./react-mathquill.js",
     "react-measure": "./react-measure.js",
     "react-router-dom": "./react-router-dom.js",

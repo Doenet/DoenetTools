@@ -83,10 +83,10 @@ describe('ChoiceInput Tag Tests', function () {
         expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 0);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 1);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 2);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
 
       });
     }
@@ -164,10 +164,10 @@ describe('ChoiceInput Tag Tests', function () {
         expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([choices[i]])
         expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([i + 1])
         // expect(components['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([originalChoices.indexOf(choices[i])+1])
-        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 0);
-        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 1);
-        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 2);
-        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder[i] === 1);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder[i] === 2);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder[i] === 3);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder[i] === 4);
 
       });
     }
@@ -653,7 +653,7 @@ describe('ChoiceInput Tag Tests', function () {
       let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
 
       let choiceOrder = components["/_choiceinput1"].stateValues.choiceOrder;
-      let choices = choiceOrder.map(x => originalChoices[x]);
+      let choices = choiceOrder.map(x => originalChoices[x - 1]);
 
 
       let checkChoices = function (selectedChoice, inputText) {
@@ -878,7 +878,7 @@ describe('ChoiceInput Tag Tests', function () {
 
 
       let mouseInd4 = components['/c4'].stateValues.choiceTexts.indexOf("mouse")
-      cy.get(`#\\/c4_choice${mouseInd4+1}_input`).should('be.checked')
+      cy.get(`#\\/c4_choice${mouseInd4 + 1}_input`).should('be.checked')
 
       cy.get('#\\/c5').should('have.value', '2')
 
@@ -886,12 +886,12 @@ describe('ChoiceInput Tag Tests', function () {
       let mouseInd6 = components['/c6'].stateValues.choiceTexts.indexOf("mouse")
       let selectedInd6 = Math.min(dogInd6, mouseInd6)
 
-      cy.get(`#\\/c6_choice${selectedInd6+1}_input`).should('be.checked')
+      cy.get(`#\\/c6_choice${selectedInd6 + 1}_input`).should('be.checked')
 
       cy.get('#\\/c7_choice4_input').should('be.checked')
 
       let mouseInd8 = components['/c8'].stateValues.choiceTexts.indexOf("mouse")
-      cy.get('#\\/c8').should('have.value', `${mouseInd8+1}`)
+      cy.get('#\\/c8').should('have.value', `${mouseInd8 + 1}`)
 
     })
 

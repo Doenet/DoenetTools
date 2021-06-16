@@ -14,6 +14,9 @@ export default class MathComponent extends InlineComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
 
+  static descendantCompositesMustHaveAReplacement = true;
+  static descendantCompositesDefaultReplacementType = "math";
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.format = {

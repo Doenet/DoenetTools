@@ -9,7 +9,19 @@ export default class Ref extends DoenetRenderer {
     if (this.children.length === 0) {
       linkContent = this.doenetSvData.linkText;
     }
-    if (this.doenetSvData.uri) {
+    if (this.doenetSvData.contentId) {
+      return /* @__PURE__ */ React.createElement("a", {
+        id: this.componentName,
+        name: this.componentName,
+        href: `https://www.doenet.org/content/#/?contentId=${this.doenetSvData.contentId}`
+      }, linkContent);
+    } else if (this.doenetSvData.doenetId) {
+      return /* @__PURE__ */ React.createElement("a", {
+        id: this.componentName,
+        name: this.componentName,
+        href: `https://www.doenet.org/content/#/?doenetId=${this.doenetSvData.doenetId}`
+      }, linkContent);
+    } else if (this.doenetSvData.uri) {
       return /* @__PURE__ */ React.createElement("a", {
         id: this.componentName,
         name: this.componentName,

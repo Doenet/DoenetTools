@@ -669,11 +669,9 @@ function DoenetViewerPanel(){
   const editorInit = useRecoilValue(editorInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
-  // const [requestedVariant,setRequestedVariant] = useState({index:0});
   if (!editorInit){ return null; }
 
   let attemptNumber = 1;
-  // let requestedVariant = { index: attemptNumber }
   let solutionDisplayMode = "button";
 
 
@@ -758,7 +756,12 @@ function VariantPanel(){
     })
   }
 
-  let optionsList = variantPanel.allPossibleVariants.map(function (s, i) {
+  //In the case allPossibleVariants isn't defined it's an empty array
+  let allPossibleVariants = [];
+  if (variantPanel.allPossibleVariants){
+    allPossibleVariants = variantPanel.allPossibleVariants
+  }
+  let optionsList = allPossibleVariants.map(function (s, i) {
     return <option key={i + 1} value={s}>{s}</option>
   });
 
