@@ -4645,6 +4645,11 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Click submit button")
     cy.get('#\\/_choiceinput1_submit').click();
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      console.log(components)
+    })
+
     cy.get('#\\/_choiceinput1_submit').should('not.exist');
     cy.get('#\\/_choiceinput1_correct').should('be.visible');
     cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
@@ -7628,7 +7633,7 @@ describe('Answer Tag Tests', function () {
   it('choiceinput credit from boolean', () => {
 
     let options = ["meow", "woof", "squeak", "blub"]
-    for (let ind = 0; ind < 4; ind++) {
+    for (let ind = 1; ind <= 4; ind++) {
 
       cy.window().then((win) => {
         win.postMessage({
@@ -7669,9 +7674,9 @@ describe('Answer Tag Tests', function () {
 
       cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
 
-      for (let ind2 = 0; ind2 < 4; ind2++) {
+      for (let ind2 = 1; ind2 <= 4; ind2++) {
 
-        cy.get('#\\/_choiceinput1').contains(options[ind2]).click({ force: true });
+        cy.get('#\\/_choiceinput1').contains(options[ind2 - 1]).click({ force: true });
 
         cy.get('#\\/_choiceinput1_submit').click();
         cy.get('#\\/_choiceinput1_submit').should('not.exist');
@@ -7690,7 +7695,7 @@ describe('Answer Tag Tests', function () {
   it('award credit from boolean', () => {
 
     let options = ["meow", "woof", "squeak", "blub"]
-    for (let ind = 0; ind < 4; ind++) {
+    for (let ind = 1; ind <= 4; ind++) {
 
       cy.window().then((win) => {
         win.postMessage({
@@ -7739,9 +7744,9 @@ describe('Answer Tag Tests', function () {
         let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
 
 
-        for (let ind2 = 0; ind2 < 4; ind2++) {
+        for (let ind2 = 1; ind2 <= 4; ind2++) {
 
-          cy.get(textinputAnchor).clear().type(options[ind2]);
+          cy.get(textinputAnchor).clear().type(options[ind2 - 1]);
           cy.get(textinputSubmitAnchor).click();
 
           cy.get(textinputSubmitAnchor).should('not.exist');
@@ -8539,7 +8544,7 @@ describe('Answer Tag Tests', function () {
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
       let textinputName = components['/_answer2'].stateValues.inputChild.componentName
-      let textinputAnchor = cesc('#' + textinputName+ "_input");
+      let textinputAnchor = cesc('#' + textinputName + "_input");
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
 
       cy.get(mathinputAnchor).type("x+y{enter}", { force: true });
@@ -8554,7 +8559,7 @@ describe('Answer Tag Tests', function () {
       })
 
       cy.get(mathinputAnchor).type("{end}{backspace}{backspace}", { force: true });
-      
+
       cy.get('#\\/nsubs1').should('have.text', 1)
       cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
         expect(components["/_answer1"].stateValues.nSubmissions).eq(1);
