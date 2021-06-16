@@ -9,6 +9,9 @@ export default class BooleanComponent extends InlineComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value"] };
 
+  static descendantCompositesMustHaveAReplacement = true;
+  static descendantCompositesDefaultReplacementType = "math";
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 

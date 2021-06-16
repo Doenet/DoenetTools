@@ -180,6 +180,36 @@ describe('Boolean Tag Tests', function () {
 
   })
 
+  it('math errors and invalid targets are not equal', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+    <boolean><math></math> = <math></math></boolean>
+    <boolean><math></math> != <math></math></boolean>
+    <boolean><math>/</math> = <math>-</math></boolean>
+    <boolean><math>/</math> != <math>-</math></boolean>
+
+    <boolean>$invalid = $invalid</boolean>
+    <boolean>$invalid != $invalid</boolean>
+    <boolean>$nothing = $nada</boolean>
+    <boolean>$nothing != $nada</boolean>
+    
+    `}, "*");
+    });
+
+    cy.get('#\\/_boolean1').should('have.text', "false")
+    cy.get('#\\/_boolean2').should('have.text', "true")
+    cy.get('#\\/_boolean3').should('have.text', "false")
+    cy.get('#\\/_boolean4').should('have.text', "true")
+
+    cy.get('#\\/_boolean5').should('have.text', "false")
+    cy.get('#\\/_boolean6').should('have.text', "true")
+    cy.get('#\\/_boolean7').should('have.text', "false")
+    cy.get('#\\/_boolean8').should('have.text', "true")
+
+  })
+
 
 })
 

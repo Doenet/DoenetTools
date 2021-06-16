@@ -39,7 +39,7 @@ export function serializedComponentsReviver(key, value) {
 class DoenetViewerChild extends Component {
 
   constructor(props) {
-  // console.log("===DoenetViewerChild constructor")
+    // console.log("===DoenetViewerChild constructor")
 
     super(props);
     this.update = this.update.bind(this);
@@ -61,10 +61,10 @@ class DoenetViewerChild extends Component {
     //Track if viewer should update with:
     //this.state.doenetML, this.state.attemptNumber, and this.state.contentId
     this.state = {
-      doenetML:null,
-      attemptNumber:null,
-      contentId:null,
-      errMsg:null
+      doenetML: null,
+      attemptNumber: null,
+      contentId: null,
+      errMsg: null
     }
   }
 
@@ -83,6 +83,7 @@ class DoenetViewerChild extends Component {
     // then use that variant rather than requestedVariant from props
     if (variant !== null) {
       this.requestedVariant = JSON.parse(variant, serializedComponentsReviver);
+      this.requestedVariantFromDatabase = true;
     }
 
     // TODO: who is responsible for verifying that a contentId matches hash?
@@ -133,9 +134,10 @@ class DoenetViewerChild extends Component {
   coreReady() {
 
     this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
+    this.allPossibleVariants = [...this.core.document.sharedParameters.allPossibleVariants];
 
-    if (this.props.generatedVariantCallback){
-      this.props.generatedVariantCallback(this.generatedVariant);
+    if (this.props.generatedVariantCallback) {
+      this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
     }
 
     if (this.cumulativeStateVariableChanges) {
@@ -166,7 +168,7 @@ class DoenetViewerChild extends Component {
 
 
     //TODO: Handle if number of items changed. Handle if weights changed
-    
+
 
     let renderPromises = [];
     let rendererClassNames = [];
@@ -197,9 +199,9 @@ class DoenetViewerChild extends Component {
       this.needNewCoreFlag = false;
 
       this.setState({
-        doenetML:this.doenetML,
-        attemptNumber:this.attemptNumber,
-        contentId:this.contentId
+        doenetML: this.doenetML,
+        attemptNumber: this.attemptNumber,
+        contentId: this.contentId
       })
     });
 
@@ -215,7 +217,7 @@ class DoenetViewerChild extends Component {
     contentId, sourceOfUpdate, transient = false
   }) {
 
-   
+
     // TODO: what should we do with transient updates?
     if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
       return;
@@ -249,7 +251,7 @@ class DoenetViewerChild extends Component {
     // maybe that's shown when enroll in class, and you cannot turn it off
     // without disenrolling from class
 
- 
+
     const data = {
       contentId,
       stateVariables: changeString,
@@ -258,17 +260,17 @@ class DoenetViewerChild extends Component {
       variant: variantString,
     }
 
-    if (this.allowLocalPageState){
-      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`,JSON.stringify({stateVariables:changeString,variant:variantString}))
+    if (this.allowLocalPageState) {
+      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({ stateVariables: changeString, variant: variantString }))
     }
 
-    if (!this.allowSavePageState){
+    if (!this.allowSavePageState) {
       return;
     }
 
     axios.post('/api/recordContentInteraction.php', data)
-      // .then(resp => {
-      // });
+    // .then(resp => {
+    // });
 
 
 
@@ -284,16 +286,16 @@ class DoenetViewerChild extends Component {
       return;
     }
 
-    if (this.allowLocalPageState){
+    if (this.allowLocalPageState) {
 
-      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`)) 
+      let stateVarVariant = JSON.parse(localStorage.getItem(`${this.contentId}${this.props.doenetId}${this.attemptNumber}`))
       let stateVariables = null;
       let variant = null;
-      
-       if (stateVarVariant){
-         stateVariables = stateVarVariant.stateVariables;
-         variant = stateVarVariant.variant
-       }
+
+      if (stateVarVariant) {
+        stateVariables = stateVarVariant.stateVariables;
+        variant = stateVarVariant.variant
+      }
       callback({
         stateVariables,
         variant
@@ -311,7 +313,7 @@ class DoenetViewerChild extends Component {
 
     axios.get('/api/loadContentInteractions.php', payload)
       .then(resp => {
-        if (!resp.data.success){
+        if (!resp.data.success) {
           throw new Error(resp.data.message)
         }
         if (callback) {
@@ -322,7 +324,7 @@ class DoenetViewerChild extends Component {
         }
       })
       .catch(errMsg => {
-        this.setState({errMsg:errMsg.message})
+        this.setState({ errMsg: errMsg.message })
       })
 
   }
@@ -366,7 +368,7 @@ class DoenetViewerChild extends Component {
     if (this.allowSaveSubmissions && this.props.doenetId) {
 
 
-      if (!this.weightsStored){
+      if (!this.weightsStored) {
         this.weightsStored = true;
         //TODO: Test if weights dynamically changed then store updates
         //FOR NOW: Only call once
@@ -377,11 +379,11 @@ class DoenetViewerChild extends Component {
           attemptNumber: this.attemptNumber
         }
 
-        axios.post('/api/saveAssignmentWeights.php', payload1) 
-          // .then(resp => {
-          // });
+        axios.post('/api/saveAssignmentWeights.php', payload1)
+        // .then(resp => {
+        // });
       }
-      
+
 
       const payload2 = {
         doenetId: this.props.doenetId,
@@ -392,10 +394,10 @@ class DoenetViewerChild extends Component {
       }
       // console.log(">>>saveCreditForItem payload",payload2)
       axios.post('/api/saveCreditForItem.php', payload2)
-        // .then(resp => {
-        //   console.log('saveCreditForItem-->>>',resp.data);
+      // .then(resp => {
+      //   console.log('saveCreditForItem-->>>',resp.data);
 
-        // });
+      // });
     }
 
     callBack("submitResponse callback parameter");
@@ -450,8 +452,8 @@ class DoenetViewerChild extends Component {
     }
 
     axios.post('/api/recordEvent.php', payload)
-      // .then(resp => {
-      // });
+    // .then(resp => {
+    // });
 
   }
 
@@ -460,15 +462,15 @@ class DoenetViewerChild extends Component {
     let promises = [];
     let newDoenetMLs = {};
     let newContentIds = contentIds;
-  
+
     for (let contentId of contentIds) {
       promises.push(axios.get(`/media/${contentId}.doenet`))
-  
+
     }
-  
+
     Promise.all(promises).then((resps) => {
       // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
-      newDoenetMLs = resps.map(x=>x.data);
+      newDoenetMLs = resps.map(x => x.data);
 
       callBack({
         newDoenetMLs,
@@ -478,7 +480,7 @@ class DoenetViewerChild extends Component {
     }).catch(err => {
 
       let message;
-      if(newContentIds.length === 1) {
+      if (newContentIds.length === 1) {
         message = `Could not retrieve contentId ${newContentIds[0]}`
       } else {
         message = `Could not retrieve contentIds ${newContentIds.join(',')}`
@@ -491,34 +493,34 @@ class DoenetViewerChild extends Component {
         newContentIds: []
       })
     })
-  
+
   }
 
 
   render() {
 
-    if (this.state.errMsg !== null){
+    if (this.state.errMsg !== null) {
       return <div>{this.state.errMsg}</div>
     }
 
     this.allowLoadPageState = true;
-    if (this.props.allowLoadPageState === false){
+    if (this.props.allowLoadPageState === false) {
       this.allowLoadPageState = false;
     }
     this.allowSavePageState = true;
-    if (this.props.allowSavePageState === false){
+    if (this.props.allowSavePageState === false) {
       this.allowSavePageState = false;
     }
     this.allowLocalPageState = true;
-    if (this.props.allowLocalPageState === false){
+    if (this.props.allowLocalPageState === false) {
       this.allowLocalPageState = false;
     }
     this.allowSaveSubmissions = true;
-    if (this.props.allowSaveSubmissions === false){
+    if (this.props.allowSaveSubmissions === false) {
       this.allowSaveSubmissions = false;
     }
     this.allowSaveEvents = true;
-    if (this.props.allowSaveEvents === false){
+    if (this.props.allowSaveEvents === false) {
       this.allowSaveEvents = false;
     }
 
@@ -528,41 +530,47 @@ class DoenetViewerChild extends Component {
       this.attemptNumber = 1;
     }
 
-    // TODO: should we be giving viewer both attemptNumber and requestedVariant?
-    // for now, attemptNumber is used for requestedVariant if not specified
-  
-    if(JSON.stringify(this.requestedVariant) !== JSON.stringify(this.props.requestedVariant)){
-      this.needNewCoreFlag = true;
-    }
-    this.requestedVariant = this.props.requestedVariant;
-    if (this.requestedVariant === undefined) {
-      this.requestedVariant = { index: this.attemptNumber - 1 };
+
+    let adjustedRequestedVariantFromProp = this.props.requestedVariant;
+    if (adjustedRequestedVariantFromProp === undefined) {
+      adjustedRequestedVariantFromProp = { index: this.attemptNumber };
     }
 
-    if (this.props.doenetML && !this.props.contentId){
+    // TODO: should we be giving viewer both attemptNumber and requestedVariant?
+    // for now, attemptNumber is used for requestedVariant if not specified
+
+    if (!this.requestedVariantFromDatabase &&
+      JSON.stringify(this.requestedVariant) !== JSON.stringify(adjustedRequestedVariantFromProp)
+    ) {
+      this.needNewCoreFlag = true;
+    }
+    this.requestedVariant = adjustedRequestedVariantFromProp;
+
+
+    if (this.props.doenetML && !this.props.contentId) {
       //*** Define this.contentId if not prop
       this.doenetML = this.props.doenetML;
-      if (this.doenetML !== this.state.doenetML){
+      if (this.doenetML !== this.state.doenetML) {
         this.contentId = sha256(this.props.doenetML).toString(CryptoJS.enc.Hex);
         this.needNewCoreFlag = true;
       }
-    }else if (!this.props.doenetML && this.props.contentId){
+    } else if (!this.props.doenetML && this.props.contentId) {
       //*** Define this.doenetML if not prop
       this.contentId = this.props.contentId;
       //If contentId is different load the corresponding contentId
-      if (this.contentId !== this.state.contentId){
-          this.needNewCoreFlag = true;
-          //Try to load doenetML from local storage
-          this.doenetML = localStorage.getItem(this.contentId);
-          if (!this.doenetML){
+      if (this.contentId !== this.state.contentId) {
+        this.needNewCoreFlag = true;
+        //Try to load doenetML from local storage
+        this.doenetML = localStorage.getItem(this.contentId);
+        if (!this.doenetML) {
           try {
             //Load the doenetML from the server
             axios.get(`/media/${contentId}.doenet`)
-            .then(resp => {
-              this.doenetML = resp.data;
-              localStorage.setItem(this.contentId,this.doenetML)
-              this.forceUpdate();
-            })
+              .then(resp => {
+                this.doenetML = resp.data;
+                localStorage.setItem(this.contentId, this.doenetML)
+                this.forceUpdate();
+              })
           } catch (err) {
             //TODO: Handle 404
             return "Error Loading";
@@ -572,42 +580,42 @@ class DoenetViewerChild extends Component {
         }
 
       }
-      
-    }else if (this.props.doenetML && this.props.contentId){
+
+    } else if (this.props.doenetML && this.props.contentId) {
       //*** Have this.doenetML and this.contentId if not prop
       this.doenetML = this.props.doenetML;
       this.contentId = this.props.contentId;
 
       //Content changed, so need new core
-      if (this.contentId !== this.state.contentId){
+      if (this.contentId !== this.state.contentId) {
         this.needNewCoreFlag = true;
       }
     }
 
-    if (this.attemptNumber !== this.state.attemptNumber){
+    if (this.attemptNumber !== this.state.attemptNumber) {
       //TODO: Change attempt number without needing a new core
       this.needNewCoreFlag = true;
     }
 
 
-    if (this.needNewCoreFlag){
+    if (this.needNewCoreFlag) {
       this.loadState(this.createCore);
       return null;
     }
-    
-    
+
+
     return this.documentRenderer;
   }
 
 }
 
-    //TODO: too blunt eliminate ignoreDatabase
-    //Propose: 
-    //props.AllowLoadPageState (ContentInteractions) (Turn off only for automated testing)
-    //props.AllowSavePageState (ContentInteractions) (Saves where you were)
-    //props.AllowSavePageStateLocally (Give user this option save only to device not Doenet)
-    //props.AllowSaveSubmissions (grades)
-    //props.AllowSaveEvents
+//TODO: too blunt eliminate ignoreDatabase
+//Propose: 
+//props.AllowLoadPageState (ContentInteractions) (Turn off only for automated testing)
+//props.AllowSavePageState (ContentInteractions) (Saves where you were)
+//props.AllowSavePageStateLocally (Give user this option save only to device not Doenet)
+//props.AllowSaveSubmissions (grades)
+//props.AllowSaveEvents
 
 class ErrorBoundary extends React.Component {
   constructor(props) {

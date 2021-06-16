@@ -99,6 +99,11 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      stateVariablesPrescribingAdditionalAttributes: {
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -168,6 +173,11 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      stateVariablesPrescribingAdditionalAttributes: {
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",

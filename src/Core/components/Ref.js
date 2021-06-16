@@ -116,30 +116,40 @@ export default class Ref extends InlineComponent {
     };
 
     stateVariableDefinitions.contentId = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "doenetId",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         uri: {
           dependencyType: "stateVariable",
-          variableName: "uri"
-        }
+          variableName: "uri",
+        },
       }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.uri !== null) {
-
-          let result = dependencyValues.uri.match(/^\s*doenet\s*:\s*(\S*)\s*$/i);
-
-          if (result !== null) {
-            return {
-              newValues: {
-                contentId: result[1]
-              }
-            }
+      definition: function ({ dependencyValues }) {
+        if (!dependencyValues.uri ||
+          dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
+        ) {
+          return {
+            newValues: { contentId: null, doenetId: null }
           }
-
         }
 
-        return { newValues: { contentId: null } }
-      }
-    }
+        let contentId = null, doenetId = null;
+
+        let result = dependencyValues.uri.match(/[:&]contentid=([^&]+)/i);
+        if (result) {
+          contentId = result[1];
+        }
+        result = dependencyValues.uri.match(/[:&]doenetid=([^&]+)/i);
+        if (result) {
+          doenetId = result[1];
+        }
+
+        return { newValues: { contentId, doenetId } };
+      },
+    };
 
     stateVariableDefinitions.linkText = {
       public: true,
