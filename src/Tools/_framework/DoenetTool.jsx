@@ -14,9 +14,38 @@ import { useSupportDividerController } from './Panels/ContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 
+import MainPanel from './Panels/MainPanel';
+import SupportPanel from './Panels/SupportPanel';
+import MenuPanel from './Panels/MenuPanel';
+import FooterPanel from './Panels/FooterPanel';
+import { animated } from '@react-spring/web';
+
+
+const ToolContainer = styled(animated.div)`
+  display: grid;
+  grid-template:
+    'menuPanel contentPanel ' 1fr
+    'menuPanel footerPanel ' auto
+    / auto 1fr auto;
+  width: 100vw;
+  height: 100vh;
+  background-color: #e2e2e2;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0px;
+  gap: 2px;
+  box-sizing: border-box;
+`;
+
 export default function DoenetTool(props){
   console.log(">>>props",props)
-  return <p>this is new tool</p>
+  return <ToolContainer>
+    <MainPanel></MainPanel>
+    <SupportPanel></SupportPanel>
+    <MenuPanel>test</MenuPanel>
+    <FooterPanel></FooterPanel>
+  </ToolContainer>
 }
 
 const LoadingFallback = styled.div`
