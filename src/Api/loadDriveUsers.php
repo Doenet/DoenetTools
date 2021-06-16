@@ -44,13 +44,14 @@ if ($success){
   $sql = "
   SELECT 
   du.canDeleteDrive AS owner,
+  du.role As role,
   u.screenName AS screenName,
   u.email AS email,
   u.userId AS userId
   FROM drive_user AS du
   LEFT OUTER JOIN user AS u
   ON du.userId = u.userId
-  WHERE du.driveId = '$driveId'
+  WHERE du.driveId = '$driveId' AND du.canDeleteDrive = '1';
   ";
   // AND du.userId != '$userId'
 $result = $conn->query($sql); 
@@ -75,7 +76,8 @@ if ($result->num_rows > 0){
       "email"=>$email,
       "screenName"=>$row['screenName'],
       "userId"=>$row['userId'],
-      "isUser"=>$isUser
+      "isUser"=>$isUser,
+      "role"=>$row['role']
     );
 
     if ($row['owner'] == '1'){
