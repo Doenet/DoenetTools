@@ -61,6 +61,7 @@ class DoenetViewerChild extends Component {
     }
     if (variant !== null) {
       this.requestedVariant = JSON.parse(variant, serializedComponentsReviver);
+      this.requestedVariantFromDatabase = true;
     }
     if (this.props.core) {
       this.core = new this.props.core({
@@ -96,6 +97,10 @@ class DoenetViewerChild extends Component {
   }
   coreReady() {
     this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
+    this.allPossibleVariants = [...this.core.document.sharedParameters.allPossibleVariants];
+    if (this.props.generatedVariantCallback) {
+      this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
+    }
     if (this.cumulativeStateVariableChanges) {
       let nFailures = Infinity;
       while (nFailures > 0) {
@@ -345,10 +350,14 @@ class DoenetViewerChild extends Component {
     if (this.attemptNumber === void 0) {
       this.attemptNumber = 1;
     }
-    this.requestedVariant = this.props.requestedVariant;
-    if (this.requestedVariant === void 0) {
-      this.requestedVariant = {index: this.attemptNumber - 1};
+    let adjustedRequestedVariantFromProp = this.props.requestedVariant;
+    if (adjustedRequestedVariantFromProp === void 0) {
+      adjustedRequestedVariantFromProp = {index: this.attemptNumber};
     }
+    if (!this.requestedVariantFromDatabase && JSON.stringify(this.requestedVariant) !== JSON.stringify(adjustedRequestedVariantFromProp)) {
+      this.needNewCoreFlag = true;
+    }
+    this.requestedVariant = adjustedRequestedVariantFromProp;
     if (this.props.doenetML && !this.props.contentId) {
       this.doenetML = this.props.doenetML;
       if (this.doenetML !== this.state.doenetML) {
