@@ -669,11 +669,9 @@ function DoenetViewerPanel(){
   const editorInit = useRecoilValue(editorInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
-  // const [requestedVariant,setRequestedVariant] = useState({index:0});
   if (!editorInit){ return null; }
 
   let attemptNumber = 1;
-  // let requestedVariant = { index: attemptNumber }
   let solutionDisplayMode = "button";
 
 
@@ -694,10 +692,14 @@ function DoenetViewerPanel(){
   }
 
 
-  function variantCallback(generatedVariantInfo){
+  function variantCallback(generatedVariantInfo, allPossibleVariants){
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
     cleanGeneratedVariant.lastUpdatedIndexOrName = null 
-    setVariantPanel({index:cleanGeneratedVariant.index,name:cleanGeneratedVariant.name});
+    setVariantPanel({
+      index:cleanGeneratedVariant.index,
+      name:cleanGeneratedVariant.name,
+      allPossibleVariants
+    });
     setVariantInfo((was)=>{
       let newObj = {...was}
       Object.assign(newObj,cleanGeneratedVariant)
@@ -730,8 +732,10 @@ function DoenetViewerPanel(){
 function VariantPanel(){
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const [variantPanel,setVariantPanel] = useRecoilState(variantPanelAtom);
+  
 
   function updateVariantInfoAtom(source){
+    // console.log(">>>updateVariantInfoAtom")
     //Prevent calling when it didn't change
     if (source === 'Index'){
       if (variantPanel.index === variantInfo.index){
@@ -752,23 +756,36 @@ function VariantPanel(){
     })
   }
 
-
+  //In the case allPossibleVariants isn't defined it's an empty array
+  let allPossibleVariants = [];
+  if (variantPanel.allPossibleVariants){
+    allPossibleVariants = variantPanel.allPossibleVariants
+  }
+  let optionsList = allPossibleVariants.map(function (s, i) {
+    return <option key={i + 1} value={s}>{s}</option>
+  });
 
   return <>
-  <div><label>Index <input type="text" value={variantPanel.index} onKeyDown={(e)=>{
+  <div><label>Variant Index <input type="text" value={variantPanel.index} onKeyDown={(e)=>{
     if (e.key ==='Enter'){ updateVariantInfoAtom('Index') }
     }} onBlur={()=>updateVariantInfoAtom('Index')} onChange={(e)=>{setVariantPanel(
       (was)=>{
       let newObj = {...was}
       newObj.index = e.target.value;
       return newObj; })}}/></label></div>
-  <div><label>Variant Name <input type="text" value={variantPanel.name} onKeyDown={(e)=>{
-    if (e.key ==='Enter'){ updateVariantInfoAtom('Name') }
-    }} onBlur={()=>updateVariantInfoAtom('Name')} onChange={(e)=>{setVariantPanel(
-      (was)=>{
-      let newObj = {...was}
-      newObj.name = e.target.value;
-      return newObj; })}}/></label></div>
+
+      <div><label>Variant Name 
+      <select value={variantPanel.name} onChange={(e)=>{
+        setVariantInfo((was)=>{
+          let newObj = {...was};
+          newObj.name = e.target.value;
+          newObj.lastUpdatedIndexOrName = 'Name';
+          return newObj;
+        })
+     
+      }}>
+      {optionsList}
+        </select></label></div>
   </>
 }
  

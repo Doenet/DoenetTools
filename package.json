@@ -53,6 +53,7 @@
     "react-dom": "^16.14.0",
     "react-dropzone": "^11.3.1",
     "react-is": "^17.0.1",
+    "react-mathjax": "^1.0.1",
     "react-mathjax2": "0.0.2",
     "react-mathquill": "^1.0.1",
     "react-measure": "^2.5.2",

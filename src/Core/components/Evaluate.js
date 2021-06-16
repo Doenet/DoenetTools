@@ -1,6 +1,5 @@
 import MathComponent from './Math';
 import me from 'math-expressions';
-import { func } from 'prop-types';
 
 export default class Evaluate extends MathComponent {
   static componentType = "evaluate";
