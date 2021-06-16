@@ -17,6 +17,7 @@ $message = "";
 $driveIdsAndLabels = array();
 $newRoleData = array();
 $newDriveIdArr = array();
+$finalDrivesArray = [];
 
 if ($userId == ""){
   $success = FALSE;
@@ -81,17 +82,17 @@ while($row = $result->fetch_assoc()){
 
 for($x=0; $x<count($driveIdArr); $x++){
   $dId = $driveIdArr[$x]; 
-  $roleArr = array();
+  $roleArr = [];
 for($y = 0; $y < count($driveIdsAndLabels); $y++){
   if($driveIdsAndLabels[$y]['driveId'] == $dId){
 
     array_push($roleArr,$driveIdsAndLabels[$y]['role']);
 
 
-      // echo count($newDriveIdArr);
+
       $roleArrUpdate = $driveIdsAndLabels[$y];
       $roleArrUpdate['role'] = $roleArr;
-      // echo '12345'.array_search(`$dId`, $newDriveIdArr, true);
+
       array_push($newDriveIdArr,$roleArrUpdate);
 
 
@@ -101,55 +102,28 @@ for($y = 0; $y < count($driveIdsAndLabels); $y++){
   
   
 } 
-
-// for($z=0;$z < count($newDriveIdArr); $z++){
-
-//   array_push($newRoleData,$newDriveIdArr);
-
-
-// }
-
-  // $sql = "
-  // SELECT 
-  // d.driveId AS driveId,
-  // d.label AS label,
-  // d.driveType AS driveType,
-  // d.isShared AS isShared,
-  // d.isPublic AS isPublic,
-  // d.image AS image,
-  // d.color AS color
-  // FROM enrollment AS e
-  // LEFT JOIN drive AS d
-  // ON d.driveId = e.driveId
-  // WHERE e.userId='$userId'
-  // AND d.isDeleted = '0'
-  // ";
-
-  // $result = $conn->query($sql);
-  // while($row = $result->fetch_assoc()){
-  //   $driveAndLabel = array(
-  //     "driveId"=>$row['driveId'],
-  //     "label"=>$row['label'],
-  //     "type"=>$row['driveType'],
-  //     "subType"=>"Student",
-  //     "isShared"=>$row['isShared'],
-  //     "isPublic"=>$row['isPublic'],
-  //     "image"=>$row['image'],
-  //     "color"=>$row['color'],
-
-  //   );
-  //   array_push($driveIdsAndLabels,$driveAndLabel);
-  // }
+              // for ($z = 0; $z < count($newDriveIdArr); $z++) {
+             $filterDriveIdArr = [];             
+                  foreach ($newDriveIdArr as $key => $value) {
+                      if ($value['driveId'] === $newDriveIdArr[$key]['driveId']) {
+                          unset($filterDriveIdArr[$key]);
+                          array_push($filterDriveIdArr, $newDriveIdArr[$key]);
+                      } 
+                  } 
+              // }
+      // $finalDriveIdsandLabelsArr = [];
+      //         for($s = 0; $s < count($finalDrivesArray); $s++){
+      //           echo $finalDrivesArray[$s];
+      //             array_push($finalDriveIdsandLabelsArr, $finalDrivesArray[$s]);
+      //         }
 
 }
 
-
 $response_arr = array(
-  "success"=>$success,
-  "driveIdsAndLabels"=>$newDriveIdArr,
-  "message"=>$message,
-  
-  );
+    'success' => $success,
+    'driveIdsAndLabels' => $filterDriveIdArr,
+    'message' => $message,
+);
 
 
 // set response code - 200 OK
