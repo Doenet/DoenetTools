@@ -10,6 +10,7 @@ import React, {
   useState,
 } from 'react';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 import { nanoid } from 'nanoid';
 import Measure from 'react-measure';
 import {
@@ -798,12 +799,28 @@ export const fetchDrivesQuery = atom({
   }),
 });
 
+export const driveSocket = atom({
+  key: 'driveSocketAtom',
+  default: () => {
+    let socket = io('https://chat.rt.doenet.org/drive', {
+      withCredentials: true,
+    });
+    socket.on('connection', () => {
+      console.log('socket', socket.id, 'connected');
+    });
+    socket.on('update_file_name', (data) => {
+      console.log('file added remote', data);
+    });
+  },
+});
+
 export const fetchDrivesSelector = selector({
   key: 'fetchDrivesSelector',
   get: ({ get }) => {
     return get(fetchDrivesQuery);
   },
   set: ({ get, set }, labelTypeDriveIdColorImage) => {
+    let socket = get(driveSocket);
     let driveData = get(fetchDrivesQuery);
     // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = { ...driveData };
@@ -889,6 +906,9 @@ export const fetchDrivesSelector = selector({
       set(fetchDrivesQuery, newDriveData);
 
       const payload = { params };
+      socket?.emit('add_drive', payload, (resp) => {
+        console.log('resp from add_drive:', resp);
+      });
       axios.get('/api/addDrive.php', payload);
       // .then((resp)=>console.log(">>>resp",resp.data))
     } else if (labelTypeDriveIdColorImage.type === 'new course drive') {
