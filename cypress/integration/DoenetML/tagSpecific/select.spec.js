@@ -526,7 +526,7 @@ describe('Select Tag Tests', function () {
         expect(choices3[ind].stateValues.value.tree).eq(samplemaths[ind]);
       }
 
-      sampleIndices = samplemaths.map(x => ["a", "b", "c"].indexOf(x));
+      sampleIndices = samplemaths.map(x => ["a", "b", "c"].indexOf(x) + 1);
       expect(components["/sample1"].stateValues.selectedIndices).eqls(sampleIndices)
       // expect(components["/noresample"].replacements[0].stateValues.selectedIndices).eqls(sampleIndices)
       expect(components['/pchoices3'].replacements[0].activeChildren[1].definingChildren[0].stateValues.selectedIndices).eqls(sampleIndices)
@@ -2623,7 +2623,7 @@ describe('Select Tag Tests', function () {
       let chosenChildren = components['/_select1'].replacements[0].replacements
         .filter(x => x.componentType !== "string")
         .map((v, i) => i < 2 ? v : v.replacements[0])
-      let option = options[components['/_select1'].stateValues.selectedIndices[0]];
+      let option = options[components['/_select1'].stateValues.selectedIndices[0] - 1];
 
       expect(chosenChildren[0].stateValues.value.toString()).eq(option.a)
       expect(chosenChildren[1].stateValues.value.toString()).eq(option.b)
@@ -2984,7 +2984,7 @@ describe('Select Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let option = options[components['/_select1'].stateValues.selectedIndices[0]];
+      let option = options[components['/_select1'].stateValues.selectedIndices[0] - 1];
 
 
       cy.get('#\\/pa').should('have.text', `a: The ${option.animal} ${option.verb}.`);

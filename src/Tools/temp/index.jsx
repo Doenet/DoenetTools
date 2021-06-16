@@ -2,6 +2,8 @@ import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { useRecoilState,RecoilRoot, useRecoilValue } from 'recoil';
 import Drive, {folderDictionaryFilterAtom,folderDictionaryFilterSelector} from '../../_reactComponents/Drive/Drive';
+import MathInput from './MathInput';
+
 
 // import axios from 'axios';
 
@@ -110,10 +112,10 @@ function Demo(props) {
 }
 ReactDOM.render(
       <RecoilRoot>
-        <Suspense fallback={<p>loading...</p>}>
-        <Demo />
+        
+        <MathInput />
 
-        </Suspense>
+        
       </RecoilRoot>
   ,
   document.getElementById('root'),

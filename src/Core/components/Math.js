@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getCustomFromText, getCustomFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay } from '../utils/math';
+import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -13,6 +13,9 @@ export default class MathComponent extends InlineComponent {
   // used when referencing this component without prop
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
+
+  static descendantCompositesMustHaveAReplacement = true;
+  static descendantCompositesDefaultReplacementType = "math";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -89,6 +92,13 @@ export default class MathComponent extends InlineComponent {
       createComponentOfType: "textList",
       createStateVariable: "functionSymbols",
       defaultValue: ["f", "g"],
+      public: true,
+    }
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
       public: true,
     }
 
@@ -186,6 +196,10 @@ export default class MathComponent extends InlineComponent {
         functionSymbols: {
           dependencyType: "stateVariable",
           variableName: "functionSymbols"
+        },
+        splitSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "splitSymbols"
         },
       }),
       definition: calculateExpressionWithCodes,
@@ -720,8 +734,9 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     expressionWithCodes = me.fromAst('\uFF3F'); // long underscore
   } else {
     if (dependencyValues.format === "text") {
-      let fromText = getCustomFromText({
-        functionSymbols: dependencyValues.functionSymbols
+      let fromText = getFromText({
+        functionSymbols: dependencyValues.functionSymbols,
+        splitSymbols: dependencyValues.splitSymbols
       });
       try {
         expressionWithCodes = fromText(inputString);
@@ -731,8 +746,9 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
       }
     }
     else if (dependencyValues.format === "latex") {
-      let fromLatex = getCustomFromLatex({
-        functionSymbols: dependencyValues.functionSymbols
+      let fromLatex = getFromLatex({
+        functionSymbols: dependencyValues.functionSymbols,
+        splitSymbols: dependencyValues.splitSymbols
       });
       try {
         expressionWithCodes = fromLatex(inputString);

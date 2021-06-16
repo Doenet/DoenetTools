@@ -53,7 +53,7 @@ export default class Line extends DoenetRenderer {
 
 
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+      this.jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
     this.jsxPointAttributes = Object.assign({}, this.jsxPolylineAttributes);

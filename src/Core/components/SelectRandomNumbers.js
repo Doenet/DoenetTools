@@ -128,10 +128,10 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
         let selectedValues = sampleFromRandomNumbers(dependencyValues);
 
-            return {
-              makeEssential: { selectedValues: true },
+        return {
+          makeEssential: { selectedValues: true },
           newValues: { selectedValues }
-              }
+        }
 
       }
     }

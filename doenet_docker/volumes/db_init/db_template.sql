@@ -188,6 +188,7 @@ CREATE TABLE `drive_user` (
   `canViewUnreleasedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canViewUnassignedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canChangeAllDriveSettings` tinyint(1) DEFAULT '0',
+    `role` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

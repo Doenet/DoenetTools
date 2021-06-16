@@ -32,7 +32,7 @@ export default class Copy extends CompositeComponent {
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
-    attributes.propFromComposite = {
+    attributes.obtainPropFromComposite = {
       createPrimitiveOfType: "boolean",
     };
     attributes.componentType = {
@@ -272,7 +272,7 @@ export default class Copy extends CompositeComponent {
     };
 
     stateVariableDefinitions.contentId = {
-      additionalStateVariablesDefined: ["contentName"],
+      additionalStateVariablesDefined: ["doenetId"],
       returnDependencies: () => ({
         uri: {
           dependencyType: "stateVariable",
@@ -284,21 +284,22 @@ export default class Copy extends CompositeComponent {
           dependencyValues.uri.substring(0, 7).toLowerCase() !== "doenet:"
         ) {
           return {
-            newValues: { contentId: null, contentName: null }
+            newValues: { contentId: null, doenetId: null }
           }
         }
 
-        let uriEnd = dependencyValues.uri.substring(7);
+        let contentId = null, doenetId = null;
 
-        let contentId = null, contentName = null;
-
-        if (uriEnd.substring(0, 10).toLowerCase() === "contentid=") {
-          contentId = uriEnd.substring(10);
-        } else if (uriEnd.substring(0, 12).toLowerCase() === "contentname=") {
-          contentName = uriEnd.substring(12);
+        let result = dependencyValues.uri.match(/[:&]contentid=([^&]+)/i);
+        if (result) {
+          contentId = result[1];
+        }
+        result = dependencyValues.uri.match(/[:&]doenetid=([^&]+)/i);
+        if (result) {
+          doenetId = result[1];
         }
 
-        return { newValues: { contentId, contentName } };
+        return { newValues: { contentId, doenetId } };
       },
     };
 
@@ -309,10 +310,6 @@ export default class Copy extends CompositeComponent {
           dependencyType: "stateVariable",
           variableName: "contentId"
         },
-        contentName: {
-          dependencyType: "stateVariable",
-          variableName: "contentName"
-        },
         externalContentChild: {
           dependencyType: "child",
           childLogicName: "atMostOneExternalContent",
@@ -320,7 +317,7 @@ export default class Copy extends CompositeComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (!(dependencyValues.contentId || dependencyValues.contentName)) {
+        if (!dependencyValues.contentId) {
           return {
             newValues: { serializedComponentsForContentId: null }
           }
@@ -361,15 +358,15 @@ export default class Copy extends CompositeComponent {
       }
     }
 
-    stateVariableDefinitions.propFromComposite = {
+    stateVariableDefinitions.obtainPropFromComposite = {
       returnDependencies: () => ({
-        propFromComposite: {
+        obtainPropFromComposite: {
           dependencyType: "attribute",
-          attributeName: "propFromComposite"
+          attributeName: "obtainPropFromComposite"
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propFromComposite: dependencyValues.propFromComposite } }
+        return { newValues: { obtainPropFromComposite: dependencyValues.obtainPropFromComposite } }
       }
     }
 
@@ -389,7 +386,7 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.replacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "componentIndex", "propName", "propFromComposite"
+        "targetComponent", "componentIndex", "propName", "obtainPropFromComposite"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
@@ -402,7 +399,7 @@ export default class Copy extends CompositeComponent {
               componentType: stateValues.targetComponent.componentType,
               includeNonStandard: false
             })
-            && !(stateValues.propName && stateValues.propFromComposite)
+            && !(stateValues.propName && stateValues.obtainPropFromComposite)
           ) {
             dependencies.targets = {
               dependencyType: "replacement",
@@ -606,7 +603,7 @@ export default class Copy extends CompositeComponent {
 
     stateVariableDefinitions.readyToExpandWhenResolved = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "propName", "propFromComposite"
+        "targetComponent", "propName", "obtainPropFromComposite"
       ],
       returnDependencies({ stateValues, componentInfoObjects }) {
 
@@ -637,7 +634,7 @@ export default class Copy extends CompositeComponent {
             componentType: stateValues.targetComponent.componentType,
             includeNonStandard: false
           })
-          && !(stateValues.propName && stateValues.propFromComposite)
+          && !(stateValues.propName && stateValues.obtainPropFromComposite)
         ) {
           dependencies.targetReadyToExpandWhenResolved = {
             dependencyType: "stateVariable",
@@ -659,7 +656,7 @@ export default class Copy extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "replacementSourceIdentities", "effectivePropNameBySource",
-        "propName", "propFromComposite"
+        "propName", "obtainPropFromComposite"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
@@ -718,7 +715,7 @@ export default class Copy extends CompositeComponent {
             componentType: stateValues.targetComponent.componentType,
             includeNonStandard: false
           })
-          && !(stateValues.propName && stateValues.propFromComposite)
+          && !(stateValues.propName && stateValues.obtainPropFromComposite)
         ) {
 
           // Include identities of all replacements (and inactive target variable)
@@ -938,10 +935,11 @@ export default class Copy extends CompositeComponent {
     workspace, componentInfoObjects, compositeAttributesObj
   }) {
 
-    let resetReplacements = false;
+    if (!component.attributes.componentType &&
+      !component.sharedParameters.compositesMustHaveAReplacement
+    ) {
 
-    if (!component.attributes.componentType) {
-      return { resetReplacements: false, replacements, replacementChanges }
+      return { replacements, replacementChanges }
     }
 
     let replacementsToWithhold = component.replacementsToWithhold;
@@ -1006,8 +1004,31 @@ export default class Copy extends CompositeComponent {
       replacementTypes = replacementTypes.slice(0, replacementTypes.length - replacementsToWithhold);
     }
 
-    if (replacementTypes.length !== component.stateValues.nComponentsSpecified ||
-      !replacementTypes.every(x => x === component.attributes.componentType)) {
+    if (!component.attributes.componentType &&
+      component.sharedParameters.compositesMustHaveAReplacement
+      && replacementTypes.length > 0
+    ) {
+      // no changes since only reason we got this far was that
+      // composites must have a replacement
+      // and we have at least one replacement
+      return { replacements, replacementChanges }
+    }
+
+    let requiredComponentType = component.attributes.componentType;
+    let requiredLength = component.stateValues.nComponentsSpecified;
+
+    if(!requiredComponentType) {
+      // must have be here due to composites needing a replacement
+      requiredComponentType = component.sharedParameters.compositesDefaultReplacementType;
+      if(!requiredComponentType) {
+        throw Error(`A component class specified descendantCompositesMustHaveAReplacement but didn't specify descendantCompositesDefaultReplacementType`)
+      }
+      requiredLength = 1;
+    }
+
+
+    if (replacementTypes.length !== requiredLength ||
+      !replacementTypes.every(x => x === requiredComponentType)) {
 
       // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
 
@@ -1021,19 +1042,19 @@ export default class Copy extends CompositeComponent {
       let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
 
       replacements = []
-      for (let i = 0; i < component.stateValues.nComponentsSpecified; i++) {
+      for (let i = 0; i < requiredLength; i++) {
 
         let attributesFromComposite = convertAttributesForComponentType({
           attributes: component.attributes,
-          componentType: component.attributes.componentType,
+          componentType: requiredComponentType,
           componentInfoObjects, compositeAttributesObj,
           compositeCreatesNewNamespace: component.attributes.newNamespace
         });
 
-        let uniqueIdentifierBase = component.attributes.componentType + "|empty" + i;
+        let uniqueIdentifierBase = requiredComponentType + "|empty" + i;
         let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
         replacements.push({
-          componentType: component.attributes.componentType,
+          componentType: requiredComponentType,
           attributes: attributesFromComposite,
           uniqueIdentifier,
         });
@@ -1077,7 +1098,7 @@ export default class Copy extends CompositeComponent {
       }
     }
 
-    return { resetReplacements, replacements, replacementChanges }
+    return { replacements, replacementChanges }
   }
 
   static createReplacementForSource({
@@ -1942,6 +1963,7 @@ export function replacementFromProp({ component, components,
               children,
               attributes,
               uniqueIdentifier,
+              skipSugar: true,
             }]
             if (typeof wrapCs[ind] === "object") {
               if (wrapCs[ind].doenetAttributes) {
