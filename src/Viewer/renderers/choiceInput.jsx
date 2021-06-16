@@ -253,7 +253,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       let keyBeginning = inputKey + '_choice';
       let children = this.children;
       let choiceDoenetTags = this.doenetSvData.choiceOrder
-        .map(v => children[v])
+        .map(v => children[v - 1])
         .map(function (child, i) {
           return <li key={inputKey + '_choice' + (i + 1)}>
             <input
