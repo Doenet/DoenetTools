@@ -7,18 +7,18 @@ export default class Cell extends BaseComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static primaryStateVariableForDefinition = "placeholder";
+  static primaryStateVariableForDefinition = "text";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.rowNum = {
-      createComponentOfType: "integer",
+      createComponentOfType: "text",
       createStateVariable: "rowNum",
       defaultValue: null,
       public: true,
     };
     attributes.colNum = {
-      createComponentOfType: "integer",
+      createComponentOfType: "text",
       createStateVariable: "colNum",
       defaultValue: null,
       public: true,
@@ -232,11 +232,6 @@ export default class Cell extends BaseComponent {
       }
     }
 
-
-    stateVariableDefinitions.placeholder = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { placeholder: null } })
-    }
 
     return stateVariableDefinitions;
   }

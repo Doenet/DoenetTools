@@ -446,9 +446,35 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "valueForDisplay"
         },
+        // value is just for inverse definition
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        },
       }),
       definition: function ({ dependencyValues }) {
         return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
+      },
+      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        let fromText = getFromText({
+          functionSymbols: stateValues.functionSymbols,
+          splitSymbols: stateValues.splitSymbols
+        });
+
+        let expr;
+        try {
+          expr = fromText(desiredStateVariableValues.text);
+        } catch (e) {
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: expr
+          }]
+        }
       }
     }
 

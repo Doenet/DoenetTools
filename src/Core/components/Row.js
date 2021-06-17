@@ -9,7 +9,7 @@ export default class Row extends BaseComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.rowNum = {
-      createComponentOfType: "integer",
+      createComponentOfType: "text",
       createStateVariable: "rowNum",
       defaultValue: null,
       public: true,

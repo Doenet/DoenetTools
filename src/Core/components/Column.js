@@ -7,9 +7,12 @@ export default class Column extends BaseComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-
-    attributes.colNum = { default: null };
-
+    attributes.colNum = {
+      createComponentOfType: "text",
+      createStateVariable: "colNum",
+      defaultValue: null,
+      public: true,
+    };
     return attributes;
   }
 
