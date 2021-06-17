@@ -10,13 +10,13 @@ import {
 import styled from 'styled-components';
 import Toast from './Toast';
 import { useMenuPanelController } from './Panels/MenuPanel';
-import { useSupportDividerController } from './Panels/ContentPanel';
+import ContentPanel, { useSupportDividerController } from './Panels/ContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 
 import MainPanel from './Panels/MainPanel';
 import SupportPanel from './Panels/SupportPanel';
-import MenuPanel from './Panels/MenuPanel';
+import MenuPanels from './Panels/MenuPanels';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 
@@ -38,14 +38,51 @@ const ToolContainer = styled(animated.div)`
   box-sizing: border-box;
 `;
 
+export const ProfileContext = React.createContext({});
+
+export const profileAtom = atom({
+  key: "profileAtom",
+  default: selector({
+      key: "profileAtom/Default",
+      get: async () => {
+          try{
+              const profile = JSON.parse(localStorage.getItem('Profile'));
+              if (profile){
+                return profile;
+              }
+              //It wasn't stored in local storage so load it from server
+              const { data } = await axios.get('/api/loadProfile.php')
+              localStorage.setItem('Profile', JSON.stringify(data.profile));
+              return data.profile
+          }catch(error){
+              console.log("Error loading user profile", error.message);                
+              return {}
+          }
+      }
+  })
+})
+
 export default function DoenetTool(props){
-  console.log(">>>props",props)
-  return <ToolContainer>
-    <MainPanel></MainPanel>
-    <SupportPanel></SupportPanel>
-    <MenuPanel>test</MenuPanel>
-    <FooterPanel></FooterPanel>
-  </ToolContainer>
+  // console.log(">>>DoenetTool props",props)
+  const profile = useRecoilValueLoadable(profileAtom)
+
+  if (profile.state === "loading"){ return null;}
+    if (profile.state === "hasError"){ 
+      console.error(profile.contents)
+      return null;}
+
+      console.log(">>>profile.contents",profile.contents)
+
+  return <ProfileContext.Provider value={profile.contents}>
+    <ToolContainer>
+      <ContentPanel 
+      main={<MainPanel><h1>main</h1></MainPanel>} 
+      support={<SupportPanel><h1>support</h1></SupportPanel>}
+      />
+      <MenuPanels />
+      {/* <FooterPanel></FooterPanel> */}
+    </ToolContainer>
+  </ProfileContext.Provider>
 }
 
 const LoadingFallback = styled.div`
@@ -201,29 +238,7 @@ export const useStackId = () => {
   return stackId;
 };
 
-export const ProfileContext = React.createContext({});
 
-export const profileAtom = atom({
-  key: "profileAtom",
-  default: selector({
-      key: "profileAtom/Default",
-      get: async () => {
-          try{
-              const profile = JSON.parse(localStorage.getItem('Profile'));
-              if (profile){
-                return profile;
-              }
-              //It wasn't stored in local storage so load it from server
-              const { data } = await axios.get('/api/loadProfile.php')
-              localStorage.setItem('Profile', JSON.stringify(data.profile));
-              return data.profile
-          }catch(error){
-              console.log("Error loading user profile", error.message);                
-              return {}
-          }
-      }
-  })
-})
 
 export function ToolRoot({ tool }) {
   const overlays = useRecoilValue(layerStackAtom);
