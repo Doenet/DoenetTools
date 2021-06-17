@@ -1,5 +1,6 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
+import { sizeToCSS } from './utils/css';
 
 export default class Table extends DoenetRenderer {
 
@@ -9,16 +10,16 @@ export default class Table extends DoenetRenderer {
       return null;
     }
 
-    let table = [];
 
-    for (let [rowNum, rowData] of this.doenetSvData.renderedChildNumberByRowCol.entries()) {
-      let row = rowData.map((childInd, colInd) => <td key={"col" + colInd}>{this.children[childInd]}</td>);
-      table.push(<tr key={"row" + rowNum}>{row}</tr>)
+    // let rows = this.children.map((x, i) => <tr key={"row" + i}>x</tr>)
+
+    const divStyle = {
+      width: sizeToCSS(this.doenetSvData.width),
+      height: sizeToCSS(this.doenetSvData.height),
     }
-
-    return <><a name={this.componentName} /><table id={this.componentName}>
+    return <><a name={this.componentName} /><table id={this.componentName} style={divStyle}>
       <tbody>
-        {table}
+        {this.children}
       </tbody>
     </table></>
   }
