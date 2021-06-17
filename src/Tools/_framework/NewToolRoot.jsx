@@ -13,9 +13,10 @@ import { useMenuPanelController } from './Panels/MenuPanel';
 import ContentPanel, { useSupportDividerController } from './Panels/NewContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
+import GlobalFont from '../../_utils/GlobalFont';
 
-import MainPanel from './Panels/MainPanel';
-import SupportPanel from './Panels/SupportPanel';
+import MainPanel from './Panels/NewMainPanel';
+import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanels from './Panels/MenuPanels';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
@@ -88,6 +89,7 @@ export default function ToolRoot(props){
       console.log(">>>profile.contents",profile.contents)
 
   return <ProfileContext.Provider value={profile.contents}>
+    <GlobalFont />
     <Toast />
     <ToolContainer>
       <MenuPanels />

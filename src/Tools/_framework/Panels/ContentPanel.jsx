@@ -22,6 +22,7 @@ const Wrapper = styled.div`
     / ${({ $proportion }) => `${$proportion}fr auto ${1 - $proportion}fr`};
   overflow: hidden;
   // border-radius: 4px;
+  margin-left: 2px;
 `;
 
 const DragHandle = styled.div`
