@@ -8,9 +8,18 @@ export default class CellBlock extends BaseComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
-    attributes.rowNum = { default: null };
-    attributes.colNum = { default: null };
-
+    attributes.rowNum = {
+      createComponentOfType: "text",
+      createStateVariable: "rowNum",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.colNum = {
+      createComponentOfType: "text",
+      createStateVariable: "colNum",
+      defaultValue: null,
+      public: true,
+    };
     return attributes;
   }
 

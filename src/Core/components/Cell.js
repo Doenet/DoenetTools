@@ -5,14 +5,24 @@ import { textToAst } from '../utils/math';
 export default class Cell extends BaseComponent {
   static componentType = "cell";
   static rendererType = "container";
+  static renderChildren = true;
 
-  static primaryStateVariableForDefinition = "placeholder";
+  static primaryStateVariableForDefinition = "text";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-
-    attributes.rowNum = { default: null };
-    attributes.colNum = { default: null };
+    attributes.rowNum = {
+      createComponentOfType: "text",
+      createStateVariable: "rowNum",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.colNum = {
+      createComponentOfType: "text",
+      createStateVariable: "colNum",
+      defaultValue: null,
+      public: true,
+    };
 
     return attributes;
   }
@@ -222,25 +232,6 @@ export default class Cell extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.childrenToRender = {
-      returnDependencies: () => ({
-        activeChildren: {
-          dependencyType: "child",
-          childLogicName: "mathXorAnything"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        return {
-          newValues:
-            { childrenToRender: dependencyValues.activeChildren.map(x => x.componentName) }
-        };
-      }
-    }
-
-    stateVariableDefinitions.placeholder = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { placeholder: null } })
-    }
 
     return stateVariableDefinitions;
   }
