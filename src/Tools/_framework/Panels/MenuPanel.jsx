@@ -1,33 +1,27 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { useStackId } from '../ToolRoot';
 import DragPanel, { handleDirection } from './Panel';
-import { ProfileContext } from '../ToolRoot';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import logo from "/media/Doenet_Logo_cloud_only.png";
 
-// import logo from './src/Media/Doenet_Logo_cloud_only.png';
+const Wrapper = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template:
+    'buttons' 60px
+    'sections' 1fr;
+  background-color: hsl(0, 0%, 99%);
+`;
+const ButtonsWrapper = styled.div`
+  grid-area: buttons;
+  display: flex;
+`;
 
-const MenuPanelsWrapper = styled.div`
-  grid-area: menuPanel;
+const PanelsWrapper = styled.div`
+  grid-area: sections;
   display: flex;
   flex-direction: column;
   overflow: auto;
-  justify-content: flex-start;
-  background: #e3e3e3;
-  height: 100%;
-  width: 240px;
-`;
-
-const MenuPanelsCap = styled.div`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: space-between;
-align-items: center;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -40,7 +34,6 @@ const MenuHeaderButton = styled.button`
       linkedPanel === activePanel ? '#white' : 'black'};
   width: 100%;
   height: 100%;
-
 `;
 
 export const activeMenuPanel = atomFamily({
@@ -54,160 +47,45 @@ export const useMenuPanelController = () => {
   return menuAtomControl;
 };
 
-const ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/profile_pictures/${(props) => props.pic}.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: 300ms;
-  // color: #333333;
-  width: 30px;
-  height: 30px;
-  display: inline-block;
-  // color: rgba(0, 0, 0, 0);
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  border-style: none;
-  margin-left: 75px;
-  margin-top: 4px
-`;
+export default function MenuPanel({ children, isInitOpen }) {
+  const stackId = useStackId();
+  const [activePanel, setActivePanel] = useRecoilState(
+    activeMenuPanel(stackId),
+  );
+  const [panels, setPanels] = useState([]);
 
-const Logo = styled.div`
-background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/Doenet_Logo_cloud_only.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 50px 25px;
-  transition: 300ms;
-  // background-color: pink;
-  width: 50px;
-  height: 25px;
-  display: inline-block;
-  justify-content: center;
-  align-items: center;
-  border-style: none;
-  margin-top: 5px;
-  margin-left: 2px
-`
+  // console.log(">>>Loading Menu w/ Child");
 
-const CloseButton = styled.button`
-background-color: #1A5A99;
-height: 35px;
-width: 20px;
-color: white;
-border: none;
-display: inline-block;
-`;
-
-const EditMenuPanels = styled.button`
-background-color: #1A5A99;
-height: 35px;
-width: 35px;
-border: none;
-color: white;
-border-radius: 17.5px;
-font-size: 24px
-`;
-
-const MenuPanelTitle = styled.button`
-width: 240px;
-height: 35px;
-background: white;
-display: flex;
-justify-content: center;
-align-items: center;
-border: 0px solid white;
-// border-top: 1px solid black;
-border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
-margin-top: 2px;
-`
-
-function MenuPanelInstance(props){
-  let isInitOpen = props.isInitOpen;
-  if (!isInitOpen){isInitOpen = false;}
-  let [isOpen,setIsOpen] = useState(isInitOpen);
-
-  let body = null;
-  if (isOpen){
-    body = <div>{props.children}</div>
-  }
-  return <>
-    <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}>{props.title}</MenuPanelTitle>
-    <div style={{
-      // paddingTop: "0px", 
-      paddingBottom: "4px", 
-      paddingLeft: "4px",
-      paddingRight: "4px",
-      backgroundColor:"white"}}>{body}</div>
-  </>
-}
-
-export default function MenuPanel({ children }) {
-  const profile = useContext(ProfileContext)
-  //WHY IS profile UNDEFINED???????
-  console.log(">>>profile",profile)
-  console.log(">>>ProfileContext",ProfileContext)
-  //USE profile TO DEFINE profilePicName
-  let profilePicName = "quokka";
-
-  let panels = [];
-
-  for (let [i,child] of Object.entries(children)){
-    panels.push(<MenuPanelInstance key={`menuPanel${i}`} {...child.props} >{child.children}</MenuPanelInstance>)
-  }
-
-  // const stackId = useStackId();
+  useEffect(() => {
+    setPanels(children.map((panel) => panel)); //swap this to only render buttons once (store in state)
+  }, [children]);
 
   return (
-    <MenuPanelsWrapper>
-      <MenuPanelsCap>
-        <span >
-          <Logo/>
-          {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
-        </span>
-        <span style={{marginBottom: '1px'}}>Doenet</span>
-        <span >
-          <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
-        </span>
-        <span >
-          <CloseButton onClick={()=>console.log('>>>close menu panels')}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
-        </span>
-        
-          {/* {anchor} */}
-      </MenuPanelsCap>
-    {panels}
-    <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
-      <EditMenuPanels onClick={()=>console.log('>>>edit menu panels')}>+</EditMenuPanels>
-    </div>
-
-    </MenuPanelsWrapper>
-    // <DragPanel
-    //   gridArea={'menuPanel'}
-    //   direction={handleDirection.LEFT}
-    //   id={`menuPanel${stackId}`}
-    //   isInitOpen={isInitOpen}
-    // >
-    //   <Wrapper>
-    //     <ButtonsWrapper>
-    //       {panels.map((panel, idx) => {
-    //         return (
-    //           <MenuHeaderButton
-    //             key={`headerB${idx}`}
-    //             onClick={() => {
-    //               activePanel !== idx ? setActivePanel(idx) : null;
-    //             }}
-    //             linkedPanel={idx}
-    //             activePanel={activePanel}
-    //           >
-    //             {panel.props.title}
-    //           </MenuHeaderButton>
-    //         );
-    //       })}
-    //     </ButtonsWrapper>
-    //     <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
-    //   </Wrapper>
-    // </DragPanel>
+    <DragPanel
+      gridArea={'menuPanel'}
+      direction={handleDirection.LEFT}
+      id={`menuPanel${stackId}`}
+      isInitOpen={isInitOpen}
+    >
+      <Wrapper>
+        <ButtonsWrapper>
+          {panels.map((panel, idx) => {
+            return (
+              <MenuHeaderButton
+                key={`headerB${idx}`}
+                onClick={() => {
+                  activePanel !== idx ? setActivePanel(idx) : null;
+                }}
+                linkedPanel={idx}
+                activePanel={activePanel}
+              >
+                {panel.props.title}
+              </MenuHeaderButton>
+            );
+          })}
+        </ButtonsWrapper>
+        <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
+      </Wrapper>
+    </DragPanel>
   );
 }

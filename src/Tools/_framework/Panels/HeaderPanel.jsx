@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   justify-content: flex-end;
   align-items: center;
   gap: 4px;
-  // border-radius: 4px;
+  border-radius: 4px;
   padding: 4px;
   background-color: hsl(0, 0%, 99%);
 `;
@@ -42,7 +42,7 @@ export default function HeaderPanel({ title, children }) {
   const stackId = useStackId();
 
   const profile = useContext(ProfileContext)
-  console.log(">>>Header profile",profile)
+  // console.log(">>>Header profile",profile)
 
   let userProfile = <p>Loading</p> //TODO: update this to blank circle svg
   if (Object.keys(profile).length > 0){

@@ -21,8 +21,7 @@ const Wrapper = styled.div`
     'mainPanel handle supportPanel' 1fr
     / ${({ $proportion }) => `${$proportion}fr auto ${1 - $proportion}fr`};
   overflow: hidden;
-  // border-radius: 4px;
-  margin-left: 2px;
+  border-radius: 4px;
 `;
 
 const DragHandle = styled.div`
@@ -34,7 +33,7 @@ const DragHandle = styled.div`
   color: hsl(0, 0%, 99%);
   padding: 0;
   cursor: ew-resize;
-  background-color: #1A5A99;
+  background-color: hsl(0, 0%, 29%);
   width: 8px;
   box-sizing: border-box;
 `;

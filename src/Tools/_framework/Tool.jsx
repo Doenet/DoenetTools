@@ -4,13 +4,13 @@ import { animated } from '@react-spring/web';
 import ContentPanel from './Panels/ContentPanel';
 // import NavPanel from './Panels/NavPanel';
 import { useStackId } from './ToolRoot';
-// 'menuPanel headerPanel ' auto
 
 const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
-    'menuPanel contentPanel ' 1fr
-    'menuPanel footerPanel ' auto
+    'navPanel headerPanel menuPanel' auto
+    'navPanel contentPanel menuPanel' 1fr
+    'navPanel footerPanel menuPanel' auto
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
@@ -18,8 +18,8 @@ const ToolContainer = styled(animated.div)`
   position: fixed;
   top: 0;
   left: 0;
-  padding: 0px;
-  gap: 0px 2px;
+  padding: 5px;
+  gap: 5px;
   box-sizing: border-box;
 `;
 
@@ -33,8 +33,8 @@ const LoadingFallback = styled.div`
 `;
 
 const implementedToolParts = [
-  // 'navPanel',
-  // 'headerPanel',
+  'navPanel',
+  'headerPanel',
   'mainPanel',
   'supportPanel',
   'menuPanel',
@@ -43,15 +43,15 @@ const implementedToolParts = [
 
 export default function Tool({ children }) {
   const [
-    // NavPanel,
-    // HeaderPanel,
+    NavPanel,
+    HeaderPanel,
     MainPanel,
     SupportPanel,
     MenuPanel,
     FooterPanel,
   ] = useRef([
-    // lazy(() => import('./Panels/NavPanel')),
-    // lazy(() => import('./Panels/HeaderPanel')),
+    lazy(() => import('./Panels/NavPanel')),
+    lazy(() => import('./Panels/HeaderPanel')),
     lazy(() => import('./Panels/MainPanel')),
     lazy(() => import('./Panels/SupportPanel')),
     lazy(() => import('./Panels/MenuPanel')),
@@ -105,28 +105,28 @@ export default function Tool({ children }) {
       }
     }
 
-    // let navPanel = null;
-    // let headerPanel = null;
+    let navPanel = null;
+    let headerPanel = null;
     let mainPanel = null;
     let supportPanel = null;
     let menuPanel = null;
     let footerPanel = null;
 
-    // if (toolParts?.navPanel) {
-    //   navPanel = (
-    //     <NavPanel {...toolParts.navPanel.props} key={`Nav${stackId}`}>
-    //       {toolParts.navPanel.children}
-    //     </NavPanel>
-    //   );
-    // }
+    if (toolParts?.navPanel) {
+      navPanel = (
+        <NavPanel {...toolParts.navPanel.props} key={`Nav${stackId}`}>
+          {toolParts.navPanel.children}
+        </NavPanel>
+      );
+    }
 
-    // if (toolParts?.headerPanel) {
-    //   headerPanel = (
-    //     <HeaderPanel {...toolParts.headerPanel.props} key={`Header${stackId}`}>
-    //       {toolParts.headerPanel.children}
-    //     </HeaderPanel>
-    //   );
-    // }
+    if (toolParts?.headerPanel) {
+      headerPanel = (
+        <HeaderPanel {...toolParts.headerPanel.props} key={`Header${stackId}`}>
+          {toolParts.headerPanel.children}
+        </HeaderPanel>
+      );
+    }
 
     if (toolParts?.mainPanel) {
       mainPanel = (
@@ -164,8 +164,8 @@ export default function Tool({ children }) {
     }
 
     setPanels({
-      // headerPanel,
-      // navPanel,
+      headerPanel,
+      navPanel,
       mainPanel,
       supportPanel,
       menuPanel,
@@ -175,12 +175,12 @@ export default function Tool({ children }) {
 
   return (
     <ToolContainer $isOverlay={stackId > 0}>
-      {/* <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         {panels.navPanel}
-      </Suspense> */}
-      {/* <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      </Suspense>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         {panels.headerPanel}
-      </Suspense> */}
+      </Suspense>
       <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
         <ContentPanel main={panels.mainPanel} support={panels.supportPanel} />
       </Suspense>
