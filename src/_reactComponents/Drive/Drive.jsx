@@ -1544,19 +1544,16 @@ const selectedDriveItems = selectorFamily({
 
 function columnJSX(columnType,item){
   let courseRole = '';
-  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(item.parentFolderId))
-  if (drivesInfo?.state === 'hasValue') {
-     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
-      }
+
 
   // console.log(">>>columnType,item",columnType,item)
-      // console.log(">>>item",item)
-      // const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
+      console.log(">>>item",item)
+      const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
       let aInfo = '';
-      // if (assignmentInfoSettings?.state === 'hasValue') {
-      //   // aInfo = assignmentInfoSettings?.contents?.assignments[0];
+      if (assignmentInfoSettings?.state === 'hasValue') {
+      aInfo = assignmentInfoSettings?.contents?.assignments[0];
         
-      // }
+      }
       
   if (columnType === 'Released' && item.isReleased === '1'){
     return <span style={{textAlign:"center"}}><FontAwesomeIcon icon={faCheck}/></span>

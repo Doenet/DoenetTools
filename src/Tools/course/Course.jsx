@@ -371,8 +371,7 @@ export default function Course(props) {
           <menuPanel title="+Add">
             <>
               
-              {/* {( courseRole */}
-              {(
+              { courseRole[0] === 'Owner' && (
                 <>
                   <Button
                     value={
@@ -406,11 +405,7 @@ const DoenetMLInfoPanel = (props) => {
   const versionHistory = useRecoilValueLoadable(
     itemHistoryAtom(itemInfo.doenetId),
   );
-  // const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(contentInfo?.driveId))
-  // if (drivesInfo?.state === 'hasValue') {
-  //    courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
 
-  //     }
   const selectedContentId = () => {
     const assignedArr = versionHistory.contents.named.filter(
       (item) => item.versionId === selectedVId,
@@ -529,9 +524,15 @@ const DoenetMLInfoPanel = (props) => {
       return false;
     }
   };
-
-  // if (itemInfo.isAssigned === '1' && courseRole) {
-    if (itemInfo.isAssigned === '1' ) {
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+  let courseRole = [];
+  let driveInfo = [];
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == itemInfo.driveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
+  if (itemInfo.isAssigned === '1' && courseRole[0] === 'Owner') {
     assignmentForm = (
       <>
         {
@@ -697,30 +698,30 @@ const StudentViewInfoPanel = (props) =>{
       folderId: itemInfo.parentFolderId,
       itemId: itemInfo.itemId,
       doenetId: itemInfo.doenetId,
-      versionId: selectedVId,
-      contentId: selectedContentId(),
+      versionId: '',
+      contentId: '',
     }),
   );
 
   let aInfo = '';
-  let courseRole = '';
-  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(itemInfo?.driveId))
-  if (drivesInfo?.state === 'hasValue') {
-     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
 
-      }
+  let courseRole = [];
+  let driveInfo = [];
+  
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == itemInfo.driveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
   if (assignmentInfoSettings?.state === 'hasValue') {
     aInfo = assignmentInfoSettings?.contents;
   }
-  // const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(contentInfo?.driveId))
-  // if (drivesInfo?.state === 'hasValue') {
-  //    courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
-
-  //     }
+ 
   return (
     <>
-      {/* {aInfo && !courseRole ? ( */}
-      {aInfo  ? (
+      {aInfo && courseRole[0] === 'Student' ? (
+        
         <div>
           <p>Due: {aInfo?.dueDate}</p>
           <p>Time Limit: {aInfo?.timeLimit}</p>
@@ -787,11 +788,14 @@ const VersionHistoryInfoPanel = (props) => {
       return '';
     }
   };
-  let courseRole = '';
-  const drivesInfo = useRecoilValueLoadable(loadDriveInfoQuery(itemInfo?.driveId))
-  if (drivesInfo?.state === 'hasValue') {
-     courseRole = drivesInfo?.contents?.message === '' ?  false :  true;
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
 
+      let courseRole = [];
+      let driveInfo = [];
+      if (drivesInfo.state === "hasValue") {
+        driveInfo = drivesInfo.contents.driveIdsAndLabels;
+        let selectedDriveInfo = driveInfo?.filter(item => item.driveId == itemInfo.driveId);
+        courseRole = selectedDriveInfo[0]?.role;
       }
   let aInfo = '';
   const assignmentInfoSettings = useRecoilValueLoadable(
@@ -1093,19 +1097,16 @@ const VersionHistoryInfoPanel = (props) => {
 
   return (
     <>
-      {assigned}
-      {/* { courseRole && assigned} */}
+      { courseRole[0] === 'Owner' && assigned}
 
       <br />
       <br />
-      {/* { courseRole && itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton} */}
-      {  itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton}
+      {  courseRole[0] === 'Owner' && itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton}
       {itemInfo.isAssigned == '1' && checkIfAssigned() && unAssignButton }
-      {/* {itemInfo.isAssigned == '1' && checkIfAssigned() && unAssignButton && courseRole} */}
       {itemInfo.isAssigned == '1' &&
         checkAssignArrItemAssigned() &&
-        // !checkIfAssigned() && courseRole && 
         !checkIfAssigned()  && 
+        courseRole[0] === 'Owner' &&
         switchAssignmentButton}
     </>
   );
@@ -1118,6 +1119,8 @@ const ItemInfoPanel = (props) => {
   const versionHistory = useRecoilValueLoadable(
     itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.doenetId),
   );
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+
 
   if (versionHistory.state === 'loading') {
     return null;
@@ -1136,6 +1139,13 @@ const ItemInfoPanel = (props) => {
     console.error(contentInfoLoad.contents);
     return null;
   }
+  let courseRole = [];
+  let driveInfo = [];
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == contentInfoLoad?.contents?.itemInfo?.driveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
   let contentInfo = contentInfoLoad?.contents?.itemInfo;
 
   if (contentInfoLoad.contents?.number > 1) {
@@ -1146,6 +1156,7 @@ const ItemInfoPanel = (props) => {
     );
   } else if (contentInfoLoad.contents?.number === 1) {
    if (contentInfo?.itemType === 'DoenetML') {
+     if(courseRole[0] === 'Owner'){
       return (
         <DoenetMLInfoPanel
           key={`DoenetMLInfoPanel${contentInfo.itemId}`}
@@ -1154,16 +1165,8 @@ const ItemInfoPanel = (props) => {
           versionArr={versionArr}
         />
       );
-    } else if (contentInfo?.itemType === 'Folder') {
-      return (
-        <FolderInfoPanel
-          key={`FolderInfoPanel${contentInfo.itemId}`}
-          contentInfo={contentInfo}
-        />
-      );
-    } else if (
-      contentInfo?.itemType === 'DoenetML' 
-    ) {
+     }
+     else if(courseRole[0] === 'Student'){
       return (
         <StudentViewInfoPanel
         key={`StudentViewInfoPanel${contentInfo.itemId}`}
@@ -1171,7 +1174,16 @@ const ItemInfoPanel = (props) => {
         props={props}
         />
       );
-    }
+     }
+      
+    } else if (contentInfo?.itemType === 'Folder') {
+      return (
+        <FolderInfoPanel
+          key={`FolderInfoPanel${contentInfo.itemId}`}
+          contentInfo={contentInfo}
+        />
+      );
+    } 
   }
   return null;
 };
