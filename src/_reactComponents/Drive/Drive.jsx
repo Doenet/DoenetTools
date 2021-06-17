@@ -1547,7 +1547,7 @@ function columnJSX(columnType,item){
 
 
   // console.log(">>>columnType,item",columnType,item)
-      console.log(">>>item",item)
+      // console.log(">>>item",item)
       const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
       let aInfo = '';
       if (assignmentInfoSettings?.state === 'hasValue') {
