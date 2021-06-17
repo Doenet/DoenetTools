@@ -66,28 +66,50 @@ export const profileAtom = atom({
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
+    viewName:"OneTwo",
     menuPanels:[],
-    mainPanel:"",
-    supportPanel:[""],
+    mainPanel:"One",
+    supportPanel:["Two","One"],
+    supportPanelIndex:1,
   }
 })
  
 export default function ToolRoot(props){
-  console.log(">>>DoenetTool props",props) 
+  // console.log(">>>DoenetTool props",props) 
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
-  // const mainPanel = useState()
+  const [mainContentObj,setMainContentObj] = useState({})
+  const [supportContentObj,setSupportContentObj] = useState({})
 
-  const [
-    One,
-    Two
-  ] = useRef([
-    lazy(() => import('./MainPanels/One')),
-    lazy(() => import('./MainPanels/Two')),
-  ]).current;
 
   useEffect(()=>{
-    console.log(">>>toolViewInfo",toolViewInfo)
+
+    async function fetchMainPanel(panelPromise,setter,index){
+      try {
+        let module = await panelPromise;
+         setter((was)=>{ 
+          let newObj = {...was}; 
+          newObj[toolViewInfo.viewName] = <div key={`${toolViewInfo.viewName}${index}`}>{module.default()}</div>
+          return newObj})
+      } catch (error) {
+        console.log(error)
+        console.error(`Error: loading view ${toolViewInfo.viewName} failed.`)
+      }
+    }
+    //Load Main Panel
+    if (!mainContentObj[toolViewInfo.viewName]){
+      //Need to load and define component
+      let panelPromise = import(`./MainPanels/${toolViewInfo.mainPanel}.js`);
+      fetchMainPanel(panelPromise,setMainContentObj,0)
+    }
+    //Load Support Panel
+    if (!supportContentObj[toolViewInfo.viewName]){
+      //Need to load and define component
+      let panelPromise = import(`./SupportPanels/${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}.js`);
+      fetchMainPanel(panelPromise,setSupportContentObj,toolViewInfo.supportPanelIndex)
+    }
+
+
   },[toolViewInfo])
 
   if (profile.state === "loading"){ return null;}
@@ -95,15 +117,17 @@ export default function ToolRoot(props){
       console.error(profile.contents)
       return null;}
 
-    let mainContent = <One />;
-    let supportContent = <One />
-    let notUsed = <Two />
-      console.log(">>>profile.contents",profile.contents)
+    let mainContent = mainContentObj[toolViewInfo.viewName];
+    if (!mainContent){mainContent = null;}
+    let supportContent = supportContentObj[toolViewInfo.viewName];
+    if (!supportContent){supportContent = null;}
+
+      // console.log(">>>profile.contents",profile.contents)
     let supportPanel = null;
     if (toolViewInfo.supportPanel.length > 0){
-      supportPanel = <SupportPanel><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{supportContent}</Suspense></SupportPanel>
+      supportPanel = <SupportPanel>{supportContent}</SupportPanel>
     }
-
+ 
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <Toast />

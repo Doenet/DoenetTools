@@ -143,7 +143,7 @@ function MenuPanelInstance(props){
 
 export default function MenuPanels({ panelNames=[] }) {
   const profile = useContext(ProfileContext)
-  console.log(">>>profile",profile)
+  // console.log(">>>profile",profile) 
 
   //These maintain the panels' state
   const [viewPanels,setViewPanels] = useState([])
@@ -153,7 +153,7 @@ export default function MenuPanels({ panelNames=[] }) {
 
   //Lasy load all the menu panels by name
   useEffect(()=>{
-    console.log(">>>panelNames",panelNames)
+    // console.log(">>>panelNames",panelNames)
       for (let [i,panelName] of Object.entries(panelNames)){
         console.log(">>>i,panelName",i,panelName)
     // panels.push(<MenuPanelInstance key={`menuPanel${i}`} {...child.props} >{child.children}</MenuPanelInstance>)
