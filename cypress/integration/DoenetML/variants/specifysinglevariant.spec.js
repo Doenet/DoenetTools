@@ -41,6 +41,10 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "al", "am", "an", "ao", "ap", "aq", "ar", "as", "at", "au", "av", "aw", "ax", "ay", "az", "ba", "bb", "bc", "bd", "be", "bf", "bg", "bh", "bi", "bj", "bk", "bl", "bm", "bn", "bo", "bp", "bq", "br", "bs", "bt", "bu", "bv", "bw", "bx", "by", "bz", "ca", "cb", "cc", "cd", "ce", "cf", "cg", "ch", "ci", "cj", "ck", "cl", "cm", "cn", "co", "cp", "cq", "cr", "cs", "ct", "cu", "cv"]);
     })
 
     cy.log("Number doesn't change with multiple updates");
@@ -74,6 +78,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.window().then((win) => {
@@ -106,6 +113,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.window().then((win) => {
@@ -140,6 +150,9 @@ describe('Specifying single variant document tests', function () {
         }]
       })
       generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo));
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.log(`Number doesn't change when use generatedVariantInfo`)
@@ -172,6 +185,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.log("Number changes for index 2");
@@ -208,6 +224,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
 
@@ -240,6 +259,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.window().then((win) => {
@@ -271,6 +293,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.log("Index 102 same as index 2");
@@ -303,6 +328,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.window().then((win) => {
@@ -334,6 +362,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.log("Index -298 same as index 2");
@@ -366,6 +397,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.window().then((win) => {
@@ -397,6 +431,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.log("Index 83057201 same as index 1");
@@ -429,6 +466,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.window().then((win) => {
@@ -460,6 +500,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.log("Variant 'a' same as index 1");
@@ -492,6 +535,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.window().then((win) => {
@@ -523,6 +569,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.log("Variant 'b' same as index 2");
@@ -555,6 +604,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.window().then((win) => {
@@ -586,6 +638,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.log("Index '301' same as index 1");
@@ -618,6 +673,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.log("Variant 'cQ' and index '95' are the same");
@@ -655,6 +713,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('95');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(95);
+      expect(components["/_document1"].sharedParameters.variantName).eq('cq');
     })
 
     cy.window().then((win) => {
@@ -686,6 +747,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('95');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(95);
+      expect(components["/_document1"].sharedParameters.variantName).eq('cq');
     })
 
 
@@ -720,6 +784,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
 
@@ -754,6 +821,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
 
@@ -788,6 +858,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('95');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(95);
+      expect(components["/_document1"].sharedParameters.variantName).eq('cq');
     })
 
 
@@ -844,6 +917,10 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('avocado');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["avocado" ,"broccoli","carrot","dill","eggplant"]);
     })
 
     cy.log("specify third variant index")
@@ -895,6 +972,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('3');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(components["/_document1"].sharedParameters.variantName).eq('carrot');
     })
 
 
@@ -949,6 +1029,9 @@ describe('Specifying single variant document tests', function () {
         }]
       })
       generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo))
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('broccoli');
     })
 
 
@@ -1001,6 +1084,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('broccoli');
     })
 
     cy.log("specify variant dill")
@@ -1052,6 +1138,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('4');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(4);
+      expect(components["/_document1"].sharedParameters.variantName).eq('dill');
     })
 
 
@@ -1104,6 +1193,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(components["/_document1"].sharedParameters.variantName).eq('eggplant');
     })
 
 
@@ -1156,6 +1248,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('broccoli');
     })
 
 
@@ -1208,6 +1303,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('avocado');
     })
 
 
@@ -1260,6 +1358,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('avocado');
     })
 
 
@@ -1312,6 +1413,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_select1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('5');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(components["/_document1"].sharedParameters.variantName).eq('eggplant');
     })
 
   });
@@ -1352,6 +1456,10 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('50283');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c", "d", "e"]);
     })
 
     cy.window().then((win) => {
@@ -1385,6 +1493,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('50283');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.log("specify second variant index")
@@ -1422,6 +1533,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('25018');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.window().then((win) => {
@@ -1454,6 +1568,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('25018');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
     cy.log("specify third variant by name")
@@ -1492,6 +1609,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('52018');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(components["/_document1"].sharedParameters.variantName).eq('c');
     })
 
     cy.window().then((win) => {
@@ -1524,6 +1644,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('52018');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(components["/_document1"].sharedParameters.variantName).eq('c');
     })
 
     cy.log("specify fourth variant as string")
@@ -1563,6 +1686,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2917392');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(4);
+      expect(components["/_document1"].sharedParameters.variantName).eq('d');
     })
 
     cy.window().then((win) => {
@@ -1595,6 +1721,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2917392');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(4);
+      expect(components["/_document1"].sharedParameters.variantName).eq('d');
     })
 
 
@@ -1636,6 +1765,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('603962');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(components["/_document1"].sharedParameters.variantName).eq('e');
     })
 
     let generatedVariantInfo;
@@ -1670,6 +1802,9 @@ describe('Specifying single variant document tests', function () {
         }]
       })
       generatedVariantInfo = JSON.parse(JSON.stringify(components["/_document1"].stateValues.generatedVariantInfo))
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('603962');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(components["/_document1"].sharedParameters.variantName).eq('e');
     })
 
 
@@ -1704,6 +1839,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('603962');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(components["/_document1"].sharedParameters.variantName).eq('e');
     })
 
 
@@ -1741,6 +1879,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2917392');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.window().then((win) => {
@@ -1773,6 +1914,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2917392');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
     })
 
     cy.log("specify second variant index")
@@ -1807,6 +1951,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('52018');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
     })
 
 
@@ -1842,6 +1989,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('603962');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(components["/_document1"].sharedParameters.variantName).eq('c');
     })
 
     cy.log("specify fourth variant as string")
@@ -1876,6 +2026,9 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('50283');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(4);
+      expect(components["/_document1"].sharedParameters.variantName).eq('d');
     })
 
     cy.log("specify fifth variant as negative")
@@ -1910,6 +2063,555 @@ describe('Specifying single variant document tests', function () {
           meta: { createdBy: "/_selectfromsequence1" }
         }]
       })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('25018');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(5);
+      expect(components["/_document1"].sharedParameters.variantName).eq('e');
+    })
+
+  });
+
+  it('document with variant control partially specifying seeds and variants', () => {
+
+    cy.log("specify first variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <variantControl nvariants="4" seeds="50283  25018  " variants="d h" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 1 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    let nWithSeed50283;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed50283 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'd',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed50283],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('50283');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('d');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["d", "h", "c", "e"]);
+    })
+
+    cy.log("specify second variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>c</text>
+    <variantControl nvariants="4" seeds="50283  25018  " variants="d h" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 124082 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `c`)
+
+    let nWithSeed25018;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed25018 = components['/n'].stateValues.value;
+      expect(nWithSeed25018).not.eq(nWithSeed50283);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 2,
+        name: 'h',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed25018],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('25018');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('h');
+    })
+
+    cy.log("specify third variant by name")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>e</text>
+    <variantControl nvariants="4" seeds="50283  25018 " variants="d h" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { name: 'c' },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `e`)
+
+    let nWithSeed3;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed3 = components['/n'].stateValues.value;
+      expect(nWithSeed3).not.eq(nWithSeed50283);
+      expect(nWithSeed3).not.eq(nWithSeed25018);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 3,
+        name: 'c',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed3],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('3');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(components["/_document1"].sharedParameters.variantName).eq('c');
+    })
+
+    cy.log("specify fourth variant as string")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>g</text>
+    <variantControl nvariants="4" seeds="50283  25018 " variants="d h" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: '820572308' },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `g`)
+
+    let nWithSeed4;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed4 = components['/n'].stateValues.value;
+      expect(nWithSeed4).not.eq(nWithSeed50283);
+      expect(nWithSeed4).not.eq(nWithSeed25018);
+      expect(nWithSeed4).not.eq(nWithSeed3);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 4,
+        name: 'e',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed4],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('4');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(4);
+      expect(components["/_document1"].sharedParameters.variantName).eq('e');
+    })
+
+  });
+
+  it('document with variant control specifying only number of variants', () => {
+
+    cy.log("specify first variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <variantControl nvariants="3" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 1 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    let nWithSeed1;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed1 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'a',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c"]);
+    })
+
+    cy.log("specify second variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>c</text>
+    <variantControl nvariants="3" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 5 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `c`)
+
+    let nWithSeed2;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed2 = components['/n'].stateValues.value;
+      expect(nWithSeed2).not.eq(nWithSeed1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 2,
+        name: 'b',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed2],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('2');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(2);
+      expect(components["/_document1"].sharedParameters.variantName).eq('b');
+    })
+
+    cy.log("specify third variant by name")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>e</text>
+    <variantControl nvariants="3" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { name: 'c' },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `e`)
+
+    let nWithSeed3;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed3 = components['/n'].stateValues.value;
+      expect(nWithSeed3).not.eq(nWithSeed1);
+      expect(nWithSeed3).not.eq(nWithSeed2);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 3,
+        name: 'c',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed3],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('3');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(components["/_document1"].sharedParameters.variantName).eq('c');
+    })
+
+
+  });
+
+  it('document with variant control specifying zero variants', () => {
+
+    cy.log("specify first variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <variantControl nvariants="0" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 1 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    let nWithSeed1;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed1 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'a',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["a"]);
+    })
+
+    cy.log("specify second variant index gives first")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>c</text>
+    <variantControl nvariants="0" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 2 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `c`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/n'].stateValues.value).eq(nWithSeed1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'a',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+    })
+
+
+  });
+
+  it('document with variant control specifying fractional variants', () => {
+
+    cy.log("specify third variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <variantControl nvariants="3.5" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 7 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    let nWithSeed3;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed3 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 3,
+        name: 'c',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed3],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('3');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(3);
+      expect(components["/_document1"].sharedParameters.variantName).eq('c');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["a","b","c","d"]);
+    })
+
+
+  });
+
+  it('document with variant control specifying negative fractional variants', () => {
+
+    cy.log("specify first variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <variantControl nvariants="-3.5" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 19 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    let nWithSeed1;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed1 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'a',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants).eqls(["a"]);
+    })
+
+    cy.log("specify second variant index gives first")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>c</text>
+    <variantControl nvariants="-3.5" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 5 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `c`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/n'].stateValues.value).eq(nWithSeed1);
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'a',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+    })
+
+
+  });
+
+  it('document with variant control specifying too many variants', () => {
+
+    cy.log("specify first variant index")
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <variantControl nvariants="10000" />
+    <p>
+      Selected number: 
+      <selectfromsequence assignnames="n" length="10000000000" />
+    </p>
+    `,
+        requestedVariant: { index: 1000 },
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    let nWithSeed1;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      nWithSeed1 = components['/n'].stateValues.value;
+      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
+        index: 1,
+        name: 'a',
+        meta: {
+          createdBy: "/_document1",
+          subvariantsSpecified: false,
+        },
+        subvariants: [{
+          indices: [nWithSeed1],
+          meta: { createdBy: "/_selectfromsequence1" }
+        }]
+      })
+      expect(components["/_document1"].sharedParameters.variantSeed).eq('1');
+      expect(components["/_document1"].sharedParameters.variantIndex).eq(1);
+      expect(components["/_document1"].sharedParameters.variantName).eq('a');
+      expect(components["/_document1"].sharedParameters.allPossibleVariants.length).eq(999);
     })
 
   });

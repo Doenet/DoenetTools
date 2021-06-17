@@ -612,24 +612,23 @@ export default class Document extends BaseComponent {
       }
 
       if (variantIndex === undefined) {
-        // if variant inedex wasn't specifed, use first variant
+        // if variant index wasn't specifed, use first variant
         variantIndex = 1;
       }
 
-      let seed = variantIndex.toString();
-
+      sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
       sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
-      sharedParameters.selectRng = new sharedParameters.rngClass(seed);
+      sharedParameters.selectRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
     } else {
       // get parameters from variant control child
+      sharedParameters.variantSeed = variantControlChild.state.selectedSeed.value;
       sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
       sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.selectRng = variantControlChild.state.selectRng.value;
       sharedParameters.allPossibleVariants = variantControlChild.state.variants.value;
-      // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
     }
 
     // seed rng for random numbers predictably from variant using selectRng
