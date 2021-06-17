@@ -160,8 +160,6 @@ export default function MenuPanels({ panelNames=[] }) {
   }
   },panelNames)
 
-
-
   return (
     <MenuPanelsWrapper>
      <MenuPanelsCap>

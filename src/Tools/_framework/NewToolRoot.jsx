@@ -63,39 +63,55 @@ export const profileAtom = atom({
   })
 })
 
-export const panelRequestsAtom = atom({
-  key: "panelRequestsAtom",
+export const toolViewAtom = atom({
+  key: "toolViewAtom",
   default:{
     menuPanels:[],
     mainPanel:"",
-    supportPanel:[],
+    supportPanel:[""],
   }
 })
-
+ 
 export default function ToolRoot(props){
-  // console.log(">>>DoenetTool props",props)
+  console.log(">>>DoenetTool props",props) 
   const profile = useRecoilValueLoadable(profileAtom)
-  const panelRequests = useRecoilValue(panelRequestsAtom);
+  const toolViewInfo = useRecoilValue(toolViewAtom);
+  // const mainPanel = useState()
+
+  const [
+    One,
+    Two
+  ] = useRef([
+    lazy(() => import('./MainPanels/One')),
+    lazy(() => import('./MainPanels/Two')),
+  ]).current;
 
   useEffect(()=>{
-    console.log(">>>panelRequests",panelRequests)
-  },[panelRequests])
+    console.log(">>>toolViewInfo",toolViewInfo)
+  },[toolViewInfo])
 
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
 
+    let mainContent = <One />;
+    let supportContent = <One />
+    let notUsed = <Two />
       console.log(">>>profile.contents",profile.contents)
+    let supportPanel = null;
+    if (toolViewInfo.supportPanel.length > 0){
+      supportPanel = <SupportPanel><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{supportContent}</Suspense></SupportPanel>
+    }
 
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <Toast />
     <ToolContainer>
-      <MenuPanels />
+      <MenuPanels key='mp'/>
       <ContentPanel 
-      main={<MainPanel><h1>main</h1></MainPanel>} 
-      support={<SupportPanel><h1>support</h1></SupportPanel>}
+      main={<MainPanel><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{mainContent}</Suspense></MainPanel>} 
+      support={supportPanel}
       />
       {/* <FooterPanel></FooterPanel> */}
     </ToolContainer>
