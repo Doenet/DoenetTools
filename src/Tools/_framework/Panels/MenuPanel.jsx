@@ -4,6 +4,10 @@ import styled from 'styled-components';
 import { useStackId } from '../ToolRoot';
 import DragPanel, { handleDirection } from './Panel';
 import { ProfileContext } from '../ToolRoot';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import logo from "/media/Doenet_Logo_cloud_only.png";
+
 // import logo from './src/Media/Doenet_Logo_cloud_only.png';
 
 const MenuPanelsWrapper = styled.div`
@@ -36,6 +40,7 @@ const MenuHeaderButton = styled.button`
       linkedPanel === activePanel ? '#white' : 'black'};
   width: 100%;
   height: 100%;
+
 `;
 
 export const activeMenuPanel = atomFamily({
@@ -56,23 +61,44 @@ const ProfilePicture = styled.button`
   background-repeat: no-repeat;
   background-size: cover;
   transition: 300ms;
-  color: #333333;
+  // color: #333333;
   width: 30px;
   height: 30px;
-  display: inline;
-  color: rgba(0, 0, 0, 0);
+  display: inline-block;
+  // color: rgba(0, 0, 0, 0);
   justify-content: center;
   align-items: center;
   border-radius: 50%;
   border-style: none;
-  margin-right: 3px;
+  margin-left: 75px;
+  margin-top: 4px
 `;
+
+const Logo = styled.div`
+background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
+    url('/media/Doenet_Logo_cloud_only.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 50px 25px;
+  transition: 300ms;
+  // background-color: pink;
+  width: 50px;
+  height: 25px;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  border-style: none;
+  margin-top: 5px;
+  margin-left: 2px
+`
+
 const CloseButton = styled.button`
 background-color: #1A5A99;
-height: 25px;
+height: 35px;
 width: 20px;
 color: white;
-border: none
+border: none;
+display: inline-block;
 `;
 
 const EditMenuPanels = styled.button`
@@ -137,17 +163,18 @@ export default function MenuPanel({ children }) {
   return (
     <MenuPanelsWrapper>
       <MenuPanelsCap>
-        <span>
-        <span style={{marginLeft:'6px',marginRight:'6px'}}>
-          Logo
+        <span >
+          <Logo/>
           {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
         </span>
-        <span>Doenet</span>
-        </span>
-        <span>
+        <span style={{marginBottom: '1px'}}>Doenet</span>
+        <span >
           <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
-          <CloseButton onClick={()=>console.log('>>>close menu panels')}>x</CloseButton>
         </span>
+        <span >
+          <CloseButton onClick={()=>console.log('>>>close menu panels')}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
+        </span>
+        
           {/* {anchor} */}
       </MenuPanelsCap>
     {panels}

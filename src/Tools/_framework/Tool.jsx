@@ -19,7 +19,7 @@ const ToolContainer = styled(animated.div)`
   top: 0;
   left: 0;
   padding: 0px;
-  gap: 2px;
+  gap: 0px 2px;
   box-sizing: border-box;
 `;
 

@@ -6,7 +6,7 @@ const SupportWapper = styled.div`
   grid-area: supportPanel;
   background-color: hsl(0, 0%, 99%);
   height: 100%;
-  border-radius: 0 0 4px 4px;
+  // border-radius: 0 0 4px 4px;
 `;
 
 const ControlsWrapper = styled.div`
@@ -15,8 +15,8 @@ const ControlsWrapper = styled.div`
   display: flex;
   gap: 4px;
   background-color: hsl(0, 0%, 99%);
-  border-radius: 4px 4px 0 0;
-  border-bottom: 2px solid #e3e3e3;
+  // border-radius: 4px 4px 0 0;
+  // border-bottom: 2px solid #e3e3e3;
 
 `;
 

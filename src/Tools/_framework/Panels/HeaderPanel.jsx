@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   justify-content: flex-end;
   align-items: center;
   gap: 4px;
-  border-radius: 4px;
+  // border-radius: 4px;
   padding: 4px;
   background-color: hsl(0, 0%, 99%);
 `;
