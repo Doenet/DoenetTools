@@ -44,7 +44,7 @@ $response_arr = array(
   FROM assignment AS a
   LEFT JOIN content AS c
   ON a.doenetId = c.doenetId
-  WHERE c.doenetId = '$doenetId' 
+  WHERE c.doenetId = '$doenetId' AND c.isAssigned = '1'
   ";
   
   $result = $conn->query($sql);

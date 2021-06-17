@@ -9,20 +9,22 @@ import {
 import { useMenuPanelController } from "../../Tools/_framework/Panels/MenuPanel";
 import { drivecardSelectedNodesAtom }from "../../Tools/library/Library";
 import {
-  // atom,
+  atom,
+  atomFamily,
   useSetRecoilState,
-  useRecoilValue,useRecoilState,
+  useRecoilValue,
+  useRecoilState,
   useRecoilValueLoadable,
+  useRecoilCallback,
 } from "recoil";
 import { 
-  fetchDrivesSelector,drivePathSyncFamily
+  fetchDrivesSelector,drivePathSyncFamily,loadDriveInfoQuery
 } from "./Drive";
 
 
 const DriveCards = (props) => {
 
-  const { driveDoubleClickCallback, isOneDriveSelect, subTypes,types,drivePathSyncKey} = props;
-
+  const { driveDoubleClickCallback, isOneDriveSelect,types,drivePathSyncKey} = props;
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
   let driveInfo = [];
   if (drivesInfo.state === "hasValue") {
@@ -33,7 +35,6 @@ const DriveCards = (props) => {
    if (driveInfo && driveInfo.length > 0) {
      drivecardComponent = <DriveCardWrapper 
      driveDoubleClickCallback={driveDoubleClickCallback} 
-     subTypes={subTypes}
      types={types}
      drivePathSyncKey={drivePathSyncKey}
      isOneDriveSelect = {isOneDriveSelect}
@@ -57,12 +58,17 @@ const DriveCards = (props) => {
    )
 };
 
+
+
 const DriveCardWrapper = (props) => {
-  const { driveDoubleClickCallback , isOneDriveSelect, subTypes ,driveInfo, drivePathSyncKey, types} = props;
+  const { driveDoubleClickCallback , isOneDriveSelect ,driveInfo, drivePathSyncKey, types} = props;
  
   const [drivecardSelectedValue,setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom)
   const setOpenMenuPanel = useMenuPanelController();
   const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
+  const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
+  // console.log(" columnJSX drivesInfo",drivecardInfo)
+
 
 
   let driveCardItems =[];
@@ -80,20 +86,22 @@ const DriveCardWrapper = (props) => {
   heights = new Array(columns).fill(0);
   let showCards = [];
   if(types[0] === 'course'){
-  if(subTypes.length > 1)
-  {
     showCards = driveInfo;
-  }
-  else
-  {
-    for(let i = 0;i< driveInfo.length;i++)
-    {
-        if(driveInfo[i].subType === subTypes[0])
-        {
-          showCards.push(driveInfo[i]);
-        }
-    }            
-  } 
+
+  // if(subTypes.length > 1)
+  // {
+  //   showCards = driveInfo;
+  // }
+  // else
+  // {
+  //   for(let i = 0;i< driveInfo.length;i++)
+  //   {
+  //       if(driveInfo[i].subType === subTypes[0])
+  //       {
+  //         showCards.push(driveInfo[i]);
+  //       }
+  //   }            
+  // } 
   }
          
   driveCardItems = showCards.map((child, i) => {
@@ -223,6 +231,7 @@ const DriveCardWrapper = (props) => {
   return availableCard.length > 0 ? true : false;
  }
 
+
   return (
     <div className="drivecardContainer">
          <Measure
@@ -278,6 +287,7 @@ const DriveCardWrapper = (props) => {
                     color={item.color}
                     label={item.label}
                     isSelected={isSelected}
+                    role={item.role}
                   />
               </div>
             </div>

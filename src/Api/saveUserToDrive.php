@@ -106,9 +106,9 @@ if ($type === "Remove User"){
       $sql = "
       INSERT INTO drive_user
       (userId,driveId,canViewDrive,canDeleteDrive,canShareDrive,canAddItemsAndFolders,canDeleteItemsAndFolders,
-      canMoveItemsAndFolders,canRenameItemsAndFolders,canPublishItemsAndFolders,canViewUnreleasedItemsAndFolders,canViewUnassignedItemsAndFolders,canChangeAllDriveSettings)
+      canMoveItemsAndFolders,canRenameItemsAndFolders,canPublishItemsAndFolders,canViewUnreleasedItemsAndFolders,canViewUnassignedItemsAndFolders,canChangeAllDriveSettings,role)
       VALUES
-      ('$newUserId','$driveId','1',$canDeleteDrive,'1','1','1','1','1','1','1','1',$canDeleteDrive)
+      ('$newUserId','$driveId','1',$canDeleteDrive,'1','1','1','1','1','1','1','1',$canDeleteDrive,'Owner')
       ";
       $result = $conn->query($sql); 
     }
