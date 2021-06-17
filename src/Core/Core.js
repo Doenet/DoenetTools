@@ -353,7 +353,7 @@ export default class Core {
             }
           } else {
             // wasn't able to retrieve content
-              console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
+            console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
             newDoenetMLs[ind] = "";
           }
         }
@@ -1008,7 +1008,7 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
-    if(componentClass.descendantCompositesMustHaveAReplacement) {
+    if (componentClass.descendantCompositesMustHaveAReplacement) {
       sharedParameters.compositesMustHaveAReplacement = true;
       sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
     }
@@ -2442,8 +2442,10 @@ export default class Core {
       }
 
 
-      stateVarDef.definition = function ({ dependencyValues }) {
-        if (dependencyValues.adapterTargetVariable === undefined) {
+      stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
+        if (dependencyValues.adapterTargetVariable === undefined
+          || usedDefault.adapterTargetVariable
+        ) {
           return {
             useEssentialOrDefaultValue: {
               [varName]: { variablesToCheck: varName }
