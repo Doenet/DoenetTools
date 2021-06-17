@@ -3,7 +3,7 @@ import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 // import { useStackId } from '../ToolRoot';
 import DragPanel, { handleDirection } from './Panel';
-import { ProfileContext } from '../DoenetTool';
+import { ProfileContext } from '../NewToolRoot';
 // import logo from './src/Media/Doenet_Logo_cloud_only.png';
 
 const MenuPanelsWrapper = styled.div`
@@ -121,7 +121,7 @@ function MenuPanelInstance(props){
 export default function MenuPanels({ panelNames=[] }) {
   const profile = useContext(ProfileContext)
   console.log(">>>profile",profile)
-  
+
   //These maintain the panels' state
   const [viewPanels,setViewPanels] = useState([])
   const [userPanels,setUserPanels] = useState([])

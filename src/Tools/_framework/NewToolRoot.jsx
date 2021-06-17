@@ -10,7 +10,7 @@ import {
 import styled from 'styled-components';
 import Toast from './Toast';
 import { useMenuPanelController } from './Panels/MenuPanel';
-import ContentPanel, { useSupportDividerController } from './Panels/ContentPanel';
+import ContentPanel, { useSupportDividerController } from './Panels/NewContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 
@@ -62,9 +62,10 @@ export const profileAtom = atom({
   })
 })
 
-export default function DoenetTool(props){
+export default function ToolRoot(props){
   // console.log(">>>DoenetTool props",props)
   const profile = useRecoilValueLoadable(profileAtom)
+
 
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
@@ -74,14 +75,16 @@ export default function DoenetTool(props){
       console.log(">>>profile.contents",profile.contents)
 
   return <ProfileContext.Provider value={profile.contents}>
+    <Toast />
     <ToolContainer>
+      <MenuPanels />
       <ContentPanel 
       main={<MainPanel><h1>main</h1></MainPanel>} 
       support={<SupportPanel><h1>support</h1></SupportPanel>}
       />
-      <MenuPanels />
       {/* <FooterPanel></FooterPanel> */}
     </ToolContainer>
+
   </ProfileContext.Provider>
 }
 
@@ -240,28 +243,28 @@ export const useStackId = () => {
 
 
 
-export function ToolRoot({ tool }) {
-  const overlays = useRecoilValue(layerStackAtom);
+// export function ToolRoot({ tool }) {
+//   const overlays = useRecoilValue(layerStackAtom);
 
-  const profile = useRecoilValueLoadable(profileAtom)
+//   const profile = useRecoilValueLoadable(profileAtom)
 
-  if (profile.state === "loading"){ return null;}
-    if (profile.state === "hasError"){ 
-      console.error(profile.contents)
-      return null;}
+//   if (profile.state === "loading"){ return null;}
+//     if (profile.state === "hasError"){ 
+//       console.error(profile.contents)
+//       return null;}
 
-// console.log(">>>ToolRoot profile.contents",profile.contents)
-  return (
-    <ProfileContext.Provider value={profile.contents}>
-      {/* <GlobalStyle /> */}
+// // console.log(">>>ToolRoot profile.contents",profile.contents)
+//   return (
+//     <ProfileContext.Provider value={profile.contents}>
+//       {/* <GlobalStyle /> */}
 
-      {tool}
-      <Suspense fallback={<LoadingFallback>Loading...</LoadingFallback>}>
-        {overlays.map((layer, idx) =>
-          idx == overlays.length - 1 ? layer : null,
-        )}
-      </Suspense>
-      <Toast />
-    </ProfileContext.Provider>
-  );
-}
+//       {tool}
+//       <Suspense fallback={<LoadingFallback>Loading...</LoadingFallback>}>
+//         {overlays.map((layer, idx) =>
+//           idx == overlays.length - 1 ? layer : null,
+//         )}
+//       </Suspense>
+//       <Toast />
+//     </ProfileContext.Provider>
+//   );
+// }

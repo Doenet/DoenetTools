@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
-import DoenetTool from '../_framework/DoenetTool';
+import ToolRoot from '../_framework/NewToolRoot';
 
 
 ReactDOM.render(
@@ -13,7 +13,7 @@ ReactDOM.render(
         <Route
           path="/"
           render={(routeprops) => (
-            <DoenetTool route={{ ...routeprops }}/>
+            <ToolRoot route={{ ...routeprops }}/>
           )}
         />
       </Switch>
