@@ -643,24 +643,25 @@ export default class SectioningComponent extends BlockComponent {
     descendantVariantComponents,
     allComponentClasses
   }) {
-    let variantcontrolChild;
+    let variantControlChild;
     for (let child of definingChildrenSoFar) {
       if (child !== undefined && child.componentType === "variantControl") {
-        variantcontrolChild = child;
+        variantControlChild = child;
         break;
       }
     }
-    sharedParameters.variantName = variantcontrolChild.state.selectedVariantName.value;
-    sharedParameters.variantIndex = variantcontrolChild.state.selectedVariantIndex.value;
-    sharedParameters.selectRng = variantcontrolChild.state.selectRng.value;
-    sharedParameters.allPossibleVariants = variantcontrolChild.state.variants.value;
+    sharedParameters.variantSeed = variantControlChild.state.selectedSeed.value;
+    sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
+    sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
+    sharedParameters.selectRng = variantControlChild.state.selectRng.value;
+    sharedParameters.allPossibleVariants = variantControlChild.state.variants.value;
 
     // seed rng for random numbers predictably from variant using selectRng
     let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
     sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
 
     // console.log("****Variant for sectioning component****")
-    // console.log("Selected seed: " + variantcontrolChild.state.selectedSeed);
+    // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
     // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants
