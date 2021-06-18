@@ -66,7 +66,7 @@ export const profileAtom = atom({
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
-    viewName:"OneTwo",
+    viewName:"CountACountB",
     menuPanels:[],
     mainPanel:"Count",
     // mainPanel:"One",
@@ -102,10 +102,11 @@ export default function ToolRoot(props){
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
+      // console.log(">>>===ToolRoot")
 
       // console.log(">>>lazyObj",lazyObj) 
       // const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><LazyObj.Two /></Suspense>
-      const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><LazyObj.Two /></Suspense>
+      const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{React.createElement(LazyObj['Two'],{key:'ha!'})}</Suspense>
 
       //<Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{mainContent}</Suspense>
  
@@ -139,10 +140,12 @@ export default function ToolRoot(props){
 
       // console.log(">>>profile.contents",profile.contents)
     let supportPanel = null;
+    supportPanel = <SupportPanel><p>hi</p></SupportPanel>
     // if (toolViewInfo.supportPanel.length > 0){
     //   supportPanel = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><SupportPanel>{supportContent}</SupportPanel></Suspense>
     // }
  
+    //CAN I JUST USE THE INDEX IN MAINPANEL AND NOT THE WHOLE ARRAY???
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <Toast />
