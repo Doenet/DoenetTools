@@ -147,7 +147,7 @@ export function showCursor(cursor){
     return showNode(cursor.node);
 }
 
-function showNode(node){
+export function showNode(node){
     let str = node.name
     if(node.firstChild != null){
         str+= "(" + showNode(node.firstChild) + ")"
