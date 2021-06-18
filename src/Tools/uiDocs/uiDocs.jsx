@@ -19,7 +19,7 @@ import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/Vertic
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-// === HOW TO ADD TO CONTROLS ===
+// === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
 // 2. Copy and paste this into the DATA STRUCTURE section below in alphabetical order
 // {
@@ -74,10 +74,26 @@ export default function attempt() {
           propPreview: '<ActionButton size="medium"/>',
           propCode: {size: 'medium'},
           description: 'The default is small, as shown above.'},
+          {name: 'Width - Menu Panel',
+          propPreview: '<ActionButton width="menu" />',
+          propCode: {width: 'menu'},
+          description: 'Sets width to fill menu panel width'},
+          {name: 'Width - Custom',
+          propPreview: '<ActionButton width="500px" />',
+          propCode: {width: '500px'},
+          description: 'Sets width to custom dimensions'},
           {name: 'Value',
           propPreview: '<ActionButton value="Edit"/>',
           propCode: {value: 'Edit'},
           description: 'Changes the text'},
+          {name: 'Icon',
+            propPreview: '<ActionButton icon={<FontAwesomeIcon icon={faCode}}/>',
+            propCode: {icon: <FontAwesomeIcon icon={faCode}/>},
+            description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'},
+            {name: 'Value + Icon',
+            propPreview: '<ActionButton icon={<FontAwesomeIcon icon={faCode}} value="code"/>',
+            propCode: {icon: <FontAwesomeIcon icon={faCode}/>, value: 'code'},
+            description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'},
           {name: 'Alert',
           propPreview: '<ActionButton alert/>',
           propCode: {alert},
@@ -91,7 +107,17 @@ export default function attempt() {
       codePreview: '<ActionButtonGroup> <ActionButton/> <ActionButton/> <ActionButton/> </ActionButtonGroup>',
       req_props: null,
       req_children: [React.createElement(ActionButton), React.createElement(ActionButton), React.createElement(ActionButton)],
-      use: 'This groups related action buttons together.'
+      use: 'This groups related action buttons together.',
+    //   props: [
+    //     // {name: 'Width - Menu Panel',
+    //     // propPreview: '<ActionButtonGroup width="menu" />',
+    //     // propCode: {width: 'menu'},
+    //     // description: 'Sets width to fill menu panel width'},
+    //     // {name: 'Width - Custom',
+    //     // propPreview: '<ActionButtonGroup width="500px" />',
+    //     // propCode: {width: '500px'},
+    //     // description: 'Sets width to custom dimensions'},
+    //   ]
     },
     {
       name: 'Button',
@@ -106,10 +132,26 @@ export default function attempt() {
           propPreview: '<Button size="medium"/>',
           propCode: {size: 'medium'},
           description: 'The default is small, as shown above.'},
+          {name: 'Width - Menu Panel',
+          propPreview: '<Button width="menu" />',
+          propCode: {width: 'menu'},
+          description: 'Sets width to fill menu panel width'},
+          {name: 'Width - Custom',
+          propPreview: '<Button width="500px" />',
+          propCode: {width: '500px'},
+          description: 'Sets width to custom dimensions'},
           {name: 'Value',
           propPreview: '<Button value="This button is amazing!"/>',
           propCode: {value: 'This button is amazing!'},
           description: 'Changes the text'},
+          {name: 'Icon',
+            propPreview: '<Button icon={<FontAwesomeIcon icon={faCode}}/>',
+            propCode: {icon: <FontAwesomeIcon icon={faCode}/>},
+            description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'},
+            {name: 'Value + Icon',
+            propPreview: '<Button icon={<FontAwesomeIcon icon={faCode}} value="code"/>',
+            propCode: {icon: <FontAwesomeIcon icon={faCode}/>, value: 'code'},
+            description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'},
           {name: 'Alert',
           propPreview: '<Button alert/>',
           propCode: {alert},
@@ -123,7 +165,17 @@ export default function attempt() {
       codePreview: '<SearchBar/>',
       req_props: null,
       req_children: null,
-      use: 'Used for finding things.'
+      use: 'Used for finding things.',
+      props: [
+        {name: 'Width - Menu Panel',
+        propPreview: '<SearchBar width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Width - Custom',
+        propPreview: '<SearchBar width="500px" />',
+        propCode: {width: '500px'},
+        description: 'Sets width to custom dimensions'},
+      ]
     },
     {
     name: 'Textfield',
@@ -138,6 +190,14 @@ export default function attempt() {
       propPreview: '<Textfield size="medium"/>',
       propCode: {size: 'medium'},
       description: 'The default is small, as shown above.'},
+      {name: 'Width - Menu Panel',
+        propPreview: '<Textfield width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Width - Custom',
+        propPreview: '<Textfield width="500px" />',
+        propCode: {width: '500px'},
+        description: 'Sets width to custom dimensions'},
       {name: 'Value',
       propPreview: '<Textfield value="Enter cat names"/>',
       propCode: {value: 'Enter cat names'},
@@ -161,6 +221,14 @@ export default function attempt() {
         propPreview: '<ToggleButton size="medium"/>',
         propCode: {size: 'medium'},
         description: 'The default is small, as shown above.'},
+        {name: 'Width - Menu Panel',
+        propPreview: '<ToggleButton width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Width - Custom',
+        propPreview: '<ToggleButton width="500px" />',
+        propCode: {width: '500px'},
+        description: 'Sets width to custom dimensions'},
         {name: 'Value',
         propPreview: '<ToggleButton value="Select me"/>',
         propCode: {value: 'Select me'},
@@ -180,6 +248,10 @@ export default function attempt() {
         {name: 'Icon',
         propPreview: '<ToggleButton icon={<FontAwesomeIcon icon={faCode}}/>',
         propCode: {icon: <FontAwesomeIcon icon={faCode}/>},
+        description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'},
+        {name: 'Value + Icon',
+        propPreview: '<ToggleButton icon={<FontAwesomeIcon icon={faCode}} value="code"/>',
+        propCode: {icon: <FontAwesomeIcon icon={faCode}/>, value: 'code'},
         description: 'See Style Guide for more info on how to use FontAwesomeIcons. Adds icon in button'},
         {name: 'Alert',
         propPreview: '<ToggleButton alert/>',
@@ -228,7 +300,7 @@ export default function attempt() {
     return (
     <div>
       <h1>Hi!</h1>
-      <p>This is the Component Library. Use it wisely.</p>
+      <p>This is the UI Component Library. Here you can find information on all the the React UI Components.</p>
       <p style={{display: "inline"}}>You will need </p>
       <p style={{color: "blue", display: "inline"}}>import ComponentName from "../imports/PanelHeaderComponents/ComponentName.js"</p>
       <p style={{display: "inline"}}> to add the component to a new file.</p>
@@ -244,7 +316,7 @@ export default function attempt() {
         <p>These are the guidelines for creating components for user input on Doenet. 
           They are guidelines -- you can break them (and should if something looks ridiculous), 
           but make sure you have a reason why you need to and that you can convince someone else of that reason. 
-          Once you’ve created or fixed a component, add the documentation for it to this file ../src/Tools/DoenetControls.js and update the component spreadsheet 
+          Once you’ve created or fixed a component, add the documentation for it to this file ../src/Tools/uiDocs.js and update the component spreadsheet 
           <a href='https://docs.google.com/spreadsheets/d/16aaVroOz-l_DX3QGsVN9m-z0yE5LGFPH9HHLsUQKZCs/edit?usp=sharing' target='_blank'> here</a>. </p>
           <hr/>
 
@@ -339,18 +411,18 @@ export default function attempt() {
             <h1>Components</h1>
             {/* <SearchBar width='110px'/> */}
           </div>
-            <h3><Link to={`/controls/new_components`} style={{color: "black"}}>New Component Guidelines</Link></h3>
+            <h3><Link to={`/uiDocs/new_components`} style={{color: "black"}}>New Component Guidelines</Link></h3>
           <List>
             {dataStructure.map(({ name, id}) => (
-              <li key={id}><Link to={`/controls/component/${id}`} style={{color: "black"}}>{name}</Link></li>
+              <li key={id}><Link to={`/uiDocs/component/${id}`} style={{color: "black"}}>{name}</Link></li>
             ))}
           </List>
         </NavBar>
 
         <Content>
-          <Route exact path='/controls' component={Home}></Route>
-          <Route exact path={`/controls/new_components`} component={New}></Route>
-          <Route path={`/controls/component/:componentId`} component={Components}></Route>
+          <Route exact path='/uiDocs' component={Home}></Route>
+          <Route exact path={`/uiDocs/new_components`} component={New}></Route>
+          <Route path={`/uiDocs/component/:componentId`} component={Components}></Route>
         </Content>
 
       </div>
