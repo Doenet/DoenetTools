@@ -94,7 +94,6 @@ export default function CodeMirror(props){
 
     const doenetLanguage = LezerLanguage.define({
         parser: parserWithMetadata,
-        //TODO look into languageData (looks like there's more than this (undocumented of course))
         languageData: {
             commentTokens: {block: {open: "<!--", close: "-->"}},
             indentOnInput: /^\s*<\/.+>$/

@@ -468,14 +468,6 @@ function TextEditor(props){
   if (activeVersionId !== ""){
     //Read Only without timers
     clearSaveTimeouts()
-    //TODO migrate to codemirror 6
-  //   if (editorRef.current){
-  //     editorRef.current.options.readOnly = true;
-  //   }
-  // }else{
-  //   if (editorRef.current){
-  //     editorRef.current.options.readOnly = false;
-  //   }
   }
 
   const editorInit = useRecoilValue(editorInitAtom);
