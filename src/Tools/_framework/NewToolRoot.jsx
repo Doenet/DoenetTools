@@ -68,80 +68,73 @@ export const toolViewAtom = atom({
   default:{
     viewName:"OneTwo",
     menuPanels:[],
-    mainPanel:"One",
+    mainPanel:"Count",
+    // mainPanel:"One",
     supportPanel:["Two","One"],
-    supportPanelIndex:1,
+    supportPanelIndex:0,
   }
 })
- 
+   
 export default function ToolRoot(props){
   // console.log(">>>DoenetTool props",props) 
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
-  const [mainContentObj,setMainContentObj] = useState({})
-  const [supportContentObj,setSupportContentObj] = useState({})
+  const mainContentObj = useRef({})
+  // const [supportContentObj,setSupportContentObj] = useState({})
 
+  let toolPanelsObj = {}
+  const One = useRef(lazy(() => import('./ToolPanels/One'))).current;
+  toolPanelsObj['One'] = <One />;
+  const Two = useRef(lazy(() => import('./ToolPanels/Two'))).current;
+  toolPanelsObj['Two'] = <Two />;
+  const Count = useRef(lazy(() => import('./ToolPanels/Count'))).current;
+  toolPanelsObj['Count'] = <Count />;
 
-  useEffect(()=>{
-
-    async function fetchMainPanel(panelPromise,setter,index){
-      try {
-        let module = await panelPromise;
-         setter((was)=>{ 
-          let newObj = {...was}; 
-          newObj[toolViewInfo.viewName] = <div key={`${toolViewInfo.viewName}${index}`}>{module.default()}</div>
-          return newObj})
-      } catch (error) {
-        console.log(error)
-        console.error(`Error: loading view ${toolViewInfo.viewName} failed.`)
-      }
-    }
-    //Load Main Panel
-    if (!mainContentObj[toolViewInfo.viewName]){
-      //Need to load and define component
-      let panelPromise = import(`./MainPanels/${toolViewInfo.mainPanel}.js`);
-      fetchMainPanel(panelPromise,setMainContentObj,0)
-    }
-    //Load Support Panel
-    if (!supportContentObj[toolViewInfo.viewName]){
-      //Need to load and define component
-      let panelPromise = import(`./SupportPanels/${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}.js`);
-      fetchMainPanel(panelPromise,setSupportContentObj,toolViewInfo.supportPanelIndex)
-    }
-
-
-  },[toolViewInfo])
 
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
 
-    let mainContent = mainContentObj[toolViewInfo.viewName];
-    if (!mainContent){mainContent = null;}
-    let supportContent = supportContentObj[toolViewInfo.viewName];
-    if (!supportContent){supportContent = null;}
+
+   //Make viewname and mainPanel name Main Panel
+   let mainContent = mainContentObj.current[`${toolViewInfo.viewName}${toolViewInfo.mainPanel}`];
+   if (!mainContent){
+    mainContent = mainContentObj.current[`${toolViewInfo.viewName}${toolViewInfo.mainPanel}`] =
+     <React.Fragment key={`toolViewInfo.viewName`} >{toolPanelsObj[toolViewInfo.mainPanel]}</React.Fragment>
+  }
+  // //Load Support Panel
+  // if (!supportContentObj[toolViewInfo.viewName]){
+  //   //Need to load and define component
+  //   let panelPromise = import(`./SupportPanels/${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}.js`);
+  //   fetchPanel(panelPromise,setSupportContentObj,toolViewInfo.supportPanelIndex)
+  // }
+
+  
+
+    // let supportContent = supportContentObj[`${toolViewInfo.viewName}${toolViewInfo.supportPanelIndex}`];
+    // if (!supportContent){supportContent = null;}
 
       // console.log(">>>profile.contents",profile.contents)
     let supportPanel = null;
-    if (toolViewInfo.supportPanel.length > 0){
-      supportPanel = <SupportPanel>{supportContent}</SupportPanel>
-    }
+    // if (toolViewInfo.supportPanel.length > 0){
+    //   supportPanel = <SupportPanel>{supportContent}</SupportPanel>
+    // }
  
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <Toast />
     <ToolContainer>
-      <MenuPanels key='mp'/>
+      <MenuPanels />
       <ContentPanel 
       main={<MainPanel><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{mainContent}</Suspense></MainPanel>} 
       support={supportPanel}
       />
-      {/* <FooterPanel></FooterPanel> */}
+      <FooterPanel></FooterPanel>
     </ToolContainer>
 
   </ProfileContext.Provider>
-}
+} 
 
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
