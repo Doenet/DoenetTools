@@ -79,19 +79,23 @@ export default function ToolRoot(props){
   // console.log(">>>DoenetTool props",props) 
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
-  const mainContentObj = useRef({})
-  const lastMainPanelInfo = useRef({})
+  const mainPanelArray = useRef([])
+  // const mainPanelIndex = useRef(-1)
+  const mainPanelDictionary = useRef({}) //key -> {index, type}
   // const [supportContentObj,setSupportContentObj] = useState({})
 
-  let toolPanelsObj = {}
-  const One = useRef(lazy(() => import('./ToolPanels/One'))).current;
-  toolPanelsObj['One'] = <One />;
-  const Two = useRef(lazy(() => import('./ToolPanels/Two'))).current;
-  toolPanelsObj['Two'] = <Two />;
-  const Count = useRef(lazy(() => import('./ToolPanels/Count'))).current;
-  toolPanelsObj['Count'] = <Count />;
-  const Count2 = useRef(lazy(() => import('./ToolPanels/Count2'))).current;
-  toolPanelsObj['Count2'] = <Count2 />;
+  // let toolPanelsObj = {}
+  // const One = useRef(lazy(() => import('./ToolPanels/One'))).current;
+  // toolPanelsObj['One'] = <One />;
+  const LazyObj = useRef({
+    One:"This is one",
+    Two:lazy(() => import('./ToolPanels/Two'))
+  }).current;
+  // toolPanelsObj['Two'] = <Two />;
+  // const Count = useRef(lazy(() => import('./ToolPanels/Count'))).current;
+  // toolPanelsObj['Count'] = <Count />;
+  // const Count2 = useRef(lazy(() => import('./ToolPanels/Count2'))).current;
+  // toolPanelsObj['Count2'] = <Count2 />;
 
 
   if (profile.state === "loading"){ return null;}
@@ -99,23 +103,28 @@ export default function ToolRoot(props){
       console.error(profile.contents)
       return null;}
 
+      // console.log(">>>lazyObj",lazyObj) 
+      // const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><LazyObj.Two /></Suspense>
+      const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><LazyObj.Two /></Suspense>
+
+      //<Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{mainContent}</Suspense>
  
    //Make viewname and mainPanel name Main Panel
-   const MainPanelKey = `${toolViewInfo.viewName}${toolViewInfo.mainPanel}`;
-   if (MainPanelKey !== lastMainPanelInfo.current?.key){
-     //Changed views so hide last one
-     if (lastMainPanelInfo.current?.key){
-      <div key={lastMainPanelInfo.current?.key} style={{ display: 'none' }} >{toolPanelsObj[lastMainPanelInfo.current['type']]}</div>
-     }
-   }
-   let mainContent = mainContentObj.current[MainPanelKey];
-   lastMainPanelInfo.current['key'] = MainPanelKey;
-   lastMainPanelInfo.current['type'] = toolViewInfo.mainPanel;
+  //  const MainPanelKey = `${toolViewInfo.viewName}${toolViewInfo.mainPanel}`;
+  //  if (MainPanelKey !== lastMainPanelInfo.current?.key){
+  //    //Changed views so hide last one
+  //    if (lastMainPanelInfo.current?.key){
+  //     <div key={lastMainPanelInfo.current?.key} style={{ display: 'none' }} >{toolPanelsObj[lastMainPanelInfo.current['type']]}</div>
+  //    }
+  //  }
+  //  let mainContent = mainContentObj.current[MainPanelKey];
+  //  lastMainPanelInfo.current['key'] = MainPanelKey;
+  //  lastMainPanelInfo.current['type'] = toolViewInfo.mainPanel;
    
-   if (!mainContent){
-    mainContent = mainContentObj.current[MainPanelKey] =
-     <div key={MainPanelKey}  style={{ display: null }}>{toolPanelsObj[toolViewInfo.mainPanel]}</div>
-  }
+  //  if (!mainContent){
+  //   mainContent = mainContentObj.current[MainPanelKey] =
+  //    <div key={MainPanelKey}  style={{ display: null }}>{toolPanelsObj[toolViewInfo.mainPanel]}</div>
+  // }
   // //Load Support Panel
   // if (!supportContentObj[toolViewInfo.viewName]){
   //   //Need to load and define component
@@ -140,7 +149,7 @@ export default function ToolRoot(props){
     <ToolContainer>
       <MenuPanels />
       <ContentPanel 
-      main={<MainPanel><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{mainContent}</Suspense></MainPanel>} 
+      main={<MainPanel>{thisone}</MainPanel>} 
       support={supportPanel}
       />
       <FooterPanel></FooterPanel>
