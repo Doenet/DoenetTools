@@ -4447,11 +4447,9 @@ export default class Core {
       }
     };
 
-    // Make the array size state variable's dependencies depend on
-    // anything that the array state variable's dependencies depend on
-    // (as the returnArraySizeDependencies function could use those).
-    if (originalStateVariablesDeterminingDependencies) {
-      component.state[arraySizeStateVar].stateVariablesDeterminingDependencies = originalStateVariablesDeterminingDependencies;
+    if (stateVarObj.stateVariablesDeterminingArraySizeDependencies) {
+      component.state[arraySizeStateVar].stateVariablesDeterminingDependencies
+        = stateVarObj.stateVariablesDeterminingArraySizeDependencies;
     }
 
 
