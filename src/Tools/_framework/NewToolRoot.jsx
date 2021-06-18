@@ -66,9 +66,9 @@ export const profileAtom = atom({
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
-    viewName:"CountACountB",
+    viewName:"Test",
     menuPanels:[],
-    mainPanel:"Count",
+    mainPanel:"One",
     // mainPanel:"One",
     supportPanel:["Two","One"],
     supportPanelIndex:0,
@@ -80,23 +80,17 @@ export default function ToolRoot(props){
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
   const mainPanelArray = useRef([])
-  // const mainPanelIndex = useRef(-1)
+  const lastMainPanelKey = useRef(null)
   const mainPanelDictionary = useRef({}) //key -> {index, type}
   // const [supportContentObj,setSupportContentObj] = useState({})
 
-  // let toolPanelsObj = {}
-  // const One = useRef(lazy(() => import('./ToolPanels/One'))).current;
-  // toolPanelsObj['One'] = <One />;
-  const LazyObj = useRef({
-    One:"This is one",
-    Two:lazy(() => import('./ToolPanels/Two'))
-  }).current;
-  // toolPanelsObj['Two'] = <Two />;
-  // const Count = useRef(lazy(() => import('./ToolPanels/Count'))).current;
-  // toolPanelsObj['Count'] = <Count />;
-  // const Count2 = useRef(lazy(() => import('./ToolPanels/Count2'))).current;
-  // toolPanelsObj['Count2'] = <Count2 />;
 
+  const LazyObj = useRef({
+    One:lazy(() => import('./ToolPanels/One')),
+    Two:lazy(() => import('./ToolPanels/Two')),
+    Count:lazy(() => import('./ToolPanels/Count')),
+    Count2:lazy(() => import('./ToolPanels/Count2')),
+  }).current;
 
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
@@ -104,58 +98,63 @@ export default function ToolRoot(props){
       return null;}
       // console.log(">>>===ToolRoot")
 
-      // console.log(">>>lazyObj",lazyObj) 
-      // const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><LazyObj.Two /></Suspense>
-      const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{React.createElement(LazyObj['Two'],{key:'ha!'})}</Suspense>
 
-      //<Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{mainContent}</Suspense>
- 
-   //Make viewname and mainPanel name Main Panel
-  //  const MainPanelKey = `${toolViewInfo.viewName}${toolViewInfo.mainPanel}`;
-  //  if (MainPanelKey !== lastMainPanelInfo.current?.key){
-  //    //Changed views so hide last one
-  //    if (lastMainPanelInfo.current?.key){
-  //     <div key={lastMainPanelInfo.current?.key} style={{ display: 'none' }} >{toolPanelsObj[lastMainPanelInfo.current['type']]}</div>
-  //    }
-  //  }
-  //  let mainContent = mainContentObj.current[MainPanelKey];
-  //  lastMainPanelInfo.current['key'] = MainPanelKey;
-  //  lastMainPanelInfo.current['type'] = toolViewInfo.mainPanel;
+  function buildPanel({key,type,visible}){
+    // console.log(">>>build",{key,type,visible})
+    let hideStyle = null;
+    if (!visible){
+      hideStyle = 'none';
+    }
+    
+    // {React.createElement(LazyObj[type],{key,style:{color: "red", backgroundColor: "blue"}})}
+    return <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+    {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
+    </Suspense>
+  } 
+   const MainPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.mainPanel}`;
+   if (!mainPanelDictionary.current[MainPanelKey]){
+    //Doesn't exist so make new Main Panel
+    mainPanelArray.current.push(buildPanel({key:MainPanelKey,type:toolViewInfo.mainPanel,visible:true}))
+    mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type:toolViewInfo.mainPanel, visible:true}
+   }
    
-  //  if (!mainContent){
-  //   mainContent = mainContentObj.current[MainPanelKey] =
-  //    <div key={MainPanelKey}  style={{ display: null }}>{toolPanelsObj[toolViewInfo.mainPanel]}</div>
-  // }
-  // //Load Support Panel
-  // if (!supportContentObj[toolViewInfo.viewName]){
-  //   //Need to load and define component
-  //   let panelPromise = import(`./SupportPanels/${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}.js`);
-  //   fetchPanel(panelPromise,setSupportContentObj,toolViewInfo.supportPanelIndex)
-  // }
+   //Show current panel and hide last panel
+   if (lastMainPanelKey.current !== null && lastMainPanelKey.current !== MainPanelKey){
+    const mpObj = mainPanelDictionary.current[MainPanelKey];
+    const lastObj = mainPanelDictionary.current[lastMainPanelKey.current];
 
-  
+    //Show current if not visible
+    if (!mpObj.visible){
+      mainPanelArray.current[mpObj.index] = buildPanel({key:MainPanelKey,type:mpObj.type,visible:true})
+      mpObj.visible = true;
+    }
+    //Hide last if visible
+    if (lastObj.visible){
+      mainPanelArray.current[lastObj.index] = buildPanel({key:lastMainPanelKey.current,type:lastObj.type,visible:false})
+      lastObj.visible = false;
+    }
+   }
 
-    // let supportContent = supportContentObj[`${toolViewInfo.viewName}${toolViewInfo.supportPanelIndex}`];
-    // if (!supportContent){supportContent = null;}
+   lastMainPanelKey.current = MainPanelKey;
 
-      // console.log(">>>profile.contents",profile.contents)
+
     let supportPanel = null;
-    supportPanel = <SupportPanel><p>hi</p></SupportPanel>
-    // if (toolViewInfo.supportPanel.length > 0){
-    //   supportPanel = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><SupportPanel>{supportContent}</SupportPanel></Suspense>
-    // }
- 
-    //CAN I JUST USE THE INDEX IN MAINPANEL AND NOT THE WHOLE ARRAY???
+   
+//  {key,style:{color: "red", backgroundColor: "blue"}
+    // const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{React.createElement(LazyObj['One'],{key:'ha!',style:{display:"none"}})}</Suspense>
+
+
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <Toast />
     <ToolContainer>
       <MenuPanels />
       <ContentPanel 
-      main={<MainPanel>{thisone}</MainPanel>} 
+      // main={<MainPanel>{thisone}</MainPanel>} 
+      main={<MainPanel>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
-      <FooterPanel></FooterPanel>
+      {/* <FooterPanel></FooterPanel> */}
     </ToolContainer>
 
   </ProfileContext.Provider>
@@ -177,133 +176,6 @@ const layerStackAtom = atom({
   default: [],
 });
 
-// export const useToolControlHelper = () => {
-//   const setLayers = useSetRecoilState(layerStackAtom);
-//   const activateMenuPanel = useMenuPanelController();
-//   const activateSupportPanel = useSupportDividerController();
-//   const [
-//     Content,
-//     Assignment,
-//     Editor,
-//     Image,
-//     Calendar,
-//     GradebookAssignmentView,
-//     GradebookAttemptView,
-//   ] = useRef([
-//     lazy(() => import('./Overlays/Content')),
-//     lazy(() => import('./Overlays/Assignment')),
-//     lazy(() => import('./Overlays/Editor')),
-//     lazy(() => import('./Overlays/Image')),
-//     lazy(() => import('./Overlays/Calendar')),
-//     lazy(() => import('./Overlays/GradebookAssignmentView')),
-//     lazy(() => import('./Overlays/GradebookAttemptView')),
-//   ]).current;
-//   const openOverlay = ({
-//     type,
-//     title,
-//     contentId,
-//     courseId,
-//     doenetId,
-//     assignmentId,
-//     attemptNumber,
-//     userId,
-//     driveId,
-//     folderId,
-//     itemId,
-//   }) => {
-//     switch (type.toLowerCase()) {
-//       case 'gradebookassignmentview':
-//         setLayers((old) => [
-//           ...old,
-//           <GradebookAssignmentView
-//             assignmentId={assignmentId}
-//             key={`GBAssign${old.length + 1}`}
-//           />,
-//         ]);
-//         break;
-//       case 'gradebookattemptview':
-//         setLayers((old) => [
-//           ...old,
-//           <GradebookAttemptView
-//             assignmentId={assignmentId}
-//             userId={userId}
-//             attemptNumber={attemptNumber}
-//             key={`GBView${old.length + 1}`}
-//           />,
-//         ]);
-//         break;
-//       case 'editor':
-//         setLayers((old) => [
-//           ...old,
-//           <Editor
-//             doenetId={doenetId}
-//             title={title}
-//             driveId={driveId}
-//             folderId={folderId}
-//             itemId={itemId}
-//             key={`EditorLayer${old.length + 1}`}
-//           />,
-//         ]);
-//         break;
-//       case 'content':
-//         setLayers((old) => [
-//           ...old,
-//           <Content
-//             contentId={contentId}
-//             doenetId={doenetId}
-//             title={title}
-//             key={`ContentLayer${old.length + 1}`}
-//           />,
-//         ]);
-//         break;
-//       case 'assignment':
-//         setLayers((old) => [
-//           ...old,
-//           <Assignment
-//             doenetId={doenetId}
-//             title={title}
-//             assignmentId={assignmentId}
-//             courseId={courseId}
-//             contentId={contentId}
-//             key={`AssignmentLayer${old.length + 1}`}
-//           />,
-//         ]);
-//         break;
-//       case 'calendar':
-//         setLayers((old) => [
-//           ...old,
-//           <Calendar
-//             doenetId={doenetId}
-//             contentId={contentId}
-//             key={`CalendarLayer${old.length + 1}`}
-//           />,
-//         ]);
-//         break;
-//       case 'image':
-//         setLayers((old) => [
-//           ...old,
-//           <Image doenetId={doenetId} key={`ImageLayer${old.length + 1}`} />,
-//         ]);
-//         break;
-//       default:
-//     }
-//   };
-
-//   const close = () => {
-//     setLayers((old) => {
-//       const newArray = [...old];
-//       newArray.pop();
-//       return newArray;
-//     });
-//   };
-
-//   return {
-//     openOverlay,
-//     close,
-//     activateMenuPanel,
-//     activateSupportPanel,
-//   };
-// };
 
 export const useStackId = () => {
   const getId = useRecoilCallback(({ snapshot }) => () => {
@@ -315,29 +187,3 @@ export const useStackId = () => {
 };
 
 
-
-// export function ToolRoot({ tool }) {
-//   const overlays = useRecoilValue(layerStackAtom);
-
-//   const profile = useRecoilValueLoadable(profileAtom)
-
-//   if (profile.state === "loading"){ return null;}
-//     if (profile.state === "hasError"){ 
-//       console.error(profile.contents)
-//       return null;}
-
-// // console.log(">>>ToolRoot profile.contents",profile.contents)
-//   return (
-//     <ProfileContext.Provider value={profile.contents}>
-//       {/* <GlobalStyle /> */}
-
-//       {tool}
-//       <Suspense fallback={<LoadingFallback>Loading...</LoadingFallback>}>
-//         {overlays.map((layer, idx) =>
-//           idx == overlays.length - 1 ? layer : null,
-//         )}
-//       </Suspense>
-//       <Toast />
-//     </ProfileContext.Provider>
-//   );
-// }

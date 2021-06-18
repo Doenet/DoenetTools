@@ -4,7 +4,7 @@ import {
 } from 'recoil';
 import { toolViewAtom } from '../NewToolRoot';
 
-export default function Count2(){
+export default function Count2(props){
   const [count,setCount] = useState(1);
   const mainPanelToOne = useRecoilCallback(({set})=> ()=>{
     set(toolViewAtom,(was)=>{
@@ -15,9 +15,9 @@ export default function Count2(){
   })
  
 
-  return <>
+  return <div style={props.style}>
   <h1>Count2 {count}</h1>
   <button onClick={()=>setCount((was)=>{return was + 1})}>+</button>
   <div><button onClick={mainPanelToOne}>Switch to Count</button></div>
-  </>
+  </div>
 }
