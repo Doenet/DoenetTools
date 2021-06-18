@@ -59,6 +59,13 @@ export default function ToggleButton(props) {
     if (props.label) {
         label.value = props.label
     }
+    if (props.width) {
+        if (props.width === "menu") {
+          toggleButton.width = '235px'
+        } else {
+          toggleButton.width = props.width
+        }
+      }
     return (
         <>
             <p style={label}>{label.value}</p>
