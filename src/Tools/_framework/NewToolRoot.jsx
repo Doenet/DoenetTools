@@ -80,6 +80,7 @@ export default function ToolRoot(props){
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
   const mainContentObj = useRef({})
+  const lastMainPanelInfo = useRef({})
   // const [supportContentObj,setSupportContentObj] = useState({})
 
   let toolPanelsObj = {}
@@ -89,6 +90,8 @@ export default function ToolRoot(props){
   toolPanelsObj['Two'] = <Two />;
   const Count = useRef(lazy(() => import('./ToolPanels/Count'))).current;
   toolPanelsObj['Count'] = <Count />;
+  const Count2 = useRef(lazy(() => import('./ToolPanels/Count2'))).current;
+  toolPanelsObj['Count2'] = <Count2 />;
 
 
   if (profile.state === "loading"){ return null;}
@@ -96,12 +99,22 @@ export default function ToolRoot(props){
       console.error(profile.contents)
       return null;}
 
-
+ 
    //Make viewname and mainPanel name Main Panel
-   let mainContent = mainContentObj.current[`${toolViewInfo.viewName}${toolViewInfo.mainPanel}`];
+   const MainPanelKey = `${toolViewInfo.viewName}${toolViewInfo.mainPanel}`;
+   if (MainPanelKey !== lastMainPanelInfo.current?.key){
+     //Changed views so hide last one
+     if (lastMainPanelInfo.current?.key){
+      <div key={lastMainPanelInfo.current?.key} style={{ display: 'none' }} >{toolPanelsObj[lastMainPanelInfo.current['type']]}</div>
+     }
+   }
+   let mainContent = mainContentObj.current[MainPanelKey];
+   lastMainPanelInfo.current['key'] = MainPanelKey;
+   lastMainPanelInfo.current['type'] = toolViewInfo.mainPanel;
+   
    if (!mainContent){
-    mainContent = mainContentObj.current[`${toolViewInfo.viewName}${toolViewInfo.mainPanel}`] =
-     <React.Fragment key={`toolViewInfo.viewName`} >{toolPanelsObj[toolViewInfo.mainPanel]}</React.Fragment>
+    mainContent = mainContentObj.current[MainPanelKey] =
+     <div key={MainPanelKey}  style={{ display: null }}>{toolPanelsObj[toolViewInfo.mainPanel]}</div>
   }
   // //Load Support Panel
   // if (!supportContentObj[toolViewInfo.viewName]){
@@ -118,7 +131,7 @@ export default function ToolRoot(props){
       // console.log(">>>profile.contents",profile.contents)
     let supportPanel = null;
     // if (toolViewInfo.supportPanel.length > 0){
-    //   supportPanel = <SupportPanel>{supportContent}</SupportPanel>
+    //   supportPanel = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}><SupportPanel>{supportContent}</SupportPanel></Suspense>
     // }
  
   return <ProfileContext.Provider value={profile.contents}>
