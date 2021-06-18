@@ -79,6 +79,7 @@ export default function Enrollment(params) {
         <td>{rowData.empId}</td>
         <td>{rowData.email}</td>
         <td>{rowData.dateEnrolled}</td>
+        <td> <Button value="Withdraw" callback={(e) => withDrawLearners(e,rowData.email)} /></td>
       </tr>,
     );
   }
@@ -294,7 +295,6 @@ export default function Enrollment(params) {
     }
   }
   const [enrolllearner, setEnrolllearner] = useState();
-  const [withdrewLearner, setWithdrewLearner] = useState();
 
   const enrollManual = (e) => {
     e.preventDefault();
@@ -319,7 +319,7 @@ export default function Enrollment(params) {
         });
     });
   };
-  const withDrawLearners = (e) => {
+  const withDrawLearners = (e,withdrewLearner) => {
     e.preventDefault();
 
     let payload = {
@@ -334,7 +334,6 @@ export default function Enrollment(params) {
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableData(enrollmentArray);
           setProcess('Display Enrollment');
-          setWithdrewLearner('');
         })
         .catch((error) => {
           console.warn(error);
@@ -346,9 +345,6 @@ export default function Enrollment(params) {
     setEnrolllearner(e.currentTarget.value);
   };
 
-  const handlewithDrew = (e) => {
-    setWithdrewLearner(e.currentTarget.value);
-  };
 
   return (
     <>
@@ -375,18 +371,6 @@ export default function Enrollment(params) {
         <Button value="Enroll" callback={(e) => enrollManual(e)} />
       </div>
 
-      <div>
-        <label>Withdraw:</label>
-        <input
-          required
-          type="email"
-          name="email"
-          value={withdrewLearner}
-          placeholder="example@example.com"
-          onChange={handlewithDrew}
-        />
-        <Button value="Withdraw" callback={(e) => withDrawLearners(e)} />
-      </div>
     </>
   );
 }
