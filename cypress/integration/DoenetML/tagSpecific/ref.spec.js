@@ -132,7 +132,6 @@ describe('ref Tag Tests', function () {
   });
 
 
-
   it('simple url', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -145,6 +144,21 @@ describe('ref Tag Tests', function () {
 
     cy.get('#\\/_ref1').should('have.text', 'Doenet').invoke('attr', 'href')
       .then((href) => expect(href).eq("http://doenet.org"));
+
+  })
+
+  it('ref to DoenetId', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>A link to <ref uri="doenet:doenetId=abcdefg">a Doenet doc</ref>.</p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', 'A link to a Doenet doc.')
+
+    cy.get('#\\/_ref1').should('have.text', 'a Doenet doc').invoke('attr', 'href')
+      .then((href) => expect(href).eq("https://www.doenet.org/content/#/?doenetId=abcdefg"));
 
   })
 

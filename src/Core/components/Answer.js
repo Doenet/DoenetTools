@@ -1162,6 +1162,24 @@ export default class Answer extends InlineComponent {
 
     }
 
+    stateVariableDefinitions.nSubmissions = {
+      public: true,
+      componentType: "number",
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          nSubmissions: { variablesToCheck: ["nSubmissions"] }
+        }
+      }),
+      inverseDefinition: ({ desiredStateVariableValues }) => ({
+        success: true,
+        instructions: [{
+          setStateVariable: "nSubmissions",
+          value: desiredStateVariableValues.nSubmissions
+        }]
+      })
+    }
 
     return stateVariableDefinitions;
   }
@@ -1229,6 +1247,13 @@ export default class Answer extends InlineComponent {
       componentName: this.componentName,
       stateVariable: "creditAchievedDependenciesAtSubmit",
       value: this.stateValues.creditAchievedDependencies
+    })
+
+    instructions.push({
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable: "nSubmissions",
+      value: this.stateValues.nSubmissions + 1,
     })
 
     for (let child of this.stateValues.awardChildren) {

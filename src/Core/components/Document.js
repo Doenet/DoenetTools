@@ -574,7 +574,7 @@ export default class Document extends BaseComponent {
       //   nVariants = serializedComponent.variants.numberOfVariants;
       // }
 
-      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(indexToLowercaseLetters);
+      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
 
       let variantIndex;
       // check if desiredVariant was specified
@@ -582,47 +582,53 @@ export default class Document extends BaseComponent {
       if (desiredVariant !== undefined) {
         if (desiredVariant.index !== undefined) {
           let desiredVariantIndex = Number(desiredVariant.index);
-          if (!Number.isInteger(desiredVariantIndex)) {
-            throw Error("Variant index " + desiredVariant.index + " must be an integer");
+          if (!Number.isFinite(desiredVariantIndex)) {
+            console.warn("Variant index " + desiredVariant.index + " must be a number");
+            variantIndex = 1;
           } else {
-            variantIndex = desiredVariantIndex % nVariants;
-            if (variantIndex < 0) {
-              variantIndex += nVariants;
+            if (!Number.isInteger(desiredVariantIndex)) {
+              console.warn("Variant index " + desiredVariant.index + " must be an integer");
+              desiredVariantIndex = Math.round(desiredVariantIndex);
             }
+            let indexFrom0 = (desiredVariantIndex - 1) % nVariants;
+            if (indexFrom0 < 0) {
+              indexFrom0 += nVariants;
+            }
+            variantIndex = indexFrom0 + 1;
           }
         } else if (desiredVariant.name !== undefined) {
           if (typeof desiredVariant.name === "string") {
             // want case insensitive test, so convert to lower case
             let desiredNumber = sharedParameters.allPossibleVariants.indexOf(desiredVariant.name.toLowerCase());
             if (desiredNumber !== -1) {
-              variantIndex = desiredNumber;
+              variantIndex = desiredNumber + 1;
             }
           }
           if (variantIndex === undefined) {
-            throw Error("Variant name " + desiredVariant.name + " is not valid")
+            console.warn("Variant name " + desiredVariant.name + " is not valid");
+            variantIndex = 1;
           }
         }
       }
 
       if (variantIndex === undefined) {
-        // if variant inedex wasn't specifed, use first variant
-        variantIndex = 0;
+        // if variant index wasn't specifed, use first variant
+        variantIndex = 1;
       }
 
-      let seed = (variantIndex + 1).toString();
-
+      sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
       sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
-      sharedParameters.selectRng = new sharedParameters.rngClass(seed);
+      sharedParameters.selectRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
     } else {
       // get parameters from variant control child
+      sharedParameters.variantSeed = variantControlChild.state.selectedSeed.value;
       sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
       sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.selectRng = variantControlChild.state.selectRng.value;
       sharedParameters.allPossibleVariants = variantControlChild.state.variants.value;
-      // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
     }
 
     // seed rng for random numbers predictably from variant using selectRng
@@ -766,7 +772,7 @@ export default class Document extends BaseComponent {
 }
 
 function indexToLowercaseLetters(index) {
-  return numberToLetters(index + 1, true)
+  return numberToLetters(index, true)
 }
 
 

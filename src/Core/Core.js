@@ -259,7 +259,6 @@ export default class Core {
 
     let arrayOfSerializedComponents = [];
     let contentIdComponents = {};
-    let contentNameComponents = {};
 
     for (let doenetML of doenetMLs) {
 
@@ -273,7 +272,7 @@ export default class Core {
 
       // remove blank string children after applying macros,
       // as applying macros could create additional blank string children
-      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
+      serializeFunctions.removeBlankStringChildren(serializedComponents, this.componentInfoObjects)
 
       serializeFunctions.decodeXMLEntities(serializedComponents);
 
@@ -289,19 +288,12 @@ export default class Core {
         }
         contentIdComponents[contentId].push(...newContentComponents.contentIdComponents[contentId])
       }
-      for (let contentName in newContentComponents.contentNameComponents) {
-        if (contentNameComponents[contentName] === undefined) {
-          contentNameComponents[contentName] = []
-        }
-        contentNameComponents[contentName].push(...newContentComponents.contentNameComponents[contentName])
-      }
     }
 
     let contentIdList = Object.keys(contentIdComponents);
-    let contentNameList = Object.keys(contentNameComponents);
-    if (contentIdList.length + contentNameList.length > 0) {
-      // found copies with contentIds or contentNames
-      // so look up those contentIds/contentNames,
+    if (contentIdList.length > 0) {
+      // found copies with contentIds 
+      // so look up those contentIds
       // convert to doenetMLs, and recurse on those doenetMLs
 
       let mergeContentIdNameSerializedComponentsIntoCopy = function ({
@@ -324,21 +316,6 @@ export default class Core {
           }
         }
 
-        for (let [ind, contentName] of contentNameList.entries()) {
-          // results from content names immediately follow those from content ids
-          let serializedComponentsForContentName = fullSerializedComponents[ind + contentIdList.length];
-          for (let originalCopyWithUri of contentNameComponents[contentName]) {
-            if (originalCopyWithUri.children === undefined) {
-              originalCopyWithUri.children = [];
-            }
-            originalCopyWithUri.children.push({
-              componentType: "externalContent",
-              children: JSON.parse(JSON.stringify(serializedComponentsForContentName)),
-              attributes: { newNamespace: true },
-              doenetAttributes: { createUniqueName: true }
-            });
-          }
-        }
 
         // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedComponents
         // so we call it with the contentIds and serializedComponents from that context
@@ -365,7 +342,7 @@ export default class Core {
         }
 
         // check to see if the doenetMLs hash to the contentIds
-        let expectedN = contentIdList.length + contentNameList.length;
+        let expectedN = contentIdList.length;
         for (let ind = 0; ind < expectedN; ind++) {
           let contentId = newContentIds[ind];
           if (contentId) {
@@ -376,11 +353,7 @@ export default class Core {
             }
           } else {
             // wasn't able to retrieve content
-            if (ind < contentIdList.length) {
               console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
-            } else {
-              console.warn(`Unable to retrieve content with contentName = ${contentNameList[ind - contentIdList.length]}`)
-            }
             newDoenetMLs[ind] = "";
           }
         }
@@ -394,7 +367,6 @@ export default class Core {
 
       this.externalFunctions.contentIdsToDoenetMLs({
         contentIds: contentIdList,
-        contentNames: contentNameList,
         callBack: recurseToAdditionalDoenetMLs
       });
 
@@ -428,7 +400,7 @@ export default class Core {
 
       parent = this._components[parentName];
       if (!parent) {
-        console.warn(`Cannot add children to parent ${parenetName} as ${parentName} does not exist`)
+        console.warn(`Cannot add children to parent ${parentName} as ${parentName} does not exist`)
         return [];
       }
 
@@ -1036,6 +1008,10 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
+    if(componentClass.descendantCompositesMustHaveAReplacement) {
+      sharedParameters.compositesMustHaveAReplacement = true;
+      sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
+    }
 
     // check if component has any attributes to propagate to descendants
     let attributesPropagated = this.propagateAncestorProps({
@@ -1083,7 +1059,7 @@ export default class Core {
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
-            child.createdComponent && components[child.componentName].componentType === "variantControl"
+            child.createdComponent && this._components[child.componentName].componentType === "variantControl"
           )) {
             variantControlInd = ind;
             variantControlChild = child;
@@ -1481,7 +1457,7 @@ export default class Core {
     // If a class is not supposed to have blank string children,
     // it is still possible that it received blank string children from a composite.
     // Hence filter out any blank string children that it might have
-    if (!parent.constructor.includeBlankStringChildren) {
+    if (!parent.constructor.includeBlankStringChildren || parent.constructor.removeBlankStringChildrenPostSugar) {
       let activeChildren = [];
       let foundBlank = false;
       let ind = 0;
@@ -7666,7 +7642,7 @@ export default class Core {
           childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
         }
       }
-      if(childLogicMessage) {
+      if (childLogicMessage) {
         console.warn(childLogicMessage)
       }
     }
