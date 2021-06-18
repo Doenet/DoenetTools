@@ -11,24 +11,13 @@ import { nanoid } from 'nanoid';
 import { 
   useRecoilValue, 
   atom, 
-  atomFamily,
-  // selector,
-  selectorFamily,
   useSetRecoilState,
   useRecoilState,
   useRecoilValueLoadable,
-  // useRecoilStateLoadable, 
   useRecoilCallback
 } from "recoil";
 import DoenetViewer from '../../../Viewer/DoenetViewer';
-// import {Controlled as CodeMirror} from 'react-codemirror2'
 import CodeMirror from '../CodeMirror';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/xml/xml';
-// import 'codemirror/theme/material.css';
-import 'codemirror/theme/xq-light.css';
-// import 'codemirror/theme/neo.css';
-// import 'codemirror/theme/base16-light.css';
 
 import './Editor.css';
 import { 
@@ -36,7 +25,6 @@ import {
   fileByContentId 
 } from '../../../_sharedRecoil/content';
 
-import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faExternalLinkAlt

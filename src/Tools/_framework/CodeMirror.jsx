@@ -87,7 +87,6 @@ export default function CodeMirror(props){
                 Is: t.definitionOperator,
                 "EntityReference CharacterReference": t.character,
                 Comment: t.blockComment,
-                Cdata: t.special(t.string)
               })
         ]
     });

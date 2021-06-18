@@ -25,8 +25,6 @@ import {
   useRecoilCallback
 } from "recoil";
 import axios from "axios";
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
 
 /**
  * Internal dependencies
