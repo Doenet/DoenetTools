@@ -5,7 +5,6 @@ import {EditorView, keymap} from "@codemirror/view";
 import {styleTags, tags as t} from "@codemirror/highlight"
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
 import {parser} from "../../Parser/doenet"
-import {showCursor} from "../../Parser/parser"
 
 export default function CodeMirror(props){
     let view = props.editorRef;
@@ -63,13 +62,6 @@ export default function CodeMirror(props){
         props : [
             indentNodeProp.add({
                 Element(context) {
-                    // console.log(">>>Element context.node",context.node);
-                    // console.log(">>>Element showCursor",showCursor(context.node.cursor));
-                    // console.log(">>>Element resolve",context.node.resolve(context.pos));
-                    // console.log(">>>Element resolve from/to",{from: context.node.resolve(context.pos).from, to: context.node.resolve(context.pos).to});
-                    // console.log(">>>Element show resolve",showCursor(context.node.resolve(context.pos).cursor));
-                    // console.log(">>>Element context.node.from",context.node.from);
-                    // console.log(">>>Element context.node.to",context.node.to);
                     let closed = /^\s*<\//.test(context.textAfter)
                     return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (closed ? 0 : context.unit)
                 },
