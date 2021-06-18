@@ -85,7 +85,8 @@
   });
 
   driveSpace.on('connection', (socket) => {
-    socket.on('rename_item', (data, cb) => {
+    console.log('connected', socket.id);
+    socket.on('rename_item', (data) => {
       console.log('>>>Rename from', socket.id, 'to', data.name);
       // axios.get('http://apache/api/updateItem.php', {
       //   headers: socket.request.headers,
@@ -98,14 +99,14 @@
       //   })
       //   .then((resp) => {
       //     console.log('request done for', data.name, resp.status);
-      if (data.respCode === '200') {
-        cb(200, data.transctionId);
-        socket.broadcast.emit('file_renamed', data);
-      } else if (data.respCode === '403') {
-        cb(403);
-      } else {
-        cb('error');
-      }
+      // if (data.respCode === '200') {
+      //   cb(200, data.transctionId);
+      //   socket.broadcast.emit('file_renamed', data);
+      // } else if (data.respCode === '403') {
+      //   cb(403);
+      // } else {
+      //   cb('error');
+      // }
       //   })
       //   .catch((error) => {
       //     cb(new Error(`Axios request error: ${error}`));

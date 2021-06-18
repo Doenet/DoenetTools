@@ -799,18 +799,20 @@ export const fetchDrivesQuery = atom({
   }),
 });
 
-export const driveSocket = atom({
+export const driveSocket = atomFamily({
   key: 'driveSocketAtom',
-  default: () => {
-    let socket = io('https://chat.rt.doenet.org/drive', {
+  default: (nsp) => {
+    let socket = io(`https://chat.rt.doenet.org/${nsp}`, {
       withCredentials: true,
     });
-    socket.on('connection', () => {
-      console.log('socket', socket.id, 'connected');
-    });
-    socket.on('update_file_name', (data) => {
-      console.log('file added remote', data);
-    });
+    console.log('>>>socket', socket);
+    // socket.on('connection', () => {
+    //   console.log('socket', socket.id, 'connected');
+    // });
+    // socket.on('update_file_name', (data) => {
+    //   console.log('file added remote', data);
+    // });
+    return socket;
   },
 });
 
