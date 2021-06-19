@@ -91,7 +91,7 @@ import Cell from './components/Cell';
 import Row from './components/Row';
 import Column from './components/Column';
 import CellBlock from './components/CellBlock';
-import Table from './components/Table';
+import Tabular from './components/Tabular';
 import Variants from './components/Variants';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
@@ -206,7 +206,7 @@ const componentTypeArray = [
   Row,
   Column,
   CellBlock,
-  Table,
+  Tabular,
   Markers,
   Panel,
   Map, Sources,

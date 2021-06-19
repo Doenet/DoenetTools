@@ -3,9 +3,9 @@ import me from 'math-expressions';
 import { normalizeIndex } from "../utils/table";
 import { textToAst } from '../utils/math';
 
-export default class Table extends BaseComponent {
-  static componentType = "table";
-  static rendererType = "table";
+export default class Tabular extends BaseComponent {
+  static componentType = "tabular";
+  static rendererType = "tabular";
   static renderChildren = true;
 
   static get stateVariablesShadowedForReference() { return ["height"] };
@@ -40,7 +40,49 @@ export default class Table extends BaseComponent {
     //   public: true,
     //   forRenderer: true,
     // };
-
+    attributes.halign = {
+      createComponentOfType: "text",
+      createStateVariable: "halign",
+      defaultValue: "left",
+      public: true,
+      validValues: ["left", "center", "right", "justify"],
+    }
+    attributes.valign = {
+      createComponentOfType: "text",
+      createStateVariable: "valign",
+      defaultValue: "middle",
+      public: true,
+      validValues: ["top", "middle", "bottom"],
+    }
+    attributes.top = {
+      createComponentOfType: "text",
+      createStateVariable: "top",
+      defaultValue: "none",
+      public: true,
+      validValues: ["none", "minor", "medium", "major"],
+      forRenderer: true,
+    }
+    attributes.left = {
+      createComponentOfType: "text",
+      createStateVariable: "left",
+      defaultValue: "none",
+      public: true,
+      validValues: ["none", "minor", "medium", "major"],
+    }
+    attributes.bottom = {
+      createComponentOfType: "text",
+      createStateVariable: "bottom",
+      defaultValue: "none",
+      public: true,
+      validValues: ["none", "minor", "medium", "major"],
+    }
+    attributes.right = {
+      createComponentOfType: "text",
+      createStateVariable: "right",
+      defaultValue: "none",
+      public: true,
+      validValues: ["none", "minor", "medium", "major"],
+    }
     return attributes;
   }
 
