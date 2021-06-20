@@ -9,8 +9,21 @@ export default class Row extends DoenetRenderer {
       return null;
     }
 
-    let cells = this.children.map((x, i) => <td key={"col" + i} >{x}</td>)
+    let props = { style: {} };
 
-    return <tr id={this.componentName}>{cells}</tr>
+    if (this.doenetSvData.valign !== null) {
+      props.style.verticalAlign =this.doenetSvData.valign;
+    }
+    if (this.doenetSvData.left !== "none") {
+      props.style.borderLeftStyle = "solid";
+      if (this.doenetSvData.left === "minor") {
+        props.style.borderLeftWidth = "thin";
+      } else if (this.doenetSvData.left === "medium") {
+        props.style.borderLeftWidth = "medium";
+      } else {
+        props.style.borderLeftWidth = "thick";
+      }
+    }
+    return <tr id={this.componentName} {...props}>{this.children}</tr>
   }
 }

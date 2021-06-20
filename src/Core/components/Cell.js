@@ -4,10 +4,16 @@ import { textToAst } from '../utils/math';
 
 export default class Cell extends BaseComponent {
   static componentType = "cell";
-  static rendererType = "container";
+  static rendererType = "cell";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+
   static primaryStateVariableForDefinition = "text";
+
+  static get stateVariablesShadowedForReference() {
+    return ["halign", "bottom", "right",]
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -23,6 +29,22 @@ export default class Cell extends BaseComponent {
       defaultValue: null,
       public: true,
     };
+    attributes.colSpan = {
+      createComponentOfType: "integer",
+      createStateVariable: "colSpan",
+      defaultValue: 1,
+      public: true,
+      forRenderer: true,
+    }
+    attributes.halign = {
+      createComponentOfType: "text",
+    }
+    attributes.bottom = {
+      createComponentOfType: "text",
+    }
+    attributes.right = {
+      createComponentOfType: "text",
+    }
 
     return attributes;
   }
@@ -71,6 +93,135 @@ export default class Cell extends BaseComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.halign = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      defaultValue: "left",
+      returnDependencies: () => ({
+        halignAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "halign",
+          variableNames: ["value"]
+        },
+        parentHalign: {
+          dependencyType: "parentStateVariable",
+          variableName: "halign"
+        },
+        // TODO: get halign for corresponding col
+        tabularHalign: {
+          dependencyType: "ancestor",
+          componentType: "tabular",
+          variableNames: ["halign"],
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.halignAttr !== null) {
+          let halign = dependencyValues.halignAttr.stateValues.value;
+          if (!["left", "center", "right", "justify"].includes(halign)) {
+            halign = "left";
+          }
+          return { newValues: { halign } }
+        } else if (!usedDefault.parentHalign) {
+          return { newValues: { halign: dependencyValues.parentHalign } }
+        } else if (!usedDefault.tabularHalign) {
+          return { newValues: { halign: dependencyValues.tabularHalign.stateValues.halign } }
+        } else {
+          return { useEssentialOrDefaultValue: { halign: {} } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.bottom = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      defaultValue: "none",
+      returnDependencies: () => ({
+        bottomAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "bottom",
+          variableNames: ["value"]
+        },
+        parentBottom: {
+          dependencyType: "parentStateVariable",
+          variableName: "bottom"
+        },
+        tabularBottom: {
+          dependencyType: "ancestor",
+          componentType: "tabular",
+          variableNames: ["bottom"],
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.bottomAttr !== null) {
+          let bottom = dependencyValues.bottomAttr.stateValues.value;
+          if (!["none", "minor", "medium", "major"].includes(bottom)) {
+            bottom = "none";
+          }
+          return { newValues: { bottom } }
+        } else if (!usedDefault.parentBottom) {
+          return { newValues: { bottom: dependencyValues.parentBottom } }
+        } else if (!usedDefault.tabularBottom) {
+          return { newValues: { bottom: dependencyValues.tabularBottom.stateValues.bottom } }
+        } else {
+          return { useEssentialOrDefaultValue: { bottom: {} } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.right = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      defaultValue: "none",
+      returnDependencies: () => ({
+        rightAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "right",
+          variableNames: ["value"]
+        },
+        // TODO: get right for corresponding col
+        tabularRight: {
+          dependencyType: "ancestor",
+          componentType: "tabular",
+          variableNames: ["right"],
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.rightAttr !== null) {
+          let right = dependencyValues.rightAttr.stateValues.value;
+          if (!["none", "minor", "medium", "major"].includes(right)) {
+            right = "none";
+          }
+          return { newValues: { right } }
+        } else if (!usedDefault.tabularRight) {
+          return { newValues: { right: dependencyValues.tabularRight.stateValues.right } }
+        } else {
+          return { useEssentialOrDefaultValue: { right: {} } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.inHeader = {
+      public: true,
+      componentType: "booloean",
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        parentHeader: {
+          dependencyType: "parentStateVariable",
+          variableName: "header"
+        },
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { inHeader: dependencyValues.parentHeader === true } }
+      }
+    }
 
     stateVariableDefinitions.onlyMathChild = {
       returnDependencies: () => ({

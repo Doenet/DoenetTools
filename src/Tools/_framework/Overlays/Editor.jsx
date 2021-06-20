@@ -642,7 +642,7 @@ function TempEditorHeaderBar(props){
 
 const variantInfoAtom = atom({
   key:"variantInfoAtom",
-  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:0}}
+  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:1}}
 })
 
 const variantPanelAtom = atom({
