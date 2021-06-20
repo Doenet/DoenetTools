@@ -92,6 +92,8 @@ import Row from './components/Row';
 import Column from './components/Column';
 import CellBlock from './components/CellBlock';
 import Tabular from './components/Tabular';
+import Table from './components/Table';
+import Figure from './components/Figure';
 import Variants from './components/Variants';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
@@ -207,6 +209,8 @@ const componentTypeArray = [
   Column,
   CellBlock,
   Tabular,
+  Table,
+  Figure,
   Markers,
   Panel,
   Map, Sources,
