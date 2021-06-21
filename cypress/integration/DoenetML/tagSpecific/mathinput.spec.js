@@ -11,7 +11,7 @@ function cesc(s) {
 describe('MathInput Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('mathinput references', () => {
@@ -2460,6 +2460,34 @@ describe('MathInput Tag Tests', function () {
         expect(components['/p'].stateValues.xs[1].tree).eq(2.142218345836)
       });
 
+    })
+
+
+  })
+
+  it('natural input to sqrt', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" /></p>
+    <p>a2: <copy prop="value" tname="a" assignNames="a2" /></p>
+    <p>a3: <copy prop="value" tname="a" simplify assignNames="a3" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a textarea').type('sqrt4{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('√4')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('√4')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
     })
 
 

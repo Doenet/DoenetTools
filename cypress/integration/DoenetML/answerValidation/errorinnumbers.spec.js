@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Allow error in numbers validation tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('expression with single number', () => {
@@ -268,7 +268,7 @@ describe('Allow error in numbers validation tests', function () {
       cy.get(mathinputSubmitAnchor).should('be.visible');
 
       cy.log("Submit exact answer")
-      cy.get(mathinputAnchor).type('10 exp(7x^2/(3-sqrt(y))){enter}');
+      cy.get(mathinputAnchor).type('10 exp(7x^2/3-sqrty{enter}');
       cy.get(mathinputCorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -277,7 +277,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error")
-      cy.get(mathinputAnchor).clear().type('9.9 exp(6.9x^2/(3.1-sqrt(y))){enter}');
+      cy.get(mathinputAnchor).clear().type('9.9 exp(6.9x^2/3.1-sqrty{enter}');
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -286,7 +286,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("shink error")
-      cy.get(mathinputAnchor).clear().type('10.0001 exp(7.00005x^2/(2.99995-sqrt(y))){enter}');
+      cy.get(mathinputAnchor).clear().type('10.0001 exp(7.00005x^2/2.99995-sqrty{enter}');
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
 
       cy.window().then((win) => {
@@ -295,7 +295,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("acceptable error for full credit")
-      cy.get(mathinputAnchor).clear().type('10.0000001 exp(7.0000001x^2/(2.9999999-sqrt(y))){enter}');
+      cy.get(mathinputAnchor).clear().type('10.0000001 exp(7.0000001x^2/2.9999999-sqrty{enter}');
       cy.get(mathinputCorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -655,7 +655,7 @@ describe('Allow error in numbers validation tests', function () {
       cy.get(mathinputSubmitAnchor).should('be.visible');
 
       cy.log("Submit exact answer")
-      cy.get(mathinputAnchor).type('10000 exp(7x^2{rightarrow}/(0.00003-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('10000 exp(7x^2{rightarrow}/0.00003-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputCorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -664,7 +664,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error in first number")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999 exp(7x^2{rightarrow}/(0.00003-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999 exp(7x^2{rightarrow}/0.00003-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -673,7 +673,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error in second number")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7.0001x^2{rightarrow}/(0.00003-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7.0001x^2{rightarrow}/0.00003-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -682,7 +682,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error in third number")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7x^2{rightarrow}/(0.0000300005-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7x^2{rightarrow}/0.0000300005-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -691,7 +691,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("partial credit error in each")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.91 exp(7.00005x^2{rightarrow}/(0.0000300002-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.91 exp(7.00005x^2{rightarrow}/0.0000300002-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
 
       cy.window().then((win) => {
@@ -700,7 +700,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("higher partial credit error in each")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.991 exp(7.000005x^2{rightarrow}/(0.00003000002-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.991 exp(7.000005x^2{rightarrow}/0.00003000002-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputPartialAnchor).should('have.text', '80 %');
 
       cy.window().then((win) => {
@@ -709,7 +709,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("acceptable error for full credit")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.9991 exp(7.0000005x^2{rightarrow}/(0.000030000002-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.9991 exp(7.0000005x^2{rightarrow}/0.000030000002-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputCorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -754,7 +754,7 @@ describe('Allow error in numbers validation tests', function () {
       cy.get(mathinputSubmitAnchor).should('be.visible');
 
       cy.log("Submit exact answer")
-      cy.get(mathinputAnchor).type('10000 exp(7x^2{rightarrow}/(0.00003-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('10000 exp(7x^2{rightarrow}/0.00003-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputCorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -763,7 +763,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error in first number")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.9999 exp(7x^2{rightarrow}/(0.00003-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.9999 exp(7x^2{rightarrow}/0.00003-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -772,7 +772,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error in second number")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7.00002x^2{rightarrow}/(0.00003-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7.00002x^2{rightarrow}/0.00003-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -781,7 +781,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error in third number")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7x^2{rightarrow}/(0.00005-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000 exp(7x^2{rightarrow}/0.00005-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -790,7 +790,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("partial credit error in each")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.999991 exp(7.000005x^2{rightarrow}/(0.000032-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.999991 exp(7.000005x^2{rightarrow}/0.000032-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputPartialAnchor).should('have.text', '60 %');
 
       cy.window().then((win) => {
@@ -799,7 +799,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("higher partial credit error in each")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.9999991 exp(7.0000005x^2{rightarrow}/(0.0000302-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.9999991 exp(7.0000005x^2{rightarrow}/0.0000302-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputPartialAnchor).should('have.text', '80 %');
 
       cy.window().then((win) => {
@@ -808,7 +808,7 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("acceptable error for full credit")
-      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.99999991 exp(7.00000005x^2{rightarrow}/(0.00003002-sqrt(y))){enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}9999.99999991 exp(7.00000005x^2{rightarrow}/0.00003002-sqrty{enter}', { force: true, delay: 0 });
       cy.get(mathinputCorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {

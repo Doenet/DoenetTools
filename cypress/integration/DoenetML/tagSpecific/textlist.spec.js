@@ -11,7 +11,7 @@ function cesc(s) {
 describe('TextList Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 

@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Integer Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('1.2+1.1', () => {

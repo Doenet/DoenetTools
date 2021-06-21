@@ -110,18 +110,20 @@ export default class MathInput extends DoenetRenderer {
     let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
 
-    if (
-      !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
-      || (!this.latexValueSetInRender && text !== this.latexValue)
-    ) {
+    let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
+      || (!this.latexValueSetInRender && text !== this.latexValue);
+
+    // Note: must set this.latexValue before calling updateImmediateValue action
+    this.latexValue = text;
+    this.latexValueSetInRender = false;
+
+    if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
         mathExpression: newMathExpression
       });
     }
 
-    this.latexValueSetInRender = false;
-    this.latexValue = text;
 
   }
 

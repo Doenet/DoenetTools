@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Copy Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 
@@ -676,7 +676,6 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy uri two problems', () => {
-    cy.wait(1000);  // TODO: remove once fix viewer bug
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -761,7 +760,6 @@ describe('Copy Tag Tests', function () {
   })
 
   it('copy uri containing copy uri of two problems', () => {
-    cy.wait(1000);  // TODO: remove once fix viewer bug
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -899,7 +897,6 @@ describe('Copy Tag Tests', function () {
 
   // this triggered an error not caught with the other order
   it('copy uri containing copy uri of two problems, newNamespace first', () => {
-    cy.wait(1000);  // TODO: remove once fix viewer bug
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

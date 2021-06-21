@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Angle Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('angle determined by three points, 45-45-90 triangle', () => {

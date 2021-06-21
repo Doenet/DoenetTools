@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Point Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
 
@@ -845,7 +845,7 @@ describe('Point Tag Tests', function () {
       expect(components['/a'].stateValues.value).closeTo(0, 1E-12);
 
     })
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
     cy.window().then((win) => {
       win.postMessage({

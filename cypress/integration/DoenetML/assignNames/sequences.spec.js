@@ -12,7 +12,7 @@ function cesc(s) {
 describe('sequence and map assignName Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('assignNames to dynamic copied sequence', () => {

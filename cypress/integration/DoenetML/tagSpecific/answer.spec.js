@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Answer Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('answer sugar from one string', () => {
@@ -7327,9 +7327,9 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi1" />
         <mathinput name="mi2" />
         <answer nAwardsCredited="$nawards" name="a">
-          <award feedbackText="First is  " credit="0.4" targetsAreResponses="mi1"><when>$mi1 > 3</when></award>
-          <award feedbackText="Second is  " credit="0.4" targetsAreResponses="mi2"><when>$mi2 > 3</when></award>
-          <award feedbackText="Distinct and  " credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
+          <award feedbackText="First is greater than 3" credit="0.4" targetsAreResponses="mi1"><when>$mi1 > 3</when></award>
+          <award feedbackText="Second is greater than 3" credit="0.4" targetsAreResponses="mi2"><when>$mi2 > 3</when></award>
+          <award feedbackText="Distinct and greater than 3" credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
           <award feedbackText="At least the first is a number" credit="0"><when><isNumber>$mi1</isNumber></when></award>
           <award feedbackText="At least the second is a number" credit="0"><when>isnumber($mi2)</when></award>
         </answer>
@@ -7505,7 +7505,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7537,7 +7537,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7569,7 +7569,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7601,8 +7601,8 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
@@ -7630,9 +7630,9 @@ describe('Answer Tag Tests', function () {
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
-    cy.get('#\\/fb3').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
+    cy.get('#\\/fb3').should('have.text', 'Distinct and greater than 3')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 
@@ -7659,7 +7659,7 @@ describe('Answer Tag Tests', function () {
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb1').should('have.text', 'Distinct and greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7690,7 +7690,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7721,8 +7721,8 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
@@ -7750,9 +7750,9 @@ describe('Answer Tag Tests', function () {
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
-    cy.get('#\\/fb3').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
+    cy.get('#\\/fb3').should('have.text', 'Distinct and greater than 3')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 

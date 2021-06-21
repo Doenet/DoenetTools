@@ -140,8 +140,8 @@ class DoenetViewerChild extends Component {
   coreReady(core) {
     this.core = core;
 
-    this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
-    this.allPossibleVariants = [...this.core.document.sharedParameters.allPossibleVariants];
+    this.generatedVariant = core.document.stateValues.generatedVariantInfo;
+    this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
 
     if (this.props.generatedVariantCallback) {
       this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
@@ -153,7 +153,7 @@ class DoenetViewerChild extends Component {
       // and the number of failures is increasing
       let nFailures = Infinity;
       while (nFailures > 0) {
-        let result = this.core.executeUpdateStateVariables({
+        let result = core.executeUpdateStateVariables({
           newStateVariableValues: this.cumulativeStateVariableChanges
         })
         if (!(result.nFailures && result.nFailures < nFailures)) {
@@ -180,8 +180,8 @@ class DoenetViewerChild extends Component {
     let renderPromises = [];
     let rendererClassNames = [];
     // console.log('rendererTypesInDocument');
-    // console.log(">>>this.core.rendererTypesInDocument",this.core.rendererTypesInDocument);  
-    for (let rendererClassName of this.core.rendererTypesInDocument) {
+    // console.log(">>>core.rendererTypesInDocument",core.rendererTypesInDocument);  
+    for (let rendererClassName of core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
@@ -189,7 +189,7 @@ class DoenetViewerChild extends Component {
 
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
       this.rendererClasses = rendererClasses;
-      let documentComponentInstructions = this.core.renderedComponentInstructions[this.core.documentName];
+      let documentComponentInstructions = core.renderedComponentInstructions[core.documentName];
       let documentRendererClass = this.rendererClasses[documentComponentInstructions.rendererType]
 
       this.documentRenderer = React.createElement(documentRendererClass,

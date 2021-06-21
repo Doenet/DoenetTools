@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Symbolic equality tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('symbolic equality match with no simplification', () => {
