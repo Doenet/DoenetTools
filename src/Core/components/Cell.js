@@ -124,9 +124,9 @@ export default class Cell extends BaseComponent {
             halign = "left";
           }
           return { newValues: { halign } }
-        } else if (!usedDefault.parentHalign) {
+        } else if (!usedDefault.parentHalign && dependencyValues.parentHalign !== null) {
           return { newValues: { halign: dependencyValues.parentHalign } }
-        } else if (!usedDefault.tabularHalign) {
+        } else if (!usedDefault.tabularHalign && dependencyValues.tabularHalign) {
           return { newValues: { halign: dependencyValues.tabularHalign.stateValues.halign } }
         } else {
           return { useEssentialOrDefaultValue: { halign: {} } }
@@ -163,9 +163,9 @@ export default class Cell extends BaseComponent {
             bottom = "none";
           }
           return { newValues: { bottom } }
-        } else if (!usedDefault.parentBottom) {
+        } else if (!usedDefault.parentBottom && dependencyValues.parentBottom !== undefined) {
           return { newValues: { bottom: dependencyValues.parentBottom } }
-        } else if (!usedDefault.tabularBottom) {
+        } else if (!usedDefault.tabularBottom && dependencyValues.tabularBottom) {
           return { newValues: { bottom: dependencyValues.tabularBottom.stateValues.bottom } }
         } else {
           return { useEssentialOrDefaultValue: { bottom: {} } }
@@ -199,7 +199,7 @@ export default class Cell extends BaseComponent {
             right = "none";
           }
           return { newValues: { right } }
-        } else if (!usedDefault.tabularRight) {
+        } else if (!usedDefault.tabularRight && dependencyValues.tabularRight) {
           return { newValues: { right: dependencyValues.tabularRight.stateValues.right } }
         } else {
           return { useEssentialOrDefaultValue: { right: {} } }

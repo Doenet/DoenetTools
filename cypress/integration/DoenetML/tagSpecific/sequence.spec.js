@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Sequence Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('number sequence, no parameters', () => {

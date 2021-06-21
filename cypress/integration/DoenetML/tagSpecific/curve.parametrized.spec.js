@@ -1,7 +1,7 @@
 describe('Curve Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('sugar a parameterization in terms of x', () => {

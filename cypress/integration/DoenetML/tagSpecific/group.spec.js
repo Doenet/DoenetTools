@@ -1,7 +1,7 @@
 describe('Group Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('nested groups, copied', () => {

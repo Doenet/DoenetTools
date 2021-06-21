@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DoenetViewer from '../../Viewer/DoenetViewer.jsx';
-import testCodeDoenetML from './testCode.doenet';
+// import testCodeDoenetML from './testCode.doenet';
 import core from '../../Core/Core';
 
 function Test() {
@@ -8,10 +8,10 @@ function Test() {
 
   const [doenetML,setDoenetML] = useState(null);
 
-  //New DoenetViewer when code changes
-  useEffect(() => {
-    setDoenetML(testCodeDoenetML);
-  }, [testCodeDoenetML]);
+  // //New DoenetViewer when code changes
+  // useEffect(() => {
+  //   setDoenetML(testCodeDoenetML);
+  // }, [testCodeDoenetML]);
 
   const defaultTestSettings = {
     updateNumber:0,
@@ -60,16 +60,16 @@ function Test() {
 
 
 
-  // //For Cypress Test Use
-  // window.onmessage = (e) => {
-  //   if (e.data.doenetML !== undefined) {
-  //     //Only if defined
-  //     if (e.data.requestedVariant) {
-  //       requestedVariant.current = e.data.requestedVariant;
-  //     }
-  //     setDoenetML(e.data.doenetML);
-  //   }
-  // };
+  //For Cypress Test Use
+  window.onmessage = (e) => {
+    if (e.data.doenetML !== undefined) {
+      //Only if defined
+      if (e.data.requestedVariant) {
+        requestedVariant.current = e.data.requestedVariant;
+      }
+      setDoenetML(e.data.doenetML);
+    }
+  };
 
   //Don't construct core until we have the doenetML defined
   if (doenetML === null) {
@@ -222,7 +222,6 @@ function Test() {
   }
 
 
-
   return (
     <>
       <div style={{ backgroundColor: "#e3e3e3" }}><h3><button onClick={() => setControlsVisible(was => !was)}>{buttonText} controls</button>
@@ -258,15 +257,15 @@ function Test() {
   )
 }
 
-if (import.meta.hot) {
-  import.meta.hot.accept();
-  // import.meta.hot.accept(({module}) => {
-  //   Test = module.default;
-  //   console.log(">>>ACCEPT CALLED in test!!!!!!!!!",module.default)
-  //   console.log(">>>module",module)
-  // }
-  // );
-}
+// if (import.meta.hot) {
+//   import.meta.hot.accept();
+//   // import.meta.hot.accept(({module}) => {
+//   //   Test = module.default;
+//   //   console.log(">>>ACCEPT CALLED in test!!!!!!!!!",module.default)
+//   //   console.log(">>>module",module)
+//   // }
+//   // );
+// }
 
 
 export default Test;

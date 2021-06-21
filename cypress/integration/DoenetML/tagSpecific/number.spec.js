@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Number Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('1+1', () => {

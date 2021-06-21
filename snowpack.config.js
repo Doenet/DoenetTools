@@ -20,6 +20,7 @@ module.exports = {
     'src/Tools/signout': '/signout',
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
+    'src/Tools/cypressTest': '/cypressTest',
     'src/Tools/uiDocs': '/uiDocs',
     'src/Tools/_framework': '/_framework',
     'src/Media': { url: '/media', static: true, resolve: false },

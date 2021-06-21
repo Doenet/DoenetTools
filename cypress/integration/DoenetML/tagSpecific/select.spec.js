@@ -3,7 +3,7 @@ import me from 'math-expressions';
 describe('Select Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it("no parameters, select doesn't do anything", () => {
