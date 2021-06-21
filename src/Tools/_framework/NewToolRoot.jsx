@@ -67,7 +67,8 @@ export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
     viewName:"Test",
-    menuPanels:[],
+    menuPanels:["TestControl"],
+    menuPanelsInitOpen:[true],
     mainPanel:"One",
     supportPanel:["Two","One"],
     supportPanelNames:["Panel Two","Panel One"],
@@ -181,7 +182,7 @@ export default function ToolRoot(props){
     <GlobalFont />
     <Toast />
     <ToolContainer>
-      <MenuPanels />
+      <MenuPanels panelNames={toolViewInfo.menuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
       <ContentPanel 
       // main={<MainPanel>{thisone}</MainPanel>} 
       main={<MainPanel>{mainPanelArray.current}</MainPanel>} 

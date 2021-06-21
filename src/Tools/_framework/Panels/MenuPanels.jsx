@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, lazy, useRef, Suspense } from 'react';
 import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 // import { useStackId } from '../ToolRoot';
@@ -121,7 +121,7 @@ border: 0px solid white;
 border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
 margin-top: 2px;
 `
-function MenuPanelInstance(props){
+function MenuPanel(props){
   let isInitOpen = props.isInitOpen;
   if (!isInitOpen){isInitOpen = false;}
   let [isOpen,setIsOpen] = useState(isInitOpen);
@@ -141,25 +141,54 @@ function MenuPanelInstance(props){
   </>
 }
 
-export default function MenuPanels({ panelNames=[] }) {
+const LoadingFallback = styled.div`
+  background-color: hsl(0, 0%, 99%);
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+  width: 100vw;
+  height: 100vh;
+`;
+
+export default function MenuPanels({ panelNames=[], initOpen=[] }) {
   const profile = useContext(ProfileContext)
-  // console.log(">>>profile",profile) 
+  console.log(">>>panelNames",panelNames,initOpen) 
 
   //These maintain the panels' state
-  const [viewPanels,setViewPanels] = useState([])
-  const [userPanels,setUserPanels] = useState([])
+  const viewPanels = useRef([])
+  // const [userPanels,setUserPanels] = useState([])
 
   const profilePicName = profile.profilePicture;
 
-  //Lasy load all the menu panels by name
-  useEffect(()=>{
-    // console.log(">>>panelNames",panelNames)
-      for (let [i,panelName] of Object.entries(panelNames)){
-        console.log(">>>i,panelName",i,panelName)
-    // panels.push(<MenuPanelInstance key={`menuPanel${i}`} {...child.props} >{child.children}</MenuPanelInstance>)
-  }
-  },panelNames)
+  const LazyObj = useRef({
+    TestControl:lazy(() => import('../MenuPanels/TestControl')),
+  }).current;
 
+  function buildMenuPanel({key,type,title,visible,initOpen}){
+    // console.log(">>>build",{key,type,visible})
+    let hideStyle = null;
+    if (!visible){
+      hideStyle = 'none';
+    }
+    
+    // {React.createElement(LazyObj[type],{key,style:{color: "red", backgroundColor: "blue"}})}
+    return <MenuPanel key={key} title={title} isInitOpen={initOpen}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+    {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
+    </Suspense></MenuPanel>
+  } 
+
+
+  if (viewPanels.current.length === 0 && panelNames.length > 0){
+    for (let [i,panelName] of Object.entries(panelNames)){
+        const open = initOpen[i]
+
+    viewPanels.current.push(buildMenuPanel({key:'key',type:'TestControl',title:'Test Control',visible:true,initOpen:open}))
+    }
+  }
+
+  console.log(">>>viewPanels.current",viewPanels.current)
   return (
     <MenuPanelsWrapper>
      <MenuPanelsCap>
@@ -177,8 +206,8 @@ export default function MenuPanels({ panelNames=[] }) {
         
           {/* {anchor} */}
       </MenuPanelsCap>
-    {viewPanels}
-    {userPanels}
+    {viewPanels.current}
+    {/* {userPanels} */}
     <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
       <EditMenuPanels onClick={()=>console.log('>>>edit menu panels')}>+</EditMenuPanels>
     </div>
