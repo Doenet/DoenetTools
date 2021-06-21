@@ -1,11 +1,10 @@
 import React, { useContext, useState, useEffect, lazy, useRef, Suspense } from 'react';
 import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
-// import { useStackId } from '../ToolRoot';
-import { ProfileContext } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 // import logo from './src/Media/Doenet_Logo_cloud_only.png';
+import Profile from '../Profile';
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -50,26 +49,6 @@ export const useMenuPanelController = () => {
   const menuAtomControl = useSetRecoilState(activeMenuPanel(stackId));
   return menuAtomControl;
 };
-
-const ProfilePicture = styled.button`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
-    url('/media/profile_pictures/${(props) => props.pic}.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  transition: 300ms;
-  // color: #333333;
-  width: 30px;
-  height: 30px;
-  display: inline-block;
-  // color: rgba(0, 0, 0, 0);
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  border-style: none;
-  margin-left: 75px;
-  margin-top: 4px
-`;
 
 const Logo = styled.div`
 background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
@@ -153,15 +132,14 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ panelNames=[], initOpen=[] }) {
-  const profile = useContext(ProfileContext)
-  console.log(">>>panelNames",panelNames,initOpen) 
+export default function MenuPanels({ panelNames=[], initOpen=[], setMenuPanelsOpen }) {
+  // console.log(">>>panelNames",panelNames,initOpen) 
 
   //These maintain the panels' state
   const viewPanels = useRef([])
   // const [userPanels,setUserPanels] = useState([])
 
-  const profilePicName = profile.profilePicture;
+  // const profilePicName = profile.profilePicture;
 
   const LazyObj = useRef({
     TestControl:lazy(() => import('../MenuPanels/TestControl')),
@@ -183,13 +161,15 @@ export default function MenuPanels({ panelNames=[], initOpen=[] }) {
 
   if (viewPanels.current.length === 0 && panelNames.length > 0){
     for (let [i,panelName] of Object.entries(panelNames)){
+        const mpKey = `${panelName}`;
         const open = initOpen[i]
 
-    viewPanels.current.push(buildMenuPanel({key:'key',type:'TestControl',title:'Test Control',visible:true,initOpen:open}))
+    viewPanels.current.push(buildMenuPanel({key:mpKey,type:'TestControl',title:'Test Control',visible:true,initOpen:open}))
     }
   }
 
-  console.log(">>>viewPanels.current",viewPanels.current)
+  
+  // console.log(">>>viewPanels.current",viewPanels.current) 
   return (
     <MenuPanelsWrapper>
      <MenuPanelsCap>
@@ -199,10 +179,10 @@ export default function MenuPanels({ panelNames=[], initOpen=[] }) {
         </span>
         <span style={{marginBottom: '1px'}}>Doenet</span>
         <span >
-          <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
+          <Profile />
         </span>
         <span >
-          <CloseButton onClick={()=>console.log('>>>close menu panels')}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
+          <CloseButton onClick={()=>setMenuPanelsOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
         </span>
         
           {/* {anchor} */}

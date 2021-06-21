@@ -87,6 +87,7 @@ export default function ToolRoot(props){
   const mainPanelDictionary = useRef({}) //key -> {index, type}
   const supportPanelDictionary = useRef({}) //key -> {index, type}
   // const [supportContentObj,setSupportContentObj] = useState({})
+  const [menuPanelsOpen,setMenuPanelsOpen] = useState(true)
 
 
   const LazyObj = useRef({
@@ -100,7 +101,7 @@ export default function ToolRoot(props){
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
-      console.log(">>>===ToolRoot")
+      // console.log(">>>===ToolRoot")
 
 
   function buildPanel({key,type,visible}){
@@ -141,8 +142,6 @@ export default function ToolRoot(props){
    }
 
    lastMainPanelKey.current = MainPanelKey;
-
-
     
 
     const SupportPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
@@ -175,18 +174,15 @@ export default function ToolRoot(props){
       supportPanel = <SupportPanel>{supportPanelArray.current}</SupportPanel>
     }
    
-//  {key,style:{color: "red", backgroundColor: "blue"}
-    // const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{React.createElement(LazyObj['One'],{key:'ha!',style:{display:"none"}})}</Suspense>
 
 
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <Toast />
     <ToolContainer>
-      <MenuPanels panelNames={toolViewInfo.menuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
+      {menuPanelsOpen ? <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelNames={toolViewInfo.menuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/> : null}
       <ContentPanel 
-      // main={<MainPanel>{thisone}</MainPanel>} 
-      main={<MainPanel>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
       {/* <FooterPanel></FooterPanel> */}

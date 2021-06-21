@@ -75,7 +75,8 @@ export const useSupportDividerController = () => {
 
 export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
-  const [hasRespCont, setHasRespCont] = useState(false);
+  // const [hasRespCont, setHasRespCont] = useState(true);
+  const hasRespCont = true;
   const stackId = useStackId();
   const setDivider = useSupportDividerController();
   const panelProportion = useRecoilValue(panelPropotion(stackId));
@@ -89,12 +90,12 @@ export default function ContentPanel({ main, support }) {
     wrapperRef.current.style.gridTemplate = null;
   }, [panelProportion]);
 
-  useEffect(() => {
-    setHasRespCont(
-      (support?.props.responsiveControls || main?.props.responsiveControls) ??
-        false,
-    );
-  }, [support?.props.responsiveControls, main?.props.responsiveControls]);
+  // useEffect(() => {
+  //   setHasRespCont(
+  //     (support?.props.responsiveControls || main?.props.responsiveControls) ??
+  //       false,
+  //   );
+  // }, [support?.props.responsiveControls, main?.props.responsiveControls]);
 
   useEffect(() => {
     wrapperRef.current.handleClicked = false;
@@ -152,7 +153,7 @@ export default function ContentPanel({ main, support }) {
         <DragHandle
           onMouseDown={onMouseDown}
           data-cy="contentPanelDragHandle"
-          key={`SupportHandle${stackId}`}
+          key={`SupportHandle`}
         >
           <FontAwesomeIcon icon={faGripLinesVertical} />
         </DragHandle>
