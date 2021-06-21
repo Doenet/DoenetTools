@@ -137,11 +137,25 @@ describe('Integer Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
     })
 
-    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}9.5{enter}', { force: true })
-    cy.get('#\\/n').should('have.text', '10');
+    // Note: change to 3 and then 31 to verify bug doesn't reappear
+    cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}{backspace}{backspace}3{enter}', { force: true })
+    cy.get('#\\/n').should('have.text', '3');
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
     })
+
+    cy.get('#\\/_mathinput1 textarea').type('{end}1{enter}', { force: true })
+    cy.get('#\\/n').should('have.text', '31');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('31')
+    })
+
+    cy.get('#\\/_mathinput1 textarea').type('{end}.5{enter}', { force: true })
+    cy.get('#\\/n').should('have.text', '32');
+    cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('32')
+    })
+
   })
 
 

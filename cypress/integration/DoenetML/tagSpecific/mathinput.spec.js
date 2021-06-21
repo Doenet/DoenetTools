@@ -1566,6 +1566,8 @@ describe('MathInput Tag Tests', function () {
     <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
     <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
     <p>a3: <copy tname="a" prop="immediateValue" assignNames="a3" /></p>
+    <p>a4: <copy tname="a" prop="value" assignNames="a4" displayDigits="16" /></p>
+    <p>a5: <copy tname="a" prop="immediateValue" assignNames="a5" displayDigits="16" /></p>
 
     <p>b: <math name="b">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
@@ -2017,7 +2019,9 @@ describe('MathInput Tag Tests', function () {
     <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
     <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
     <p>a3: <copy tname="a" prop="immediatevalue" assignNames="a3" /></p>
-
+    <p>a4: <copy tname="a" prop="value" assignNames="a4" displayDigits="16" /></p>
+    <p>a5: <copy tname="a" prop="immediatevalue" assignNames="a5" displayDigits="16" /></p>
+  
     <p>b: <math name="b">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
     <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
@@ -2160,11 +2164,11 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
-      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/a2'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
-      expect(components['/a3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/a3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/a3'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
       expect(components['/b'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
       expect(components['/b2'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
@@ -2173,11 +2177,11 @@ describe('MathInput Tag Tests', function () {
       expect(components['/b3'].stateValues.valueForDisplay.tree).eqls(['*', 9.35e-14, ['^', 'e', ['*', 7.3e-15, 'y']]]);
       expect(components['/b4'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
       expect(components['/b4'].stateValues.valueForDisplay.tree).eqls(['*', 9.35e-14, ['^', 'e', ['*', 7.3e-15, 'y']]]);
-      expect(components['/c'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/c'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/c'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 0]);
-      expect(components['/c2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/c2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/c2'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 0]);
-      expect(components['/c3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/c3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/c3'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 0]);
       expect(components['/d'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
       expect(components['/d2'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
