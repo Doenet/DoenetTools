@@ -1,7 +1,7 @@
 describe('CobwebPolyline Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 

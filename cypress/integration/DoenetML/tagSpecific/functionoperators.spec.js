@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Function Operator Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 

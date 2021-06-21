@@ -8,6 +8,13 @@ const actionGroup = {
 };
 
 const ActionButtonGroup = (props) => {
+  // if (props.width) {
+  //   if (props.width === "menu") {
+  //     actionGroup.width = '235px'
+  //   } else {
+  //     actionGroup.width = props.width
+  //   }
+  // }
   let elem = React.Children.toArray(props.children);
   if (elem.length > 1) {
     elem = [React.cloneElement(elem[0], {num: 'first'})]

@@ -174,7 +174,7 @@ export default class Constraints extends BaseComponent {
               let result = constraintChild.stateValues.applyComponentConstraint(variables);
 
               if (result.constrained) {
-                variables['x' + varEnding] = result.variables['x' + varEnding]
+                variables['x' + varEnding] = convertValueToMathExpression(result.variables['x' + varEnding]);
                 constraintUsed = true;
               }
 
@@ -214,7 +214,9 @@ export default class Constraints extends BaseComponent {
             }
 
             if (constraintResult.constrained) {
-              Object.assign(variables, constraintResult.variables);
+              for(let varName in constraintResult.variables) {
+                variables[varName] = convertValueToMathExpression(constraintResult.variables[varName]);
+              }
               constraintUsed = true;
             }
           }
@@ -268,7 +270,7 @@ export default class Constraints extends BaseComponent {
               let result = constraintChild.stateValues.applyComponentConstraint(variables);
 
               if (result.constrained) {
-                variables['x' + varEnding] = result.variables['x' + varEnding]
+                variables['x' + varEnding] = convertValueToMathExpression(result.variables['x' + varEnding]);
               }
 
             }
@@ -321,7 +323,9 @@ export default class Constraints extends BaseComponent {
             }
 
             if (constraintResult.constrained) {
-              Object.assign(variables, constraintResult.variables);
+              for(let varName in constraintResult.variables) {
+                variables[varName] = convertValueToMathExpression(constraintResult.variables[varName]);
+              }
             }
           }
 

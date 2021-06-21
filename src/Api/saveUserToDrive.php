@@ -98,17 +98,21 @@ if ($type === "Remove User"){
       "email"=>$email
       );
 
-      $canDeleteDrive = '0';
-      if ($type == "Add Owner"){
-        $canDeleteDrive = '1';
-      }
+            $canDeleteDrive = '0';
+            $userRole = '';
+            if ($type == 'Add Owner') {
+               $userRole = 'Owner';
+                $canDeleteDrive = '1';
+            }else{
+              $userRole = 'Administrator';
+            }
 
-      $sql = "
+            $sql = "
       INSERT INTO drive_user
       (userId,driveId,canViewDrive,canDeleteDrive,canShareDrive,canAddItemsAndFolders,canDeleteItemsAndFolders,
       canMoveItemsAndFolders,canRenameItemsAndFolders,canPublishItemsAndFolders,canViewUnreleasedItemsAndFolders,canViewUnassignedItemsAndFolders,canChangeAllDriveSettings,role)
       VALUES
-      ('$newUserId','$driveId','1',$canDeleteDrive,'1','1','1','1','1','1','1','1',$canDeleteDrive,'Owner')
+      ('$newUserId','$driveId','1',$canDeleteDrive,'1','1','1','1','1','1','1','1',$canDeleteDrive,'$userRole')
       ";
       $result = $conn->query($sql); 
     }

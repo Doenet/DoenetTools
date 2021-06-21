@@ -11,23 +11,13 @@ import { nanoid } from 'nanoid';
 import { 
   useRecoilValue, 
   atom, 
-  atomFamily,
-  // selector,
-  selectorFamily,
   useSetRecoilState,
   useRecoilState,
   useRecoilValueLoadable,
-  // useRecoilStateLoadable, 
   useRecoilCallback
 } from "recoil";
 import DoenetViewer from '../../../Viewer/DoenetViewer';
-import {Controlled as CodeMirror} from 'react-codemirror2'
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/xml/xml';
-// import 'codemirror/theme/material.css';
-import 'codemirror/theme/xq-light.css';
-// import 'codemirror/theme/neo.css';
-// import 'codemirror/theme/base16-light.css';
+import CodeMirror from '../CodeMirror';
 
 import './Editor.css';
 import { 
@@ -35,7 +25,6 @@ import {
   fileByContentId 
 } from '../../../_sharedRecoil/content';
 
-import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faExternalLinkAlt
@@ -467,13 +456,6 @@ function TextEditor(props){
   if (activeVersionId !== ""){
     //Read Only without timers
     clearSaveTimeouts()
-    if (editorRef.current){
-      editorRef.current.options.readOnly = true;
-    }
-  }else{
-    if (editorRef.current){
-      editorRef.current.options.readOnly = false;
-    }
   }
 
   const editorInit = useRecoilValue(editorInitAtom);
@@ -521,7 +503,7 @@ function TextEditor(props){
           }
           // Might be non-obvious behavior. Should it comment/uncomment all of the selections?
           // Shouldn't come up too often.
-          selections = selections.map((s) => s.substring(0,4) !== "<!--" ? "<!-- " + s + " -->": s.substring(5,s.length-3))
+          selections = selections.map((s) => s.trim().substring(0,4) !== "<!--" ? "<!-- " + s + " -->": s.trim().substring(5,s.length-3))
           // let selectionsPos = cm.listSelections().map(({anchor,head}) => {return {anchor : anchor, head : {line : head.line, ch: head.ch + "<!--  -->".length}}}) ;
           // console.log(">>pos",selectionsPos);
           //the around option here is supposed to keep the replacing text selected, but it doesn't work.
@@ -557,18 +539,16 @@ function TextEditor(props){
     // editorRef.current.doc.redo();
   }}>Redo</button> */}
 
-  <VisibilitySensor onChange={(visible)=>{
+  {/* <VisibilitySensor onChange={(visible)=>{
     if (visible){
       editorRef.current.refresh();
     }  
-    }}>
+    }}> */}
     
 <CodeMirror
-  className="CodeMirror"
-  editorDidMount={editor => { editorRef.current = editor;  }}
-  value={textValue}
-  options={options}
-  onBeforeChange={(editor, data, value) => {
+  editorRef = {editorRef}
+  value={textValue} 
+  onBeforeChange={(value) => {
     if (activeVersionId === "") { //No timers when active version history
       setEditorDoenetML(value);
       if (timeout.current === null){
@@ -585,11 +565,18 @@ function TextEditor(props){
       }
     }
   }}
+
+  />
+{/* <CodeMirror
+  className="CodeMirror"
+  editorDidMount={editor => { editorRef.current = editor;  }}
+  value={textValue}
+  options={options}
   // onChange={(editor, data, value) => {
   // }}
-/>
+/> */}
 
-  </VisibilitySensor>
+  {/* </VisibilitySensor> */}
   </>
 }
 
@@ -655,7 +642,7 @@ function TempEditorHeaderBar(props){
 
 const variantInfoAtom = atom({
   key:"variantInfoAtom",
-  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:0}}
+  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:1}}
 })
 
 const variantPanelAtom = atom({

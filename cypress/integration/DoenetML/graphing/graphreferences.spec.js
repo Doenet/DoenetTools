@@ -1,7 +1,7 @@
 describe('Graph Reference Test', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 

@@ -21,6 +21,8 @@ module.exports = {
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
     'src/Tools/new': '/new',
+    'src/Tools/cypressTest': '/cypressTest',
+    'src/Tools/uiDocs': '/uiDocs',
     'src/Tools/_framework': '/_framework',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
