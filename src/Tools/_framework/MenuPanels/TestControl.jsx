@@ -16,7 +16,7 @@ export default function TestControl(props){
 
   
   return <div style={props.style}>
-  <h1>Count {count}</h1>
+  <h1>State Count {count}</h1>
   <button onClick={()=>setCount((was)=>{return was + 1})}>+</button>
   <div><button onClick={()=>mainPanel("One")}>Switch to One</button></div>
   <div><button onClick={()=>mainPanel("Two")}>Switch to Two</button></div>

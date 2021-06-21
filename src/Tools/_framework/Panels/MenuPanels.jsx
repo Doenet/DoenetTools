@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect, lazy, useRef, Suspense } from '
 import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 // import { useStackId } from '../ToolRoot';
-import DragPanel, { handleDirection } from './Panel';
 import { ProfileContext } from '../NewToolRoot';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
@@ -126,18 +125,20 @@ function MenuPanel(props){
   if (!isInitOpen){isInitOpen = false;}
   let [isOpen,setIsOpen] = useState(isInitOpen);
 
-  let body = null;
-  if (isOpen){
-    body = <div>{props.children}</div>
+  let hideShowStyle = null;
+  if (!isOpen){
+    hideShowStyle = 'none'
   }
+
   return <>
     <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}>{props.title}</MenuPanelTitle>
     <div style={{
+      display: hideShowStyle,
       // paddingTop: "0px", 
       paddingBottom: "4px", 
       paddingLeft: "4px",
       paddingRight: "4px",
-      backgroundColor:"white"}}>{body}</div>
+      backgroundColor:"white"}}>{props.children}</div>
   </>
 }
 

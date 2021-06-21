@@ -9,8 +9,8 @@ import {
 } from 'recoil';
 import styled from 'styled-components';
 import Toast from './Toast';
-import { useMenuPanelController } from './Panels/MenuPanel';
-import ContentPanel, { useSupportDividerController } from './Panels/NewContentPanel';
+// import { useMenuPanelController } from './Panels/MenuPanel';
+import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
 import GlobalFont from '../../_utils/GlobalFont';
@@ -77,7 +77,7 @@ export const toolViewAtom = atom({
 })
    
 export default function ToolRoot(props){
-  // console.log(">>>DoenetTool props",props) 
+  // console.log(">>>ToolRoot props",props) 
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
   const mainPanelArray = useRef([])
@@ -100,7 +100,7 @@ export default function ToolRoot(props){
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
-      // console.log(">>>===ToolRoot")
+      console.log(">>>===ToolRoot")
 
 
   function buildPanel({key,type,visible}){
@@ -115,6 +115,7 @@ export default function ToolRoot(props){
     {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
     </Suspense>
   } 
+
    const MainPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.mainPanel}`;
    if (!mainPanelDictionary.current[MainPanelKey]){
     //Doesn't exist so make new Main Panel
