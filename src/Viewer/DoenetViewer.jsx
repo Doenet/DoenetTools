@@ -4,6 +4,7 @@ import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import me from 'math-expressions';
+import { nanoid } from 'nanoid';
 
 
 export function serializedComponentsReplacer(key, value) {
@@ -93,8 +94,12 @@ class DoenetViewerChild extends Component {
     // Best option: viewer and the function passed in to retrieve content 
     // should verify hash
 
+    this.coreId = nanoid();
+    // console.log(">>>CREATE core this.coreId!!!",this.coreId)  
+
     if (this.props.core) {
-      this.core = new this.props.core({
+      new this.props.core({
+        coreId: this.coreId,
         coreReadyCallback: this.coreReady,
         coreUpdatedCallback: this.update,
         doenetML: this.doenetML,
@@ -109,7 +114,8 @@ class DoenetViewerChild extends Component {
         requestedVariant: this.requestedVariant,
       });
     } else {
-      this.core = new Core({
+      new Core({
+        coreId: this.coreId,
         coreReadyCallback: this.coreReady,
         coreUpdatedCallback: this.update,
         doenetML: this.doenetML,
@@ -131,7 +137,8 @@ class DoenetViewerChild extends Component {
 
   }
 
-  coreReady() {
+  coreReady(core) {
+    this.core = core;
 
     this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
     this.allPossibleVariants = [...this.core.document.sharedParameters.allPossibleVariants];
@@ -173,7 +180,7 @@ class DoenetViewerChild extends Component {
     let renderPromises = [];
     let rendererClassNames = [];
     // console.log('rendererTypesInDocument');
-    // console.log(this.core.rendererTypesInDocument);
+    // console.log(">>>this.core.rendererTypesInDocument",this.core.rendererTypesInDocument);  
     for (let rendererClassName of this.core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
