@@ -114,6 +114,10 @@ let viewsObj = {
     supportPanel:[],
   }
 }
+
+let encodeParams = p => Object.entries(p).map(kv => 
+  kv.map(encodeURIComponent).join("=")).join("&");
+
    
 export default function ToolRoot(props){
   // console.log(">>>ToolRoot props",props) 
@@ -130,19 +134,24 @@ export default function ToolRoot(props){
   const [menuPanelsOpen,setMenuPanelsOpen] = useState(true)
 
   const setView = useRecoilCallback(({set})=> (view,origPath)=>{
-    console.log(">>>view",view)
-    let newView = viewsObj[view];
-    //TODO: make a tool not found mainPanel
-    if (!newView){ 
-      // let newParams = {};
-      //               newParams["courseId"] = `${item.courseId}`;
-      //               history.push("?" + encodeParams(newParams));
-    location.href = `#/notfound?path=${origPath}`
+    if (view === ""){ 
+      location.href = `#test/`  
     }else{
+      let newView = viewsObj[view];
+   
       console.log(">>>newView",newView)
-
-      set(toolViewAtom,newView);
+  
+      if (!newView){ 
+        let newParams = {};
+        newParams["path"] = `${origPath}`;
+        const ePath = encodeParams(newParams);
+      location.href = `#/notfound?${ePath}`
+      }else{
+  
+        set(toolViewAtom,newView);
+      }
     }
+    
 
   })
 
