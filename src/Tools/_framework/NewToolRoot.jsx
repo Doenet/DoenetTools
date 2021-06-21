@@ -20,7 +20,6 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanels from './Panels/MenuPanels';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
-import { useHistory } from "react-router-dom";
 import HyperFormulaNS from 'hyperformula';
 
 
@@ -111,7 +110,7 @@ let viewsObj = {
     viewName:"Notfound",
     menuPanels:[],
     menuPanelsInitOpen:[],
-    mainPanel:"Notfound",
+    mainPanel:"NotFound",
     supportPanel:[],
   }
 }
@@ -135,7 +134,10 @@ export default function ToolRoot(props){
     let newView = viewsObj[view];
     //TODO: make a tool not found mainPanel
     if (!newView){ 
-    location.href = `#/notfound?=${origPath}`
+      // let newParams = {};
+      //               newParams["courseId"] = `${item.courseId}`;
+      //               history.push("?" + encodeParams(newParams));
+    location.href = `#/notfound?path=${origPath}`
     }else{
       console.log(">>>newView",newView)
 
@@ -150,6 +152,7 @@ export default function ToolRoot(props){
     Two:lazy(() => import('./ToolPanels/Two')),
     Count:lazy(() => import('./ToolPanels/Count')),
     Count2:lazy(() => import('./ToolPanels/Count2')),
+    NotFound:lazy(() => import('./ToolPanels/NotFound')),
   }).current;
 
   if (profile.state === "loading"){ return null;}
@@ -249,7 +252,7 @@ export default function ToolRoot(props){
       support={supportPanel}
       />
     
-      <FooterPanel><button onClick={()=>props.route.history.push('/Test')}>test</button></FooterPanel>
+      {/* <FooterPanel><button onClick={()=>props.route.history.push('/Test')}>test</button></FooterPanel> */}
     </ToolContainer>
 
   </ProfileContext.Provider>
