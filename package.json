@@ -21,8 +21,8 @@
     "lint": "eslint \"src/**/*.{js,jsx}\""
   },
   "dependencies": {
-    "@blueprintjs/core": "^3.44.3",
-    "@blueprintjs/datetime": "^3.23.3",
+    "@blueprintjs/core": "^3.45.0",
+    "@blueprintjs/datetime": "^3.23.4",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
@@ -35,7 +35,7 @@
     "compromise-numbers": "^1.2.0",
     "crypto-js": "^4.0.0",
     "cssesc": "^3.0.0",
-    "csv-parse": "^4.15.3",
+    "csv-parse": "^4.16.0",
     "esm-seedrandom": "^3.0.5",
     "handsontable": "^8.4.0",
     "http2-proxy": "^5.0.53",
@@ -76,7 +76,7 @@
     "@web/test-runner": "^0.12.19",
     "chai": "^4.2.0",
     "cypress": "^7.4.0",
-    "esbuild": "^0.12.6",
+    "esbuild": "^0.12.9",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.2.0",
     "eslint-plugin-cypress": "^2.11.3",
@@ -86,7 +86,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy": "^1.18.1",
     "prettier": "^2.3.1",
-    "snowpack": "^3.5.5",
+    "snowpack": "^3.5.8",
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {
