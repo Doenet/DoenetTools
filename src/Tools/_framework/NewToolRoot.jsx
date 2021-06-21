@@ -69,8 +69,8 @@ export const toolViewAtom = atom({
     viewName:"Test",
     menuPanels:[],
     mainPanel:"One",
-    // mainPanel:"One",
     supportPanel:["Two","One"],
+    supportPanelNames:["Panel Two","Panel One"],
     supportPanelIndex:0,
   }
 })
@@ -80,8 +80,11 @@ export default function ToolRoot(props){
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
   const mainPanelArray = useRef([])
+  const supportPanelArray = useRef([])
   const lastMainPanelKey = useRef(null)
+  const lastSupportPanelKey = useRef(null)
   const mainPanelDictionary = useRef({}) //key -> {index, type}
+  const supportPanelDictionary = useRef({}) //key -> {index, type}
   // const [supportContentObj,setSupportContentObj] = useState({})
 
 
@@ -107,7 +110,7 @@ export default function ToolRoot(props){
     }
     
     // {React.createElement(LazyObj[type],{key,style:{color: "red", backgroundColor: "blue"}})}
-    return <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+    return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
     {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
     </Suspense>
   } 
@@ -138,7 +141,37 @@ export default function ToolRoot(props){
    lastMainPanelKey.current = MainPanelKey;
 
 
+    
+
+    const SupportPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
+    if (!supportPanelDictionary.current[SupportPanelKey]){
+     //Doesn't exist so make new Support Panel
+     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex],visible:true}))
+     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex], visible:true}
+    }
+    
+    //Show current panel and hide last panel
+    if (lastSupportPanelKey.current !== null && lastSupportPanelKey.current !== SupportPanelKey){
+     const spObj = supportPanelDictionary.current[SupportPanelKey];
+     const lastObj = supportPanelDictionary.current[lastSupportPanelKey.current];
+ 
+     //Show current if not visible
+     if (!spObj.visible){
+       supportPanelArray.current[spObj.index] = buildPanel({key:SupportPanelKey,type:spObj.type,visible:true})
+       spObj.visible = true;
+     }
+     //Hide last if visible
+     if (lastObj.visible){
+       supportPanelArray.current[lastObj.index] = buildPanel({key:lastSupportPanelKey.current,type:lastObj.type,visible:false})
+       lastObj.visible = false;
+     }
+    }
+ 
+    lastSupportPanelKey.current = SupportPanelKey;
     let supportPanel = null;
+    if (supportPanelArray.current.length > 0){
+      supportPanel = <SupportPanel>{supportPanelArray.current}</SupportPanel>
+    }
    
 //  {key,style:{color: "red", backgroundColor: "blue"}
     // const thisone = <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>{React.createElement(LazyObj['One'],{key:'ha!',style:{display:"none"}})}</Suspense>
