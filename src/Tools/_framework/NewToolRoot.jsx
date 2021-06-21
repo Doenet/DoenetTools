@@ -20,6 +20,8 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanels from './Panels/MenuPanels';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
+import { useHistory } from "react-router-dom";
+import HyperFormulaNS from 'hyperformula';
 
 
 const ToolContainer = styled(animated.div)`
@@ -67,27 +69,80 @@ export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
     viewName:"Test",
+    menuPanels:[],
+    menuPanelsInitOpen:[],
+    mainPanel:"One",
+    supportPanel:[],
+    supportPanelNames:["Panel Two","Panel One"],
+    supportPanelIndex:0,
+  }
+})
+
+
+// {
+//   viewName:"Test",
+//   menuPanels:["TestControl"],
+//   menuPanelsInitOpen:[true],
+//   mainPanel:"One",
+//   supportPanel:["Two","One"],
+//   supportPanelNames:["Panel Two","Panel One"],
+//   supportPanelIndex:0,
+// }
+let viewsObj = {
+  test:{
+    viewName:"Test",
     menuPanels:["TestControl"],
     menuPanelsInitOpen:[true],
     mainPanel:"One",
     supportPanel:["Two","One"],
     supportPanelNames:["Panel Two","Panel One"],
     supportPanelIndex:0,
+  },
+  count:{
+    viewName:"Count",
+    menuPanels:["TestControl"],
+    menuPanelsInitOpen:[true],
+    mainPanel:"Count",
+    supportPanel:["Count2","Count"],
+    supportPanelNames:["Count Two","Count One"],
+    supportPanelIndex:0,
+  },
+  notfound:{
+    viewName:"Notfound",
+    menuPanels:[],
+    menuPanelsInitOpen:[],
+    mainPanel:"Notfound",
+    supportPanel:[],
   }
-})
+}
    
 export default function ToolRoot(props){
   // console.log(">>>ToolRoot props",props) 
+
   const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
   const mainPanelArray = useRef([])
-  const supportPanelArray = useRef([])
   const lastMainPanelKey = useRef(null)
-  const lastSupportPanelKey = useRef(null)
   const mainPanelDictionary = useRef({}) //key -> {index, type}
+  const supportPanelArray = useRef([])
+  const lastSupportPanelKey = useRef(null)
   const supportPanelDictionary = useRef({}) //key -> {index, type}
   // const [supportContentObj,setSupportContentObj] = useState({})
   const [menuPanelsOpen,setMenuPanelsOpen] = useState(true)
+
+  const setView = useRecoilCallback(({set})=> (view,origPath)=>{
+    console.log(">>>view",view)
+    let newView = viewsObj[view];
+    //TODO: make a tool not found mainPanel
+    if (!newView){ 
+    location.href = `#/notfound?=${origPath}`
+    }else{
+      console.log(">>>newView",newView)
+
+      set(toolViewAtom,newView);
+    }
+
+  })
 
 
   const LazyObj = useRef({
@@ -102,6 +157,7 @@ export default function ToolRoot(props){
       console.error(profile.contents)
       return null;}
       // console.log(">>>===ToolRoot")
+      console.log(">>>===Route",props.route) 
 
 
   function buildPanel({key,type,visible}){
@@ -116,6 +172,13 @@ export default function ToolRoot(props){
     {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
     </Suspense>
   } 
+
+  const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
+  //Need to update path
+  if (toolViewInfo.viewName.toLowerCase() !== lcpath){
+    setView(lcpath,props.route.location.pathname)
+    return null;
+  }
 
    const MainPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.mainPanel}`;
    if (!mainPanelDictionary.current[MainPanelKey]){
@@ -144,6 +207,9 @@ export default function ToolRoot(props){
    lastMainPanelKey.current = MainPanelKey;
     
 
+   let supportPanel = null;
+
+   if (toolViewInfo.supportPanel && toolViewInfo.supportPanel.length > 0){
     const SupportPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
     if (!supportPanelDictionary.current[SupportPanelKey]){
      //Doesn't exist so make new Support Panel
@@ -169,11 +235,8 @@ export default function ToolRoot(props){
     }
  
     lastSupportPanelKey.current = SupportPanelKey;
-    let supportPanel = null;
-    if (supportPanelArray.current.length > 0){
-      supportPanel = <SupportPanel>{supportPanelArray.current}</SupportPanel>
-    }
-   
+    supportPanel = <SupportPanel>{supportPanelArray.current}</SupportPanel>
+  }
 
 
   return <ProfileContext.Provider value={profile.contents}>
@@ -185,7 +248,8 @@ export default function ToolRoot(props){
       main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
-      {/* <FooterPanel></FooterPanel> */}
+    
+      <FooterPanel><button onClick={()=>props.route.history.push('/Test')}>test</button></FooterPanel>
     </ToolContainer>
 
   </ProfileContext.Provider>
