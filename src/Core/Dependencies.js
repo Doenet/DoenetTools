@@ -1002,7 +1002,7 @@ export class DependencyHandler {
         dependencyChanges[dependencyName] = changes;
       }
       if (usedDefault) {
-        dependencyUsedDefault[dependencyName] = true;
+        dependencyUsedDefault[dependencyName] = usedDefault;
       }
     }
 
@@ -2963,6 +2963,34 @@ class Dependency {
             changes.valuesChanged = changes.valuesChanged[0];
           } else {
             delete changes.valuesChanged;
+          }
+
+          if (value.stateValues && Object.keys(value.stateValues).length > 0) {
+            let usedDefaultObj = {};
+            let foundOneUsedDefault = false;
+            for (let [varInd,mappedVarName] of this.mappedDownstreamVariableNamesByComponent[0].entries()) {
+              if (this.dependencyHandler.components[this.downstreamComponentNames[0]].state[
+                mappedVarName
+              ].usedDefault) {
+
+                foundOneUsedDefault = true;
+
+                let nameForOutput;
+                if (this.useMappedVariableNames) {
+                  nameForOutput = mappedVarName;
+                } else {
+                  if (this.originalVariablesByComponent) {
+                    nameForOutput = this.originalDownstreamVariableNamesByComponent[0][varInd];
+                  } else {
+                    nameForOutput = this.originalDownstreamVariableNames[varInd];
+                  }
+                }
+                usedDefaultObj[nameForOutput] = true;
+              }
+            }
+            if (foundOneUsedDefault) {
+              usedDefault = usedDefaultObj;
+            }
           }
         } else {
           value = null;

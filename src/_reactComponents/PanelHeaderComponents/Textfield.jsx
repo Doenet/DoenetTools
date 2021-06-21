@@ -18,6 +18,13 @@ export default function Textfield(props) {
   if (props.value) {
     textfield.value = props.value;
 }
+if (props.width) {
+  if (props.width === "menu") {
+    textfield.width = '235px'
+  } else {
+    textfield.width = props.width
+  }
+}
     return (
         <>
             <textarea defaultValue={textfield.value} style={textfield}></textarea>

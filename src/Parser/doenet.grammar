@@ -6,7 +6,7 @@ entity {
   CharacterReference |
   Cdata |
   Element |
-  comment |
+  Comment |
   MismatchedCloseTag |
   incompleteStartCloseTag
 }
@@ -37,12 +37,13 @@ Attribute {
 }
 
 misc {
-  (comment | space )*
+  (Comment | space )*
 }
 
 AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference)* "\"" }
 
-comment { "<!--" commentContent* "-->" }
+
+Comment { "<!--" commentContent* "-->" }
 
 
 Cdata { cdataStart cdataContent* "]]>" }

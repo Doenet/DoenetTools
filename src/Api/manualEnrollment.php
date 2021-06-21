@@ -45,6 +45,23 @@ $enrollUserId = mysqli_real_escape_string($conn,$_POST["userId"]);
 	('$enrollUserId','$driveId','1','0','0','0','0','0','0','0','0','0','0','Student')
 	";
 	$result = $conn->query($sql);
+
+	$sql = "
+	INSERT INTO user
+	(userId,
+	screenName,
+	email, 
+	studentId, 
+	lastName,
+	firstName,
+	profilePicture,
+	trackingConsent,
+	roleStudent,
+	roleInstructor)
+	VALUES
+	('$enrollUserId','NULL','$email','NULL','NULL','NULL','quokka','1','1','0')
+	";
+	$result = $conn->query($sql);
   
 
 

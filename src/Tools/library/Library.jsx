@@ -25,8 +25,6 @@ import {
   useRecoilCallback
 } from "recoil";
 import axios from "axios";
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
 
 /**
  * Internal dependencies
@@ -685,7 +683,8 @@ function AddCourseDriveButton(){
       type: "course",
       image,
       color,
-      subType:"Administrator"
+      subType:"Administrator",
+      role:["Owner"]
     }
     const payload = { params:{
       driveId:newDriveId,
@@ -1051,7 +1050,7 @@ export default function Library(props) {
        <DriveCards
        drivePathSyncKey="main"
        types={['course']}
-       subTypes={['Administrator']}
+      //  subTypes={['Administrator']}
        />
         </div>
         
@@ -1091,7 +1090,7 @@ export default function Library(props) {
        <DriveCards
        drivePathSyncKey="support"
        types={['course']}
-       subTypes={['Administrator']}
+      //  subTypes={['Administrator']}
        />
         </div>
       </supportPanel>
