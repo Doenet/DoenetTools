@@ -1499,15 +1499,7 @@ export default class Core {
       }
     }
 
-    let nActiveChildrenChanged = true;
-
-    if (previousActiveChildren) {
-      nActiveChildrenChanged = previousActiveChildren.length !== parent.activeChildren.length;
-    }
-
-    this.dependencies.addBlockersFromChangedActiveChildren({
-      parent, nActiveChildrenChanged
-    });
+    this.dependencies.addBlockersFromChangedActiveChildren({ parent });
 
     let ind = this.derivingChildResults.indexOf(parent.componentName);
 
