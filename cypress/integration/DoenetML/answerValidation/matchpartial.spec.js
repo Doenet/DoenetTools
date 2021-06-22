@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Match partial validation tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('match partial with ordered and unordered tuple', () => {

@@ -3,7 +3,7 @@ import { numberToLetters } from "../../../../src/Core/utils/sequence";
 describe('Specifying single variant document tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('document with no variant control', () => {

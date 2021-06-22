@@ -1,15 +1,15 @@
 import BlockComponent from './abstract/BlockComponent';
 
-export default class Table extends BlockComponent {
-  static componentType = "table";
+export default class Figure extends BlockComponent {
+  static componentType = "figure";
   static renderChildren = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
-    attributes.suppressTableNameInTitle = {
+    attributes.suppressFigureNameInCaption = {
       createComponentOfType: "boolean",
-      createStateVariable: "suppressTableNameInTitle",
+      createStateVariable: "suppressFigureNameInCaption",
       defaultValue: false,
       forRenderer: true,
     }
@@ -20,24 +20,24 @@ export default class Table extends BlockComponent {
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
-    let atMostOneTitle = childLogic.newLeaf({
-      name: "atMostOneTitle",
-      componentType: "title",
+    let atMostOneCaption = childLogic.newLeaf({
+      name: "atMostOneCaption",
+      componentType: "caption",
       comparison: "atMost",
       number: 1,
     })
 
-    let atMostOneTabular = childLogic.newLeaf({
-      name: "atMostOneTabular",
-      componentType: "tabular",
+    let atMostOneBlock = childLogic.newLeaf({
+      name: "atMostOneBlock",
+      componentType: "_block",
       comparison: "atMost",
       number: 1,
     })
 
     childLogic.newOperator({
-      name: "titleAndTabular",
+      name: "captionAndBlock",
       operator: "and",
-      propositions: [atMostOneTitle, atMostOneTabular],
+      propositions: [atMostOneCaption, atMostOneBlock],
       setAsBase: true,
     })
 
@@ -48,61 +48,62 @@ export default class Table extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.tableEnumeration = {
+    stateVariableDefinitions.figureEnumeration = {
       public: true,
       componentType: "text",
       forRenderer: true,
       returnDependencies: () => ({
-        tableCounter: {
+        figureCounter: {
           dependencyType: "counter",
-          counterName: "table"
+          counterName: "figure"
         }
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { tableEnumeration: String(dependencyValues.tableCounter) }
+          newValues: { figureEnumeration: String(dependencyValues.figureCounter) }
         }
       }
     }
 
-    stateVariableDefinitions.titleChildName = {
+    stateVariableDefinitions.captionChildName = {
       forRenderer: true,
       returnDependencies: () => ({
-        titleChild: {
+        captionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childLogicName: "atMostOneCaption",
         },
       }),
       definition({ dependencyValues }) {
-        let titleChildName = null;
-        if (dependencyValues.titleChild.length === 1) {
-          titleChildName = dependencyValues.titleChild[0].componentName
+        let captionChildName = null;
+        if (dependencyValues.captionChild.length === 1) {
+          captionChildName = dependencyValues.captionChild[0].componentName
         }
         return {
-          newValues: { titleChildName }
+          newValues: { captionChildName }
         }
       }
     }
 
 
-    stateVariableDefinitions.title = {
+    stateVariableDefinitions.caption = {
       public: true,
       componentType: "text",
       forRenderer: true,
       returnDependencies: () => ({
-        titleChild: {
+        captionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childLogicName: "atMostOneCaption",
           variableNames: ["text"],
         },
       }),
       definition({ dependencyValues }) {
 
-        let title = null;
-        if (dependencyValues.titleChild.length === 1) {
-          title = dependencyValues.titleChild[0].stateValues.text;
+        let caption= null;
+
+        if (dependencyValues.captionChild.length === 1) {
+          caption = dependencyValues.captionChild[0].stateValues.text;
         }
-        return { newValues: { title } }
+        return { newValues: { caption } }
       }
     }
 

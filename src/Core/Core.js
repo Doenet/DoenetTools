@@ -21,8 +21,10 @@ import Hex from 'crypto-js/enc-hex'
 
 export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
-    externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback }) {
+    externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback, coreId }) {
     // console.time('start up time');
+
+    this.coreId = coreId;
 
     this.numerics = new Numerics();
     this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
@@ -48,7 +50,7 @@ export default class Core {
 
     this.coreUpdatedCallback = coreUpdatedCallback;
     this.coreReadyCallback = function () {
-      coreReadyCallback();
+      coreReadyCallback(this);
 
       this.requestRecordEvent({
         verb: "experienced",
@@ -247,9 +249,13 @@ export default class Core {
     // console.log("** components at the end of the core constructor **");
     // console.log(this._components);
 
+
     if (calledAsynchronously) {
+      // console.log(">>>calledAsynchronously") 
       this.coreReadyCallback()
     } else {
+      // console.log(">>>not calledAsynchronously")
+
       setTimeout(() => this.coreReadyCallback(), 0)
     }
 
@@ -353,7 +359,7 @@ export default class Core {
             }
           } else {
             // wasn't able to retrieve content
-              console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
+            console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
             newDoenetMLs[ind] = "";
           }
         }
@@ -1008,7 +1014,7 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
-    if(componentClass.descendantCompositesMustHaveAReplacement) {
+    if (componentClass.descendantCompositesMustHaveAReplacement) {
       sharedParameters.compositesMustHaveAReplacement = true;
       sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
     }
@@ -1493,15 +1499,7 @@ export default class Core {
       }
     }
 
-    let nActiveChildrenChanged = true;
-
-    if (previousActiveChildren) {
-      nActiveChildrenChanged = previousActiveChildren.length !== parent.activeChildren.length;
-    }
-
-    this.dependencies.addBlockersFromChangedActiveChildren({
-      parent, nActiveChildrenChanged
-    });
+    this.dependencies.addBlockersFromChangedActiveChildren({ parent });
 
     let ind = this.derivingChildResults.indexOf(parent.componentName);
 
@@ -2442,8 +2440,10 @@ export default class Core {
       }
 
 
-      stateVarDef.definition = function ({ dependencyValues }) {
-        if (dependencyValues.adapterTargetVariable === undefined) {
+      stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
+        if (dependencyValues.adapterTargetVariable === undefined
+          || usedDefault.adapterTargetVariable
+        ) {
           return {
             useEssentialOrDefaultValue: {
               [varName]: { variablesToCheck: varName }
@@ -4445,11 +4445,9 @@ export default class Core {
       }
     };
 
-    // Make the array size state variable's dependencies depend on
-    // anything that the array state variable's dependencies depend on
-    // (as the returnArraySizeDependencies function could use those).
-    if (originalStateVariablesDeterminingDependencies) {
-      component.state[arraySizeStateVar].stateVariablesDeterminingDependencies = originalStateVariablesDeterminingDependencies;
+    if (stateVarObj.stateVariablesDeterminingArraySizeDependencies) {
+      component.state[arraySizeStateVar].stateVariablesDeterminingDependencies
+        = stateVarObj.stateVariablesDeterminingArraySizeDependencies;
     }
 
 

@@ -3,7 +3,7 @@ import me from 'math-expressions';
 describe('SelectRandomNumbers Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 

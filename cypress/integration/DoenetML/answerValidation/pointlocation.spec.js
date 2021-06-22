@@ -1,7 +1,7 @@
 describe('Point location validation tests',function() {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
     })
   
   it('point in first quadrant',() => {
