@@ -68,12 +68,12 @@ export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
     viewName:"Test",
-    menuPanels:[],
-    menuPanelsInitOpen:[],
+    menuPanels:["TestControl"],
+    menuPanelsInitOpen:[true],
     mainPanel:"One",
-    supportPanel:[],
-    supportPanelNames:["Panel Two","Panel One"],
-    supportPanelIndex:0,
+    supportPanel:["Two","One","Count"],
+    supportPanelNames:["Panel Two","Panel One","Count"],
+    supportPanelIndex:1,
   }
 })
 
@@ -247,7 +247,7 @@ export default function ToolRoot(props){
     }
  
     lastSupportPanelKey.current = SupportPanelKey;
-    supportPanel = <SupportPanel>{supportPanelArray.current}</SupportPanel>
+    supportPanel = <SupportPanel panelNames={toolViewInfo.supportPanelNames} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
 

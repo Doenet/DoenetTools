@@ -1,5 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import { toolViewAtom } from '../NewToolRoot';
+import {
+  useRecoilCallback,
+} from 'recoil';
 
 const SupportWapper = styled.div`
   overflow: auto;
@@ -20,10 +24,32 @@ const ControlsWrapper = styled.div`
 
 `;
 
-export default function SupportPanel({ children, responsiveControls }) {
+export default function SupportPanel({ children, panelNames=[], panelIndex }) {
+
+  const setSupportPanelIndex = useRecoilCallback(({set})=>(index)=>{
+    set(toolViewAtom,(was)=>{
+      let newObj = {...was}
+      newObj.supportPanelIndex = index
+      return newObj
+    })
+  })
+
+  let panelSelector = null;
+  if (panelNames.length > 0){
+
+    let options = [];
+    for (let [i,name] of Object.entries(panelNames)){
+      options.push(<option key={`panelSelector${i}`} value={i}>{name}</option>)
+    }
+
+    panelSelector = <select value={panelIndex} onChange={(e)=>{setSupportPanelIndex(e.target.value)}} >
+      {options}
+    </select>
+  }
+
   return (
     <>
-      <ControlsWrapper>{responsiveControls}</ControlsWrapper>
+      <ControlsWrapper>{panelSelector}</ControlsWrapper>
       <SupportWapper>{children}</SupportWapper>
     </>
   );

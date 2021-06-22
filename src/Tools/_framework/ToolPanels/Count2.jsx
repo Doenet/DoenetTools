@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 
 export default function Count2(props){
+  console.log(">>>===Count2") 
+
   const [count,setCount] = useState(1);
   
  
