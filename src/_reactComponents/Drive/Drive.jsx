@@ -799,21 +799,21 @@ export const fetchDrivesQuery = atom({
   }),
 });
 
-export const driveSocket = atomFamily({
-  key: 'driveSocketAtom',
+export const socketsAtom = atomFamily({
+  key: 'socketsAtom',
   default: (nsp) => {
-    let socket = io(`https://chat.rt.doenet.org/${nsp}`, {
+    let socket = io(`localhost:81/${nsp}`, {
       withCredentials: true,
     });
-    console.log('>>>socket', socket);
-    // socket.on('connection', () => {
-    //   console.log('socket', socket.id, 'connected');
-    // });
-    // socket.on('update_file_name', (data) => {
-    //   console.log('file added remote', data);
-    // });
+    socket.on('connection', () => {
+      console.log('socket', socket.id, 'connected');
+    });
+    socket.on('remote_add_doenetML', (payload) => {
+      console.log('file added remote', payload);
+    });
     return socket;
   },
+  dangerouslyAllowMutability: true,
 });
 
 export const fetchDrivesSelector = selector({
@@ -822,7 +822,7 @@ export const fetchDrivesSelector = selector({
     return get(fetchDrivesQuery);
   },
   set: ({ get, set }, labelTypeDriveIdColorImage) => {
-    let socket = get(driveSocket);
+    let socket = get(socketsAtom);
     let driveData = get(fetchDrivesQuery);
     // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = { ...driveData };

@@ -1,6 +1,7 @@
 /*jshint esversion: 8 */
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { atomFamily, useRecoilState } from 'recoil';
 import { io } from 'socket.io-client';
 import Tool from '@Tool';
 import { v4 as uuidV4 } from 'uuid';
@@ -68,7 +69,7 @@ export default function Chat() {
   const [currentTransaction, setCurrentTransaction] = useState('');
 
   useEffect(() => {
-    let chatSocket = io('https://chat.rt.doenet.org/chat', {
+    let chatSocket = io('localhost:81/chat', {
       withCredentials: true,
     });
     chatSocket.on('connect', () => {
@@ -89,26 +90,28 @@ export default function Chat() {
       console.log('socket disconnected');
     });
 
-    let driveSocket = io('https://chat.rt.doenet.org/drive', {
-      withCredentials: true,
-    });
+    // let driveSocket = io('localhost:81/drive', {
+    //   withCredentials: true,
+    // });
 
-    driveSocket.on('connect', () => {
-      setDriveSocket(driveSocket);
-    });
+    // driveSocket.on('connect', () => {
+    //   console.log('drivesocket', driveSocket.id, 'connected');
+    // });
 
-    driveSocket.on('file_renamed', (data) => {
-      setCurrentTransaction((currentId) => {
-        if (currentId !== data.transactionId) {
-          setDocName(data.name);
-          return data.transactionId;
-        }
-        return currentId;
-      });
-    });
+    // driveSocket.on('file_renamed', (data) => {
+    //   console.log('drivesocket file_rename received');
+    //   setCurrentTransaction((currentId) => {
+    //     if (currentId !== data.transactionId) {
+    //       setDocName(data.name);
+    //       return data.transactionId;
+    //     }
+    //     return currentId;
+    //   });
+    // });
+
     return () => {
       chatSocket.disconnect();
-      driveSocket.disconnect();
+      // driveSocket.disconnect();
     };
   }, []);
 

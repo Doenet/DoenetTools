@@ -811,20 +811,11 @@ function AddMenuPanel(props){
     value="Add DoenetML" 
     data-cy="addDoenetMLButton"
     callback={()=>{
-      const result = addItem({
+      addItem({
         driveIdFolderId: {driveId: driveId, folderId: folderId},
         label:"Untitled",
         itemType:"DoenetML"
       });
-      result.then(resp => {
-        if (resp.data.success){
-          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-        }else{
-          onAddItemError({errorMessage: resp.data});
-        }
-      }).catch( e => {
-        onAddItemError({errorMessage: e.message});
-      })
     }} 
   />
  

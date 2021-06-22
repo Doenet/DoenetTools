@@ -21,7 +21,7 @@ import {
   sortItems,
   nodePathSelector,
   folderOpenAtom,
-  driveSocket,
+  socketsAtom,
 } from './Drive';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
 
@@ -93,7 +93,7 @@ export const useAddItem = () => {
         newObj.contentsDictionary[itemId] = newItem;
 
         const versionId = nanoid();
-        const data = {
+        const payload = {
           driveId: driveIdFolderId.driveId,
           parentFolderId: driveIdFolderId.folderId,
           itemId,
@@ -103,17 +103,13 @@ export const useAddItem = () => {
           type: itemType,
           sortOrder: newItem.sortOrder,
         };
-        const payload = {
-          params: data,
-        };
-        let socket = snapshot.getLoadable(driveSocket('drive'));
-        // socket.emit('rename_item', payload);
-        const result = axios.get('/api/addItem.php', payload);
-
-        result.then((resp) => {
-          if (resp.data.success) {
+        let socket = snapshot.getLoadable(socketsAtom('drive')).getValue();
+        socket.emit('add_doenetML', payload, (respData) => {
+          console.log('>>>obj', newObj);
+          if (respData.success) {
             // Insert item info into destination folder
             set(folderDictionary(driveIdFolderId), newObj);
+            addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
 
             // Update folderDictionary when new item is of type Folder
             if (itemType === 'Folder') {
@@ -129,11 +125,14 @@ export const useAddItem = () => {
                 },
               );
             }
+          } else {
+            onAddItemError({ errorMessage: respData });
           }
         });
-        return result;
       },
   );
+
+  const acceptNewItem = useRecoilCallback(() => {});
 
   const onAddItemError = ({ errorMessage = null }) => {
     addToast(`Add item error: ${errorMessage}`, ToastType.ERROR);

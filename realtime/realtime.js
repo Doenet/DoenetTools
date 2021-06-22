@@ -14,7 +14,7 @@
   });
   const driveSpace = io.of('/drive');
   const chatSpace = io.of('/chat');
-  const { default: axios } = require('axios');
+  const axios = require('axios').default;
 
   chatSpace.use((socket, next) => {
     //TODO: auth against central database instead of local
@@ -86,35 +86,6 @@
 
   driveSpace.on('connection', (socket) => {
     console.log('connected', socket.id);
-    socket.on('rename_item', (data) => {
-      console.log('>>>Rename from', socket.id, 'to', data.name);
-      // axios.get('http://apache/api/updateItem.php', {
-      //   headers: socket.request.headers,
-      //   params: { driveId: '', itemId: '', label: '', instruction: 'rename' },
-      // });
-      // axios
-      //   .get('http://apache/api/loadProfile.php', {
-      //     headers: socket.handshake.headers,
-      //     params: {},
-      //   })
-      //   .then((resp) => {
-      //     console.log('request done for', data.name, resp.status);
-      // if (data.respCode === '200') {
-      //   cb(200, data.transctionId);
-      //   socket.broadcast.emit('file_renamed', data);
-      // } else if (data.respCode === '403') {
-      //   cb(403);
-      // } else {
-      //   cb('error');
-      // }
-      //   })
-      //   .catch((error) => {
-      //     cb(new Error(`Axios request error: ${error}`));
-      //   });
-      console.log('func done for', data.name);
-      // driveSpace.to(data.driveId).emit('rename_item', data);
-    });
-
     socket.on('add_drive', ({ driveId, label, image, color }, cb) => {
       console.log('>>>recived add_drive');
     });
@@ -136,24 +107,18 @@
         console.log('>>>recived add_folder');
       },
     );
-    socket.on(
-      'add_doenetML',
-      (
-        {
-          driveId,
-          parentFolderId,
-          itemId,
-          doenetId,
-          versionId,
-          label,
-          type,
-          sortOrder,
-        },
-        cb,
-      ) => {
-        console.log('>>>recived add_doenetML');
-      },
-    );
+    socket.on('add_doenetML', (payload, cb) => {
+      axios
+        .get('http://apache/api/addItem.php', {
+          params: payload,
+          headers: socket.request.headers,
+        })
+        .then((resp) => {
+          cb(resp.data);
+          socket.broadcast.emit('remote_add_doenetML', payload);
+        })
+        .catch((err) => console.log('>>>ERROR:', err));
+    });
     socket.on('add_user', ({ driveId, email, userId }, cb) => {
       console.log('>>>recived add_user');
     });
@@ -161,3 +126,28 @@
   console.log('sever ready!');
   httpServer.listen(81);
 })();
+
+// axios.get('http://apache/api/updateItem.php', {
+//   headers: socket.request.headers,
+//   params: { driveId: '', itemId: '', label: '', instruction: 'rename' },
+// });
+// axios
+//   .get('http://apache/api/loadProfile.php', {
+//     headers: socket.handshake.headers,
+//     params: {},
+//   })
+//   .then((resp) => {
+//     console.log('request done for', data.name, resp.status);
+// if (data.respCode === '200') {
+//   cb(200, data.transctionId);
+//   socket.broadcast.emit('file_renamed', data);
+// } else if (data.respCode === '403') {
+//   cb(403);
+// } else {
+//   cb('error');
+// }
+//   })
+//   .catch((error) => {
+//     cb(new Error(`Axios request error: ${error}`));
+//   });
+// driveSpace.to(data.driveId).emit('rename_item', data);
