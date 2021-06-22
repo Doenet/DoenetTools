@@ -30,12 +30,12 @@ border: none;
 display: inline-block;
 `;
 
-export default function MainPanel({ children, setMenuPanelsOpen, menuPanelsOpen }) {
+export default function MainPanel({ children, setMenuPanelsOpen, displayProfile }) {
 
   return (
     <>
       <ControlsWrapper>
-        {!menuPanelsOpen ? <><OpenButton onClick={()=>setMenuPanelsOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton><Profile /></> : null} 
+        {displayProfile ? <><OpenButton onClick={()=>setMenuPanelsOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton><Profile /></> : null} 
       </ControlsWrapper>
       <ContentWrapper>{children}</ContentWrapper>
     </>

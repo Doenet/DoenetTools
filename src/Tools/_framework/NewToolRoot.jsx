@@ -99,6 +99,7 @@ let toolsObj = {
     supportPanelTypes:["Two","One","Count"],
     supportPanelTitles:["Panel Two","Panel One","Count"],
     supportPanelIndex:1,
+    noMenuPanels: true,
   },
   count:{
     toolName:"Count",
@@ -255,13 +256,21 @@ export default function ToolRoot(props){
     supportPanel = <SupportPanel panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
+  let menuPanels = null;
+  if (menuPanelsOpen && !toolViewInfo.noMenuPanels){
+    menuPanels = <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} panelTypes={toolViewInfo.menuPanelTypes} initOpen={toolViewInfo.menuPanelsInitOpen}/>
+  }
 
+  let profileInMainPanel = !menuPanelsOpen;
+  if (toolViewInfo.noMenuPanels){
+    profileInMainPanel = false;
+  }
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <ToolContainer>
-      {menuPanelsOpen ? <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} panelTypes={toolViewInfo.menuPanelTypes} initOpen={toolViewInfo.menuPanelsInitOpen}/> : null}
+      {menuPanels}
       <ContentPanel 
-      main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen}>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
     
