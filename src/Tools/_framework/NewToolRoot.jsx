@@ -91,16 +91,18 @@ export const toolViewAtom = atom({
 let viewsObj = {
   test:{
     viewName:"Test",
-    menuPanels:["TestControl"],
-    menuPanelsInitOpen:[true],
+    menuPanels:["TestControl","ToastTest"],
+    menuPanelsTitles:["Test Control", "Toast"],
+    menuPanelsInitOpen:[false,true],
     mainPanel:"One",
-    supportPanel:["Two","One"],
-    supportPanelNames:["Panel Two","Panel One"],
-    supportPanelIndex:0,
+    supportPanel:["Two","One","Count"],
+    supportPanelNames:["Panel Two","Panel One","Count"],
+    supportPanelIndex:1,
   },
   count:{
     viewName:"Count",
     menuPanels:["TestControl"],
+    menuPanelsTitles:["Test Control"],
     menuPanelsInitOpen:[true],
     mainPanel:"Count",
     supportPanel:["Count2","Count"],
