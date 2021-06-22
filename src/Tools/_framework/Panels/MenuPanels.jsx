@@ -132,8 +132,8 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ panelTitles=[], panelComponentNames=[], initOpen=[], setMenuPanelsOpen }) {
-  // console.log(">>>panelComponentNames",panelComponentNames,initOpen) 
+export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[], setMenuPanelsOpen }) {
+  // console.log(">>>panelTypes",panelTypes,initOpen) 
 
   //These maintain the panels' state
   const viewPanels = useRef([])
@@ -160,8 +160,8 @@ export default function MenuPanels({ panelTitles=[], panelComponentNames=[], ini
   } 
 
 
-  if (viewPanels.current.length === 0 && panelComponentNames.length > 0){
-    for (let [i,panelName] of Object.entries(panelComponentNames)){
+  if (viewPanels.current.length === 0 && panelTypes.length > 0){
+    for (let [i,panelName] of Object.entries(panelTypes)){
         const mpKey = `${panelName}`;
         const isOpen = initOpen[i]
         const title = panelTitles[i]

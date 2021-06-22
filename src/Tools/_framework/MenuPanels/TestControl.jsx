@@ -9,7 +9,7 @@ export default function TestControl(props){
   const mainPanel = useRecoilCallback(({set})=> (panelName)=>{
     set(toolViewAtom,(was)=>{
       let newObj = {...was};
-      newObj.mainPanel = panelName;
+      newObj.mainPanelType = panelName;
       return newObj;
     })
   })

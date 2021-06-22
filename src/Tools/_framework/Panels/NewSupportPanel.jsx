@@ -24,7 +24,7 @@ const ControlsWrapper = styled.div`
 
 `;
 
-export default function SupportPanel({ children, panelNames=[], panelIndex }) {
+export default function SupportPanel({ children, panelTitles=[], panelIndex }) {
 
   const setSupportPanelIndex = useRecoilCallback(({set})=>(index)=>{
     set(toolViewAtom,(was)=>{
@@ -35,10 +35,10 @@ export default function SupportPanel({ children, panelNames=[], panelIndex }) {
   })
 
   let panelSelector = null;
-  if (panelNames.length > 0){
+  if (panelTitles.length > 0){
 
     let options = [];
-    for (let [i,name] of Object.entries(panelNames)){
+    for (let [i,name] of Object.entries(panelTitles)){
       options.push(<option key={`panelSelector${i}`} value={i}>{name}</option>)
     }
 

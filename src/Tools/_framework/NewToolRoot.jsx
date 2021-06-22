@@ -67,54 +67,55 @@ export const profileAtom = atom({
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
-    viewName:"Test",
-    menuPanels:["TestControl","ToastTest"],
+    toolName:"Test",
+    menuPanelTypes:["TestControl","ToastTest"], 
     menuPanelsTitles:["Test Control", "Toast"],
     menuPanelsInitOpen:[false,true],
-    mainPanel:"One",
-    supportPanel:["Two","One","Count"],
-    supportPanelNames:["Panel Two","Panel One","Count"],
-    supportPanelIndex:1,
+    mainPanelType:"One", 
+    supportPanelTypes:["Two","One","Count"], 
+    supportPanelTitles:["Panel Two","Panel One","Count"], 
+    supportPanelIndex:1, 
+    noMenuPanels: true,
   }
 })
 
 
 // {
-//   viewName:"Test",
+//   toolName:"Test",
 //   menuPanels:["TestControl"],
 //   menuPanelsInitOpen:[true],
 //   mainPanel:"One",
 //   supportPanel:["Two","One"],
-//   supportPanelNames:["Panel Two","Panel One"],
+//   supportPanelTitles:["Panel Two","Panel One"],
 //   supportPanelIndex:0,
 // }
-let viewsObj = {
+let toolsObj = {
   test:{
-    viewName:"Test",
-    menuPanels:["TestControl","ToastTest"],
+    toolName:"Test",
+    menuPanelTypes:["TestControl","ToastTest"],
     menuPanelsTitles:["Test Control", "Toast"],
     menuPanelsInitOpen:[false,true],
-    mainPanel:"One",
-    supportPanel:["Two","One","Count"],
-    supportPanelNames:["Panel Two","Panel One","Count"],
+    mainPanelType:"One",
+    supportPanelTypes:["Two","One","Count"],
+    supportPanelTitles:["Panel Two","Panel One","Count"],
     supportPanelIndex:1,
   },
   count:{
-    viewName:"Count",
-    menuPanels:["TestControl"],
+    toolName:"Count",
+    menuPanelTypes:["TestControl"],
     menuPanelsTitles:["Test Control"],
     menuPanelsInitOpen:[true],
-    mainPanel:"Count",
-    supportPanel:["Count2","Count"],
-    supportPanelNames:["Count Two","Count One"],
+    mainPanelType:"Count",
+    supportPanelTypes:["Count2","Count"],
+    supportPanelTitles:["Count Two","Count One"],
     supportPanelIndex:0,
   },
   notfound:{
-    viewName:"Notfound",
-    menuPanels:[],
+    toolName:"Notfound",
+    menuPanelTypes:[],
     menuPanelsInitOpen:[],
-    mainPanel:"NotFound",
-    supportPanel:[],
+    mainPanelType:"NotFound",
+    supportPanelTypes:[],
   }
 }
 
@@ -140,7 +141,7 @@ export default function ToolRoot(props){
     if (view === ""){ 
       location.href = `#test/`  
     }else{
-      let newView = viewsObj[view];
+      let newView = toolsObj[view];
    
       console.log(">>>newView",newView)
   
@@ -158,7 +159,6 @@ export default function ToolRoot(props){
 
   })
 
-
   const LazyObj = useRef({
     One:lazy(() => import('./ToolPanels/One')),
     Two:lazy(() => import('./ToolPanels/Two')),
@@ -172,7 +172,7 @@ export default function ToolRoot(props){
       console.error(profile.contents)
       return null;}
       // console.log(">>>===ToolRoot")
-      console.log(">>>===Route",props.route) 
+      console.log(">>>===ToolRoot Route",props.route) 
 
 
   function buildPanel({key,type,visible}){
@@ -190,16 +190,16 @@ export default function ToolRoot(props){
 
   const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
   //Need to update path
-  if (toolViewInfo.viewName.toLowerCase() !== lcpath){
+  if (toolViewInfo.toolName.toLowerCase() !== lcpath){
     setView(lcpath,props.route.location.pathname)
     return null;
   }
 
-   const MainPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.mainPanel}`;
+   const MainPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.mainPanelType}`;
    if (!mainPanelDictionary.current[MainPanelKey]){
     //Doesn't exist so make new Main Panel
-    mainPanelArray.current.push(buildPanel({key:MainPanelKey,type:toolViewInfo.mainPanel,visible:true}))
-    mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type:toolViewInfo.mainPanel, visible:true}
+    mainPanelArray.current.push(buildPanel({key:MainPanelKey,type:toolViewInfo.mainPanelType,visible:true}))
+    mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type:toolViewInfo.mainPanelType, visible:true}
    }
    
    //Show current panel and hide last panel
@@ -224,12 +224,13 @@ export default function ToolRoot(props){
 
    let supportPanel = null;
 
-   if (toolViewInfo.supportPanel && toolViewInfo.supportPanel.length > 0){
-    const SupportPanelKey = `${toolViewInfo.viewName}-${toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
+
+   if (toolViewInfo.supportPanelTypes && toolViewInfo.supportPanelTypes.length > 0){
+    const SupportPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.supportPanelTypes[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
     if (!supportPanelDictionary.current[SupportPanelKey]){
      //Doesn't exist so make new Support Panel
-     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex],visible:true}))
-     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolViewInfo.supportPanel[toolViewInfo.supportPanelIndex], visible:true}
+     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolViewInfo.supportPanelTypes[toolViewInfo.supportPanelIndex],visible:true}))
+     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolViewInfo.supportPanelTypes[toolViewInfo.supportPanelIndex], visible:true}
     }
     
     //Show current panel and hide last panel
@@ -250,14 +251,15 @@ export default function ToolRoot(props){
     }
  
     lastSupportPanelKey.current = SupportPanelKey;
-    supportPanel = <SupportPanel panelNames={toolViewInfo.supportPanelNames} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
+    
+    supportPanel = <SupportPanel panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
 
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
     <ToolContainer>
-      {menuPanelsOpen ? <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} panelComponentNames={toolViewInfo.menuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/> : null}
+      {menuPanelsOpen ? <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} panelTypes={toolViewInfo.menuPanelTypes} initOpen={toolViewInfo.menuPanelsInitOpen}/> : null}
       <ContentPanel 
       main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
