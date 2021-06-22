@@ -20,7 +20,6 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanels from './Panels/MenuPanels';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
-import HyperFormulaNS from 'hyperformula';
 
 
 const ToolContainer = styled(animated.div)`
@@ -75,7 +74,7 @@ export const toolViewAtom = atom({
     supportPanelTypes:["Two","One","Count"], 
     supportPanelTitles:["Panel Two","Panel One","Count"], 
     supportPanelIndex:1, 
-    noMenuPanels: true,
+    // noMenuPanels: true,
   }
 })
 
@@ -99,7 +98,7 @@ let toolsObj = {
     supportPanelTypes:["Two","One","Count"],
     supportPanelTitles:["Panel Two","Panel One","Count"],
     supportPanelIndex:1,
-    noMenuPanels: true,
+    // noMenuPanels: true,
   },
   count:{
     toolName:"Count",
@@ -117,6 +116,7 @@ let toolsObj = {
     menuPanelsInitOpen:[],
     mainPanelType:"NotFound",
     supportPanelTypes:[],
+    noMenuPanels: true,
   }
 }
 
