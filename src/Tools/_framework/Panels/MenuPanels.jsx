@@ -132,8 +132,8 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ panelNames=[], initOpen=[], setMenuPanelsOpen }) {
-  // console.log(">>>panelNames",panelNames,initOpen) 
+export default function MenuPanels({ panelTitles=[], panelComponentNames=[], initOpen=[], setMenuPanelsOpen }) {
+  // console.log(">>>panelComponentNames",panelComponentNames,initOpen) 
 
   //These maintain the panels' state
   const viewPanels = useRef([])
@@ -143,6 +143,7 @@ export default function MenuPanels({ panelNames=[], initOpen=[], setMenuPanelsOp
 
   const LazyObj = useRef({
     TestControl:lazy(() => import('../MenuPanels/TestControl')),
+    ToastTest:lazy(() => import('../MenuPanels/ToastTest')),
   }).current;
 
   function buildMenuPanel({key,type,title,visible,initOpen}){
@@ -159,12 +160,14 @@ export default function MenuPanels({ panelNames=[], initOpen=[], setMenuPanelsOp
   } 
 
 
-  if (viewPanels.current.length === 0 && panelNames.length > 0){
-    for (let [i,panelName] of Object.entries(panelNames)){
+  if (viewPanels.current.length === 0 && panelComponentNames.length > 0){
+    for (let [i,panelName] of Object.entries(panelComponentNames)){
         const mpKey = `${panelName}`;
-        const open = initOpen[i]
+        const isOpen = initOpen[i]
+        const title = panelTitles[i]
+        console.log(">>>panelName",panelName)
 
-    viewPanels.current.push(buildMenuPanel({key:mpKey,type:'TestControl',title:'Test Control',visible:true,initOpen:open}))
+    viewPanels.current.push(buildMenuPanel({key:mpKey,type:panelName,title,visible:true,initOpen:isOpen}))
     }
   }
 

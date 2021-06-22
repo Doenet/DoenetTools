@@ -68,8 +68,9 @@ export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
     viewName:"Test",
-    menuPanels:["TestControl"],
-    menuPanelsInitOpen:[true],
+    menuPanels:["TestControl","ToastTest"],
+    menuPanelsTitles:["Test Control", "Toast"],
+    menuPanelsInitOpen:[false,true],
     mainPanel:"One",
     supportPanel:["Two","One","Count"],
     supportPanelNames:["Panel Two","Panel One","Count"],
@@ -253,9 +254,8 @@ export default function ToolRoot(props){
 
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont />
-    <Toast />
     <ToolContainer>
-      {menuPanelsOpen ? <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelNames={toolViewInfo.menuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/> : null}
+      {menuPanelsOpen ? <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} panelComponentNames={toolViewInfo.menuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/> : null}
       <ContentPanel 
       main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
@@ -263,7 +263,8 @@ export default function ToolRoot(props){
     
       {/* <FooterPanel><button onClick={()=>props.route.history.push('/Test')}>test</button></FooterPanel> */}
     </ToolContainer>
-
+    <Toast />
+ 
   </ProfileContext.Provider>
 } 
 
