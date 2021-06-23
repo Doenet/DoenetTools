@@ -2,7 +2,7 @@
 describe('Component Size Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('width of image from string', () => {

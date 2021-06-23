@@ -14,8 +14,6 @@ import {
   atomFamily,
 } from 'recoil';
 import axios from 'axios';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
 
 /**
  * Internal dependencies
@@ -440,14 +438,11 @@ const DoenetMLInfoPanel = (props) => {
   let assignmentForm = null;
 
   const [addToast, ToastType] = useToast();
-
+  const [oldValue,setoldValue] = useState();
   const handleChange = (event) => {
     event.preventDefault();
     let name = event.target.name;
-    let value =
-      event.target.type === 'checkbox'
-        ? event.target.checked
-        : event.target.value;
+    let value = event.target.value;
     // if (aInfo[`${name}`] != value) {
     const result = changeSettings({
       [name]: value,
@@ -463,11 +458,18 @@ const DoenetMLInfoPanel = (props) => {
 
     // }
   };
+  const handleOnfocus = (event) => {
+    event.preventDefault();
+    let name = event.target.name;
+    let value = event.target.value;
+    setoldValue(event.target.value)
+  };
+  
   const handleOnBlur = (e) => {
     e.preventDefault();
     let name = e.target.name;
-    let value =
-      e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    let value = e.target.value;
+    if(value !== oldValue ){
     const result = saveSettings({
       [name]: value,
       driveIditemIddoenetIdparentFolderId: {
@@ -509,7 +511,7 @@ const DoenetMLInfoPanel = (props) => {
           .catch((e) => {
             onAssignmentError({ errorMessage: e.message });
           });
-    
+  }
   };
 
   // // View Assignment Form
@@ -548,6 +550,7 @@ const DoenetMLInfoPanel = (props) => {
                 placeholder="0001-01-01 01:01:01 "
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -560,6 +563,7 @@ const DoenetMLInfoPanel = (props) => {
                 placeholder="0001-01-01 01:01:01"
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -572,6 +576,7 @@ const DoenetMLInfoPanel = (props) => {
                 placeholder="01:01:01"
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -584,6 +589,7 @@ const DoenetMLInfoPanel = (props) => {
                 value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''}
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -612,6 +618,7 @@ const DoenetMLInfoPanel = (props) => {
                 value={aInfo ? aInfo?.totalPointsOrPercent : ''}
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -623,6 +630,7 @@ const DoenetMLInfoPanel = (props) => {
                 value={aInfo ? aInfo?.gradeCategory : ''}
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>

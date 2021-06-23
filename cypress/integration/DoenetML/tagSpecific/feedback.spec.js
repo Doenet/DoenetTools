@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Feedback Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('feedback from answer value or credit', () => {

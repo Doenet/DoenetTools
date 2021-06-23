@@ -20,18 +20,36 @@ export default function Button(props) {
     button.height = '36px',
     button.fontSize = '18px'
   };
-  if (button.width < button.height) {
-    button.width = '85px'
-    };
-  if (props.value) {
-      button.value = props.value;
-  };
+  if (props.width) {
+    if (props.width === "menu") {
+      button.width = '235px'
+    } else {
+      button.width = props.width
+    }
+  }
+  var icon = '';
+  if (props.value || props.icon){
+    if (props.value && props.icon){
+        icon = props.icon;
+        button.value = props.value
+    }
+    else if (props.value){
+        button.value = props.value
+    }
+    else if (props.icon){
+        icon = props.icon;
+        button.value = ''
+    }
+}
+  // if (props.value) {
+  //     button.value = props.value;
+  // };
   function handleClick(e) {
     if (props.callback) props.callback(e)
   }
     return (
         <>
-            <button style={button} {...props} onClick={(e) => { handleClick(e) }}>{button.value}</button>
+            <button style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</button>
         </>
     )
 }

@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Sectioning Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 

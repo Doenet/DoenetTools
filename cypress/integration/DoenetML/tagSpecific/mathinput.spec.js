@@ -11,7 +11,7 @@ function cesc(s) {
 describe('MathInput Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('mathinput references', () => {
@@ -1566,6 +1566,8 @@ describe('MathInput Tag Tests', function () {
     <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
     <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
     <p>a3: <copy tname="a" prop="immediateValue" assignNames="a3" /></p>
+    <p>a4: <copy tname="a" prop="value" assignNames="a4" displayDigits="16" /></p>
+    <p>a5: <copy tname="a" prop="immediateValue" assignNames="a5" displayDigits="16" /></p>
 
     <p>b: <math name="b">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
@@ -2017,7 +2019,9 @@ describe('MathInput Tag Tests', function () {
     <p>a: <mathinput name="a" displayDigits="5" prefill="sin(2x)"/></p>
     <p>a2: <copy tname="a" prop="value" assignNames="a2" /></p>
     <p>a3: <copy tname="a" prop="immediatevalue" assignNames="a3" /></p>
-
+    <p>a4: <copy tname="a" prop="value" assignNames="a4" displayDigits="16" /></p>
+    <p>a5: <copy tname="a" prop="immediatevalue" assignNames="a5" displayDigits="16" /></p>
+  
     <p>b: <math name="b">10e^(3y)</math></p>
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
     <p>b3: <copy tname="b2" prop="value" assignNames="b3" /></p>
@@ -2160,11 +2164,11 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/a'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/a'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
-      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/a2'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
-      expect(components['/a3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/a3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/a3'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', ['*', 4.7295e-16, 'x']]);
       expect(components['/b'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
       expect(components['/b2'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
@@ -2173,11 +2177,11 @@ describe('MathInput Tag Tests', function () {
       expect(components['/b3'].stateValues.valueForDisplay.tree).eqls(['*', 9.35e-14, ['^', 'e', ['*', 7.3e-15, 'y']]]);
       expect(components['/b4'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
       expect(components['/b4'].stateValues.valueForDisplay.tree).eqls(['*', 9.35e-14, ['^', 'e', ['*', 7.3e-15, 'y']]]);
-      expect(components['/c'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/c'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/c'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 0]);
-      expect(components['/c2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/c2'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/c2'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 0]);
-      expect(components['/c3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.7294638473947e-16, 'x']]);
+      expect(components['/c3'].stateValues.value.tree).eqls(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']]);
       expect(components['/c3'].stateValues.valueForDisplay.tree).eqls(['apply', 'sin', 0]);
       expect(components['/d'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
       expect(components['/d2'].stateValues.value.tree).eqls(['*', 9.34720357236e-14, ['^', 'e', ['*', 7.3013048309e-15, 'y']]]);
@@ -2456,6 +2460,34 @@ describe('MathInput Tag Tests', function () {
         expect(components['/p'].stateValues.xs[1].tree).eq(2.142218345836)
       });
 
+    })
+
+
+  })
+
+  it('natural input to sqrt', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" /></p>
+    <p>a2: <copy prop="value" tname="a" assignNames="a2" /></p>
+    <p>a3: <copy prop="value" tname="a" simplify assignNames="a3" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a textarea').type('sqrt4{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('√4')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('√4')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2')
     })
 
 

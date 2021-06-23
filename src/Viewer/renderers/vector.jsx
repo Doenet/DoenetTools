@@ -42,6 +42,7 @@ export default class Vector extends DoenetRenderer {
       highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      lastArrow: { type: 1, size: 3, highlightSize: 3 },
     };
 
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
@@ -87,7 +88,7 @@ export default class Vector extends DoenetRenderer {
     this.point1JXG.on('up', e => this.onDragHandler(e, 0, false));
     this.point2JXG.on('up', e => this.onDragHandler(e, 1, false));
     this.vectorJXG.on('up', e => {
-      if(this.headBeingDragged && this.tailBeingDragged) {
+      if (this.headBeingDragged && this.tailBeingDragged) {
         this.actions.finalizeVectorPosition();
       }
     });

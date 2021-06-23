@@ -11,7 +11,7 @@ function cesc(s) {
 describe('MathInput Graph Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('mathinputs specifying point', () => {

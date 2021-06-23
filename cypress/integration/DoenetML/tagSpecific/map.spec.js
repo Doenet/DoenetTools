@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Map Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('single map of maths', () => {

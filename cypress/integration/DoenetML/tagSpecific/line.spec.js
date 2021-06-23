@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Line Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('move points copied by line', () => {

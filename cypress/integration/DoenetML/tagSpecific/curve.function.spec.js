@@ -1,7 +1,7 @@
 describe('Function curve Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('a function of x', () => {

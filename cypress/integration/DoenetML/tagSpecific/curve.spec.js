@@ -1,7 +1,7 @@
 describe('Curve Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('spline through four points, as string with copy', () => {

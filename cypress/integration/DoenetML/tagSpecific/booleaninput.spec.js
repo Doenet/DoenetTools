@@ -11,7 +11,7 @@ function cesc(s) {
 describe('BooleanInput Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('single boolean input', () => {
