@@ -11,6 +11,7 @@ const ContentWrapper = styled.div`
   // border-radius: 0 0 4px 4px;
   overflow: auto;
 `;
+
 const ControlsWrapper = styled.div`
   grid-area: mainControls;
   display: flex;
