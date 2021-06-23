@@ -70,7 +70,7 @@ export const toolViewAtom = atom({
     menuPanelTypes:["TestControl","ToastTest"], 
     menuPanelsTitles:["Test Control", "Toast"],
     menuPanelsInitOpen:[false,true],
-    mainPanelType:"One", 
+    mainPanelType:"SelectStuff", 
     supportPanelTypes:["Two","One","Count"], 
     supportPanelTitles:["Panel Two","Panel One","Count"], 
     supportPanelIndex:1, 
@@ -94,7 +94,7 @@ let toolsObj = {
     menuPanelTypes:["TestControl","ToastTest"],
     menuPanelsTitles:["Test Control", "Toast"],
     menuPanelsInitOpen:[false,true],
-    mainPanelType:"One",
+    mainPanelType:"SelectStuff",
     supportPanelTypes:["Two","One","Count"],
     supportPanelTitles:["Panel Two","Panel One","Count"],
     supportPanelIndex:1,
@@ -166,6 +166,7 @@ export default function ToolRoot(props){
     Count:lazy(() => import('./ToolPanels/Count')),
     Count2:lazy(() => import('./ToolPanels/Count2')),
     NotFound:lazy(() => import('./ToolPanels/NotFound')),
+    SelectStuff:lazy(() => import('./ToolPanels/SelectStuff')),
   }).current;
 
   if (profile.state === "loading"){ return null;}

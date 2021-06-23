@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, lazy, useRef, Suspense } from 'react';
-import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
+import { atom, atomFamily, useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
@@ -99,6 +99,24 @@ border: 0px solid white;
 border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
 margin-top: 2px;
 `
+
+export const selectedMenuPanelAtom = atom({
+  key:"selectedMenuPanelAtom",
+  default:null
+}) 
+
+function SelectionMenuPanel(props){
+
+  return <>
+    <div style={{
+      // paddingTop: "0px", 
+      paddingBottom: "4px", 
+      paddingLeft: "4px",
+      paddingRight: "4px",
+      backgroundColor:"white"}}>{props.children}</div>
+  </>
+}
+
 function MenuPanel(props){
   let isInitOpen = props.isInitOpen;
   if (!isInitOpen){isInitOpen = false;}
@@ -137,14 +155,30 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
 
   //These maintain the panels' state
   const viewPanels = useRef([])
-  // const [userPanels,setUserPanels] = useState([])
+  const currentSelectedPanel = useRecoilValue(selectedMenuPanelAtom);
+  console.log(">>>currentSelectedPanel",currentSelectedPanel)
+  // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
 
   const LazyObj = useRef({
     TestControl:lazy(() => import('../MenuPanels/TestControl')),
     ToastTest:lazy(() => import('../MenuPanels/ToastTest')),
+    SelectPanel:lazy(() => import('../MenuPanels/SelectPanel')),
   }).current;
+
+  let selectionPanel = null;
+  if (currentSelectedPanel){
+    console.log(">>>here currentSelectedPanel",currentSelectedPanel)
+    const panelToUse = LazyObj[currentSelectedPanel];
+    //protect from typos
+    if (panelToUse){
+      const key = `SelectionMenuPanel${currentSelectedPanel}`
+      selectionPanel = <SelectionMenuPanel key={key}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      {React.createElement(panelToUse,{key})}
+      </Suspense></SelectionMenuPanel>
+    }
+  }
 
   function buildMenuPanel({key,type,title,visible,initOpen}){
     // console.log(">>>build",{key,type,visible})
@@ -165,7 +199,6 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
         const mpKey = `${panelName}`;
         const isOpen = initOpen[i]
         const title = panelTitles[i]
-        console.log(">>>panelName",panelName)
 
     viewPanels.current.push(buildMenuPanel({key:mpKey,type:panelName,title,visible:true,initOpen:isOpen}))
     }
@@ -190,6 +223,7 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
         
           {/* {anchor} */}
       </MenuPanelsCap>
+    {selectionPanel}
     {viewPanels.current}
     {/* {userPanels} */}
     <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
