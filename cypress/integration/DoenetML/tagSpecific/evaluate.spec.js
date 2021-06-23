@@ -3,7 +3,7 @@ describe('Evaluate Tag Tests', function () {
 
   beforeEach(() => {
 
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 
@@ -301,6 +301,50 @@ describe('Evaluate Tag Tests', function () {
     cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}ay+by^2{enter}", { force: true });
     cy.get('#\\/result').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('f(u)=f(cq2)=acq2+bc2q4')
+    })
+
+  })
+
+  it('evaluate function when input is replaced', () => {
+    // catch bug where child dependency was not recalculated
+    // when a skipComponentNames = true
+    // and the number of active children did not change
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <function variable="u" symbolic name="f">1+u</function>
+  <answer size="5">
+    <mathinput />
+    <award><math>1</math></award>
+  </answer>
+  <p><evaluate name="eval" function="$f" input="$(_answer1{prop='submittedResponse'})" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.log('initial state');
+
+    cy.get('#\\/eval').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+＿')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/eval'].stateValues.value.tree).eqls(["+", 1, '＿']);
+    })
+
+    cy.log('submit answer')
+    cy.get('#\\/_mathinput1 textarea').type("4{enter}", { force: true });
+    cy.get('#\\/eval').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1+4')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/eval'].stateValues.value.tree).eqls(["+", 1, 4]);
     })
 
   })

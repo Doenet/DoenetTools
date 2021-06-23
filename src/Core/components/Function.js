@@ -350,7 +350,7 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.formula = {
       public: true,
-      componentType: "formula",
+      componentType: "math",
       defaultValue: me.fromAst(0),
       returnDependencies: () => ({
         formulaAttr: {

@@ -1,7 +1,7 @@
 describe('Boolean Operator on Math Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('isinteger, is number', () => {

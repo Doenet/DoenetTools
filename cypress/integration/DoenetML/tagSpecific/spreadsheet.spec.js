@@ -2,7 +2,7 @@
 describe('Spreadsheet Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   var enterSpreadsheetText = function ({ id = "\\/_spreadsheet1", row, column, text = "", clear = false, verify = true }) {

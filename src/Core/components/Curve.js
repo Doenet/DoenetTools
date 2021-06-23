@@ -1702,6 +1702,33 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.graphYmin = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "graphYmax",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["ymin", "ymax"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.graphAncestor) {
+          return {
+            newValues: {
+              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
+              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
+            }
+          }
+        } else {
+          return { newValues: { graphYmin: null, graphYmax: null } }
+        }
+      }
+    }
+
 
     return stateVariableDefinitions;
   }

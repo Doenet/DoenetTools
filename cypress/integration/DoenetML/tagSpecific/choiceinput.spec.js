@@ -11,7 +11,7 @@ function cesc(s) {
 describe('ChoiceInput Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('default is block format', () => {
