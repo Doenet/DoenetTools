@@ -13,6 +13,12 @@ export default class Figure extends BlockComponent {
       defaultValue: false,
       forRenderer: true,
     }
+    attributes.number = {
+      createComponentOfType: "boolean",
+      createStateVariable: "number",
+      defaultValue: true,
+      forRenderer: true,
+    }
 
     return attributes;
   }
@@ -27,17 +33,24 @@ export default class Figure extends BlockComponent {
       number: 1,
     })
 
-    let atMostOneBlock = childLogic.newLeaf({
-      name: "atMostOneBlock",
+    let atLeastZeroBlock = childLogic.newLeaf({
+      name: "atLeastZeroBlock",
       componentType: "_block",
-      comparison: "atMost",
-      number: 1,
+      comparison: "atLeast",
+      number: 0,
+    })
+
+    let atLeastZeroInline = childLogic.newLeaf({
+      name: "atLeastZeroInline",
+      componentType: "_inline",
+      comparison: "atLeast",
+      number: 0,
     })
 
     childLogic.newOperator({
-      name: "captionAndBlock",
+      name: "captionAndBlockInline",
       operator: "and",
-      propositions: [atMostOneCaption, atMostOneBlock],
+      propositions: [atMostOneCaption, atLeastZeroBlock, atLeastZeroInline],
       setAsBase: true,
     })
 
@@ -52,15 +65,33 @@ export default class Figure extends BlockComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
-      returnDependencies: () => ({
-        figureCounter: {
-          dependencyType: "counter",
-          counterName: "figure"
+      stateVariablesDeterminingDependencies: ["number"],
+      additionalStateVariablesDefined: [{
+        variableName: "figureName",
+        public: true,
+        componentType: "text",
+        forRenderer: true,
+      }],
+      returnDependencies({ stateValues }) {
+        let dependencies = {};
+
+        if (stateValues.number) {
+          dependencies.figureCounter = {
+            dependencyType: "counter",
+            counterName: "figure"
+          }
         }
-      }),
+        return dependencies;
+      },
       definition({ dependencyValues }) {
+        if (dependencyValues.figureCounter === undefined) {
+          return { newValues: { figureEnumeration: null, figureName: "Figure" } };
+        }
+        let figureEnumeration = String(dependencyValues.figureCounter);
+        let figureName = "Figure " + figureEnumeration;
         return {
-          newValues: { figureEnumeration: String(dependencyValues.figureCounter) }
+
+          newValues: { figureEnumeration, figureName }
         }
       }
     }
@@ -98,7 +129,7 @@ export default class Figure extends BlockComponent {
       }),
       definition({ dependencyValues }) {
 
-        let caption= null;
+        let caption = null;
 
         if (dependencyValues.captionChild.length === 1) {
           caption = dependencyValues.captionChild[0].stateValues.text;
@@ -106,7 +137,6 @@ export default class Figure extends BlockComponent {
         return { newValues: { caption } }
       }
     }
-
 
 
     return stateVariableDefinitions;
