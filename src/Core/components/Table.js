@@ -13,6 +13,12 @@ export default class Table extends BlockComponent {
       defaultValue: false,
       forRenderer: true,
     }
+    attributes.number = {
+      createComponentOfType: "boolean",
+      createStateVariable: "number",
+      defaultValue: true,
+      forRenderer: true,
+    }
 
     return attributes;
   }
@@ -27,17 +33,24 @@ export default class Table extends BlockComponent {
       number: 1,
     })
 
-    let atMostOneTabular = childLogic.newLeaf({
-      name: "atMostOneTabular",
-      componentType: "tabular",
-      comparison: "atMost",
-      number: 1,
+    let atLeastZeroBlock = childLogic.newLeaf({
+      name: "atLeastZeroBlock",
+      componentType: "_block",
+      comparison: "atLeast",
+      number: 0,
+    })
+
+    let atLeastZeroInline = childLogic.newLeaf({
+      name: "atLeastZeroInline",
+      componentType: "_inline",
+      comparison: "atLeast",
+      number: 0,
     })
 
     childLogic.newOperator({
-      name: "titleAndTabular",
+      name: "titleAndBlockInline",
       operator: "and",
-      propositions: [atMostOneTitle, atMostOneTabular],
+      propositions: [atMostOneTitle, atLeastZeroBlock, atLeastZeroInline],
       setAsBase: true,
     })
 
@@ -52,18 +65,37 @@ export default class Table extends BlockComponent {
       public: true,
       componentType: "text",
       forRenderer: true,
-      returnDependencies: () => ({
-        tableCounter: {
-          dependencyType: "counter",
-          counterName: "table"
+      stateVariablesDeterminingDependencies: ["number"],
+      additionalStateVariablesDefined: [{
+        variableName: "tableName",
+        public: true,
+        componentType: "text",
+        forRenderer: true,
+      }],
+      returnDependencies({ stateValues }) {
+        let dependencies = {};
+
+        if (stateValues.number) {
+          dependencies.tableCounter = {
+            dependencyType: "counter",
+            counterName: "table"
+          }
         }
-      }),
+        return dependencies;
+      },
       definition({ dependencyValues }) {
+        if (dependencyValues.tableCounter === undefined) {
+          return { newValues: { tableEnumeration: null, tableName: "Table" } };
+        }
+        let tableEnumeration = String(dependencyValues.tableCounter);
+        let tableName = "Table " + tableEnumeration;
         return {
-          newValues: { tableEnumeration: String(dependencyValues.tableCounter) }
+
+          newValues: { tableEnumeration, tableName }
         }
       }
     }
+
 
     stateVariableDefinitions.titleChildName = {
       forRenderer: true,
