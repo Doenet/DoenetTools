@@ -150,13 +150,11 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[], setMenuPanelsOpen }) {
-  // console.log(">>>panelTypes",panelTypes,initOpen) 
+export default function MenuPanels({ panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen }) {
 
   //These maintain the panels' state
   const viewPanels = useRef([])
   const currentSelectedPanel = useRecoilValue(selectedMenuPanelAtom);
-  console.log(">>>currentSelectedPanel",currentSelectedPanel)
   // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
@@ -169,7 +167,6 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
 
   let selectionPanel = null;
   if (currentSelectedPanel){
-    console.log(">>>here currentSelectedPanel",currentSelectedPanel)
     const panelToUse = LazyObj[currentSelectedPanel];
     //protect from typos
     if (panelToUse){
@@ -193,9 +190,9 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
     </Suspense></MenuPanel>
   } 
 
-
-  if (viewPanels.current.length === 0 && panelTypes.length > 0){
-    for (let [i,panelName] of Object.entries(panelTypes)){
+ 
+  if (viewPanels.current.length === 0 && currentPanels.length > 0){
+    for (let [i,panelName] of Object.entries(currentPanels)){
         const mpKey = `${panelName}`;
         const isOpen = initOpen[i]
         const title = panelTitles[i]
