@@ -799,23 +799,6 @@ export const fetchDrivesQuery = atom({
   }),
 });
 
-export const socketsAtom = atomFamily({
-  key: 'socketsAtom',
-  default: (nsp) => {
-    let socket = io(`localhost:81/${nsp}`, {
-      withCredentials: true,
-    });
-    socket.on('connection', () => {
-      console.log('socket', socket.id, 'connected');
-    });
-    socket.on('remote_add_doenetML', (payload) => {
-      console.log('file added remote', payload);
-    });
-    return socket;
-  },
-  dangerouslyAllowMutability: true,
-});
-
 export const fetchDrivesSelector = selector({
   key: 'fetchDrivesSelector',
   get: ({ get }) => {

@@ -21,9 +21,9 @@ import {
   sortItems,
   nodePathSelector,
   folderOpenAtom,
-  socketsAtom,
 } from './Drive';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
+import useSockets from '../Sockets';
 
 const dragShadowId = 'dragShadow';
 
@@ -45,6 +45,7 @@ const formatDate = (dt) => {
 
 export const useAddItem = () => {
   const [addToast, ToastType] = useToast();
+  const { socket: driveSocket, acceptNewItem } = useSockets('drive');
 
   const addItem = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -103,36 +104,19 @@ export const useAddItem = () => {
           type: itemType,
           sortOrder: newItem.sortOrder,
         };
-        let socket = snapshot.getLoadable(socketsAtom('drive')).getValue();
-        socket.emit('add_doenetML', payload, (respData) => {
-          console.log('>>>obj', newObj);
+        console.log(driveIdFolderId, {
+          driveId: payload.driveId,
+          folderId: payload.parentFolderId,
+        });
+        driveSocket.emit('add_doenetML', payload, newObj, (respData) => {
           if (respData.success) {
-            // Insert item info into destination folder
-            set(folderDictionary(driveIdFolderId), newObj);
-            addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-
-            // Update folderDictionary when new item is of type Folder
-            if (itemType === 'Folder') {
-              set(
-                folderDictionary({
-                  driveId: driveIdFolderId.driveId,
-                  folderId: itemId,
-                }),
-                {
-                  folderInfo: newItem,
-                  contentsDictionary: {},
-                  contentIds: { [sortOptions.DEFAULT]: [] },
-                },
-              );
-            }
+            acceptNewItem(payload, newObj);
           } else {
             onAddItemError({ errorMessage: respData });
           }
         });
       },
   );
-
-  const acceptNewItem = useRecoilCallback(() => {});
 
   const onAddItemError = ({ errorMessage = null }) => {
     addToast(`Add item error: ${errorMessage}`, ToastType.ERROR);

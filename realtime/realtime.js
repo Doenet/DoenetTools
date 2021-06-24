@@ -107,7 +107,7 @@
         console.log('>>>recived add_folder');
       },
     );
-    socket.on('add_doenetML', (payload, cb) => {
+    socket.on('add_doenetML', (payload, newItem, cb) => {
       axios
         .get('http://apache/api/addItem.php', {
           params: payload,
@@ -115,7 +115,7 @@
         })
         .then((resp) => {
           cb(resp.data);
-          socket.broadcast.emit('remote_add_doenetML', payload);
+          socket.broadcast.emit('remote_add_doenetML', payload, newItem);
         })
         .catch((err) => console.log('>>>ERROR:', err));
     });
