@@ -267,9 +267,9 @@ export default function ToolRoot(props){
     supportPanel = <SupportPanel panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
-  let menuPanels = null;
+  let menuPanels = <MenuPanels hide={true} />;
   if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanels){
-    menuPanels = <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} currentPanels={toolViewInfo.curentMenuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
+    menuPanels = <MenuPanels hide={false} setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} currentPanels={toolViewInfo.curentMenuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
   }
 
   let profileInMainPanel = !menuPanelsOpen;
