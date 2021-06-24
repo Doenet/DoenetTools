@@ -6,6 +6,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 // import logo from './src/Media/Doenet_Logo_cloud_only.png';
 import Profile from '../Profile';
 
+
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
   display: flex;

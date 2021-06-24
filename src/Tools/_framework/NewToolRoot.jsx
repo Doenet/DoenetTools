@@ -74,21 +74,12 @@ export const toolViewAtom = atom({
     supportPanelOptions:["Two","One","Count"], 
     supportPanelTitles:["Panel Two","Panel One","Count"], 
     supportPanelIndex:1, 
-    overlay:null, //TODO
-    // noMenuPanels: true,
+    // headerControls:["CloseProfileButton"],
+    // headerControlsPositions:["Right"],
   }
 })
 
 
-// {
-//   toolName:"Test",
-//   menuPanels:["TestControl"],
-//   menuPanelsInitOpen:[true],
-//   mainPanel:"One",
-//   supportPanel:["Two","One"],
-//   supportPanelTitles:["Panel Two","Panel One"],
-//   supportPanelIndex:0,
-// }
 let toolsObj = {
   test:{
     toolName:"Test",
@@ -99,7 +90,8 @@ let toolsObj = {
     supportPanelOptions:["Two","One","Count"],
     supportPanelTitles:["Panel Two","Panel One","Count"],
     supportPanelIndex:1,
-    // noMenuPanels: true,
+    // headerControls:["CloseProfileButton"],
+    // headerControlsPositions:["Right"], 
   },
   count:{
     toolName:"Count",
@@ -117,7 +109,7 @@ let toolsObj = {
     menuPanelsInitOpen:[],
     currentMainPanel:"NotFound",
     supportPanelOptions:[],
-    noMenuPanels: true,
+    hasNoMenuPanels: true,
   }
 }
 
@@ -157,13 +149,18 @@ export default function ToolRoot(props){
     }
   })
 
-  const LazyObj = useRef({
+  const LazyPanelObj = useRef({
     One:lazy(() => import('./ToolPanels/One')),
     Two:lazy(() => import('./ToolPanels/Two')),
     Count:lazy(() => import('./ToolPanels/Count')),
     Count2:lazy(() => import('./ToolPanels/Count2')),
     NotFound:lazy(() => import('./ToolPanels/NotFound')),
     SelectStuff:lazy(() => import('./ToolPanels/SelectStuff')),
+    AccountSettings:lazy(() => import('./ToolPanels/AccountSettings')),
+  }).current;
+
+  const LazyControlObj = useRef({
+    CloseProfileButton:lazy(() => import('./HeaderControls/CloseProfileButton')),
   }).current;
 
   if (profile.state === "loading"){ return null;}
@@ -181,7 +178,7 @@ export default function ToolRoot(props){
     }
     
     return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
+    {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
     </Suspense>
   } 
 
@@ -197,7 +194,25 @@ export default function ToolRoot(props){
     //Doesn't exist so make new Main Panel
     mainPanelArray.current.push(buildPanel({key:MainPanelKey,type:toolViewInfo.currentMainPanel,visible:true}))
     mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type:toolViewInfo.currentMainPanel, visible:true}
-   }
+   
+  }
+
+  let headerControls = null;
+  let headerControlsPositions = null;
+  if (toolViewInfo.headerControls){
+    headerControls = [];
+    headerControlsPositions = [];
+    for (const [i,controlName] of Object.entries(toolViewInfo.headerControls)){
+      const controlObj = LazyControlObj[controlName]
+      if (controlObj){
+        const key = `headerControls${MainPanelKey}`;
+        headerControlsPositions.push(toolViewInfo.headerControlsPositions[i])
+        headerControls.push(<Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+        {React.createElement(controlObj,{key:{key}})}
+        </Suspense>)
+      }
+    }
+  }
    
    //Show current panel and hide last panel
    if (lastMainPanelKey.current !== null && lastMainPanelKey.current !== MainPanelKey){
@@ -253,20 +268,20 @@ export default function ToolRoot(props){
   }
 
   let menuPanels = null;
-  if (menuPanelsOpen && !toolViewInfo.noMenuPanels){
+  if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanels){
     menuPanels = <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} currentPanels={toolViewInfo.curentMenuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
   }
 
   let profileInMainPanel = !menuPanelsOpen;
-  if (toolViewInfo.noMenuPanels){
+  if (toolViewInfo.hasNoMenuPanels){
     profileInMainPanel = false;
   }
   return <ProfileContext.Provider value={profile.contents}>
-    <GlobalFont />
+    <GlobalFont key='globalfont' />
     <ToolContainer>
       {menuPanels}
       <ContentPanel 
-      main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
     
