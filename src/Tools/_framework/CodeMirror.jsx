@@ -5,11 +5,16 @@ import {EditorView, keymap} from "@codemirror/view";
 import {styleTags, tags as t} from "@codemirror/highlight"
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
 import {completeFromSchema} from '@codemirror/lang-xml';
-import {parser} from "../../Parser/doenet"
-import { showNode } from "../../Parser/parser";
+import {parser} from "../../Parser/doenet";
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import { atom, useRecoilState } from "recoil";
 
+const matchTagState = atom({
+    key: 'matchTagState',
+    default: false,
+});
 export default function CodeMirror(props){
-    let matchTagEnabled = false;
+    let [matchTagEnabled, setMatchTagEnabled] = useRecoilState(matchTagState);
     let view = props.editorRef;
     let parent = useRef(null);
 
@@ -30,7 +35,7 @@ export default function CodeMirror(props){
     function matchTag(tr){
         const cursorPos = tr.newSelection.main.from;
         //if we may be closing an OpenTag
-        if(tr.annotation(Transaction.userEvent) == "input" && tr.newDoc.sliceString(cursorPos-1,cursorPos) === ">"){ //TODO check if resolve finds the correct node
+        if(tr.annotation(Transaction.userEvent) == "input" && tr.newDoc.sliceString(cursorPos-1,cursorPos) === ">"){
             //check to se if we are actually closing an OpenTag
             let node = syntaxTree(tr.state).resolve(cursorPos,-1);
             if(node.name !== "OpenTag") {
@@ -69,12 +74,10 @@ export default function CodeMirror(props){
                 //fun (unfixable?) glitch: If you modify the document and then create a newline before enough time has passed for a new parse (which is often < 50ms)
                 //the indent wont have time to update and you're going right back to the left side of the screen.
                 Element(context) {
-                    console.log(">>>context node", showNode(context.node));
                     let closed = /^\s*<\//.test(context.textAfter)
                     return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (closed ? 0 : context.unit)
                 },
                 "OpenTag CloseTag SelfClosingTag"(context) {
-                    console.log(">>>tag context node", showNode(context.node.parent));
 
                     if(context.node.firstChild.name == "TagName" ){
                         return context.column(context.node.from) 
@@ -119,18 +122,19 @@ export default function CodeMirror(props){
     }));
 
     const doenetSchema = {
+        //TODO update schema to be more complete.
         elements: [
-            {
-                name: "p",
-            },
-            {
-                name: "div",
-            },
-            {
-                name: "mathInput",
-                children: [],
-                attributes: [{name: "test"}]
-            }
+            // {
+            //     name: "p",
+            // },
+            // {
+            //     name: "div",
+            // },
+            // {
+            //     name: "mathInput",
+            //     children: [],
+            //     attributes: [{name: "TEST"}]
+            // }
         ]
     }
 
@@ -148,23 +152,24 @@ export default function CodeMirror(props){
         
     });
 
+    //should rewrite using compartments once a more formal config component is established
     function toggleMatchTag(){
         if(matchTagEnabled){
             view.current.dispatch({
-                effects: StateEffect.reconfigure(doenetExtensions)
-              })
-              matchTagEnabled = false;
+                effects: StateEffect.reconfigure.of(doenetExtensions)
+              });
+              setMatchTagEnabled(false);
         } else{
             view.current.dispatch({
                 effects: StateEffect.appendConfig.of(EditorState.transactionFilter.of(matchTag))
-            })
-            matchTagEnabled = true;
+            });
+            setMatchTagEnabled(true);
         }
     }
 
     return (
         <>
-        <button onClick={toggleMatchTag}>Toggle matching tags</button>
+        <ToggleButton value="Enable matching tags" switch_value="Disable matching tags" callback={toggleMatchTag}/>
         <div ref={parent} ></div>
         </>
     )
