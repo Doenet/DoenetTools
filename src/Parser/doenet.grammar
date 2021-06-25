@@ -1,4 +1,4 @@
-@top Document { Element }
+@top Document { topLevel+ }
 
 entity {
   Text |
@@ -15,8 +15,14 @@ Element {
   SelfClosingTag
 }
 
+topLevel {
+  Text |
+  Comment |
+  Element
+}
+
 OpenTag[closedBy=CloseTag] {
-  StartTag  TagName  Attribute* endTag
+  StartTag TagName Attribute* endTag
 }
 
 SelfClosingTag {
