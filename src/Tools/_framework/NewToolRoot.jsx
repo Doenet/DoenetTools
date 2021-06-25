@@ -67,56 +67,49 @@ export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
     toolName:"Test",
-    menuPanelTypes:["TestControl","ToastTest"], 
+    curentMenuPanels:["TestControl","ToastTest"], 
     menuPanelsTitles:["Test Control", "Toast"],
     menuPanelsInitOpen:[false,true],
-    mainPanelType:"SelectStuff", 
-    supportPanelTypes:["Two","One","Count"], 
+    currentMainPanel:"SelectStuff", 
+    supportPanelOptions:["Two","One","Count"], 
     supportPanelTitles:["Panel Two","Panel One","Count"], 
     supportPanelIndex:1, 
-    // noMenuPanels: true,
+    // headerControls:["CloseProfileButton"],
+    // headerControlsPositions:["Right"],
   }
 })
 
 
-// {
-//   toolName:"Test",
-//   menuPanels:["TestControl"],
-//   menuPanelsInitOpen:[true],
-//   mainPanel:"One",
-//   supportPanel:["Two","One"],
-//   supportPanelTitles:["Panel Two","Panel One"],
-//   supportPanelIndex:0,
-// }
 let toolsObj = {
   test:{
     toolName:"Test",
-    menuPanelTypes:["TestControl","ToastTest"],
+    curentMenuPanels:["TestControl","ToastTest"],
     menuPanelsTitles:["Test Control", "Toast"],
     menuPanelsInitOpen:[false,true],
-    mainPanelType:"SelectStuff",
-    supportPanelTypes:["Two","One","Count"],
+    currentMainPanel:"SelectStuff",
+    supportPanelOptions:["Two","One","Count"],
     supportPanelTitles:["Panel Two","Panel One","Count"],
     supportPanelIndex:1,
-    // noMenuPanels: true,
+    // headerControls:["CloseProfileButton"],
+    // headerControlsPositions:["Right"], 
   },
   count:{
     toolName:"Count",
-    menuPanelTypes:["TestControl"],
+    curentMenuPanels:["TestControl"],
     menuPanelsTitles:["Test Control"],
     menuPanelsInitOpen:[true],
-    mainPanelType:"Count",
-    supportPanelTypes:["Count2","Count"],
+    currentMainPanel:"Count",
+    supportPanelOptions:["Count2","Count"],
     supportPanelTitles:["Count Two","Count One"],
     supportPanelIndex:0,
   },
   notfound:{
     toolName:"Notfound",
-    menuPanelTypes:[],
+    curentMenuPanels:[],
     menuPanelsInitOpen:[],
-    mainPanelType:"NotFound",
-    supportPanelTypes:[],
-    noMenuPanels: true,
+    currentMainPanel:"NotFound",
+    supportPanelOptions:[],
+    hasNoMenuPanels: true,
   }
 }
 
@@ -138,35 +131,36 @@ export default function ToolRoot(props){
   // const [supportContentObj,setSupportContentObj] = useState({})
   const [menuPanelsOpen,setMenuPanelsOpen] = useState(true)
 
-  const setView = useRecoilCallback(({set})=> (view,origPath)=>{
-    if (view === ""){ 
+  const setTool = useRecoilCallback(({set})=> (tool,origPath)=>{
+    if (tool === ""){ 
       location.href = `#test/`  
     }else{
-      let newView = toolsObj[view];
-   
-      console.log(">>>newView",newView)
+      let newTool = toolsObj[tool];
   
-      if (!newView){ 
+      if (!newTool){ 
         let newParams = {};
         newParams["path"] = `${origPath}`;
         const ePath = encodeParams(newParams);
       location.href = `#/notfound?${ePath}`
       }else{
   
-        set(toolViewAtom,newView);
+        set(toolViewAtom,newTool);
       }
     }
-    
-
   })
 
-  const LazyObj = useRef({
+  const LazyPanelObj = useRef({
     One:lazy(() => import('./ToolPanels/One')),
     Two:lazy(() => import('./ToolPanels/Two')),
     Count:lazy(() => import('./ToolPanels/Count')),
     Count2:lazy(() => import('./ToolPanels/Count2')),
     NotFound:lazy(() => import('./ToolPanels/NotFound')),
     SelectStuff:lazy(() => import('./ToolPanels/SelectStuff')),
+    AccountSettings:lazy(() => import('./ToolPanels/AccountSettings')),
+  }).current;
+
+  const LazyControlObj = useRef({
+    CloseProfileButton:lazy(() => import('./HeaderControls/CloseProfileButton')),
   }).current;
 
   if (profile.state === "loading"){ return null;}
@@ -178,31 +172,47 @@ export default function ToolRoot(props){
 
 
   function buildPanel({key,type,visible}){
-    // console.log(">>>build",{key,type,visible})
     let hideStyle = null;
     if (!visible){
       hideStyle = 'none';
     }
     
-    // {React.createElement(LazyObj[type],{key,style:{color: "red", backgroundColor: "blue"}})}
     return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
+    {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
     </Suspense>
   } 
 
   const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
-  //Need to update path
   if (toolViewInfo.toolName.toLowerCase() !== lcpath){
-    setView(lcpath,props.route.location.pathname)
+  //Need to update path
+    setTool(lcpath,props.route.location.pathname)
     return null;
   }
 
-   const MainPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.mainPanelType}`;
+   const MainPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.currentMainPanel}`;
    if (!mainPanelDictionary.current[MainPanelKey]){
     //Doesn't exist so make new Main Panel
-    mainPanelArray.current.push(buildPanel({key:MainPanelKey,type:toolViewInfo.mainPanelType,visible:true}))
-    mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type:toolViewInfo.mainPanelType, visible:true}
-   }
+    mainPanelArray.current.push(buildPanel({key:MainPanelKey,type:toolViewInfo.currentMainPanel,visible:true}))
+    mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type:toolViewInfo.currentMainPanel, visible:true}
+   
+  }
+
+  let headerControls = null;
+  let headerControlsPositions = null;
+  if (toolViewInfo.headerControls){
+    headerControls = [];
+    headerControlsPositions = [];
+    for (const [i,controlName] of Object.entries(toolViewInfo.headerControls)){
+      const controlObj = LazyControlObj[controlName]
+      if (controlObj){
+        const key = `headerControls${MainPanelKey}`;
+        headerControlsPositions.push(toolViewInfo.headerControlsPositions[i])
+        headerControls.push(<Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+        {React.createElement(controlObj,{key:{key}})}
+        </Suspense>)
+      }
+    }
+  }
    
    //Show current panel and hide last panel
    if (lastMainPanelKey.current !== null && lastMainPanelKey.current !== MainPanelKey){
@@ -227,12 +237,12 @@ export default function ToolRoot(props){
    let supportPanel = null;
 
 
-   if (toolViewInfo.supportPanelTypes && toolViewInfo.supportPanelTypes.length > 0){
-    const SupportPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.supportPanelTypes[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
+   if (toolViewInfo.supportPanelOptions && toolViewInfo.supportPanelOptions.length > 0){
+    const SupportPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
     if (!supportPanelDictionary.current[SupportPanelKey]){
      //Doesn't exist so make new Support Panel
-     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolViewInfo.supportPanelTypes[toolViewInfo.supportPanelIndex],visible:true}))
-     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolViewInfo.supportPanelTypes[toolViewInfo.supportPanelIndex], visible:true}
+     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex],visible:true}))
+     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex], visible:true}
     }
     
     //Show current panel and hide last panel
@@ -257,21 +267,21 @@ export default function ToolRoot(props){
     supportPanel = <SupportPanel panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
-  let menuPanels = null;
-  if (menuPanelsOpen && !toolViewInfo.noMenuPanels){
-    menuPanels = <MenuPanels setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} panelTypes={toolViewInfo.menuPanelTypes} initOpen={toolViewInfo.menuPanelsInitOpen}/>
+  let menuPanels = <MenuPanels hide={true} />;
+  if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanels){
+    menuPanels = <MenuPanels hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} currentPanels={toolViewInfo.curentMenuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
   }
 
   let profileInMainPanel = !menuPanelsOpen;
-  if (toolViewInfo.noMenuPanels){
+  if (toolViewInfo.hasNoMenuPanels){
     profileInMainPanel = false;
   }
   return <ProfileContext.Provider value={profile.contents}>
-    <GlobalFont />
-    <ToolContainer>
+    <GlobalFont key='globalfont' />
+    <ToolContainer >
       {menuPanels}
       <ContentPanel 
-      main={<MainPanel setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
     

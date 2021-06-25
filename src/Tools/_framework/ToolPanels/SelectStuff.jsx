@@ -8,10 +8,8 @@ export const myselection = atom({
 })
 
 export default function SelectStuff(props){
-  console.log(">>>===SelectStuff")
 
   const setSelection = useRecoilCallback(({set})=>(selection)=>{
-    console.log(">>>SelectStuff selection",selection)
     set(myselection,selection)
     if (selection.length > 0){
       set(selectedMenuPanelAtom,"SelectPanel");

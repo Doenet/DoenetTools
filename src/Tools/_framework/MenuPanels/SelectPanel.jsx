@@ -7,7 +7,7 @@ export default function TestControl(props){
 
   const selection = useRecoilValue(myselection);
   
-  return <div style={props.style}>
+  return <>
   <p>You have selected {selection}</p>
-  </div>
+  </>
 }

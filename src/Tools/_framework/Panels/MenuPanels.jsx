@@ -3,19 +3,19 @@ import { atom, atomFamily, useRecoilState, useSetRecoilState, useRecoilValue } f
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-// import logo from './src/Media/Doenet_Logo_cloud_only.png';
 import Profile from '../Profile';
+
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+ // overflow: auto;
   justify-content: flex-start;
   background: #e3e3e3;
   height: 100%;
-  width: 240px;
   overflow: hidden;
+  width: ${({hide})=>hide ? '0px' : '240px'};
 `;
 
 const MenuPanelsCap = styled.div`
@@ -25,6 +25,10 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
+position: ${(props) => props.fix ? 'sticky' : 'static'};
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+top: 0;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -159,13 +163,11 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[], setMenuPanelsOpen }) {
-  // console.log(">>>panelTypes",panelTypes,initOpen) 
+export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
 
   //These maintain the panels' state
   const viewPanels = useRef([])
   const currentSelectedPanel = useRecoilValue(selectedMenuPanelAtom);
-  console.log(">>>currentSelectedPanel",currentSelectedPanel)
   // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
@@ -178,7 +180,6 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
 
   let selectionPanel = null;
   if (currentSelectedPanel){
-    console.log(">>>here currentSelectedPanel",currentSelectedPanel)
     const panelToUse = LazyObj[currentSelectedPanel];
     //protect from typos
     if (panelToUse){
@@ -202,9 +203,9 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
     </Suspense></MenuPanel>
   } 
 
-
-  if (viewPanels.current.length === 0 && panelTypes.length > 0){
-    for (let [i,panelName] of Object.entries(panelTypes)){
+ 
+  if (viewPanels.current.length === 0 && currentPanels.length > 0){
+    for (let [i,panelName] of Object.entries(currentPanels)){
         const mpKey = `${panelName}`;
         const isOpen = initOpen[i]
         const title = panelTitles[i]
@@ -214,17 +215,18 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
   }
 
   
-  // console.log(">>>viewPanels.current",viewPanels.current) 
   return (
-    <MenuPanelsWrapper>
-     <MenuPanelsCap>
+    <MenuPanelsWrapper hide={hide}>
+     <MenuPanelsCap fix={menuPanelsOpen}>
         <span >
           <Logo/>
           {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
         </span>
         <span style={{marginBottom: '1px'}}>Doenet</span>
         <span >
-          <Profile />
+          <Profile 
+          margin={menuPanelsOpen}
+          />
         </span>
         <span >
           <CloseButton onClick={()=>setMenuPanelsOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
@@ -240,31 +242,5 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
     </div>
 
     </MenuPanelsWrapper>
-    // <DragPanel
-    //   gridArea={'menuPanel'}
-    //   direction={handleDirection.LEFT}
-    //   id={`menuPanel${stackId}`}
-    //   isInitOpen={isInitOpen}
-    // >
-    //   <Wrapper>
-    //     <ButtonsWrapper>
-    //       {panels.map((panel, idx) => {
-    //         return (
-    //           <MenuHeaderButton
-    //             key={`headerB${idx}`}
-    //             onClick={() => {
-    //               activePanel !== idx ? setActivePanel(idx) : null;
-    //             }}
-    //             linkedPanel={idx}
-    //             activePanel={activePanel}
-    //           >
-    //             {panel.props.title}
-    //           </MenuHeaderButton>
-    //         );
-    //       })}
-    //     </ButtonsWrapper>
-    //     <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
-    //   </Wrapper>
-    // </DragPanel>
   );
 }
