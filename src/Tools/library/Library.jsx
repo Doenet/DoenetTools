@@ -43,7 +43,6 @@ import Drive, {
   drivePathSyncFamily
 } from "../../_reactComponents/Drive/Drive";
 import { 
-  useAddItem,
   useDeleteItem,
   useRenameItem
 } from "../../_reactComponents/Drive/DriveActions";
@@ -456,7 +455,6 @@ const FolderInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
-  const { deleteItem, onDeleteItemError } = useDeleteItem();
   const { renameItem, onRenameItemError } = useRenameItem();
   const [addToast, ToastType] = useToast();
 
@@ -506,20 +504,11 @@ const FolderInfoPanel = function(props){
   <br />
   <br />
   <Button data-cy="deleteFolderButton" value="Delete Folder" callback={()=>{
-    const result = deleteItem({
+    props.handlers?.deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
     });
-    result.then((resp)=>{
-      if (resp.data.success){
-        addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
-      }else{
-        onDeleteItemError({errorMessage: resp.data.message});
-      }
-    }).catch((e)=>{
-      onDeleteItemError({errorMessage: e.message});
-    })
   }} />
   </>
 }
@@ -528,7 +517,6 @@ const DoenetMLInfoPanel = function(props){
   const itemInfo = props.itemInfo;
 
   const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId:itemInfo.driveId,folderId:itemInfo.parentFolderId}))
-  const { deleteItem, onDeleteItemError } = useDeleteItem();
   const [addToast, ToastType] = useToast();
   const { renameItem, onRenameItemError } = useRenameItem();
 
@@ -593,25 +581,16 @@ const DoenetMLInfoPanel = function(props){
   <br />
   <br />
   <Button data-cy="deleteDoenetMLButton" value="Delete DoenetML" callback={()=>{
-    const result = deleteItem({
+    props.handlers?.deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
       driveInstanceId:itemInfo.driveInstanceId
     });
-    result.then((resp)=>{
-      if (resp.data.success){
-        addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
-      }else{
-        onDeleteItemError({errorMessage: resp.data.message});
-      }
-    }).catch((e)=>{
-      onDeleteItemError({errorMessage: e.message});
-    })
   }} />
   </>
 }
 
-const ItemInfo = function (){
+const ItemInfo = function ({handlers}){
   // console.log("=== 🧐 Item Info")
   //Temp: Delete Soon
 
@@ -659,11 +638,13 @@ const ItemInfo = function (){
         return <DoenetMLInfoPanel
         key={`DoenetMLInfoPanel${itemInfo.itemId}`}
         itemInfo={itemInfo}
+        handlers={handlers}
         />
       }else if (itemInfo?.itemType === "Folder"){
         return <FolderInfoPanel
         key={`FolderInfoPanel${itemInfo.itemId}`}
         itemInfo={itemInfo}
+        handlers={handlers}
         />
       }
    x
@@ -767,8 +748,6 @@ function AddMenuPanel(props){
   }
   let [driveId,folderId] = path.split(":");
   const [, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}))
-  const { addItem, onAddItemError } = useSockets();
-  const [addToast, ToastType] = useToast();
 
   let addDrives = <>
    <Suspense fallback={<p>Failed to make add course drive button</p>} >
@@ -790,21 +769,12 @@ function AddMenuPanel(props){
     value="Add Folder" 
     data-cy="addFolderButton"
     callback={()=>{
-      const result = addItem({
+      props.handlers?.addItem({
         driveIdFolderId: {driveId: driveId, folderId: folderId},
         label: "Untitled",
         itemType: "Folder"
       });
-      result.then(resp => {
-        if (resp.data?.success){
-          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-        }else{
-          onAddItemError({errorMessage: resp.data});
-        }
-      }).catch( e => {
-        onAddItemError({errorMessage: e.message});
-      })
-    }} 
+    }}
   />
 
   <h3>DoenetML</h3>
@@ -812,7 +782,7 @@ function AddMenuPanel(props){
     value="Add DoenetML" 
     data-cy="addDoenetMLButton"
     callback={()=>{
-      addItem({
+      props.handlers?.addItem({
         driveIdFolderId: {driveId: driveId, folderId: folderId},
         label:"Untitled",
         itemType:"DoenetML"
@@ -909,6 +879,7 @@ export default function Library(props) {
   // console.log("=== 📚 Doenet Library Tool",props);  
 
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
+  const { addItem, onAddItemError, deleteItem, onDeleteItemError } = useSockets('drive');
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -1089,10 +1060,10 @@ export default function Library(props) {
       </supportPanel>
 
       <menuPanel title="Selected" isInitOpen>
-        <ItemInfo  />
+        <ItemInfo  handlers={{deleteItem, onDeleteItemError}}/>
       </menuPanel>
       <menuPanel title="+ Add Items" isInitOpen>
-       <AddMenuPanel route={props.route} />
+       <AddMenuPanel route={props.route} handlers={{addItem, onAddItemError}}/>
       </menuPanel>
 
      

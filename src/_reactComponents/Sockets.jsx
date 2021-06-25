@@ -13,6 +13,8 @@ import { useToast } from '../Tools/_framework/Toast';
 import {
   folderDictionary,
   getLexicographicOrder,
+  globalSelectedNodesAtom,
+  selectedDriveItemsAtom,
   sortOptions,
 } from './Drive/Drive';
 
@@ -50,9 +52,10 @@ export default function useSockets(nsp) {
   const [addToast, ToastType] = useToast();
   const [namespace] = useState(nsp);
   const socket = useRecoilValue(sockets(namespace));
+  // const { addItem, onAddItemError, deleteItem, onDeleteItemError} = useDriveBindings()
 
   const addItem = useRecoilCallback(
-    ({ snapshot, set }) =>
+    ({ snapshot }) =>
       async ({
         driveIdFolderId,
         label,
@@ -108,10 +111,6 @@ export default function useSockets(nsp) {
           type: itemType,
           sortOrder: newItem.sortOrder,
         };
-        console.log(driveIdFolderId, {
-          driveId: payload.driveId,
-          folderId: payload.parentFolderId,
-        });
         socket.emit('add_doenetML', payload, newObj, (respData) => {
           if (respData.success) {
             acceptNewItem(payload, newObj);
@@ -125,6 +124,7 @@ export default function useSockets(nsp) {
   const onAddItemError = ({ errorMessage = null }) => {
     addToast(`Add item error: ${errorMessage}`, ToastType.ERROR);
   };
+
   const acceptNewItem = useRecoilCallback(({ set }) => (payload, newItem) => {
     // Insert item info into destination folder
     set(
@@ -151,6 +151,70 @@ export default function useSockets(nsp) {
       );
     }
   });
+
+  const deleteItem = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async ({ driveIdFolderId, driveInstanceId = null, itemId }) => {
+        const fInfo = await snapshot.getPromise(
+          folderDictionary(driveIdFolderId),
+        );
+        const globalSelectedNodes = await snapshot.getPromise(
+          globalSelectedNodesAtom,
+        );
+        const item = {
+          driveId: driveIdFolderId.driveId,
+          driveInstanceId: driveInstanceId,
+          itemId: itemId,
+        };
+        const selectedDriveItems = await snapshot.getPromise(
+          selectedDriveItemsAtom(item),
+        );
+
+        // Remove from selection
+        if (selectedDriveItems) {
+          set(selectedDriveItemsAtom(item), false);
+          let newGlobalItems = [];
+          for (let gItem of globalSelectedNodes) {
+            if (gItem.itemId !== itemId) {
+              newGlobalItems.push(gItem);
+            }
+          }
+          set(globalSelectedNodesAtom, newGlobalItems);
+        }
+
+        // Remove from folder
+        let newFInfo = { ...fInfo };
+        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        delete newFInfo['contentsDictionary'][itemId];
+        newFInfo.folderInfo = { ...fInfo.folderInfo };
+        newFInfo.contentIds = {};
+        newFInfo.contentIds[sortOptions.DEFAULT] = [
+          ...fInfo.contentIds[sortOptions.DEFAULT],
+        ];
+        const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(itemId);
+        newFInfo.contentIds[sortOptions.DEFAULT].splice(index, 1);
+
+        // Remove from database
+        const pdata = {
+          driveId: driveIdFolderId.driveId,
+          itemId: itemId,
+        };
+        let itemInfo = { label: 'todo' };
+        socket.emit('delete_doenetML', pdata, newFInfo, (resp) => {
+          if (resp.data.success) {
+            set(folderDictionary(driveIdFolderId), newFInfo);
+            addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
+          } else {
+            onDeleteItemError({ errorMessage: resp.data.message });
+          }
+        });
+      },
+  );
+
+  const onDeleteItemError = ({ errorMessage = null }) => {
+    addToast(`Delete item error: ${errorMessage}`, ToastType.ERROR);
+  };
+
   const [bindings] = useState({
     drive: [
       {
@@ -163,6 +227,10 @@ export default function useSockets(nsp) {
         eventName: 'remote_add_doenetML',
         callback: acceptNewItem,
       },
+      {
+        eventName: 'remote_add_folder',
+        callback: acceptNewItem,
+      },
     ],
   });
 
@@ -173,7 +241,7 @@ export default function useSockets(nsp) {
     });
   }, [bindings, socket, namespace]);
 
-  return { addItem, onAddItemError };
+  return { addItem, onAddItemError, deleteItem, onDeleteItemError };
 }
 
 const formatDate = (dt) => {

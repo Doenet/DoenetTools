@@ -21,8 +21,9 @@ import {
   sortItems,
   nodePathSelector,
   folderOpenAtom,
+  folderSortOrderAtom,
 } from './Drive';
-import Toast, { useToast } from '../../Tools/_framework/Toast';
+import { useToast } from '../../Tools/_framework/Toast';
 
 const dragShadowId = 'dragShadow';
 
