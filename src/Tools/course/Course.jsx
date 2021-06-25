@@ -33,7 +33,7 @@ import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMen
 import DriveCards from '../../_reactComponents/Drive/DriveCards';
 import '../../_reactComponents/Drive/drivecard.css';
 import '../../_utils/util.css';
-import GlobalFont from '../../_utils/GlobalFont';
+// import GlobalFont from '../../_utils/GlobalFont';
 import Tool from '../_framework/Tool';
 import Switch from '../_framework/Switch';
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
@@ -251,7 +251,7 @@ export default function Course(props) {
   if (profile.signedIn === '0') {
     return (
       <>
-        <GlobalFont />
+        {/* <GlobalFont /> */}
         <Tool>
           <headerPanel title="Course"></headerPanel>
 
@@ -294,7 +294,7 @@ export default function Course(props) {
   return (
     <>
       <URLPathSync route={props.route} />
-      <GlobalFont />
+      {/* <GlobalFont /> */}
       <Tool>
         <headerPanel title="Course" />
         <navPanel isInitOpen>
