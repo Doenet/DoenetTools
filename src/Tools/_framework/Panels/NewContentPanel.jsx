@@ -90,6 +90,12 @@ export default function ContentPanel({ main, support }) {
     wrapperRef.current.style.gridTemplate = null;
   }, [panelProportion]);
 
+  useEffect(() => {
+    // wrapperRef.current.style.gridTemplate = null;
+    setDivider(!support?.props?.hide)
+  }, [support?.props?.hide]);
+
+
   // useEffect(() => {
   //   setHasRespCont(
   //     (support?.props.responsiveControls || main?.props.responsiveControls) ??
@@ -137,7 +143,7 @@ export default function ContentPanel({ main, support }) {
       }
     }
   };
-
+ 
   return (
     <Wrapper
       onMouseUp={onMouseUp}
@@ -149,7 +155,7 @@ export default function ContentPanel({ main, support }) {
       $proportion={panelProportion}
     >
       {main}
-      {support ? (
+      {!support?.props?.hide ? (
         <DragHandle
           onMouseDown={onMouseDown}
           data-cy="contentPanelDragHandle"
