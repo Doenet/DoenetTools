@@ -24,6 +24,10 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
+position: ${(props) => props.fix ? 'sticky' : 'static'};
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+top: 0;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -150,7 +154,7 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen }) {
+export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
 
   //These maintain the panels' state
   const viewPanels = useRef([])
@@ -204,14 +208,16 @@ export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], ini
   
   return (
     <MenuPanelsWrapper hide={hide}>
-     <MenuPanelsCap>
+     <MenuPanelsCap fix={menuPanelsOpen}>
         <span >
           <Logo/>
           {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
         </span>
         <span style={{marginBottom: '1px'}}>Doenet</span>
         <span >
-          <Profile />
+          <Profile 
+          margin={menuPanelsOpen}
+          />
         </span>
         <span >
           <CloseButton onClick={()=>setMenuPanelsOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>

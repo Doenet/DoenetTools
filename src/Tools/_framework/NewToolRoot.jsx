@@ -269,7 +269,7 @@ export default function ToolRoot(props){
 
   let menuPanels = <MenuPanels hide={true} />;
   if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanels){
-    menuPanels = <MenuPanels hide={false} setMenuPanelsOpen={setMenuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} currentPanels={toolViewInfo.curentMenuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
+    menuPanels = <MenuPanels hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} currentPanels={toolViewInfo.curentMenuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
   }
 
   let profileInMainPanel = !menuPanelsOpen;
@@ -278,7 +278,7 @@ export default function ToolRoot(props){
   }
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont key='globalfont' />
-    <ToolContainer>
+    <ToolContainer >
       {menuPanels}
       <ContentPanel 
       main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
