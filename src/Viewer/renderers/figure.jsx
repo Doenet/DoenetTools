@@ -31,20 +31,19 @@ export default class Figure extends DoenetRenderer {
     }
 
 
-    if(!this.doenetSvData.suppressFigureNameInCaption) {
-      let figureName = <strong>Figure {this.doenetSvData.figureEnumeration}</strong>
-      if(caption) {
+    if (!this.doenetSvData.suppressFigureNameInCaption) {
+      let figureName = <strong>{this.doenetSvData.figureName}</strong>
+      if (caption) {
         caption = <>{figureName}: {caption}</>
       } else {
         caption = figureName;
       }
-
     }
 
     return <div id={this.componentName} >
       <a name={this.componentName} />
       {childrenToRender}
-      <div id={{id: this.componentName + "_caption" }}>{caption}</div>
+      <div id={ this.componentName + "_caption" }>{caption}</div>
     </div>
   }
 }
