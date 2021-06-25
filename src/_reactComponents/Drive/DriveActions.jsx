@@ -23,7 +23,6 @@ import {
   folderOpenAtom,
 } from './Drive';
 import Toast, { useToast } from '../../Tools/_framework/Toast';
-import useSockets from '../Sockets';
 
 const dragShadowId = 'dragShadow';
 
@@ -41,88 +40,6 @@ const formatDate = (dt) => {
     .padStart(2, '0')}`;
 
   return formattedDate;
-};
-
-export const useAddItem = () => {
-  const [addToast, ToastType] = useToast();
-  const { socket: driveSocket, acceptNewItem } = useSockets('drive');
-
-  const addItem = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async ({
-        driveIdFolderId,
-        label,
-        itemType,
-        selectedItemId = null,
-        url = null,
-      }) => {
-        // Item creation
-        const dt = new Date();
-        const creationDate = formatDate(dt);
-        const itemId = nanoid();
-        const doenetId = nanoid();
-        const newItem = {
-          assignmentId: null,
-          doenetId,
-          contentId: null,
-          creationDate,
-          isPublished: '0',
-          itemId,
-          itemType: itemType,
-          label: label,
-          parentFolderId: driveIdFolderId.folderId,
-          url: url,
-          urlDescription: null,
-          urlId: null,
-          sortOrder: '',
-        };
-
-        const fInfo = await snapshot.getPromise(
-          folderDictionary(driveIdFolderId),
-        );
-        let newObj = JSON.parse(JSON.stringify(fInfo));
-        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-        let index = newDefaultOrder.indexOf(selectedItemId);
-        const newOrder = getLexicographicOrder({
-          index,
-          nodeObjs: newObj.contentsDictionary,
-          defaultFolderChildrenIds: newDefaultOrder,
-        });
-        newItem.sortOrder = newOrder;
-        newDefaultOrder.splice(index + 1, 0, itemId);
-        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
-        newObj.contentsDictionary[itemId] = newItem;
-
-        const versionId = nanoid();
-        const payload = {
-          driveId: driveIdFolderId.driveId,
-          parentFolderId: driveIdFolderId.folderId,
-          itemId,
-          doenetId,
-          versionId,
-          label: label,
-          type: itemType,
-          sortOrder: newItem.sortOrder,
-        };
-        console.log(driveIdFolderId, {
-          driveId: payload.driveId,
-          folderId: payload.parentFolderId,
-        });
-        driveSocket.emit('add_doenetML', payload, newObj, (respData) => {
-          if (respData.success) {
-            acceptNewItem(payload, newObj);
-          } else {
-            onAddItemError({ errorMessage: respData });
-          }
-        });
-      },
-  );
-
-  const onAddItemError = ({ errorMessage = null }) => {
-    addToast(`Add item error: ${errorMessage}`, ToastType.ERROR);
-  };
-
-  return { addItem, onAddItemError };
 };
 
 export const useDeleteItem = () => {

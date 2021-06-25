@@ -58,6 +58,7 @@ import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper , ProfileContext } from '../_framework/ToolRoot';
 import { useToast } from '../_framework/Toast';
+import useSockets from "../../_reactComponents/Sockets";
 
 
 function Container(props){
@@ -765,8 +766,8 @@ function AddMenuPanel(props){
       path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
   }
   let [driveId,folderId] = path.split(":");
-  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}))
-  const { addItem, onAddItemError } = useAddItem();
+  const [, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}))
+  const { addItem, onAddItemError } = useSockets();
   const [addToast, ToastType] = useToast();
 
   let addDrives = <>
