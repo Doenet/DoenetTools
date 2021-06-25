@@ -66,42 +66,57 @@ export const profileAtom = atom({
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
-    toolName:"Test",
-    curentMenuPanels:["TestControl","ToastTest"], 
-    menuPanelsTitles:["Test Control", "Toast"],
-    menuPanelsInitOpen:[false,true],
-    currentMainPanel:"SelectStuff", 
-    supportPanelOptions:["Two","One","Count"], 
-    supportPanelTitles:["Panel Two","Panel One","Count"], 
-    supportPanelIndex:1, 
-    // headerControls:["CloseProfileButton"],
-    // headerControlsPositions:["Right"],
+    toolName:"Home",
+    curentMenuPanels:[],
+    menuPanelsTitles:[],
+    menuPanelsInitOpen:[],
+    currentMainPanel:"HomePanel",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanels: true,
+
+   
   }
 })
 
+ // headerControls:["CloseProfileButton"],
+// headerControlsPositions:["Right"], 
+// hasNoMenuPanels: true,
+//
 
 let toolsObj = {
-  test:{
-    toolName:"Test",
-    curentMenuPanels:["TestControl","ToastTest"],
-    menuPanelsTitles:["Test Control", "Toast"],
-    menuPanelsInitOpen:[false,true],
-    currentMainPanel:"SelectStuff",
-    supportPanelOptions:["Two","One","Count"],
-    supportPanelTitles:["Panel Two","Panel One","Count"],
-    supportPanelIndex:1,
-    // headerControls:["CloseProfileButton"],
-    // headerControlsPositions:["Right"], 
-  },
-  count:{
-    toolName:"Count",
-    curentMenuPanels:["TestControl"],
-    menuPanelsTitles:["Test Control"],
-    menuPanelsInitOpen:[true],
-    currentMainPanel:"Count",
-    supportPanelOptions:["Count2","Count"],
-    supportPanelTitles:["Count Two","Count One"],
+  home:{
+    toolName:"Home",
+    curentMenuPanels:[],
+    menuPanelsTitles:[],
+    menuPanelsInitOpen:[],
+    currentMainPanel:"HomePanel",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
     supportPanelIndex:0,
+    hasNoMenuPanels: true,
+  },
+  course:{
+    toolName:"Course",
+    curentMenuPanels:[],
+    menuPanelsTitles:[],
+    menuPanelsInitOpen:[],
+    currentMainPanel:"DriveCards",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+  },
+  content:{
+    toolName:"Content",
+    curentMenuPanels:[],
+    menuPanelsTitles:[],
+    menuPanelsInitOpen:[],
+    currentMainPanel:"Content",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanels: true,
   },
   notfound:{
     toolName:"Notfound",
@@ -133,7 +148,7 @@ export default function ToolRoot(props){
 
   const setTool = useRecoilCallback(({set})=> (tool,origPath)=>{
     if (tool === ""){ 
-      location.href = `#test/`  
+      location.href = `#home/`  
     }else{
       let newTool = toolsObj[tool];
   
@@ -150,13 +165,12 @@ export default function ToolRoot(props){
   })
 
   const LazyPanelObj = useRef({
-    One:lazy(() => import('./ToolPanels/One')),
-    Two:lazy(() => import('./ToolPanels/Two')),
-    Count:lazy(() => import('./ToolPanels/Count')),
-    Count2:lazy(() => import('./ToolPanels/Count2')),
     NotFound:lazy(() => import('./ToolPanels/NotFound')),
-    SelectStuff:lazy(() => import('./ToolPanels/SelectStuff')),
     AccountSettings:lazy(() => import('./ToolPanels/AccountSettings')),
+    HomePanel:lazy(() => import('./ToolPanels/HomePanel')),
+    Content:lazy(() => import('./ToolPanels/Content')),
+    DriveCards:lazy(() => import('./ToolPanels/DriveCards')),
+    SignIn:lazy(() => import('./ToolPanels/SignIn')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -168,7 +182,7 @@ export default function ToolRoot(props){
       console.error(profile.contents)
       return null;}
       // console.log(">>>===ToolRoot")
-      console.log(">>>===ToolRoot Route",props.route) 
+      console.log(">>>===ToolRoot toolViewInfo",toolViewInfo) 
 
 
   function buildPanel({key,type,visible}){
