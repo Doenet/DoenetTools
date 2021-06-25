@@ -1,4 +1,4 @@
-@top Document { misc (Element misc)+ }
+@top Document { Element }
 
 entity {
   Text |
@@ -16,35 +16,29 @@ Element {
 }
 
 OpenTag[closedBy=CloseTag] {
-  StartTag space* TagName space* (Attribute space*)* endTag
+  StartTag  TagName  Attribute* endTag
 }
 
 SelfClosingTag {
-  StartTag space* TagName space* (Attribute space*)* selfCloseEndTag
+  StartTag TagName Attribute* selfCloseEndTag
 }
 
 CloseTag[openedBy=OpenTag] {
-  StartCloseTag space* TagName space* endTag
+  StartCloseTag TagName  endTag
 }
 
 MismatchedCloseTag {
-  mismatchedStartCloseTag space* TagName space* endTag
+  mismatchedStartCloseTag TagName endTag
 }
 
 Attribute {
   AttributeName |
-  AttributeName is AttributeValue
-}
-
-misc {
-  (Comment | space )*
+  AttributeName "=" AttributeValue
 }
 
 AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference)* "\"" }
 
-
 Comment { "<!--" commentContent* "-->" }
-
 
 @context elementContext from "./tokens.js"
 
@@ -62,7 +56,6 @@ Comment { "<!--" commentContent* "-->" }
 
   selfCloseEndTag { "/>" }
 
-
   nameChar {
     std.asciiLetter | "-" | "_" | std.digit 
   }
@@ -75,15 +68,20 @@ Comment { "<!--" commentContent* "-->" }
 
   attributeContent { !["&]+ }
 
-  is { space* "=" space* }
-
   EntityReference { "&" ![#; ]+ ";" }
 
   CharacterReference { "&#" ![; ]+ ";" }
 
   Text { ![<&]+ }
 
-  space { (" " | "\t" | "\r" | "\n")+ }
+  space { std.whitespace+ }
+
+  @precedence {attributeContent, space}
+  
+  @precedence {Text, space}
+
 }
+
+@skip { space }
 
 @detectDelim

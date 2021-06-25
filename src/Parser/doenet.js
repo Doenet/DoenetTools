@@ -4,20 +4,20 @@ import {startTag, commentContent, elementContext} from "./tokens.js"
 import {NodeProp} from "lezer"
 export const parser = Parser.deserialize({
   version: 13,
-  states: "*nOQOTOOO]OUO'#CbOOOP'#Co'#CoOeOTO'#CxOsOPOOOOOQ'#Cp'#CpOxOUO,58|OOOP,58|,58|OOOP-E6m-E6mO!QOWO'#CdO!YOaO'#CcOOOP'#Cc'#CcO!tOTO'#CqQsOPOOOOOQ-E6n-E6nOOOP1G.h1G.hOOOO'#Cr'#CrO#SOWO,59OO#[OpO,59OO#jOWO'#ClOOOP'#DQ'#DQOOOP'#Cu'#CuO!YOaO,58}O#rOWO'#CmOOOP,58},58}OOOP,59],59]OOOP-E6o-E6oOOOO-E6p-E6pO#zOpO1G.jO#zOpO1G.jO$YOpO'#CfO$kOpO'#CsO$yOpO1G.jOOOP1G.j1G.jOOOP1G.t1G.tO%UOWO,59WO%^OSO,59WOOOP-E6s-E6sOOOP1G.i1G.iO%fOWO,59XO%nOSO,59XO%vOpO7+$UO&UOpO7+$UOOOP7+$U7+$UOOOP7+$`7+$`O&aOSO,59QO&iOpO,59_OOOO-E6q-E6qO&wOSO1G.rO&wOSO1G.rOOOP1G.r1G.rO'POSO1G.sO'POSO1G.sOOOP1G.s1G.sO'XOpO<<GpOOOP<<Gp<<GpOOOP<<Gz<<GzO&aOSO1G.lO'dO!bO'#ChOOOO1G.l1G.lO'rOSO7+$^OOOP7+$^7+$^O'zOSO7+$_OOOP7+$_7+$_OOOPAN=[AN=[OOOPAN=fAN=fOOOO7+$W7+$WOOOO'#Ct'#CtO(SO!bO,59SOOOO,59S,59SOOOP<<Gx<<GxOOOP<<Gy<<GyOOOO-E6r-E6rOOOO1G.n1G.n",
-  stateData: "(b~OnPOoQOPlP~OkTOmVO~OnPOoQOPlXjlX~OPXO~OkTOm_O~OXbOo`O~OPXOQgORcOSdO]dO^dO_dOnPO~OnPOoQOPlPjlP~OXlOo`O~OZnOo`OpqOurO~OXtOo`O~OXxOo`O~OZnOo`Op{Ou|O~Oq}OZYXoYXpYXuYX~Oo`OZgXpgXugX~OZnOp{Ou|O~OX!QOo`O~Oo`Op!SO~OX!TOo`O~Oo`Op!VO~OZnOo`Op!XOu!YO~OZnOp!XOu!YO~Oo`Or![O~Oo`OZgapgauga~Oo`Op!_O~Oo`Op!aO~OZnOp!bOu!cO~O]!eO^!eOr!gOs!eO~Oo`Op!hO~Oo`Op!iO~O]!eO^!eOr!kOs!eO~O",
-  goto: "%UuPPPPPPv!P!XP!_P!hPPP{!n!t!z#R#X#_$_$n$tPP$zPPPPPPP%QUQOR[TdYfS[S]TdYfXYSY]f_oblmpyz!WQ!]}R!d!ZQhYRvfXZSY]fSRO[RWRQUPR^UQ]SRj]QaXfkamswy!O!R!U!Z!^!`QmbQscQwgQylQ!OoQ!RtQ!UxQ!Z}Q!^!QR!`!TQpbSzlmU!Ppz!WR!WyQ!f![R!j!fQfYRufQSORi[TeYf",
-  nodeNames: "⚠ StartTag StartCloseTag StartCloseTag StartCloseTag Document Comment Element OpenTag TagName Attribute AttributeName AttributeValue EntityReference CharacterReference Text MismatchedCloseTag CloseTag SelfClosingTag",
-  maxTerm: 37,
+  states: "&YOVQTOOO[QSO'#CcOaQXO'#CbOOQP'#Cb'#CbQOQSOOO{Q`O,58}O!WQrO'#CkO!`QSO'#ClOOQP'#C{'#C{OOQP'#Cq'#CqOaQXO,58|O!eQSO'#CmOOQP,58|,58|O!jQ`O'#CeOOQO'#Co'#CoO!xQ`O1G.iOOQP1G.i1G.iOOQP1G.t1G.tOOQQ'#Cr'#CrO#TQrO,59VOOQP,59V,59VO#]QSO,59WOOQP-E6o-E6oOOQP1G.h1G.hO#bQSO,59XO#gQSO,59POOQO-E6m-E6mOOQP7+$T7+$TOOQP7+$`7+$`OOQQ-E6p-E6pOOQP1G.q1G.qOOQP1G.r1G.rOOQP1G.s1G.sO#lQ!bO'#CgOOQO1G.k1G.kOOQO'#Cp'#CpO#zQ!bO,59ROOQO,59R,59ROOQO-E6n-E6nOOQO1G.m1G.m",
+  stateData: "$]~OjOS~OPPO~OWTO~OPPOQZORVOSWO[WO]WO^WOqUO~OY]Ok`OraO~OhbOpdO~OWeO~OWhO~OliOYXXkXXrXX~OY]OkkOrlO~OhbOpnO~OkoO~OkpO~OmqO~O[sO]sOmuOnsO~O[sO]sOmwOnsO~On^~",
+  goto: "!}pPPPPPPqxP}P!RPPPtt!U![!a!g!m!sPPPPPPPP!yQSOTWQYVQOQYT^T_RriQ[QRgYVROQYQ_TRj_QtqRvtQYQRfYQcURmcTXQY",
+  nodeNames: "⚠ StartTag StartCloseTag StartCloseTag StartCloseTag Document Element OpenTag TagName Attribute AttributeName AttributeValue EntityReference CharacterReference Text Comment MismatchedCloseTag CloseTag SelfClosingTag",
+  maxTerm: 34,
   context: elementContext,
   nodeProps: [
-    [NodeProp.closedBy, 1,"SelfCloseEndTag EndTag",8,"CloseTag"],
+    [NodeProp.closedBy, 1,"SelfCloseEndTag EndTag",7,"CloseTag"],
     [NodeProp.openedBy, 17,"OpenTag"]
   ],
   skippedNodes: [0],
-  repeatNodeCount: 7,
-  tokenData: "/i~RkOX!vXY#}YZ#}Z]!v]^#}^p!vpq#}qr!vrs%Psv!vvw%aw}!v}!O&|!O!P!v!P!Q+h!Q![)n![!^!v!^!_,t!_!`.a!`!a.|!a!c!v!c!})n!}#R!v#R#S)n#S#T!v#T#o)n#o~!vd!}U_Ss`Or!vrs#asv!vw!^!v!^!_#o!_~!vS#fR_SOv#aw!^#a!_~#a`#tRs`Or#osv#ow~#oo$W]_Ss`oZOX!vXY#}YZ#}Z]!v]^#}^p!vpq#}qr!vrs#asv!vw!^!v!^!_#o!_~!ve%WRra_SOv#aw!^#a!_~#a~%dTOp%sqs%sst&[t!]%s!^~%s~%vTOp%sqs%st!]%s!]!^&V!^~%s~&[O]~~&_ROp&hq!]&h!^~&h~&kSOp&hq!]&h!]!^&w!^~&h~&|O^~o'X`ZWXQ_Ss`Or!vrs#asv!vw}!v}!O(Z!O!Q!v!Q![)n![!^!v!^!_#o!_!c!v!c!})n!}#R!v#R#S)n#S#T!v#T#o)n#o~!vo(fbZWXQ_Ss`Or!vrs#asv!vw}!v}!O)n!O!Q!v!Q![)n![!^!v!^!_#o!_!`!v!`!a*{!a!c!v!c!})n!}#R!v#R#S)n#S#T!v#T#o)n#o~!vn)y`ZWXQ_Ss`Or!vrs#asv!vw}!v}!O)n!O!Q!v!Q![)n![!^!v!^!_#o!_!c!v!c!})n!}#R!v#R#S)n#S#T!v#T#o)n#o~!ve+UUmP_Ss`Or!vrs#asv!vw!^!v!^!_#o!_~!vl+oW_Ss`Or!vrs#asv!vw!^!v!^!_#o!_!`!v!`!a,X!a~!vl,bU_Ss`uWOr!vrs#asv!vw!^!v!^!_#o!_~!ve,ySs`Oq#oqr-Vsv#ow~#oe-[Ts`Or#osv#ow}#o}!O-k!O~#oe-pTs`Or#osv#ow}#o}!O.P!O~#oe.WRnTs`Or#osv#ow~#ol.jU_Ss`qWOr!vrs#asv!vw!^!v!^!_#o!_~!vm/VU_Ss`pXOr!vrs#asv!vw!^!v!^!_#o!_~!v",
+  repeatNodeCount: 4,
+  tokenData: "1Z~RxOX#oX^$v^p#opq$vqr#ors&qsv#ovw'Rw}#o}!O(n!O!P#o!P!Q-Y!Q![+`![!^#o!^!_.f!_!`0R!`!a0n!a!c#o!c!}+`!}#R#o#R#S+`#S#T#o#T#o+`#o#y#o#y#z$v#z$f#o$f$g$v$g#BY#o#BY#BZ$v#BZ$IS#o$IS$I_$v$I_$I|#o$I|$JO$v$JO$JT#o$JT$JU$v$JU$KV#o$KV$KW$v$KW&FU#o&FU&FV$v&FV~#ob#vUn`^QOr#ors$Ysv#ow!^#o!^!_$h!_~#oQ$_R^QOv$Yw!^$Y!_~$Y`$mRn`Or$hsv$hw~$h~%Pjj~n`^QOX#oX^$v^p#opq$vqr#ors$Ysv#ow!^#o!^!_$h!_#y#o#y#z$v#z$f#o$f$g$v$g#BY#o#BY#BZ$v#BZ$IS#o$IS$I_$v$I_$I|#o$I|$JO$v$JO$JT#o$JT$JU$v$JU$KV#o$KV$KW$v$KW&FU#o&FU&FV$v&FV~#oc&xRma^QOv$Yw!^$Y!_~$Y~'UTOp'eqs'est'|t!]'e!^~'e~'hTOp'eqs'et!]'e!]!^'w!^~'e~'|O[~~(PROp(Yq!](Y!^~(Y~(]SOp(Yq!](Y!]!^(i!^~(Y~(nO]~o(y`YSWPn`^QOr#ors$Ysv#ow}#o}!O){!O!Q#o!Q![+`![!^#o!^!_$h!_!c#o!c!}+`!}#R#o#R#S+`#S#T#o#T#o+`#o~#oo*WbYSWPn`^QOr#ors$Ysv#ow}#o}!O+`!O!Q#o!Q![+`![!^#o!^!_$h!_!`#o!`!a,m!a!c#o!c!}+`!}#R#o#R#S+`#S#T#o#T#o+`#o~#og+k`YSWPn`^QOr#ors$Ysv#ow}#o}!O+`!O!Q#o!Q![+`![!^#o!^!_$h!_!c#o!c!}+`!}#R#o#R#S+`#S#T#o#T#o+`#o~#oj,vUpWn`^QOr#ors$Ysv#ow!^#o!^!_$h!_~#of-aWn`^QOr#ors$Ysv#ow!^#o!^!_$h!_!`#o!`!a-y!a~#of.SUrSn`^QOr#ors$Ysv#ow!^#o!^!_$h!_~#ob.kSn`Oq$hqr.wsv$hw~$hb.|Tn`Or$hsv$hw}$h}!O/]!O~$hb/bTn`Or$hsv$hw}$h}!O/q!O~$hb/xRqQn`Or$hsv$hw~$hf0[UlSn`^QOr#ors$Ysv#ow!^#o!^!_$h!_~#og0wUkTn`^QOr#ors$Ysv#ow!^#o!^!_$h!_~#o",
   tokenizers: [startTag, commentContent, 0, 1, 2, 3, 4],
   topRules: {"Document":[0,5]},
-  tokenPrec: 0
+  tokenPrec: 148
 })
