@@ -4,6 +4,7 @@ import {EditorState, Transaction } from "@codemirror/state";
 import {EditorView, keymap} from "@codemirror/view";
 import {styleTags, tags as t} from "@codemirror/highlight"
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
+import {xml} from '@codemirror/lang-xml';
 import {parser} from "../../Parser/doenet"
 
 export default function CodeMirror(props){
@@ -24,27 +25,27 @@ export default function CodeMirror(props){
         }
     }
 
-    function matchTag(tr){
-        const cursorPos = tr.newSelection.main.from;
-        //if we may be closing an OpenTag
-        if(tr.annotation(Transaction.userEvent) == "input" && tr.newDoc.sliceString(cursorPos-1,cursorPos) === ">"){ //TODO check if resolve finds the correct node
-            //check to se if we are actually closing an OpenTag
-            let node = syntaxTree(tr.state).resolve(cursorPos,-1);
-            if(node.name !== "OpenTag") {
-                return tr;
-            }
-            let tagNameNode = node.firstChild;
-            let tagName = tr.newDoc.sliceString(tagNameNode.from,tagNameNode.to);
+    // function matchTag(tr){
+    //     const cursorPos = tr.newSelection.main.from;
+    //     //if we may be closing an OpenTag
+    //     if(tr.annotation(Transaction.userEvent) == "input" && tr.newDoc.sliceString(cursorPos-1,cursorPos) === ">"){ //TODO check if resolve finds the correct node
+    //         //check to se if we are actually closing an OpenTag
+    //         let node = syntaxTree(tr.state).resolve(cursorPos,-1);
+    //         if(node.name !== "OpenTag") {
+    //             return tr;
+    //         }
+    //         let tagNameNode = node.firstChild;
+    //         let tagName = tr.newDoc.sliceString(tagNameNode.from,tagNameNode.to);
 
-            //an ineffecient hack to make it so the modified document is saved directly after tagMatch
-            let tra = tr.state.update({changes: {from: cursorPos, insert: "</".concat(tagName,">")}, sequential: true });
-            changeFunc(tra);
+    //         //an ineffecient hack to make it so the modified document is saved directly after tagMatch
+    //         let tra = tr.state.update({changes: {from: cursorPos, insert: "</".concat(tagName,">")}, sequential: true });
+    //         changeFunc(tra);
 
-            return [tr, {changes: {from: cursorPos, insert: "</".concat(tagName,">")}, sequential: true }];
-        } else {
-            return tr;
-        }
-    }
+    //         return [tr, {changes: {from: cursorPos, insert: "</".concat(tagName,">")}, sequential: true }];
+    //     } else {
+    //         return tr;
+    //     }
+    // }
 
     //tab = 2 spaces
     const tab = "  ";
@@ -108,10 +109,11 @@ export default function CodeMirror(props){
         doc : props.value,
         extensions: [
             basicSetup,
-            doenet,
+            xml({elements: [{name:"p",top: true}]}),
+            // doenet,
             EditorView.lineWrapping,
             tabExtension,
-            EditorState.transactionFilter.of(matchTag),
+            // EditorState.transactionFilter.of(matchTag),
             EditorState.changeFilter.of(changeFunc)
         ]
     });

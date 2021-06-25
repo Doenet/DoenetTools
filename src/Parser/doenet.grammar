@@ -4,7 +4,6 @@ entity {
   Text |
   EntityReference |
   CharacterReference |
-  Cdata |
   Element |
   Comment |
   MismatchedCloseTag |
@@ -17,15 +16,15 @@ Element {
 }
 
 OpenTag[closedBy=CloseTag] {
-  startTag space* TagName space* (Attribute space*)* endTag
+  StartTag space* TagName space* (Attribute space*)* endTag
 }
 
 SelfClosingTag {
-  startTag space* TagName space* (Attribute space*)* selfCloseEndTag
+  StartTag space* TagName space* (Attribute space*)* selfCloseEndTag
 }
 
 CloseTag[openedBy=OpenTag] {
-  startCloseTag space* TagName space* endTag
+  StartCloseTag space* TagName space* endTag
 }
 
 MismatchedCloseTag {
@@ -33,7 +32,8 @@ MismatchedCloseTag {
 }
 
 Attribute {
-  AttributeName space* is space* AttributeValue
+  AttributeName |
+  AttributeName is AttributeValue
 }
 
 misc {
@@ -46,36 +46,28 @@ AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference)*
 Comment { "<!--" commentContent* "-->" }
 
 
-Cdata { cdataStart cdataContent* "]]>" }
-
 @context elementContext from "./tokens.js"
 
 @external tokens startTag from "./tokens.js" {
-  startTag
-  startCloseTag
-  mismatchedStartCloseTag
-  incompleteStartCloseTag
+  StartTag[closedBy="SelfCloseEndTag EndTag"]
+  StartCloseTag
+  mismatchedStartCloseTag[@name=StartCloseTag]
+  incompleteStartCloseTag[@name=StartCloseTag]
 }
 
 @external tokens commentContent from "./tokens.js" { commentContent }
-@external tokens cdataContent from "./tokens.js" { cdataContent }
 
 @tokens {
   endTag { ">" }
 
   selfCloseEndTag { "/>" }
 
-  nameStart {
-    ":" | std.asciiLetter | "_" |
-    $[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D] |
-    $[\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}]
-  }
 
   nameChar {
-    nameStart | "-" | "." | std.digit | $[\u00B7\u0300-\u036F\u203F-\u2040]
+    std.asciiLetter | "-" | "_" | std.digit 
   }
 
-  identifier { nameStart nameChar* }
+  identifier { nameChar+ }
 
   TagName { identifier }
 
@@ -83,15 +75,13 @@ Cdata { cdataStart cdataContent* "]]>" }
 
   attributeContent { !["&]+ }
 
-  is { "=" }
+  is { space* "=" space* }
 
   EntityReference { "&" ![#; ]+ ";" }
 
   CharacterReference { "&#" ![; ]+ ";" }
 
   Text { ![<&]+ }
-
-  cdataStart { "<![" ("cdata" | "CDATA") "[" }
 
   space { (" " | "\t" | "\r" | "\n")+ }
 }
