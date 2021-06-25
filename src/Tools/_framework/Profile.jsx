@@ -20,7 +20,7 @@ justify-content: center;
 align-items: center;
 border-radius: 50%;
 border-style: none;
-margin-left: 75px;
+margin-left: ${(props) => props.margin ? '75px' : '0px'};
 margin-top: 4px
 `;
 
@@ -29,7 +29,7 @@ export const profileToolViewStashAtom = atom({
   default:{},
 })
  
-export default function Profile(){
+export default function Profile(props){
   const profile = useContext(ProfileContext)
   const profilePicName = profile.profilePicture;
   const displaySettings = useRecoilCallback(({set,snapshot})=> async ()=>{
@@ -57,5 +57,7 @@ export default function Profile(){
 
   // let profilePicName = "cat";
 // return <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
-return <ProfilePicture pic={profilePicName} onClick={()=>displaySettings()}/>
+return <ProfilePicture pic={profilePicName} 
+margin={props.margin} 
+onClick={()=>displaySettings()}/>
 }
