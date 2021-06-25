@@ -33,7 +33,7 @@ MismatchedCloseTag {
 
 Attribute {
   AttributeName |
-  AttributeName "=" AttributeValue
+  AttributeName Is AttributeValue
 }
 
 AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference)* "\"" }
@@ -71,6 +71,8 @@ Comment { "<!--" commentContent* "-->" }
   EntityReference { "&" ![#; ]+ ";" }
 
   CharacterReference { "&#" ![; ]+ ";" }
+
+  Is { "=" }
 
   Text { ![<&]+ }
 
