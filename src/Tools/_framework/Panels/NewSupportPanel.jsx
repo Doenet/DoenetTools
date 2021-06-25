@@ -5,11 +5,12 @@ import {
   useRecoilCallback,
 } from 'recoil';
 
-const SupportWapper = styled.div`
+const SupportWrapper = styled.div`
   overflow: auto;
   grid-area: supportPanel;
   background-color: hsl(0, 0%, 99%);
   height: 100%;
+  display: ${({$hide})=> $hide ? 'none' : 'block' }
   // border-radius: 0 0 4px 4px;
 `;
 
@@ -19,12 +20,13 @@ const ControlsWrapper = styled.div`
   display: flex;
   gap: 4px;
   background-color: hsl(0, 0%, 99%);
+  display: ${({$hide})=> $hide ? 'none' : 'block' }
   // border-radius: 4px 4px 0 0;
   // border-bottom: 2px solid #e3e3e3;
 
 `;
 
-export default function SupportPanel({ children, panelTitles=[], panelIndex }) {
+export default function SupportPanel({ hide, children, panelTitles=[], panelIndex }) {
 
   const setSupportPanelIndex = useRecoilCallback(({set})=>(index)=>{
     set(toolViewAtom,(was)=>{
@@ -49,8 +51,8 @@ export default function SupportPanel({ children, panelTitles=[], panelIndex }) {
 
   return (
     <>
-      <ControlsWrapper>{panelSelector}</ControlsWrapper>
-      <SupportWapper>{children}</SupportWapper>
+      <ControlsWrapper $hide={hide}>{panelSelector}</ControlsWrapper>
+      <SupportWrapper  $hide={hide}>{children}</SupportWrapper>
     </>
   );
 }

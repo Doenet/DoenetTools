@@ -234,7 +234,8 @@ export default function ToolRoot(props){
    lastMainPanelKey.current = MainPanelKey;
     
 
-   let supportPanel = null;
+  //  let supportPanel = <SupportPanel hide={false} />;
+   let supportPanel = <SupportPanel hide={true} >{supportPanelArray.current}</SupportPanel>;
 
 
    if (toolViewInfo.supportPanelOptions && toolViewInfo.supportPanelOptions.length > 0){
@@ -264,7 +265,7 @@ export default function ToolRoot(props){
  
     lastSupportPanelKey.current = SupportPanelKey;
     
-    supportPanel = <SupportPanel panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
+    supportPanel = <SupportPanel hide={false} panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
   let menuPanels = <MenuPanels hide={true} />;
