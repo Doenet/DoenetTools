@@ -15,6 +15,7 @@ const MenuPanelsWrapper = styled.div`
   background: #e3e3e3;
   height: 100%;
   width: 240px;
+  overflow: hidden;
 `;
 
 const MenuPanelsCap = styled.div`
@@ -110,10 +111,18 @@ function SelectionMenuPanel(props){
   return <>
     <div style={{
       // paddingTop: "0px", 
+      marginTop: "2px",
       paddingBottom: "4px", 
       paddingLeft: "4px",
       paddingRight: "4px",
-      backgroundColor:"white"}}>{props.children}</div>
+      // backgroundColor:"hsl(209,54%,90%)"
+      backgroundColor: 'white',
+      borderLeft:"8px solid #1A5A99"
+      }}>
+        <h3 style={{textAlign: "center", width: "240px", height: "35px",
+ fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3>
+        {props.children}
+        </div>
   </>
 }
 
@@ -128,7 +137,7 @@ function MenuPanel(props){
   }
 
   return <>
-    <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}>{props.title}</MenuPanelTitle>
+    <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}><h3>{props.title}</h3></MenuPanelTitle>
     <div style={{
       display: hideShowStyle,
       // paddingTop: "0px", 
