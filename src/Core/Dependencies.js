@@ -319,7 +319,7 @@ export class DependencyHandler {
           stateVariable: dep.representativeStateVariable,
           dependency: dep.dependencyName,
           force,
-          recurseUpstream: true,
+          // recurseUpstream: true,
         })
       }
     }
@@ -335,7 +335,7 @@ export class DependencyHandler {
             stateVariable: dep.representativeStateVariable,
             dependency: dep.dependencyName,
             force,
-            recurseUpstream: true
+            // recurseUpstream: true
           })
         }
       }
@@ -352,7 +352,7 @@ export class DependencyHandler {
             stateVariable: dep.representativeStateVariable,
             dependency: dep.dependencyName,
             force,
-            recurseUpstream: true
+            // recurseUpstream: true
           })
         }
 
@@ -397,7 +397,7 @@ export class DependencyHandler {
           stateVariable: dep.representativeStateVariable,
           dependency: dep.dependencyName,
           force,
-          recurseUpstream: true
+          // recurseUpstream: true
         })
       }
     }
@@ -1936,7 +1936,7 @@ export class DependencyHandler {
         componentName,
         type: "componentIdentity",
         expandComposites: false,
-        recurseUpstream: true
+        // recurseUpstream: true
       });
 
       stateVariables = Object.keys(component.state);
@@ -1966,7 +1966,7 @@ export class DependencyHandler {
               stateVariable: blockerStateVariable,
               dependency: blockerDependency,
               expandComposites: true,  // TODO: why is this true?
-              recurseUpstream: true
+              // recurseUpstream: true
             });
 
           }
@@ -1977,7 +1977,7 @@ export class DependencyHandler {
         type: "stateVariable",
         stateVariable: varName,
         expandComposites: false,
-        recurseUpstream: true
+        // recurseUpstream: true
       })
 
 

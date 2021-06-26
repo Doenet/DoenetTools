@@ -2248,5 +2248,108 @@ describe('Function Tag Tests', function () {
 
   });
 
+  it('extrema not resolved if not requested', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <function name="f">sin(x)</function>
+    <copy assignNames="f2" tname="f" />
+    <function name="f3">$f</function>
+    <function name="g" maxima="(1,2) (4,3)" />
+    <copy assignNames="g2" tname="g" />
+    <function name="g3">$g</function>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/f"].state.formula.isResolved).eq(true);
+      expect(components["/f"].state.symbolicf.isResolved).eq(false);
+      expect(components["/f"].state.numericalf.isResolved).eq(false);
+      expect(components["/f"].state.allMaxima.isResolved).eq(false);
+      expect(components["/f"].state.allMinima.isResolved).eq(false);
+      expect(components["/f"].state.allExtrema.isResolved).eq(false);
+      expect(components["/f"].state.numberMaxima.isResolved).eq(false);
+      expect(components["/f"].state.numberMinima.isResolved).eq(false);
+      expect(components["/f"].state.numberExtrema.isResolved).eq(false);
+      expect(components["/f"].state.maxima.isResolved).eq(false);
+      expect(components["/f"].state.minima.isResolved).eq(false);
+      expect(components["/f"].state.extrema.isResolved).eq(false);
+
+      expect(components["/f2"].state.formula.isResolved).eq(true);
+      expect(components["/f2"].state.symbolicf.isResolved).eq(false);
+      expect(components["/f2"].state.numericalf.isResolved).eq(false);
+      expect(components["/f2"].state.allMaxima.isResolved).eq(false);
+      expect(components["/f2"].state.allMinima.isResolved).eq(false);
+      expect(components["/f2"].state.allExtrema.isResolved).eq(false);
+      expect(components["/f2"].state.numberMaxima.isResolved).eq(false);
+      expect(components["/f2"].state.numberMinima.isResolved).eq(false);
+      expect(components["/f2"].state.numberExtrema.isResolved).eq(false);
+      expect(components["/f2"].state.maxima.isResolved).eq(false);
+      expect(components["/f2"].state.minima.isResolved).eq(false);
+      expect(components["/f2"].state.extrema.isResolved).eq(false);
+
+      expect(components["/f3"].state.formula.isResolved).eq(true);
+      expect(components["/f3"].state.symbolicf.isResolved).eq(false);
+      expect(components["/f3"].state.numericalf.isResolved).eq(false);
+      expect(components["/f3"].state.allMaxima.isResolved).eq(false);
+      expect(components["/f3"].state.allMinima.isResolved).eq(false);
+      expect(components["/f3"].state.allExtrema.isResolved).eq(false);
+      expect(components["/f3"].state.numberMaxima.isResolved).eq(false);
+      expect(components["/f3"].state.numberMinima.isResolved).eq(false);
+      expect(components["/f3"].state.numberExtrema.isResolved).eq(false);
+      expect(components["/f3"].state.maxima.isResolved).eq(false);
+      expect(components["/f3"].state.minima.isResolved).eq(false);
+      expect(components["/f3"].state.extrema.isResolved).eq(false);
+
+      expect(components["/g"].state.formula.isResolved).eq(true);
+      expect(components["/g"].state.symbolicf.isResolved).eq(false);
+      expect(components["/g"].state.numericalf.isResolved).eq(false);
+      expect(components["/g"].state.allMaxima.isResolved).eq(false);
+      expect(components["/g"].state.allMinima.isResolved).eq(false);
+      expect(components["/g"].state.allExtrema.isResolved).eq(false);
+      expect(components["/g"].state.numberMaxima.isResolved).eq(false);
+      expect(components["/g"].state.numberMinima.isResolved).eq(false);
+      expect(components["/g"].state.numberExtrema.isResolved).eq(false);
+      expect(components["/g"].state.maxima.isResolved).eq(false);
+      expect(components["/g"].state.minima.isResolved).eq(false);
+      expect(components["/g"].state.extrema.isResolved).eq(false);
+
+      expect(components["/g2"].state.formula.isResolved).eq(true);
+      expect(components["/g2"].state.symbolicf.isResolved).eq(false);
+      expect(components["/g2"].state.numericalf.isResolved).eq(false);
+      expect(components["/g2"].state.allMaxima.isResolved).eq(false);
+      expect(components["/g2"].state.allMinima.isResolved).eq(false);
+      expect(components["/g2"].state.allExtrema.isResolved).eq(false);
+      expect(components["/g2"].state.numberMaxima.isResolved).eq(false);
+      expect(components["/g2"].state.numberMinima.isResolved).eq(false);
+      expect(components["/g2"].state.numberExtrema.isResolved).eq(false);
+      expect(components["/g2"].state.maxima.isResolved).eq(false);
+      expect(components["/g2"].state.minima.isResolved).eq(false);
+      expect(components["/g2"].state.extrema.isResolved).eq(false);
+
+      expect(components["/g3"].state.formula.isResolved).eq(true);
+      expect(components["/g3"].state.symbolicf.isResolved).eq(false);
+      expect(components["/g3"].state.numericalf.isResolved).eq(false);
+      expect(components["/g3"].state.allMaxima.isResolved).eq(false);
+      expect(components["/g3"].state.allMinima.isResolved).eq(false);
+      expect(components["/g3"].state.allExtrema.isResolved).eq(false);
+      expect(components["/g3"].state.numberMaxima.isResolved).eq(false);
+      expect(components["/g3"].state.numberMinima.isResolved).eq(false);
+      expect(components["/g3"].state.numberExtrema.isResolved).eq(false);
+      expect(components["/g3"].state.maxima.isResolved).eq(false);
+      expect(components["/g3"].state.minima.isResolved).eq(false);
+      expect(components["/g3"].state.extrema.isResolved).eq(false);
+    });
+
+  });
+
 
 });
