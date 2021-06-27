@@ -18,6 +18,7 @@ import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx'
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -58,6 +59,7 @@ const List = styled.ul`
 `
 
 export default function attempt() {
+  const font = () => {};
 
 //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -156,6 +158,33 @@ export default function attempt() {
           propPreview: '<Button alert/>',
           propCode: {alert},
           description: 'Changes to alert mode (color is red)'},
+      ]
+    },
+    {
+      name: 'Increment',
+      id: 'increment',
+      code: Increment,
+      codePreview: '<Increment/>',
+      req_props: null,
+      req_children: null,
+      use: 'Text input with increment and decrement buttons. Also has dropdown menu to select given values',
+      props: [
+        {name: 'Font',
+        propPreview: '<Increment font/>',
+        propCode: {font},
+        description: 'Sets menu with default font values'},
+        {name: 'Range',
+        propPreview: '<Increment range={[0, 12]}/>',
+        propCode: {range: [0,12]},
+        description: 'Sets menu with range of numbers given - inclusive. Also restricts values to those withiin the given range'},
+        {name: 'Values',
+        propPreview: '<IncrementMenu values={["A", "B", "C", "D", "F"]} />',
+        propCode: {values: ["A", "B", "C", "D", "F"]},
+        description: 'Sets menu with given values'},
+        {name: 'onValueChange',
+        propPreview: '<IncrementMenu onValueChange={(data) => console.log(data)} />',
+        propCode: {onValueChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
       ]
     },
     {
