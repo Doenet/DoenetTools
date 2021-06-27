@@ -44,16 +44,10 @@ export default function Button(props) {
   //       cursor: 'pointer',
   //       fontSize: '12px'
   //     };
-  if (props.size === "medium") {
-    button.height = '36px',
-    button.fontSize = '18px'
-  };
   if (props.width) {
     if (props.width === "menu") {
       button.width = '235px'
-    } else {
-      button.width = props.width
-    }
+    } 
   }
   var icon = '';
   if (props.value || props.icon){

@@ -30,16 +30,9 @@ export default function ActionButton(props) {
   var actionButton = {
         value: 'Action Button',
       };
-  if (props.size === "medium") {
-    actionButton.height = '36px',
-    actionButton.fontSize = '18px'
-  };
   if (props.width) {
     if (props.width === "menu") {
-      actionButton.width = '235px'
-    } else {
-      actionButton.width = props.width
-    }
+      actionButton.width = '235px'}
   }
   var icon = '';
   if (props.value || props.icon){
