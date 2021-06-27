@@ -13,6 +13,7 @@ import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/Acti
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.jsx";
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
 import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
@@ -159,6 +160,25 @@ export default function attempt() {
           propCode: {alert},
           description: 'Changes to alert mode (color is red)'},
       ]
+    },
+    {
+      name: 'ButtonGroup',
+      id: 'buttongroup',
+      code: ButtonGroup,
+      codePreview: '<ButtonGroup> <Button/> <Button/> <Button/> </ButtonGroup>',
+      req_props: null,
+      req_children: [React.createElement(Button), React.createElement(Button), React.createElement(Button)],
+      use: 'This groups related buttons together.',
+    //   props: [
+    //     // {name: 'Width - Menu Panel',
+    //     // propPreview: '<ActionButtonGroup width="menu" />',
+    //     // propCode: {width: 'menu'},
+    //     // description: 'Sets width to fill menu panel width'},
+    //     // {name: 'Width - Custom',
+    //     // propPreview: '<ActionButtonGroup width="500px" />',
+    //     // propCode: {width: '500px'},
+    //     // description: 'Sets width to custom dimensions'},
+    //   ]
     },
     {
       name: 'Increment',
