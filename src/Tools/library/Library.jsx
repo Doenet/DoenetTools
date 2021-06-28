@@ -506,7 +506,8 @@ const FolderInfoPanel = function(props){
     props.handlers?.deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
-      driveInstanceId:itemInfo.driveInstanceId
+      driveInstanceId:itemInfo.driveInstanceId,
+      label: itemInfo.label
     });
   }} />
   </>
@@ -583,7 +584,8 @@ const DoenetMLInfoPanel = function(props){
     props.handlers?.deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
-      driveInstanceId:itemInfo.driveInstanceId
+      driveInstanceId:itemInfo.driveInstanceId,
+      label: itemInfo.label
     });
   }} />
   </>

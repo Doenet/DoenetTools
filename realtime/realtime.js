@@ -131,7 +131,6 @@
           headers: socket.request.headers,
         })
         .then((resp) => {
-          console.log(resp);
           cb(resp.data);
           socket.broadcast.emit('remote_delete_doenetML', payload, newInfo);
         })

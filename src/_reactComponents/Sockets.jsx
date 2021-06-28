@@ -161,21 +161,23 @@ export default function useSockets(nsp) {
     }
   });
 
-  const acceptDelete = useRecoilCallback(({ set }) => (payload, newFInfo) => {
-    set(
-      folderDictionary({
-        driveId: payload.driveId,
-        folderId: payload.parentFolderId,
-      }),
-      newFInfo,
-    );
-    let itemInfo = 'todo';
-    addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
-  });
+  const acceptDelete = useRecoilCallback(
+    ({ set }) =>
+      (payload, newFInfo, label) => {
+        set(
+          folderDictionary({
+            driveId: payload.driveId,
+            folderId: payload.parentFolderId,
+          }),
+          newFInfo,
+        );
+        addToast(`Deleted item '${label}'`, ToastType.SUCCESS);
+      },
+  );
 
   const deleteItem = useRecoilCallback(
     ({ snapshot, set }) =>
-      async ({ driveIdFolderId, driveInstanceId = null, itemId }) => {
+      async ({ driveIdFolderId, driveInstanceId = null, itemId, label }) => {
         const fInfo = await snapshot.getPromise(
           folderDictionary(driveIdFolderId),
         );
@@ -218,11 +220,12 @@ export default function useSockets(nsp) {
         // Remove from database
         const pdata = {
           driveId: driveIdFolderId.driveId,
+          parentFolderId: driveIdFolderId.folderId,
           itemId: itemId,
         };
         socket.emit('delete_doenetML', pdata, newFInfo, (respData) => {
           if (respData.success) {
-            acceptDelete(pdata, newFInfo);
+            acceptDelete(pdata, newFInfo, label);
           } else {
             onDeleteItemError({ errorMessage: respData.message });
           }
@@ -249,6 +252,10 @@ export default function useSockets(nsp) {
       {
         eventName: 'remote_add_folder',
         callback: acceptNewItem,
+      },
+      {
+        eventName: 'remote_delete_doenetML',
+        callback: acceptDelete,
       },
     ],
   });
