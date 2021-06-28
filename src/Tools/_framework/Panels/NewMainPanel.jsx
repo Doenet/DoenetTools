@@ -33,7 +33,7 @@ display: inline-block;
 `;
 
 export default function MainPanel({ headerControls, headerControlsPositions, children, setMenuPanelsOpen, displayProfile }) {
-console.log(">>>main panel controls",headerControls,headerControlsPositions) 
+  console.log(">>>===main panel")
   const controls = [];
   if (displayProfile){
     controls.push(<OpenButton key='openbutton' onClick={()=>setMenuPanelsOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton>)

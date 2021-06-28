@@ -164,6 +164,7 @@ const LoadingFallback = styled.div`
 `;
 
 export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
+console.log(">>>===MenuPanels")
 
   //These maintain the panels' state
   const viewPanels = useRef([])

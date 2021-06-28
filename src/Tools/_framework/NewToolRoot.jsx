@@ -2,7 +2,7 @@ import React, { useState, lazy, Suspense, useRef, useEffect } from 'react';
 import {
   atom,
   selector,
-  useSetRecoilState,
+  atomFamily,
   useRecoilValue,
   useRecoilCallback,
   useRecoilValueLoadable,
@@ -63,27 +63,30 @@ export const profileAtom = atom({
   })
 })
 
+export const searchParamAtomFamily = atomFamily({
+  key: "searchParamAtomFamily",
+  default: "",
+})
+
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
-    toolName:"Home",
-    curentMenuPanels:[],
-    menuPanelsTitles:[],
-    menuPanelsInitOpen:[],
-    currentMainPanel:"HomePanel",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanels: true,
-
-   
+    toolName:"Init",
+    // curentMenuPanels:[],
+    // menuPanelsTitles:[],
+    // menuPanelsInitOpen:[],
+    // currentMainPanel:"",
+    // supportPanelOptions:[],
+    // supportPanelTitles:[],
+    // supportPanelIndex:0,
+    // hasNoMenuPanels: true,
   }
 })
 
  // headerControls:["CloseProfileButton"],
 // headerControlsPositions:["Right"], 
 // hasNoMenuPanels: true,
-//
+// toolHandler:"CourseToolHandler",
 
 let toolsObj = {
   home:{
@@ -106,6 +109,7 @@ let toolsObj = {
     supportPanelOptions:[],
     supportPanelTitles:[],
     supportPanelIndex:0,
+    toolHandler:"CourseToolHandler",
   },
   content:{
     toolName:"Content",
@@ -148,7 +152,7 @@ export default function ToolRoot(props){
 
   const setTool = useRecoilCallback(({set})=> (tool,origPath)=>{
     if (tool === ""){ 
-      location.href = `#home/`  
+      location.href = `#home/`
     }else{
       let newTool = toolsObj[tool];
   
@@ -164,6 +168,15 @@ export default function ToolRoot(props){
     }
   })
 
+  const setSearchParam = useRecoilCallback(({set,snapshot})=>(paramObj)=>{
+
+    for (const [key,value] of Object.entries(paramObj)){
+      // console.log(">>>key value",key,value)
+      set(searchParamAtomFamily(key),value)
+    }
+
+  })
+
   const LazyPanelObj = useRef({
     NotFound:lazy(() => import('./ToolPanels/NotFound')),
     AccountSettings:lazy(() => import('./ToolPanels/AccountSettings')),
@@ -177,6 +190,10 @@ export default function ToolRoot(props){
     CloseProfileButton:lazy(() => import('./HeaderControls/CloseProfileButton')),
   }).current;
 
+  const LazyToolHandlerObj = useRef({
+    CourseToolHandler:lazy(() => import('./ToolHandlers/CourseToolHandler')),
+  }).current;
+
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
@@ -184,6 +201,10 @@ export default function ToolRoot(props){
       // console.log(">>>===ToolRoot")
       console.log(">>>===ToolRoot toolViewInfo",toolViewInfo) 
 
+  const searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
+  setSearchParam(searchParamObj);
+  // console.log(">>>buildPanel searchParamObj",searchParamObj)
+  //TODO: Send to recoilcallback set selectorFam
 
   function buildPanel({key,type,visible}){
     let hideStyle = null;
@@ -201,6 +222,18 @@ export default function ToolRoot(props){
   //Need to update path
     setTool(lcpath,props.route.location.pathname)
     return null;
+  }
+
+  let toolHandler = null;
+  if (toolViewInfo.toolHandler){
+    const ToolHandlerKey = `${toolViewInfo.toolName}-${toolViewInfo.toolHandler}`;
+    const handler = LazyToolHandlerObj[toolViewInfo.toolHandler];
+    if (handler){
+      toolHandler = <Suspense key={ToolHandlerKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      {React.createElement(handler,{key:ToolHandlerKey})}
+      </Suspense>
+    }
+   
   }
 
    const MainPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.currentMainPanel}`;
@@ -303,7 +336,7 @@ export default function ToolRoot(props){
       {/* <FooterPanel><button onClick={()=>props.route.history.push('/Test')}>test</button></FooterPanel> */}
     </ToolContainer>
     <Toast />
- 
+    {toolHandler}
   </ProfileContext.Provider>
 } 
 
