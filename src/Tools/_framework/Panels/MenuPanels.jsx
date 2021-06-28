@@ -1,20 +1,21 @@
 import React, { useContext, useState, useEffect, lazy, useRef, Suspense } from 'react';
-import { atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
+import { atom, atomFamily, useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-// import logo from './src/Media/Doenet_Logo_cloud_only.png';
 import Profile from '../Profile';
+
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
   display: flex;
   flex-direction: column;
-  overflow: auto;
+ // overflow: auto;
   justify-content: flex-start;
   background: #e3e3e3;
   height: 100%;
-  width: 240px;
+  overflow: hidden;
+  width: ${({hide})=>hide ? '0px' : '240px'};
 `;
 
 const MenuPanelsCap = styled.div`
@@ -24,6 +25,10 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
+position: ${(props) => props.fix ? 'sticky' : 'static'};
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+top: 0;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -99,6 +104,32 @@ border: 0px solid white;
 border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
 margin-top: 2px;
 `
+
+export const selectedMenuPanelAtom = atom({
+  key:"selectedMenuPanelAtom",
+  default:null
+}) 
+
+function SelectionMenuPanel(props){
+
+  return <>
+    <div style={{
+      // paddingTop: "0px", 
+      marginTop: "2px",
+      paddingBottom: "4px", 
+      paddingLeft: "4px",
+      paddingRight: "4px",
+      // backgroundColor:"hsl(209,54%,90%)"
+      backgroundColor: 'white',
+      borderLeft:"8px solid #1A5A99"
+      }}>
+        <h3 style={{textAlign: "center", width: "240px", height: "35px",
+ fontSize: "16px", marginTop: "5px", marginLeft: "-8px"}}>Current Selection</h3>
+        {props.children}
+        </div>
+  </>
+}
+
 function MenuPanel(props){
   let isInitOpen = props.isInitOpen;
   if (!isInitOpen){isInitOpen = false;}
@@ -110,7 +141,7 @@ function MenuPanel(props){
   }
 
   return <>
-    <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}>{props.title}</MenuPanelTitle>
+    <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}><h3>{props.title}</h3></MenuPanelTitle>
     <div style={{
       display: hideShowStyle,
       // paddingTop: "0px", 
@@ -132,19 +163,32 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[], setMenuPanelsOpen }) {
-  // console.log(">>>panelTypes",panelTypes,initOpen) 
+export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
 
   //These maintain the panels' state
   const viewPanels = useRef([])
-  // const [userPanels,setUserPanels] = useState([])
+  const currentSelectedPanel = useRecoilValue(selectedMenuPanelAtom);
+  // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
 
   const LazyObj = useRef({
     TestControl:lazy(() => import('../MenuPanels/TestControl')),
     ToastTest:lazy(() => import('../MenuPanels/ToastTest')),
+    SelectPanel:lazy(() => import('../MenuPanels/SelectPanel')),
   }).current;
+
+  let selectionPanel = null;
+  if (currentSelectedPanel){
+    const panelToUse = LazyObj[currentSelectedPanel];
+    //protect from typos
+    if (panelToUse){
+      const key = `SelectionMenuPanel${currentSelectedPanel}`
+      selectionPanel = <SelectionMenuPanel key={key}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      {React.createElement(panelToUse,{key})}
+      </Suspense></SelectionMenuPanel>
+    }
+  }
 
   function buildMenuPanel({key,type,title,visible,initOpen}){
     // console.log(">>>build",{key,type,visible})
@@ -159,30 +203,30 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
     </Suspense></MenuPanel>
   } 
 
-
-  if (viewPanels.current.length === 0 && panelTypes.length > 0){
-    for (let [i,panelName] of Object.entries(panelTypes)){
+ 
+  if (viewPanels.current.length === 0 && currentPanels.length > 0){
+    for (let [i,panelName] of Object.entries(currentPanels)){
         const mpKey = `${panelName}`;
         const isOpen = initOpen[i]
         const title = panelTitles[i]
-        console.log(">>>panelName",panelName)
 
     viewPanels.current.push(buildMenuPanel({key:mpKey,type:panelName,title,visible:true,initOpen:isOpen}))
     }
   }
 
   
-  // console.log(">>>viewPanels.current",viewPanels.current) 
   return (
-    <MenuPanelsWrapper>
-     <MenuPanelsCap>
+    <MenuPanelsWrapper hide={hide}>
+     <MenuPanelsCap fix={menuPanelsOpen}>
         <span >
           <Logo/>
           {/* <img style={{height:"45px", width:"70px", objectFit: "scale-down"}} href="https://www.doenet.org/media/Doenet_Logo_cloud_only.png"/> */}
         </span>
         <span style={{marginBottom: '1px'}}>Doenet</span>
         <span >
-          <Profile />
+          <Profile 
+          margin={menuPanelsOpen}
+          />
         </span>
         <span >
           <CloseButton onClick={()=>setMenuPanelsOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
@@ -190,6 +234,7 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
         
           {/* {anchor} */}
       </MenuPanelsCap>
+    {selectionPanel}
     {viewPanels.current}
     {/* {userPanels} */}
     <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
@@ -197,31 +242,5 @@ export default function MenuPanels({ panelTitles=[], panelTypes=[], initOpen=[],
     </div>
 
     </MenuPanelsWrapper>
-    // <DragPanel
-    //   gridArea={'menuPanel'}
-    //   direction={handleDirection.LEFT}
-    //   id={`menuPanel${stackId}`}
-    //   isInitOpen={isInitOpen}
-    // >
-    //   <Wrapper>
-    //     <ButtonsWrapper>
-    //       {panels.map((panel, idx) => {
-    //         return (
-    //           <MenuHeaderButton
-    //             key={`headerB${idx}`}
-    //             onClick={() => {
-    //               activePanel !== idx ? setActivePanel(idx) : null;
-    //             }}
-    //             linkedPanel={idx}
-    //             activePanel={activePanel}
-    //           >
-    //             {panel.props.title}
-    //           </MenuHeaderButton>
-    //         );
-    //       })}
-    //     </ButtonsWrapper>
-    //     <PanelsWrapper>{panels[activePanel]?.children}</PanelsWrapper>
-    //   </Wrapper>
-    // </DragPanel>
   );
 }

@@ -1,9 +1,6 @@
-import BaseComponent from './abstract/BaseComponent';
-import me from 'math-expressions';
-import { normalizeIndex } from "../utils/table";
-import { textToAst } from '../utils/math';
+import BlockComponent from './abstract/BlockComponent';
 
-export default class Tabular extends BaseComponent {
+export default class Tabular extends BlockComponent {
   static componentType = "tabular";
   static rendererType = "tabular";
   static renderChildren = true;

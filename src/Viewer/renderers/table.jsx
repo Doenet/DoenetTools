@@ -31,17 +31,16 @@ export default class Table extends DoenetRenderer {
       title = this.doenetSvData.title;
     }
 
-    if (!this.doenetSvData.suppressTableNameInTitle) {
-      let tableName = <strong>Table {this.doenetSvData.tableEnumeration}</strong>
+    if (!this.doenetSvData.suppressTableNameInCaption) {
+      let tableName = <strong>{this.doenetSvData.tableName}</strong>
       if (title) {
         title = <>{tableName}: {title}</>
       } else {
         title = tableName;
       }
-
     }
 
-    heading = <div id={{ id: this.componentName + "_title" }}>{title}</div>
+    heading = <div id={this.componentName + "_title"}>{title}</div>
 
     return <div id={this.componentName} >
       <a name={this.componentName} />

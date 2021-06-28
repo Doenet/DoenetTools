@@ -1,12 +1,20 @@
 import React, {useEffect, useRef} from "react";
 import {basicSetup} from "@codemirror/basic-setup";
-import {EditorState, Transaction } from "@codemirror/state";
+import {EditorState, Transaction, StateEffect} from "@codemirror/state";
 import {EditorView, keymap} from "@codemirror/view";
 import {styleTags, tags as t} from "@codemirror/highlight"
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
-import {parser} from "../../Parser/doenet"
+import {completeFromSchema} from '@codemirror/lang-xml';
+import {parser} from "../../Parser/doenet";
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import { atom, useRecoilState } from "recoil";
 
+const matchTagState = atom({
+    key: 'matchTagState',
+    default: false,
+});
 export default function CodeMirror(props){
+    let [matchTagEnabled, setMatchTagEnabled] = useRecoilState(matchTagState);
     let view = props.editorRef;
     let parent = useRef(null);
 
@@ -27,13 +35,14 @@ export default function CodeMirror(props){
     function matchTag(tr){
         const cursorPos = tr.newSelection.main.from;
         //if we may be closing an OpenTag
-        if(tr.annotation(Transaction.userEvent) == "input" && tr.newDoc.sliceString(cursorPos-1,cursorPos) === ">"){ //TODO check if resolve finds the correct node
+        if(tr.annotation(Transaction.userEvent) == "input" && tr.newDoc.sliceString(cursorPos-1,cursorPos) === ">"){
             //check to se if we are actually closing an OpenTag
             let node = syntaxTree(tr.state).resolve(cursorPos,-1);
             if(node.name !== "OpenTag") {
                 return tr;
             }
-            let tagNameNode = node.firstChild;
+            //first node is the StartTag
+            let tagNameNode = node.firstChild.nextSibling;
             let tagName = tr.newDoc.sliceString(tagNameNode.from,tagNameNode.to);
 
             //an ineffecient hack to make it so the modified document is saved directly after tagMatch
@@ -69,6 +78,10 @@ export default function CodeMirror(props){
                     return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (closed ? 0 : context.unit)
                 },
                 "OpenTag CloseTag SelfClosingTag"(context) {
+
+                    if(context.node.firstChild.name == "TagName" ){
+                        return context.column(context.node.from) 
+                    }
                     return context.column(context.node.from) + context.unit
                 }
               }),
@@ -85,7 +98,9 @@ export default function CodeMirror(props){
                 Text: t.content,
                 TagName: t.tagName,
                 MismatchedCloseTag: t.invalid,
-                "MismatchedCloseTag/TagNamed": t.invalid,
+                "StartTag StartCloseTag EndTag SelfCloseEndTag": t.angleBracket,
+                "MismatchedCloseTag/TagName": [t.tagName,t.invalid],
+                "MismatchedCloseTag/StartCloseTag": t.invalid,
                 AttributeName: t.propertyName,
                 Is: t.definitionOperator,
                 "EntityReference CharacterReference": t.character,
@@ -98,26 +113,64 @@ export default function CodeMirror(props){
         parser: parserWithMetadata,
         languageData: {
             commentTokens: {block: {open: "<!--", close: "-->"}},
-            indentOnInput: /^\s*<\/.+>$/
+            indentOnInput: /^\s*<\/$/
         }
     });
 
-    const doenet = new LanguageSupport(doenetLanguage, []);
+    const doenet = (conf) => new LanguageSupport(doenetLanguage, doenetLanguage.data.of({
+        autocomplete: completeFromSchema(conf.elements || [], conf.attributes || [])
+    }));
+
+    const doenetSchema = {
+        //TODO update schema to be more complete.
+        elements: [
+            // {
+            //     name: "p",
+            // },
+            // {
+            //     name: "div",
+            // },
+            // {
+            //     name: "mathInput",
+            //     children: [],
+            //     attributes: [{name: "TEST"}]
+            // }
+        ]
+    }
+
+    const doenetExtensions = [
+        basicSetup,
+        doenet(doenetSchema),
+        EditorView.lineWrapping,
+        tabExtension,
+        EditorState.changeFilter.of(changeFunc)
+    ]
 
     const state = EditorState.create({
         doc : props.value,
-        extensions: [
-            basicSetup,
-            doenet,
-            EditorView.lineWrapping,
-            tabExtension,
-            EditorState.transactionFilter.of(matchTag),
-            EditorState.changeFilter.of(changeFunc)
-        ]
+        extensions: doenetExtensions
+        
     });
 
+    //should rewrite using compartments once a more formal config component is established
+    function toggleMatchTag(){
+        if(matchTagEnabled){
+            view.current.dispatch({
+                effects: StateEffect.reconfigure.of(doenetExtensions)
+              });
+              setMatchTagEnabled(false);
+        } else{
+            view.current.dispatch({
+                effects: StateEffect.appendConfig.of(EditorState.transactionFilter.of(matchTag))
+            });
+            setMatchTagEnabled(true);
+        }
+    }
 
     return (
+        <>
+        <ToggleButton value="Enable matching tags" switch_value="Disable matching tags" callback={toggleMatchTag}/>
         <div ref={parent} ></div>
+        </>
     )
 }

@@ -11,9 +11,11 @@ const ContentWrapper = styled.div`
   // border-radius: 0 0 4px 4px;
   overflow: auto;
 `;
+
 const ControlsWrapper = styled.div`
   grid-area: mainControls;
   display: flex;
+  flex-direction: row;
   gap: 4px;
   background-color: hsl(0, 0%, 99%);
   // border-radius: 4px 4px 0 0;
@@ -30,12 +32,24 @@ border: none;
 display: inline-block;
 `;
 
-export default function MainPanel({ children, setMenuPanelsOpen, displayProfile }) {
-
+export default function MainPanel({ headerControls, headerControlsPositions, children, setMenuPanelsOpen, displayProfile }) {
+console.log(">>>main panel controls",headerControls,headerControlsPositions) 
+  const controls = [];
+  if (displayProfile){
+    controls.push(<OpenButton key='openbutton' onClick={()=>setMenuPanelsOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton>)
+    controls.push(<Profile key='profile'/>)
+  }
+  if (headerControls){
+    for (const [i,control] of Object.entries(headerControls)){
+      const position = headerControlsPositions[i]
+      console.log(">>>position",position)
+      controls.push(<span key={`headControl${i}`}>{control}</span>)
+    }
+  }
   return (
     <>
       <ControlsWrapper>
-        {displayProfile ? <><OpenButton onClick={()=>setMenuPanelsOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton><Profile /></> : null} 
+      {controls}
       </ControlsWrapper>
       <ContentWrapper>{children}</ContentWrapper>
     </>
