@@ -48,12 +48,21 @@ const sockets = atomFamily({
   dangerouslyAllowMutability: true,
 });
 
+/**
+ * Hook access to realtime sockets, supports conection to drive and chat
+ *
+ * @param {string} nsp namespace connect to
+ */
 export default function useSockets(nsp) {
   const [addToast, ToastType] = useToast();
   const [namespace] = useState(nsp);
   const socket = useRecoilValue(sockets(namespace));
   // const { addItem, onAddItemError, deleteItem, onDeleteItemError} = useDriveBindings()
 
+  /**
+   * create and add a new folder or doenetML
+   *
+   */
   const addItem = useRecoilCallback(
     ({ snapshot }) =>
       async ({
@@ -152,6 +161,18 @@ export default function useSockets(nsp) {
     }
   });
 
+  const acceptDelete = useRecoilCallback(({ set }) => (payload, newFInfo) => {
+    set(
+      folderDictionary({
+        driveId: payload.driveId,
+        folderId: payload.parentFolderId,
+      }),
+      newFInfo,
+    );
+    let itemInfo = 'todo';
+    addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
+  });
+
   const deleteItem = useRecoilCallback(
     ({ snapshot, set }) =>
       async ({ driveIdFolderId, driveInstanceId = null, itemId }) => {
@@ -199,13 +220,11 @@ export default function useSockets(nsp) {
           driveId: driveIdFolderId.driveId,
           itemId: itemId,
         };
-        let itemInfo = { label: 'todo' };
-        socket.emit('delete_doenetML', pdata, newFInfo, (resp) => {
-          if (resp.data.success) {
-            set(folderDictionary(driveIdFolderId), newFInfo);
-            addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
+        socket.emit('delete_doenetML', pdata, newFInfo, (respData) => {
+          if (respData.success) {
+            acceptDelete(pdata, newFInfo);
           } else {
-            onDeleteItemError({ errorMessage: resp.data.message });
+            onDeleteItemError({ errorMessage: respData.message });
           }
         });
       },
@@ -239,6 +258,10 @@ export default function useSockets(nsp) {
     bindings[namespace].map((bind) => {
       socket.on(bind.eventName, bind.callback);
     });
+    return () => {
+      console.log('>>>disconnect', namespace);
+      socket.disconnect();
+    };
   }, [bindings, socket, namespace]);
 
   return { addItem, onAddItemError, deleteItem, onDeleteItemError };

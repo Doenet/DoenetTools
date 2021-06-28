@@ -43,7 +43,6 @@ import Drive, {
   drivePathSyncFamily
 } from "../../_reactComponents/Drive/Drive";
 import { 
-  useDeleteItem,
   useRenameItem
 } from "../../_reactComponents/Drive/DriveActions";
 import { BreadcrumbContainer } from "../../_reactComponents/Breadcrumb";

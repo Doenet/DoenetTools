@@ -19,29 +19,25 @@
   axios.defaults.baseURL = 'http://apache/api/';
 
   chatSpace.use((socket, next) => {
-    //TODO: auth against central database instead of local
-    socket.data.profile = { screenName: 'remote-test-anon' };
-    next();
-    // axios
-    //   .get('loadProfile.php', {
-    //     headers: socket.handshake.headers,
-    //     params: {},
-    //   })
-    //   .then((resp) => {
-    //     if (resp.data.success === '1') {
-    //       if (resp.data.profile.signedIn === '1') {
-    //         socket.data.profile = resp.data.profile;
-    //         next();
-    //       } else {
-    //         next(new Error('Please sign in'));
-    //       }
-    //     } else {
-    //       next(new Error('PHP sever error'));
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     next(new Error(`Axios request error: ${error}`));
-    //   });
+    axios
+      .get('loadProfile.php', {
+        headers: socket.handshake.headers,
+      })
+      .then((resp) => {
+        if (resp.data.success === '1') {
+          if (resp.data.profile.signedIn === '1') {
+            socket.data.profile = resp.data.profile;
+            next();
+          } else {
+            next(new Error('Please sign in'));
+          }
+        } else {
+          next(new Error('PHP sever error'));
+        }
+      })
+      .catch((error) => {
+        next(new Error(`Axios request error: ${error}`));
+      });
   });
 
   chatSpace.on('connection', (socket) => {
