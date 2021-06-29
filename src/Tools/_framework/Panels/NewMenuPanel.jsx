@@ -164,6 +164,7 @@ const LoadingFallback = styled.div`
 `;
 
 export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
+console.log(">>>===MenuPanels")
 
   //These maintain the panels' state
   const viewPanels = useRef([])
@@ -173,9 +174,9 @@ export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], ini
   // const profilePicName = profile.profilePicture;
 
   const LazyObj = useRef({
-    TestControl:lazy(() => import('../MenuPanels/TestControl')),
-    ToastTest:lazy(() => import('../MenuPanels/ToastTest')),
-    SelectPanel:lazy(() => import('../MenuPanels/SelectPanel')),
+    TestControl:lazy(() => import('../Menus/TestControl')),
+    ToastTest:lazy(() => import('../Menus/ToastTest')),
+    SelectPanel:lazy(() => import('../Menus/SelectPanel')),
   }).current;
 
   let selectionPanel = null;

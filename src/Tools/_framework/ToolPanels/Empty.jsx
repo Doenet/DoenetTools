@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
 import { useHistory } from 'react-router';
 
-export default function DriveCards(props){
-  console.log(">>>===DriveCards")
+export default function Empty(props){
+  console.log(">>>===Empty")
   // const [count,setCount] = useState(0)
   // let history = useHistory();
-  return <div style={props.style}><h1>Drive Cards</h1>
-  <p>put Drive Cards here</p>
+  return <div style={props.style}>
 
   {/* <div><button onClick={()=>{setCount((was)=>was+1)}}>count {count}</button></div>
   <hr></hr>
