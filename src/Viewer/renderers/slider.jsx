@@ -4,6 +4,7 @@ import styled from "styled-components";
 import {Spring} from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button";
+import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
 
 const SliderContainer = styled.div`
     width: fit-content;
@@ -18,8 +19,8 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: #dddddd;
-  height: 5px;
+  background: #888888 ;
+  height: 1px;
   width: ${props => props.width};
 `;
 
@@ -30,28 +31,30 @@ const StyledValueLabel = styled.p`
 
 const StyledThumb = styled.div`
   width: 10px;
-  height: 15px;
-  border-radius: 3px;
+  height: 10px;
+  border-radius: 5px;
   position: relative;
-  top: -5px;
-  opacity: 0.8;
-  background: ${props => props.disabled ? "#404040" : "#002266"};
+  top: -3px;
+  opacity: 1;
+  background: ${props => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`};
   cursor: pointer;
 `;
 
 const Tick = styled.div`
     position: absolute;
-    border-left: solid #888888;
+    border-left: 2px solid  ${doenetLightGray};
     height: 10px;
-    width: 1px;
+    top:1px;
+    z-Index:-2;
     left: ${props => props.x};
 `;
 
 const Label = styled.p`
     position: absolute;
     left: ${props => props.x};
-    color: #888888;
-    font-size: 15px;
+    color: ${doenetComponentForegroundInactive};
+    font-size: 12px;
+    top:1px;
     user-select: none;
 `;
 
@@ -145,7 +148,7 @@ function findMaxValueWidth(points){
   let currWidth = points.reduce(function(a,b){
     return a.length > b.length ? a : b;
   });
-return currWidth.toString().length * 15;
+return currWidth.toString().length * 12;
 }
 
 function generateTextLabels (points, div_width,SVs) {
@@ -283,8 +286,8 @@ export default function Slider(props) {
             <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
                 {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
                 {SVs.showControls? <>
-                <Button value="Prev" style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled />
-                <Button value="Next" style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled />
+                <Button value="Prev"  callback = {(e)=>handlePrevious(e)} disabled />
+                <Button value="Next" callback = {(e)=>handleNext(e)} disabled />
 
                 </> : null}
             </div>
@@ -408,8 +411,8 @@ function handlePrevious(e) {
             {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
             {/* TODO */}
             {SVs.showControls? <>
-              <Button value="Prev" style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} data-cy="prevbutton" />  
-            <Button value="Next" style = {{float: "right", userSelect: "none"}} onClick = {handleNext} data-cy="nextbutton" />
+              <Button value="Prev"  callback = {(e)=>handlePrevious(e)} data-cy="prevbutton" ></Button>  
+              <Button value="Next" callback = {(e)=>handleNext(e)} data-cy="nextbutton" ></Button>
             </> : null}
         </div>
         <SubContainer2 onMouseDown = {handleDragEnter} onMouseUp = {handleDragExit} onMouseMove = {handleDragThrough} onMouseLeave = {handleDragExit} >
