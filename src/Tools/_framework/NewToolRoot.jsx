@@ -17,7 +17,7 @@ import GlobalFont from '../../_utils/GlobalFont';
 
 import MainPanel from './Panels/NewMainPanel';
 import SupportPanel from './Panels/NewSupportPanel';
-import MenuPanels from './Panels/MenuPanels';
+import MenuPanels from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 
@@ -72,39 +72,39 @@ export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
     toolName:"Init",
-    // curentMenuPanels:[],
-    // menuPanelsTitles:[],
-    // menuPanelsInitOpen:[],
+    // curentMenus:[],
+    // menusTitles:[],
+    // menusInitOpen:[],
     // currentMainPanel:"",
     // supportPanelOptions:[],
     // supportPanelTitles:[],
     // supportPanelIndex:0,
-    // hasNoMenuPanels: true,
+    // hasNoMenuPanel: true,
   }
 })
 
  // headerControls:["CloseProfileButton"],
 // headerControlsPositions:["Right"], 
-// hasNoMenuPanels: true,
+// hasNoMenuPanel: true,
 // toolHandler:"CourseToolHandler",
 
 let toolsObj = {
   home:{
     toolName:"Home",
-    curentMenuPanels:[],
-    menuPanelsTitles:[],
-    menuPanelsInitOpen:[],
+    curentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
     currentMainPanel:"HomePanel",
     supportPanelOptions:[],
     supportPanelTitles:[],
     supportPanelIndex:0,
-    hasNoMenuPanels: true,
+    hasNoMenuPanel: true,
   },
   course:{
     toolName:"Course",
-    curentMenuPanels:[],
-    menuPanelsTitles:[],
-    menuPanelsInitOpen:[],
+    curentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
     currentMainPanel:"DriveCards",
     supportPanelOptions:[],
     supportPanelTitles:[],
@@ -113,22 +113,22 @@ let toolsObj = {
   },
   content:{
     toolName:"Content",
-    curentMenuPanels:[],
-    menuPanelsTitles:[],
-    menuPanelsInitOpen:[],
+    curentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
     currentMainPanel:"Content",
     supportPanelOptions:[],
     supportPanelTitles:[],
     supportPanelIndex:0,
-    hasNoMenuPanels: true,
+    hasNoMenuPanel: true,
   },
   notfound:{
     toolName:"Notfound",
-    curentMenuPanels:[],
-    menuPanelsInitOpen:[],
+    curentMenus:[],
+    menusInitOpen:[],
     currentMainPanel:"NotFound",
     supportPanelOptions:[],
-    hasNoMenuPanels: true,
+    hasNoMenuPanel: true,
   }
 }
 
@@ -316,12 +316,12 @@ export default function ToolRoot(props){
   }
 
   let menuPanels = <MenuPanels hide={true} />;
-  if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanels){
-    menuPanels = <MenuPanels hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menuPanelsTitles} currentPanels={toolViewInfo.curentMenuPanels} initOpen={toolViewInfo.menuPanelsInitOpen}/>
+  if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanel){
+    menuPanels = <MenuPanels hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menusTitles} currentPanels={toolViewInfo.curentMenus} initOpen={toolViewInfo.menusInitOpen}/>
   }
 
   let profileInMainPanel = !menuPanelsOpen;
-  if (toolViewInfo.hasNoMenuPanels){
+  if (toolViewInfo.hasNoMenuPanel){
     profileInMainPanel = false;
   }
   return <ProfileContext.Provider value={profile.contents}>
