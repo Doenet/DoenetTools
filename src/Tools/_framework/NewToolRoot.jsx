@@ -71,7 +71,7 @@ export const searchParamAtomFamily = atomFamily({
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
-    toolName:"Init",
+    pageName:"Init",
     // curentMenus:[],
     // menusTitles:[],
     // menusInitOpen:[],
@@ -90,7 +90,7 @@ export const toolViewAtom = atom({
 
 let toolsObj = {
   home:{
-    toolName:"Home",
+    pageName:"Home",
     curentMenus:[],
     menusTitles:[],
     menusInitOpen:[],
@@ -101,7 +101,7 @@ let toolsObj = {
     hasNoMenuPanel: true,
   },
   course:{
-    toolName:"Course",
+    pageName:"Course",
     curentMenus:[],
     menusTitles:[],
     menusInitOpen:[],
@@ -112,7 +112,7 @@ let toolsObj = {
     toolHandler:"CourseToolHandler",
   },
   content:{
-    toolName:"Content",
+    pageName:"Content",
     curentMenus:[],
     menusTitles:[],
     menusInitOpen:[],
@@ -123,7 +123,7 @@ let toolsObj = {
     hasNoMenuPanel: true,
   },
   notfound:{
-    toolName:"Notfound",
+    pageName:"Notfound",
     curentMenus:[],
     menusInitOpen:[],
     currentMainPanel:"NotFound",
@@ -218,7 +218,8 @@ export default function ToolRoot(props){
   } 
 
   const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
-  if (toolViewInfo.toolName.toLowerCase() !== lcpath){
+  if (toolViewInfo.pageName.toLowerCase() !== lcpath){
+
   //Need to update path
     setTool(lcpath,props.route.location.pathname)
     return null;
@@ -226,7 +227,7 @@ export default function ToolRoot(props){
 
   let toolHandler = null;
   if (toolViewInfo.toolHandler){
-    const ToolHandlerKey = `${toolViewInfo.toolName}-${toolViewInfo.toolHandler}`;
+    const ToolHandlerKey = `${toolViewInfo.pageName}-${toolViewInfo.toolHandler}`;
     const handler = LazyToolHandlerObj[toolViewInfo.toolHandler];
     if (handler){
       toolHandler = <Suspense key={ToolHandlerKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
@@ -236,7 +237,7 @@ export default function ToolRoot(props){
    
   }
 
-   const MainPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.currentMainPanel}`;
+   const MainPanelKey = `${toolViewInfo.pageName}-${toolViewInfo.currentMainPanel}`;
    if (!mainPanelDictionary.current[MainPanelKey]){
     //Doesn't exist so make new Main Panel
     mainPanelArray.current.push(buildPanel({key:MainPanelKey,type:toolViewInfo.currentMainPanel,visible:true}))
@@ -286,7 +287,7 @@ export default function ToolRoot(props){
 
 
    if (toolViewInfo.supportPanelOptions && toolViewInfo.supportPanelOptions.length > 0){
-    const SupportPanelKey = `${toolViewInfo.toolName}-${toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
+    const SupportPanelKey = `${toolViewInfo.pageName}-${toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
     if (!supportPanelDictionary.current[SupportPanelKey]){
      //Doesn't exist so make new Support Panel
      supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex],visible:true}))
