@@ -17,7 +17,7 @@ import GlobalFont from '../../_utils/GlobalFont';
 
 import MainPanel from './Panels/NewMainPanel';
 import SupportPanel from './Panels/NewSupportPanel';
-import MenuPanels from './Panels/NewMenuPanel';
+import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 
@@ -316,9 +316,9 @@ export default function ToolRoot(props){
     supportPanel = <SupportPanel hide={false} panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
-  let menuPanels = <MenuPanels hide={true} />;
+  let menus = <MenuPanel hide={true} />;
   if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanel){
-    menuPanels = <MenuPanels hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menusTitles} currentPanels={toolViewInfo.curentMenus} initOpen={toolViewInfo.menusInitOpen}/>
+    menus = <MenuPanel hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menusTitles} currentPanels={toolViewInfo.curentMenus} initOpen={toolViewInfo.menusInitOpen}/>
   }
 
   let profileInMainPanel = !menuPanelsOpen;
@@ -328,7 +328,7 @@ export default function ToolRoot(props){
   return <ProfileContext.Provider value={profile.contents}>
     <GlobalFont key='globalfont' />
     <ToolContainer >
-      {menuPanels}
+      {menus}
       <ContentPanel 
       main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
