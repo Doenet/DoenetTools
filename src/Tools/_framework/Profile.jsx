@@ -40,7 +40,7 @@ export default function Profile(props){
 
     set(toolViewAtom,(was)=>{
       let newObj = {...was}
-      newObj.curentMenus = []
+      newObj.currentMenus = []
       newObj.menusInitOpen = []
       newObj.menusTitles = []
       newObj.currentMainPanel = "AccountSettings"
