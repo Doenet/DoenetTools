@@ -283,8 +283,9 @@ export default function Slider(props) {
             <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
                 {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
                 {SVs.showControls? <>
-                <Button value="Next" style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled />
                 <Button value="Prev" style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} disabled />
+                <Button value="Next" style = {{float: "right", userSelect: "none"}} onClick = {handleNext} disabled />
+
                 </> : null}
             </div>
             <SubContainer2>
@@ -407,8 +408,8 @@ function handlePrevious(e) {
             {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
             {/* TODO */}
             {SVs.showControls? <>
+              <Button value="Prev" style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} data-cy="prevbutton" />  
             <Button value="Next" style = {{float: "right", userSelect: "none"}} onClick = {handleNext} data-cy="nextbutton" />
-            <Button value="Prev" style = {{float: "right", userSelect: "none"}} onClick = {handlePrevious} data-cy="prevbutton" />  
             </> : null}
         </div>
         <SubContainer2 onMouseDown = {handleDragEnter} onMouseUp = {handleDragExit} onMouseMove = {handleDragThrough} onMouseLeave = {handleDragExit} >
