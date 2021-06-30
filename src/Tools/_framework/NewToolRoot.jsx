@@ -9,10 +9,8 @@ import {
 } from 'recoil';
 import styled from 'styled-components';
 import Toast from './Toast';
-// import { useMenuPanelController } from './Panels/MenuPanel';
 import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
-// import { GlobalStyle } from "../../Tools/DoenetStyle";
 import GlobalFont from '../../_utils/GlobalFont';
 
 import MainPanel from './Panels/NewMainPanel';
@@ -72,18 +70,17 @@ export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
     pageName:"Init",
-    // currentMenus:[],
-    // menusTitles:[],
-    // menusInitOpen:[],
-    // currentMainPanel:"",
-    // supportPanelOptions:[],
-    // supportPanelTitles:[],
-    // supportPanelIndex:0,
-    // hasNoMenuPanel: true,
   }
 })
-
- // headerControls:["CloseProfileButton"],
+// currentMenus:[],
+// menusTitles:[],
+// menusInitOpen:[],
+// currentMainPanel:"",
+// supportPanelOptions:[],
+// supportPanelTitles:[],
+// supportPanelIndex:0,
+// hasNoMenuPanel: true,
+// headerControls:["CloseProfileButton"],
 // headerControlsPositions:["Right"], 
 // hasNoMenuPanel: true,
 // toolHandler:"CourseToolHandler",
@@ -102,14 +99,6 @@ let toolsObj = {
   },
   course:{
     pageName:"Course",
-    // currentMenus:[],
-    // menusTitles:[],
-    // menusInitOpen:[],
-    // currentMainPanel:"DriveCards",
-    // currentMainPanel:"Empty",
-    // supportPanelOptions:[],
-    // supportPanelTitles:[],
-    // supportPanelIndex:0,
     toolHandler:"CourseToolHandler",
   },
   content:{
@@ -139,7 +128,6 @@ let toolsObj = {
 
 let encodeParams = p => Object.entries(p).map(kv => 
   kv.map(encodeURIComponent).join("=")).join("&");
-
    
 export default function ToolRoot(props){
   // console.log(">>>ToolRoot props",props) 
@@ -157,7 +145,9 @@ export default function ToolRoot(props){
 
   const setPage = useRecoilCallback(({set})=> (tool,origPath)=>{
     if (tool === ""){ 
-      location.href = `#home/`
+      // location.href = `#home/`
+      window.history.replaceState('','','/new#/home')
+
     }else{
       let newTool = toolsObj[tool];
   
@@ -174,8 +164,14 @@ export default function ToolRoot(props){
   })
 
   const setSearchParam = useRecoilCallback(({set,snapshot})=>(paramObj)=>{
+    //Track when tool isn't defined so the controlers get refreshed
+    let clearTool = true;
     for (const [key,value] of Object.entries(paramObj)){
+      if (key === 'tool'){clearTool = false;}
       set(searchParamAtomFamily(key),value)
+    }
+    if (clearTool){
+      set(searchParamAtomFamily('tool'),'')
     }
   })
 
@@ -364,19 +360,7 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-const layerStackAtom = atom({
-  key: 'layerStackAtom',
-  default: [],
-});
 
 
-export const useStackId = () => {
-  const getId = useRecoilCallback(({ snapshot }) => () => {
-    const currentId = snapshot.getLoadable(layerStackAtom);
-    return currentId.getValue().length;
-  });
-  const [stackId] = useState(() => getId());
-  return stackId;
-};
 
 
