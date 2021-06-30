@@ -1,13 +1,13 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
-// import { myselection } from '../ToolPanels/SelectStuff';
+import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler'
 
 export default function SelectedCourse(props){
 
-  // const selection = useRecoilValue(myselection);
-  let selection = 'to do'
+  const selection = useRecoilValue(drivecardSelectedNodesAtom);
+  // console.log(">>>selection",selection)
   return <>
-  <p>You have selected course {selection}</p>
+  <p>You have selected course '{selection}'</p>
   </>
 }
