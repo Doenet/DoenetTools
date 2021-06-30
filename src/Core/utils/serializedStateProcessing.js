@@ -893,11 +893,17 @@ function createEvaluateIfFindMatchedClosingParens({
     // recurse on pieces
     let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
 
-    let inputArray = pieces.map(x => ({
-      componentType: "math",
-      doenetAttributes: { createdFromMacro: true },
-      children: x
-    }))
+    let inputArray = pieces.map(x => {
+      if (x.length === 1 && x[0].componentType !== "string") {
+        return x[0]
+      } else {
+        return {
+          componentType: "math",
+          doenetAttributes: { createdFromMacro: true },
+          children: x
+        }
+      }
+    })
 
     let evaluateComponent = {
       componentType: "evaluate",
@@ -915,7 +921,6 @@ function createEvaluateIfFindMatchedClosingParens({
         }
       }
     }
-
 
     let replacements = [evaluateComponent];
 
@@ -1054,6 +1059,11 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             }
           }
 
+          let createdFromMacro = false;
+          if (component.doenetAttributes && component.doenetAttributes.createdFromMacro) {
+            createdFromMacro = true;
+          }
+
           let sugarResults = sugarInstruction.replacementFunction({
             matchedChildren,
             parentParametersFromSugar,
@@ -1061,7 +1071,8 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             componentAttributes,
             uniqueId: uniqueId + '|sugar' + sugarInd,
             componentInfoObjects,
-            isAttributeComponent: isAttributeComponent
+            isAttributeComponent,
+            createdFromMacro
           });
 
           // console.log("sugarResults")

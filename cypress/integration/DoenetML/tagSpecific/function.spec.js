@@ -1,3 +1,4 @@
+import me from 'math-expressions';
 import cssesc from 'cssesc';
 
 function cesc(s) {
@@ -1093,10 +1094,19 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
       let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
 
     })
   });
@@ -1117,10 +1127,84 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
       let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('symbolic function determined by formula via sugar', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function symbolic>
+    3/(1+e^(-x/2))
+    </function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(f('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('symbolic function determined by formula', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function symbolic formula="3/(1+e^(-x/2))" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(f('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
 
     })
   });
@@ -1131,7 +1215,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function variable="q">
+    <function variables="q">
       q^2 sin(pi q/2)/100
     </function>
 
@@ -1145,9 +1229,16 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(numericalf(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(numericalf(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('(-5)^2sin(pi(-5)/2)/100'))).eq(true)
+      expect(symbolicf(3).equals(me.fromText('(3)^2sin(pi(3)/2)/100'))).eq(true)
+      expect(symbolicf('p').equals(me.fromText('p^2sin(pi p/2)/100'))).eq(true)
 
     })
   });
@@ -1158,7 +1249,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function variable="q" formula="q^2 sin(pi q/2)/100" />
+    <function variables="q" formula="q^2 sin(pi q/2)/100" />
 
     </graph>
     `}, "*");
@@ -1170,9 +1261,16 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(numericalf(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(numericalf(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('(-5)^2sin(pi(-5)/2)/100'))).eq(true)
+      expect(symbolicf(3).equals(me.fromText('(3)^2sin(pi(3)/2)/100'))).eq(true)
+      expect(symbolicf('p').equals(me.fromText('p^2sin(pi p/2)/100'))).eq(true)
 
     })
   });
@@ -1183,7 +1281,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function variable="u">
+    <function variables="u">
       log(2u)
     </function>
     <point x="-3" y="5">
@@ -2175,10 +2273,10 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <function variable="t" name="f">t^3</function>
+    <function variables="t" name="f">t^3</function>
 
     <function name="f2"><copy tname="f"/></function>
-    <function name="f3" variable="s"><copy tname="f"/></function>
+    <function name="f3" variables="s"><copy tname="f"/></function>
 
     <copy name="f4" tname="f"/>
     <copy name="f5" tname="f2"/>
@@ -2229,12 +2327,12 @@ describe('Function Tag Tests', function () {
 
       cy.window().then((win) => {
 
-        expect(components["/f"].stateValues.variable.tree).eq('t');
-        expect(components["/f2"].stateValues.variable.tree).eq('t');
-        expect(components["/f3"].stateValues.variable.tree).eq('t');
-        expect(components["/f4"].replacements[0].stateValues.variable.tree).eq('t');
-        expect(components["/f5"].replacements[0].stateValues.variable.tree).eq('t');
-        expect(components["/f6"].replacements[0].stateValues.variable.tree).eq('t');
+        expect(components["/f"].stateValues.variables[0].tree).eq('t');
+        expect(components["/f2"].stateValues.variables[0].tree).eq('t');
+        expect(components["/f3"].stateValues.variables[0].tree).eq('t');
+        expect(components["/f4"].replacements[0].stateValues.variables[0].tree).eq('t');
+        expect(components["/f5"].replacements[0].stateValues.variables[0].tree).eq('t');
+        expect(components["/f6"].replacements[0].stateValues.variables[0].tree).eq('t');
 
         expect(components["/f"].stateValues.formula.tree).eqls(["^", "t", 3]);
         expect(components["/f2"].stateValues.formula.tree).eqls(["^", "t", 3]);
@@ -2351,5 +2449,254 @@ describe('Function Tag Tests', function () {
 
   });
 
+  it('function determined by formula, specify 1 input', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function nInputs="1" formula="3/(1+e^(-x/2))" />
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function of two variables determined by formula', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function nInputs="2" formula="3/(y+e^(-x/2))" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(2);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5, 7).equals(me.fromText('3/(7+e^(5/2))'))).eq(true)
+      expect(symbolicf(1, 4).equals(me.fromText('3/(4+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z', 'a').equals(me.fromText('3/(a+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function of two variables determined by formula, specify variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function nInputs="2" variables="q r" formula="3/(r+e^(-q/2))" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(2);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5, 7).equals(me.fromText('3/(7+e^(5/2))'))).eq(true)
+      expect(symbolicf(1, 4).equals(me.fromText('3/(4+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z', 'a').equals(me.fromText('3/(a+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function of two variables determined by formula, specify variables, no nInputs specified', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="q r" formula="3/(r+e^(-q/2))" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(2);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5, 7).equals(me.fromText('3/(7+e^(5/2))'))).eq(true)
+      expect(symbolicf(1, 4).equals(me.fromText('3/(4+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z', 'a').equals(me.fromText('3/(a+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function of three variables determined by formula', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function nInputs="3" formula="z/(y+e^(-x/2))" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(3);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5, 7, -2).equals(me.fromText('-2/(7+e^(5/2))'))).eq(true)
+      expect(symbolicf(1, 4, -9).equals(me.fromText('-9/(4+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z', 'a', 'u').equals(me.fromText('u/(a+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function of three variables determined by formula, specify variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="q r s" formula="s/(r+e^(-q/2))" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(3);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5, 7, -2).equals(me.fromText('-2/(7+e^(5/2))'))).eq(true)
+      expect(symbolicf(1, 4, -9).equals(me.fromText('-9/(4+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z', 'a', 'u').equals(me.fromText('u/(a+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function of four variables determined by formula', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function nInputs="4" formula="x_3/(x_2+e^(-x_1/2))+x_4" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(4);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
+      expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
+      expect(numericalf(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
+      expect(numericalf(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
+      expect(symbolicf(-5, 7, -2, 6).equals(me.fromText('-2/(7+e^(5/2))+6'))).eq(true)
+      expect(symbolicf(1, 4, -9, -8).equals(me.fromText('-9/(4+e^(-1/2))-8'))).eq(true)
+      expect(symbolicf('z', 'a', 'u', 'p').equals(me.fromText('u/(a+e^(-z/2))+p'))).eq(true)
+
+    })
+  });
+
+  it('function of four variables determined by formula, specify some variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function nInputs="4" variables="x y z" formula="z/(y+e^(-x/2))+x_4" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(4);
+
+      let f = components['/_function1'].stateValues.f;
+      let numericalf = components['/_function1'].stateValues.numericalf;
+      let symbolicf = components['/_function1'].stateValues.symbolicf;
+
+      expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
+      expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
+      expect(numericalf(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
+      expect(numericalf(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
+      expect(symbolicf(-5, 7, -2, 6).equals(me.fromText('-2/(7+e^(5/2))+6'))).eq(true)
+      expect(symbolicf(1, 4, -9, -8).equals(me.fromText('-9/(4+e^(-1/2))-8'))).eq(true)
+      expect(symbolicf('z', 'a', 'u', 'p').equals(me.fromText('u/(a+e^(-z/2))+p'))).eq(true)
+
+    })
+  });
 
 });

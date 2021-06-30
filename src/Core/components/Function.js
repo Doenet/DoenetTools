@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { normalizeMathExpression } from '../utils/math';
+import { normalizeMathExpression, returnNVariables } from '../utils/math';
 import { returnDefaultStyleDefinitions } from '../utils/style';
 
 export default class Function extends InlineComponent {
@@ -9,7 +9,8 @@ export default class Function extends InlineComponent {
 
   static get stateVariablesShadowedForReference() {
     return [
-      "variable", "numericalf", "symbolicf", "symbolic",
+      "variables", "numericalf", "symbolicf", "symbolic",
+      "nInputs", "nOutputs",
       "isInterpolatedFunction", "formula",
       "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema"
     ]
@@ -48,6 +49,16 @@ export default class Function extends InlineComponent {
       defaultValue: 1,
       public: true,
       propagateToDescendants: true,
+    };
+    attributes.nInputs = {
+      createComponentOfType: "integer",
+    };
+    attributes.nOutputs = {
+      createComponentOfType: "integer",
+      createStateVariable: "nOutputs",
+      defaultValue: 1,
+      clamp: [0, Infinity],
+      public: true,
     };
 
     // include attributes of graphical components
@@ -95,8 +106,8 @@ export default class Function extends InlineComponent {
     attributes.throughSlopes = {
       createComponentOfType: "mathList"
     }
-    attributes.variable = {
-      createComponentOfType: "variable"
+    attributes.variables = {
+      createComponentOfType: "variables"
     }
     attributes.symbolic = {
       createComponentOfType: "boolean"
@@ -212,6 +223,84 @@ export default class Function extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.nInputs = {
+      defaultValue: 1,
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        nInputsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nInputs",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["nInputs"]
+        },
+        variablesAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "variables",
+          variableNames: ["nComponents"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              nInputs: dependencyValues.functionChild[0].stateValues.nInputs
+            }
+          }
+        } else if (dependencyValues.nInputsAttr !== null) {
+          let nInputs = dependencyValues.nInputsAttr.stateValues.value;
+          if (!(nInputs >= 0)) {
+            nInputs = 1;
+          }
+          return { newValues: { nInputs } };
+        } else if (dependencyValues.variablesAttr !== null) {
+          return { newValues: { nInputs: dependencyValues.variablesAttr.stateValues.nComponents } }
+        } else {
+          return { useEssentialOrDefaultValue: { nInputs: { variablesToCheck: ["nInputs"] } } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.nOutputs = {
+      defaultValue: 1,
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        nOutputsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nOutputs",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["nOutputs"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              nOutputs: dependencyValues.functionChild[0].stateValues.nOutputs
+            }
+          }
+        } else if (dependencyValues.nOutputsAttr !== null) {
+          let nOutputs = dependencyValues.nOutputsAttr.stateValues.value;
+          if (!(nOutputs >= 0)) {
+            nOutputs = 1;
+          }
+          return { newValues: { nOutputs } };
+        } else {
+          return { useEssentialOrDefaultValue: { nOutputs: { variablesToCheck: ["nOutputs"] } } }
+        }
+      }
+    }
+
+
     stateVariableDefinitions.numericalfShadow = {
       defaultValue: null,
       returnDependencies: () => ({}),
@@ -302,51 +391,90 @@ export default class Function extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.variable = {
+    stateVariableDefinitions.variables = {
+      isArray: true,
       public: true,
       componentType: "variable",
-      defaultValue: me.fromAst("x"),
-      returnDependencies: () => ({
-        variableAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "variable",
-          variableNames: ["value"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneFunction",
-          variableNames: ["variable"],
-        },
-        parentVariableForChild: {
-          dependencyType: "parentStateVariable",
-          variableName: "variableForChild"
-        },
-        isInterpolatedFunction: {
+      entryPrefixes: ["variable"],
+      returnArraySizeDependencies: () => ({
+        nInputs: {
           dependencyType: "stateVariable",
-          variableName: "isInterpolatedFunction"
-        }
+          variableName: "nInputs",
+        },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
-        if (dependencyValues.isInterpolatedFunction) {
-          return { newValues: { variable: me.fromAst('\uff3f') } };
-        } else if (dependencyValues.functionChild.length === 1) {
-          if (dependencyValues.variableAttr !== null) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nInputs];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          variablesAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "variables",
+            variableNames: ["variables"],
+          },
+          parentVariableForChild: {
+            dependencyType: "parentStateVariable",
+            variableName: "variableForChild"
+          },
+          isInterpolatedFunction: {
+            dependencyType: "stateVariable",
+            variableName: "isInterpolatedFunction"
+          },
+          functionChild: {
+            dependencyType: "child",
+            childLogicName: "atMostOneFunction",
+          },
+        };
+
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            functionChild: {
+              dependencyType: "child",
+              childLogicName: "atMostOneFunction",
+              variableNames: ["variable" + (Number(arrayKey) + 1)],
+            },
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arraySize, arrayKeys, usedDefault }) {
+        if (globalDependencyValues.isInterpolatedFunction) {
+          return { newValues: { variables: Array(arraySize[0]).fill(me.fromAst('\uff3f')) } };
+        } else if (globalDependencyValues.functionChild.length === 1) {
+          if (globalDependencyValues.variablesAttr !== null) {
             console.warn("Variable for function is ignored when it has a function child")
           }
-          return { newValues: { variable: dependencyValues.functionChild[0].stateValues.variable } }
-        } else if (dependencyValues.variableAttr !== null) {
-          return { newValues: { variable: dependencyValues.variableAttr.stateValues.value } }
-        } else if (dependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
-          return { newValues: { variable: dependencyValues.parentVariableForChild } }
+          let variables = {};
+          for (let arrayKey of arrayKeys) {
+            variables[arrayKey] = dependencyValuesByKey[arrayKey].functionChild[0]
+              .stateValues["variable" + (Number(arrayKey) + 1)];
+          }
+          return { newValues: { variables } }
+        } else if (globalDependencyValues.variablesAttr !== null) {
+          let variablesSpecified = globalDependencyValues.variablesAttr.stateValues.variables;
+          return {
+            newValues: {
+              variables: returnNVariables(arraySize[0], variablesSpecified)
+            }
+          }
+        } else if (globalDependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
+          return { newValues: { variables: Array(arraySize[0]).fill(globalDependencyValues.parentVariableForChild) } }
         } else {
           return {
-            useEssentialOrDefaultValue: {
-              variable: { variablesToCheck: ["variable"] }
+            newValues: {
+              variables: returnNVariables(arraySize[0], [])
             }
           }
         }
       }
     }
+
+    stateVariableDefinitions.variable = {
+      isAlias: true,
+      targetVariableName: "variable1"
+    };
 
     stateVariableDefinitions.formula = {
       public: true,
@@ -629,9 +757,13 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "formula",
             },
-            variable: {
+            variables: {
               dependencyType: "stateVariable",
-              variableName: "variable",
+              variableName: "variables",
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs",
             },
             functionChild: {
               dependencyType: "child",
@@ -694,7 +826,7 @@ export default class Function extends InlineComponent {
             newValues: {
               symbolicf: function (x) {
                 let input = x.evaluate_to_constant();
-                if(input === null) {
+                if (input === null) {
                   return NaN;
                 }
                 return me.fromAst(dependencyValues.numericalfShadow(input))
@@ -741,9 +873,13 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "formula",
             },
-            variable: {
+            variables: {
               dependencyType: "stateVariable",
-              variableName: "variable",
+              variableName: "variables",
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs",
             },
             functionChild: {
               dependencyType: "child",
@@ -909,7 +1045,16 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
-            }
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs"
+            },
+            nOutputs: {
+              dependencyType: "stateVariable",
+              variableName: "nOutputs"
+            },
+
           }
         }
       },
@@ -1056,6 +1201,11 @@ export default class Function extends InlineComponent {
           }
 
           // no function child
+
+          // calculate only for functions from R -> R
+          if (!(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)) {
+            return [];
+          }
 
           let f = dependencyValues.numericalf;
 
@@ -1276,6 +1426,14 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs"
+            },
+            nOutputs: {
+              dependencyType: "stateVariable",
+              variableName: "nOutputs"
             }
           }
         }
@@ -1423,6 +1581,11 @@ export default class Function extends InlineComponent {
           }
 
           // no function child
+
+          // calculate only for functions from R -> R
+          if (!(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)) {
+            return [];
+          }
 
           let f = (x) => -dependencyValues.numericalf(x);
 
@@ -1856,28 +2019,45 @@ export default class Function extends InlineComponent {
 export function returnSymbolicFunctionFromFormula(dependencyValues) {
 
   let formula = dependencyValues.formula;
-  let varString = dependencyValues.variable.tree;
+  let varStrings = [];
+  for (let i = 0; i < dependencyValues.nInputs; i++) {
+    varStrings.push(dependencyValues.variables[i].subscripts_to_strings().tree)
+  }
   let simplify = dependencyValues.simplify;
   let expand = dependencyValues.expand;
-  return (x) => normalizeMathExpression({
-    value: formula.substitute({ [varString]: x }),
-    simplify,
-    expand
-  })
+  let formula_transformed = formula.subscripts_to_strings();
+  return function (...xs) {
+    let subArgs = {}
+    for (let i = 0; i < dependencyValues.nInputs; i++) {
+      subArgs[varStrings[i]] = xs[i];
+    }
+    return normalizeMathExpression({
+      value: formula_transformed.substitute(subArgs).strings_to_subscripts(),
+      simplify,
+      expand
+    })
+  }
 }
 
 export function returnNumericalFunctionFromFormula(dependencyValues) {
 
   let formula_f;
   try {
-    formula_f = dependencyValues.formula.f();
+    formula_f = dependencyValues.formula.subscripts_to_strings().f();
   } catch (e) {
     formula_f = () => NaN;
   }
-  let varString = dependencyValues.variable.tree;
-  return function (x) {
+  let varStrings = [];
+  for (let i = 0; i < dependencyValues.nInputs; i++) {
+    varStrings.push(dependencyValues.variables[i].subscripts_to_strings().tree)
+  }
+  return function (...xs) {
+    let fArgs = {}
+    for (let i = 0; i < dependencyValues.nInputs; i++) {
+      fArgs[varStrings[i]] = xs[i];
+    }
     try {
-      return formula_f({ [varString]: x });
+      return formula_f(fArgs);
     } catch (e) {
       return NaN;
     }

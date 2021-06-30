@@ -67,7 +67,7 @@ export default class Evaluate extends MathComponent {
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
-            variableNames: ["symbolicf", "numericalf", "symbolic"],
+            variableNames: ["symbolicf", "numericalf", "symbolic", "nInputs"],
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
@@ -84,7 +84,8 @@ export default class Evaluate extends MathComponent {
 
         if (!(dependencyValues.functionAttr
           && dependencyValues.inputAttr
-          && dependencyValues.inputAttr.stateValues.nComponents > 0
+          && dependencyValues.inputAttr.stateValues.nComponents
+          === dependencyValues.functionAttr.stateValues.nInputs
         )) {
 
           return {
@@ -96,10 +97,8 @@ export default class Evaluate extends MathComponent {
         }
 
 
-        // TODO: for now just take the first input
-        // generalize to functions of multiple variables
 
-        let input = dependencyValues.inputAttr.stateValues.maths[0];
+        let input = dependencyValues.inputAttr.stateValues.maths;
 
         let unnormalizedValue;
 
@@ -107,14 +106,12 @@ export default class Evaluate extends MathComponent {
         if (!dependencyValues.forceNumeric &&
           (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic)
         ) {
-          unnormalizedValue = functionComp.stateValues.symbolicf(input);
+          unnormalizedValue = functionComp.stateValues.symbolicf(...input);
         } else {
-          let numericInput = input.evaluate_to_constant();
-          if (numericInput === null) {
-            numericInput = NaN;
-          }
+          let numericInput = input.map(x => x.evaluate_to_constant())
+            .map(x => x === null ? NaN : x);
 
-          unnormalizedValue = me.fromAst(functionComp.stateValues.numericalf(numericInput))
+          unnormalizedValue = me.fromAst(functionComp.stateValues.numericalf(...numericInput))
 
         }
 

@@ -57,8 +57,8 @@ export default class MathList extends InlineComponent {
     let breakStringsIntoMathsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({componentType: "math"});
 
     sugarInstructions.push({
-      replacementFunction: function ({ matchedChildren, isAttributeComponent = false }) {
-        if (isAttributeComponent) {
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+        if (isAttributeComponent && !createdFromMacro) {
           return groupIntoMathsSeparatedBySpaces({ matchedChildren });
         } else {
           return breakStringsIntoMathsBySpaces({ matchedChildren })
