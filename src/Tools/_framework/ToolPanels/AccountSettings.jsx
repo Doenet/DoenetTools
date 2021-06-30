@@ -5,5 +5,6 @@ export default function AccountSettings(props){
   
   return <div style={props.style}><h1>Account Settings</h1>
   <p>put account settings here</p>
+  <button>Sign Out</button>
   </div>
 }

@@ -130,7 +130,7 @@ function SelectionMenuPanel(props){
   </>
 }
 
-function MenuPanel(props){
+function Menu(props){
   let isInitOpen = props.isInitOpen;
   if (!isInitOpen){isInitOpen = false;}
   let [isOpen,setIsOpen] = useState(isInitOpen);
@@ -163,56 +163,53 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
+export default function MenuPanel({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
+console.log(">>>===MenuPanel")
 
   //These maintain the panels' state
-  const viewPanels = useRef([])
-  const currentSelectedPanel = useRecoilValue(selectedMenuPanelAtom);
+  const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
 
   const LazyObj = useRef({
-    TestControl:lazy(() => import('../MenuPanels/TestControl')),
-    ToastTest:lazy(() => import('../MenuPanels/ToastTest')),
-    SelectPanel:lazy(() => import('../MenuPanels/SelectPanel')),
+    SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
+    CreateCourse:lazy(() => import('../Menus/CreateCourse')),
+    CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
   }).current;
 
   let selectionPanel = null;
-  if (currentSelectedPanel){
-    const panelToUse = LazyObj[currentSelectedPanel];
+  if (currentSelectionMenu){
+    const panelToUse = LazyObj[currentSelectionMenu];
     //protect from typos
     if (panelToUse){
-      const key = `SelectionMenuPanel${currentSelectedPanel}`
+      const key = `SelectionMenuPanel${currentSelectionMenu}`
       selectionPanel = <SelectionMenuPanel key={key}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
       {React.createElement(panelToUse,{key})}
       </Suspense></SelectionMenuPanel>
     }
   }
 
-  function buildMenuPanel({key,type,title,visible,initOpen}){
-    // console.log(">>>build",{key,type,visible})
+  function buildMenu({key,type,title,visible,initOpen}){
     let hideStyle = null;
     if (!visible){
       hideStyle = 'none';
     }
     
     // {React.createElement(LazyObj[type],{key,style:{color: "red", backgroundColor: "blue"}})}
-    return <MenuPanel key={key} title={title} isInitOpen={initOpen}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+    return <Menu key={key} title={title} isInitOpen={initOpen} style={{display:hideStyle}}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
     {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
-    </Suspense></MenuPanel>
+    </Suspense></Menu>
   } 
 
- 
-  if (viewPanels.current.length === 0 && currentPanels.length > 0){
+  let toolMenus = []
     for (let [i,panelName] of Object.entries(currentPanels)){
-        const mpKey = `${panelName}`;
+        const mKey = `${panelName}`;
         const isOpen = initOpen[i]
         const title = panelTitles[i]
 
-    viewPanels.current.push(buildMenuPanel({key:mpKey,type:panelName,title,visible:true,initOpen:isOpen}))
+    toolMenus.push(buildMenu({key:mKey,type:panelName,title,visible:true,initOpen:isOpen}))
     }
-  }
 
   
   return (
@@ -232,14 +229,15 @@ export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], ini
           <CloseButton onClick={()=>setMenuPanelsOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
         </span>
         
-          {/* {anchor} */}
+          {/* {anchorImage} */}
       </MenuPanelsCap>
     {selectionPanel}
-    {viewPanels.current}
+    {toolMenus}
+
     {/* {userPanels} */}
-    <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
+    {/* <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
       <EditMenuPanels onClick={()=>console.log('>>>edit menu panels')}>+</EditMenuPanels>
-    </div>
+    </div> */}
 
     </MenuPanelsWrapper>
   );

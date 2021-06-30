@@ -13,6 +13,7 @@ export function parse(inText) {
  * @param {string} inText
  */
 //TODO skip comments
+//TODO accomdate Is, StartTag and StartCloseTag no longer being ignored
 export function parseAndCompile(inText){
     function compileElement(cursor){
         if(cursor.name != "Element"){
