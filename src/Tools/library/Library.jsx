@@ -51,7 +51,7 @@ import DriveCards from "../../_reactComponents/Drive/DriveCards";
 import "../../_reactComponents/Drive/drivecard.css";
 import DoenetDriveCardMenu from "../../_reactComponents/Drive/DoenetDriveCardMenu";
 import '../../_utils/util.css';
-import GlobalFont from '../../_utils/GlobalFont';
+// import GlobalFont from '../../_utils/GlobalFont';
 import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper , ProfileContext } from '../_framework/ToolRoot';
@@ -945,7 +945,7 @@ export default function Library(props) {
 
   if (profile.signedIn === "0" && !window.Cypress){
     return (<>
-     <GlobalFont/>
+     {/* <GlobalFont/> */}
     <Tool>
 
       <headerPanel title="Library">
@@ -992,7 +992,7 @@ export default function Library(props) {
 
   return (
     <>
-    <GlobalFont/>
+    {/* <GlobalFont/> */}
     <URLPathSync route={props.route}/>
     <Tool>
       <navPanel isInitOpen>
