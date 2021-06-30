@@ -9,10 +9,8 @@ import {
 } from 'recoil';
 import styled from 'styled-components';
 import Toast from './Toast';
-// import { useMenuPanelController } from './Panels/MenuPanel';
 import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
-// import { GlobalStyle } from "../../Tools/DoenetStyle";
 import GlobalFont from '../../_utils/GlobalFont';
 
 import MainPanel from './Panels/NewMainPanel';
@@ -364,19 +362,7 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-const layerStackAtom = atom({
-  key: 'layerStackAtom',
-  default: [],
-});
 
 
-export const useStackId = () => {
-  const getId = useRecoilCallback(({ snapshot }) => () => {
-    const currentId = snapshot.getLoadable(layerStackAtom);
-    return currentId.getValue().length;
-  });
-  const [stackId] = useState(() => getId());
-  return stackId;
-};
 
 

@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import {
-  atomFamily,
   atom,
-  selectorFamily,
   selector,
   useRecoilCallback,
   useRecoilValue,
@@ -11,7 +9,7 @@ import {
 } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGripLinesVertical } from '@fortawesome/free-solid-svg-icons';
-import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/Drive';
+// import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/Drive';
 
 const Wrapper = styled.div`
   grid-area: contentPanel;
@@ -79,7 +77,7 @@ export default function ContentPanel({ main, support }) {
   const hasRespCont = true;
   const setDivider = useSupportDividerController();
   const panelProportion = useRecoilValue(panelPropotion);
-  const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
+  // const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   useEffect(() => {
     setDivider(support?.props.isInitOpen ?? false);
@@ -149,7 +147,7 @@ export default function ContentPanel({ main, support }) {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
-      onClick={clearDriveSelections}
+      // onClick={clearDriveSelections}
       $hasRespCont={hasRespCont}
       $proportion={panelProportion}
     >
