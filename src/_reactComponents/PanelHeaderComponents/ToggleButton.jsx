@@ -49,7 +49,7 @@ export default function ToggleButton(props) {
         } if (isSelected === true) {
             setSelected(false)
         }
-        if (props.callback) props.callback();
+        if (props.onClick) props.onClick(isSelected);
     }
     if (props.label) {
         label.value = props.label

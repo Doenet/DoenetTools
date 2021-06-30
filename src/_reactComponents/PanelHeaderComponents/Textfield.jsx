@@ -20,10 +20,13 @@ if (props.width) {
     textfield.width = '235px'
   } 
 }
+function handleChange(e) {
+  if (props.onChange) props.onChange(e.target.value)
+}
 
     return (
         <>
-            <textarea defaultValue={textfield.value} style={textfield}></textarea>
+            <textarea defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }}></textarea>
         </>
     )
 }

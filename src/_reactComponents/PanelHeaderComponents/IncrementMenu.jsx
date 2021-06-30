@@ -103,8 +103,8 @@ export default function Increment(props) {
   }
 
   function valueChange(data) {
-    if (props.onValueChange) {
-      props.onValueChange(data);
+    if (props.onChange) {
+      props.onChange(data);
     }
     setCurrentValue(data);
   }
