@@ -164,8 +164,14 @@ export default function ToolRoot(props){
   })
 
   const setSearchParam = useRecoilCallback(({set,snapshot})=>(paramObj)=>{
+    //Track when tool isn't defined so the controlers get refreshed
+    let clearTool = true;
     for (const [key,value] of Object.entries(paramObj)){
+      if (key === 'tool'){clearTool = false;}
       set(searchParamAtomFamily(key),value)
+    }
+    if (clearTool){
+      set(searchParamAtomFamily('tool'),'')
     }
   })
 
