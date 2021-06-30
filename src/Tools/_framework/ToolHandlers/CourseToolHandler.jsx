@@ -12,7 +12,8 @@ export default function CourseToolHandler(props){
     //Set starting tool
     if (tool === ""){
       tool = 'courseChooser';
-      window.history.pushState('','','/new#/course?tool=courseChooser')
+      // window.history.pushState('','','/new#/course?tool=courseChooser')
+      window.history.replaceState('','','/new#/course?tool=courseChooser')
     }
     if (tool === lastTool){ return; }
 
