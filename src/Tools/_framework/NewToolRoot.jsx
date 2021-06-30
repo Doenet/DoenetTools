@@ -226,13 +226,13 @@ export default function ToolRoot(props){
 
   const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
   if (toolViewInfo.pageName.toLowerCase() !== lcpath){
+    console.log(">>>Changed Tool!!!!!!! toolViewInfo",toolViewInfo)
 
   //Need to update path
     setPage(lcpath,props.route.location.pathname)
     // return null; 
   }
 
-  console.log(">>>toolViewInfo!!!!!!!",toolViewInfo)
   let toolHandler = null;
   if (toolViewInfo.toolHandler){
     const ToolHandlerKey = `${toolViewInfo.pageName}-${toolViewInfo.toolHandler}`;
