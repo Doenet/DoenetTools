@@ -1,8 +1,11 @@
 import React, { useRef } from 'react';
-import { useRecoilValue, useRecoilCallback } from 'recoil'
+import { atom, useRecoilValue, useRecoilCallback } from 'recoil'
 import { searchParamAtomFamily, toolViewAtom } from '../NewToolRoot';
 
-
+export const drivecardSelectedNodesAtom = atom({
+  key:'drivecardSelectedNodesAtom',
+  default:[]
+})
 
 export default function CourseToolHandler(props){
   console.log(">>>===CourseToolHandler")
@@ -12,7 +15,8 @@ export default function CourseToolHandler(props){
     //Set starting tool
     if (tool === ""){
       tool = 'courseChooser';
-      window.history.pushState('','','/new#/course?tool=courseChooser')
+      // window.history.pushState('','','/new#/course?tool=courseChooser')
+      window.history.replaceState('','','/new#/course?tool=courseChooser')
     }
     if (tool === lastTool){ return; }
 

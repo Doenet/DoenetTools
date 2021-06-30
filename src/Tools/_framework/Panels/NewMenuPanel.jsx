@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect, lazy, useRef, Suspense } from 'react';
-import { atom, atomFamily, useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
+import React, { useState, lazy, useRef, Suspense } from 'react';
+import { atom,  useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
@@ -43,17 +43,6 @@ const MenuHeaderButton = styled.button`
   height: 100%;
 
 `;
-
-export const activeMenuPanel = atomFamily({
-  key: 'activeMenuPanelAtom',
-  default: 0,
-});
-
-export const useMenuPanelController = () => {
-  const stackId = useStackId();
-  const menuAtomControl = useSetRecoilState(activeMenuPanel(stackId));
-  return menuAtomControl;
-};
 
 const Logo = styled.div`
 background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
