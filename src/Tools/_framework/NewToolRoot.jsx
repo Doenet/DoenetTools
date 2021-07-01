@@ -11,8 +11,8 @@ import styled from 'styled-components';
 import Toast from './Toast';
 import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
-import GlobalFont from '../../_utils/GlobalFont';
-
+// import { GlobalStyle } from "../../Tools/DoenetStyle";
+// import GlobalFont from '../../_utils/GlobalFont';
 import MainPanel from './Panels/NewMainPanel';
 import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
@@ -334,7 +334,7 @@ export default function ToolRoot(props){
     profileInMainPanel = false;
   }
   return <ProfileContext.Provider value={profile.contents}>
-    <GlobalFont key='globalfont' />
+    {/* <GlobalFont key='globalfont' /> */}
     <ToolContainer >
       {menus}
       <ContentPanel 
