@@ -399,6 +399,7 @@ export default class BaseComponent {
     let defAttributesToCopy = [
       "returnDependencies", "definition",
       "inverseDefinition", "stateVariablesDeterminingDependencies",
+      "stateVariablesDeterminingArraySizeDependencies",
       "isArray", "nDimensions",
       "returnArraySizeDependencies", "returnArraySize",
       "returnArrayDependenciesByKey", "arrayDefinitionByKey",

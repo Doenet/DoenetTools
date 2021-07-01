@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Basic copy assignName Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('recursively copying and assigning names to text', () => {

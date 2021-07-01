@@ -3,12 +3,40 @@ import { normalizeIndex } from '../utils/table';
 
 export default class Row extends BaseComponent {
   static componentType = "row";
-  static rendererType = "container";
+  static rendererType = "row";
   static renderChildren = true;
+
+  static get stateVariablesShadowedForReference() {
+    return ["halign", "valign", "left", "bottom",]
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
-    attributes.rowNum = { default: null };
+    attributes.rowNum = {
+      createComponentOfType: "text",
+      createStateVariable: "rowNum",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.header = {
+      createComponentOfType: "boolean",
+      createStateVariable: "header",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
+    attributes.halign = {
+      createComponentOfType: "text",
+    }
+    attributes.valign = {
+      createComponentOfType: "text",
+    }
+    attributes.left = {
+      createComponentOfType: "text",
+    }
+    attributes.bottom = {
+      createComponentOfType: "text",
+    }
     return attributes;
   }
 
@@ -28,6 +56,132 @@ export default class Row extends BaseComponent {
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.halign = {
+      public: true,
+      componentType: "text",
+      defaultValue: "left",
+      returnDependencies: () => ({
+        halignAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "halign",
+          variableNames: ["value"]
+        },
+        parentHalign: {
+          dependencyType: "parentStateVariable",
+          variableName: "halign"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.halignAttr !== null) {
+          let halign = dependencyValues.halignAttr.stateValues.value;
+          if (!["left", "center", "right", "justify"].includes(halign)) {
+            halign = "left";
+          }
+          return { newValues: { halign } }
+        } else if (!usedDefault.parentHalign) {
+          return { newValues: { halign: dependencyValues.parentHalign } }
+        } else {
+          return { useEssentialOrDefaultValue: { halign: {} } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.valign = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      defaultValue: "middle",
+      returnDependencies: () => ({
+        valignAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "valign",
+          variableNames: ["value"]
+        },
+        parentValign: {
+          dependencyType: "parentStateVariable",
+          variableName: "valign"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.valignAttr !== null) {
+          let valign = dependencyValues.valignAttr.stateValues.value;
+          if (!["top", "middle", "bottom"].includes(valign)) {
+            valign = "middle";
+          }
+          return { newValues: { valign } }
+        } else if (!usedDefault.parentValign) {
+          return { newValues: { valign: dependencyValues.parentValign } }
+        } else {
+          return { useEssentialOrDefaultValue: { valign: {} } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.left = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      defaultValue: "none",
+      returnDependencies: () => ({
+        leftAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "left",
+          variableNames: ["value"]
+        },
+        parentLeft: {
+          dependencyType: "parentStateVariable",
+          variableName: "left"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.leftAttr !== null) {
+          let left = dependencyValues.leftAttr.stateValues.value;
+          if (!["none", "minor", "medium", "major"].includes(left)) {
+            left = "none";
+          }
+          return { newValues: { left } }
+        } else if (!usedDefault.parentLeft) {
+          return { newValues: { left: dependencyValues.parentLeft } }
+        } else {
+          return { useEssentialOrDefaultValue: { left: {} } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.bottom = {
+      public: true,
+      componentType: "text",
+      defaultValue: "none",
+      returnDependencies: () => ({
+        bottomAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "bottom",
+          variableNames: ["value"]
+        },
+        parentBottom: {
+          dependencyType: "parentStateVariable",
+          variableName: "bottom"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.bottomAttr !== null) {
+          let bottom = dependencyValues.bottomAttr.stateValues.value;
+          if (!["none", "minor", "medium", "major"].includes(bottom)) {
+            bottom = "none";
+          }
+          return { newValues: { bottom } }
+        } else if (!usedDefault.parentBottom) {
+          return { newValues: { bottom: dependencyValues.parentBottom } }
+        } else {
+          return { useEssentialOrDefaultValue: { bottom: {} } }
+        }
+      }
+    }
 
     stateVariableDefinitions.prescribedCellsWithColNum = {
       returnDependencies: () => ({

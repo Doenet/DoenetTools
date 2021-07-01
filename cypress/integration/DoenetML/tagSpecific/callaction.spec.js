@@ -11,7 +11,7 @@ function cesc(s) {
 describe('CallAction Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
 
   })

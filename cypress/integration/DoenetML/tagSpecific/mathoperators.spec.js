@@ -14,7 +14,7 @@ function cesc(s) {
 describe('Math Operator Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('sum', () => {

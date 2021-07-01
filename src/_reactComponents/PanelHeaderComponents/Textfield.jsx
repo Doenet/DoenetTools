@@ -12,12 +12,15 @@ export default function Textfield(props) {
         color: '#000',
         value: 'Enter text here'
       }
-  if (props.size === "medium") {
-    textfield.height = '36px'
-  }
   if (props.value) {
     textfield.value = props.value;
 }
+if (props.width) {
+  if (props.width === "menu") {
+    textfield.width = '235px'
+  } 
+}
+
     return (
         <>
             <textarea defaultValue={textfield.value} style={textfield}></textarea>

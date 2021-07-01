@@ -18,7 +18,7 @@ $email = mysqli_real_escape_string($conn,$_POST["email"]);
 
 
 	$sql = "
-	UPDATE enrollment SET withDrew = 1 WHERE driveId = '$driveId' AND email='$email';
+	UPDATE enrollment SET dateEnrolled = NOW() , withDrew = 1 WHERE driveId = '$driveId' AND email='$email';
 	";
   $result = $conn->query($sql);
 $response_arr = array(

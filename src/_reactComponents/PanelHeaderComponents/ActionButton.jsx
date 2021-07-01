@@ -30,13 +30,24 @@ export default function ActionButton(props) {
   var actionButton = {
         value: 'Action Button',
       };
-  if (props.size === "medium") {
-    actionButton.height = '36px',
-    actionButton.fontSize = '18px'
-  };
-  if (props.value) {
-      actionButton.value = props.value;
-  };
+  if (props.width) {
+    if (props.width === "menu") {
+      actionButton.width = '235px'}
+  }
+  var icon = '';
+  if (props.value || props.icon){
+    if (props.value && props.icon){
+        icon = props.icon;
+        actionButton.value = props.value
+    }
+    else if (props.value){
+        actionButton.value = props.value
+    }
+    else if (props.icon){
+        icon = props.icon;
+        actionButton.value = ''
+    }
+}
   if (props.num === 'first') {
     actionButton.borderRadius = '5px 0px 0px 5px'
   }
@@ -49,7 +60,7 @@ export default function ActionButton(props) {
   //TODO handleClick() is not defined
     return (
         <>
-            <Button id="actionButton" style={actionButton} onClick={() => { handleClick() }}>{actionButton.value}</Button>
+            <Button id="actionButton" style={actionButton} onClick={() => { handleClick() }}>{icon}{' '}{actionButton.value}</Button>
         </>
     )
 }

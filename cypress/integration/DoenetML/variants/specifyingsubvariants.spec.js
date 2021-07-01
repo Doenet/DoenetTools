@@ -3,7 +3,7 @@ import { numberToLetters } from "../../../../src/Core/utils/sequence";
 describe('Specifying subvariants tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('specify indices of a select', () => {

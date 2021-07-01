@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Extract Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('extract copies properties', () => {

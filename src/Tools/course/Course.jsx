@@ -14,8 +14,6 @@ import {
   atomFamily,
 } from 'recoil';
 import axios from 'axios';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
 
 /**
  * Internal dependencies
@@ -25,16 +23,19 @@ import Drive, {
   clearDriveAndItemSelections,
   drivePathSyncFamily,
   folderDictionaryFilterAtom,
+  loadDriveInfoQuery,
+  fetchDrivesSelector
 } from '../../_reactComponents/Drive/Drive';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
+import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 // import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'; //TODO
 import DriveCards from '../../_reactComponents/Drive/DriveCards';
 import '../../_reactComponents/Drive/drivecard.css';
 import '../../_utils/util.css';
 import GlobalFont from '../../_utils/GlobalFont';
 import Tool from '../_framework/Tool';
-import Switch from "../_framework/Switch";
+import Switch from '../_framework/Switch';
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
 import { useToast } from '../_framework/Toast';
 import { URLPathSync } from '../library/Library';
@@ -103,7 +104,7 @@ export const assignmentDictionary = atomFamily({
   }),
 });
 let assignmentDictionarySelector = selectorFamily({
-  key: 'assignmentDictionaryNewSelector',
+  key: 'assignmentDictionarySelector',
   get:
     (driveIditemIddoenetIdparentFolderId) =>
     ({ get }) => {
@@ -170,6 +171,14 @@ export default function Course(props) {
   if (urlParamsObj?.path !== undefined) {
     [routePathDriveId] = urlParamsObj.path.split(':');
   }
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+  let driveInfo = [];
+  let courseRole = [];
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == routePathDriveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
   // const [init,setInit]  = useState(false)
   // const setFilteredDrive = useSetRecoilState(folderDictionaryFilterAtom({driveId:routePathDriveId}));
   const [filter, setFilteredDrive] = useRecoilState(
@@ -190,6 +199,12 @@ export default function Course(props) {
   //Wait for the filter to change
   if (filter === 'All' && routePathDriveId !== '') {
     return null;
+  }
+  let columnsArr = [];
+  if(filter === 'Released Only'){
+    columnsArr.push('Due Date', 'Assigned')
+  }else{
+    columnsArr.push('Due Date')
   }
   function cleardrivecardSelection() {
     setDrivePath({
@@ -230,25 +245,7 @@ export default function Course(props) {
   if (role === 'Instructor') {
     urlClickBehavior = 'select';
   }
-  let responsiveControls = '';
 
-  if (routePathDriveId) {
-    responsiveControls = (
-      <>
-        <Button
-          value={openEnrollment ? 'Close Enrollment' : 'Open Enrollment'}
-          callback={(e) => setEnrollment(e)}
-        ></Button> 
-        <label>View as Student</label>
-
-        <Switch
-          onChange={(e) => setViewAccessToggle(e)}
-          checked={filter === 'Released Only' ? false : true}
-        ></Switch>
-
-      </>
-    );
-  }
 
   const profile = useContext(ProfileContext);
   if (profile.signedIn === '0') {
@@ -313,7 +310,7 @@ export default function Course(props) {
           </div>
         </navPanel>
 
-        <mainPanel responsiveControls={responsiveControls}>
+        <mainPanel>
           <AutoSelect />
           {openEnrollment ? (
             <Enrollment selectedCourse={enrollDriveId} />
@@ -328,8 +325,7 @@ export default function Course(props) {
               >
                 <Container>
                   <Drive
-                    filter={filter}
-                    columnTypes={filter === 'Released Only' ? ['Due Date', 'Assigned'] : ['Due Date'] }
+                    columnTypes={columnsArr}
                     driveId={routePathDriveId}
                     hideUnpublished={hideUnpublished}
                     subTypes={['Administrator']}
@@ -347,35 +343,50 @@ export default function Course(props) {
               </div>
 
               <div onClick={cleardrivecardSelection} tabIndex={0}>
-                {!routePathDriveId && <h2>Admin</h2>}
                 <DriveCards
                   routePathDriveId={routePathDriveId}
                   isOneDriveSelect={true}
                   types={['course']}
                   drivePathSyncKey="main"
-                  subTypes={['Administrator']}
                 />
 
-                {!routePathDriveId && <h2>Student</h2>}
-                <DriveCards
-                  isOneDriveSelect={true}
-                  routePathDriveId={routePathDriveId}
-                  isOneDriveSelect={true}
-                  types={['course']}
-                  drivePathSyncKey="main"
-                  subTypes={['Student']}
-                />
               </div>
             </>
           )}
         </mainPanel>
+
         {routePathDriveId && (
           <menuPanel isInitOpen title="Assignment">
-            <VersionInfo route={props.route} />
-            <br />
+            <>
+              <VersionInfo route={props.route} />
+              <br />
+              <ItemInfoPanel route={props.route} />
+            </>
+          </menuPanel>
+        )}
 
-            <ItemInfoPanel route={props.route} />
+        {routePathDriveId && (
+          <menuPanel title="+Add">
+            <>
+              
+              { courseRole[0] === 'Owner' && (
+                <>
+                  <Button
+                    value={
+                      openEnrollment ? 'Close Enrollment' : 'Open Enrollment'
+                    }
+                    callback={(e) => setEnrollment(e)}
+                  ></Button>
+                  <br />
+                  <label>View as Student</label>
 
+                  <Switch
+                    onChange={(e) => setViewAccessToggle(e)}
+                    checked={filter === 'Released Only' ? false : true}
+                  ></Switch>
+                </>
+              ) }
+            </>
           </menuPanel>
         )}
       </Tool>
@@ -427,15 +438,12 @@ const DoenetMLInfoPanel = (props) => {
   let assignmentForm = null;
 
   const [addToast, ToastType] = useToast();
-
+  const [oldValue,setoldValue] = useState();
   const handleChange = (event) => {
     event.preventDefault();
     let name = event.target.name;
-    let value =
-      event.target.type === 'checkbox'
-        ? event.target.checked
-        : event.target.value;
-
+    let value = event.target.value;
+    // if (aInfo[`${name}`] != value) {
     const result = changeSettings({
       [name]: value,
       driveIditemIddoenetIdparentFolderId: {
@@ -447,23 +455,21 @@ const DoenetMLInfoPanel = (props) => {
         contentId: selectedContentId(),
       },
     });
-    result
-      .then((resp) => {
-        if (resp.data.success) {
-          // addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
-        } else {
-          // onRenameItemError({errorMessage: resp.data.message});
-        }
-      })
-      .catch((e) => {
-        // onRenameItemError({errorMessage: e.message});
-      });
+
+    // }
   };
+  const handleOnfocus = (event) => {
+    event.preventDefault();
+    let name = event.target.name;
+    let value = event.target.value;
+    setoldValue(event.target.value)
+  };
+  
   const handleOnBlur = (e) => {
     e.preventDefault();
     let name = e.target.name;
-    let value =
-      e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    let value = e.target.value;
+    if(value !== oldValue ){
     const result = saveSettings({
       [name]: value,
       driveIditemIddoenetIdparentFolderId: {
@@ -494,23 +500,23 @@ const DoenetMLInfoPanel = (props) => {
       contentId: itemInfo.contentId,
     });
 
-    result
-      .then((resp) => {
-        if (resp.data.success) {
-          addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
-        } else {
-          onAssignmentError({ errorMessage: resp.data.message });
-        }
-      })
-      .catch((e) => {
-        onAssignmentError({ errorMessage: e.message });
-      });
+        result
+          .then((resp) => {
+            if (resp.data.success) {
+              addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
+            } else {
+              onAssignmentError({ errorMessage: resp.data.message });
+            }
+          })
+          .catch((e) => {
+            onAssignmentError({ errorMessage: e.message });
+          });
+  }
   };
 
   // // View Assignment Form
   const checkIsVersionAssigned = () => {
     const selectedVId = useRecoilValue(selectedVersionAtom);
-    // console.log(">>>>>>>>>>>>>>>>>>>>selectedVersionId",selectedVId);
     const assignedArr = props.versionArr.filter(
       (item) => item.versionId === selectedVId,
     );
@@ -520,13 +526,20 @@ const DoenetMLInfoPanel = (props) => {
       return false;
     }
   };
-
-  if (itemInfo.isAssigned === '1') {
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+  let courseRole = [];
+  let driveInfo = [];
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == itemInfo.driveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
+  if (itemInfo.isAssigned === '1' && courseRole[0] === 'Owner') {
     assignmentForm = (
       <>
         {
           <>
-           <h3>Assignment Info</h3>
+            <h3>Assignment Info</h3>
             <div>
               <label>Assigned Date:</label>
               <input
@@ -537,6 +550,7 @@ const DoenetMLInfoPanel = (props) => {
                 placeholder="0001-01-01 01:01:01 "
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -549,6 +563,7 @@ const DoenetMLInfoPanel = (props) => {
                 placeholder="0001-01-01 01:01:01"
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -561,10 +576,12 @@ const DoenetMLInfoPanel = (props) => {
                 placeholder="01:01:01"
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
               <label>Number Of Attempts:</label>
+              <Increment range={[0, 20]} />
               <input
                 required
                 type="number"
@@ -572,16 +589,25 @@ const DoenetMLInfoPanel = (props) => {
                 value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''}
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
               <label>Attempt Aggregation :</label>
               <select name="attemptAggregation" onChange={handleOnBlur}>
-                <option value='m' selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}>Maximum
+                <option
+                  value="m"
+                  selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}
+                >
+                  Maximum
                 </option>
-                <option value='l' selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}>Last Attempt
+                <option
+                  value="l"
+                  selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}
+                >
+                  Last Attempt
                 </option>
-              </select>              
+              </select>
             </div>
             <div>
               <label>Total Points Or Percent: </label>
@@ -592,6 +618,7 @@ const DoenetMLInfoPanel = (props) => {
                 value={aInfo ? aInfo?.totalPointsOrPercent : ''}
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
@@ -603,77 +630,64 @@ const DoenetMLInfoPanel = (props) => {
                 value={aInfo ? aInfo?.gradeCategory : ''}
                 onBlur={handleOnBlur}
                 onChange={handleChange}
+                onFocus={handleOnfocus}
               />
             </div>
             <div>
               <label>Individualize: </label>
-              <input
-                required
-                type="checkbox"
+              <Switch
                 name="individualize"
-                checked={aInfo ? aInfo?.individualize : false}
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.individualize : false}
+              ></Switch>
             </div>
             <div>
               <label>Multiple Attempts: </label>
-              <input
-                required
-                type="checkbox"
-                name="multipleAttempts"
-                checked={aInfo ? aInfo?.multipleAttempts : false}
+              <Switch
+              name="multipleAttempts"
                 onChange={handleOnBlur}
-              />{' '}
+                checked={aInfo ? aInfo?.multipleAttempts : false}
+              ></Switch>
             </div>
             <div>
               <label>Show solution: </label>
-              <input
-                required
-                type="checkbox"
-                name="showSolution"
-                checked={aInfo ? aInfo?.showSolution : false}
+              <Switch
+              name="showSolution"
                 onChange={handleOnBlur}
-              />{' '}
+                checked={aInfo ? aInfo?.showSolution : false}
+              ></Switch>
             </div>
             <div>
               <label>Show feedback: </label>
-              <input
-                required
-                type="checkbox"
-                name="showFeedback"
-                checked={aInfo ? aInfo?.showFeedback : false}
+              <Switch
+              name="showFeedback"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.showFeedback : false}
+              ></Switch>
             </div>
             <div>
               <label>Show hints: </label>
-              <input
-                required
-                type="checkbox"
-                name="showHints"
-                checked={aInfo ? aInfo?.showHints : false}
+              <Switch
+              name="showHints"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.showHints : false}
+              ></Switch>         
             </div>
             <div>
               <label>Show correctness: </label>
-              <input
-                required
-                type="checkbox"
-                name="showCorrectness"
-                checked={aInfo ? aInfo?.showCorrectness : false}
+              <Switch
+              name="showCorrectness"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.showCorrectness : false}
+              ></Switch> 
             </div>
             <div>
               <label>Proctor make available: </label>
-              <input
-                required
-                type="checkbox"
-                name="proctorMakesAvailable"
-                checked={aInfo ? aInfo?.proctorMakesAvailable : false}
+              <Switch
+              name="proctorMakesAvailable"
                 onChange={handleOnBlur}
-              />
+                checked={aInfo ? aInfo?.proctorMakesAvailable : false}
+              ></Switch> 
             </div>
             <br />
           </>
@@ -683,6 +697,50 @@ const DoenetMLInfoPanel = (props) => {
   }
 
   return <>{assignmentForm}</>;
+};
+const StudentViewInfoPanel = (props) =>{
+  let itemInfo = props.contentInfo;
+  const assignmentInfoSettings = useRecoilValueLoadable(
+    assignmentDictionarySelector({
+      driveId: itemInfo.driveId,
+      folderId: itemInfo.parentFolderId,
+      itemId: itemInfo.itemId,
+      doenetId: itemInfo.doenetId,
+      versionId: '',
+      contentId: '',
+    }),
+  );
+
+  let aInfo = '';
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+
+  let courseRole = [];
+  let driveInfo = [];
+  
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == itemInfo.driveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
+  if (assignmentInfoSettings?.state === 'hasValue') {
+    aInfo = assignmentInfoSettings?.contents;
+  }
+ 
+  return (
+    <>
+      {aInfo && courseRole[0] === 'Student' ? (
+        
+        <div>
+          <p>Due: {aInfo?.dueDate}</p>
+          <p>Time Limit: {aInfo?.timeLimit}</p>
+          <p>Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+      ) : (
+        ''
+      )}
+    </>
+  );
 };
 const FolderInfoPanel = () => {
   return <h1>Folder Info</h1>;
@@ -738,13 +796,21 @@ const VersionHistoryInfoPanel = (props) => {
       return '';
     }
   };
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+
+      let courseRole = [];
+      let driveInfo = [];
+      if (drivesInfo.state === "hasValue") {
+        driveInfo = drivesInfo.contents.driveIdsAndLabels;
+        let selectedDriveInfo = driveInfo?.filter(item => item.driveId == itemInfo.driveId);
+        courseRole = selectedDriveInfo[0]?.role;
+      }
   let aInfo = '';
   const assignmentInfoSettings = useRecoilValueLoadable(
     loadAssignmentSelector(itemInfo.doenetId),
   );
   if (assignmentInfoSettings?.state === 'hasValue') {
-    aInfo = assignmentInfoSettings?.contents?.assignments[0];
-
+    aInfo = assignmentInfoSettings?.contents?.assignments;
   }
 
   if (versionHistory.state === 'loading') {
@@ -809,7 +875,7 @@ const VersionHistoryInfoPanel = (props) => {
                 try {
                   if (result.success) {
                     addToast(
-                      `Add new assignment 'Untitled assignment'`,
+                      `Add new assignment`,
                       ToastType.SUCCESS,
                     );
                   } else {
@@ -863,7 +929,7 @@ const VersionHistoryInfoPanel = (props) => {
                   .then((resp) => {
                     if (resp.data.success) {
                       addToast(
-                        `'version title' back to '${itemInfo.label}''`,  //TODO update version title
+                        `'UnAssigned ${itemInfo.label}''`, 
                         ToastType.SUCCESS,
                       );
                     } else {
@@ -912,7 +978,6 @@ const VersionHistoryInfoPanel = (props) => {
                   contentId: selectedContentId(),
                   versionId: selectedVId,
                   ...aInfo
-                  // prevAssignedVersionId:prevAssignedVersionId(),
                 });
                 let payload = {
                   ...aInfo,
@@ -940,7 +1005,7 @@ const VersionHistoryInfoPanel = (props) => {
                 try {
                   if (result.success) {
                     addToast(
-                      `Switch  assignment 'Untitled assignment'`,
+                      `Switch  assignment`,
                       ToastType.SUCCESS,
                     );
                   } else {
@@ -1040,26 +1105,30 @@ const VersionHistoryInfoPanel = (props) => {
 
   return (
     <>
-      {assigned}
+      { courseRole[0] === 'Owner' && assigned}
 
       <br />
       <br />
-      {itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton}
-      {itemInfo.isAssigned == '1' && checkIfAssigned() && unAssignButton}
+      {  courseRole[0] === 'Owner' && itemInfo.isAssigned !== '1' && makeAssignmentforReleasedButton}
+      {itemInfo.isAssigned == '1' && checkIfAssigned() && unAssignButton }
       {itemInfo.isAssigned == '1' &&
         checkAssignArrItemAssigned() &&
-        !checkIfAssigned() &&
+        !checkIfAssigned()  && 
+        courseRole[0] === 'Owner' &&
         switchAssignmentButton}
     </>
   );
 };
 
 const ItemInfoPanel = (props) => {
+
   let versionArr = [];
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   const versionHistory = useRecoilValueLoadable(
     itemHistoryAtom(contentInfoLoad?.contents?.itemInfo?.doenetId),
   );
+  const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
+
 
   if (versionHistory.state === 'loading') {
     return null;
@@ -1078,6 +1147,13 @@ const ItemInfoPanel = (props) => {
     console.error(contentInfoLoad.contents);
     return null;
   }
+  let courseRole = [];
+  let driveInfo = [];
+  if (drivesInfo.state === "hasValue") {
+    driveInfo = drivesInfo.contents.driveIdsAndLabels;
+    let selectedDriveInfo = driveInfo?.filter(item => item.driveId == contentInfoLoad?.contents?.itemInfo?.driveId);
+    courseRole = selectedDriveInfo[0]?.role;
+  }
   let contentInfo = contentInfoLoad?.contents?.itemInfo;
 
   if (contentInfoLoad.contents?.number > 1) {
@@ -1087,7 +1163,8 @@ const ItemInfoPanel = (props) => {
       </>
     );
   } else if (contentInfoLoad.contents?.number === 1) {
-    if (contentInfo?.itemType === 'DoenetML') {
+   if (contentInfo?.itemType === 'DoenetML') {
+     if(courseRole[0] === 'Owner'){
       return (
         <DoenetMLInfoPanel
           key={`DoenetMLInfoPanel${contentInfo.itemId}`}
@@ -1096,6 +1173,17 @@ const ItemInfoPanel = (props) => {
           versionArr={versionArr}
         />
       );
+     }
+     else if(courseRole[0] === 'Student'){
+      return (
+        <StudentViewInfoPanel
+        key={`StudentViewInfoPanel${contentInfo.itemId}`}
+        contentInfo={contentInfo}
+        props={props}
+        />
+      );
+     }
+      
     } else if (contentInfo?.itemType === 'Folder') {
       return (
         <FolderInfoPanel
@@ -1103,11 +1191,12 @@ const ItemInfoPanel = (props) => {
           contentInfo={contentInfo}
         />
       );
-    }
+    } 
   }
   return null;
 };
 const VersionInfo = (props) => {
+
   const contentInfoLoad = useRecoilValueLoadable(selectedInformation);
   if (contentInfoLoad.state === 'loading') {
     return null;
@@ -1138,19 +1227,4 @@ const VersionInfo = (props) => {
   return null;
 };
 
-//Student view info panel
 
-// <div>
-//       {
-//         itemInfo.assignment_isPublished ===
-//           '1'(
-//             <div>
-//               <p>Due: {aInfo?.dueDate}</p>
-//               <p>Time Limit: {aInfo?.timeLimit}</p>
-//               <p>
-//                 Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}
-//               </p>
-//               <p>Points: {aInfo?.totalPointsOrPercent}</p>
-//             </div>,
-//           )}
-//     </div>

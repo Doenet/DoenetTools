@@ -10,9 +10,10 @@ export default class VariantControl extends BaseComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.nVariants = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "nVariants",
       defaultValue: 100,
+      clamp: [1, 999],
       public: true,
     };
     attributes.uniqueVariants = {
@@ -361,7 +362,7 @@ export default class VariantControl extends BaseComponent {
         // try seeds, n+1, n+2, ...., selectedVariantIndex
         // except skipping seeds that are already in original seeds
         let seedNumber = dependencyValues.seeds.length;
-        let seedValue = seedNumber + 1;
+        let seedValue = seedNumber;
         let seedString;
         while (seedNumber < dependencyValues.selectedVariantIndex) {
           seedNumber++;

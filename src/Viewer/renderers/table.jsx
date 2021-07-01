@@ -1,6 +1,5 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
-
 export default class Table extends DoenetRenderer {
 
   render() {
@@ -9,17 +8,44 @@ export default class Table extends DoenetRenderer {
       return null;
     }
 
-    let table = [];
+    let heading = null;
 
-    for (let [rowNum, rowData] of this.doenetSvData.renderedChildNumberByRowCol.entries()) {
-      let row = rowData.map((childInd, colInd) => <td key={"col" + colInd}>{this.children[childInd]}</td>);
-      table.push(<tr key={"row" + rowNum}>{row}</tr>)
+    let childrenToRender = [...this.children];
+
+    // BADBADBAD: need to redo how getting the title child
+    // getting it using the internal guts of componentInstructions
+    // is just asking for trouble
+
+    let title;
+    if (this.doenetSvData.titleChildName) {
+      let titleChildInd;
+      for (let [ind, child] of this.children.entries()) {
+        if (child.props.componentInstructions.componentName === this.doenetSvData.titleChildName) {
+          titleChildInd = ind;
+          break;
+        }
+      }
+      title = this.children[titleChildInd];
+      childrenToRender.splice(titleChildInd, 1); // remove title
+    } else {
+      title = this.doenetSvData.title;
     }
 
-    return <><a name={this.componentName} /><table id={this.componentName}>
-      <tbody>
-        {table}
-      </tbody>
-    </table></>
+    if (!this.doenetSvData.suppressTableNameInCaption) {
+      let tableName = <strong>{this.doenetSvData.tableName}</strong>
+      if (title) {
+        title = <>{tableName}: {title}</>
+      } else {
+        title = tableName;
+      }
+    }
+
+    heading = <div id={this.componentName + "_title"}>{title}</div>
+
+    return <div id={this.componentName} >
+      <a name={this.componentName} />
+      {heading}
+      {childrenToRender}
+    </div>
   }
 }

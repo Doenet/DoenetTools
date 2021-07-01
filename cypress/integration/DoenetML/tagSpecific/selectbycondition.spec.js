@@ -12,7 +12,7 @@ function cesc(s) {
 describe('SelectByCondition Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('select single text, assign sub on copy', () => {

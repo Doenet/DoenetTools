@@ -1,7 +1,7 @@
 describe('factor polynomial tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   // Note: even after develop a better factoring test,

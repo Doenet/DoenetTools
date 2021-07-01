@@ -4,7 +4,12 @@ import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
 
 
 ReactDOM.render(
-        <DateTime />
+  <DateTime
+    showArrowButtons={false}
+    precision="second"
+    time = {false}
+    callBack={(date) => console.log(date)}
+  />
   ,
   document.getElementById('root'),
 );

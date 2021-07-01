@@ -13,7 +13,7 @@ function cesc(s) {
 describe('Collection assignName Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('name points and coords off a graph', () => {

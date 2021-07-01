@@ -60,7 +60,7 @@ const DragHandle = styled.div`
   padding: 0;
   cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'ns-resize')};
   background-color: #1a5a99;
-  border-radius: ${({ $rounding }) => $rounding};
+  // border-radius: ${({ $rounding }) => $rounding};
   height: ${({ $vertical }) => ($vertical ? '25%' : '')};
   width: ${({ $vertical }) => ($vertical ? '' : '25%')};
   box-sizing: border-box;
