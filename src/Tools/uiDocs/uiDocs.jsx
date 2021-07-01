@@ -93,6 +93,10 @@ export default function attempt() {
           propPreview: '<ActionButton alert/>',
           propCode: {alert},
           description: 'Changes to alert mode (border is red)'},
+          {name: 'onClick',
+          propPreview: '<ActionButton onClick={() => console.log("clicked")} />',
+          propCode: {onClick: () => console.log("clicked")},
+          description: 'Function called when button is clicked'},
       ]
     },
     {
@@ -143,6 +147,10 @@ export default function attempt() {
           propPreview: '<Button alert/>',
           propCode: {alert},
           description: 'Changes to alert mode (color is red)'},
+          {name: 'onClick',
+          propPreview: '<Button onClick={() => console.log("clicked")} />',
+          propCode: {onClick: () => console.log("clicked")},
+          description: 'Function called when button is clicked'},
       ]
     },
     {
@@ -185,9 +193,9 @@ export default function attempt() {
         propPreview: '<IncrementMenu values={["A", "B", "C", "D", "F"]} />',
         propCode: {values: ["A", "B", "C", "D", "F"]},
         description: 'Sets menu with given values'},
-        {name: 'onValueChange',
-        propPreview: '<IncrementMenu onValueChange={(data) => console.log(data)} />',
-        propCode: {onValueChange: (data) => console.log(data)},
+        {name: 'onChange',
+        propPreview: '<IncrementMenu onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
         description: 'Function called when data changes'},
       ]
     },
@@ -203,7 +211,7 @@ export default function attempt() {
         {name: 'Width - Menu Panel',
         propPreview: '<SearchBar width="menu" />',
         propCode: {width: 'menu'},
-        description: 'Sets width to fill menu panel width'},
+        description: 'Sets width to fill menu panel width'}
       ]
     },
     {
@@ -227,6 +235,10 @@ export default function attempt() {
       propPreview: '<Textfield alert/>',
       propCode: {alert},
       description: 'Changes to alert mode (border is red)'},
+      {name: 'onChange',
+      propPreview: '<Textfield onChange={(data) => console.log(data)} />',
+      propCode: {onChange: (data) => console.log(data)},
+      description: 'Function called when data changes'},
       ]
     },
     {
@@ -270,6 +282,10 @@ export default function attempt() {
         propPreview: '<ToggleButton alert/>',
         propCode: {alert},
         description: 'Changes to alert mode (main coloring is red)'},
+        {name: 'onClick',
+        propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
+        propCode: {onClick: (data) => console.log(data)},
+        description: 'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)'},
       ]
     },
     {
@@ -293,7 +309,11 @@ export default function attempt() {
         propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} label="Label: ">',
         propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: '},
         description: 'Adds label in front of the component. Dragging on the label will increment the value.'
-        }
+        },
+        {name: 'onChange',
+        propPreview: '<UnitMenu onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data), units: ['EM', 'PT', 'PX']},
+        description: 'Function called when data changes'},
         ]
       },
     {

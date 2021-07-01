@@ -66,12 +66,12 @@ export default function Button(props) {
   // if (props.value) {
   //     button.value = props.value;
   // };
-  function handleClick(e) {
-    if (props.callback) props.callback(e)
+  function handleClick() {
+    if (props.onClick) props.onClick()
   }
     return (
         <>
-            <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
+            <ButtonStyling style={button} {...props} onClick={() => { handleClick() }}>{icon}{' '}{button.value}</ButtonStyling>
         </>
     )
 }
