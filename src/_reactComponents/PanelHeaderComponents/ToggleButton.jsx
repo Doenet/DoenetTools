@@ -24,11 +24,6 @@ export default function ToggleButton(props) {
         display: `${labelVisible}`
     }
     var icon = '';
-    if (props.size === "medium") {
-        toggleButton.height = '36px',
-        toggleButton.fontSize = '18px',
-        label.fontSize = '18px'
-    }
     if (props.value || props.icon){
         if (props.value && props.icon){
             icon = props.icon;
@@ -54,7 +49,7 @@ export default function ToggleButton(props) {
         } if (isSelected === true) {
             setSelected(false)
         }
-        if (props.callback) props.callback();
+        if (props.onClick) props.onClick(isSelected);
     }
     if (props.label) {
         label.value = props.label
@@ -62,9 +57,7 @@ export default function ToggleButton(props) {
     if (props.width) {
         if (props.width === "menu") {
           toggleButton.width = '235px'
-        } else {
-          toggleButton.width = props.width
-        }
+        } 
       }
     return (
         <>

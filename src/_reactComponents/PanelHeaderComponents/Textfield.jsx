@@ -12,22 +12,21 @@ export default function Textfield(props) {
         color: '#000',
         value: 'Enter text here'
       }
-  if (props.size === "medium") {
-    textfield.height = '36px'
-  }
   if (props.value) {
     textfield.value = props.value;
 }
 if (props.width) {
   if (props.width === "menu") {
     textfield.width = '235px'
-  } else {
-    textfield.width = props.width
-  }
+  } 
 }
+function handleChange(e) {
+  if (props.onChange) props.onChange(e.target.value)
+}
+
     return (
         <>
-            <textarea defaultValue={textfield.value} style={textfield}></textarea>
+            <textarea defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }}></textarea>
         </>
     )
 }

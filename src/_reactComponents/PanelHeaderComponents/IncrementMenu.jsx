@@ -102,6 +102,13 @@ export default function Increment(props) {
     increaseIcon = <FontAwesomeIcon icon={faAngleRight} />;
   }
 
+  function valueChange(data) {
+    if (props.onChange) {
+      props.onChange(data);
+    }
+    setCurrentValue(data);
+  }
+
   //Creation of dropdown menus
   if (props.range) {
     for (let i = props.range[0]; i <= props.range[1]; i++) {
@@ -109,7 +116,9 @@ export default function Increment(props) {
         <MenuOptions
           id={i}
           onClick={function (e) {
-            setCurrentValue(i);
+            valueChange(i);
+            // setCurrentValue(i);
+            // props.onValueChange(i);
           }}
         >
           {i}
@@ -124,7 +133,9 @@ export default function Increment(props) {
         <MenuOptions
           id={i}
           onClick={function (e) {
-            setCurrentValue(sizes[i]);
+            // setCurrentValue(sizes[i]);
+            // props.onValueChange(sizes[i]);
+            valueChange(sizes[i]);
           }}
         >
           {sizes[i]}
@@ -139,7 +150,9 @@ export default function Increment(props) {
         <MenuOptions
           id={i}
           onClick={function (e) {
-            setCurrentValue(values[i]);
+            valueChange(values[i]);
+            // setCurrentValue(values[i]);
+            // props.onValueChange(values[i]);
           }}
         >
           {values[i]}
@@ -149,7 +162,9 @@ export default function Increment(props) {
   }
 
   function changeValue(e) {
-    setCurrentValue(e.target.value);
+    valueChange(e.target.value);
+    // setCurrentValue(e.target.value);
+    // props.onValueChange(e.target.value);
   }
 
   function decrement() {
@@ -157,18 +172,28 @@ export default function Increment(props) {
       var index = values.indexOf(currentValue);
       // setCurrentIndex();
       if (index !== -1 && index !== 0 && index < values.length) {
-        setCurrentValue(values[index - 1]);
+        valueChange(values[index-1]);
+        // setCurrentValue(values[index - 1]);
+        // props.onValueChange(values[index - 1]);
       } else if (index === -1) {
-        setCurrentValue(values[0]);
+        // setCurrentValue(values[0]);
+        // props.onValueChange(values[0]);
+        valueChange(values[0]);
       } else {
-        setCurrentValue(values[values.length - 1]);
+        // setCurrentValue(values[values.length - 1]);
+        // props.onValueChange(values[values.length - 1]);
+        valueChange(values[values.length - 1]);
       }
     } else if (props.range) {
       if (props.range[0] <= Number(currentValue) - 1) {
-        setCurrentValue(Number(currentValue) - 1);
+        // setCurrentValue(Number(currentValue) - 1);
+        // props.onValueChange(Number(currentValue) - 1);
+        valueChange(Number(currentValue) - 1);
       }
     } else {
-      setCurrentValue(Number(currentValue) - 1);
+      // setCurrentValue(Number(currentValue) - 1);
+      // props.onValueChange(Number(currentValue) - 1);
+      valueChange(Number(currentValue) - 1);
     }
   }
 
@@ -180,18 +205,28 @@ export default function Increment(props) {
       // console.log(currentIndex);
       if (index !== -1 && index < values.length - 1) {
         // console.log("are you there?");
-        setCurrentValue(values[index + 1]);
+        // setCurrentValue(values[index + 1]);
+        // props.onValueChange(values[index + 1]);
+        valueChange(values[index + 1]);
       } else if (index === -1) {
-        setCurrentValue(values[values.length - 1]);
+        // setCurrentValue(values[values.length - 1]);
+        // props.onValueChange(values[values.length - 1]);
+        valueChange(values[values.length - 1]);
       } else {
-        setCurrentValue(values[0]);
+        // setCurrentValue(values[0]);
+        // props.onValueChange(values[0]);
+        valueChange(values[0]);
       }
     } else if (props.range) {
       if (props.range[1] >= Number(currentValue) + 1) {
-        setCurrentValue(Number(currentValue) + 1);
+        valueChange(Number(currentValue) + 1);
+        // setCurrentValue(Number(currentValue) + 1);
+        // props.onValueChange(Number(currentValue) + 1);
       }
     } else {
-      setCurrentValue(Number(currentValue) + 1);
+      valueChange(Number(currentValue) + 1);
+      // setCurrentValue(Number(currentValue) + 1);
+      // props.onValueChange(Number(currentValue) + 1);
     }
   }
 
@@ -211,8 +246,9 @@ export default function Increment(props) {
           onClick={() => {
             displayMenu();
           }}
-          onChange={() => {
-            changeValue(event);
+          onChange={(data) => {
+            changeValue(data);
+            
           }}
         ></Textfield>
 

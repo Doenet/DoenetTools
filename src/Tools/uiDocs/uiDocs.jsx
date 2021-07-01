@@ -5,7 +5,7 @@ import {
   Route 
 } from 'react-router-dom';
 import styled from 'styled-components';
-import GlobalFont from "../../_utils/GlobalFont.js";
+// import GlobalFont from "../../_utils/GlobalFont.js";
 
 //=== COMPONENT IMPORTS ===
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.jsx";
@@ -13,11 +13,13 @@ import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/Acti
 import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.jsx";
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
 import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -58,6 +60,7 @@ const List = styled.ul`
 `
 
 export default function attempt() {
+  const font = () => {};
 
 //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -70,18 +73,10 @@ export default function attempt() {
       req_children: null,
       use: 'This is the simpler button styling. Can be used in ActionButtonGroup to place related buttons together.',
       props: [
-          {name: 'Size',
-          propPreview: '<ActionButton size="medium"/>',
-          propCode: {size: 'medium'},
-          description: 'The default is small, as shown above.'},
           {name: 'Width - Menu Panel',
           propPreview: '<ActionButton width="menu" />',
           propCode: {width: 'menu'},
           description: 'Sets width to fill menu panel width'},
-          {name: 'Width - Custom',
-          propPreview: '<ActionButton width="500px" />',
-          propCode: {width: '500px'},
-          description: 'Sets width to custom dimensions'},
           {name: 'Value',
           propPreview: '<ActionButton value="Edit"/>',
           propCode: {value: 'Edit'},
@@ -98,6 +93,10 @@ export default function attempt() {
           propPreview: '<ActionButton alert/>',
           propCode: {alert},
           description: 'Changes to alert mode (border is red)'},
+          {name: 'onClick',
+          propPreview: '<ActionButton onClick={() => console.log("clicked")} />',
+          propCode: {onClick: () => console.log("clicked")},
+          description: 'Function called when button is clicked'},
       ]
     },
     {
@@ -128,18 +127,10 @@ export default function attempt() {
       req_children: null,
       use: 'This style is more eye-catching. It is meant to be used when you want the user to do this thing! Click this button here!!',
       props: [
-          {name: 'Size',
-          propPreview: '<Button size="medium"/>',
-          propCode: {size: 'medium'},
-          description: 'The default is small, as shown above.'},
           {name: 'Width - Menu Panel',
           propPreview: '<Button width="menu" />',
           propCode: {width: 'menu'},
           description: 'Sets width to fill menu panel width'},
-          {name: 'Width - Custom',
-          propPreview: '<Button width="500px" />',
-          propCode: {width: '500px'},
-          description: 'Sets width to custom dimensions'},
           {name: 'Value',
           propPreview: '<Button value="This button is amazing!"/>',
           propCode: {value: 'This button is amazing!'},
@@ -156,6 +147,56 @@ export default function attempt() {
           propPreview: '<Button alert/>',
           propCode: {alert},
           description: 'Changes to alert mode (color is red)'},
+          {name: 'onClick',
+          propPreview: '<Button onClick={() => console.log("clicked")} />',
+          propCode: {onClick: () => console.log("clicked")},
+          description: 'Function called when button is clicked'},
+      ]
+    },
+    {
+      name: 'ButtonGroup',
+      id: 'buttongroup',
+      code: ButtonGroup,
+      codePreview: '<ButtonGroup> <Button/> <Button/> <Button/> </ButtonGroup>',
+      req_props: null,
+      req_children: [React.createElement(Button), React.createElement(Button), React.createElement(Button)],
+      use: 'This groups related buttons together.',
+    //   props: [
+    //     // {name: 'Width - Menu Panel',
+    //     // propPreview: '<ActionButtonGroup width="menu" />',
+    //     // propCode: {width: 'menu'},
+    //     // description: 'Sets width to fill menu panel width'},
+    //     // {name: 'Width - Custom',
+    //     // propPreview: '<ActionButtonGroup width="500px" />',
+    //     // propCode: {width: '500px'},
+    //     // description: 'Sets width to custom dimensions'},
+    //   ]
+    },
+    {
+      name: 'Increment',
+      id: 'increment',
+      code: Increment,
+      codePreview: '<Increment/>',
+      req_props: null,
+      req_children: null,
+      use: 'Text input with increment and decrement buttons. Also has dropdown menu to select given values',
+      props: [
+        {name: 'Font',
+        propPreview: '<Increment font/>',
+        propCode: {font},
+        description: 'Sets menu with default font values'},
+        {name: 'Range',
+        propPreview: '<Increment range={[0, 12]}/>',
+        propCode: {range: [0,12]},
+        description: 'Sets menu with range of numbers given - inclusive. Also restricts values to those withiin the given range'},
+        {name: 'Values',
+        propPreview: '<IncrementMenu values={["A", "B", "C", "D", "F"]} />',
+        propCode: {values: ["A", "B", "C", "D", "F"]},
+        description: 'Sets menu with given values'},
+        {name: 'onChange',
+        propPreview: '<IncrementMenu onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
       ]
     },
     {
@@ -170,11 +211,7 @@ export default function attempt() {
         {name: 'Width - Menu Panel',
         propPreview: '<SearchBar width="menu" />',
         propCode: {width: 'menu'},
-        description: 'Sets width to fill menu panel width'},
-        {name: 'Width - Custom',
-        propPreview: '<SearchBar width="500px" />',
-        propCode: {width: '500px'},
-        description: 'Sets width to custom dimensions'},
+        description: 'Sets width to fill menu panel width'}
       ]
     },
     {
@@ -186,18 +223,10 @@ export default function attempt() {
     req_children: null,
     use: 'This is where you can enter text.',
     props: [
-      {name: 'Size',
-      propPreview: '<Textfield size="medium"/>',
-      propCode: {size: 'medium'},
-      description: 'The default is small, as shown above.'},
       {name: 'Width - Menu Panel',
-        propPreview: '<Textfield width="menu" />',
-        propCode: {width: 'menu'},
-        description: 'Sets width to fill menu panel width'},
-        {name: 'Width - Custom',
-        propPreview: '<Textfield width="500px" />',
-        propCode: {width: '500px'},
-        description: 'Sets width to custom dimensions'},
+      propPreview: '<Textfield width="menu" />',
+      propCode: {width: 'menu'},
+      description: 'Sets width to fill menu panel width'},
       {name: 'Value',
       propPreview: '<Textfield value="Enter cat names"/>',
       propCode: {value: 'Enter cat names'},
@@ -206,6 +235,10 @@ export default function attempt() {
       propPreview: '<Textfield alert/>',
       propCode: {alert},
       description: 'Changes to alert mode (border is red)'},
+      {name: 'onChange',
+      propPreview: '<Textfield onChange={(data) => console.log(data)} />',
+      propCode: {onChange: (data) => console.log(data)},
+      description: 'Function called when data changes'},
       ]
     },
     {
@@ -217,18 +250,10 @@ export default function attempt() {
       req_props: null,
       req_children: null,
       props: [
-        {name: 'Size',
-        propPreview: '<ToggleButton size="medium"/>',
-        propCode: {size: 'medium'},
-        description: 'The default is small, as shown above.'},
         {name: 'Width - Menu Panel',
         propPreview: '<ToggleButton width="menu" />',
         propCode: {width: 'menu'},
         description: 'Sets width to fill menu panel width'},
-        {name: 'Width - Custom',
-        propPreview: '<ToggleButton width="500px" />',
-        propCode: {width: '500px'},
-        description: 'Sets width to custom dimensions'},
         {name: 'Value',
         propPreview: '<ToggleButton value="Select me"/>',
         propCode: {value: 'Select me'},
@@ -257,6 +282,10 @@ export default function attempt() {
         propPreview: '<ToggleButton alert/>',
         propCode: {alert},
         description: 'Changes to alert mode (main coloring is red)'},
+        {name: 'onClick',
+        propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
+        propCode: {onClick: (data) => console.log(data)},
+        description: 'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)'},
       ]
     },
     {
@@ -280,7 +309,11 @@ export default function attempt() {
         propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} label="Label: ">',
         propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: '},
         description: 'Adds label in front of the component. Dragging on the label will increment the value.'
-        }
+        },
+        {name: 'onChange',
+        propPreview: '<UnitMenu onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data), units: ['EM', 'PT', 'PX']},
+        description: 'Function called when data changes'},
         ]
       },
     {
@@ -404,7 +437,7 @@ export default function attempt() {
   return (
     <Router>
       <div>
-        <GlobalFont/>
+        {/* <GlobalFont/> */}
 
         <NavBar>
           <div style={{marginLeft: '10px'}}>

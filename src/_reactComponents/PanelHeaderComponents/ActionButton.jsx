@@ -30,16 +30,9 @@ export default function ActionButton(props) {
   var actionButton = {
         value: 'Action Button',
       };
-  if (props.size === "medium") {
-    actionButton.height = '36px',
-    actionButton.fontSize = '18px'
-  };
   if (props.width) {
     if (props.width === "menu") {
-      actionButton.width = '235px'
-    } else {
-      actionButton.width = props.width
-    }
+      actionButton.width = '235px'}
   }
   var icon = '';
   if (props.value || props.icon){
@@ -62,7 +55,7 @@ export default function ActionButton(props) {
     actionButton.borderRadius = '0px 5px 5px 0px'
   }
   function handleClick() {
-    if (props.callback) props.callback()
+    if (props.onClick) props.onClick()
   }
   //TODO handleClick() is not defined
     return (
