@@ -46,7 +46,7 @@ import DriveCards from "../_reactComponents/Drive/DriveCards.js";
 import "../_reactComponents/Drive/drivecard.css.proxy.js";
 import DoenetDriveCardMenu from "../_reactComponents/Drive/DoenetDriveCardMenu.js";
 import "../_utils/util.css.proxy.js";
-import GlobalFont from "../_utils/GlobalFont.js";
+// import GlobalFont from "../_utils/GlobalFont.js";
 import {driveColors, driveImages} from "../_reactComponents/Drive/util.js";
 import Tool from "../_framework/Tool.js";
 import {useToolControlHelper, ProfileContext} from "../_framework/ToolRoot.js";
@@ -771,7 +771,9 @@ export default function Library(props) {
   const history = useHistory();
   const profile = useContext(ProfileContext);
   if (profile.signedIn === "0" && !window.Cypress) {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, 
+      // /* @__PURE__ */ React.createElement(GlobalFont, null), 
+      /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
       title: "Library"
     }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
       style: {border: "1px solid grey", borderRadius: "20px", margin: "auto", marginTop: "10%", padding: "10px", width: "50%"}
@@ -795,7 +797,9 @@ export default function Library(props) {
   let supportBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
     drivePathSyncKey: "support"
   });
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(URLPathSync, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, 
+    // /* @__PURE__ */ React.createElement(GlobalFont, null), 
+    /* @__PURE__ */ React.createElement(URLPathSync, {
     route: props.route
   }), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("navPanel", {
     isInitOpen: true
