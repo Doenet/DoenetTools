@@ -308,8 +308,8 @@ export default function Slider(props) {
     let controls = '';
     if(SVs.showControls){
       controls = <>
-                <Button value="Prev"  callback = {(e)=>handlePrevious(e)} disabled />
-                <Button value="Next" callback = {(e)=>handleNext(e)} disabled />
+                <Button value="Prev"  onClick = {(e)=>handlePrevious(e)} disabled />
+                <Button value="Next" onClick = {(e)=>handleNext(e)} disabled />
                 </>
     }else{
       controls = null;
@@ -466,12 +466,12 @@ function handlePrevious(e) {
     controls =  <>
     <Button
       value="Prev"
-      callback={(e) => handlePrevious(e)}
+      onClick={(e) => handlePrevious(e)}
       data-cy="prevbutton"
     ></Button>
     <Button
       value="Next"
-      callback={(e) => handleNext(e)}
+      onClick={(e) => handleNext(e)}
       data-cy="nextbutton"
     ></Button>
   </>
