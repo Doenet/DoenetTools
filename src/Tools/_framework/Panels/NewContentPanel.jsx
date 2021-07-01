@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import {
-  atomFamily,
-  selectorFamily,
+  atom,
+  selector,
   useRecoilCallback,
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGripLinesVertical } from '@fortawesome/free-solid-svg-icons';
-import { useStackId } from '../ToolRoot';
-import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/Drive';
+// import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/Drive';
 
 const Wrapper = styled.div`
   grid-area: contentPanel;
@@ -39,15 +38,15 @@ const DragHandle = styled.div`
   box-sizing: border-box;
 `;
 
-const panelsInfoAtom = atomFamily({
+const panelsInfoAtom = atom({
   key: 'panelsInfoAtom',
   default: { propotion: 0.5, isActive: false },
 });
 
-const panelPropotion = selectorFamily({
+  const panelPropotion = selector({
   key: 'panelPropotion',
-  get: (id) => ({ get }) => {
-    const info = get(panelsInfoAtom(id));
+    get: ({ get }) => {
+    const info = get(panelsInfoAtom);
     return info.isActive ? info.propotion : 1;
   },
 });
@@ -56,10 +55,9 @@ const calcInfo = (num) =>
   num < 0.05 ? 0 : num < 0.1 ? 0.1 : num > 0.95 ? 1 : num > 0.9 ? 0.9 : num;
 
 export const useSupportDividerController = () => {
-  const stackId = useStackId();
   const supportController = useRecoilCallback(
     ({ set }) => (newIsActive, newProportion) => {
-      set(panelsInfoAtom(stackId), (oldInfo) => ({
+      set(panelsInfoAtom, (oldInfo) => ({
         isActive:
           newProportion === 1 ? false : newIsActive ?? !oldInfo.isActive,
         propotion:
@@ -68,7 +66,7 @@ export const useSupportDividerController = () => {
             : calcInfo(newProportion),
       }));
     },
-    [stackId],
+    [],
   );
   return supportController;
 };
@@ -77,10 +75,9 @@ export default function ContentPanel({ main, support }) {
   const wrapperRef = useRef();
   // const [hasRespCont, setHasRespCont] = useState(true);
   const hasRespCont = true;
-  const stackId = useStackId();
   const setDivider = useSupportDividerController();
-  const panelProportion = useRecoilValue(panelPropotion(stackId));
-  const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
+  const panelProportion = useRecoilValue(panelPropotion);
+  // const clearDriveSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   useEffect(() => {
     setDivider(support?.props.isInitOpen ?? false);
@@ -150,7 +147,7 @@ export default function ContentPanel({ main, support }) {
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseUp}
       ref={wrapperRef}
-      onClick={clearDriveSelections}
+      // onClick={clearDriveSelections}
       $hasRespCont={hasRespCont}
       $proportion={panelProportion}
     >

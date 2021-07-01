@@ -23,7 +23,7 @@ import Button from "../_reactComponents/PanelHeaderComponents/Button.js";
 import DriveCards from "../_reactComponents/Drive/DriveCards.js";
 import "../_reactComponents/Drive/drivecard.css.proxy.js";
 import "../_utils/util.css.proxy.js";
-import GlobalFont from "../_utils/GlobalFont.js";
+// import GlobalFont from "../_utils/GlobalFont.js";
 import Tool from "../_framework/Tool.js";
 import Switch from "../_framework/Switch.js";
 import {useToolControlHelper, ProfileContext} from "../_framework/ToolRoot.js";
@@ -199,7 +199,9 @@ export default function Course(props) {
   }
   const profile = useContext(ProfileContext);
   if (profile.signedIn === "0") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, 
+      // /* @__PURE__ */ React.createElement(GlobalFont, null), 
+      /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
       title: "Course"
     }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
       style: {
@@ -225,7 +227,9 @@ export default function Course(props) {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(URLPathSync, {
     route: props.route
-  }), /* @__PURE__ */ React.createElement(GlobalFont, null), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
+  }), 
+  // /* @__PURE__ */ React.createElement(GlobalFont, null), 
+  /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
     title: "Course"
   }), /* @__PURE__ */ React.createElement("navPanel", {
     isInitOpen: true
