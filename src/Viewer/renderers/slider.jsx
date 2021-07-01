@@ -61,7 +61,8 @@ const Label = styled.p`
 function generateNumericLabels (points, div_width, point_start_val,SVs) {
   let maxValueWidth = findMaxValueWidth(points);
   let showAllItems = false;
-  if(SVs.width.size > maxValueWidth * points.length){
+ const length = Object.keys(points).length;
+ if(SVs.width.size > maxValueWidth * length){
     showAllItems = true;
     return (
       [points.map((point, index) => (
@@ -98,30 +99,50 @@ function generateNumericLabels (points, div_width, point_start_val,SVs) {
       ]
   );
   }
-  else if(SVs.width.size < maxValueWidth * points.length){
+  else if(SVs.width.size < maxValueWidth * length){
+
         showAllItems = false;
     return (
       [points.map((point, index) => {
-        if(index == 0 || points.length === index + 1){
-        return <Tick key = {point} x = {`${index * 3 }px`}/>
-        }else if(index === Math.round(points.length/2)){
-          return <Tick key = {point} x = {`${index * 3}px`}/>
-        }else{
-          return '';
+        let countToShow = Math.round((SVs.width.size * Math.round(div_width)) / length) + 2;
+        let displayPoints = [];
+        for(let i=1; i<countToShow;i++){
+          displayPoints.push(Math.round((length/countToShow) * i));
+  
+        } 
+        if(index == 0 ){
+        return <Tick key = {point} x = "0px"/>
         }
-
+        // else if(point % (length/10) == 0){
+          else if(displayPoints.includes(point)){
+          return <Tick key = {point} x = {`${ (index * div_width)}px`}/>
+        }
+        else if(length === index + 1){
+          return <Tick key = {point} x = {`${index * div_width  }px`}/>
+        }
       }
           
       ),
       points.map((point, index) => {
-        if(index == 0 || points.length === index ){
-          return  <Label key = {point} x = {`${(index * 3) - 3}px`}>{point}</Label>
-
-        }else if(index == Math.round(points.length/2)){
-          return  <Label key = {point} x = {`${(index * 3) - 3}px`}>{"..."}</Label>
-
-        }else if(Math.round(points.length) == index + 1){
-          return  <Label key = {point} x = {`${(index * 3) - 3}px`}>{point}</Label>
+      let countToShow = Math.round((SVs.width.size * Math.round(div_width)) / length) + 2;
+      
+      let displayPoints = [];
+      // displayPoints = points.filter((item)=> item % Math.round(length /countToShow) == 0) 
+      // // displayPoints.pop();
+      for(let i=1; i<countToShow;i++){
+        displayPoints.push(Math.round((length/countToShow) * i));
+      } 
+      // console.log(">>>displayPoints",displayPoints);
+      // console.log(">>>countToShow",countToShow);
+        if(index == 0){
+          return  <Label key = {point} x = "0px">{point}</Label>
+        }
+        else if(displayPoints.includes(point)){
+          // console.log(">>>>divWidth",div_width * index, "length",length,"index",index);
+           return  <Label key = {point} x = {`${(index * div_width)}px`}>{point}</Label>
+        }
+        else if(length  ==  index + 1 ){
+          return  <Label key = {point} x = {`${index * div_width }px`}>{point}</Label>
 
         }
       }   
@@ -153,8 +174,11 @@ return currWidth.toString().length * 12;
 
 function generateTextLabels (points, div_width,SVs) {
   let maxValueWidth = findMaxValueWidth(points);
+  console.log(">>>maxValueWidth",maxValueWidth);
+  const length = Object.keys(points).length;
+
   let showAllItems = false;
-  if(SVs.width.size > maxValueWidth * points.length){
+  if(SVs.width.size > maxValueWidth * length){
     showAllItems = true;
     return (
       [points.map((point, index) => (
@@ -191,7 +215,7 @@ function generateTextLabels (points, div_width,SVs) {
       ]
   );
   }
-  else if(SVs.width.size < maxValueWidth * points.length){
+  else if(SVs.width.size < maxValueWidth * length){
     showAllItems = false;
     return (
       [points.map((point, index) => (
@@ -199,11 +223,11 @@ function generateTextLabels (points, div_width,SVs) {
           )
       ),
       points.map((point, index) => {
-        if(index == 0 || points.length === index + 1){
+        if(index == 0 || length === index + 1){
           return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point}</Label>
 
         }else{
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{"..."}</Label>
+          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point.length < 3 ? point : point.substr(0,3) + "..." }</Label>
 
         }
       }   
@@ -243,19 +267,19 @@ export default function Slider(props) {
   //console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
 
   const containerRef = useRef(null);
-
-  let sorted_points = [...SVs.items].sort((p1, p2) => p1 - p2);
+// console.log("SVs",SVs);
+  // let sorted_points = [...SVs.items].sort((p1, p2) => p1 - p2);
 
   const [thumbXPos, setThumbXPos] = useState(0);
-  const [thumbValue, setThumbValue] = useState((SVs.sliderType === "text") ? SVs.items[0] : sorted_points[0]);
+  const [thumbValue, setThumbValue] = useState((SVs.sliderType === "text") ? SVs.items[0] :  Math.min(...SVs.items));
   const [isMouseDown, setIsMouseDown] = useState(0);
   const [offsetLeft, setOffsetLeft] = useState(0);
-  const [startValue, setStartValue] = useState((SVs.sliderType === "text") ? 0 : sorted_points[0]);
-  const [endValue, setEndValue] = useState((SVs.sliderType === "text") ? 0 : sorted_points[sorted_points.length - 1]);
-  const [divisionWidth, setDivisionWidth] = useState((SVs.sliderType === "text") ? SVs.width.size/(SVs.items.length - 1) : SVs.width.size/(endValue - startValue));
+  const startValue = (SVs.sliderType === "text") ? 0 : Math.min(...SVs.items);
+  const endValue = (SVs.sliderType === "text") ? 0 : Math.max(...SVs.items);
+  const divisionWidth = SVs.sliderType === "text" ? SVs.width.size/(SVs.items.length - 1) : SVs.width.size/(endValue - startValue);
+
   const [index, setIndex] = useState(0);
-
-
+   const width = (SVs.width.size);
   useEffect(() => {
       if(containerRef.current){
           const rect = containerRef.current.getBoundingClientRect();
@@ -281,23 +305,44 @@ export default function Slider(props) {
   }
 
   if(SVs.disabled) {
-    return (
-        <SliderContainer labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} ref = {containerRef}>
-            <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
-                {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
-                {SVs.showControls? <>
+    let controls = '';
+    if(SVs.showControls){
+      controls = <>
                 <Button value="Prev"  callback = {(e)=>handlePrevious(e)} disabled />
                 <Button value="Next" callback = {(e)=>handleNext(e)} disabled />
-
-                </> : null}
-            </div>
-            <SubContainer2>
-                <StyledSlider width = {`${SVs.width.size}px`} >
-                <StyledThumb disabled style={{left: `${-3}px`}}/>
-                {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth,SVs) : generateNumericLabels(SVs.items, divisionWidth, startValue,SVs))}
-                </StyledSlider>
-            </SubContainer2>
-        </SliderContainer>
+                </>
+    }else{
+      controls = null;
+    }
+    let labels = '';
+    if(SVs.sliderType === 'text'){
+      labels = generateTextLabels(SVs.items, divisionWidth, SVs)
+    }else{
+      labels = generateNumericLabels(SVs.items, divisionWidth, startValue, SVs)
+    }
+    let ticksAndLabels = '' ;
+    if(SVs.showTicks === false){
+      ticksAndLabels = null
+    }else{
+      ticksAndLabels = labels;
+    }
+    return (
+      <SliderContainer
+        labeled={SVs.showControls || SVs.label}
+        noTicked={SVs.showTicks === false}
+        ref={containerRef}
+      >
+        <div style={{ height: SVs.showControls || SVs.label ? '20px' : '0px' }}>
+          {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
+          {controls}
+        </div>
+        <SubContainer2>
+          <StyledSlider width={`${SVs.width.size}px`}>
+            <StyledThumb disabled style={{ left: `${-3}px` }} />
+            {ticksAndLabels}
+          </StyledSlider>
+        </SubContainer2>
+      </SliderContainer>
     );
 }
 function handleDragEnter(e) {
@@ -404,16 +449,41 @@ function handlePrevious(e) {
     setThumbValue(SVs.items[index-1]);
     setIndex(index - 1);
 }
-  
+  let labels = '';
+  if(SVs.sliderType === 'text'){
+    labels = generateTextLabels(SVs.items, divisionWidth, SVs)
+  }else{
+    labels = generateNumericLabels(SVs.items, divisionWidth, startValue, SVs)
+  }
+  let ticksAndLabels = '' ;
+  if(SVs.showTicks === false){
+    ticksAndLabels = null
+  }else{
+    ticksAndLabels = labels;
+  }
+  let controls = '';
+  if(SVs.showControls){
+    controls =  <>
+    <Button
+      value="Prev"
+      callback={(e) => handlePrevious(e)}
+      data-cy="prevbutton"
+    ></Button>
+    <Button
+      value="Next"
+      callback={(e) => handleNext(e)}
+      data-cy="nextbutton"
+    ></Button>
+  </>
+  }else{
+    null
+  }
   return (
     <SliderContainer  ref = {containerRef} labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} >
-        <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
+      <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
             {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
             {/* TODO */}
-            {SVs.showControls? <>
-              <Button value="Prev"  callback = {(e)=>handlePrevious(e)} data-cy="prevbutton" ></Button>  
-              <Button value="Next" callback = {(e)=>handleNext(e)} data-cy="nextbutton" ></Button>
-            </> : null}
+        {controls}
         </div>
         <SubContainer2 onMouseDown = {handleDragEnter} onMouseUp = {handleDragExit} onMouseMove = {handleDragThrough} onMouseLeave = {handleDragExit} >
             <StyledSlider width = {(`${SVs.width.size}px`)} data-cy="slider1">
@@ -423,7 +493,7 @@ function handlePrevious(e) {
                 data-cy="slider1-handle"/>
             }}
             </Spring>
-            {(SVs.showTicks === false) ? null : ((SVs.sliderType === "text") ? generateTextLabels(SVs.items, divisionWidth,SVs) : generateNumericLabels(SVs.items, divisionWidth, startValue,SVs))}
+            {ticksAndLabels}
             </StyledSlider>
         </SubContainer2>
     </SliderContainer>
