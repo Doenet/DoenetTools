@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
 // import { useHistory } from 'react-router';
 import Button from '../temp/Button'
-import { useRecoilCallback, useSetRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler'
 import { toolViewAtom } from '../NewToolRoot';
+import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 
-export default function DriveCards(props){
-  console.log(">>>===DriveCards")
+export default function DriveCardsNew(props){
+  console.log(">>>===DriveCards");
+  console.log(">>drivecardSelectedNodesAtom",drivecardSelectedNodesAtom);
+  const driveId = useRecoilValue(drivecardSelectedNodesAtom);
   const setSelectedCourse = useRecoilCallback(({set})=>(driveIds)=>{
     console.log(">>>driveId",driveIds);
     set(drivecardSelectedNodesAtom,driveIds)
@@ -33,7 +36,11 @@ export default function DriveCards(props){
   // const [count,setCount] = useState(0)
   // let history = useHistory();
   return <div style={props.style}><h1>Drive Cards</h1>
-  <p>put Drive Cards here</p>
+  {driveId.map(item => {
+    return (
+      <p>{item.label}</p>
+      )
+  })}
   <hr />
 
   <h2>Selection Experiment</h2>
