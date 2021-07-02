@@ -5,6 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import Profile from '../Profile';
 
+export const selectedMenuPanelAtom = atom({
+  key:"selectedMenuPanelAtom",
+  default:null
+}) 
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -94,12 +98,7 @@ border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} 
 margin-top: 2px;
 `
 
-export const selectedMenuPanelAtom = atom({
-  key:"selectedMenuPanelAtom",
-  default:null
-}) 
-
-function SelectionMenuPanel(props){
+function SelectionMenu(props){
 
   return <>
     <div style={{
@@ -175,12 +174,17 @@ console.log(">>>===MenuPanel")
     const panelToUse = LazyObj[currentSelectionMenu];
     //protect from typos
     if (panelToUse){
-      const key = `SelectionMenuPanel${currentSelectionMenu}`
-      selectionPanel = <SelectionMenuPanel key={key}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-      {React.createElement(panelToUse,{key})}
-      </Suspense></SelectionMenuPanel>
+      const key = `SelectionMenu${currentSelectionMenu}`
+      selectionPanel = <SelectionMenu key={key}>
+        <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+        {React.createElement(panelToUse,{key})}
+        </Suspense></SelectionMenu>
     }
   }
+
+  
+
+  console.log(">>>selectionPanel",selectionPanel)
 
   function buildMenu({key,type,title,visible,initOpen}){
     let hideStyle = null;
