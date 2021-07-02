@@ -32,11 +32,11 @@ border: none;
 display: inline-block;
 `;
 
-export default function MainPanel({ headerControls, headerControlsPositions, children, setMenuPanelsOpen, displayProfile }) {
+export default function MainPanel({ headerControls, headerControlsPositions, children, setMenusOpen, displayProfile }) {
   console.log(">>>===main panel")
   const controls = [];
   if (displayProfile){
-    controls.push(<OpenButton key='openbutton' onClick={()=>setMenuPanelsOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton>)
+    controls.push(<OpenButton key='openbutton' onClick={()=>setMenusOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton>)
     controls.push(<Profile key='profile'/>)
   }
   if (headerControls){
