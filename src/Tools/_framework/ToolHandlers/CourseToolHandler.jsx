@@ -11,7 +11,7 @@ export default function CourseToolHandler(props){
   console.log(">>>===CourseToolHandler")
   let lastTool = useRef(null);
   const setTool = useRecoilCallback(({set})=> (tool,lastTool)=>{
-    console.log(`>>>setTool >${tool}< >${lastTool}<`)
+    // console.log(`>>>setTool >${tool}< >${lastTool}<`)
     //Set starting tool
     if (tool === ""){
       tool = 'courseChooser';
@@ -29,6 +29,13 @@ export default function CourseToolHandler(props){
           newObj.menusInitOpen = [true,false];
           return newObj;
         });
+      }else if (tool === 'file'){
+        console.log(">>>file!")
+        // set(toolViewAtom,(was)=>{
+        //   let newObj = {...was}
+        //   newObj.currentMainPanel = "DriveCards";
+        //   return newObj;
+        // });
       }else if (tool === 'editor'){
         console.log(">>>editor!")
         // set(toolViewAtom,(was)=>{

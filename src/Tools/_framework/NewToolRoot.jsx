@@ -141,7 +141,7 @@ export default function ToolRoot(props){
   const lastSupportPanelKey = useRef(null)
   const supportPanelDictionary = useRef({}) //key -> {index, type}
   // const [supportContentObj,setSupportContentObj] = useState({})
-  const [menuPanelsOpen,setMenuPanelsOpen] = useState(true)
+  const [menusOpen,setMenusOpen] = useState(true)
 
   const setPage = useRecoilCallback(({set})=> (tool,origPath)=>{
     if (tool === ""){ 
@@ -324,12 +324,12 @@ export default function ToolRoot(props){
     supportPanel = <SupportPanel hide={false} panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
-  let menus = <MenuPanel hide={true} />;
-  if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanel){
-    menus = <MenuPanel hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menusTitles} currentPanels={toolViewInfo.currentMenus} initOpen={toolViewInfo.menusInitOpen}/>
+  let menus = <MenuPanel key='menuPanel' hide={true} />;
+  if (menusOpen && !toolViewInfo.hasNoMenuPanel){
+    menus = <MenuPanel key='menuPanel' hide={false} setMenusOpen={setMenusOpen} menusOpen={menusOpen} menusTitles={toolViewInfo.menusTitles} currentMenus={toolViewInfo.currentMenus} initOpen={toolViewInfo.menusInitOpen}/>
   }
 
-  let profileInMainPanel = !menuPanelsOpen;
+  let profileInMainPanel = !menusOpen;
   if (toolViewInfo.hasNoMenuPanel){
     profileInMainPanel = false;
   }
@@ -338,7 +338,7 @@ export default function ToolRoot(props){
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
     
