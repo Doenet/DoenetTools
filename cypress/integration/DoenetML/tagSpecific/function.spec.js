@@ -32,7 +32,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(0, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -60,7 +60,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -87,7 +87,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -114,7 +114,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(1)).closeTo(2 + 1, 1E-12);
       expect(f(2)).closeTo(2 + 4, 1E-12);
@@ -141,7 +141,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1, 1E-12);
       expect(f(6)).closeTo(2 + 4, 1E-12);
@@ -168,7 +168,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(3)).closeTo(2 + 1 * 5, 1E-12);
       expect(f(6)).closeTo(2 + 4 * 5, 1E-12);
@@ -195,7 +195,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(1)).closeTo(3 - 1, 1E-12);
       expect(f(2)).closeTo(3 - 4, 1E-12);
@@ -222,7 +222,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1, 1E-12);
       expect(f(6)).closeTo(3 - 4, 1E-12);
@@ -249,7 +249,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(3, 1E-12);
       expect(f(3)).closeTo(3 - 1 * 5, 1E-12);
       expect(f(6)).closeTo(3 - 4 * 5, 1E-12);
@@ -276,7 +276,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -301,7 +301,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(4, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(0, 1E-12);
@@ -326,7 +326,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(4 - 3, 1E-12);
       expect(f(1)).closeTo(1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -351,7 +351,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(-4 - 3, 1E-12);
       expect(f(1)).closeTo(-1 - 3, 1E-12);
       expect(f(2)).closeTo(0 - 3, 1E-12);
@@ -376,7 +376,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -407,7 +407,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -438,7 +438,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(0, 1E-12);
       expect(f(1)).closeTo(1, 1E-12);
       expect(f(0.5)).closeTo(0.5, 1E-12);
@@ -469,7 +469,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(2, 1E-12);
@@ -500,7 +500,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -531,7 +531,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(0)).closeTo(5, 1E-12);
@@ -562,7 +562,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(0, 1E-12);
@@ -591,7 +591,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(1, 1E-12);
       expect(f(-3)).closeTo(0, 1E-12);
       expect(f(0)).closeTo(0, 1E-12);
@@ -617,7 +617,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(-2 + 4 / 3)).closeTo(4, 1E-12);
@@ -646,7 +646,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(4, 1E-12);
       expect(f(0)).closeTo(4, 1E-12);
@@ -672,7 +672,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(3, 1E-12);
       expect(f(-3)).closeTo(2, 1E-12);
       expect(f(0)).closeTo(1, 1E-12);
@@ -698,7 +698,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-2)).closeTo(2, 1E-12);
       expect(f(-5)).closeTo(0, 1E-12);
       expect(f(-6)).closeTo(-1, 1E-12);
@@ -733,7 +733,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1, 1E-12);
       expect(f(-12)).closeTo(-1, 1E-12);
@@ -757,7 +757,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 3 * (-12 + 6), 1E-12);
@@ -782,7 +782,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -792,7 +792,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 2 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 2 * (-12 + 6), 1E-12);
@@ -802,7 +802,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 - 3 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 - 3 * (-12 + 6), 1E-12);
@@ -812,7 +812,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 0 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 0 * (-12 + 6), 1E-12);
@@ -840,7 +840,7 @@ describe('Function Tag Tests', function () {
     cy.log('with undefined slope, get line through points')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -850,7 +850,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("2{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * 2, 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * 2, 1E-3);
@@ -869,7 +869,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6 - 0.01)).closeTo(-1 - 0.01 * (-3), 1E-3);
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-6 + 0.01)).closeTo(-1 + 0.01 * (-3), 1E-3);
@@ -887,7 +887,7 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}", { force: true }).blur();
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-6)).closeTo(-1, 1E-12);
       expect(f(-2)).closeTo(-1 + 1 * (-2 + 6), 1E-12);
       expect(f(-12)).closeTo(-1 + 1 * (-12 + 6), 1E-12);
@@ -913,7 +913,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(2)).closeTo(1, 1E-12);
       expect(f(3)).closeTo(2, 1E-12);
@@ -947,7 +947,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       expect(f(-0.01)).closeTo(2 - 0.01 * 0.5, 1E-3)
       expect(f(0)).closeTo(2, 1E-12);
       expect(f(0.01)).closeTo(2 + 0.01 * 0.5, 1E-3)
@@ -989,7 +989,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       assert.isNaN(f(0));
       assert.isNaN(f(1));
       assert.isNaN(f(2));
@@ -1012,7 +1012,7 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
+      let f = components['/_function1'].stateValues.fs[0];
       for (let x = -5; x <= 6; x += 0.1) {
         expect(f(x - 0.1)).lessThan(f(x));
       }
@@ -1096,9 +1096,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1129,9 +1129,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -1162,9 +1162,9 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1194,9 +1194,9 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       expect(f(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
@@ -1228,9 +1228,9 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -1260,9 +1260,9 @@ describe('Function Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
       expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
@@ -2154,7 +2154,7 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.f(-2)).eq(2 * (-2) ** 3 + 1)
+      expect(components["/_function1"].stateValues.fs[0](-2)).eq(2 * (-2) ** 3 + 1)
     });
 
 
@@ -2167,7 +2167,7 @@ describe('Function Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      expect(components["/_function1"].stateValues.f(-2)).eq(4 * (-2) ** 3 + 1)
+      expect(components["/_function1"].stateValues.fs[0](-2)).eq(4 * (-2) ** 3 + 1)
     });
 
   });
@@ -2369,8 +2369,8 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       expect(components["/f"].state.formula.isResolved).eq(true);
-      expect(components["/f"].state.symbolicf.isResolved).eq(false);
-      expect(components["/f"].state.numericalf.isResolved).eq(false);
+      expect(components["/f"].state.symbolicfs.isResolved).eq(false);
+      expect(components["/f"].state.numericalfs.isResolved).eq(false);
       expect(components["/f"].state.allMaxima.isResolved).eq(false);
       expect(components["/f"].state.allMinima.isResolved).eq(false);
       expect(components["/f"].state.allExtrema.isResolved).eq(false);
@@ -2382,8 +2382,8 @@ describe('Function Tag Tests', function () {
       expect(components["/f"].state.extrema.isResolved).eq(false);
 
       expect(components["/f2"].state.formula.isResolved).eq(true);
-      expect(components["/f2"].state.symbolicf.isResolved).eq(false);
-      expect(components["/f2"].state.numericalf.isResolved).eq(false);
+      expect(components["/f2"].state.symbolicfs.isResolved).eq(false);
+      expect(components["/f2"].state.numericalfs.isResolved).eq(false);
       expect(components["/f2"].state.allMaxima.isResolved).eq(false);
       expect(components["/f2"].state.allMinima.isResolved).eq(false);
       expect(components["/f2"].state.allExtrema.isResolved).eq(false);
@@ -2395,8 +2395,8 @@ describe('Function Tag Tests', function () {
       expect(components["/f2"].state.extrema.isResolved).eq(false);
 
       expect(components["/f3"].state.formula.isResolved).eq(true);
-      expect(components["/f3"].state.symbolicf.isResolved).eq(false);
-      expect(components["/f3"].state.numericalf.isResolved).eq(false);
+      expect(components["/f3"].state.symbolicfs.isResolved).eq(false);
+      expect(components["/f3"].state.numericalfs.isResolved).eq(false);
       expect(components["/f3"].state.allMaxima.isResolved).eq(false);
       expect(components["/f3"].state.allMinima.isResolved).eq(false);
       expect(components["/f3"].state.allExtrema.isResolved).eq(false);
@@ -2408,8 +2408,8 @@ describe('Function Tag Tests', function () {
       expect(components["/f3"].state.extrema.isResolved).eq(false);
 
       expect(components["/g"].state.formula.isResolved).eq(true);
-      expect(components["/g"].state.symbolicf.isResolved).eq(false);
-      expect(components["/g"].state.numericalf.isResolved).eq(false);
+      expect(components["/g"].state.symbolicfs.isResolved).eq(false);
+      expect(components["/g"].state.numericalfs.isResolved).eq(false);
       expect(components["/g"].state.allMaxima.isResolved).eq(false);
       expect(components["/g"].state.allMinima.isResolved).eq(false);
       expect(components["/g"].state.allExtrema.isResolved).eq(false);
@@ -2421,8 +2421,8 @@ describe('Function Tag Tests', function () {
       expect(components["/g"].state.extrema.isResolved).eq(false);
 
       expect(components["/g2"].state.formula.isResolved).eq(true);
-      expect(components["/g2"].state.symbolicf.isResolved).eq(false);
-      expect(components["/g2"].state.numericalf.isResolved).eq(false);
+      expect(components["/g2"].state.symbolicfs.isResolved).eq(false);
+      expect(components["/g2"].state.numericalfs.isResolved).eq(false);
       expect(components["/g2"].state.allMaxima.isResolved).eq(false);
       expect(components["/g2"].state.allMinima.isResolved).eq(false);
       expect(components["/g2"].state.allExtrema.isResolved).eq(false);
@@ -2434,8 +2434,8 @@ describe('Function Tag Tests', function () {
       expect(components["/g2"].state.extrema.isResolved).eq(false);
 
       expect(components["/g3"].state.formula.isResolved).eq(true);
-      expect(components["/g3"].state.symbolicf.isResolved).eq(false);
-      expect(components["/g3"].state.numericalf.isResolved).eq(false);
+      expect(components["/g3"].state.symbolicfs.isResolved).eq(false);
+      expect(components["/g3"].state.numericalfs.isResolved).eq(false);
       expect(components["/g3"].state.allMaxima.isResolved).eq(false);
       expect(components["/g3"].state.allMinima.isResolved).eq(false);
       expect(components["/g3"].state.allExtrema.isResolved).eq(false);
@@ -2467,9 +2467,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(1);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
       expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
@@ -2498,9 +2498,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -2529,9 +2529,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -2560,9 +2560,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(2);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5, 7)).closeTo(3 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4)).closeTo(3 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -2591,9 +2591,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -2622,9 +2622,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(3);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5, 7, -2)).closeTo(-2 / (7 + Math.exp(5 / 2)), 1E-12);
       expect(f(1, 4, -9)).closeTo(-9 / (4 + Math.exp(-1 / 2)), 1E-12);
@@ -2653,9 +2653,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
@@ -2684,9 +2684,9 @@ describe('Function Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_function1'].stateValues.nInputs).eq(4);
 
-      let f = components['/_function1'].stateValues.f;
-      let numericalf = components['/_function1'].stateValues.numericalf;
-      let symbolicf = components['/_function1'].stateValues.symbolicf;
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
 
       expect(f(-5, 7, -2, 6)).closeTo(-2 / (7 + Math.exp(5 / 2)) + 6, 1E-12);
       expect(f(1, 4, -9, -8)).closeTo(-9 / (4 + Math.exp(-1 / 2)) - 8, 1E-12);
@@ -2698,5 +2698,337 @@ describe('Function Tag Tests', function () {
 
     })
   });
+
+  it('2D vector-valued function of a single variable', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function formula="(x^2, x^3)" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+
+      let f1 = components['/_function1'].stateValues.fs[0];
+      let f2 = components['/_function1'].stateValues.fs[1];
+      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
+      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
+      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
+      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+
+      expect(f1(-5)).closeTo(25, 1E-12);
+      expect(f2(-5)).closeTo(-125, 1E-12);
+      expect(f1(3)).closeTo(9, 1E-12);
+      expect(f2(3)).closeTo(27, 1E-12);
+      expect(numericalf1(-5)).closeTo(25, 1E-12);
+      expect(numericalf2(-5)).closeTo(-125, 1E-12);
+      expect(numericalf1(3)).closeTo(9, 1E-12);
+      expect(numericalf2(3)).closeTo(27, 1E-12);
+      expect(symbolicf1(-5).equals(me.fromText('(-5)^2'))).eq(true);
+      expect(symbolicf2(-5).equals(me.fromText('(-5)^3'))).eq(true);
+      expect(symbolicf1(3).equals(me.fromText('3^2'))).eq(true);
+      expect(symbolicf2(3).equals(me.fromText('3^3'))).eq(true);
+      expect(symbolicf1('z').equals(me.fromText('z^2'))).eq(true);
+      expect(symbolicf2('z').equals(me.fromText('z^3'))).eq(true);
+
+
+    })
+  })
+
+  it('2D vector-valued function of a single variable, specify variable', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="t" formula="(t^2, t^3)" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+
+      let f1 = components['/_function1'].stateValues.fs[0];
+      let f2 = components['/_function1'].stateValues.fs[1];
+      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
+      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
+      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
+      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+
+      expect(f1(-5)).closeTo(25, 1E-12);
+      expect(f2(-5)).closeTo(-125, 1E-12);
+      expect(f1(3)).closeTo(9, 1E-12);
+      expect(f2(3)).closeTo(27, 1E-12);
+      expect(numericalf1(-5)).closeTo(25, 1E-12);
+      expect(numericalf2(-5)).closeTo(-125, 1E-12);
+      expect(numericalf1(3)).closeTo(9, 1E-12);
+      expect(numericalf2(3)).closeTo(27, 1E-12);
+      expect(symbolicf1(-5).equals(me.fromText('(-5)^2'))).eq(true);
+      expect(symbolicf2(-5).equals(me.fromText('(-5)^3'))).eq(true);
+      expect(symbolicf1(3).equals(me.fromText('3^2'))).eq(true);
+      expect(symbolicf2(3).equals(me.fromText('3^3'))).eq(true);
+      expect(symbolicf1('z').equals(me.fromText('z^2'))).eq(true);
+      expect(symbolicf2('z').equals(me.fromText('z^3'))).eq(true);
+
+
+    })
+  })
+
+  it('2D vector-valued function of a single variable, specify nOutputs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="t" nOutputs="2" formula="(t^2, t^3)" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+
+      let f1 = components['/_function1'].stateValues.fs[0];
+      let f2 = components['/_function1'].stateValues.fs[1];
+      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
+      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
+      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
+      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+
+      expect(f1(-5)).closeTo(25, 1E-12);
+      expect(f2(-5)).closeTo(-125, 1E-12);
+      expect(f1(3)).closeTo(9, 1E-12);
+      expect(f2(3)).closeTo(27, 1E-12);
+      expect(numericalf1(-5)).closeTo(25, 1E-12);
+      expect(numericalf2(-5)).closeTo(-125, 1E-12);
+      expect(numericalf1(3)).closeTo(9, 1E-12);
+      expect(numericalf2(3)).closeTo(27, 1E-12);
+      expect(symbolicf1(-5).equals(me.fromText('(-5)^2'))).eq(true);
+      expect(symbolicf2(-5).equals(me.fromText('(-5)^3'))).eq(true);
+      expect(symbolicf1(3).equals(me.fromText('3^2'))).eq(true);
+      expect(symbolicf2(3).equals(me.fromText('3^3'))).eq(true);
+      expect(symbolicf1('z').equals(me.fromText('z^2'))).eq(true);
+      expect(symbolicf2('z').equals(me.fromText('z^3'))).eq(true);
+
+
+    })
+  })
+
+  it('3D vector-valued function of a single variable', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function formula="(x^2, x^3, x^4)" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(components['/_function1'].stateValues.nOutputs).eq(3);
+
+      let f1 = components['/_function1'].stateValues.fs[0];
+      let f2 = components['/_function1'].stateValues.fs[1];
+      let f3 = components['/_function1'].stateValues.fs[2];
+      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
+      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
+      let numericalf3 = components['/_function1'].stateValues.numericalfs[2];
+      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
+      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+      let symbolicf3 = components['/_function1'].stateValues.symbolicfs[2];
+
+      expect(f1(-5)).closeTo(25, 1E-12);
+      expect(f2(-5)).closeTo(-125, 1E-12);
+      expect(f3(-5)).closeTo(625, 1E-12);
+      expect(f1(3)).closeTo(9, 1E-12);
+      expect(f2(3)).closeTo(27, 1E-12);
+      expect(f3(3)).closeTo(81, 1E-12);
+      expect(numericalf1(-5)).closeTo(25, 1E-12);
+      expect(numericalf2(-5)).closeTo(-125, 1E-12);
+      expect(numericalf3(-5)).closeTo(625, 1E-12);
+      expect(numericalf1(3)).closeTo(9, 1E-12);
+      expect(numericalf2(3)).closeTo(27, 1E-12);
+      expect(numericalf3(3)).closeTo(81, 1E-12);
+      expect(symbolicf1(-5).equals(me.fromText('(-5)^2'))).eq(true);
+      expect(symbolicf2(-5).equals(me.fromText('(-5)^3'))).eq(true);
+      expect(symbolicf3(-5).equals(me.fromText('(-5)^4'))).eq(true);
+      expect(symbolicf1(3).equals(me.fromText('3^2'))).eq(true);
+      expect(symbolicf2(3).equals(me.fromText('3^3'))).eq(true);
+      expect(symbolicf3(3).equals(me.fromText('3^4'))).eq(true);
+      expect(symbolicf1('z').equals(me.fromText('z^2'))).eq(true);
+      expect(symbolicf2('z').equals(me.fromText('z^3'))).eq(true);
+      expect(symbolicf3('z').equals(me.fromText('z^4'))).eq(true);
+
+
+    })
+  })
+
+  it('3D vector-valued function of a single variable, specify variable', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="t" formula="(t^2, t^3, t^4)" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+      expect(components['/_function1'].stateValues.nOutputs).eq(3);
+
+      let f1 = components['/_function1'].stateValues.fs[0];
+      let f2 = components['/_function1'].stateValues.fs[1];
+      let f3 = components['/_function1'].stateValues.fs[2];
+      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
+      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
+      let numericalf3 = components['/_function1'].stateValues.numericalfs[2];
+      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
+      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+      let symbolicf3 = components['/_function1'].stateValues.symbolicfs[2];
+
+      expect(f1(-5)).closeTo(25, 1E-12);
+      expect(f2(-5)).closeTo(-125, 1E-12);
+      expect(f3(-5)).closeTo(625, 1E-12);
+      expect(f1(3)).closeTo(9, 1E-12);
+      expect(f2(3)).closeTo(27, 1E-12);
+      expect(f3(3)).closeTo(81, 1E-12);
+      expect(numericalf1(-5)).closeTo(25, 1E-12);
+      expect(numericalf2(-5)).closeTo(-125, 1E-12);
+      expect(numericalf3(-5)).closeTo(625, 1E-12);
+      expect(numericalf1(3)).closeTo(9, 1E-12);
+      expect(numericalf2(3)).closeTo(27, 1E-12);
+      expect(numericalf3(3)).closeTo(81, 1E-12);
+      expect(symbolicf1(-5).equals(me.fromText('(-5)^2'))).eq(true);
+      expect(symbolicf2(-5).equals(me.fromText('(-5)^3'))).eq(true);
+      expect(symbolicf3(-5).equals(me.fromText('(-5)^4'))).eq(true);
+      expect(symbolicf1(3).equals(me.fromText('3^2'))).eq(true);
+      expect(symbolicf2(3).equals(me.fromText('3^3'))).eq(true);
+      expect(symbolicf3(3).equals(me.fromText('3^4'))).eq(true);
+      expect(symbolicf1('z').equals(me.fromText('z^2'))).eq(true);
+      expect(symbolicf2('z').equals(me.fromText('z^3'))).eq(true);
+      expect(symbolicf3('z').equals(me.fromText('z^4'))).eq(true);
+
+
+    })
+  })
+
+  it('2D vector-valued function of two variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function nInputs="2" formula="(x^2y^3, x^3y^2)" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(2);
+      expect(components['/_function1'].stateValues.nOutputs).eq(2);
+
+      let f1 = components['/_function1'].stateValues.fs[0];
+      let f2 = components['/_function1'].stateValues.fs[1];
+      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
+      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
+      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
+      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+
+      expect(f1(-5,2)).closeTo(200, 1E-12);
+      expect(f2(-5,2)).closeTo(-500, 1E-12);
+      expect(f1(3,-4)).closeTo(-576, 1E-12);
+      expect(f2(3, -4)).closeTo(432, 1E-12);
+      expect(numericalf1(-5,2)).closeTo(200, 1E-12);
+      expect(numericalf2(-5,2)).closeTo(-500, 1E-12);
+      expect(numericalf1(3,-4)).closeTo(-576, 1E-12);
+      expect(numericalf2(3,-4)).closeTo(432, 1E-12);
+      expect(symbolicf1(-5,2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
+      expect(symbolicf2(-5,2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
+      expect(symbolicf1(3,-4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
+      expect(symbolicf2(3,-4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
+      expect(symbolicf1('z','w').equals(me.fromText('z^2w^3'))).eq(true);
+      expect(symbolicf2('z','w').equals(me.fromText('z^3w^2'))).eq(true);
+
+
+    })
+  })
+
+  it('3D vector-valued function of two variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="s t" formula="(s^2t^3, s^3t^2, st)" />
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(2);
+      expect(components['/_function1'].stateValues.nOutputs).eq(3);
+
+      let f1 = components['/_function1'].stateValues.fs[0];
+      let f2 = components['/_function1'].stateValues.fs[1];
+      let f3 = components['/_function1'].stateValues.fs[2];
+      let numericalf1 = components['/_function1'].stateValues.numericalfs[0];
+      let numericalf2 = components['/_function1'].stateValues.numericalfs[1];
+      let numericalf3 = components['/_function1'].stateValues.numericalfs[2];
+      let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
+      let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
+      let symbolicf3 = components['/_function1'].stateValues.symbolicfs[2];
+
+      expect(f1(-5,2)).closeTo(200, 1E-12);
+      expect(f2(-5,2)).closeTo(-500, 1E-12);
+      expect(f3(-5,2)).closeTo(-10, 1E-12);
+      expect(f1(3,-4)).closeTo(-576, 1E-12);
+      expect(f2(3, -4)).closeTo(432, 1E-12);
+      expect(f3(3, -4)).closeTo(-12, 1E-12);
+      expect(numericalf1(-5,2)).closeTo(200, 1E-12);
+      expect(numericalf2(-5,2)).closeTo(-500, 1E-12);
+      expect(numericalf3(-5,2)).closeTo(-10, 1E-12);
+      expect(numericalf1(3,-4)).closeTo(-576, 1E-12);
+      expect(numericalf2(3,-4)).closeTo(432, 1E-12);
+      expect(numericalf3(3,-4)).closeTo(-12, 1E-12);
+      expect(symbolicf1(-5,2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
+      expect(symbolicf2(-5,2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
+      expect(symbolicf3(-5,2).equals(me.fromText('(-5)*2'))).eq(true);
+      expect(symbolicf1(3,-4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
+      expect(symbolicf2(3,-4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
+      expect(symbolicf3(3,-4).equals(me.fromText('3*(-4)'))).eq(true);
+      expect(symbolicf1('z','w').equals(me.fromText('z^2w^3'))).eq(true);
+      expect(symbolicf2('z','w').equals(me.fromText('z^3w^2'))).eq(true);
+      expect(symbolicf3('z','w').equals(me.fromText('zw'))).eq(true);
+
+
+    })
+  })
+
 
 });

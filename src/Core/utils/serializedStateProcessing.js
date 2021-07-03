@@ -422,24 +422,34 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
 export function componentFromAttribute({ attrObj, value, componentInfoObjects, flags }) {
   if (attrObj.createComponentOfType) {
     let newComponent;
-    if (value === true &&
-      componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: attrObj.createComponentOfType,
-        baseComponentType: "boolean",
-      })) {
-      // special case where had prop with no value
-      // so its value was set to be boolean true (rather than string)
-      // in this case, set state directly in component
+
+    // set to string, as if had an attribute with no value, would get true
+    value = String(value);
+    let valueLower = value.toLowerCase();
+
+    if (valueLower === "true" && attrObj.valueForTrue !== undefined) {
       newComponent = {
         componentType: attrObj.createComponentOfType,
-        state: { implicitValue: true }
+        state: { value: attrObj.valueForTrue }
+      };
+    } else if (valueLower === "false" && attrObj.valueForFalse !== undefined) {
+      newComponent = {
+        componentType: attrObj.createComponentOfType,
+        state: { value: attrObj.valueForFalse }
+      };
+    } else if (componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: attrObj.createComponentOfType,
+      baseComponentType: "boolean",
+    }) && ["true", "false"].includes(valueLower)) {
+      newComponent = {
+        componentType: attrObj.createComponentOfType,
+        state: { value: valueLower === "true" }
       };
     } else {
-      // use String() just in case have a boolean true (i.e., had prop with no value)
       newComponent = {
         componentType: attrObj.createComponentOfType,
         children: [
-          { componentType: "string", state: { value: String(value) } }
+          { componentType: "string", state: { value } }
         ]
       };
     }
@@ -1748,9 +1758,6 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
       //     let uniqueVariantsComp = variantControlChild.attributes.uniqueVariants;
 
       //     if (uniqueVariantsComp.state !== undefined) {
-      //       if (uniqueVariantsComp.state.implicitValue !== undefined) {
-      //         uniqueVariants = uniqueVariantsComp.state.implicitValue;
-      //       }
       //       if (uniqueVariantsComp.state.value !== undefined) {
       //         uniqueVariants = uniqueVariantsComp.state.value;
       //       }

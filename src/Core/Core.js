@@ -3176,7 +3176,7 @@ export default class Core {
           }
           return dependencies;
         };
-        stateDef.definition = function ({ dependencyValues }) {
+        stateDef.definition = function ({ dependencyValues, usedDefault }) {
           let result = {
             alwaysShadow: [varName]
           }
@@ -3187,7 +3187,12 @@ export default class Core {
               [varName]: dependencyValues.targetVariableComponentType
             }
           }
-          result.newValues = { [varName]: dependencyValues.targetVariable }
+
+          if (usedDefault.targetVariable) {
+            result.useEssentialOrDefaultValue = { [varName]: { variablesToCheck: [varName] } }
+          } else {
+            result.newValues = { [varName]: dependencyValues.targetVariable }
+          }
 
           return result;
 

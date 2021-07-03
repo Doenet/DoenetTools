@@ -2844,7 +2844,7 @@ class Dependency {
 
     let value = [];
     let changes = {};
-    let usedDefault = false;
+    let usedDefault = [];
 
     if (this.componentIdentitiesChanged) {
       changes.componentIdentitiesChanged = true;
@@ -2854,6 +2854,8 @@ class Dependency {
     for (let [componentInd, componentName] of this.downstreamComponentNames.entries()) {
 
       let depComponent = this.dependencyHandler._components[componentName];
+
+      usedDefault[componentInd] = false;
 
       if (depComponent) {
 
@@ -2876,6 +2878,9 @@ class Dependency {
 
           componentObj.stateValues = {};
 
+          let usedDefaultObj = {};
+          let foundOneUsedDefault = false;
+
           for (let [varInd, originalVarName] of originalVarNames.entries()) {
             let mappedVarName = this.mappedDownstreamVariableNamesByComponent[componentInd][varInd];
 
@@ -2894,8 +2899,18 @@ class Dependency {
                   changes.valuesChanged[componentInd][nameForOutput] = this.valuesChanged[componentInd][mappedVarName];
                 }
                 this.valuesChanged[componentInd][mappedVarName] = {};
+                
+                if(depComponent.state[mappedVarName].usedDefault) {
+                  usedDefaultObj[nameForOutput] = true;
+                  foundOneUsedDefault = true;
+                }
+
               }
             }
+          }
+
+          if(foundOneUsedDefault) {
+            usedDefault[componentInd] = usedDefaultObj;
           }
         }
 
@@ -2920,37 +2935,30 @@ class Dependency {
           } else {
             delete changes.valuesChanged;
           }
+          usedDefault = usedDefault[0];
 
           let stateVariables = Object.keys(value.stateValues);
           if (stateVariables.length === 1) {
-            value = value.stateValues[stateVariables[0]];
-            let nameForOutput;
-
-            if (this.useMappedVariableNames) {
-              nameForOutput = this.mappedDownstreamVariableNamesByComponent[0][0];
-            } else {
-              if (this.originalVariablesByComponent) {
-                nameForOutput = this.originalDownstreamVariableNamesByComponent[0][0];
-              } else {
-                nameForOutput = this.originalDownstreamVariableNames[0];
-              }
-            }
+            let nameForOutput = stateVariables[0];
+            value = value.stateValues[nameForOutput];
 
             if (changes.valuesChanged && changes.valuesChanged[nameForOutput]) {
               changes.valuesChanged = changes.valuesChanged[nameForOutput];
             }
 
-            usedDefault = this.dependencyHandler.components[this.downstreamComponentNames[0]].state[
-              this.mappedDownstreamVariableNamesByComponent[0][0]
-            ].usedDefault;
+            if(usedDefault) {
+              usedDefault = usedDefault[nameForOutput];
+            }
 
           } else {
             value = null;
             changes.valuesChanged = {};
+            usedDefault = false;
           }
         } else {
           value = null;
           changes.valuesChanged = {};
+          usedDefault = false;
         }
       } else if (this.returnSingleComponent) {
         if (value.length === 1) {
@@ -2960,36 +2968,10 @@ class Dependency {
           } else {
             delete changes.valuesChanged;
           }
-
-          if (value.stateValues && Object.keys(value.stateValues).length > 0) {
-            let usedDefaultObj = {};
-            let foundOneUsedDefault = false;
-            for (let [varInd, mappedVarName] of this.mappedDownstreamVariableNamesByComponent[0].entries()) {
-              if (this.dependencyHandler.components[this.downstreamComponentNames[0]].state[
-                mappedVarName
-              ].usedDefault) {
-
-                foundOneUsedDefault = true;
-
-                let nameForOutput;
-                if (this.useMappedVariableNames) {
-                  nameForOutput = mappedVarName;
-                } else {
-                  if (this.originalVariablesByComponent) {
-                    nameForOutput = this.originalDownstreamVariableNamesByComponent[0][varInd];
-                  } else {
-                    nameForOutput = this.originalDownstreamVariableNames[varInd];
-                  }
-                }
-                usedDefaultObj[nameForOutput] = true;
-              }
-            }
-            if (foundOneUsedDefault) {
-              usedDefault = usedDefaultObj;
-            }
-          }
+          usedDefault = usedDefault[0]
         } else {
           value = null;
+          usedDefault = false;
         }
       }
     }
