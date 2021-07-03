@@ -3,6 +3,12 @@ import styled from 'styled-components';
 import Profile from '../Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { atom, useRecoilCallback } from 'recoil';
+
+export const mainPanelClickAtom = atom({
+  key:"mainPanelClickAtom",
+  default:[]
+})
 
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
@@ -32,11 +38,19 @@ border: none;
 display: inline-block;
 `;
 
-export default function MainPanel({ headerControls, headerControlsPositions, children, setMenuPanelsOpen, displayProfile }) {
+export default function MainPanel({ headerControls, headerControlsPositions, children, setMenusOpen, displayProfile }) {
   console.log(">>>===main panel")
+  const mpOnClick = useRecoilCallback(({set,snapshot})=> async ()=>{
+    const atomArray = await snapshot.getPromise(mainPanelClickAtom)
+    // console.log(">>>mpOnClick",atomArray)
+    for (let obj of atomArray){
+      set(obj.atom,obj.value)
+      // console.log(">>>obj",obj)
+    }
+  })
   const controls = [];
   if (displayProfile){
-    controls.push(<OpenButton key='openbutton' onClick={()=>setMenuPanelsOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton>)
+    controls.push(<OpenButton key='openbutton' onClick={()=>setMenusOpen(true)}><FontAwesomeIcon icon={faChevronRight}/></OpenButton>)
     controls.push(<Profile key='profile'/>)
   }
   if (headerControls){
@@ -51,7 +65,7 @@ export default function MainPanel({ headerControls, headerControlsPositions, chi
       <ControlsWrapper>
       {controls}
       </ControlsWrapper>
-      <ContentWrapper>{children}</ContentWrapper>
+      <ContentWrapper onClick={mpOnClick}>{children}</ContentWrapper>
     </>
   );
 }
