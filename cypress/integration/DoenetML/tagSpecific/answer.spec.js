@@ -30,7 +30,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
@@ -180,7 +180,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
@@ -304,7 +304,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
 
@@ -380,7 +380,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
@@ -533,7 +533,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy2'].replacements[0];
@@ -679,7 +679,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
@@ -812,7 +812,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy2'].replacements[0];
@@ -936,7 +936,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
@@ -1140,7 +1140,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy3'].replacements[0];
@@ -1335,7 +1335,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
@@ -1502,7 +1502,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/s/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/s/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/s/_copy1'].replacements[0];
@@ -1689,6 +1689,533 @@ describe('Answer Tag Tests', function () {
   <answer>
   <award><when><math><copy prop="immediateValue" tname="_mathinput1" isResponse />+<copy prop="immediateValue" tname="_mathinput2" isResponse /></math> = <math>3x</math></when></award>
   <award credit="0.5"><when><math><copy prop="immediateValue" tname="_mathinput1" />+<copy prop="immediateValue" tname="_mathinput2" /></math> = <math>3</math></when></award>
+  </answer></p>
+  <p>First current response: <copy name="cr" prop="currentResponse" tname="_answer1" /></p>
+  <p>First current response again: <copy name="cr1" prop="currentResponse1" tname="_answer1" /></p>
+  <p>Second current response: <copy name="cr2" prop="currentResponse2" tname="_answer1" /></p>
+  <p>Both current responses together: <copy name="crs" prop="currentResponses" tname="_answer1" /></p>
+  <p>First submitted response: <copy name="sr" prop="submittedResponse" tname="_answer1" componentType="math" /></p>
+  <p>First submitted response again: <copy name="sr1" prop="submittedResponse1" tname="_answer1" componentType="math" /></p>
+  <p>Second submitted response: <copy name="sr2" prop="submittedResponse2" tname="_answer1" componentType="math" /></p>
+  <p>Both submitted responses together: <copy name="srs" prop="submittedResponses" tname="_answer1" /></p>
+  <p>Credit for submitted responses: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let cr = components['/cr'].replacements[0];
+      let crAnchor = cesc('#' + cr.componentName);
+      let cr1 = components['/cr1'].replacements[0];
+      let cr1Anchor = cesc('#' + cr1.componentName);
+      let cr2 = components['/cr2'].replacements[0];
+      let cr2Anchor = cesc('#' + cr2.componentName);
+      let crsa = components['/crs'].replacements[0];
+      let crsaAnchor = cesc('#' + crsa.componentName);
+      let crsb = components['/crs'].replacements[1];
+      let crsbAnchor = cesc('#' + crsb.componentName);
+      let sr = components['/sr'].replacements[0];
+      let srAnchor = cesc('#' + sr.componentName);
+      let sr1 = components['/sr1'].replacements[0];
+      let sr1Anchor = cesc('#' + sr1.componentName);
+      let sr2 = components['/sr2'].replacements[0];
+      let sr2Anchor = cesc('#' + sr2.componentName);
+      // let srsa = components['/srs'].replacements[0];
+      // let srsaAnchor = cesc('#' + srsa.componentName);
+      // let srsb = components['/srs'].replacements[1];
+      // let srsbAnchor = cesc('#' + srsb.componentName);
+      let ca = components['/ca'].replacements[0];
+      let caAnchor = cesc('#' + ca.componentName);
+
+      cy.log('Test value displayed in browser')
+      // cy.get('#\\/_mathinput1_input').should('have.value', '');
+      // cy.get('#\\/_mathinput2_input').should('have.value', '');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      // cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      // cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then((win) => {
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F', '\uFF3F']);
+        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('\uFF3F')
+        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls('\uFF3F')
+        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect(components['/_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+        // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(components['/_mathinput2'].stateValues.value.tree).eq('\uFF3F');
+        // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(cr.stateValues.value.tree).eq('\uFF3F')
+        expect(cr1.stateValues.value.tree).eq('\uFF3F')
+        expect(cr2.stateValues.value.tree).eq('\uFF3F')
+        expect(crsa.stateValues.value.tree).eq('\uFF3F')
+        expect(crsb.stateValues.value.tree).eq('\uFF3F')
+        expect(sr.stateValues.value.tree).eq('\uFF3F')
+        expect(sr1.stateValues.value.tree).eq('\uFF3F')
+        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsa.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsb.stateValues.value.tree).eq('\uFF3F')
+        expect(ca.stateValues.value).eq(0)
+      });
+
+      cy.log("Enter a correct answer in")
+      cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true }).blur();
+      cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true }).blur();
+
+      cy.log('Test value displayed in browser')
+      // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
+      // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2x−y')
+      });
+      cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2x−y')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      // cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      // cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then((win) => {
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
+        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+        // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+        // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+        expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+        expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+        expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect(sr.stateValues.value.tree).eq('\uFF3F')
+        expect(sr1.stateValues.value.tree).eq('\uFF3F')
+        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsa.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsb.stateValues.value.tree).eq('\uFF3F')
+        expect(ca.stateValues.value).eq(0)
+      });
+
+
+      cy.log("Submit answer")
+      cy.get('#\\/_answer1_submit').click();
+
+      // wrap to get submitted response anchors
+      cy.window().then((win) => {
+        sr = components['/sr'].replacements[0];
+        srAnchor = cesc('#' + sr.componentName);
+        sr1 = components['/sr1'].replacements[0];
+        sr1Anchor = cesc('#' + sr1.componentName);
+        sr2 = components['/sr2'].replacements[0];
+        sr2Anchor = cesc('#' + sr2.componentName);
+        let srsa = components['/srs'].replacements[0];
+        let srsaAnchor = cesc('#' + srsa.componentName);
+        let srsb = components['/srs'].replacements[1];
+        let srsbAnchor = cesc('#' + srsb.componentName);
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(caAnchor).should('have.text', '1')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(ca.stateValues.value).eq(1)
+        });
+
+
+        cy.log("Enter partially correct answer")
+        cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}x`, { force: true }).blur();
+        cy.get('#\\/_mathinput2 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(caAnchor).should('have.text', '1')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(cr.stateValues.value.tree).eqls('x')
+          expect(cr1.stateValues.value.tree).eqls('x')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('x')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(ca.stateValues.value).eq(1)
+        });
+
+        cy.log("Submit answer")
+        cy.get('#\\/_answer1_submit').click();
+
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(caAnchor).should('have.text', '0.5')
+
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(cr.stateValues.value.tree).eqls('x')
+          expect(cr1.stateValues.value.tree).eqls('x')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('x')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls('x')
+          expect(sr1.stateValues.value.tree).eqls('x')
+          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(srsa.stateValues.value.tree).eqls('x')
+          expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(ca.stateValues.value).eq(0.5)
+        });
+
+        cy.log("Enter incorrect answer")
+        cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(caAnchor).should('have.text', '0.5')
+
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(cr.stateValues.value.tree).eqls('y')
+          expect(cr1.stateValues.value.tree).eqls('y')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('y')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls('x')
+          expect(sr1.stateValues.value.tree).eqls('x')
+          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(srsa.stateValues.value.tree).eqls('x')
+          expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(ca.stateValues.value).eq(0.5)
+        });
+
+        cy.log("Submit answer")
+        cy.get('#\\/_answer1_submit').click();
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(caAnchor).should('have.text', '0')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('y');
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('y');
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(cr.stateValues.value.tree).eqls('y')
+          expect(cr1.stateValues.value.tree).eqls('y')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('y')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls('y')
+          expect(sr1.stateValues.value.tree).eqls('y')
+          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(srsa.stateValues.value.tree).eqls('y')
+          expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(ca.stateValues.value).eq(0)
+        });
+
+      })
+
+    })
+  });
+
+  it('full answer tag, two inputs inside answer, shorter form', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Enter values that sum to <m>3x</m>: 
+  <answer>
+  <mathinput /> <mathinput/>
+  <award><when>$_mathinput1+$_mathinput2 = 3x</when></award>
+  <award credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
   </answer></p>
   <p>First current response: <copy name="cr" prop="currentResponse" tname="_answer1" /></p>
   <p>First current response again: <copy name="cr1" prop="currentResponse1" tname="_answer1" /></p>
@@ -2984,7 +3511,7 @@ describe('Answer Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let answer1 = components['/_map1'].replacements[0].replacements[1].activeChildren[3];
-      let mathinput1Name = answer1.stateValues.inputChild.componentName;
+      let mathinput1Name = answer1.stateValues.inputChildren[0].componentName;
       let mathinput1 = components[mathinput1Name]
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
@@ -2996,7 +3523,7 @@ describe('Answer Tag Tests', function () {
       let sr1Anchor = cesc('#' + sr1.componentName);
 
       let answer2 = components['/_map1'].replacements[1].replacements[1].activeChildren[3];
-      let mathinput2Name = answer2.stateValues.inputChild.componentName;
+      let mathinput2Name = answer2.stateValues.inputChildren[0].componentName;
       let mathinput2 = components[mathinput2Name]
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
@@ -3008,7 +3535,7 @@ describe('Answer Tag Tests', function () {
       let sr2Anchor = cesc('#' + sr2.componentName);
 
       let answer3 = components['/_map1'].replacements[2].replacements[1].activeChildren[3];
-      let mathinput3Name = answer3.stateValues.inputChild.componentName;
+      let mathinput3Name = answer3.stateValues.inputChildren[0].componentName;
       let mathinput3 = components[mathinput3Name]
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
@@ -3311,7 +3838,7 @@ describe('Answer Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let answer1 = components['/a/_answer1'];
-      let mathinput1Name = answer1.stateValues.inputChild.componentName;
+      let mathinput1Name = answer1.stateValues.inputChildren[0].componentName;
       let mathinput1 = components[mathinput1Name]
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
@@ -3323,7 +3850,7 @@ describe('Answer Tag Tests', function () {
       let sr1Anchor = cesc('#' + sr1.componentName);
 
       let answer2 = components['/b/_answer1'];
-      let mathinput2Name = answer2.stateValues.inputChild.componentName;
+      let mathinput2Name = answer2.stateValues.inputChildren[0].componentName;
       let mathinput2 = components[mathinput2Name]
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
@@ -3335,7 +3862,7 @@ describe('Answer Tag Tests', function () {
       let sr2Anchor = cesc('#' + sr2.componentName);
 
       let answer3 = components['/c/_answer1'];
-      let mathinput3Name = answer3.stateValues.inputChild.componentName;
+      let mathinput3Name = answer3.stateValues.inputChildren[0].componentName;
       let mathinput3 = components[mathinput3Name]
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
@@ -3632,7 +4159,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -3897,7 +4424,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
@@ -6243,7 +6770,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName);
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -6408,7 +6935,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName);
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -6792,7 +7319,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -7290,7 +7817,7 @@ describe('Answer Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
-        let textinputName = components['/ans'].stateValues.inputChild.componentName
+        let textinputName = components['/ans'].stateValues.inputChildren[0].componentName
         let textinputAnchor = cesc('#' + textinputName + '_input');
         let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
         let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
@@ -8092,11 +8619,11 @@ describe('Answer Tag Tests', function () {
       expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
       expect(components["/nsubs2"].stateValues.value).eq(0);
 
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
-      let textinputName = components['/_answer2'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer2'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + "_input");
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
 

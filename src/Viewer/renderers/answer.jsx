@@ -21,19 +21,12 @@ export default class Answer extends DoenetRenderer {
     // without using the internal guts of componentInstructions
     // is just asking for trouble
 
-    let inputChildToRender = null;
-    if (this.doenetSvData.inputChild) {
-
-      if (this.doenetSvData.inputChild) {
-        let inputChildInd;
-        for (let [ind, child] of this.children.entries()) {
-          if (child.props.componentInstructions.componentName === this.doenetSvData.inputChild.componentName) {
-            inputChildInd = ind;
-            break;
-          }
-        }
-        inputChildToRender = this.children[inputChildInd];
-      }
+    let inputChildrenToRender = null;
+    if (this.doenetSvData.inputChildren.length > 0) {
+      let inputChildNames = this.doenetSvData.inputChildren.map(x => x.componentName);
+      inputChildrenToRender = this.children.filter(
+        child => inputChildNames.includes(child.props.componentInstructions.componentName)
+      )
     }
 
 
@@ -81,7 +74,7 @@ export default class Answer extends DoenetRenderer {
           }}
         >
           <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      &nbsp;
+          &nbsp;
           {checkWorkText}
         </button>);
 
@@ -93,8 +86,8 @@ export default class Answer extends DoenetRenderer {
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCheck} />
-          &nbsp;
-          Correct
+              &nbsp;
+              Correct
             </span>);
         } else if (validationState === "incorrect") {
           checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
@@ -103,8 +96,8 @@ export default class Answer extends DoenetRenderer {
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faTimes} />
-          &nbsp;
-          Incorrect
+              &nbsp;
+              Incorrect
             </span>);
         } else if (validationState === "partialcorrect") {
           checkWorkStyle.backgroundColor = "#efab34";
@@ -127,19 +120,19 @@ export default class Answer extends DoenetRenderer {
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCloud} />
-          &nbsp;
-          Response Saved
+              &nbsp;
+              Response Saved
             </span>);
         }
       }
 
       return <span id={this.componentName}>
         <a name={this.componentName} />
-        {inputChildToRender}
+        {inputChildrenToRender}
         {checkworkComponent}
       </span>;
     } else {
-      return <span id={this.componentName}><a name={this.componentName} />{inputChildToRender}</span>;
+      return <span id={this.componentName}><a name={this.componentName} />{inputChildrenToRender}</span>;
     }
 
   }
