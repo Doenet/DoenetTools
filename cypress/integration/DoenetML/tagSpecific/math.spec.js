@@ -615,6 +615,8 @@ describe('Math Tag Tests', function () {
   <p><text>a</text></p>
   <p><math>2x + (1E-15)y</math></p>
   <p><math displaysmallaszero>2x + (1E-15)y</math></p>
+  <p><math displaysmallaszero>2x + (1E-13)y</math></p>
+  <p><math displaysmallaszero="1E-12">2x + (1E-13)y</math></p>
   `}, "*");
     });
 
@@ -627,14 +629,24 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2x')
     })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x+1⋅10−13y')
+    })
+    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
 
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/_math1'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
       expect(components['/_math2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-15, 'y']]);
-      expect(components['/_math1'].stateValues.displaySmallAsZero).eq(false);
-      expect(components['/_math2'].stateValues.displaySmallAsZero).eq(true);
+      expect(components['/_math3'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-13, 'y']]);
+      expect(components['/_math4'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['*', 1E-13, 'y']]);
+      expect(components['/_math1'].stateValues.displaySmallAsZero).eq(0);
+      expect(components['/_math2'].stateValues.displaySmallAsZero).eq(1E-14);
+      expect(components['/_math3'].stateValues.displaySmallAsZero).eq(1E-14);
+      expect(components['/_math4'].stateValues.displaySmallAsZero).eq(1E-12);
     });
 
 

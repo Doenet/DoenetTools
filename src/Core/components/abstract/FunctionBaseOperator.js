@@ -69,17 +69,30 @@ export default class FunctionOperator extends Function {
     delete stateVariableDefinitions.interpolationPoints;
     delete stateVariableDefinitions.xs;
 
-    let originalVariableReturnDependences = stateVariableDefinitions.variable.returnDependencies;
-    stateVariableDefinitions.variable.returnDependencies = function () {
-      let dependencies = originalVariableReturnDependences();
-      dependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
-      return dependencies;
+
+    let variablesToChangeFunctionChildLogicName = [
+      "displayDigits", "displayDecimals", "displaySmallAsZero",
+      "nInputs", "nOutputs",
+      "symbolic",
+    ];
+
+    for (let vName of variablesToChangeFunctionChildLogicName) {
+      let originalReturnDependences = stateVariableDefinitions[vName].returnDependencies;
+      stateVariableDefinitions[vName].returnDependencies = function () {
+        let dependencies = originalReturnDependences();
+        dependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
+        return dependencies;
+      }
     }
 
-    let originalSymbolicReturnDependences = stateVariableDefinitions.symbolic.returnDependencies;
-    stateVariableDefinitions.symbolic.returnDependencies = function () {
-      let dependencies = originalSymbolicReturnDependences();
-      dependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
+
+    let originalVariablesReturnDependences = stateVariableDefinitions.variables.returnArrayDependenciesByKey;
+    stateVariableDefinitions.variables.returnArrayDependenciesByKey = function ({ arrayKeys }) {
+      let dependencies = originalVariablesReturnDependences({ arrayKeys });
+      dependencies.globalDependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
+      for (let arrayKey of arrayKeys) {
+        dependencies.dependenciesByKey[arrayKey].functionChild.childLogicName = "atMostOneFunctionForOperator";
+      }
       return dependencies;
     }
 
@@ -98,6 +111,10 @@ export default class FunctionOperator extends Function {
       definition: () => ({ newValues: { operatorComposesWithOriginal: true } })
     }
 
+    // TODO: extend symbolicFunctionOperator and numericalFunctionOperator
+    // to be multi-dimensional
+    // For now, the same function is used for each component
+    // if the function is to be vector-valued
     stateVariableDefinitions.symbolicFunctionOperator = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { symbolicFunctionOperator: x => me.fromAst('\uff3f') } })
@@ -178,186 +195,267 @@ export default class FunctionOperator extends Function {
 
     }
 
-    stateVariableDefinitions.symbolicf = {
-      returnDependencies: () => ({
-        operatorBasedOnFormula: {
+    stateVariableDefinitions.symbolicfs = {
+      isArray: true,
+      entryPrefixes: ["symbolicf"],
+      returnArraySizeDependencies: () => ({
+        nOutputs: {
           dependencyType: "stateVariable",
-          variableName: "operatorBasedOnFormula"
-        },
-        formula: {
-          dependencyType: "stateVariable",
-          variableName: "formula"
-        },
-        variable: {
-          dependencyType: "stateVariable",
-          variableName: "variable",
-        },
-        simplify: {
-          dependencyType: "stateVariable",
-          variableName: "simplify",
-        },
-        expand: {
-          dependencyType: "stateVariable",
-          variableName: "expand",
-        },
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneFunctionForOperator",
-          variableNames: ["symbolicf"]
-        },
-        mathChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneMath",
-          variableNames: ["value"],
-        },
-        symbolicFunctionOperator: {
-          dependencyType: "stateVariable",
-          variableName: "symbolicFunctionOperator"
-        },
-        operatorComposesWithOriginal: {
-          dependencyType: "stateVariable",
-          variableName: "operatorComposesWithOriginal"
+          variableName: "nOutputs"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nOutputs];
+      },
+      returnArrayDependenciesByKey: () => ({
+        globalDependencies: {
+          operatorBasedOnFormula: {
+            dependencyType: "stateVariable",
+            variableName: "operatorBasedOnFormula"
+          },
+          formula: {
+            dependencyType: "stateVariable",
+            variableName: "formula"
+          },
+          variables: {
+            dependencyType: "stateVariable",
+            variableName: "variables",
+          },
+          nInputs: {
+            dependencyType: "stateVariable",
+            variableName: "nInputs",
+          },
+          simplify: {
+            dependencyType: "stateVariable",
+            variableName: "simplify",
+          },
+          expand: {
+            dependencyType: "stateVariable",
+            variableName: "expand",
+          },
+          functionChild: {
+            dependencyType: "child",
+            childLogicName: "atMostOneFunctionForOperator",
+            variableNames: ["symbolicfs"]
+          },
+          mathChild: {
+            dependencyType: "child",
+            childLogicName: "exactlyOneMath",
+            variableNames: ["value"],
+          },
+          symbolicFunctionOperator: {
+            dependencyType: "stateVariable",
+            variableName: "symbolicFunctionOperator"
+          },
+          operatorComposesWithOriginal: {
+            dependencyType: "stateVariable",
+            variableName: "operatorComposesWithOriginal"
+          }
+        }
+      }),
+      arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys, arraySize }) {
 
-        if (dependencyValues.operatorBasedOnFormula) {
-          return {
-            newValues: {
-              symbolicf: returnSymbolicFunctionFromFormula(dependencyValues)
+        if (globalDependencyValues.operatorBasedOnFormula) {
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey)
+            return {
+              newValues: { symbolicfs }
             }
           }
-        } else if (dependencyValues.operatorComposesWithOriginal) {
+        } else if (globalDependencyValues.operatorComposesWithOriginal) {
 
-          if (dependencyValues.functionChild.length === 0) {
-            if (dependencyValues.mathChild.length === 0) {
+          if (globalDependencyValues.functionChild.length === 0) {
+            if (globalDependencyValues.mathChild.length === 0) {
+              let symbolicfs = {};
+              for (let arrayKey of arrayKeys) {
+                symbolicfs[arrayKey] = x => me.fromAst('\uff3f')
+              }
               return {
-                newValues: { symbolicf: x => me.fromAst('\uff3f') }
+                newValues: { symbolicfs }
               }
             } else {
 
-              let dependencyValuesWithChildFormula = Object.assign({}, dependencyValues);
-              dependencyValuesWithChildFormula.formula = dependencyValues.mathChild[0].stateValues.value;
+              // TODO: is this case with a math child used anywhere?
+              let dependencyValuesWithChildFormula = Object.assign({}, globalDependencyValues);
+              dependencyValuesWithChildFormula.formula = globalDependencyValues.mathChild[0].stateValues.value;
 
-              let childF = returnSymbolicFunctionFromFormula(dependencyValues)
+              let childFs = [];
+
+              for (let ind = 0; ind < arraySize[0]; ind++) {
+                childFs.push(returnSymbolicFunctionFromFormula(dependencyValuesWithChildFormula, ind))
+              }
+              let symbolicfs = {};
+              for (let arrayKey of arrayKeys) {
+                symbolicfs[arrayKey] = (...xs) => globalDependencyValues.symbolicFunctionOperator(
+                  ...childFs.map(cf => cf(...xs))
+                )
+              }
+
               return {
-                newValues: {
-                  symbolicf: x => dependencyValues.symbolicFunctionOperator(childF(x))
-                }
+                newValues: { symbolicfs }
               }
 
             }
           } else {
-            let childF = dependencyValues.functionChild[0].stateValues.symbolicf;
-            return {
-              newValues: {
-                symbolicf: x => dependencyValues.symbolicFunctionOperator(childF(x))
-              }
+            let childFs = [];
+            for (let ind = 0; ind < arraySize[0]; ind++) {
+              childFs.push(globalDependencyValues.functionChild[0].stateValues.symbolicfs[ind]);
             }
+            let symbolicfs = {};
+            for (let arrayKey of arrayKeys) {
+              symbolicfs[arrayKey] = (...xs) => globalDependencyValues.symbolicFunctionOperator(
+                ...childFs.map(cf => cf(...xs))
+              )
+            }
+
+            return {
+              newValues: { symbolicfs }
+            }
+
           }
         } else {
-          return {
-            newValues: {
-              symbolicf: function (x) {
-                return dependencyValues.symbolicFunctionOperator(x)
-              }
-            }
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            symbolicfs[arrayKey] = (...xs) => globalDependencyValues.symbolicFunctionOperator(...xs)
           }
+
+          return {
+            newValues: { symbolicfs }
+          }
+
         }
       }
     }
 
-    stateVariableDefinitions.numericalf = {
-      returnDependencies: () => ({
-        operatorBasedOnFormula: {
+    stateVariableDefinitions.numericalfs = {
+      isArray: true,
+      entryPrefixes: ["numericalf"],
+      returnArraySizeDependencies: () => ({
+        nOutputs: {
           dependencyType: "stateVariable",
-          variableName: "operatorBasedOnFormula"
-        },
-        formula: {
-          dependencyType: "stateVariable",
-          variableName: "formula"
-        },
-        variable: {
-          dependencyType: "stateVariable",
-          variableName: "variable",
-        },
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneFunctionForOperator",
-          variableNames: ["numericalf"]
-        },
-        mathChild: {
-          dependencyType: "child",
-          childLogicName: "exactlyOneMath",
-          variableNames: ["value"],
-        },
-        numericalFunctionOperator: {
-          dependencyType: "stateVariable",
-          variableName: "numericalFunctionOperator"
-        },
-        operatorComposesWithOriginal: {
-          dependencyType: "stateVariable",
-          variableName: "operatorComposesWithOriginal"
+          variableName: "nOutputs"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nOutputs];
+      },
+      returnArrayDependenciesByKey: () => ({
+        globalDependencies: {
+          operatorBasedOnFormula: {
+            dependencyType: "stateVariable",
+            variableName: "operatorBasedOnFormula"
+          },
+          formula: {
+            dependencyType: "stateVariable",
+            variableName: "formula"
+          },
+          variables: {
+            dependencyType: "stateVariable",
+            variableName: "variables",
+          },
+          nInputs: {
+            dependencyType: "stateVariable",
+            variableName: "nInputs",
+          },
+          functionChild: {
+            dependencyType: "child",
+            childLogicName: "atMostOneFunctionForOperator",
+            variableNames: ["numericalfs"]
+          },
+          mathChild: {
+            dependencyType: "child",
+            childLogicName: "exactlyOneMath",
+            variableNames: ["value"],
+          },
+          numericalFunctionOperator: {
+            dependencyType: "stateVariable",
+            variableName: "numericalFunctionOperator"
+          },
+          operatorComposesWithOriginal: {
+            dependencyType: "stateVariable",
+            variableName: "operatorComposesWithOriginal"
+          }
+        }
+      }),
+      arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys, arraySize }) {
 
-        if (dependencyValues.operatorBasedOnFormula) {
-          return {
-            newValues: {
-              numericalf: returnNumericalFunctionFromFormula(dependencyValues)
+        if (globalDependencyValues.operatorBasedOnFormula) {
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            numericalfs[arrayKey] = returnNumericalFunctionFromFormula(globalDependencyValues, arrayKey)
+            return {
+              newValues: { numericalfs }
             }
           }
-        } else if (dependencyValues.operatorComposesWithOriginal) {
+        } else if (globalDependencyValues.operatorComposesWithOriginal) {
 
-          if (dependencyValues.functionChild.length === 0) {
-            if (dependencyValues.mathChild.length === 0) {
+          if (globalDependencyValues.functionChild.length === 0) {
+            if (globalDependencyValues.mathChild.length === 0) {
+              let numericalfs = {};
+              for (let arrayKey of arrayKeys) {
+                numericalfs[arrayKey] = x => NaN
+              }
               return {
-                newValues: { numericalf: x => NaN }
+                newValues: { numericalfs }
               }
             } else {
 
-              let dependencyValuesWithChildFormula = Object.assign({}, dependencyValues);
-              dependencyValuesWithChildFormula.formula = dependencyValues.mathChild[0].stateValues.value;
+              // TODO: is this case with a math child used anywhere?
+              let dependencyValuesWithChildFormula = Object.assign({}, globalDependencyValues);
+              dependencyValuesWithChildFormula.formula = globalDependencyValues.mathChild[0].stateValues.value;
 
-              let childF = returnNumericalFunctionFromFormula(dependencyValues)
+              let childFs = [];
+
+              for (let ind = 0; ind < arraySize[0]; ind++) {
+                childFs.push(returnNumericalFunctionFromFormula(dependencyValuesWithChildFormula, ind))
+              }
+              let numericalfs = {};
+              for (let arrayKey of arrayKeys) {
+                numericalfs[arrayKey] = (...xs) => globalDependencyValues.numericalFunctionOperator(
+                  ...childFs.map(cf => cf(...xs))
+                )
+              }
+
               return {
-                newValues: {
-                  numericalf: x => dependencyValues.numericalFunctionOperator(childF(x))
-                }
+                newValues: { numericalfs }
               }
 
             }
           } else {
 
-            let childF = dependencyValues.functionChild[0].stateValues.numericalf;
-            return {
-              newValues: {
-                numericalf: x => dependencyValues.numericalFunctionOperator(childF(x))
-              }
+            let childFs = [];
+            for (let ind = 0; ind < arraySize[0]; ind++) {
+              childFs.push(globalDependencyValues.functionChild[0].stateValues.numericalfs[ind]);
             }
+            let numericalfs = {};
+            for (let arrayKey of arrayKeys) {
+              numericalfs[arrayKey] = (...xs) => globalDependencyValues.numericalFunctionOperator(
+                ...childFs.map(cf => cf(...xs))
+              )
+            }
+
+            return {
+              newValues: { numericalfs }
+            }
+
           }
 
         } else {
-          return {
-            newValues: {
-              numericalf: function (x) {
-                return dependencyValues.numericalFunctionOperator(x)
-              }
-            }
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            numericalfs[arrayKey] = (...xs) => globalDependencyValues.numericalFunctionOperator(...xs)
           }
+
+          return {
+            newValues: { numericalfs }
+          }
+
         }
 
       }
     }
 
-    // make functionChild null
-    // as base Function component uses it to determine if extrema
-    // should depend on a function child
-    stateVariableDefinitions.functionChild = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { functionChild: null } })
-    }
 
     // remove function child dependency from minima
     stateVariableDefinitions.allMinima.returnDependencies = () => ({
@@ -368,6 +466,14 @@ export default class FunctionOperator extends Function {
       xscale: {
         dependencyType: "stateVariable",
         variableName: "xscale"
+      },
+      nInputs: {
+        dependencyType: "stateVariable",
+        variableName: "nInputs"
+      },
+      nOutputs: {
+        dependencyType: "stateVariable",
+        variableName: "nOutputs"
       },
     })
 
@@ -381,6 +487,14 @@ export default class FunctionOperator extends Function {
       xscale: {
         dependencyType: "stateVariable",
         variableName: "xscale"
+      },
+      nInputs: {
+        dependencyType: "stateVariable",
+        variableName: "nInputs"
+      },
+      nOutputs: {
+        dependencyType: "stateVariable",
+        variableName: "nOutputs"
       },
     })
 

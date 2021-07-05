@@ -1371,7 +1371,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         longNameId += componentInd + "|" + indOffset + "|" + createNameContext;
       }
 
-      prescribedName = createUniqueName(componentType, longNameId);
+      prescribedName = createUniqueName(componentType.toLowerCase(), longNameId);
     }
 
     if (!assignNames && useOriginalNames
@@ -1950,7 +1950,7 @@ export function processAssignNames({
 
         // give component itself an unreachable name
         let longNameId = parentName + "|assignName|" + indForNames.toString();
-        component.doenetAttributes.prescribedName = createUniqueName(component.componentType, longNameId);
+        component.doenetAttributes.prescribedName = createUniqueName(component.componentType.toLowerCase(), longNameId);
 
         let componentName = parentName;
         if (!parentCreatesNewNamespace) {
@@ -1981,7 +1981,7 @@ export function processAssignNames({
         name = component.originalName.slice(originalNamespace.length + 1);
       } else {
         let longNameId = parentName + "|assignName|" + (indForNames).toString();
-        name = createUniqueName(component.componentType, longNameId);
+        name = createUniqueName(component.componentType.toLowerCase(), longNameId);
       }
     }
 

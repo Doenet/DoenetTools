@@ -544,6 +544,37 @@ export class DependencyHandler {
     // first check if we should shadow state variable
     if (stateVarObj.determineIfShadowData) {
 
+      if (stateVarObj.isArrayEntry) {
+        // addressing determineIfShadowData must be done at the array level,
+        // not the array entry level
+        let arrayStateVariable = stateVarObj.arrayStateVariable;
+        let arrayStateVarObj = component.state[arrayStateVariable]
+
+        if (arrayStateVarObj.determineIfShadowData) {
+          let result = this.updateDependencies({
+            componentName,
+            stateVariable: arrayStateVariable,
+            dependency: "__determine_dependencies_shadow_data"
+          });
+          if (!result.success) {
+            return { success: false };
+          }
+        }
+
+        delete stateVarObj.determineIfShadowData;
+
+        // TODO: if array entry is shadowed,
+        // do we need to delete a __determine_dependencies dependency
+        // if it exists?
+
+        // try again
+        return this.updateDependencies({
+          componentName,
+          stateVariable,
+          dependency
+        });
+      }
+
       let determineIfShadowData = stateVarObj.determineIfShadowData;
       delete stateVarObj.determineIfShadowData;
 
@@ -2899,8 +2930,8 @@ class Dependency {
                   changes.valuesChanged[componentInd][nameForOutput] = this.valuesChanged[componentInd][mappedVarName];
                 }
                 this.valuesChanged[componentInd][mappedVarName] = {};
-                
-                if(depComponent.state[mappedVarName].usedDefault) {
+
+                if (depComponent.state[mappedVarName].usedDefault) {
                   usedDefaultObj[nameForOutput] = true;
                   foundOneUsedDefault = true;
                 }
@@ -2909,7 +2940,7 @@ class Dependency {
             }
           }
 
-          if(foundOneUsedDefault) {
+          if (foundOneUsedDefault) {
             usedDefault[componentInd] = usedDefaultObj;
           }
         }
@@ -2946,7 +2977,7 @@ class Dependency {
               changes.valuesChanged = changes.valuesChanged[nameForOutput];
             }
 
-            if(usedDefault) {
+            if (usedDefault) {
               usedDefault = usedDefault[nameForOutput];
             }
 
@@ -4070,6 +4101,16 @@ class ChildDependency extends Dependency {
           // mark that child logic is blocked by
           // the readyToExpandWhenResolved state variable of the composites not ready
 
+          // Note: since unresolved composites that don't have a component type
+          // will prevent child logic from being satisfied with placeholders
+          // (as they don't get turned into placeholders)
+          // add blockers just to them, if they exist
+          // (This prevents adding circular dependencies that could
+          // be avoided once child logic is resolved with placeholders)
+
+          let compositesBlockingWithComponentType = [];
+          let compositesBlockingWithoutComponentType = [];
+
           for (let compositeNotReady of parent.unexpandedCompositesNotReady) {
 
             if (parent.childLogicSatisfiedWithPlaceholders) {
@@ -4082,8 +4123,21 @@ class ChildDependency extends Dependency {
               }
             }
 
-            for (let varName of this.upstreamVariableNames) {
+            if (this.dependencyHandler._components[compositeNotReady].attributes.componentType) {
+              compositesBlockingWithComponentType.push(compositeNotReady);
+            } else {
+              compositesBlockingWithoutComponentType.push(compositeNotReady)
+            }
+          }
 
+          let compositesToAddBlockers = compositesBlockingWithoutComponentType;
+          if (compositesToAddBlockers.length === 0) {
+            compositesToAddBlockers = compositesBlockingWithComponentType;
+          }
+
+          for (let compositeNotReady of compositesToAddBlockers) {
+
+            for (let varName of this.upstreamVariableNames) {
 
               this.dependencyHandler.addBlocker({
                 blockerComponentName: compositeNotReady,

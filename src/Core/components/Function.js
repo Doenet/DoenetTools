@@ -11,9 +11,10 @@ export default class Function extends InlineComponent {
     return [
       "variables", "numericalfs", "symbolicfs", "symbolic",
       "nInputs", "nOutputs",
-      "isInterpolatedFunction", "formula",
+      "symbolic", "isInterpolatedFunction", "formula",
       "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema",
-      "displayDigits", "displayDecimals", "displaySmallAsZero"
+      "displayDigits", "displayDecimals", "displaySmallAsZero",
+      "nPrescribedPoints"
     ]
   };
 
@@ -1466,7 +1467,11 @@ export default class Function extends InlineComponent {
 
           // calculate only for functions from R -> R
           if (!(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)) {
-            return [];
+            return {
+              newValues: {
+                allMinima: []
+              }
+            }
           }
 
           let f = dependencyValues.numericalf;
@@ -1846,7 +1851,11 @@ export default class Function extends InlineComponent {
 
           // calculate only for functions from R -> R
           if (!(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)) {
-            return [];
+            return {
+              newValues: {
+                allMaxima: []
+              }
+            }
           }
 
           let f = (x) => -dependencyValues.numericalf(x);
