@@ -4260,7 +4260,7 @@ describe('Collection assignName Tests', function () {
 
   })
 
-  it.only('name points off a dynamic list with changing dimensions', () => {
+  it('name points off a dynamic list with changing dimensions', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
