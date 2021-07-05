@@ -1,10 +1,10 @@
 import BaseComponent from './abstract/BaseComponent';
 
-export default class Variants extends BaseComponent {
-  static componentType = "variants";
+export default class VariantNames extends BaseComponent {
+  static componentType = "variantNames";
   static rendererType = undefined;
 
-  static stateVariableForAttributeValue = "variants";
+  static stateVariableForAttributeValue = "variantNames";
 
 
   static returnSugarInstructions() {
@@ -12,7 +12,7 @@ export default class Variants extends BaseComponent {
 
     let breakStringsIntoVariantsBySpaces = function ({ matchedChildren }) {
 
-      // break any string by white space and wrap pieces with variant
+      // break any string by white space and wrap pieces with variantName
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
@@ -21,7 +21,7 @@ export default class Variants extends BaseComponent {
             ...c.state.value.split(/\s+/)
               .filter(s => s)
               .map(s => ({
-                componentType: "variant",
+                componentType: "variantName",
                 state: { value: s }
               }))
           ]
@@ -49,8 +49,8 @@ export default class Variants extends BaseComponent {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.newLeaf({
-      name: "atLeastZeroVariants",
-      componentType: 'variant',
+      name: "atLeastZeroVariantNames",
+      componentType: 'variantName',
       comparison: 'atLeast',
       number: 0,
       setAsBase: true,
@@ -68,21 +68,21 @@ export default class Variants extends BaseComponent {
       public: true,
       componentType: "number",
       returnDependencies: () => ({
-        variantChildren: {
+        variantNameChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroVariants",
+          childLogicName: "atLeastZeroVariantNames",
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nVariants: dependencyValues.variantChildren.length } }
+        return { newValues: { nVariants: dependencyValues.variantNameChildren.length } }
       }
     }
 
-    stateVariableDefinitions.variants = {
+    stateVariableDefinitions.variantNames = {
       public: true,
-      componentType: "variant",
+      componentType: "variantName",
       isArray: true,
-      entryPrefixes: ["variant"],
+      entryPrefixes: ["variantName"],
       returnArraySizeDependencies: () => ({
         nVariants: {
           dependencyType: "stateVariable",
@@ -96,9 +96,9 @@ export default class Variants extends BaseComponent {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
-            variantChild: {
+            variantNameChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroVariants",
+              childLogicName: "atLeastZeroVariantNames",
               variableNames: ["value"],
               childIndices: [arrayKey]
             }
@@ -107,14 +107,14 @@ export default class Variants extends BaseComponent {
         return { dependenciesByKey }
       },
       arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
-        let variants = {};
+        let variantNames = {};
         for (let arrayKey of arrayKeys) {
-          if (dependencyValuesByKey[arrayKey].variantChild.length === 1) {
-            variants[arrayKey] = dependencyValuesByKey[arrayKey].variantChild[0]
-              .stateValues.value.toLowerCase()
+          if (dependencyValuesByKey[arrayKey].variantNameChild.length === 1) {
+            variantNames[arrayKey] = dependencyValuesByKey[arrayKey].variantNameChild[0]
+              .stateValues.value.toLowerCase().substring(0, 1000);
           }
         }
-        return { newValues: { variants } }
+        return { newValues: { variantNames } }
       }
     }
 

@@ -94,7 +94,7 @@ import CellBlock from './components/CellBlock';
 import Tabular from './components/Tabular';
 import Table from './components/Table';
 import Figure from './components/Figure';
-import Variants from './components/Variants';
+import VariantNames from './components/VariantNames';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
 import SelectFromSequence from './components/SelectFromSequence';
@@ -225,7 +225,7 @@ const componentTypeArray = [
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
-  Seeds, Variants, VariantControl,
+  Seeds, VariantNames, VariantControl,
   SelectFromSequence, Select,
   Group,
   AnimateFromSequence,

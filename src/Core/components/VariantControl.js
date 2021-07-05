@@ -23,10 +23,8 @@ export default class VariantControl extends BaseComponent {
       public: true,
     };
 
-    // base component has variants as a attribute
-    // but want to treat variants separately here
-    attributes.variants = {
-      createComponentOfType: "variants"
+    attributes.variantNames = {
+      createComponentOfType: "variantNames"
     }
 
     attributes.seeds = {
@@ -137,28 +135,28 @@ export default class VariantControl extends BaseComponent {
       }
     }
 
-    stateVariableDefinitions.originalVariants = {
+    stateVariableDefinitions.originalVariantNames = {
       returnDependencies: () => ({
-        variantsAttr: {
+        variantNamesAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "variants",
-          variableNames: ["variants"],
+          attributeName: "variantNames",
+          variableNames: ["variantNames"],
         },
       }),
       definition: function ({ dependencyValues }) {
-        let originalVariants = [];
-        if (dependencyValues.variantsAttr !== null) {
-          originalVariants = dependencyValues.variantsAttr.stateValues.variants;
+        let originalVariantNames = [];
+        if (dependencyValues.variantNamesAttr !== null) {
+          originalVariantNames = dependencyValues.variantNamesAttr.stateValues.variantNames;
         }
-        return { newValues: { originalVariants } }
+        return { newValues: { originalVariantNames } }
       }
     }
 
-    stateVariableDefinitions.variants = {
+    stateVariableDefinitions.variantNames = {
       public: true,
-      componentType: "variant",
+      componentType: "variantName",
       isArray: true,
-      entryPrefixes: ["variant"],
+      entryPrefixes: ["variantName"],
       returnArraySizeDependencies: () => ({
         nVariantsSpecified: {
           dependencyType: "stateVariable",
@@ -170,9 +168,9 @@ export default class VariantControl extends BaseComponent {
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
-          originalVariants: {
+          originalVariantNames: {
             dependencyType: "stateVariable",
-            variableName: "originalVariants"
+            variableName: "originalVariantNames"
           },
           nVariantsSpecified: {
             dependencyType: "stateVariable",
@@ -183,25 +181,25 @@ export default class VariantControl extends BaseComponent {
       },
       arrayDefinitionByKey: function ({ globalDependencyValues, arrayKeys }) {
 
-        // if fewer variants specified than nVariantsSpecified, find additional variants
-        // try variants, n, n+1, ...., nVariantsSpecified, (converted to letters)
-        // except skipping variants that are already in original variants
-        let variants = [...globalDependencyValues.originalVariants];
-        let variantNumber = variants.length;
+        // if fewer variantNames specified than nVariantsSpecified, find additional variantNames
+        // try variantNames, n, n+1, ...., nVariantsSpecified, (converted to letters)
+        // except skipping variantNames that are already in original variantNames
+        let variantNames = [...globalDependencyValues.originalVariantNames];
+        let variantNumber = variantNames.length;
         let variantValue = variantNumber;
         let variantString;
         while (variantNumber < globalDependencyValues.nVariantsSpecified) {
           variantNumber++;
           variantValue++;
           variantString = indexToLowercaseLetters(variantValue);
-          while (globalDependencyValues.originalVariants.includes(variantString)) {
+          while (globalDependencyValues.originalVariantNames.includes(variantString)) {
             variantValue++;
             variantString = indexToLowercaseLetters(variantValue);
           }
-          variants.push(variantString);
+          variantNames.push(variantString);
         }
 
-        return { newValues: { variants } }
+        return { newValues: { variantNames } }
       }
     }
 
@@ -214,13 +212,13 @@ export default class VariantControl extends BaseComponent {
         variantsObject: {
           dependencyType: "variants",
         },
-        originalVariants: {
+        originalVariantNames: {
           dependencyType: "stateVariable",
-          variableName: "originalVariants"
+          variableName: "originalVariantNames"
         },
-        variants: {
+        variantNames: {
           dependencyType: "stateVariable",
-          variableName: "variants"
+          variableName: "variantNames"
         },
         nVariantsSpecified: {
           dependencyType: "stateVariable",
@@ -238,7 +236,7 @@ export default class VariantControl extends BaseComponent {
         // Use the first of these options that is available
         // 1. if variants.desiredVariantIndex is defined and is a valid index,
         //    then use that for variantIndex
-        // 2. if variants.desiredVariantName is defined and is a valid variant
+        // 2. if variants.desiredVariantName is defined and is a valid variantName
         //    then use the variantIndex corresponding to that name
         // 3. else, randomly generate variantIndex (except use 0 for document)
 
@@ -273,11 +271,11 @@ export default class VariantControl extends BaseComponent {
           if (dependencyValues.variantsObject.desiredVariantName !== undefined) {
             if (typeof dependencyValues.variantsObject.desiredVariantName === "string") {
               // want case insensitive test, so convert to lower case
-              // treat originalVariants separately so don't have to lower case
-              // remaining variants, which are alread lowercase
-              let originalLowerCaseVariants = dependencyValues.originalVariants.map(x => x.toLowerCase());
-              let lowerCaseVariants = [...originalLowerCaseVariants, ...dependencyValues.variants.slice(originalLowerCaseVariants.length)];
-              let desiredIndexFrom0 = lowerCaseVariants.indexOf(dependencyValues.variantsObject.desiredVariantName.toLowerCase());
+              // treat originalVariantNames separately so don't have to lower case
+              // remaining variantNames, which are alread lowercase
+              let originalLowerCaseVariantNames = dependencyValues.originalVariantNames.map(x => x.toLowerCase());
+              let lowerCaseVariantNames = [...originalLowerCaseVariantNames, ...dependencyValues.variantNames.slice(originalLowerCaseVariantNames.length)];
+              let desiredIndexFrom0 = lowerCaseVariantNames.indexOf(dependencyValues.variantsObject.desiredVariantName.toLowerCase());
               if (desiredIndexFrom0 !== -1) {
                 return {
                   makeEssential: { selectedVariantIndex: true },
@@ -322,9 +320,9 @@ export default class VariantControl extends BaseComponent {
       public: true,
       componentType: "text",
       returnDependencies: () => ({
-        variants: {
+        variantNames: {
           dependencyType: "stateVariable",
-          variableName: "variants"
+          variableName: "variantNames"
         },
         selectedVariantIndex: {
           dependencyType: "stateVariable",
@@ -335,7 +333,7 @@ export default class VariantControl extends BaseComponent {
         return {
           newValues: {
             selectedVariantName:
-              dependencyValues.variants[dependencyValues.selectedVariantIndex - 1]
+              dependencyValues.variantNames[dependencyValues.selectedVariantIndex - 1]
           }
         }
       }

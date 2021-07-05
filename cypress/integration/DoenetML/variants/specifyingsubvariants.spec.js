@@ -218,12 +218,12 @@ describe('Specifying subvariants tests', function () {
       d: [sides[1], sides[3]]
     }
 
-    let variants = ["a", "b", "c", "d"];
+    let variantNames = ["a", "b", "c", "d"];
 
     cy.log("specify each document variant");
     for (let ind = 1; ind <= 4; ind++) {
 
-      let variant = variants[ind - 1];
+      let variantName = variantNames[ind - 1];
 
       cy.window().then((win) => {
         win.postMessage({
@@ -232,23 +232,23 @@ describe('Specifying subvariants tests', function () {
       <variantControl nvariants="4"/>
 
       <p>Direction: <select assignnames="(direction)" numbertoselect="1">
-        <option selectForVariants="a"><text>north</text></option>
-        <option selectForVariants="b"><text>south</text></option>
-        <option selectForVariants="c"><text>east</text></option>
-        <option selectForVariants="d"><text>west</text></option>
+        <option selectForVariantNames="a"><text>north</text></option>
+        <option selectForVariantNames="b"><text>south</text></option>
+        <option selectForVariantNames="c"><text>east</text></option>
+        <option selectForVariantNames="d"><text>west</text></option>
       </select></p>
 
       <p>Sides: <aslist>
       <select assignnames="(side1) (side2)" numbertoselect="2">
-        <option selectForVariants="a b c a"><text>top</text></option>
-        <option selectForVariants="b d"><text>bottom</text></option>
-        <option selectForVariants="c"><text>left</text></option>
-        <option selectForVariants="d"><text>right</text></option>
+        <option selectForVariantNames="a b c a"><text>top</text></option>
+        <option selectForVariantNames="b d"><text>bottom</text></option>
+        <option selectForVariantNames="c"><text>left</text></option>
+        <option selectForVariantNames="d"><text>right</text></option>
       </select>
       </aslist></p>
     `,
           requestedVariant: {
-            name: variant
+            name: variantName
           }
         }, "*");
       })
@@ -258,11 +258,11 @@ describe('Specifying subvariants tests', function () {
       cy.window().then((win) => {
 
         let components = Object.assign({}, win.state.components);
-        expect(components['/direction'].stateValues.value).eq(directionsByVariantName[variant]);
+        expect(components['/direction'].stateValues.value).eq(directionsByVariantName[variantName]);
 
         let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         let sideOrder = sidesSelected.map(x => sides.indexOf(x) + 1)
-        expect(sidesSelected.sort()).eqls(sidesByVariantName[variant]);
+        expect(sidesSelected.sort()).eqls(sidesByVariantName[variantName]);
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: ind,
           name: numberToLetters(ind, true),
@@ -271,7 +271,7 @@ describe('Specifying subvariants tests', function () {
             createdBy: "/_document1"
           },
           subvariants: [{
-            indices: directionIndByVariantName[variant],
+            indices: directionIndByVariantName[variantName],
             meta: { createdBy: "/_select1" },
             subvariants: []
           }, {
@@ -288,7 +288,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 8; ind++) {
 
-      let variant = variants[ind % 4];
+      let variantName = variantNames[ind % 4];
       let directionInd = directionToChoose[ind];
       let direction = directions[directionInd - 1];
       cy.window().then((win) => {
@@ -298,23 +298,23 @@ describe('Specifying subvariants tests', function () {
       <variantControl nvariants="4"/>
 
       <p>Direction: <select assignnames="(direction)" numbertoselect="1">
-        <option selectForVariants="a"><text>north</text></option>
-        <option selectForVariants="b"><text>south</text></option>
-        <option selectForVariants="c"><text>east</text></option>
-        <option selectForVariants="d"><text>west</text></option>
+        <option selectForVariantNames="a"><text>north</text></option>
+        <option selectForVariantNames="b"><text>south</text></option>
+        <option selectForVariantNames="c"><text>east</text></option>
+        <option selectForVariantNames="d"><text>west</text></option>
       </select></p>
 
       <p>Sides: <aslist>
       <select assignnames="(side1) (side2)" numbertoselect="2">
-        <option selectForVariants="a b c a"><text>top</text></option>
-        <option selectForVariants="b d"><text>bottom</text></option>
-        <option selectForVariants="c"><text>left</text></option>
-        <option selectForVariants="d"><text>right</text></option>
+        <option selectForVariantNames="a b c a"><text>top</text></option>
+        <option selectForVariantNames="b d"><text>bottom</text></option>
+        <option selectForVariantNames="c"><text>left</text></option>
+        <option selectForVariantNames="d"><text>right</text></option>
       </select>
       </aslist></p>
     `,
           requestedVariant: {
-            name: variant,
+            name: variantName,
             subvariants: [{
               indices: [directionInd]
             }]
@@ -331,7 +331,7 @@ describe('Specifying subvariants tests', function () {
 
         let sidesSelected = [components['/side1'].stateValues.value, components['/side2'].stateValues.value];
         let sideOrder = sidesSelected.map(x => sides.indexOf(x) + 1)
-        expect(sidesSelected.sort()).eqls(sidesByVariantName[variant]);
+        expect(sidesSelected.sort()).eqls(sidesByVariantName[variantName]);
         expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
           index: (ind % 4) + 1,
           name: numberToLetters((ind % 4) + 1, true),
@@ -357,7 +357,7 @@ describe('Specifying subvariants tests', function () {
 
     for (let ind = 0; ind < 8; ind++) {
 
-      let variant = variants[ind % 4];
+      let variantName = variantNames[ind % 4];
       let direction = directions[ind % 4];
       let sideInds = sidesToChoose[ind];
       let sidesChosen = sideInds.map(x => sides[x - 1])
@@ -368,23 +368,23 @@ describe('Specifying subvariants tests', function () {
       <variantControl nvariants="4"/>
 
       <p>Direction: <select assignnames="(direction)" numbertoselect="1">
-        <option selectForVariants="a"><text>north</text></option>
-        <option selectForVariants="b"><text>south</text></option>
-        <option selectForVariants="c"><text>east</text></option>
-        <option selectForVariants="d"><text>west</text></option>
+        <option selectForVariantNames="a"><text>north</text></option>
+        <option selectForVariantNames="b"><text>south</text></option>
+        <option selectForVariantNames="c"><text>east</text></option>
+        <option selectForVariantNames="d"><text>west</text></option>
       </select></p>
 
       <p>Sides: <aslist>
       <select assignnames="(side1) (side2)" numbertoselect="2">
-        <option selectForVariants="a b c a"><text>top</text></option>
-        <option selectForVariants="b d"><text>bottom</text></option>
-        <option selectForVariants="c"><text>left</text></option>
-        <option selectForVariants="d"><text>right</text></option>
+        <option selectForVariantNames="a b c a"><text>top</text></option>
+        <option selectForVariantNames="b d"><text>bottom</text></option>
+        <option selectForVariantNames="c"><text>left</text></option>
+        <option selectForVariantNames="d"><text>right</text></option>
       </select>
       </aslist></p>
     `,
           requestedVariant: {
-            name: variant,
+            name: variantName,
             subvariants: [{
             }, {
               indices: sideInds
@@ -410,7 +410,7 @@ describe('Specifying subvariants tests', function () {
             createdBy: "/_document1"
           },
           subvariants: [{
-            indices: directionIndByVariantName[variant],
+            indices: directionIndByVariantName[variantName],
             meta: { createdBy: "/_select1" },
             subvariants: []
           }, {
@@ -436,18 +436,18 @@ describe('Specifying subvariants tests', function () {
       <variantControl nvariants="4"/>
 
       <p>Direction: <select assignnames="(direction)" numbertoselect="1">
-        <option selectForVariants="a"><text>north</text></option>
-        <option selectForVariants="b"><text>south</text></option>
-        <option selectForVariants="c"><text>east</text></option>
-        <option selectForVariants="d"><text>west</text></option>
+        <option selectForVariantNames="a"><text>north</text></option>
+        <option selectForVariantNames="b"><text>south</text></option>
+        <option selectForVariantNames="c"><text>east</text></option>
+        <option selectForVariantNames="d"><text>west</text></option>
       </select></p>
 
       <p>Sides: <aslist>
       <select assignnames="(side1) (side2)" numbertoselect="2">
-        <option selectForVariants="a b c a"><text>top</text></option>
-        <option selectForVariants="b d"><text>bottom</text></option>
-        <option selectForVariants="c"><text>left</text></option>
-        <option selectForVariants="d"><text>right</text></option>
+        <option selectForVariantNames="a b c a"><text>top</text></option>
+        <option selectForVariantNames="b d"><text>bottom</text></option>
+        <option selectForVariantNames="c"><text>left</text></option>
+        <option selectForVariantNames="d"><text>right</text></option>
       </select>
       </aslist></p>
     `,
@@ -843,14 +843,14 @@ describe('Specifying subvariants tests', function () {
             
                 <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
                   <option><problem newNamespace><title>A word problem</title>
-                    <variantControl nvariants="5" variants="a b c d e" />
+                    <variantControl nvariants="5" variantNames="a b c d e" />
                     <p>Word:
                       <select>
-                        <option selectForVariants="b"><text>bad</text></option>
-                        <option selectForVariants="a"><text>angry</text></option>
-                        <option selectForVariants="d"><text>drab</text></option>
-                        <option selectForVariants="e"><text>excoriated</text></option>
-                        <option selectForVariants="c"><text>churlish</text></option>
+                        <option selectForVariantNames="b"><text>bad</text></option>
+                        <option selectForVariantNames="a"><text>angry</text></option>
+                        <option selectForVariantNames="d"><text>drab</text></option>
+                        <option selectForVariantNames="e"><text>excoriated</text></option>
+                        <option selectForVariantNames="c"><text>churlish</text></option>
                       </select>
                     </p>
                   </problem></option>
@@ -858,9 +858,9 @@ describe('Specifying subvariants tests', function () {
                     <variantControl nvariants="3" />
                     <p>Number: 
                       <select>
-                         <option selectForVariants="a"><number>7</number></option>
-                         <option selectForVariants="c"><number>47</number></option>
-                         <option selectForVariants="b"><number>13</number></option>
+                         <option selectForVariantNames="a"><number>7</number></option>
+                         <option selectForVariantNames="c"><number>47</number></option>
+                         <option selectForVariantNames="b"><number>13</number></option>
                     </select></p>
                   </problem></option>
                 </select>

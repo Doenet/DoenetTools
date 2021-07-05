@@ -33,13 +33,6 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true
     };
-    attributes.fixedOrder = {
-      createComponentOfType: "boolean",
-      createStateVariable: "fixedOrder",
-      defaultValue: false,
-      public: true,
-      propagateToDescendants: true
-    };
     attributes.size = {
       createComponentOfType: "number",
       createStateVariable: "size",
@@ -60,6 +53,13 @@ export default class Answer extends InlineComponent {
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
       validValues: ["none", "full", "numbers", "numbersepreserveorder"],
+      public: true,
+      propagateToDescendants: true,
+    };
+    attributes.expandOnCompare = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expandOnCompare",
+      defaultValue: false,
       public: true,
       propagateToDescendants: true,
     };

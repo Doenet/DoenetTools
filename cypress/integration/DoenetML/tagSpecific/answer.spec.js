@@ -7192,19 +7192,19 @@ describe('Answer Tag Tests', function () {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variants="cat dog mouse fish"/>
+        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal)" hide>
-          <option selectForVariants="cat">
+          <option selectForVariantNames="cat">
             <text>cat</text>
           </option>
-          <option selectForVariants="dog">
+          <option selectForVariantNames="dog">
             <text>dog</text>
           </option>
-          <option selectForVariants="mouse">
+          <option selectForVariantNames="mouse">
             <text>mouse</text>
           </option>
-          <option selectForVariants="fish">
+          <option selectForVariantNames="fish">
             <text>fish</text>
           </option>
         </select>
@@ -7254,19 +7254,19 @@ describe('Answer Tag Tests', function () {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variants="cat dog mouse fish"/>
+        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal sound)" hide>
-          <option selectForVariants="cat">
+          <option selectForVariantNames="cat">
             <text>cat</text><text>meow</text>
           </option>
-          <option selectForVariants="dog">
+          <option selectForVariantNames="dog">
             <text>dog</text><text>woof</text>
           </option>
-          <option selectForVariants="mouse">
+          <option selectForVariantNames="mouse">
             <text>mouse</text><text>squeak</text>
           </option>
-          <option selectForVariants="fish">
+          <option selectForVariantNames="fish">
             <text>fish</text><text>blub</text>
           </option>
         </select>
