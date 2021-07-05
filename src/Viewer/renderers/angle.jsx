@@ -128,9 +128,9 @@ export default class Angle extends DoenetRenderer {
     this.angleJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, through[1]);
     this.angleJXG.point3.coords.setCoordinates(JXG.COORDS_BY_USER, through[2]);
 
-    this.angleJXG.setAttribute({radius: this.doenetSvData.numericalRadius, visible: !this.doenetSvData.hidden});
+    this.angleJXG.setAttribute({ radius: this.doenetSvData.numericalRadius, visible: !this.doenetSvData.hidden });
 
- 
+
     this.angleJXG.name = this.doenetSvData.label;
     // this.lineJXG.visProp.withlabel = this.showlabel && this.label !== "";
 
@@ -154,15 +154,19 @@ export default class Angle extends DoenetRenderer {
 
   componentDidMount() {
     if (!this.props.board) {
-      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      if (window.MathJax) {
+        window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
+        window.MathJax.Hub.processSectionDelay = 0;
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      }
     }
   }
 
   componentDidUpdate() {
     if (!this.props.board) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      if (window.MathJax) {
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      }
     }
   }
 
@@ -177,7 +181,7 @@ export default class Angle extends DoenetRenderer {
     }
 
     let mathJaxify;
-    if(this.doenetSvData.inDegrees) {
+    if (this.doenetSvData.inDegrees) {
       mathJaxify = "\\(" + this.doenetSvData.degrees + "^\\circ \\)";
     } else {
       mathJaxify = "\\(" + this.doenetSvData.radians + "\\)";

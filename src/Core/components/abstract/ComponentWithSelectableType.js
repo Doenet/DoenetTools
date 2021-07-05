@@ -162,7 +162,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
     sugarInstructions.push({
       replacementFunction: function ({ matchedChildren,
-        componentAttributes, parentAttributes, isAttributeComponent = false
+        componentAttributes, parentAttributes,
+        isAttributeComponent = false, createdFromMacro = false
       }) {
         let type = componentAttributes.type;
         if (!type) {
@@ -177,7 +178,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
         let componentType = type === "letters" ? "text" : type;
 
-        if (isAttributeComponent) {
+        if (isAttributeComponent && !createdFromMacro) {
           let groupIntoComponentTypesSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType });
           return groupIntoComponentTypesSeparatedBySpaces({ matchedChildren });
         } else {

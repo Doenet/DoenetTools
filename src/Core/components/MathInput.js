@@ -67,21 +67,23 @@ export default class MathInput extends Input {
       public: true,
     }
     attributes.displayDigits = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDigits",
       defaultValue: 10,
       public: true,
     };
     attributes.displayDecimals = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDecimals",
       defaultValue: null,
       public: true,
     };
     attributes.displaySmallAsZero = {
-      createComponentOfType: "boolean",
+      createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      defaultValue: false,
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
       public: true,
     };
     attributes.bindValueTo = {

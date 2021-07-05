@@ -345,8 +345,8 @@ export function roundForDisplay({ value, dependencyValues, usedDefault }) {
     } else {
       rounded = value;
     }
-    if (dependencyValues.displaySmallAsZero) {
-      rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: true });
+    if (dependencyValues.displaySmallAsZero > 0) {
+      rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: dependencyValues.displaySmallAsZero });
     }
 
   }

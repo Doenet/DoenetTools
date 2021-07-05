@@ -44,6 +44,31 @@ export default class FunctionIterates extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.nDimensions = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        functionAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "function",
+          variableNames: ["nInputs", "nOutputs"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (!dependencyValues.functionAttr) {
+          return { newValues: { nDimensions: 0 } }
+        } else if (dependencyValues.functionAttr.stateValues.nInputs !==
+          dependencyValues.functionAttr.stateValues.nOutputs
+        ) {
+          console.warn(`Function iterates are possible only if the number of inputs is equal to the number of outputs`)
+          return { newValues: { nDimensions: 0 } }
+        } else {
+          return { newValues: { nDimensions: dependencyValues.functionAttr.stateValues.nInputs } }
+        }
+      }
+    }
+
+
     stateVariableDefinitions.iterates = {
       isArray: true,
       public: true,
@@ -65,7 +90,7 @@ export default class FunctionIterates extends InlineComponent {
           functionAttr: {
             dependencyType: "attributeComponent",
             attributeName: "function",
-            variableNames: ["symbolicf", "numericalf", "symbolic"],
+            variableNames: ["symbolicfs", "numericalfs", "symbolic"],
           },
           forceSymbolic: {
             dependencyType: "stateVariable",
@@ -74,6 +99,10 @@ export default class FunctionIterates extends InlineComponent {
           forceNumeric: {
             dependencyType: "stateVariable",
             variableName: "forceNumeric"
+          },
+          nDimensions: {
+            dependencyType: "stateVariable",
+            variableName: "nDimensions"
           }
         }
 
@@ -105,7 +134,7 @@ export default class FunctionIterates extends InlineComponent {
 
 
         for (let arrayKey of arrayKeys) {
-          if (!functionComp) {
+          if (!functionComp || globalDependencyValues.nDimensions === 0) {
             iterates[arrayKey] = me.fromAst('\uff3f')
           } else {
 
@@ -114,24 +143,63 @@ export default class FunctionIterates extends InlineComponent {
             if (!globalDependencyValues.forceNumeric &&
               (functionComp.stateValues.symbolic || globalDependencyValues.forceSymbolic)
             ) {
-              iterates[arrayKey] = functionComp.stateValues.symbolicf(prevValue);
-            } else {
-              let numericInput = prevValue.evaluate_to_constant();
-              if (numericInput === null) {
-                numericInput = NaN;
+              let symbolicfs = functionComp.stateValues.symbolicfs;
+              if (globalDependencyValues.nDimensions === 1) {
+                iterates[arrayKey] = symbolicfs[0](prevValue);
+              } else {
+                if (Array.isArray(prevValue.tree)
+                  && ["vector", "tuple"].includes(prevValue.tree[0])
+                  && prevValue.tree.length === globalDependencyValues.nDimensions + 1
+                ) {
+                  let iterComps = [];
+                  let inputs = prevValue.tree.slice(1);
+
+                  for (let i = 0; i < globalDependencyValues.nDimensions; i++) {
+                    iterComps.push(symbolicfs[i](...inputs))
+                  }
+                  iterates[arrayKey] = me.fromAst(["vector", ...iterComps])
+                } else {
+                  iterates[arrayKey] = me.fromAst('\uff3f')
+                }
               }
+            } else {
+              let numericalfs = functionComp.stateValues.numericalfs;
 
-              iterates[arrayKey] = me.fromAst(functionComp.stateValues.numericalf(numericInput))
+              if (globalDependencyValues.nDimensions === 1) {
 
+                let numericInput = prevValue.evaluate_to_constant();
+                if (numericInput === null) {
+                  numericInput = NaN;
+                }
+                iterates[arrayKey] = me.fromAst(numericalfs[0](numericInput))
+              } else {
+                if (Array.isArray(prevValue.tree)
+                  && ["vector", "tuple"].includes(prevValue.tree[0])
+                  && prevValue.tree.length === globalDependencyValues.nDimensions + 1
+                ) {
+                  let iterComps = [];
+                  let inputs = prevValue.tree.slice(1).map(x => me.fromAst(x).evaluate_to_constant())
+                    .map(x => x == null ? NaN : x)
+
+                  for (let i = 0; i < globalDependencyValues.nDimensions; i++) {
+                    iterComps.push(numericalfs[i](...inputs))
+                  }
+                  iterates[arrayKey] = me.fromAst(["vector", ...iterComps])
+                } else {
+                  iterates[arrayKey] = me.fromAst('\uff3f')
+                }
+              }
             }
 
-            // console.log("iterates")
-            // console.log(iterates)
 
-            return {
-              newValues: { iterates }
-            }
           }
+        }
+
+        // console.log("iterates")
+        // console.log(iterates)
+
+        return {
+          newValues: { iterates }
         }
       }
 
@@ -145,8 +213,8 @@ export default class FunctionIterates extends InlineComponent {
         if (!Number.isFinite(stateValues.nIterates) || stateValues.nIterates < 0) {
           return {};
         }
-        
-        
+
+
         if (stateValues.nIterates > 0) {
           return {
             finalIterate: {

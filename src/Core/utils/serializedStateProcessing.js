@@ -422,24 +422,34 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
 export function componentFromAttribute({ attrObj, value, componentInfoObjects, flags }) {
   if (attrObj.createComponentOfType) {
     let newComponent;
-    if (value === true &&
-      componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: attrObj.createComponentOfType,
-        baseComponentType: "boolean",
-      })) {
-      // special case where had prop with no value
-      // so its value was set to be boolean true (rather than string)
-      // in this case, set state directly in component
+
+    // set to string, as if had an attribute with no value, would get true
+    value = String(value);
+    let valueLower = value.toLowerCase();
+
+    if (valueLower === "true" && attrObj.valueForTrue !== undefined) {
       newComponent = {
         componentType: attrObj.createComponentOfType,
-        state: { implicitValue: true }
+        state: { value: attrObj.valueForTrue }
+      };
+    } else if (valueLower === "false" && attrObj.valueForFalse !== undefined) {
+      newComponent = {
+        componentType: attrObj.createComponentOfType,
+        state: { value: attrObj.valueForFalse }
+      };
+    } else if (componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: attrObj.createComponentOfType,
+      baseComponentType: "boolean",
+    }) && ["true", "false"].includes(valueLower)) {
+      newComponent = {
+        componentType: attrObj.createComponentOfType,
+        state: { value: valueLower === "true" }
       };
     } else {
-      // use String() just in case have a boolean true (i.e., had prop with no value)
       newComponent = {
         componentType: attrObj.createComponentOfType,
         children: [
-          { componentType: "string", state: { value: String(value) } }
+          { componentType: "string", state: { value } }
         ]
       };
     }
@@ -893,11 +903,17 @@ function createEvaluateIfFindMatchedClosingParens({
     // recurse on pieces
     let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
 
-    let inputArray = pieces.map(x => ({
-      componentType: "math",
-      doenetAttributes: { createdFromMacro: true },
-      children: x
-    }))
+    let inputArray = pieces.map(x => {
+      if (x.length === 1 && x[0].componentType !== "string") {
+        return x[0]
+      } else {
+        return {
+          componentType: "math",
+          doenetAttributes: { createdFromMacro: true },
+          children: x
+        }
+      }
+    })
 
     let evaluateComponent = {
       componentType: "evaluate",
@@ -915,7 +931,6 @@ function createEvaluateIfFindMatchedClosingParens({
         }
       }
     }
-
 
     let replacements = [evaluateComponent];
 
@@ -1054,6 +1069,11 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             }
           }
 
+          let createdFromMacro = false;
+          if (component.doenetAttributes && component.doenetAttributes.createdFromMacro) {
+            createdFromMacro = true;
+          }
+
           let sugarResults = sugarInstruction.replacementFunction({
             matchedChildren,
             parentParametersFromSugar,
@@ -1061,7 +1081,8 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             componentAttributes,
             uniqueId: uniqueId + '|sugar' + sugarInd,
             componentInfoObjects,
-            isAttributeComponent: isAttributeComponent
+            isAttributeComponent,
+            createdFromMacro
           });
 
           // console.log("sugarResults")
@@ -1350,7 +1371,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         longNameId += componentInd + "|" + indOffset + "|" + createNameContext;
       }
 
-      prescribedName = createUniqueName(componentType, longNameId);
+      prescribedName = createUniqueName(componentType.toLowerCase(), longNameId);
     }
 
     if (!assignNames && useOriginalNames
@@ -1737,9 +1758,6 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
       //     let uniqueVariantsComp = variantControlChild.attributes.uniqueVariants;
 
       //     if (uniqueVariantsComp.state !== undefined) {
-      //       if (uniqueVariantsComp.state.implicitValue !== undefined) {
-      //         uniqueVariants = uniqueVariantsComp.state.implicitValue;
-      //       }
       //       if (uniqueVariantsComp.state.value !== undefined) {
       //         uniqueVariants = uniqueVariantsComp.state.value;
       //       }
@@ -1932,7 +1950,7 @@ export function processAssignNames({
 
         // give component itself an unreachable name
         let longNameId = parentName + "|assignName|" + indForNames.toString();
-        component.doenetAttributes.prescribedName = createUniqueName(component.componentType, longNameId);
+        component.doenetAttributes.prescribedName = createUniqueName(component.componentType.toLowerCase(), longNameId);
 
         let componentName = parentName;
         if (!parentCreatesNewNamespace) {
@@ -1963,7 +1981,7 @@ export function processAssignNames({
         name = component.originalName.slice(originalNamespace.length + 1);
       } else {
         let longNameId = parentName + "|assignName|" + (indForNames).toString();
-        name = createUniqueName(component.componentType, longNameId);
+        name = createUniqueName(component.componentType.toLowerCase(), longNameId);
       }
     }
 

@@ -7277,21 +7277,12 @@ describe('Point Tag Tests', function () {
         expect(components['/_point1'].stateValues.nDimensions).eq(1);
         expect(components['/_point1'].stateValues.xs.length).eq(1);
         expect(components['/_point1'].stateValues.xs[0].tree).eq('＿');
-        expect(components['/_point1'].stateValues.x1.tree).eq('＿');
-        expect(components['/_point1'].stateValues.x2).eq(undefined);
-        expect(components['/_point1'].stateValues.x3).eq(undefined);
         expect(point2.stateValues.nDimensions).eq(1);
         expect(point2.stateValues.xs.length).eq(1);
         expect(point2.stateValues.xs[0].tree).eq('＿');
-        expect(point2.stateValues.x1.tree).eq('＿');
-        expect(point2.stateValues.x2).eq(undefined);
-        expect(point2.stateValues.x3).eq(undefined);
         expect(point3.stateValues.nDimensions).eq(1);
         expect(point3.stateValues.xs.length).eq(1);
         expect(point3.stateValues.xs[0].tree).eq('＿');
-        expect(point3.stateValues.x1.tree).eq('＿');
-        expect(point3.stateValues.x2).eq(undefined);
-        expect(point3.stateValues.x3).eq(undefined);
 
       });
 
@@ -7316,23 +7307,14 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.xs.length).eq(2);
           expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
           expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
-          expect(components['/_point1'].stateValues.x1.tree).eq('a');
-          expect(components['/_point1'].stateValues.x2.tree).eq('b');
-          expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
           expect(point2.stateValues.xs.length).eq(2);
           expect(point2.stateValues.xs[0].tree).eq('a');
           expect(point2.stateValues.xs[1].tree).eq('b');
-          expect(point2.stateValues.x1.tree).eq('a');
-          expect(point2.stateValues.x2.tree).eq('b');
-          expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
           expect(point3.stateValues.xs.length).eq(2);
           expect(point3.stateValues.xs[0].tree).eq('a');
           expect(point3.stateValues.xs[1].tree).eq('b');
-          expect(point3.stateValues.x1.tree).eq('a');
-          // expect(point3.stateValues.x2.tree).eq('b');
-          expect(point3.stateValues.x3).eq(undefined);
 
         });
 
@@ -7359,21 +7341,12 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.nDimensions).eq(1);
           expect(components['/_point1'].stateValues.xs.length).eq(1);
           expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
-          expect(components['/_point1'].stateValues.x1.tree).eq('q');
-          expect(components['/_point1'].stateValues.x2).eq(undefined);
-          expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(1);
           expect(point2.stateValues.xs.length).eq(1);
           expect(point2.stateValues.xs[0].tree).eq('q');
-          expect(point2.stateValues.x1.tree).eq('q');
-          expect(point2.stateValues.x2).eq(undefined);
-          expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(1);
           expect(point3.stateValues.xs.length).eq(1);
           expect(point3.stateValues.xs[0].tree).eq('q');
-          expect(point3.stateValues.x1.tree).eq('q');
-          expect(point3.stateValues.x2).eq(undefined);
-          expect(point3.stateValues.x3).eq(undefined);
 
         });
 
@@ -7401,25 +7374,16 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.xs[0].tree).eqls(["*", 2, "x"]);
           expect(components['/_point1'].stateValues.xs[1].tree).eqls(["/", "u", "v"]);
           expect(components['/_point1'].stateValues.xs[2].tree).eqls(["^", "w", 2]);
-          expect(components['/_point1'].stateValues.x1.tree).eqls(["*", 2, "x"]);;
-          expect(components['/_point1'].stateValues.x2.tree).eqls(["/", "u", "v"]);
-          expect(components['/_point1'].stateValues.x3.tree).eqls(["^", "w", 2]);
           expect(point2.stateValues.nDimensions).eq(3);
           expect(point2.stateValues.xs.length).eq(3);
           expect(point2.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
           expect(point2.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
           expect(point2.stateValues.xs[2].tree).eqls(["^", "w", 2]);
-          expect(point2.stateValues.x1.tree).eqls(["*", 2, "x"]);
-          expect(point2.stateValues.x2.tree).eqls(["/", "u", "v"]);
-          expect(point2.stateValues.x3.tree).eqls(["^", "w", 2]);
           expect(point3.stateValues.nDimensions).eq(3);
           expect(point3.stateValues.xs.length).eq(3);
           expect(point3.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
           expect(point3.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
           expect(point3.stateValues.xs[2].tree).eqls(["^", "w", 2]);
-          expect(point3.stateValues.x1.tree).eqls(["*", 2, "x"]);
-          // expect(point3.stateValues.x2.tree).eqls(["/", "u", "v"]);
-          // expect(point3.stateValues.x3.tree).eqls(["^", "w", 2]);
 
         });
 
@@ -7449,23 +7413,14 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.xs.length).eq(2);
           expect(components['/_point1'].stateValues.xs[0].tree).eq('p');
           expect(components['/_point1'].stateValues.xs[1].tree).eq('q');
-          expect(components['/_point1'].stateValues.x1.tree).eq('p');
-          expect(components['/_point1'].stateValues.x2.tree).eq('q');
-          expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
           expect(point2.stateValues.xs.length).eq(2);
           expect(point2.stateValues.xs[0].tree).eq('p');
           expect(point2.stateValues.xs[1].tree).eq('q');
-          expect(point2.stateValues.x1.tree).eq('p');
-          expect(point2.stateValues.x2.tree).eq('q');
-          expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
           expect(point3.stateValues.xs.length).eq(2);
           expect(point3.stateValues.xs[0].tree).eq('p');
           expect(point3.stateValues.xs[1].tree).eq('q');
-          expect(point3.stateValues.x1.tree).eq('p');
-          // expect(point3.stateValues.x2.tree).eq('q');
-          expect(point3.stateValues.x3).eq(undefined);
 
         });
 
