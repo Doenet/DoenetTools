@@ -9,6 +9,11 @@ export const drivecardSelectedNodesAtom = atom({
   default:[]
 })
 
+export const allDriveCardsAtom = atom({
+  key:'allDriveCardsAtom',
+  default:[]
+})
+
 export default function CourseToolHandler(props){
   console.log(">>>===CourseToolHandler")
   let lastTool = useRef(null);
