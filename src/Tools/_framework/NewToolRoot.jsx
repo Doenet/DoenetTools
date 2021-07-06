@@ -163,18 +163,6 @@ export default function ToolRoot(props){
     }
   })
 
-  const setSearchParam = useRecoilCallback(({set,snapshot})=>(paramObj)=>{
-    //Track when tool isn't defined so the controlers get refreshed
-    let clearTool = true;
-    for (const [key,value] of Object.entries(paramObj)){
-      if (key === 'tool'){clearTool = false;}
-      set(searchParamAtomFamily(key),value)
-    }
-    if (clearTool){
-      set(searchParamAtomFamily('tool'),'')
-    }
-  })
-
   const LazyPanelObj = useRef({
     Empty:lazy(() => import('./ToolPanels/Empty')),
     NotFound:lazy(() => import('./ToolPanels/NotFound')),
@@ -183,7 +171,7 @@ export default function ToolRoot(props){
     Content:lazy(() => import('./ToolPanels/Content')),
     DriveCards:lazy(() => import('./ToolPanels/DriveCards')),
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
-    Drive:lazy(() => import('./ToolPanels/Drive')),
+    DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -198,14 +186,36 @@ export default function ToolRoot(props){
   //   CourseToolHandler:lazy(() => import('./ToolHandlers/CourseToolHandler')),
   // }).current;
 
+  const lastSearchParam = useRef({})
+
+  const setSearchParam = useRecoilCallback(({set})=>(paramObj,lastParamObj)=>{
+    //Only set atom if parameter has changed
+    for (const [key,value] of Object.entries(paramObj)){
+      if (lastParamObj[key] !== value){
+        // console.log(`>>>CHANGED so SET key: ${key} value: ${value}`)
+        set(searchParamAtomFamily(key),value)
+      }
+    }
+    //If not defined then clear atom
+    for (const [key,value] of Object.entries(lastParamObj)){
+      if (!paramObj[key]){
+        // console.log(">>>clear!!!",key)
+        set(searchParamAtomFamily(key),"") 
+      }
+    }
+  })
+
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
-      console.log(">>>===ToolRoot")
 
+  console.log(">>>===ToolRoot")
   
-  //TODO: Send to recoilcallback set selectorFam
+  const searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
+  setSearchParam(searchParamObj,lastSearchParam.current);
+  lastSearchParam.current = searchParamObj;
+
 
   function buildPanel({key,type,visible}){
     let hideStyle = null;
@@ -223,11 +233,6 @@ export default function ToolRoot(props){
   //Need to update path
     setPage(lcpath,props.route.location.pathname)
     // return null; 
-  }else if (!toolViewInfo.toolHandler){
-   //If no handler and same page use search params to set tool and parameters
-   //Or else it's the handler's job to set 
-    const searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
-    setSearchParam(searchParamObj);
   }
 
   let toolHandler = null;

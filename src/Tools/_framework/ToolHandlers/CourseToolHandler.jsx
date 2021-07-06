@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import  { useRef } from 'react';
 import { atom, useRecoilValue, useRecoilCallback } from 'recoil'
 import { searchParamAtomFamily, toolViewAtom } from '../NewToolRoot';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
@@ -9,11 +9,11 @@ export const drivecardSelectedNodesAtom = atom({
   default:[]
 })
 
-export default function CourseToolHandler(props){
+export default function CourseToolHandler(){
   console.log(">>>===CourseToolHandler")
   
   let lastAtomTool = useRef(null);
-  // let lastParamTool = useRef(null);
+
   const setTool = useRecoilCallback(({set})=> (tool,lastAtomTool)=>{
     //Set starting tool
     if (tool === ""){
@@ -38,7 +38,7 @@ export default function CourseToolHandler(props){
         // }else if (role === "Owner" || role === "Admin"){
             set(toolViewAtom,(was)=>{
               let newObj = {...was}
-              newObj.currentMainPanel = "Drive";
+              newObj.currentMainPanel = "DrivePanel";
               newObj.currentMenus = ["AddDriveItems","EnrollStudents"];
               newObj.menusTitles = ["Add Items","Enrollment"];
               newObj.menusInitOpen = [true,false];
@@ -62,14 +62,9 @@ export default function CourseToolHandler(props){
       }
   })
   const atomTool = useRecoilValue(searchParamAtomFamily('tool')) 
-  // const searchParamObj = Object.fromEntries(new URLSearchParams(location.search))
-  // const paramTool = searchParamObj['tool']
-  // if (atomTool !== paramTool){
-    // console.log(`>>> atomTool >${atomTool}< lastAtomTool.current >${lastAtomTool.current}<`)
-    // console.log(`>>> paramTool >${paramTool}< lastParamTool.current >${lastParamTool.current}<`)
-  // }
-  // lastParamTool.current = paramTool;
+  
 
+  //Update panels when tool changes
   if (atomTool !== lastAtomTool.current){
     setTool(atomTool,lastAtomTool.current)
     lastAtomTool.current = atomTool;
