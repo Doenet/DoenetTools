@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { useHistory } from 'react-router';
 
 export default function Empty(props){
-  console.log(">>>===Empty")
+  // console.log(">>>===Empty")
   // const [count,setCount] = useState(0)
   // let history = useHistory();
   return <div style={props.style}>

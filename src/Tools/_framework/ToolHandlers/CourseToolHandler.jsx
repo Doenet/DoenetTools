@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import  { useRef } from 'react';
 import { atom, useRecoilValue, useRecoilCallback } from 'recoil'
 import { searchParamAtomFamily, toolViewAtom } from '../NewToolRoot';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
@@ -9,18 +9,18 @@ export const drivecardSelectedNodesAtom = atom({
   default:[]
 })
 
-export default function CourseToolHandler(props){
+export default function CourseToolHandler(){
   console.log(">>>===CourseToolHandler")
-  let lastTool = useRef(null);
-  const setTool = useRecoilCallback(({set})=> (tool,lastTool)=>{
-    // console.log(`>>>setTool >${tool}< >${lastTool}<`)
+  
+  let lastAtomTool = useRef(null);
+
+  const setTool = useRecoilCallback(({set})=> (tool,lastAtomTool)=>{
     //Set starting tool
     if (tool === ""){
       tool = 'courseChooser';
-      // window.history.pushState('','','/new#/course?tool=courseChooser')
       window.history.replaceState('','','/new#/course?tool=courseChooser')
     }
-    if (tool === lastTool){ return; }
+    if (tool === lastAtomTool){ return; }
 
       if (tool === 'courseChooser'){
         set(toolViewAtom,(was)=>{
@@ -32,13 +32,21 @@ export default function CourseToolHandler(props){
           return newObj;
         });
         set(mainPanelClickAtom,[{atom:drivecardSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
-      }else if (tool === 'file'){
-        console.log(">>>file!")
-        // set(toolViewAtom,(was)=>{
-        //   let newObj = {...was}
-        //   newObj.currentMainPanel = "DriveCards";
-        //   return newObj;
-        // });
+      }else if (tool === 'navigation'){
+        // if (role === "Student"){
+          //TODO
+        // }else if (role === "Owner" || role === "Admin"){
+            set(toolViewAtom,(was)=>{
+              let newObj = {...was}
+              newObj.currentMainPanel = "DrivePanel";
+              newObj.currentMenus = ["AddDriveItems","EnrollStudents"];
+              newObj.menusTitles = ["Add Items","Enrollment"];
+              newObj.menusInitOpen = [true,false];
+
+              return newObj;
+            });
+        // }
+       
         set(mainPanelClickAtom,[])
 
       }else if (tool === 'editor'){
@@ -53,13 +61,13 @@ export default function CourseToolHandler(props){
         console.log(">>>didn't match!")
       }
   })
-  const tool = useRecoilValue(searchParamAtomFamily('tool')) 
+  const atomTool = useRecoilValue(searchParamAtomFamily('tool')) 
+  
 
-
-  if (tool !== lastTool.current){
-    console.log(">>>CourseToolHandler tool>>>",tool)
-    setTool(tool,lastTool.current)
-    lastTool.current = tool;
+  //Update panels when tool changes
+  if (atomTool !== lastAtomTool.current){
+    setTool(atomTool,lastAtomTool.current)
+    lastAtomTool.current = atomTool;
   }
   return null;
 
