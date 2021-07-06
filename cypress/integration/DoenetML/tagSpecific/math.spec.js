@@ -930,10 +930,160 @@ describe('Math Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/set'].stateValues.value.tree).eqls(["set", "a", "b", "c"]);
       // expect(components['/tuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c"]);
-      expect(components['/combinedSet'].stateValues.value.tree).eqls(["set", "a", "b", "c","d","e","f"]);
-      expect(components['/combinedTuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c","d","e","f"]);
+      expect(components['/combinedSet'].stateValues.value.tree).eqls(["set", "a", "b", "c", "d", "e", "f"]);
+      expect(components['/combinedTuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c", "d", "e", "f"]);
 
     });
+
+  });
+
+  it('components of math', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><mathinput name="m" prefill="(a,b,c)" /></p>
+  <p><math name="m2">$m</math></p>
+  <p><math name="m3" createVectors>$m</math></p>
+  <p>Ndimensions: <extract prop="nDimensions" assignNames="nDim1">$m</extract> <copy prop="nDimensions" tname="m2" assignNames="nDim2" /> <copy prop="nDimensions" tname="m3" assignNames="nDim3" /></p>
+  <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" tname="m2" assignNames="x_2" /> <copy prop="x" tname="m3" assignNames="x_3" /></p>
+  <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" tname="m2" assignNames="y_2" /> <copy prop="y" tname="m3" assignNames="y_3" /></p>
+  <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" tname="m2" assignNames="z_2" /> <copy prop="z" tname="m3" assignNames="z_3" /></p>
+  <p>x1: <extract prop="x1" assignNames="x1">$m</extract> <copy prop="x1" tname="m2" assignNames="x1_2" /> <copy prop="x1" tname="m3" assignNames="x1_3" /></p>
+  <p>x2: <extract prop="x2" assignNames="x2">$m</extract> <copy prop="x2" tname="m2" assignNames="x2_2" /> <copy prop="x2" tname="m3" assignNames="x2_3" /></p>
+  <p>x3: <extract prop="x3" assignNames="x3">$m</extract> <copy prop="x3" tname="m2" assignNames="x3_2" /> <copy prop="x3" tname="m3" assignNames="x3_3" /></p>
+  <p>x4: <extract prop="x4" assignNames="x4">$m</extract> <copy prop="x4" tname="m2" assignNames="x4_2" /> <copy prop="x4" tname="m3" assignNames="x4_3" /></p>
+  <p>x: <mathinput bindValueTo="$x" name="mx" /> <mathinput bindValueTo="$(m2{prop='x'})" name="mx_2" /> <mathinput bindValueTo="$(m3{prop='x'})" name="mx_3" /></p>
+  <p>y: <mathinput bindValueTo="$y" name="my" /> <mathinput bindValueTo="$(m2{prop='y'})" name="my_2" /> <mathinput bindValueTo="$(m3{prop='y'})" name="my_3" /></p>
+  <p>z: <mathinput bindValueTo="$z" name="mz" /> <mathinput bindValueTo="$(m2{prop='z'})" name="mz_2" /> <mathinput bindValueTo="$(m3{prop='z'})" name="mz_3" /></p>
+  <p>x1: <mathinput bindValueTo="$x1" name="mx1" /> <mathinput bindValueTo="$(m2{prop='x1'})" name="mx1_2" /> <mathinput bindValueTo="$(m3{prop='x1'})" name="mx1_3" /></p>
+  <p>x2: <mathinput bindValueTo="$x2" name="mx2" /> <mathinput bindValueTo="$(m2{prop='x2'})" name="mx2_2" /> <mathinput bindValueTo="$(m3{prop='x2'})" name="mx2_3" /></p>
+  <p>x3: <mathinput bindValueTo="$x3" name="mx3" /> <mathinput bindValueTo="$(m2{prop='x3'})" name="mx3_2" /> <mathinput bindValueTo="$(m3{prop='x3'})" name="mx3_3" /></p>
+  <p>x4: <mathinput bindValueTo="$x4" name="mx4" /> <mathinput bindValueTo="$(m2{prop='x4'})" name="mx4_2" /> <mathinput bindValueTo="$(m3{prop='x4'})" name="mx4_3" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    let indToComp = ["x", "y", "z"]
+
+    function check_values(xs, operator) {
+
+      cy.get(`#\\/nDim1`).should('have.text', xs.length.toString())
+      cy.get(`#\\/nDim2`).should('have.text', xs.length.toString())
+
+      for (let [ind, x] of xs.entries()) {
+        let comp = indToComp[ind];
+        if (comp) {
+          cy.get(`#\\/${comp}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim().replace(/−/g, '-')).equal(x.toString())
+          })
+          cy.get(`#\\/${comp}_2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim().replace(/−/g, '-')).equal(x.toString())
+          })
+          cy.get(`#\\/${comp}_3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+            expect(text.trim().replace(/−/g, '-')).equal(x.toString())
+          })
+        }
+        cy.get(`#\\/x${ind + 1}`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(x.toString())
+        })
+        cy.get(`#\\/x${ind + 1}_2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(x.toString())
+        })
+        cy.get(`#\\/x${ind + 1}_3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(x.toString())
+        })
+      }
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        expect(components["/nDim1"].stateValues.value).eq(xs.length)
+        expect(components["/nDim2"].stateValues.value).eq(xs.length)
+
+        let m3Operator = operator === "tuple" ? "vector" : operator;
+
+        expect(components["/m"].stateValues.value.tree).eqls([operator, ...xs])
+        expect(components["/m2"].stateValues.value.tree).eqls([operator, ...xs])
+        expect(components["/m3"].stateValues.value.tree).eqls([m3Operator, ...xs])
+  
+        for (let [ind, x] of xs.entries()) {
+          let comp = indToComp[ind];
+          if (comp) {
+            expect(components[`/${comp}`].stateValues.value.tree).eqls(x);
+            expect(components[`/${comp}_2`].stateValues.value.tree).eqls(x);
+            expect(components[`/${comp}_3`].stateValues.value.tree).eqls(x);
+          }
+          expect(components[`/x${ind + 1}`].stateValues.value.tree).eqls(x);
+          expect(components[`/x${ind + 1}_2`].stateValues.value.tree).eqls(x);
+          expect(components[`/x${ind + 1}_3`].stateValues.value.tree).eqls(x);
+        }
+
+      });
+
+    }
+
+
+    check_values(["a", "b", "c"], "tuple")
+
+    cy.log('change xyz 1')
+    cy.get('#\\/mx textarea').type('{end}{backspace}d{enter}', { force: true })
+    cy.get('#\\/my textarea').type('{end}{backspace}e{enter}', { force: true })
+    cy.get('#\\/mz textarea').type('{end}{backspace}f{enter}', { force: true })
+    check_values(["d", "e", "f"], "tuple")
+
+    cy.log('change xyz 2')
+    cy.get('#\\/mx_2 textarea').type('{end}{backspace}g{enter}', { force: true })
+    cy.get('#\\/my_2 textarea').type('{end}{backspace}h{enter}', { force: true })
+    cy.get('#\\/mz_2 textarea').type('{end}{backspace}i{enter}', { force: true })
+    check_values(["g", "h", "i"], "tuple")
+
+    cy.log('change xyz 3')
+    cy.get('#\\/mx_3 textarea').type('{end}{backspace}j{enter}', { force: true })
+    cy.get('#\\/my_3 textarea').type('{end}{backspace}k{enter}', { force: true })
+    cy.get('#\\/mz_3 textarea').type('{end}{backspace}l{enter}', { force: true })
+    check_values(["j", "k", "l"], "vector")
+
+    cy.log('change x1x2x3 1')
+    cy.get('#\\/mx1 textarea').type('{end}{backspace}m{enter}', { force: true })
+    cy.get('#\\/mx2 textarea').type('{end}{backspace}n{enter}', { force: true })
+    cy.get('#\\/mx3 textarea').type('{end}{backspace}o{enter}', { force: true })
+    check_values(["m", "n", "o"], "vector")
+
+    cy.log('change x1x2x3 2')
+    cy.get('#\\/mx1_2 textarea').type('{end}{backspace}p{enter}', { force: true })
+    cy.get('#\\/mx2_2 textarea').type('{end}{backspace}q{enter}', { force: true })
+    cy.get('#\\/mx3_2 textarea').type('{end}{backspace}r{enter}', { force: true })
+    check_values(["p", "q", "r"], "vector")
+
+    cy.log('change x1x2x3 2')
+    cy.get('#\\/mx1_3 textarea').type('{end}{backspace}s{enter}', { force: true })
+    cy.get('#\\/mx2_3 textarea').type('{end}{backspace}t{enter}', { force: true })
+    cy.get('#\\/mx3_3 textarea').type('{end}{backspace}u{enter}', { force: true })
+    check_values(["s", "t", "u"], "vector")
+
+    cy.log('change to 4D list')
+    cy.get('#\\/m textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}v,w,x,y{enter}", { force: true })
+
+    check_values(["v", "w", "x", "y"], "list")
+
+
+    cy.log('change x1x2x3x4 1')
+    cy.get('#\\/mx1 textarea').type('{end}{backspace}z{enter}', { force: true })
+    cy.get('#\\/mx2 textarea').type('{end}{backspace}a{enter}', { force: true })
+    cy.get('#\\/mx3 textarea').type('{end}{backspace}b{enter}', { force: true })
+    cy.get('#\\/mx4 textarea').type('{end}{backspace}c{enter}', { force: true })
+    check_values(["z", "a", "b", "c"], "list")
+
+    cy.log('change x1x2x3x4 2')
+    cy.get('#\\/mx1_2 textarea').type('{end}{backspace}d{enter}', { force: true })
+    cy.get('#\\/mx2_2 textarea').type('{end}{backspace}e{enter}', { force: true })
+    cy.get('#\\/mx3_2 textarea').type('{end}{backspace}f{enter}', { force: true })
+    cy.get('#\\/mx4_2 textarea').type('{end}{backspace}g{enter}', { force: true })
+    check_values(["d", "e", "f", "g"], "list")
+
 
   });
 
