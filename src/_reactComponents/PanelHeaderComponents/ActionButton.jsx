@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { ThemeProvider, css } from "styled-components";
 
 const Button = styled.button`
@@ -12,27 +12,47 @@ const Button = styled.button`
   border-radius: ${props => props.theme.borderRadius};
   padding: ${props => props.theme.padding};
   cursor: pointer;
-  font-size: 12px
- ;
+  font-size: 12px;
 `
 
 Button.defaultProps = {
   theme: {
     margin: "0",
     borderRadius: "5px",
-    padding: '0px 10px 0px 10px'
+    padding: '0px 10px 0px 10px',
   }
 }
 
+const Label = styled.p`
+  font-size: 12px;
+  display: ${props => props.labelVisible};
+  margin-right: 5px
+`
+const Container = styled.div`
+  display: flex;
+  width: auto;
+  align-items: center;
+`
 
 export default function ActionButton(props) {
   //Assume small
+  var container = {};
   var actionButton = {
         value: 'Action Button',
       };
   if (props.width) {
     if (props.width === "menu") {
-      actionButton.width = '235px'}
+      actionButton.width = '235px'
+      if (props.label) {
+        container.width = '235px';
+        actionButton.width = '100%';
+      }
+    }
+  }
+  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+  var label = '';
+  if (props.label) {
+    label = props.label;
   }
   var icon = '';
   if (props.value || props.icon){
@@ -57,10 +77,13 @@ export default function ActionButton(props) {
   function handleClick() {
     if (props.onClick) props.onClick()
   }
-  //TODO handleClick() is not defined
     return (
         <>
-            <Button id="actionButton" style={actionButton} onClick={() => { handleClick() }}>{icon}{' '}{actionButton.value}</Button>
+            <Container style={container}>
+              <Label labelVisible={labelVisible}>{label}</Label>
+              <Button id="actionButton" style={actionButton} onClick={() => { handleClick() }}>{icon}{' '}{actionButton.value}</Button>
+            </Container>
+            
         </>
     )
 }

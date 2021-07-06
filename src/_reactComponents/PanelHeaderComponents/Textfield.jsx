@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
+  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
+
   //Assume small
   var textfield = {
         margin: '0px',
@@ -12,12 +14,31 @@ export default function Textfield(props) {
         color: '#000',
         value: 'Enter text here'
       }
+      var label ={
+        value: 'Label:',
+        fontSize: '12px',
+        display: `${labelVisible}`,
+        marginRight: '5px'
+    }
+    
+    var container = {
+        display: 'flex',
+        width: 'auto',
+        alignItems: 'flex-end'
+    }
+    if (props.label) {
+      label.value = props.label;
+  }
   if (props.value) {
     textfield.value = props.value;
 }
 if (props.width) {
   if (props.width === "menu") {
-    textfield.width = '235px'
+    textfield.width = '235px';
+    if (props.label) {
+      container.width = '235px';
+      textfield.width = '100%';
+    }
   } 
 }
 function handleChange(e) {
@@ -26,7 +47,10 @@ function handleChange(e) {
 
     return (
         <>
-            <textarea defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }}></textarea>
+          <div style={container}>
+                <p style={label}>{label.value}</p>
+                <textarea defaultValue={textfield.value} style={textfield} onChange={(e) => { handleChange(e) }}></textarea>
+          </div>
         </>
     )
 }
