@@ -31,6 +31,7 @@ export default function CourseToolHandler(){
           newObj.menusInitOpen = [true,false];
           return newObj;
         });
+        set(selectedMenuPanelAtom,""); //clear selection
         set(mainPanelClickAtom,[{atom:drivecardSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
       }else if (tool === 'navigation'){
         // if (role === "Student"){
@@ -46,8 +47,8 @@ export default function CourseToolHandler(){
               return newObj;
             });
         // }
-       
-        set(mainPanelClickAtom,[])
+        set(selectedMenuPanelAtom,""); //clear selection
+        set(mainPanelClickAtom,[])  //clear main panel click
 
       }else if (tool === 'editor'){
         console.log(">>>editor!")
@@ -56,7 +57,8 @@ export default function CourseToolHandler(){
         //   newObj.currentMainPanel = "DriveCards";
         //   return newObj;
         // });
-        set(mainPanelClickAtom,[])
+        set(selectedMenuPanelAtom,""); //clear selection
+        set(mainPanelClickAtom,[])  //clear main panel click
       }else{
         console.log(">>>didn't match!")
       }
