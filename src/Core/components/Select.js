@@ -154,7 +154,7 @@ export default class Select extends CompositeComponent {
         optionChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroOptions",
-          variableNames: ["selectForVariants", "selectWeight"]
+          variableNames: ["selectForVariantNames", "selectWeight"]
         },
       }),
       definition({ dependencyValues }) {
@@ -187,7 +187,7 @@ export default class Select extends CompositeComponent {
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
-          for (let variantName of optionChild.stateValues.selectForVariants) {
+          for (let variantName of optionChild.stateValues.selectForVariantNames) {
             let variantLower = variantName.toLowerCase();
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];

@@ -22,8 +22,8 @@ export class Caption extends TextOrInline {
   static rendererType = "textOrInline";
 }
 
-export class Variant extends TextFromSingleStringChild {
-  static componentType = "variant";
+export class VariantName extends TextFromSingleStringChild {
+  static componentType = "variantName";
   static rendererType = "text";
 }
 

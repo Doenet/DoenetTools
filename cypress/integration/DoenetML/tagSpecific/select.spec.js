@@ -1469,20 +1469,20 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('variants specified, select single', () => {
+  it('variant names specified, select single', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variants="aVocado  broCColi   carrot  Dill eggplanT"/>
+    <variantControl nvariants="5" variantNames="aVocado  broCColi   carrot  Dill eggplanT"/>
 
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="dill"><math>d</math></option>
-      <option selectForVariants="Carrot"><math>c</math></option>
-      <option selectForVariants="eggPlant"><math>e</math></option>
-      <option selectForVariants="avocadO"><math>a</math></option>
-      <option selectForVariants="broccOli"><math>b</math></option>
+      <option selectForVariantNames="dill"><math>d</math></option>
+      <option selectForVariantNames="Carrot"><math>c</math></option>
+      <option selectForVariantNames="eggPlant"><math>e</math></option>
+      <option selectForVariantNames="avocadO"><math>a</math></option>
+      <option selectForVariantNames="broccOli"><math>b</math></option>
     </select>
     </p>
 
@@ -1516,21 +1516,21 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('variants specified, select multiple', () => {
+  it('variant names specified, select multiple', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variants="avocado  brOccoli   carrot  dill    eggPlant  "/>
+    <variantControl nvariants="5" variantNames="avocado  brOccoli   carrot  dill    eggPlant  "/>
 
     <p>Selected variables:
     <aslist>
     <select assignnames="(x)  (y)  (z)" numbertoselect="3">
-      <option selectForVariants="dill  carrot  avocado"><math>d</math></option>
-      <option selectForVariants="cArrOt eggplant eggplant"><math>c</math></option>
-      <option selectForVariants="eggplant  broccoli  dilL"><math>e</math></option>
-      <option selectForVariants="aVocado   avocado   broccoli"><math>a</math></option>
-      <option selectForVariants="  broccoli     caRRot     dill    "><math>b</math></option>
+      <option selectForVariantNames="dill  carrot  avocado"><math>d</math></option>
+      <option selectForVariantNames="cArrOt eggplant eggplant"><math>c</math></option>
+      <option selectForVariantNames="eggplant  broccoli  dilL"><math>e</math></option>
+      <option selectForVariantNames="aVocado   avocado   broccoli"><math>a</math></option>
+      <option selectForVariantNames="  broccoli     caRRot     dill    "><math>b</math></option>
     </select>
     </aslist>
     </p>

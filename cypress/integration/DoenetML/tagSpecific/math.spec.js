@@ -897,4 +897,44 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('merge lists with other containers', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="set">{<math>a,b,c</math>}</math></p>
+  <!--<p><math name="tuple">(<math>a,b,c</math>,)</math></p>-->
+  <p><math name="combinedSet">{<math>a,b,c</math>,d,<math>e,f</math>}</math></p>
+  <p><math name="combinedTuple">(<math>a,b,c</math>,d,<math>e,f</math>)</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/set').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('{a,b,c}')
+    })
+    // cy.get('#\\/tuple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text.trim()).equal('(a,b,c)')
+    // })
+    cy.get('#\\/combinedSet').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('{a,b,c,d,e,f}')
+    })
+    cy.get('#\\/combinedTuple').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(a,b,c,d,e,f)')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/set'].stateValues.value.tree).eqls(["set", "a", "b", "c"]);
+      // expect(components['/tuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c"]);
+      expect(components['/combinedSet'].stateValues.value.tree).eqls(["set", "a", "b", "c","d","e","f"]);
+      expect(components['/combinedTuple'].stateValues.value.tree).eqls(["tuple", "a", "b", "c","d","e","f"]);
+
+    });
+
+  });
+
 })
