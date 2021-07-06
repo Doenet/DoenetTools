@@ -88,7 +88,7 @@ function ReturnToEditingButton(props){
 
   if (activeVersionId === ""){ return null; }
 
-  return <Button callback={()=> returnToEditing(props.doenetId) } value="Return to current version" />
+  return <Button onClick={()=> returnToEditing(props.doenetId) } value="Return to current version" />
 }
 
 function EditorInfoPanel(props){
@@ -587,7 +587,7 @@ function DoenetViewerUpdateButton(){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Update" callback={()=>{setViewerDoenetML((old)=>{
+  return <Button value="Update" onClick={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
     newInfo.doenetML = editorDoenetML;
     newInfo.updateNumber = old.updateNumber+1;
@@ -632,7 +632,7 @@ function NameCurrentVersionControl(props){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Save Version" callback={()=>saveVersion(props.doenetId)} />
+  return <Button value="Save Version" onClick={()=>saveVersion(props.doenetId)} />
 }
 
 function TempEditorHeaderBar(props){
