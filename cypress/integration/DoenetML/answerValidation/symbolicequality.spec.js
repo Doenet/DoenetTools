@@ -47,28 +47,28 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -197,14 +197,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -320,14 +320,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -443,14 +443,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -555,14 +555,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -666,14 +666,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');

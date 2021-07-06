@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay } from '../utils/math';
+import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -819,6 +819,8 @@ function calculateMathValue({ dependencyValues } = {}) {
   if (dependencyValues.mathChildren.length > 0) {
     value = value.substitute(subsMapping);
   }
+
+  value = me.fromAst(mergeListsWithOtherContainers(value.tree))
 
 
   return {

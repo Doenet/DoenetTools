@@ -336,9 +336,9 @@ export default class Core {
 
       let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
 
-        // if (!success) {
-        //   console.warn(message);
-        // }
+        if (!success) {
+          console.warn(message);
+        }
 
         // check to see if got the contentIds requested
         for (let [ind, contentId] of contentIdList.entries()) {
