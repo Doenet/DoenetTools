@@ -68,6 +68,7 @@ import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel';
 import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import { loadAssignmentSelector } from '../../Tools/course/Course';
+import useSockets from '../Sockets';
 const fetchDriveUsersQuery = atomFamily({
   key: 'fetchDriveUsersQuery',
   default: selectorFamily({
@@ -299,7 +300,6 @@ export default function Drive(props) {
                           isNav={isNav}
                           {...props}
                           driveObj={driveObj}
-                          handlers={props?.handlers}
                         />
                       </Suspense>
                     )}
@@ -329,7 +329,6 @@ export default function Drive(props) {
                       isNav={isNav}
                       {...props}
                       driveObj={driveObj}
-                      handlers={props?.handlers}
                     />
                   </Suspense>
                 )}
@@ -693,7 +692,7 @@ function DriveRouted(props) {
   const [numColumns, setNumColumns] = useState(1);
 
   const { onDragEnterInvalidArea, registerDropTarget, unregisterDropTarget } =
-    useDnDCallbacks(props.handlers.moveItems);
+    useDnDCallbacks();
   const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey));
 
   let hideUnpublished = false; //Default to showing unpublished
@@ -711,7 +710,6 @@ function DriveRouted(props) {
     driveId: props.driveId,
     driveLabel: props.driveObj.label,
     path: path,
-    moveItems: props.handlers?.moveItems,
   });
 
   if (driveInstanceId.current === '') {
@@ -777,7 +775,6 @@ function DriveRouted(props) {
         numColumns={numColumns}
         columnTypes={columnTypes}
         drivePathSyncKey={props.drivePathSyncKey}
-        handlers={props.handlers}
       />
       <WithDropTarget
         key={DropTargetsConstant.INVALID_DROP_AREA_ID}
@@ -1016,7 +1013,7 @@ function Folder(props) {
   }
 
   const setDrivePath = useSetRecoilState(drivePathSyncFamily(drivePathSyncKey));
-
+  const { deleteItem } = useSockets('drive');
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
     folderInfoSelector({
       driveId: props.driveId,
@@ -1035,7 +1032,7 @@ function Folder(props) {
     renderDragGhost,
     registerDropTarget,
     unregisterDropTarget,
-  } = useDnDCallbacks(props.handlers.moveItems);
+  } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   // const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
@@ -1064,7 +1061,7 @@ function Folder(props) {
     }),
   );
   const deleteItemCallback = (itemId) => {
-    props.handlers.deleteItem({
+    deleteItem({
       driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
       driveInstanceId: props.driveInstanceId,
       itemId,
@@ -1570,7 +1567,6 @@ function Folder(props) {
               hideUnpublished={props.hideUnpublished}
               foldersOnly={props.foldersOnly}
               drivePathSyncKey={props.drivePathSyncKey}
-              handlers={props.handlers}
             />,
           );
         }
@@ -1597,7 +1593,6 @@ function Folder(props) {
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
                 drivePathSyncKey={props.drivePathSyncKey}
-                handlers={props.handlers}
               />,
             );
             break;
@@ -1975,7 +1970,7 @@ const DoenetML = React.memo((props) => {
     renderDragGhost,
     registerDropTarget,
     unregisterDropTarget,
-  } = useDnDCallbacks(props.handlers.moveItems);
+  } = useDnDCallbacks();
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
     folderInfoSelector({
@@ -2211,7 +2206,7 @@ const DoenetML = React.memo((props) => {
   return doenetMLJSX;
 });
 
-function useDnDCallbacks(moveItems) {
+function useDnDCallbacks() {
   //TODO: check all refernces
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
@@ -2223,6 +2218,7 @@ function useDnDCallbacks(moveItems) {
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
   const optionKeyPressed = useKeyPressedListener('Alt'); // Listen for option key events
   const optionKeyPressedRef = useRef(optionKeyPressed);
+  const { moveItems } = useSockets('drive');
 
   useEffect(() => {
     setDragState((dragState) => ({
@@ -2455,6 +2451,7 @@ function useUpdateBreadcrumb(props) {
       folderId: routePathFolderId,
     }),
   );
+  const { moveItems } = useSockets('drive');
   const driveLabel = props.driveLabel ?? '/';
 
   useEffect(() => {
@@ -2505,7 +2502,7 @@ function useUpdateBreadcrumb(props) {
                 isBreadcrumb: true,
               }),
             onDrop: () => {
-              props?.moveItems({
+              moveItems({
                 targetDriveId: props.driveId,
                 targetFolderId: currentNodeId,
               });
@@ -2545,7 +2542,7 @@ function useUpdateBreadcrumb(props) {
               isBreadcrumb: true,
             }),
           onDrop: () => {
-            props?.moveItems({
+            moveItems({
               targetDriveId: props.driveId,
               targetFolderId: props.driveId,
             });

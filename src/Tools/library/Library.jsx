@@ -521,6 +521,7 @@ const FolderInfoPanel = function (props) {
   );
   const { renameItem, onRenameItemError } = useRenameItem();
   const [addToast, ToastType] = useToast();
+  const { deleteItem } = useSockets('drive');
 
   const [label, setLabel] = useState(itemInfo.label);
 
@@ -584,7 +585,7 @@ const FolderInfoPanel = function (props) {
         data-cy="deleteFolderButton"
         value="Delete Folder"
         callback={() => {
-          props.handlers?.deleteItem({
+          deleteItem({
             driveIdFolderId: {
               driveId: itemInfo.driveId,
               folderId: itemInfo.parentFolderId,
@@ -601,6 +602,7 @@ const FolderInfoPanel = function (props) {
 
 const DoenetMLInfoPanel = function (props) {
   const itemInfo = props.itemInfo;
+  const { deleteItem } = useSockets('drive');
 
   const setFolder = useSetRecoilState(
     folderDictionaryFilterSelector({
@@ -690,7 +692,7 @@ const DoenetMLInfoPanel = function (props) {
         data-cy="deleteDoenetMLButton"
         value="Delete DoenetML"
         callback={() => {
-          props.handlers?.deleteItem({
+          deleteItem({
             driveIdFolderId: {
               driveId: itemInfo.driveId,
               folderId: itemInfo.parentFolderId,
@@ -705,7 +707,7 @@ const DoenetMLInfoPanel = function (props) {
   );
 };
 
-const ItemInfo = function ({ handlers }) {
+const ItemInfo = function () {
   // console.log("=== 🧐 Item Info")
   //Temp: Delete Soon
 
@@ -756,7 +758,6 @@ const ItemInfo = function ({ handlers }) {
         <DoenetMLInfoPanel
           key={`DoenetMLInfoPanel${itemInfo.itemId}`}
           itemInfo={itemInfo}
-          handlers={handlers}
         />
       );
     } else if (itemInfo?.itemType === 'Folder') {
@@ -764,11 +765,9 @@ const ItemInfo = function ({ handlers }) {
         <FolderInfoPanel
           key={`FolderInfoPanel${itemInfo.itemId}`}
           itemInfo={itemInfo}
-          handlers={handlers}
         />
       );
     }
-    x;
   }
 };
 
@@ -894,6 +893,7 @@ function AddMenuPanel(props) {
   const [, setFolderInfo] = useRecoilStateLoadable(
     folderDictionaryFilterSelector({ driveId, folderId }),
   );
+  const { addItem } = useSockets('drive');
 
   let addDrives = (
     <>
@@ -919,7 +919,7 @@ function AddMenuPanel(props) {
         value="Add Folder"
         data-cy="addFolderButton"
         callback={() => {
-          props.handlers?.addItem({
+          addItem({
             driveIdFolderId: { driveId: driveId, folderId: folderId },
             label: 'Untitled',
             itemType: 'Folder',
@@ -932,7 +932,7 @@ function AddMenuPanel(props) {
         value="Add DoenetML"
         data-cy="addDoenetMLButton"
         callback={() => {
-          props.handlers?.addItem({
+          addItem({
             driveIdFolderId: { driveId: driveId, folderId: folderId },
             label: 'Untitled',
             itemType: 'DoenetML',
@@ -1153,12 +1153,6 @@ export default function Library(props) {
                 types={['content', 'course']}
                 foldersOnly={true}
                 drivePathSyncKey="main"
-                handlers={{
-                  moveItems,
-                  onMoveItemsError,
-                  deleteItem,
-                  onDeleteItemError,
-                }}
               />
             </div>
           </div>
@@ -1192,12 +1186,6 @@ export default function Library(props) {
                     folderId: info.item.parentFolderId,
                     itemId: info.item.itemId,
                   });
-                }}
-                handlers={{
-                  moveItems,
-                  onMoveItemsError,
-                  deleteItem,
-                  onDeleteItemError,
                 }}
               />
             </Container>
@@ -1235,12 +1223,6 @@ export default function Library(props) {
                   itemId: info.item.itemId,
                 });
               }}
-              handlers={{
-                moveItems,
-                onMoveItemsError,
-                deleteItem,
-                onDeleteItemError,
-              }}
             />
           </Container>
 
@@ -1258,13 +1240,10 @@ export default function Library(props) {
         </supportPanel>
 
         <menuPanel title="Selected" isInitOpen>
-          <ItemInfo handlers={{ deleteItem, onDeleteItemError }} />
+          <ItemInfo />
         </menuPanel>
         <menuPanel title="+ Add Items" isInitOpen>
-          <AddMenuPanel
-            route={props.route}
-            handlers={{ addItem, onAddItemError }}
-          />
+          <AddMenuPanel route={props.route} />
         </menuPanel>
       </Tool>
     </>

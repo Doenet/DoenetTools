@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   atom,
   selector,
@@ -59,8 +59,6 @@ export default function useSockets(nsp) {
   const [namespace] = useState(nsp);
   const socket = useRecoilValue(sockets(namespace));
   const dragShadowId = 'dragShadow';
-  const { createItem, onAddItemError } = useAddItem();
-  const { removeItem, onDeleteItemError } = useDeleteItem();
   // const { addItem, onAddItemError, deleteItem, onDeleteItemError} = useDriveBindings()
 
   const acceptNewItem = useRecoilCallback(
@@ -155,27 +153,148 @@ export default function useSockets(nsp) {
       },
   );
 
-  const addItem = () => {
-    const [payload, newItem] = createItem();
-    socket.emit('add_doenetML', payload, newItem, (respData) => {
-      if (respData.success) {
-        acceptNewItem(payload, newItem);
-      } else {
-        onAddItemError({ errorMessage: respData });
-      }
-    });
-  };
+  /**
+   * create and add a new folder or doenetML
+   *
+   */
+  const addItem = useRecoilCallback(
+    ({ snapshot }) =>
+      async ({
+        driveIdFolderId,
+        label,
+        itemType,
+        selectedItemId = null,
+        url = null,
+      }) => {
+        // Item creation
+        const dt = new Date();
+        const creationDate = formatDate(dt);
+        const itemId = nanoid();
+        const doenetId = nanoid();
+        const newItem = {
+          assignmentId: null,
+          doenetId,
+          contentId: null,
+          creationDate,
+          isPublished: '0',
+          itemId,
+          itemType: itemType,
+          label: label,
+          parentFolderId: driveIdFolderId.folderId,
+          url: url,
+          urlDescription: null,
+          urlId: null,
+          sortOrder: '',
+        };
 
-  const deleteItem = () => {
-    const [payload, newFInfo, label] = removeItem();
-    socket.emit('delete_doenetML', payload, newFInfo, (respData) => {
-      if (respData.success) {
-        acceptDelete(payload, newFInfo, label);
-      } else {
-        onDeleteItemError({ errorMessage: respData.message });
-      }
-    });
-  };
+        const fInfo = await snapshot.getPromise(
+          folderDictionary(driveIdFolderId),
+        );
+        let newObj = JSON.parse(JSON.stringify(fInfo));
+        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+        let index = newDefaultOrder.indexOf(selectedItemId);
+        const newOrder = getLexicographicOrder({
+          index,
+          nodeObjs: newObj.contentsDictionary,
+          defaultFolderChildrenIds: newDefaultOrder,
+        });
+        newItem.sortOrder = newOrder;
+        newDefaultOrder.splice(index + 1, 0, itemId);
+        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
+        newObj.contentsDictionary[itemId] = newItem;
+
+        const versionId = nanoid();
+        const payload = {
+          driveId: driveIdFolderId.driveId,
+          parentFolderId: driveIdFolderId.folderId,
+          itemId,
+          doenetId,
+          versionId,
+          label: label,
+          type: itemType,
+          sortOrder: newItem.sortOrder,
+        };
+        socket.emit('add_doenetML', payload, newItem, (respData) => {
+          if (respData.success) {
+            acceptNewItem(payload, newItem);
+          } else {
+            onAddItemError({ errorMessage: respData });
+          }
+        });
+      },
+  );
+
+  const onAddItemError = useCallback(
+    ({ errorMessage = null }) => {
+      addToast(`Add item error: ${errorMessage}`, ToastType.ERROR);
+    },
+    [addToast, ToastType.ERROR],
+  );
+
+  const deleteItem = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async ({ driveIdFolderId, driveInstanceId = null, itemId, label }) => {
+        const fInfo = await snapshot.getPromise(
+          folderDictionary(driveIdFolderId),
+        );
+        const globalSelectedNodes = await snapshot.getPromise(
+          globalSelectedNodesAtom,
+        );
+        const item = {
+          driveId: driveIdFolderId.driveId,
+          driveInstanceId: driveInstanceId,
+          itemId: itemId,
+        };
+        const selectedDriveItems = await snapshot.getPromise(
+          selectedDriveItemsAtom(item),
+        );
+
+        // Remove from selection
+        if (selectedDriveItems) {
+          set(selectedDriveItemsAtom(item), false);
+          let newGlobalItems = [];
+          for (let gItem of globalSelectedNodes) {
+            if (gItem.itemId !== itemId) {
+              newGlobalItems.push(gItem);
+            }
+          }
+          set(globalSelectedNodesAtom, newGlobalItems);
+        }
+
+        // Remove from folder
+        let newFInfo = { ...fInfo };
+        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        delete newFInfo['contentsDictionary'][itemId];
+        newFInfo.folderInfo = { ...fInfo.folderInfo };
+        newFInfo.contentIds = {};
+        newFInfo.contentIds[sortOptions.DEFAULT] = [
+          ...fInfo.contentIds[sortOptions.DEFAULT],
+        ];
+        const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(itemId);
+        newFInfo.contentIds[sortOptions.DEFAULT].splice(index, 1);
+
+        // Remove from database
+        const payload = {
+          driveId: driveIdFolderId.driveId,
+          parentFolderId: driveIdFolderId.folderId,
+          itemId: itemId,
+        };
+        socket.emit('delete_doenetML', payload, newFInfo, (respData) => {
+          if (respData.success) {
+            acceptDelete(payload, newFInfo, label);
+          } else {
+            onDeleteItemError({ errorMessage: respData.message });
+          }
+        });
+      },
+  );
+
+  const onDeleteItemError = useCallback(
+    ({ errorMessage = null }) => {
+      addToast(`Delete item error: ${errorMessage}`, ToastType.ERROR);
+    },
+    [addToast, ToastType.ERROR],
+  );
 
   const moveItems = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -501,142 +620,6 @@ export default function useSockets(nsp) {
     onRenameItemError,
   };
 }
-
-const useAddItem = () => {
-  const [addToast, ToastType] = useToast();
-  /**
-   * create and add a new folder or doenetML
-   *
-   */
-  const createItem = useRecoilCallback(
-    ({ snapshot }) =>
-      async ({
-        driveIdFolderId,
-        label,
-        itemType,
-        selectedItemId = null,
-        url = null,
-      }) => {
-        // Item creation
-        const dt = new Date();
-        const creationDate = formatDate(dt);
-        const itemId = nanoid();
-        const doenetId = nanoid();
-        const newItem = {
-          assignmentId: null,
-          doenetId,
-          contentId: null,
-          creationDate,
-          isPublished: '0',
-          itemId,
-          itemType: itemType,
-          label: label,
-          parentFolderId: driveIdFolderId.folderId,
-          url: url,
-          urlDescription: null,
-          urlId: null,
-          sortOrder: '',
-        };
-
-        const fInfo = await snapshot.getPromise(
-          folderDictionary(driveIdFolderId),
-        );
-        let newObj = JSON.parse(JSON.stringify(fInfo));
-        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-        let index = newDefaultOrder.indexOf(selectedItemId);
-        const newOrder = getLexicographicOrder({
-          index,
-          nodeObjs: newObj.contentsDictionary,
-          defaultFolderChildrenIds: newDefaultOrder,
-        });
-        newItem.sortOrder = newOrder;
-        newDefaultOrder.splice(index + 1, 0, itemId);
-        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
-        newObj.contentsDictionary[itemId] = newItem;
-
-        const versionId = nanoid();
-        const payload = {
-          driveId: driveIdFolderId.driveId,
-          parentFolderId: driveIdFolderId.folderId,
-          itemId,
-          doenetId,
-          versionId,
-          label: label,
-          type: itemType,
-          sortOrder: newItem.sortOrder,
-        };
-        return [payload, newObj];
-      },
-    [],
-  );
-
-  const onAddItemError = ({ errorMessage = null }) => {
-    addToast(`Add item error: ${errorMessage}`, ToastType.ERROR);
-  };
-  return { createItem, onAddItemError };
-};
-
-const useDeleteItem = () => {
-  const [addToast, ToastType] = useToast();
-  const removeItem = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async ({ driveIdFolderId, driveInstanceId = null, itemId, label }) => {
-        const fInfo = await snapshot.getPromise(
-          folderDictionary(driveIdFolderId),
-        );
-        const globalSelectedNodes = await snapshot.getPromise(
-          globalSelectedNodesAtom,
-        );
-        const item = {
-          driveId: driveIdFolderId.driveId,
-          driveInstanceId: driveInstanceId,
-          itemId: itemId,
-        };
-        const selectedDriveItems = await snapshot.getPromise(
-          selectedDriveItemsAtom(item),
-        );
-
-        // Remove from selection
-        if (selectedDriveItems) {
-          set(selectedDriveItemsAtom(item), false);
-          let newGlobalItems = [];
-          for (let gItem of globalSelectedNodes) {
-            if (gItem.itemId !== itemId) {
-              newGlobalItems.push(gItem);
-            }
-          }
-          set(globalSelectedNodesAtom, newGlobalItems);
-        }
-
-        // Remove from folder
-        let newFInfo = { ...fInfo };
-        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
-        delete newFInfo['contentsDictionary'][itemId];
-        newFInfo.folderInfo = { ...fInfo.folderInfo };
-        newFInfo.contentIds = {};
-        newFInfo.contentIds[sortOptions.DEFAULT] = [
-          ...fInfo.contentIds[sortOptions.DEFAULT],
-        ];
-        const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(itemId);
-        newFInfo.contentIds[sortOptions.DEFAULT].splice(index, 1);
-
-        // Remove from database
-        const payload = {
-          driveId: driveIdFolderId.driveId,
-          parentFolderId: driveIdFolderId.folderId,
-          itemId: itemId,
-        };
-        return [payload, newFInfo, label];
-      },
-    [],
-  );
-
-  const onDeleteItemError = ({ errorMessage = null }) => {
-    addToast(`Delete item error: ${errorMessage}`, ToastType.ERROR);
-  };
-
-  return { removeItem, onDeleteItemError };
-};
 
 const formatDate = (dt) => {
   const formattedDate = `${dt.getFullYear().toString().padStart(2, '0')}-${(
