@@ -152,7 +152,7 @@ const LoadingFallback = styled.div`
 `;
 
 export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
-console.log(">>>===MenuPanel")
+// console.log(">>>===MenuPanel")
 
   //These maintain the panels' state
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
@@ -167,6 +167,8 @@ console.log(">>>===MenuPanel")
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
     CreateCourse:lazy(() => import('../Menus/CreateCourse')),
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
+    AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
+    EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
   }).current;
 
   let selectionPanel = null;
@@ -184,7 +186,6 @@ console.log(">>>===MenuPanel")
 
   
 
-  console.log(">>>selectionPanel",selectionPanel)
 
   function buildMenu({key,type,title,visible,initOpen}){
     let hideStyle = null;
@@ -203,9 +204,6 @@ console.log(">>>===MenuPanel")
   // handle more than one of the same panel type
   // match order of panel types 
   // toolMenus.current = []
-
-  console.log(">>>currentMenus",currentMenus)
-  console.log(">>>lastToolMenus.current",lastToolMenus.current)
 
 
   //Show menus
@@ -238,8 +236,6 @@ console.log(">>>===MenuPanel")
 
     }
   }
-
-  console.log(">>>toolMenus.current",toolMenus.current)
 
     lastToolMenus.current = currentMenus;
 

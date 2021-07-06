@@ -27,7 +27,7 @@ const ControlsWrapper = styled.div`
 `;
 
 export default function SupportPanel({ hide, children, panelTitles=[], panelIndex }) {
-  console.log(">>>===SupportPanel")
+  // console.log(">>>===SupportPanel")
   
   const setSupportPanelIndex = useRecoilCallback(({set})=>(index)=>{
     set(toolViewAtom,(was)=>{

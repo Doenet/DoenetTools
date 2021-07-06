@@ -1,26 +1,25 @@
 import React, { useEffect } from 'react';
 // import { useHistory } from 'react-router';
-import Button from '../temp/Button'
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler'
-import { toolViewAtom } from '../NewToolRoot';
+import { toolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 
 export default function DriveCardsNew(props){
-  console.log(">>>===DriveCards");
-  console.log(">>drivecardSelectedNodesAtom",drivecardSelectedNodesAtom);
+  // console.log(">>>===DriveCards");
   const driveId = useRecoilValue(drivecardSelectedNodesAtom);
   const setSelectedCourse = useRecoilCallback(({set})=>(driveIds)=>{
-    console.log(">>>driveId",driveIds);
     set(drivecardSelectedNodesAtom,driveIds)
     set(selectedMenuPanelAtom,"SelectedCourse");
   },[])
-  // const clearSelectedCourse = useRecoilCallback(({set})=>()=>{
-  //   console.log(">>>clearSelectedCourse");
-  //   set(drivecardSelectedNodesAtom,[])
-  //   set(selectedMenuPanelAtom,"");
-  // },[])
+  const goToNav = useRecoilCallback(({set})=>()=>{
+    //TODO: set the path to the current drive 
+    window.history.pushState('','','/new#/course?tool=navigation')
+    set(searchParamAtomFamily('tool'), "navigation")
+  },[])
 
   const tempChangeMenus = useRecoilCallback(({set})=>(newMenus,menusTitles,initOpen)=>{
     set(toolViewAtom,(was)=>{
@@ -48,10 +47,7 @@ export default function DriveCardsNew(props){
   <button onClick={(e)=>{e.stopPropagation();setSelectedCourse(['A Id'])}}>Test A Selection</button>
   {/* <button onClick={(e)=>{e.stopPropagation();clearSelectedCourse()}}>Clear Selection</button> */}
   <hr />
-  <h2>Menu Experiment</h2>
-  <div><button onClick={(e)=>{e.stopPropagation();tempChangeMenus(["CreateCourse","CourseEnroll"],["Create Course","Enroll"],[true,false])}}>Create and Enroll</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();tempChangeMenus(["CourseEnroll"],["Enroll"],[false])}}>Just Enroll</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();tempChangeMenus([],[],[])}}>No Menus</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();goToNav();}}>Go To navigation</button></div>
 
 
   </div>

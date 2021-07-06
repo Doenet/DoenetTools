@@ -183,6 +183,7 @@ export default function ToolRoot(props){
     Content:lazy(() => import('./ToolPanels/Content')),
     DriveCards:lazy(() => import('./ToolPanels/DriveCards')),
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
+    Drive:lazy(() => import('./ToolPanels/Drive')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -201,12 +202,9 @@ export default function ToolRoot(props){
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
-      // console.log(">>>===ToolRoot")
-      console.log(">>>===ToolRoot toolViewInfo",toolViewInfo) 
+      console.log(">>>===ToolRoot")
 
-  const searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
-  setSearchParam(searchParamObj);
-  // console.log(">>>buildPanel searchParamObj",searchParamObj)
+  
   //TODO: Send to recoilcallback set selectorFam
 
   function buildPanel({key,type,visible}){
@@ -222,11 +220,14 @@ export default function ToolRoot(props){
 
   const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
   if (toolViewInfo.pageName.toLowerCase() !== lcpath){
-    console.log(">>>Changed Tool!!!!!!! toolViewInfo",toolViewInfo)
-
   //Need to update path
     setPage(lcpath,props.route.location.pathname)
     // return null; 
+  }else if (!toolViewInfo.toolHandler){
+   //If no handler and same page use search params to set tool and parameters
+   //Or else it's the handler's job to set 
+    const searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
+    setSearchParam(searchParamObj);
   }
 
   let toolHandler = null;

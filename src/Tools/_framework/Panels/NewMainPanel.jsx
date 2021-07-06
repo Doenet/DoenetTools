@@ -39,7 +39,7 @@ display: inline-block;
 `;
 
 export default function MainPanel({ headerControls, headerControlsPositions, children, setMenusOpen, displayProfile }) {
-  console.log(">>>===main panel")
+  // console.log(">>>===main panel")
   const mpOnClick = useRecoilCallback(({set,snapshot})=> async ()=>{
     const atomArray = await snapshot.getPromise(mainPanelClickAtom)
     // console.log(">>>mpOnClick",atomArray)
@@ -56,7 +56,6 @@ export default function MainPanel({ headerControls, headerControlsPositions, chi
   if (headerControls){
     for (const [i,control] of Object.entries(headerControls)){
       const position = headerControlsPositions[i]
-      console.log(">>>position",position)
       controls.push(<span key={`headControl${i}`}>{control}</span>)
     }
   }
