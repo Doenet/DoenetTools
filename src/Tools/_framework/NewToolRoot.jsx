@@ -18,7 +18,8 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
-
+import { selectedMenuPanelAtom } from './Panels/NewMenuPanel';
+import { mainPanelClickAtom } from './Panels/NewMainPanel';
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -161,6 +162,9 @@ export default function ToolRoot(props){
         set(toolViewAtom,newTool);
       }
     }
+    set(selectedMenuPanelAtom,""); //clear selection
+    set(mainPanelClickAtom,[])  //clear main panel click
+
   })
 
   const LazyPanelObj = useRef({
