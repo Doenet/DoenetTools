@@ -60,8 +60,6 @@ import { BreadcrumbContext } from '../Breadcrumb';
 import { drivecardSelectedNodesAtom } from '../../Tools/library/Library';
 import '../../_utils/util.css';
 import {
-  useDeleteItem,
-  useMoveItems,
   useDragShadowCallbacks,
   useSortFolder,
   useCopyItems,
@@ -301,6 +299,7 @@ export default function Drive(props) {
                           isNav={isNav}
                           {...props}
                           driveObj={driveObj}
+                          handlers={props?.handlers}
                         />
                       </Suspense>
                     )}
@@ -330,6 +329,7 @@ export default function Drive(props) {
                       isNav={isNav}
                       {...props}
                       driveObj={driveObj}
+                      handlers={props?.handlers}
                     />
                   </Suspense>
                 )}
@@ -693,7 +693,7 @@ function DriveRouted(props) {
   const [numColumns, setNumColumns] = useState(1);
 
   const { onDragEnterInvalidArea, registerDropTarget, unregisterDropTarget } =
-    useDnDCallbacks();
+    useDnDCallbacks(props.handlers.moveItems);
   const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey));
 
   let hideUnpublished = false; //Default to showing unpublished
@@ -711,6 +711,7 @@ function DriveRouted(props) {
     driveId: props.driveId,
     driveLabel: props.driveObj.label,
     path: path,
+    moveItems: props.handlers?.moveItems,
   });
 
   if (driveInstanceId.current === '') {
@@ -776,6 +777,7 @@ function DriveRouted(props) {
         numColumns={numColumns}
         columnTypes={columnTypes}
         drivePathSyncKey={props.drivePathSyncKey}
+        handlers={props.handlers}
       />
       <WithDropTarget
         key={DropTargetsConstant.INVALID_DROP_AREA_ID}
@@ -1033,7 +1035,7 @@ function Folder(props) {
     renderDragGhost,
     registerDropTarget,
     unregisterDropTarget,
-  } = useDnDCallbacks();
+  } = useDnDCallbacks(props.handlers.moveItems);
   const { dropState } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   // const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
@@ -1061,24 +1063,12 @@ function Folder(props) {
       itemId,
     }),
   );
-  const { deleteItem, onDeleteItemError } = useDeleteItem();
   const deleteItemCallback = (itemId) => {
-    const result = deleteItem({
+    props.handlers.deleteItem({
       driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
       driveInstanceId: props.driveInstanceId,
       itemId,
     });
-    result
-      .then((resp) => {
-        if (resp.data.success) {
-          addToast(`Deleted item '${props.item?.label}'`, ToastType.SUCCESS);
-        } else {
-          onDeleteItemError({ errorMessage: resp.data.message });
-        }
-      })
-      .catch((e) => {
-        onDeleteItemError({ errorMessage: e.message });
-      });
   };
 
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
@@ -1102,7 +1092,6 @@ function Folder(props) {
   const isOpenRef = useRef(isOpen); // for memoized DnD callbacks
   const isSelectedRef = useRef(isSelected); // for memoized DnD callbacks
 
-  const [addToast, ToastType] = useToast();
   const { sortFolder, invalidateSortCache, onSortFolderError } =
     useSortFolder();
   const { insertDragShadow, removeDragShadow } = useDragShadowCallbacks();
@@ -1581,6 +1570,7 @@ function Folder(props) {
               hideUnpublished={props.hideUnpublished}
               foldersOnly={props.foldersOnly}
               drivePathSyncKey={props.drivePathSyncKey}
+              handlers={props.handlers}
             />,
           );
         }
@@ -1607,6 +1597,7 @@ function Folder(props) {
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
                 drivePathSyncKey={props.drivePathSyncKey}
+                handlers={props.handlers}
               />,
             );
             break;
@@ -1984,7 +1975,7 @@ const DoenetML = React.memo((props) => {
     renderDragGhost,
     registerDropTarget,
     unregisterDropTarget,
-  } = useDnDCallbacks();
+  } = useDnDCallbacks(props.handlers.moveItems);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
     folderInfoSelector({
@@ -2220,14 +2211,14 @@ const DoenetML = React.memo((props) => {
   return doenetMLJSX;
 });
 
-function useDnDCallbacks() {
+function useDnDCallbacks(moveItems) {
+  //TODO: check all refernces
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
   const [addToast, ToastType] = useToast();
   const { replaceDragShadow, removeDragShadow, cleanUpDragShadow } =
     useDragShadowCallbacks();
-  const { moveItems, onMoveItemsError } = useMoveItems();
   const { copyItems, onCopyItemsError } = useCopyItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
   const optionKeyPressed = useKeyPressedListener('Alt'); // Listen for option key events
@@ -2327,21 +2318,7 @@ function useDnDCallbacks() {
             onCopyItemsError({ errorMessage: e.message });
           });
       } else {
-        const result = moveItems(replaceDragShadowResp);
-        result
-          .then((resp) => {
-            if (resp.data.success) {
-              addToast(
-                `Moved ${replaceDragShadowResp?.numItems} item(s)`,
-                ToastType.SUCCESS,
-              );
-            } else {
-              onMoveItemsError({ errorMessage: resp.data.message });
-            }
-          })
-          .catch((e) => {
-            onMoveItemsError({ errorMessage: e.message });
-          });
+        moveItems(replaceDragShadowResp);
       }
     });
 
@@ -2479,7 +2456,6 @@ function useUpdateBreadcrumb(props) {
     }),
   );
   const driveLabel = props.driveLabel ?? '/';
-  const { moveItems } = useMoveItems();
 
   useEffect(() => {
     updateBreadcrumb({ routePathDriveId, routePathFolderId });
@@ -2529,7 +2505,7 @@ function useUpdateBreadcrumb(props) {
                 isBreadcrumb: true,
               }),
             onDrop: () => {
-              moveItems({
+              props?.moveItems({
                 targetDriveId: props.driveId,
                 targetFolderId: currentNodeId,
               });
@@ -2569,7 +2545,7 @@ function useUpdateBreadcrumb(props) {
               isBreadcrumb: true,
             }),
           onDrop: () => {
-            moveItems({
+            props?.moveItems({
               targetDriveId: props.driveId,
               targetFolderId: props.driveId,
             });

@@ -124,6 +124,36 @@
       console.log('>>>recived add_user');
     });
 
+    socket.on(
+      'update_file_locaiton',
+      (payload, newDestinationFolderObj, editedCache, cb) => {
+        axios
+          .get('moveItem.php', {
+            params: payload,
+            headers: socket.request.headers,
+          })
+          .then((resp) => {
+            cb(resp.data);
+            socket.broadcast.emit(
+              'remote_update_file_locaiton',
+              payload,
+              newDestinationFolderObj,
+              editedCache,
+            );
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      },
+    );
+
+    socket.on('update_file_name', (payload) => {
+      axios.get('updateItem.php', {
+        params: payload,
+        headers: socket.request.headers,
+      });
+    });
+
     socket.on('delete_doenetML', (payload, newInfo, cb) => {
       axios
         .get('deleteItem.php', {

@@ -1038,8 +1038,14 @@ export default function Library(props) {
   // console.log("=== 📚 Doenet Library Tool",props);
 
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
-  const { addItem, onAddItemError, deleteItem, onDeleteItemError } =
-    useSockets('drive');
+  const {
+    addItem,
+    onAddItemError,
+    deleteItem,
+    onDeleteItemError,
+    moveItems,
+    onMoveItemsError,
+  } = useSockets('drive');
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -1147,6 +1153,12 @@ export default function Library(props) {
                 types={['content', 'course']}
                 foldersOnly={true}
                 drivePathSyncKey="main"
+                handlers={{
+                  moveItems,
+                  onMoveItemsError,
+                  deleteItem,
+                  onDeleteItemError,
+                }}
               />
             </div>
           </div>
@@ -1180,6 +1192,12 @@ export default function Library(props) {
                     folderId: info.item.parentFolderId,
                     itemId: info.item.itemId,
                   });
+                }}
+                handlers={{
+                  moveItems,
+                  onMoveItemsError,
+                  deleteItem,
+                  onDeleteItemError,
                 }}
               />
             </Container>
@@ -1216,6 +1234,12 @@ export default function Library(props) {
                   folderId: info.item.parentFolderId,
                   itemId: info.item.itemId,
                 });
+              }}
+              handlers={{
+                moveItems,
+                onMoveItemsError,
+                deleteItem,
+                onDeleteItemError,
               }}
             />
           </Container>
