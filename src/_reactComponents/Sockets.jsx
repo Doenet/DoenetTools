@@ -63,14 +63,14 @@ export default function useSockets(nsp) {
 
   const acceptNewItem = useRecoilCallback(
     ({ set }) =>
-      (payload, newItem) => {
+      (payload, newObj, newItem) => {
         // Insert item info into destination folder
         set(
           folderDictionary({
             driveId: payload.driveId,
             folderId: payload.parentFolderId,
           }),
-          newItem,
+          newObj,
         );
         addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
 
@@ -79,7 +79,7 @@ export default function useSockets(nsp) {
           set(
             folderDictionary({
               driveId: payload.driveId,
-              folderId: payload.parentFolderId,
+              folderId: payload.itemId,
             }),
             {
               folderInfo: newItem,
@@ -214,9 +214,9 @@ export default function useSockets(nsp) {
           type: itemType,
           sortOrder: newItem.sortOrder,
         };
-        socket.emit('add_doenetML', payload, newItem, (respData) => {
+        socket.emit('add_doenetML', payload, newObj, (respData) => {
           if (respData.success) {
-            acceptNewItem(payload, newItem);
+            acceptNewItem(payload, newObj, newItem);
           } else {
             onAddItemError({ errorMessage: respData });
           }
@@ -604,8 +604,9 @@ export default function useSockets(nsp) {
       }
     });
     return () => {
-      console.log('>>>disconnect', namespace);
-      socket.disconnect();
+      // console.log('>>>disconnect', namespace);
+      // socket.disconnect();
+      //TODO: socket disconnect logic
     };
   }, [bindings, socket, namespace]);
 
