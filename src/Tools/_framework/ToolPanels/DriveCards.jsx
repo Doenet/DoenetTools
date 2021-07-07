@@ -2,9 +2,9 @@ import React, { useEffect ,useState} from 'react';
 import axios from "axios";
 // import { useHistory } from 'react-router';
 import Button from '../temp/Button'
-import { useRecoilCallback, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
+import { useRecoilCallback,selector, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { drivecardSelectedNodesAtom ,allDriveCardsAtom} from '../ToolHandlers/CourseToolHandler'
+import { drivecardSelectedNodesAtom ,allDriveCardsAtom, fetchDrivesSelector, fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler'
 import { toolViewAtom } from '../NewToolRoot';
 import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
@@ -15,28 +15,13 @@ import Measure from 'react-measure';
 export default function DriveCardsNew(props){
   console.log(">>>===DriveCards");
   
-  const drivesInfo = useRecoilValue(allDriveCardsAtom);
-  const setDrivesInfo = useSetRecoilState(allDriveCardsAtom);
+  const driveInfo = useRecoilValueLoadable(fetchDrivesQuery);
+  let driveIdsAndLabelsInfo = '';
+  if(driveInfo.state == 'hasValue'){
+    driveIdsAndLabelsInfo = driveInfo.contents.driveIdsAndLabels;
+  }
 
-  // const setSelectedCourse = useRecoilCallback(({set})=>(driveIds)=>{
-  //   console.log(">>>driveId",driveIds);
-  //   set(drivecardSelectedNodesAtom,driveIds)
-  //   set(selectedMenuPanelAtom,"SelectedCourse");
-  // },[])
 
-  // const clearSelectedCourse = useRecoilCallback(({set})=>()=>{
-  //   console.log(">>>clearSelectedCourse");
-  //   set(drivecardSelectedNodesAtom,[])
-  //   set(selectedMenuPanelAtom,"");
-  // },[])
-  useEffect(()=>{
-   async function fetchData(){
-     
-      const { data } = await axios.get(`/api/loadAvailableDrives.php`);
-      setDrivesInfo(data.driveIdsAndLabels);
-    }
-    fetchData();
-  },[]);
     const tempChangeMenus = useRecoilCallback(({set})=>(newMenus,menusTitles,initOpen)=>{
     set(toolViewAtom,(was)=>{
       let newObj = {...was};
@@ -51,9 +36,10 @@ export default function DriveCardsNew(props){
   // const [count,setCount] = useState(0)
   // let history = useHistory();
   return <div style={props.style}><h1>Drive Cards</h1>
-  <DriveCardWrapper 
-      driveInfo={drivesInfo} driveDoubleClickCallback={()=>console.log(">>>double clicked")} drivePathSyncKey="main"
-       types={['course']} isOneDriveSelect={false} />
+
+  { driveIdsAndLabelsInfo && <DriveCardWrapper 
+      driveInfo={driveIdsAndLabelsInfo} driveDoubleClickCallback={()=>console.log(">>>double clicked")} drivePathSyncKey="main"
+       types={['course']} isOneDriveSelect={false} />}
   <hr />
 
   <h2>Menu Experiment</h2>
@@ -150,7 +136,16 @@ const DriveCardWrapper = (props) => {
     }
   };
 
-  
+  const setSelectedCourseMenu = useRecoilCallback(({set})=> ()=>{
+    set(selectedMenuPanelAtom,"SelectedCourse");
+    });
+
+  const clearSelectedCourse = useRecoilCallback(({set})=>()=>{
+    console.log(">>>clearSelectedCourse");
+    set(drivecardSelectedNodesAtom,[])
+    set(selectedMenuPanelAtom,"");
+  },[])
+
   // Drive selection 
   const drivecardselection = (e,item) =>{
    e.preventDefault();
@@ -159,11 +154,13 @@ const DriveCardWrapper = (props) => {
    if(isOneDriveSelect){
     if (!e.shiftKey && !e.metaKey){          // one item
       setDrivecardSelection((old) => [item]);
+      setSelectedCourseMenu();
     }
    }
    else{
     if (!e.shiftKey && !e.metaKey){          // one item
       setDrivecardSelection((old) => [item]);
+      setSelectedCourseMenu();
       
     }else if (e.shiftKey && !e.metaKey){      // range to item 
       
