@@ -1,6 +1,6 @@
 import  { useRef } from 'react';
-import { atom, useRecoilValue, useRecoilCallback } from 'recoil'
-import { searchParamAtomFamily, toolViewAtom } from '../NewToolRoot';
+import { atom, useRecoilValue, useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil'
+import { searchParamAtomFamily, toolViewAtom, paramObjAtom } from '../NewToolRoot';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
@@ -12,15 +12,15 @@ export const drivecardSelectedNodesAtom = atom({
 export default function CourseToolHandler(){
   console.log(">>>===CourseToolHandler")
   
-  let lastAtomTool = useRef(null);
+  let lastAtomTool = useRef("");
 
   const setTool = useRecoilCallback(({set})=> (tool,lastAtomTool)=>{
     //Set starting tool
-    if (tool === ""){
-      tool = 'courseChooser';
-      window.history.replaceState('','','/new#/course?tool=courseChooser')
-    }
-    if (tool === lastAtomTool){ return; }
+    // if (tool === ""){
+    //   tool = 'courseChooser';
+    //   window.history.replaceState('','','/new#/course?tool=courseChooser')
+    // }
+    // if (tool === lastAtomTool){ return; }
 
       if (tool === 'courseChooser'){
         set(toolViewAtom,(was)=>{
@@ -60,16 +60,20 @@ export default function CourseToolHandler(){
         set(selectedMenuPanelAtom,""); //clear selection
         set(mainPanelClickAtom,[])  //clear main panel click
       }else{
-        console.log(">>>didn't match!")
+        console.log(">>>Course Tool Handler: didn't match!")
       }
   })
   const atomTool = useRecoilValue(searchParamAtomFamily('tool')) 
-  
+  const setParamObj = useSetRecoilState(paramObjAtom);
+  // console.log(`>>>atomTool >${atomTool}< lastAtomTool.current >${lastAtomTool.current}<`)
+
 
   //Update panels when tool changes
   if (atomTool !== lastAtomTool.current){
     setTool(atomTool,lastAtomTool.current)
     lastAtomTool.current = atomTool;
+  }else if (atomTool === '' && lastAtomTool.current === ''){
+    setParamObj({tool:'courseChooser'})
   }
   return null;
 
