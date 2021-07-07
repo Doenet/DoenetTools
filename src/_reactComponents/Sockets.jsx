@@ -153,6 +153,32 @@ export default function useSockets(nsp) {
       },
   );
 
+  const acceptRename = useRecoilCallback(({ set }) => (payload, newFInfo) => {
+    set(
+      folderDictionary({
+        driveId: payload.driveId,
+        folderId: payload.folderId,
+      }),
+      newFInfo,
+    );
+    // If a folder, update the label in the child folder
+    if (payload.type === 'Folder') {
+      set(
+        folderDictionary({
+          driveId: payload.driveId,
+          folderId: payload.itemId,
+        }),
+        (old) => {
+          let newFolderInfo = { ...old };
+          newFolderInfo.folderInfo = { ...old.folderInfo };
+          newFolderInfo.folderInfo.label = payload.label;
+          return newFolderInfo;
+        },
+      );
+    }
+    addToast(`Renamed item to '${payload.label}'`, ToastType.SUCCESS);
+  });
+
   /**
    * create and add a new folder or doenetML
    *
@@ -214,7 +240,7 @@ export default function useSockets(nsp) {
           type: itemType,
           sortOrder: newItem.sortOrder,
         };
-        socket.emit('add_doenetML', payload, newObj, (respData) => {
+        socket.emit('add_doenetML', payload, newObj, newItem, (respData) => {
           if (respData.success) {
             acceptNewItem(payload, newObj, newItem);
           } else {
@@ -501,17 +527,16 @@ export default function useSockets(nsp) {
           destinationDriveId: targetDriveId,
           newSortOrder,
         };
-
         socket.emit(
           'update_file_location',
-          (payload,
+          payload,
           newDestinationFolderObj,
           editedCache,
           (respData) => {
             if (respData.success) {
               acceptMove(payload, newDestinationFolderObj, editedCache);
             }
-          }),
+          },
         );
       },
   );
@@ -536,30 +561,19 @@ export default function useSockets(nsp) {
         newFInfo['contentsDictionary'][itemId].label = newLabel;
 
         // Rename in database
-        const rndata = {
+        const payload = {
           instruction: 'rename',
           driveId: driveIdFolderId.driveId,
+          folderId: driveIdFolderId.folderId,
           itemId: itemId,
           label: newLabel,
+          type: itemType,
         };
-        socket.emit('update_file_name', rndata, (respData) => {
+        socket.emit('update_file_name', payload, newFInfo, (respData) => {
           if (respData.success) {
-            set(folderDictionary(driveIdFolderId), newFInfo);
-            // If a folder, update the label in the child folder
-            if (itemType === 'Folder') {
-              set(
-                folderDictionary({
-                  driveId: driveIdFolderId.driveId,
-                  folderId: itemId,
-                }),
-                (old) => {
-                  let newFolderInfo = { ...old };
-                  newFolderInfo.folderInfo = { ...old.folderInfo };
-                  newFolderInfo.folderInfo.label = newLabel;
-                  return newFolderInfo;
-                },
-              );
-            }
+            acceptRename(payload, newFInfo);
+          } else {
+            // addToast
           }
         });
       },
@@ -592,6 +606,10 @@ export default function useSockets(nsp) {
       {
         eventName: 'remote_update_file_locaiton',
         callback: acceptMove,
+      },
+      {
+        eventName: 'remote_update_file_name',
+        callback: acceptRename,
       },
     ],
   });

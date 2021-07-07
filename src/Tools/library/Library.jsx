@@ -46,7 +46,6 @@ import Drive, {
   fetchDrivesQuery,
   drivePathSyncFamily,
 } from '../../_reactComponents/Drive/Drive';
-import { useRenameItem } from '../../_reactComponents/Drive/DriveActions';
 import { BreadcrumbContainer } from '../../_reactComponents/Breadcrumb';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import DriveCards from '../../_reactComponents/Drive/DriveCards';
@@ -519,16 +518,15 @@ const FolderInfoPanel = function (props) {
       folderId: itemInfo.parentFolderId,
     }),
   );
-  const { renameItem, onRenameItemError } = useRenameItem();
   const [addToast, ToastType] = useToast();
-  const { deleteItem } = useSockets('drive');
+  const { deleteItem, renameItem } = useSockets('drive');
 
   const [label, setLabel] = useState(itemInfo.label);
 
   let fIcon = <FontAwesomeIcon icon={faFolder} />;
 
   const renameItemCallback = (newLabel) => {
-    const result = renameItem({
+    renameItem({
       driveIdFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
@@ -537,17 +535,6 @@ const FolderInfoPanel = function (props) {
       itemType: itemInfo.itemType,
       newLabel: newLabel,
     });
-    result
-      .then((resp) => {
-        if (resp.data.success) {
-          addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
-        } else {
-          onRenameItemError({ errorMessage: resp.data.message });
-        }
-      })
-      .catch((e) => {
-        onRenameItemError({ errorMessage: e.message });
-      });
   };
 
   return (
@@ -602,7 +589,7 @@ const FolderInfoPanel = function (props) {
 
 const DoenetMLInfoPanel = function (props) {
   const itemInfo = props.itemInfo;
-  const { deleteItem } = useSockets('drive');
+  const { deleteItem, renameItem } = useSockets('drive');
 
   const setFolder = useSetRecoilState(
     folderDictionaryFilterSelector({
@@ -611,7 +598,6 @@ const DoenetMLInfoPanel = function (props) {
     }),
   );
   const [addToast, ToastType] = useToast();
-  const { renameItem, onRenameItemError } = useRenameItem();
 
   const [label, setLabel] = useState(itemInfo.label);
 
@@ -620,7 +606,7 @@ const DoenetMLInfoPanel = function (props) {
   let dIcon = <FontAwesomeIcon icon={faCode} />;
 
   const renameItemCallback = (newLabel) => {
-    const result = renameItem({
+    renameItem({
       driveIdFolderId: {
         driveId: itemInfo.driveId,
         folderId: itemInfo.parentFolderId,
@@ -629,17 +615,6 @@ const DoenetMLInfoPanel = function (props) {
       itemType: itemInfo.itemType,
       newLabel: newLabel,
     });
-    result
-      .then((resp) => {
-        if (resp.data.success) {
-          addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
-        } else {
-          onRenameItemError({ errorMessage: resp.data.message });
-        }
-      })
-      .catch((e) => {
-        onRenameItemError({ errorMessage: e.message });
-      });
   };
 
   return (

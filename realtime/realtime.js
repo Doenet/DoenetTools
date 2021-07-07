@@ -107,7 +107,7 @@
       },
     );
 
-    socket.on('add_doenetML', (payload, newItem, cb) => {
+    socket.on('add_doenetML', (payload, newObj, newItem, cb) => {
       axios
         .get('addItem.php', {
           params: payload,
@@ -115,43 +115,53 @@
         })
         .then((resp) => {
           cb(resp.data);
-          socket.broadcast.emit('remote_add_doenetML', payload, newItem);
+          socket.broadcast.emit(
+            'remote_add_doenetML',
+            payload,
+            newObj,
+            newItem,
+          );
         })
         .catch((err) => console.log('>>>ERROR:', err));
     });
 
-    socket.on('add_user', ({ driveId, email, userId }, cb) => {
-      console.log('>>>recived add_user');
-    });
-
     socket.on(
-      'update_file_locaiton',
+      'update_file_location',
       (payload, newDestinationFolderObj, editedCache, cb) => {
         axios
-          .get('moveItem.php', {
-            params: payload,
+          .post('moveItems.php', payload, {
             headers: socket.request.headers,
           })
           .then((resp) => {
+            console.log(resp.data);
             cb(resp.data);
-            socket.broadcast.emit(
-              'remote_update_file_locaiton',
-              payload,
-              newDestinationFolderObj,
-              editedCache,
-            );
+            if (resp.data.success) {
+              socket.broadcast.emit(
+                'remote_update_file_locaiton',
+                payload,
+                newDestinationFolderObj,
+                editedCache,
+              );
+            }
           })
           .catch((err) => {
-            console.log(err);
+            console.log('>>>ERROR:', err);
           });
       },
     );
 
-    socket.on('update_file_name', (payload) => {
-      axios.get('updateItem.php', {
-        params: payload,
-        headers: socket.request.headers,
-      });
+    socket.on('update_file_name', (payload, newFInfo, cb) => {
+      axios
+        .get('updateItem.php', {
+          params: payload,
+          headers: socket.request.headers,
+        })
+        .then((resp) => {
+          cb(resp.data);
+          if (resp.data.success) {
+            socket.broadcast.emit('remote_update_file_name', payload, newFInfo);
+          }
+        });
     });
 
     socket.on('delete_doenetML', (payload, newInfo, cb) => {
