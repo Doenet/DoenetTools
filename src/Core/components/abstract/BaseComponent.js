@@ -333,7 +333,7 @@ export default class BaseComponent {
           variableName: "hidden"
         },
         adapterSourceHidden: {
-          dependencyType: "adapterSourceDependency",
+          dependencyType: "adapterSource",
           variableName: "hidden"
         },
       }),

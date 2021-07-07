@@ -1076,6 +1076,64 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('point constrained to function, restrict domain', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function maxima="(5,6)" through="(0,5) (8,4)" domain="(-4,7)" />
+
+    <point x="1" y="2">
+      <constraints>
+        <constrainTo><copy tname="_function1" /></constrainTo>
+      </constraints>
+    </point>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let p = components['/_point1'];
+
+      let x = p.stateValues.xs[0].evaluate_to_constant();
+      let y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).closeTo(1, 1E-12);
+      expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
+
+      p.movePoint({ x: -8, y: 8 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).closeTo(-4, 1E-12);
+      expect(6 - (x - 5) * (x - 5) / 25).closeTo(y, 1E-5);
+
+      p.movePoint({ x: 6, y: 8 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).closeTo(6, 1E-12);
+      expect(6 - (x - 5) * (x - 5) * (2 / 9)).closeTo(y, 1E-5);
+
+      p.movePoint({ x: 8, y: -4 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).closeTo(7, 1E-12);
+      expect(6 - (x - 5) * (x - 5) * (2 / 9)).closeTo(y, 1E-5);
+
+    })
+  });
+
   it('function determined by formula via sugar', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1325,6 +1383,68 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('point constrained to function in different variable, restrict domain', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function variables="u" domain="(0.1, 6)" >
+      log(2u)
+    </function>
+    <point x="-3" y="5">
+      <constraints>
+        <constrainTo><copy tname="_function1" /></constrainTo>
+      </constraints>
+    </point>
+
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let p = components['/_point1'];
+
+      let x = p.stateValues.xs[0].evaluate_to_constant();
+      let y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).greaterThan(0.1);
+      expect(Math.log(2 * x)).closeTo(y, 1E-5);
+
+      p.movePoint({ x: 4, y: 6 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).closeTo(4, 1E-12);
+      expect(Math.log(2 * x)).closeTo(y, 1E-5);
+
+
+      p.movePoint({ x: 8, y: 8 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).closeTo(6, 1E-12);
+      expect(Math.log(2 * x)).closeTo(y, 1E-5);
+
+      p.movePoint({ x: -8, y: -8 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(x).closeTo(0.1, 1E-12);
+      expect(Math.log(2 * x)).closeTo(y, 1E-5);
+
+
+    })
+  });
+
   it('calculated extrema from spline', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1511,6 +1631,149 @@ describe('Function Tag Tests', function () {
         cy.get(numberExtremaAnchor).should('have.text', '4');
         cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('((5,6),(6,5),(7,7),(8,6))');
+        });
+
+      });
+    })
+
+  });
+
+  it('calculated extrema from spline, restrict domain', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>xmin = <mathinput name="xmin" prefill="-4" />
+    xmax = <mathinput name="xmax" prefill="7" /></p>
+    <graph>
+    <point>(0.7, 5.43)</point>
+    <point>(3,4)</point>
+    <point>(5,6)</point>
+    <point>(-5,6)</point>
+    <function through="$_point1 $_point2" maxima="$_point3" minima="$_point4" domain="($xmin, $xmax)" />
+    <copy prop="maxima" tname="_function1" />
+    <copy prop="minima" tname="_function1" />
+    </graph>
+
+    <p>Number of maxima: <copy prop="numbermaxima" name="numbermaxima" tname="_function1" /></p>
+    <p>Maxima: <math simplify="none"><copy prop="maxima" tname="_function1" /></math></p>
+    <p>Number of minima: <copy prop="numberminima" name="numberminima" tname="_function1" /></p>
+    <p>Minima: <math simplify="none"><copy prop="minima" tname="_function1" /></math></p>
+    <p>Number of extrema: <copy prop="numberextrema" name="numberextrema" tname="_function1" /></p>
+    <p>Extrema: <math simplify="none"><copy prop="extrema" tname="_function1" /></math></p>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let numberMaximaAnchor = cesc('#' + components["/numbermaxima"].replacements[0].componentName);
+      let numberMinimaAnchor = cesc('#' + components["/numberminima"].replacements[0].componentName);
+      let numberExtremaAnchor = cesc('#' + components["/numberextrema"].replacements[0].componentName);
+
+      cy.get(numberMaximaAnchor).should('have.text', '2');
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('((−2.15,7),(5,6))');
+      });
+      cy.get(numberMinimaAnchor).should('have.text', '1');
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)');
+      });
+      cy.get(numberExtremaAnchor).should('have.text', '3');
+
+      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('((−2.15,7),(3,4),(5,6))');
+      });
+
+      cy.get('#\\/xmin textarea').type('{end}{backspace}2{enter}', { force: true });
+      cy.get('#\\/xmax textarea').type('{end}{backspace}4{enter}', { force: true });
+
+      cy.get(numberMaximaAnchor).should('have.text', '0');
+      cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿');
+      });
+      cy.get(numberMinimaAnchor).should('have.text', '1');
+      cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)');
+      });
+      cy.get(numberExtremaAnchor).should('have.text', '1');
+
+      cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)');
+      });
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point1'].movePoint({ x: 2, y: 2 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '1');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(−1.5,7)');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '1');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(2,2)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '2');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−1.5,7),(2,2))');
+        });
+
+        cy.get('#\\/xmin textarea').type('{end}{backspace}6{enter}', { force: true });
+        cy.get('#\\/xmax textarea').type('{end}{backspace}8{enter}', { force: true });
+  
+        cy.get(numberMaximaAnchor).should('have.text', '2');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−1.5,7),(5,6))');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '2');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−5,6),(2,2))');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '4');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−5,6),(−1.5,7),(2,2),(5,6))');
+        });
+
+      });
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        components['/_point1'].movePoint({ x: 3.6, y: 5.1 });
+
+        cy.get(numberMaximaAnchor).should('have.text', '3');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−1,7),(3.6,5.1),(5,6))');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '3');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−5,6),(3,4),(4.3,5))');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '6');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−5,6),(−1,7),(3,4),(3.6,5.1),(4.3,5),(5,6))');
+        });
+
+        cy.get('#\\/xmin textarea').type('{end}{backspace}1{enter}', { force: true });
+        cy.get('#\\/xmax textarea').type('{end}{backspace}4{enter}', { force: true });
+
+        cy.get(numberMaximaAnchor).should('have.text', '2');
+        cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−1,7),(3.6,5.1))');
+        });
+        cy.get(numberMinimaAnchor).should('have.text', '1');
+        cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('(3,4)');
+        });
+        cy.get(numberExtremaAnchor).should('have.text', '3');
+        cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('((−1,7),(3,4),(3.6,5.1))');
         });
 
       });
@@ -1857,6 +2120,238 @@ describe('Function Tag Tests', function () {
 
   });
 
+  it('calculated extrema from sinusoid, restrict domain', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Period: <mathinput /></p>
+    <p>xmin = <mathinput name="xmin" prefill="-10" />
+    xmax = <mathinput name="xmax" prefill="10" /></p>
+    <graph>
+    <function formula="sin(2*pi*x/$_mathinput1)" domain="($xmin, $xmax)" />
+    <copy prop="extrema" tname="_function1" />
+    </graph>
+    <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="maximumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="minimumValues" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumLocations" tname="_function1" /></aslist></p>
+    <p><aslist><copy prop="extremumValues" tname="_function1" /></aslist></p>
+
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let f = components['/_function1'];
+
+      expect(f.stateValues.numberMaxima).eq(0);
+      expect(f.stateValues.numberMinima).eq(0);
+      expect(f.stateValues.numberExtrema).eq(0);
+
+    });
+
+    cy.get('#\\/_mathinput1 textarea').type("10{enter}", { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let period = 10;
+
+      let f = components['/_function1'];
+
+      expect(f.stateValues.numberMaxima).eq(20 / period);
+
+      let maximumLocations = f.stateValues.maximumLocations;
+      for (let m of maximumLocations) {
+        expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
+      }
+
+      let maximumValues = f.stateValues.maximumValues;
+      for (let m of maximumValues) {
+        expect(m).closeTo(1, 0.0001);
+      }
+
+      expect(f.stateValues.numberMinima).eq(20 / period);
+
+      let minimumLocations = f.stateValues.minimumLocations;
+      for (let m of minimumLocations) {
+        expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
+      }
+
+      let minimumValues = f.stateValues.minimumValues;
+      for (let m of minimumValues) {
+        expect(m).closeTo(-1, 0.0001);
+      }
+
+      expect(f.stateValues.numberExtrema).eq(40 / period);
+
+      let extremumLocations = f.stateValues.minimumLocations;
+      for (let m of extremumLocations) {
+        expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
+      }
+
+      let extremumValues = f.stateValues.minimumValues;
+      for (let m of extremumValues) {
+        expect(Math.abs(m)).closeTo(1, 0.0001);
+      }
+
+    });
+
+    cy.get('#\\/xmin textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
+    cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}25{enter}", { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let period = 10;
+
+      let f = components['/_function1'];
+
+      expect(f.stateValues.numberMaxima).eq(30 / period);
+
+      let maximumLocations = f.stateValues.maximumLocations;
+      for (let m of maximumLocations) {
+        expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
+      }
+
+      let maximumValues = f.stateValues.maximumValues;
+      for (let m of maximumValues) {
+        expect(m).closeTo(1, 0.0001);
+      }
+
+      expect(f.stateValues.numberMinima).eq(30 / period);
+
+      let minimumLocations = f.stateValues.minimumLocations;
+      for (let m of minimumLocations) {
+        expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
+      }
+
+      let minimumValues = f.stateValues.minimumValues;
+      for (let m of minimumValues) {
+        expect(m).closeTo(-1, 0.0001);
+      }
+
+      expect(f.stateValues.numberExtrema).eq(60 / period);
+
+      let extremumLocations = f.stateValues.minimumLocations;
+      for (let m of extremumLocations) {
+        expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
+      }
+
+      let extremumValues = f.stateValues.minimumValues;
+      for (let m of extremumValues) {
+        expect(Math.abs(m)).closeTo(1, 0.0001);
+      }
+
+    });
+
+
+    cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}{backspace}5{enter}", { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let period = 5;
+
+      let f = components['/_function1'];
+
+      expect(f.stateValues.numberMaxima).eq(30 / period);
+
+      let maximumLocations = f.stateValues.maximumLocations;
+      for (let m of maximumLocations) {
+        expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
+      }
+
+      let maximumValues = f.stateValues.maximumValues;
+      for (let m of maximumValues) {
+        expect(m).closeTo(1, 0.0001);
+      }
+
+      expect(f.stateValues.numberMinima).eq(30 / period);
+
+      let minimumLocations = f.stateValues.minimumLocations;
+      for (let m of minimumLocations) {
+        expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
+      }
+
+      let minimumValues = f.stateValues.minimumValues;
+      for (let m of minimumValues) {
+        expect(m).closeTo(-1, 0.0001);
+      }
+
+      expect(f.stateValues.numberExtrema).eq(60 / period);
+
+      let extremumLocations = f.stateValues.minimumLocations;
+      for (let m of extremumLocations) {
+        expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
+      }
+
+      let extremumValues = f.stateValues.minimumValues;
+      for (let m of extremumValues) {
+        expect(Math.abs(m)).closeTo(1, 0.0001);
+      }
+
+    });
+
+
+    cy.get('#\\/xmin textarea').type("{end}{backspace}1{enter}", { force: true });
+    cy.get('#\\/xmax textarea').type("{end}{backspace}{backspace}9{enter}", { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let period = 5;
+
+      let f = components['/_function1'];
+
+      expect(f.stateValues.numberMaxima).eq(10 / period);
+
+      let maximumLocations = f.stateValues.maximumLocations;
+      for (let m of maximumLocations) {
+        expect(((m % period) + period) % period).closeTo(period / 4, 0.0001);
+      }
+
+      let maximumValues = f.stateValues.maximumValues;
+      for (let m of maximumValues) {
+        expect(m).closeTo(1, 0.0001);
+      }
+
+      expect(f.stateValues.numberMinima).eq(10 / period);
+
+      let minimumLocations = f.stateValues.minimumLocations;
+      for (let m of minimumLocations) {
+        expect(((m % period) + period) % period).closeTo(3 * period / 4, 0.0001);
+      }
+
+      let minimumValues = f.stateValues.minimumValues;
+      for (let m of minimumValues) {
+        expect(m).closeTo(-1, 0.0001);
+      }
+
+      expect(f.stateValues.numberExtrema).eq(20 / period);
+
+      let extremumLocations = f.stateValues.minimumLocations;
+      for (let m of extremumLocations) {
+        expect(((m % (period / 2)) + (period / 2)) % (period / 2)).closeTo(period / 4, 0.0001);
+      }
+
+      let extremumValues = f.stateValues.minimumValues;
+      for (let m of extremumValues) {
+        expect(Math.abs(m)).closeTo(1, 0.0001);
+      }
+
+    });
+
+
+
+  });
+
   it('no extrema with horizontal asymptote', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1966,7 +2461,7 @@ describe('Function Tag Tests', function () {
 
   });
 
-  it('extrema of function with restricted domain', () => {
+  it('extrema of function with restricted domain, not explicit', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -2958,20 +3453,20 @@ describe('Function Tag Tests', function () {
       let symbolicf1 = components['/_function1'].stateValues.symbolicfs[0];
       let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
 
-      expect(f1(-5,2)).closeTo(200, 1E-12);
-      expect(f2(-5,2)).closeTo(-500, 1E-12);
-      expect(f1(3,-4)).closeTo(-576, 1E-12);
+      expect(f1(-5, 2)).closeTo(200, 1E-12);
+      expect(f2(-5, 2)).closeTo(-500, 1E-12);
+      expect(f1(3, -4)).closeTo(-576, 1E-12);
       expect(f2(3, -4)).closeTo(432, 1E-12);
-      expect(numericalf1(-5,2)).closeTo(200, 1E-12);
-      expect(numericalf2(-5,2)).closeTo(-500, 1E-12);
-      expect(numericalf1(3,-4)).closeTo(-576, 1E-12);
-      expect(numericalf2(3,-4)).closeTo(432, 1E-12);
-      expect(symbolicf1(-5,2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
-      expect(symbolicf2(-5,2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
-      expect(symbolicf1(3,-4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
-      expect(symbolicf2(3,-4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
-      expect(symbolicf1('z','w').equals(me.fromText('z^2w^3'))).eq(true);
-      expect(symbolicf2('z','w').equals(me.fromText('z^3w^2'))).eq(true);
+      expect(numericalf1(-5, 2)).closeTo(200, 1E-12);
+      expect(numericalf2(-5, 2)).closeTo(-500, 1E-12);
+      expect(numericalf1(3, -4)).closeTo(-576, 1E-12);
+      expect(numericalf2(3, -4)).closeTo(432, 1E-12);
+      expect(symbolicf1(-5, 2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
+      expect(symbolicf2(-5, 2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
+      expect(symbolicf1(3, -4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
+      expect(symbolicf2(3, -4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
+      expect(symbolicf1('z', 'w').equals(me.fromText('z^2w^3'))).eq(true);
+      expect(symbolicf2('z', 'w').equals(me.fromText('z^3w^2'))).eq(true);
 
 
     })
@@ -3004,27 +3499,27 @@ describe('Function Tag Tests', function () {
       let symbolicf2 = components['/_function1'].stateValues.symbolicfs[1];
       let symbolicf3 = components['/_function1'].stateValues.symbolicfs[2];
 
-      expect(f1(-5,2)).closeTo(200, 1E-12);
-      expect(f2(-5,2)).closeTo(-500, 1E-12);
-      expect(f3(-5,2)).closeTo(-10, 1E-12);
-      expect(f1(3,-4)).closeTo(-576, 1E-12);
+      expect(f1(-5, 2)).closeTo(200, 1E-12);
+      expect(f2(-5, 2)).closeTo(-500, 1E-12);
+      expect(f3(-5, 2)).closeTo(-10, 1E-12);
+      expect(f1(3, -4)).closeTo(-576, 1E-12);
       expect(f2(3, -4)).closeTo(432, 1E-12);
       expect(f3(3, -4)).closeTo(-12, 1E-12);
-      expect(numericalf1(-5,2)).closeTo(200, 1E-12);
-      expect(numericalf2(-5,2)).closeTo(-500, 1E-12);
-      expect(numericalf3(-5,2)).closeTo(-10, 1E-12);
-      expect(numericalf1(3,-4)).closeTo(-576, 1E-12);
-      expect(numericalf2(3,-4)).closeTo(432, 1E-12);
-      expect(numericalf3(3,-4)).closeTo(-12, 1E-12);
-      expect(symbolicf1(-5,2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
-      expect(symbolicf2(-5,2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
-      expect(symbolicf3(-5,2).equals(me.fromText('(-5)*2'))).eq(true);
-      expect(symbolicf1(3,-4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
-      expect(symbolicf2(3,-4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
-      expect(symbolicf3(3,-4).equals(me.fromText('3*(-4)'))).eq(true);
-      expect(symbolicf1('z','w').equals(me.fromText('z^2w^3'))).eq(true);
-      expect(symbolicf2('z','w').equals(me.fromText('z^3w^2'))).eq(true);
-      expect(symbolicf3('z','w').equals(me.fromText('zw'))).eq(true);
+      expect(numericalf1(-5, 2)).closeTo(200, 1E-12);
+      expect(numericalf2(-5, 2)).closeTo(-500, 1E-12);
+      expect(numericalf3(-5, 2)).closeTo(-10, 1E-12);
+      expect(numericalf1(3, -4)).closeTo(-576, 1E-12);
+      expect(numericalf2(3, -4)).closeTo(432, 1E-12);
+      expect(numericalf3(3, -4)).closeTo(-12, 1E-12);
+      expect(symbolicf1(-5, 2).equals(me.fromText('(-5)^2*2^3'))).eq(true);
+      expect(symbolicf2(-5, 2).equals(me.fromText('(-5)^3*2^2'))).eq(true);
+      expect(symbolicf3(-5, 2).equals(me.fromText('(-5)*2'))).eq(true);
+      expect(symbolicf1(3, -4).equals(me.fromText('3^2*(-4)^3'))).eq(true);
+      expect(symbolicf2(3, -4).equals(me.fromText('3^3*(-4)^2'))).eq(true);
+      expect(symbolicf3(3, -4).equals(me.fromText('3*(-4)'))).eq(true);
+      expect(symbolicf1('z', 'w').equals(me.fromText('z^2w^3'))).eq(true);
+      expect(symbolicf2('z', 'w').equals(me.fromText('z^3w^2'))).eq(true);
+      expect(symbolicf3('z', 'w').equals(me.fromText('zw'))).eq(true);
 
 
     })
