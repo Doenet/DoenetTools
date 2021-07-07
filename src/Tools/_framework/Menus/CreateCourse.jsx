@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { useToast } from '@Toast';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
+import { allDriveCardsAtom ,fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler';
 import { useRecoilCallback } from 'recoil';
 // import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
@@ -41,10 +41,9 @@ const CreateCourse = (props) =>{
 
     result.then((resp) => {
       if (resp.data.success){
-        // set(drivecardSelectedNodesAtom,newDrive)
-        set(drivecardSelectedNodesAtom,(oldDrivesInfo)=>{
-          let newDrivesInfo = [];
-          newDrivesInfo = [newDrive,...oldDrivesInfo]
+        set(fetchDrivesQuery,(oldDrivesInfo)=>{
+          let newDrivesInfo = {...oldDrivesInfo}
+          newDrivesInfo.driveIdsAndLabels = [newDrive,...oldDrivesInfo.driveIdsAndLabels]
           return newDrivesInfo
         }
         )
