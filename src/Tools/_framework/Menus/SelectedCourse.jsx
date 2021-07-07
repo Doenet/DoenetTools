@@ -16,8 +16,7 @@ import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
 export default function SelectedCourse(props){
 
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
-  console.log(">>>selection",selection)
-  if(selection.length === 1){
+  if(selection.length === 1 && selection[0].role[0] === "Owner" ){
     return <>
 
     <DriveInfoPanel 
@@ -310,4 +309,64 @@ function User(props){
       {buttons}
     </div>
     </>
+}
+
+function NewUser(props){
+  const [email,setEmail] = useState("")
+
+
+  function addUser(){
+    if (validateEmail(email)){
+      props.setDriveUsers({
+          driveId:props.driveId,
+          type:props.type,
+          email,
+          callback
+        })
+      props.open(false);
+    }else{
+      //Toast invalid email
+      console.log(`Not Added: Invalid email ${email}`)
+    }
+
+    //TODO: when set async available replace this.
+    function callback(resp){
+
+      if (resp.success){
+        props.setDriveUsers({
+          driveId:props.driveId,
+          type:`${props.type} step 2`,
+          email,
+          screenName:resp.screenName,
+          userId:resp.userId
+        })
+      }else{
+        console.log(">>>Toast ",resp.message)
+      }
+      
+    }
+    
+  }
+
+  return <><div>
+    <label>User&#39;s Email Address<br />
+    <input type="text" value={email} 
+    onChange={(e)=>{setEmail(e.target.value)}}
+    onKeyDown={(e)=>{if (e.keyCode === 13){ 
+      addUser();
+    }}}
+    onBlur={()=>{
+      addUser();
+    }}
+    /></label>
+  </div>
+    <Button value="Submit" callback={()=>addUser()}/>
+    <Button value="Cancel" callback={()=>props.open(false)}/>
+    </>
+
+}
+
+function validateEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
 }
