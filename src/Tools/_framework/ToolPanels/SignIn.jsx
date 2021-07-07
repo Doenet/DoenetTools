@@ -4,7 +4,7 @@ import React from 'react';
 // import { toolViewAtom } from '../NewToolRoot';
 
 export default function SignIn(props){
-  console.log(">>>===SignIn")
+  // console.log(">>>===SignIn")
   // let history = useHistory();
   // const goToSignIn = useRecoilCallback(({set})=>()=>{
   //   set(toolViewAtom,(was)=>{

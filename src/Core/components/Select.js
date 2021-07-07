@@ -154,7 +154,7 @@ export default class Select extends CompositeComponent {
         optionChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroOptions",
-          variableNames: ["selectForVariants", "selectWeight"]
+          variableNames: ["selectForVariantNames", "selectWeight"]
         },
       }),
       definition({ dependencyValues }) {
@@ -187,7 +187,7 @@ export default class Select extends CompositeComponent {
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
-          for (let variantName of optionChild.stateValues.selectForVariants) {
+          for (let variantName of optionChild.stateValues.selectForVariantNames) {
             let variantLower = variantName.toLowerCase();
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];
@@ -576,14 +576,10 @@ export default class Select extends CompositeComponent {
           return { success: false }
         }
       } else if (componentType === "withReplacement") {
-        // calculate withReplacement only if has its implicitValue or value set directly
+        // calculate withReplacement only if has its value set directly
         // or if has a child that is a string
         let foundValid = false;
         if (child.state !== undefined) {
-          if (child.state.implicitValue !== undefined) {
-            withReplacement = child.state.implicitValue;
-            foundValid = true;
-          }
           if (child.state.value !== undefined) {
             withReplacement = child.state.value;
             foundValid = true;

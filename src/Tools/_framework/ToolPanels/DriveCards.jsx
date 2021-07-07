@@ -40,12 +40,6 @@ export default function DriveCardsNew(props){
   { driveIdsAndLabelsInfo && <DriveCardWrapper 
       driveInfo={driveIdsAndLabelsInfo} driveDoubleClickCallback={()=>console.log(">>>double clicked")} drivePathSyncKey="main"
        types={['course']} isOneDriveSelect={false} />}
-  <hr />
-
-  <h2>Menu Experiment</h2>
-  <div><button onClick={(e)=>{e.stopPropagation();tempChangeMenus(["CreateCourse","CourseEnroll"],["Create Course","Enroll"],[true,false])}}>Create and Enroll</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();tempChangeMenus(["CourseEnroll"],["Enroll"],[false])}}>Just Enroll</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();tempChangeMenus([],[],[])}}>No Menus</button></div>
 
 
   </div>

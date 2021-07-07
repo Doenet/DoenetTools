@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { doenetComponentForegroundActive } from "./theme";
 import styled, { ThemeProvider, css } from "styled-components";
 
@@ -26,8 +26,21 @@ ButtonStyling.defaultProps = {
   }
 }
 
+const Label = styled.p`
+  font-size: 12px;
+  display: ${props => props.labelVisible};
+  margin-right: 5px
+`
+const Container = styled.div`
+  display: flex;
+  width: auto;
+  align-items: center;
+`
+
 export default function Button(props) {
   //Assume small
+  var container = {};
+
   var button = {
     value: 'Button',
   };
@@ -46,8 +59,17 @@ export default function Button(props) {
   //     };
   if (props.width) {
     if (props.width === "menu") {
-      button.width = '235px'
+      button.width = '235px';
+      if (props.label) {
+        container.width = '235px';
+        button.width = '100%';
+      }
     } 
+  }
+  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+  var label = '';
+  if (props.label) {
+    label = props.label;
   }
   var icon = '';
   if (props.value || props.icon){
@@ -71,7 +93,10 @@ export default function Button(props) {
   }
     return (
         <>
-            <ButtonStyling style={button} {...props} onClick={() => { handleClick() }}>{icon}{' '}{button.value}</ButtonStyling>
+            <Container style={container}>
+              <Label labelVisible={labelVisible}>{label}</Label>
+              <ButtonStyling style={button} {...props} onClick={() => { handleClick() }}>{icon}{' '}{button.value}</ButtonStyling>
+            </Container>
         </>
     )
 }

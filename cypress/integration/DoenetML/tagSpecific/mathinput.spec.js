@@ -1653,7 +1653,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     // for some reason, blurring doesn't seem to get mq-editable-field to updates, so type enter
-    cy.get('#\\/b2 textarea').type("{enter}", {force: true});
+    cy.get('#\\/b2 textarea').type("{enter}", { force: true });
 
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2.047529345e0.000007301304831y')
@@ -1878,7 +1878,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     // for some reason, blurring doesn't seem to get mq-editable-field to updates, so type enter
-    cy.get('#\\/b2 textarea').type("{enter}", {force: true});
+    cy.get('#\\/b2 textarea').type("{enter}", { force: true });
 
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2.047529345e0.000007301304831y')
@@ -2489,6 +2489,174 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('2')
     })
+
+
+  })
+
+
+  it('substitute unicode', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" /></p>
+    <p>a2: <copy prop="value" tname="a" assignNames="a2" /></p>
+    <p>a3: <copy prop="value" tname="a" simplify assignNames="a3" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a textarea').type('α{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('α')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('α')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('α')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls("alpha");
+      expect(components['/a2'].stateValues.value.tree).eqls("alpha");
+      expect(components['/a3'].stateValues.value.tree).eqls("alpha");
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}\\alpha{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('α')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('α')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('α')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls("alpha");
+      expect(components['/a2'].stateValues.value.tree).eqls("alpha");
+      expect(components['/a3'].stateValues.value.tree).eqls("alpha");
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}y\u2212z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y−z')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y−z')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y−z')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y-z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y−z')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y−z')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y−z')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u22C5z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y⋅z')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["*", "y", "z"]);
+    });
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y*z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y\u00B7z')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["*", "y", "z"]);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00B7z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y\u00B7z')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["*", "y", "z"]);
+    });
+
+
+    
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00D7z{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y\u00D7z')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yz')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["*", "y", "z"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["*", "y", "z"]);
+    });
 
 
   })

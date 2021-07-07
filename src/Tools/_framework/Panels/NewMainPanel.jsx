@@ -62,7 +62,6 @@ export default function MainPanel({ headerControls, headerControlsPositions, chi
   if (headerControls){
     for (const [i,control] of Object.entries(headerControls)){
       const position = headerControlsPositions[i]
-      console.log(">>>position",position)
       controls.push(<span key={`headControl${i}`}>{control}</span>)
     }
   }

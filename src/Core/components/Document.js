@@ -628,7 +628,7 @@ export default class Document extends BaseComponent {
       sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
       sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.selectRng = variantControlChild.state.selectRng.value;
-      sharedParameters.allPossibleVariants = variantControlChild.state.variants.value;
+      sharedParameters.allPossibleVariants = variantControlChild.state.variantNames.value;
     }
 
     // seed rng for random numbers predictably from variant using selectRng

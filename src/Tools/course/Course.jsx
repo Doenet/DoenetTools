@@ -375,7 +375,7 @@ export default function Course(props) {
                     value={
                       openEnrollment ? 'Close Enrollment' : 'Open Enrollment'
                     }
-                    callback={(e) => setEnrollment(e)}
+                    onClick={(e) => setEnrollment(e)}
                   ></Button>
                   <br />
                   <label>View as Student</label>
@@ -838,7 +838,7 @@ const VersionHistoryInfoPanel = (props) => {
           <>
             <Button
               value="Make Assignment"
-              callback={async () => {
+              onClick={async () => {
                 setIsAssigned(true);
                 const result = await addContentAssignment({
                   driveIditemIddoenetIdparentFolderId: {
@@ -893,7 +893,7 @@ const VersionHistoryInfoPanel = (props) => {
           <>
             <Button
               value="Unassign"
-              callback={async () => {
+              onClick={async () => {
                 assignmentToContent({
                   driveIditemIddoenetIdparentFolderId: {
                     driveId: itemInfo.driveId,
@@ -949,7 +949,7 @@ const VersionHistoryInfoPanel = (props) => {
           <>
             <Button
               value="View Version"
-              callback={() => {
+              onClick={() => {
                 openOverlay({
                   type: 'content',
                   doenetId: itemInfo?.doenetId,
@@ -963,7 +963,7 @@ const VersionHistoryInfoPanel = (props) => {
           <>
             <Button
               value="Switch Assignment"
-              callback={async () => {
+              onClick={async () => {
                 setIsAssigned(true);
                 const result = await addSwitchAssignment({
                   driveIditemIddoenetIdparentFolderId: {

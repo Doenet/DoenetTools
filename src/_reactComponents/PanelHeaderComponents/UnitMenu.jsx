@@ -17,6 +17,7 @@ const Textfield = styled.input`
 const Label = styled.p`
   font-size: 14px;
   display: none;
+  margin-right: 5px;
   text-align: center;
   ${(props) =>
     props.visible === "True" &&

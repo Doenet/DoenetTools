@@ -25,7 +25,10 @@ export default function ButtonGroup(props) {
     //     .concat(React.cloneElement(elem[elem.length - 1], {num: 'last'}));
     // }
     return (
-      <ThemeProvider theme={buttonGroup}>{elem}</ThemeProvider>
+      <div style={{display: 'flex'}}>
+        <ThemeProvider theme={buttonGroup}>{elem}</ThemeProvider>
+      </div>
+      
     )
   }
 // export default function ButtonGroup(props) {

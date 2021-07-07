@@ -493,6 +493,8 @@ class DoenetViewerChild extends Component {
         message = `Could not retrieve contentIds ${newContentIds.join(',')}`
       }
 
+      message += ": " + err.message;
+
       callBack({
         success: false,
         message,

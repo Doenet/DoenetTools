@@ -80,7 +80,7 @@ export default class Row extends BaseComponent {
             halign = "left";
           }
           return { newValues: { halign } }
-        } else if (!usedDefault.parentHalign) {
+        } else if (dependencyValues.parentHalign !== null && !usedDefault.parentHalign) {
           return { newValues: { halign: dependencyValues.parentHalign } }
         } else {
           return { useEssentialOrDefaultValue: { halign: {} } }
@@ -112,7 +112,7 @@ export default class Row extends BaseComponent {
             valign = "middle";
           }
           return { newValues: { valign } }
-        } else if (!usedDefault.parentValign) {
+        } else if (dependencyValues.parentValign !== null && !usedDefault.parentValign) {
           return { newValues: { valign: dependencyValues.parentValign } }
         } else {
           return { useEssentialOrDefaultValue: { valign: {} } }
@@ -144,7 +144,7 @@ export default class Row extends BaseComponent {
             left = "none";
           }
           return { newValues: { left } }
-        } else if (!usedDefault.parentLeft) {
+        } else if (dependencyValues.parentLeft !== null && !usedDefault.parentLeft) {
           return { newValues: { left: dependencyValues.parentLeft } }
         } else {
           return { useEssentialOrDefaultValue: { left: {} } }
@@ -175,7 +175,7 @@ export default class Row extends BaseComponent {
             bottom = "none";
           }
           return { newValues: { bottom } }
-        } else if (!usedDefault.parentBottom) {
+        } else if (dependencyValues.parentBottom !== null && !usedDefault.parentBottom) {
           return { newValues: { bottom: dependencyValues.parentBottom } }
         } else {
           return { useEssentialOrDefaultValue: { bottom: {} } }

@@ -319,7 +319,7 @@ export class DependencyHandler {
           stateVariable: dep.representativeStateVariable,
           dependency: dep.dependencyName,
           force,
-          recurseUpstream: true,
+          // recurseUpstream: true,
         })
       }
     }
@@ -335,7 +335,7 @@ export class DependencyHandler {
             stateVariable: dep.representativeStateVariable,
             dependency: dep.dependencyName,
             force,
-            recurseUpstream: true
+            // recurseUpstream: true
           })
         }
       }
@@ -352,7 +352,7 @@ export class DependencyHandler {
             stateVariable: dep.representativeStateVariable,
             dependency: dep.dependencyName,
             force,
-            recurseUpstream: true
+            // recurseUpstream: true
           })
         }
 
@@ -397,7 +397,7 @@ export class DependencyHandler {
           stateVariable: dep.representativeStateVariable,
           dependency: dep.dependencyName,
           force,
-          recurseUpstream: true
+          // recurseUpstream: true
         })
       }
     }
@@ -543,6 +543,37 @@ export class DependencyHandler {
 
     // first check if we should shadow state variable
     if (stateVarObj.determineIfShadowData) {
+
+      if (stateVarObj.isArrayEntry) {
+        // addressing determineIfShadowData must be done at the array level,
+        // not the array entry level
+        let arrayStateVariable = stateVarObj.arrayStateVariable;
+        let arrayStateVarObj = component.state[arrayStateVariable]
+
+        if (arrayStateVarObj.determineIfShadowData) {
+          let result = this.updateDependencies({
+            componentName,
+            stateVariable: arrayStateVariable,
+            dependency: "__determine_dependencies_shadow_data"
+          });
+          if (!result.success) {
+            return { success: false };
+          }
+        }
+
+        delete stateVarObj.determineIfShadowData;
+
+        // TODO: if array entry is shadowed,
+        // do we need to delete a __determine_dependencies dependency
+        // if it exists?
+
+        // try again
+        return this.updateDependencies({
+          componentName,
+          stateVariable,
+          dependency
+        });
+      }
 
       let determineIfShadowData = stateVarObj.determineIfShadowData;
       delete stateVarObj.determineIfShadowData;
@@ -1936,7 +1967,7 @@ export class DependencyHandler {
         componentName,
         type: "componentIdentity",
         expandComposites: false,
-        recurseUpstream: true
+        // recurseUpstream: true
       });
 
       stateVariables = Object.keys(component.state);
@@ -1966,7 +1997,7 @@ export class DependencyHandler {
               stateVariable: blockerStateVariable,
               dependency: blockerDependency,
               expandComposites: true,  // TODO: why is this true?
-              recurseUpstream: true
+              // recurseUpstream: true
             });
 
           }
@@ -1977,7 +2008,7 @@ export class DependencyHandler {
         type: "stateVariable",
         stateVariable: varName,
         expandComposites: false,
-        recurseUpstream: true
+        // recurseUpstream: true
       })
 
 
@@ -2844,7 +2875,7 @@ class Dependency {
 
     let value = [];
     let changes = {};
-    let usedDefault = false;
+    let usedDefault = [];
 
     if (this.componentIdentitiesChanged) {
       changes.componentIdentitiesChanged = true;
@@ -2854,6 +2885,8 @@ class Dependency {
     for (let [componentInd, componentName] of this.downstreamComponentNames.entries()) {
 
       let depComponent = this.dependencyHandler._components[componentName];
+
+      usedDefault[componentInd] = false;
 
       if (depComponent) {
 
@@ -2876,6 +2909,9 @@ class Dependency {
 
           componentObj.stateValues = {};
 
+          let usedDefaultObj = {};
+          let foundOneUsedDefault = false;
+
           for (let [varInd, originalVarName] of originalVarNames.entries()) {
             let mappedVarName = this.mappedDownstreamVariableNamesByComponent[componentInd][varInd];
 
@@ -2894,8 +2930,18 @@ class Dependency {
                   changes.valuesChanged[componentInd][nameForOutput] = this.valuesChanged[componentInd][mappedVarName];
                 }
                 this.valuesChanged[componentInd][mappedVarName] = {};
+
+                if (depComponent.state[mappedVarName].usedDefault) {
+                  usedDefaultObj[nameForOutput] = true;
+                  foundOneUsedDefault = true;
+                }
+
               }
             }
+          }
+
+          if (foundOneUsedDefault) {
+            usedDefault[componentInd] = usedDefaultObj;
           }
         }
 
@@ -2920,37 +2966,30 @@ class Dependency {
           } else {
             delete changes.valuesChanged;
           }
+          usedDefault = usedDefault[0];
 
           let stateVariables = Object.keys(value.stateValues);
           if (stateVariables.length === 1) {
-            value = value.stateValues[stateVariables[0]];
-            let nameForOutput;
-
-            if (this.useMappedVariableNames) {
-              nameForOutput = this.mappedDownstreamVariableNamesByComponent[0][0];
-            } else {
-              if (this.originalVariablesByComponent) {
-                nameForOutput = this.originalDownstreamVariableNamesByComponent[0][0];
-              } else {
-                nameForOutput = this.originalDownstreamVariableNames[0];
-              }
-            }
+            let nameForOutput = stateVariables[0];
+            value = value.stateValues[nameForOutput];
 
             if (changes.valuesChanged && changes.valuesChanged[nameForOutput]) {
               changes.valuesChanged = changes.valuesChanged[nameForOutput];
             }
 
-            usedDefault = this.dependencyHandler.components[this.downstreamComponentNames[0]].state[
-              this.mappedDownstreamVariableNamesByComponent[0][0]
-            ].usedDefault;
+            if (usedDefault) {
+              usedDefault = usedDefault[nameForOutput];
+            }
 
           } else {
             value = null;
             changes.valuesChanged = {};
+            usedDefault = false;
           }
         } else {
           value = null;
           changes.valuesChanged = {};
+          usedDefault = false;
         }
       } else if (this.returnSingleComponent) {
         if (value.length === 1) {
@@ -2960,36 +2999,10 @@ class Dependency {
           } else {
             delete changes.valuesChanged;
           }
-
-          if (value.stateValues && Object.keys(value.stateValues).length > 0) {
-            let usedDefaultObj = {};
-            let foundOneUsedDefault = false;
-            for (let [varInd, mappedVarName] of this.mappedDownstreamVariableNamesByComponent[0].entries()) {
-              if (this.dependencyHandler.components[this.downstreamComponentNames[0]].state[
-                mappedVarName
-              ].usedDefault) {
-
-                foundOneUsedDefault = true;
-
-                let nameForOutput;
-                if (this.useMappedVariableNames) {
-                  nameForOutput = mappedVarName;
-                } else {
-                  if (this.originalVariablesByComponent) {
-                    nameForOutput = this.originalDownstreamVariableNamesByComponent[0][varInd];
-                  } else {
-                    nameForOutput = this.originalDownstreamVariableNames[varInd];
-                  }
-                }
-                usedDefaultObj[nameForOutput] = true;
-              }
-            }
-            if (foundOneUsedDefault) {
-              usedDefault = usedDefaultObj;
-            }
-          }
+          usedDefault = usedDefault[0]
         } else {
           value = null;
+          usedDefault = false;
         }
       }
     }
@@ -4088,6 +4101,16 @@ class ChildDependency extends Dependency {
           // mark that child logic is blocked by
           // the readyToExpandWhenResolved state variable of the composites not ready
 
+          // Note: since unresolved composites that don't have a component type
+          // will prevent child logic from being satisfied with placeholders
+          // (as they don't get turned into placeholders)
+          // add blockers just to them, if they exist
+          // (This prevents adding circular dependencies that could
+          // be avoided once child logic is resolved with placeholders)
+
+          let compositesBlockingWithComponentType = [];
+          let compositesBlockingWithoutComponentType = [];
+
           for (let compositeNotReady of parent.unexpandedCompositesNotReady) {
 
             if (parent.childLogicSatisfiedWithPlaceholders) {
@@ -4100,8 +4123,21 @@ class ChildDependency extends Dependency {
               }
             }
 
-            for (let varName of this.upstreamVariableNames) {
+            if (this.dependencyHandler._components[compositeNotReady].attributes.componentType) {
+              compositesBlockingWithComponentType.push(compositeNotReady);
+            } else {
+              compositesBlockingWithoutComponentType.push(compositeNotReady)
+            }
+          }
 
+          let compositesToAddBlockers = compositesBlockingWithoutComponentType;
+          if (compositesToAddBlockers.length === 0) {
+            compositesToAddBlockers = compositesBlockingWithComponentType;
+          }
+
+          for (let compositeNotReady of compositesToAddBlockers) {
+
+            for (let varName of this.upstreamVariableNames) {
 
               this.dependencyHandler.addBlocker({
                 blockerComponentName: compositeNotReady,

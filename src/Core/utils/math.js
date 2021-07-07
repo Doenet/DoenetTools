@@ -345,12 +345,31 @@ export function roundForDisplay({ value, dependencyValues, usedDefault }) {
     } else {
       rounded = value;
     }
-    if (dependencyValues.displaySmallAsZero) {
-      rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: true });
+    if (dependencyValues.displaySmallAsZero > 0) {
+      rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: dependencyValues.displaySmallAsZero });
     }
 
   }
 
   return rounded;
+
+}
+
+export function mergeListsWithOtherContainers(tree) {
+
+  if (!Array.isArray(tree)) {
+    return tree;
+  }
+
+  let operator = tree[0];
+  let operands = tree.slice(1);
+
+  if (["tuple", "vector", "list", "set"].includes(operator)) {
+    operands = operands.reduce((a, c) => Array.isArray(c) && c[0] === "list" ? [...a, ...c.slice(1)] : [...a, c], [])
+  }
+
+  operands = operands.map(x => mergeListsWithOtherContainers(x))
+
+  return [operator, ...operands];
 
 }

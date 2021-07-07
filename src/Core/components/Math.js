@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay } from '../utils/math';
+import { getFromText, getFromLatex, convertValueToMathExpression, normalizeMathExpression, roundForDisplay, mergeListsWithOtherContainers } from '../utils/math';
 import { flattenDeep } from '../utils/array';
 
 
@@ -44,22 +44,24 @@ export default class MathComponent extends InlineComponent {
     };
 
     attributes.displayDigits = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDigits",
       defaultValue: 10,
       public: true,
     };
 
     attributes.displayDecimals = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDecimals",
       defaultValue: null,
       public: true,
     };
     attributes.displaySmallAsZero = {
-      createComponentOfType: "boolean",
+      createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      defaultValue: false,
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
       public: true,
     };
     attributes.renderMode = {
@@ -592,6 +594,126 @@ export default class MathComponent extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.nDimensions = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let nDimensions = 1;
+
+        let tree = dependencyValues.value.tree;
+
+        if (Array.isArray(tree) && ["vector", "tuple", "list"].includes(tree[0])) {
+          nDimensions = tree.length - 1;
+        }
+
+        return { newValues: { nDimensions } }
+
+      }
+    }
+
+
+    stateVariableDefinitions.xs = {
+      public: true,
+      componentType: "math",
+      isArray: true,
+      entryPrefixes: ["x"],
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          value: {
+            dependencyType: "stateVariable",
+            variableName: "value"
+          }
+        };
+        return { globalDependencies };
+      },
+      arrayDefinitionByKey({ globalDependencyValues, arrayKeys, arraySize }) {
+
+
+        let tree = globalDependencyValues.value.tree;
+
+        let haveVector = Array.isArray(tree) && ["vector", "tuple", "list"].includes(tree[0])
+
+        let xs = {};
+        if (haveVector) {
+          for (let ind = 0; ind < arraySize[0]; ind++) {
+            xs[ind] = me.fromAst(tree[ind + 1]);
+          }
+        } else {
+          xs[0] = globalDependencyValues.value;
+        }
+
+        return { newValues: { xs } }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        stateValues, workspace, arraySize
+      }) {
+
+
+        // in case just one ind specified, merge with previous values
+        if (!workspace.desiredXs) {
+          workspace.desiredXs = [];
+        }
+        for (let ind = 0; ind < arraySize[0]; ind++) {
+          if (desiredStateVariableValues.xs[ind] !== undefined) {
+            workspace.desiredXs[ind] = convertValueToMathExpression(desiredStateVariableValues.xs[ind]);
+          } else if (workspace.desiredXs[ind] === undefined) {
+            workspace.desiredXs[ind] = stateValues.xs[ind];
+          }
+        }
+
+
+        let desiredValue;
+        if (arraySize[0] > 1) {
+          let operator = stateValues.value.tree[0]
+          desiredValue = me.fromAst([operator, ...workspace.desiredXs.map(x => x.tree)])
+        } else {
+          desiredValue = workspace.desiredXs[0];
+        }
+
+        let instructions = [{
+          setDependency: "value",
+          desiredValue
+        }];
+
+        return {
+          success: true,
+          instructions
+        }
+
+      },
+    }
+
+    stateVariableDefinitions.x = {
+      isAlias: true,
+      targetVariableName: "x1"
+    };
+
+    stateVariableDefinitions.y = {
+      isAlias: true,
+      targetVariableName: "x2"
+    };
+
+    stateVariableDefinitions.z = {
+      isAlias: true,
+      targetVariableName: "x3"
+    };
+
+
     return stateVariableDefinitions;
 
   }
@@ -817,6 +939,8 @@ function calculateMathValue({ dependencyValues } = {}) {
   if (dependencyValues.mathChildren.length > 0) {
     value = value.substitute(subsMapping);
   }
+
+  value = me.fromAst(mergeListsWithOtherContainers(value.tree))
 
 
   return {
