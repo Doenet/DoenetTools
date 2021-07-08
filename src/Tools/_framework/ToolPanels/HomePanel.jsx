@@ -93,13 +93,7 @@ const Footer = styled.div`
 export default function HomePage(props){
   // console.log(">>>===HomePage")
   let history = useHistory();
-  const goToSignIn = useRecoilCallback(({set})=>()=>{
-    set(toolViewAtom,(was)=>{
-      let newObj = {...was};
-      newObj.currentMainPanel = "SignIn"
-      return newObj;
-    })
-  })
+
   const jwt = Cookies.get();
   let isSignedIn = false;
   if (Object.keys(jwt).includes('JWT_JS')) {
@@ -146,7 +140,7 @@ export default function HomePage(props){
               
             </ParagraphTags>
           </SectionText>
- {isSignedIn ? <div ><Button size = "medium"  onClick={()=>history.push('/course')} value = "Go to Course" /></div> : <div ><Button onClick={goToSignIn} size = "medium" value = "Sign In" /></div>}
+ {isSignedIn ? <div ><Button size = "medium"  onClick={()=>history.push('/course')} value = "Go to Course" /></div> : <div ><Button onClick={()=>history.push('/SignIn')} size = "medium" value = "Sign In" /></div>}
 
         </CloudColorSection>
 

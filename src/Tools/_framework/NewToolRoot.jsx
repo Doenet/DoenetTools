@@ -99,6 +99,22 @@ export const toolViewAtom = atom({
 // toolHandler:"CourseToolHandler",
 
 let toolsObj = {
+  
+  content:{
+    pageName:"Content",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"Content",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  course:{
+    pageName:"Course",
+    toolHandler:"CourseToolHandler",
+  },
   home:{
     pageName:"Home",
     currentMenus:[],
@@ -110,19 +126,12 @@ let toolsObj = {
     supportPanelIndex:0,
     hasNoMenuPanel: true,
   },
-  course:{
-    pageName:"Course",
-    toolHandler:"CourseToolHandler",
-  },
-  content:{
-    pageName:"Content",
+  notfound:{
+    pageName:"Notfound",
     currentMenus:[],
-    menusTitles:[],
     menusInitOpen:[],
-    currentMainPanel:"Content",
+    currentMainPanel:"NotFound",
     supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
     hasNoMenuPanel: true,
   },
   settings:{
@@ -138,14 +147,29 @@ let toolsObj = {
     headerControls: ["CloseProfileButton"],
     headerControlsPositions: ["Right"]
   },
-  notfound:{
-    pageName:"Notfound",
+  signin:{
+    pageName:"SignIn",
     currentMenus:[],
+    menusTitles:[],
     menusInitOpen:[],
-    currentMainPanel:"NotFound",
+    currentMainPanel:"SignIn",
     supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
     hasNoMenuPanel: true,
-  }
+  },
+  signout:{
+    pageName:"SignOut",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"SignOut",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  
 }
 
 // function EmptyPanel(props){
@@ -201,6 +225,7 @@ export default function ToolRoot(props){
     Content:lazy(() => import('./ToolPanels/Content')),
     DriveCards:lazy(() => import('./ToolPanels/DriveCards')),
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
+    SignOut:lazy(() => import('./ToolPanels/SignOut')),
     DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
   }).current;
 

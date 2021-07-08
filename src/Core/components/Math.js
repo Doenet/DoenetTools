@@ -104,6 +104,12 @@ export default class MathComponent extends InlineComponent {
       public: true,
     }
 
+    attributes.groupCompositeReplacements = {
+      createComponentOfType: "boolean",
+      createStateVariable: "groupCompositeReplacements",
+      defaultValue: true,
+    }
+
     return attributes;
   }
 
@@ -202,6 +208,10 @@ export default class MathComponent extends InlineComponent {
         splitSymbols: {
           dependencyType: "stateVariable",
           variableName: "splitSymbols"
+        },
+        groupCompositeReplacements: {
+          dependencyType: "stateVariable",
+          variableName: "groupCompositeReplacements"
         },
       }),
       definition: calculateExpressionWithCodes,
@@ -780,6 +790,7 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
   let lastCompositeInd;
   let compositeGroupString = "";
   let nComponentsInGroup = 0;
+  let noGroupingForCompositeInd;
 
   for (let child of dependencyValues.stringMathChildren) {
     if (nComponentsInGroup > 0 && child.compositeInd !== lastCompositeInd) {
@@ -829,9 +840,13 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
     }
 
     if (child.componentType === "string") {
-      inputString += " " + child.stateValues.value + " ";
+      // if have a string in the composite group, then don't group into tuple
+      inputString += compositeGroupString + " " + child.stateValues.value + " ";
       compositeGroupString = "";
       nComponentsInGroup = 0;
+      if (child.compositeInd !== undefined) {
+        noGroupingForCompositeInd = child.compositeInd;
+      }
     } else { // a math
       let code = dependencyValues.codePre + mathInd;
       mathInd++;
@@ -849,7 +864,10 @@ function calculateExpressionWithCodes({ dependencyValues, changes }) {
         nextString = " " + code + " ";
       }
 
-      if (child.compositeInd !== undefined) {
+      if (dependencyValues.groupCompositeReplacements &&
+        child.compositeInd !== undefined
+        && child.compositeInd !== noGroupingForCompositeInd
+      ) {
         if (child.compositeInd === lastCompositeInd) {
           // continuing a composite group
           compositeGroupString += ",";

@@ -167,7 +167,6 @@ const DriveInfoPanel = function(props){
         value="Promote to Owner" onClick={(e)=>{
           e.preventDefault();
           e.stopPropagation();
-          onClick("")
         setDriveUsers({
             driveId:driveId,
             type:"To Owner",
@@ -185,7 +184,6 @@ const DriveInfoPanel = function(props){
           onClick={(e)=>{
             e.preventDefault();
             e.stopPropagation();
-            onClick("")
             setDriveUsers({
               driveId:driveId,
               type:"Remove User",
@@ -208,7 +206,6 @@ const DriveInfoPanel = function(props){
         value="Demote to Admin" onClick={(e)=>{
           e.preventDefault();
           e.stopPropagation();
-          onClick("")
           setDriveUsers({
             driveId:driveId,
             type:"To Admin",
@@ -226,7 +223,6 @@ const DriveInfoPanel = function(props){
           onClick={(e)=>{
             e.preventDefault();
             e.stopPropagation();
-            onClick("")
             setDriveUsers({
               driveId:driveId,
               type:"Remove User",
@@ -328,7 +324,6 @@ const DriveInfoPanel = function(props){
         value="Demote to Admin" onClick={(e)=>{
           e.preventDefault();
           e.stopPropagation();
-          onClick("")
           setDriveUsers({
             driveId:driveId,
             type:"To Admin",
@@ -343,7 +338,6 @@ const DriveInfoPanel = function(props){
           onClick={(e)=>{
             e.preventDefault();
             e.stopPropagation();
-            onClick("")
             setDriveUsers({
               driveId:driveId,
               type:"Remove User",
