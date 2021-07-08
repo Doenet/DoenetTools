@@ -32,7 +32,7 @@ const Label = styled.p`
   margin-right: 5px
 `
 const Container = styled.div`
-  display: flex;
+  display: ${props => props.align};
   width: auto;
   align-items: center;
 `
@@ -40,7 +40,7 @@ const Container = styled.div`
 export default function Button(props) {
   //Assume small
   var container = {};
-
+  var align = 'flex';
   var button = {
     value: 'Button',
   };
@@ -70,6 +70,9 @@ export default function Button(props) {
   var label = '';
   if (props.label) {
     label = props.label;
+    if (props.vertical) {
+      align = 'static';
+    }
   }
   var icon = '';
   if (props.value || props.icon){
@@ -93,7 +96,7 @@ export default function Button(props) {
   }
     return (
         <>
-            <Container style={container}>
+            <Container style={container} align={align}>
               <Label labelVisible={labelVisible}>{label}</Label>
               <ButtonStyling style={button} {...props} onClick={() => { handleClick() }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>

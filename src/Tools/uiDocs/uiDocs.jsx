@@ -61,6 +61,7 @@ const List = styled.ul`
 
 export default function attempt() {
   const font = () => {};
+  const vertical = () => {};
 
 //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -93,6 +94,10 @@ export default function attempt() {
           propPreview: '<ActionButton label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to button'},
+          {name: 'Vertical Label',
+          propPreview: '<ActionButton label="What: "/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to componenet on top'},
           {name: 'Alert',
           propPreview: '<ActionButton alert/>',
           propCode: {alert},
@@ -151,6 +156,10 @@ export default function attempt() {
           propPreview: '<Button label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to button'},
+          {name: 'Vertical Label',
+          propPreview: '<Button label="What: "/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to component on top'},
           {name: 'Alert',
           propPreview: '<Button alert/>',
           propCode: {alert},
@@ -205,6 +214,10 @@ export default function attempt() {
           propPreview: '<Increment label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to componenet'},
+          {name: 'Vertical Label',
+          propPreview: '<Increment label="What: "/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to component on top'},
         {name: 'onChange',
         propPreview: '<Increment onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data)},
@@ -251,6 +264,7 @@ export default function attempt() {
           propPreview: '<Increment label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to componenet'},
+          
       {name: 'Alert',
       propPreview: '<Textfield alert/>',
       propCode: {alert},
