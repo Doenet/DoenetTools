@@ -125,6 +125,19 @@ let toolsObj = {
     supportPanelIndex:0,
     hasNoMenuPanel: true,
   },
+  settings:{
+    pageName:"Settings",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"AccountSettings",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+    headerControls: ["CloseProfileButton"],
+    headerControlsPositions: ["Right"]
+  },
   notfound:{
     pageName:"Notfound",
     currentMenus:[],
@@ -157,6 +170,7 @@ export default function ToolRoot(props){
   const [menusOpen,setMenusOpen] = useState(true)
 
   const setPage = useRecoilCallback(({set})=> (tool,origPath)=>{
+    console.log(">>> Root setPAge",tool,origPath)
     if (tool === ""){ 
       // location.href = `#home/`
       window.history.replaceState('','','/new#/home')
