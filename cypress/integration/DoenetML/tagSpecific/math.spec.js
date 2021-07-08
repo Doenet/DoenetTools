@@ -1008,7 +1008,7 @@ describe('Math Tag Tests', function () {
         expect(components["/m"].stateValues.value.tree).eqls([operator, ...xs])
         expect(components["/m2"].stateValues.value.tree).eqls([operator, ...xs])
         expect(components["/m3"].stateValues.value.tree).eqls([m3Operator, ...xs])
-  
+
         for (let [ind, x] of xs.entries()) {
           let comp = indToComp[ind];
           if (comp) {
@@ -1083,6 +1083,51 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/mx3_2 textarea').type('{end}{backspace}f{enter}', { force: true })
     cy.get('#\\/mx4_2 textarea').type('{end}{backspace}g{enter}', { force: true })
     check_values(["d", "e", "f", "g"], "list")
+
+
+  });
+
+  it('group composite replacements inside math', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="groupByDefault">
+    <group><math>a</math><math>b</math></group>
+  </math>
+  <math name="dontGroup" groupCompositeReplacements="false">
+    <group><math>a</math><math>b</math></group>
+  </math>
+  <math name="dontGroupDueToString">
+    <group><math>a</math> + <math>b</math></group>
+  </math>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get(`#\\/groupByDefault`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(a,b)')
+    })
+    cy.get(`#\\/dontGroup`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('ab')
+    })
+    cy.get(`#\\/dontGroupDueToString`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('a+b')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/groupByDefault"].stateValues.value.tree).eqls(["tuple", "a", "b"])
+      expect(components["/dontGroup"].stateValues.value.tree).eqls(["*", "a", "b"])
+      expect(components["/dontGroupDueToString"].stateValues.value.tree).eqls(["+", "a", "b"])
+
+
+
+    });
+
+
 
 
   });
