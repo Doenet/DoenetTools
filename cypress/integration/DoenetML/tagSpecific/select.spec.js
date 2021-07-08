@@ -1711,6 +1711,39 @@ describe('Select Tag Tests', function () {
     })
   });
 
+  it('select boolean as sugar', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist>
+    <select type="boolean" assignnames="(b1) (b2) (b3) (b4) (b5) (b6) (b7) (b8) (b9) (b10) (b11) (b12) (b13) (b14) (b15) (b16) (b17) (b18) (b19) (b20)" numbertoselect="20" withReplacement>
+      true false
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let foundTrue = false, foundFalse = false;
+      for (let ind = 1; ind <= 20; ind++) {
+        let bool = components['/b' + ind].stateValues.value;
+        expect([true, false].includes(bool)).eq(true);
+        if(bool === true) {
+          foundTrue = true;
+        } else {
+          foundFalse = true;
+        }
+      }
+      expect(foundTrue).be.true;
+      expect(foundFalse).be.true;
+    })
+  });
+
   it('select weighted', () => {
 
     // TODO: this test seems to fail with num Y < 17 once in awhile

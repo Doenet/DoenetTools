@@ -51,12 +51,25 @@ export default class Select extends CompositeComponent {
         type = "math";
       }
 
-      if (!["math", "text", "number"].includes(type)) {
+      if (!["math", "text", "number", "boolean"].includes(type)) {
         console.warn(`Invalid type ${type}`);
         type = "math";
       }
 
       // break any string by white space and wrap pieces with option and type
+
+      let convertState = function(s) {
+        if(type==="math") {
+          return me.fromAst(textToAst.convert(s));
+        } else if (type==="number") {
+          return Number(s);
+        } else if(type==="boolean") {
+          return s.toLowerCase() === "true";
+        } else {
+          return s;
+        }
+      }
+
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
@@ -64,7 +77,7 @@ export default class Select extends CompositeComponent {
             ...a,
             ...c.state.value.split(/\s+/)
               .filter(s => s)
-              .map(s => type === "math" ? me.fromAst(textToAst.convert(s)) : (type === "number" ? Number(s) : s))
+              .map(convertState)
               .map(s => ({
                 componentType: "option",
                 children: [{
