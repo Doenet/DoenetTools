@@ -73,7 +73,7 @@ export default class FunctionOperator extends Function {
     let variablesToChangeFunctionChildLogicName = [
       "displayDigits", "displayDecimals", "displaySmallAsZero",
       "nInputs", "nOutputs",
-      "symbolic",
+      "symbolic", "domain",
     ];
 
     for (let vName of variablesToChangeFunctionChildLogicName) {
@@ -250,6 +250,10 @@ export default class FunctionOperator extends Function {
           operatorComposesWithOriginal: {
             dependencyType: "stateVariable",
             variableName: "operatorComposesWithOriginal"
+          },
+          domain: {
+            dependencyType: "stateVariable",
+            variableName: "domain"
           }
         }
       }),
@@ -375,6 +379,10 @@ export default class FunctionOperator extends Function {
           operatorComposesWithOriginal: {
             dependencyType: "stateVariable",
             variableName: "operatorComposesWithOriginal"
+          },
+          domain: {
+            dependencyType: "stateVariable",
+            variableName: "domain"
           }
         }
       }),
@@ -475,6 +483,10 @@ export default class FunctionOperator extends Function {
         dependencyType: "stateVariable",
         variableName: "nOutputs"
       },
+      domain: {
+        dependencyType: "stateVariable",
+        variableName: "domain"
+      },
     })
 
 
@@ -495,6 +507,10 @@ export default class FunctionOperator extends Function {
       nOutputs: {
         dependencyType: "stateVariable",
         variableName: "nOutputs"
+      },
+      domain: {
+        dependencyType: "stateVariable",
+        variableName: "domain"
       },
     })
 
