@@ -12,11 +12,14 @@ import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler'
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from "../../../_reactComponents/Drive/DoenetDriveCardMenu";
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 export default function SelectedCourse(props){
 
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   if(selection.length === 1 && selection[0].role[0] === "Owner" ){
+    let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
+
     return <>
 
     <DriveInfoPanel 
@@ -27,6 +30,14 @@ export default function SelectedCourse(props){
           driveId={selection[0].driveId} 
           />
       </>
+  }else if(selection[0].role[0] === "Student"){
+    return (
+      <>
+      {dIcon}
+      <h2>{selection[0].label}
+      </h2>
+      </>
+    );
   }else{
     return '';
   }
@@ -60,7 +71,7 @@ const DriveInfoPanel = function(props){
   let addOwners = null;
   let addOwnersButton = null;
   if (isOwner){
-    addOwnersButton = <Button value="+ Add Owner" onClick={()=>{
+    addOwnersButton = <Button width="menu" value="+ Add Owner" onClick={()=>{
       setAddOwners(true);
     }} />
   }
@@ -71,7 +82,7 @@ const DriveInfoPanel = function(props){
     addOwnersButton = null;
   }
   let addAdmins = null;
-  let addAdminsButton = <Button value="+ Add Administrator" onClick={()=>{
+  let addAdminsButton = <Button width="menu" value="+ Add Administrator" onClick={()=>{
     setAddAdmins(true);
   }} />
   if (shouldAddAdmins){
@@ -127,7 +138,7 @@ const DriveInfoPanel = function(props){
   let deleteCourseButton = null;
   if (isOwner){
     deleteCourseButton = <>
-    <Button value="Delete Course" onClick={()=>{
+    <Button  width="menu" value="Delete Course" alert onClick={()=>{
     // alert("Delete Drive")
     setDrivesInfo({
       color:props.color,
@@ -137,14 +148,12 @@ const DriveInfoPanel = function(props){
       type:"delete drive"
     })
   }} />
-  <br />
-  <br />
     </>
   }
 
   return <>
   <h2 data-cy="infoPanelItemLabel">{dIcon} {panelDriveLabel}</h2>
-  <label>Course Name<input type="text" 
+  <label>Name : <input type="text" 
   value={driveLabel} 
   onChange={(e)=>setDriveLabel(e.target.value)} 
   onKeyDown={(e)=>{
@@ -171,6 +180,7 @@ const DriveInfoPanel = function(props){
   }}/></label>
   <br />
   <br />
+  <label>Image :  
   <DoenetDriveCardMenu
   key={`colorMenu${props.driveId}`}
   colors={driveColors} 
@@ -185,17 +195,17 @@ const DriveInfoPanel = function(props){
         })
   }}
   />
-  <br />
-  <br />
-  {deleteCourseButton}
-  <h3>Owners</h3>
+  </label>
   {owners}
   {addOwners}
   {addOwnersButton}
-  <h3>Admins</h3>
+  <br />
+
   {admins}
   {addAdmins}
   {addAdminsButton}
+  <br />
+  {deleteCourseButton}
 
   </>
 }
@@ -220,10 +230,10 @@ function User(props){
           //Only show remove if two or more owners
           buttons.push(
             <div key={`remove${props.userId}`}>
-              <Button 
+              <Button width="menu"
               data-doenet-removeButton={props.userId}
             value="Remove" 
-            callback={(e)=>{
+            onClick={(e)=>{
               e.preventDefault();
               e.stopPropagation();
               onClick("")
@@ -247,9 +257,9 @@ function User(props){
         
         buttons.push(
           <div key={`promote${props.userId}`}>
-            <Button 
+            <Button width="menu"
           data-doenet-removebutton={props.userId}
-          value="Promote to Owner" callback={(e)=>{
+          value="Promote to Owner" onClick={(e)=>{
             e.preventDefault();
             e.stopPropagation();
             onClick("")
@@ -270,7 +280,7 @@ function User(props){
           <div key={`demote${props.userId}`}>
             <Button 
           data-doenet-removebutton={props.userId}
-          value="Demote to Admin" callback={(e)=>{
+          value="Demote to Admin" onClick={(e)=>{
             e.preventDefault();
             e.stopPropagation();
             onClick("")
@@ -359,9 +369,11 @@ function NewUser(props){
       addUser();
     }}
     /></label>
-  </div>
-    <Button value="Submit" callback={()=>addUser()}/>
-    <Button value="Cancel" callback={()=>props.open(false)}/>
+  </div><ButtonGroup>
+   <Button value="Submit" onClick={()=>addUser()}/>
+    <Button value="Cancel" onClick={()=>props.open(false)}/>
+  </ButtonGroup>
+    
     </>
 
 }
