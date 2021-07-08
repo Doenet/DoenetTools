@@ -42,12 +42,12 @@ export default function SelectedCourse(props){
       <>
         <h2> {selection.length} Items Selected</h2>
         <Button width="menu" value="Make Copy" onClick={(e)=>{
-          e.preventDefault();
-          e.stopPropagation();
+          // e.preventDefault();
+          // e.stopPropagation();
         }}/>
            <Button width="menu" value="Delete Course" onClick={(e)=>{
-          e.preventDefault();
-          e.stopPropagation();
+          // e.preventDefault();
+          // e.stopPropagation();
           
         }}/>
       </>
@@ -81,6 +81,7 @@ const DriveInfoPanel = function(props){
 
   let admins = [];
   let owners = [];
+  let buttons = [];
 
   let addOwners = null;
   let addOwnersButton = null;
@@ -107,48 +108,141 @@ const DriveInfoPanel = function(props){
 
 
   
+  let selectedOwner = '';
+  let selectedAdmin = '';
 
-  for (let owner of driveUsers?.contents?.owners){ 
-    let isSelected = false;
-    if (owner.userId === selectedUserId){
-      isSelected = true;
+  // for (let owner of driveUsers?.contents?.owners){
+  //   let isSelected = false;
+
+  //   if (owner.userId === selectedUserId){
+  //     isSelected = true;
+  //     selectedOwner = owner;
+
+  //   }
+  //   owners.push(<User 
+  //     key={`User${owner.userId}`} 
+  //     isSelected={isSelected}
+  //     onClick={setSelectedUserId}
+  //     userId={owner.userId} 
+  //     driveId={driveId} 
+  //     email={owner.email} 
+  //     isUser={owner.isUser} 
+  //     screenName={owner.screenName}
+  //     setDriveUsers={setDriveUsers}
+  //     userRole="owner"
+  //     isOwner={isOwner}
+  //     numOwners={driveUsers.contents.owners.length}
+  //     />)
+  // }
+  // for (let admin of driveUsers.contents.admins){
+  //   let isSelected = false;
+
+  //   if (admin.userId === selectedUserId){
+  //     isSelected = true;
+  //     selectedAdmin = admin;
+
+  //   }
+  //   admins.push(<User 
+  //     key={`User${admin.userId}`} 
+  //     isSelected={isSelected}
+  //     onClick={setSelectedUserId}
+  //     userId={admin.userId} 
+  //     driveId={driveId} 
+  //     email={admin.email} 
+  //     isUser={admin.isUser} 
+  //     screenName={admin.screenName}
+  //     setDriveUsers={setDriveUsers}
+  //     userRole="admin"
+  //     isOwner={isOwner}
+  //     />)
+
+  // }
+
+    if (isOwner && selectedAdmin){
+      
+      buttons.push(
+        <div key={`promote${selectedAdmin.userId}`}>
+          <Button width="menu"
+        data-doenet-removebutton={selectedAdmin.userId}
+        value="Promote to Owner" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          onClick("")
+        setDriveUsers({
+            driveId:driveId,
+            type:"To Owner",
+            userId:selectedAdmin.userId,
+            userRole:"admin"
+          })
+        }
+        } /><br /></div>
+        )
+        buttons.push(
+          <div key={`remove${selectedAdmin.userId}`}>
+            <Button width="menu"
+            data-doenet-removeButton={selectedAdmin.userId}
+          value="Remove" 
+          onClick={(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            onClick("")
+            setDriveUsers({
+              driveId:driveId,
+              type:"Remove User",
+              userId:selectedAdmin.userId,
+              userRole:"admin"
+            })
+          }
+          }/>
+         <br />
+          </div>
+          )
     }
-    owners.push(<User 
-      key={`User${owner.userId}`} 
-      isSelected={isSelected}
-      onClick={setSelectedUserId}
-      userId={owner.userId} 
-      driveId={driveId} 
-      email={owner.email} 
-      isUser={owner.isUser} 
-      screenName={owner.screenName}
-      setDriveUsers={setDriveUsers}
-      userRole="owner"
-      isOwner={isOwner}
-      numOwners={driveUsers.contents.owners.length}
-      />)
-  }
-  for (let admin of driveUsers.contents.admins){
-    let isSelected = false;
-    if (admin.userId === selectedUserId){
-      isSelected = true;
+    if (isOwner && selectedOwner){
+      if (!(selectedOwner && driveUsers.contents.owners.length< 2)){
+        //Only show demote if two or more owners
+      buttons.push(
+        <div key={`demote${selectedOwner.userId}`}>
+          <Button width="menu"
+        data-doenet-removebutton={selectedOwner.userId}
+        value="Demote to Admin" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          onClick("")
+          setDriveUsers({
+            driveId:driveId,
+            type:"To Admin",
+            userId:selectedOwner.userId,
+            userRole:"owner"
+          })
+        }
+        }/></div>
+        )
+        buttons.push(
+          <div key={`remove${selectedOwner.userId}`}>
+            <Button width="menu"
+            data-doenet-removeButton={selectedOwner.userId}
+          value="Remove" 
+          onClick={(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            onClick("")
+            setDriveUsers({
+              driveId:driveId,
+              type:"Remove User",
+              userId:selectedOwner.userId,
+              userRole:"owner"
+            })
+          }
+          }/>
+          </div>
+          
+          )
+      }
     }
     
-    admins.push(<User 
-      key={`User${admin.userId}`} 
-      isSelected={isSelected}
-      onClick={setSelectedUserId}
-      userId={admin.userId} 
-      driveId={driveId} 
-      email={admin.email} 
-      isUser={admin.isUser} 
-      screenName={admin.screenName}
-      setDriveUsers={setDriveUsers}
-      userRole="admin"
-      isOwner={isOwner}
-      />)
+   
 
-  }
   let deleteCourseButton = null;
   if (isOwner){
     deleteCourseButton = <>
@@ -164,7 +258,15 @@ const DriveInfoPanel = function(props){
   }} />
     </>
   }
-
+  const selectedOwnerFn = (userId) =>{
+    for (let owner of driveUsers?.contents?.owners){
+  
+      if (owner.userId === userId){
+        selectedOwner = owner;
+  
+      }
+    }
+  }
   return <>
   <h2 data-cy="infoPanelItemLabel">{dIcon} {panelDriveLabel}</h2>
   <label>Name : <input type="text" 
@@ -210,15 +312,57 @@ const DriveInfoPanel = function(props){
   }}
   />
   </label>
-  {owners}
+   <select multiple onChange={(e)=>{selectedOwnerFn(e.target.value)}}>
+     {driveUsers?.contents?.owners.map((item,i) => {
+       return (
+         <option value={item.userId}>{item.email}</option>
+       )
+     })}
+    </select>
+
   {addOwners}
-  {addOwnersButton}
   <br />
+<>
+  <Button width="menu"
+        data-doenet-removebutton={selectedOwner.userId}
+        value="Demote to Admin" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          onClick("")
+          setDriveUsers({
+            driveId:driveId,
+            type:"To Admin",
+            userId:selectedOwner.userId,
+            userRole:"owner"
+          })
+        }
+        }/><br />
+         <Button width="menu"
+            data-doenet-removeButton={selectedOwner.userId}
+          value="Remove" 
+          onClick={(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            onClick("")
+            setDriveUsers({
+              driveId:driveId,
+              type:"Remove User",
+              userId:selectedOwner.userId,
+              userRole:"owner"
+            })
+          }
+          }/>
+          </>
+          <br />
+          {addOwnersButton}
+
 
   {admins}
   {addAdmins}
-  {addAdminsButton}
   <br />
+  {selectedAdmin && buttons}
+  {addAdminsButton}
+
   {deleteCourseButton}
 
   </>
@@ -238,80 +382,83 @@ function User(props){
   }
     emailAddress = <span style={emailStyle}>{props.email}</span>;
   let containerStyle = {}
-    if (props.isSelected){
-      if (props.isOwner || props.userRole == "admin"){
-        if (!(props.userRole === 'owner' && props.numOwners < 2)){
-          //Only show remove if two or more owners
-          buttons.push(
-            <div key={`remove${props.userId}`}>
-              <Button width="menu"
-              data-doenet-removeButton={props.userId}
-            value="Remove" 
-            onClick={(e)=>{
-              e.preventDefault();
-              e.stopPropagation();
-              onClick("")
-              props.setDriveUsers({
-                driveId:props.driveId,
-                type:"Remove User",
-                userId:props.userId,
-                userRole:props.userRole
-              })
+  //   if (props.isSelected){
+  //     if (props.isOwner || props.userRole == "admin"){
+  //       if (!(props.userRole === 'owner' && props.numOwners < 2)){
+  //         //Only show remove if two or more owners
+  //         buttons.push(
+  //           <div key={`remove${props.userId}`}>
+  //             <Button width="menu"
+  //             data-doenet-removeButton={props.userId}
+  //           value="Remove" 
+  //           onClick={(e)=>{
+  //             e.preventDefault();
+  //             e.stopPropagation();
+  //             onClick("")
+  //             props.setDriveUsers({
+  //               driveId:props.driveId,
+  //               type:"Remove User",
+  //               userId:props.userId,
+  //               userRole:props.userRole
+  //             })
             
             
-            }
-            }/>
+  //           }
+  //           }/>
            
-            </div>
-            )
-        }
+  //           </div>
+  //           )
+  //       }
         
-      }
-      if (props.isOwner && props.userRole == "admin"){
+  //     }
+  //     if (props.isOwner && props.userRole == "admin"){
         
-        buttons.push(
-          <div key={`promote${props.userId}`}>
-            <Button width="menu"
-          data-doenet-removebutton={props.userId}
-          value="Promote to Owner" onClick={(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            onClick("")
-          props.setDriveUsers({
-              driveId:props.driveId,
-              type:"To Owner",
-              userId:props.userId,
-              userRole:props.userRole
-            })
-          }
-          } /></div>
-          )
-      }
-      if (props.isOwner && props.userRole == "owner"){
-        if (!(props.userRole === 'owner' && props.numOwners < 2)){
-          //Only show demote if two or more owners
-        buttons.push(
-          <div key={`demote${props.userId}`}>
-            <Button 
-          data-doenet-removebutton={props.userId}
-          value="Demote to Admin" onClick={(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            onClick("")
-            props.setDriveUsers({
-              driveId:props.driveId,
-              type:"To Admin",
-              userId:props.userId,
-              userRole:props.userRole
-            })
-          }
-          }/></div>
-          )
-        }
-      }
+  //       buttons.push(
+  //         <div key={`promote${props.userId}`}>
+  //           <Button width="menu"
+  //         data-doenet-removebutton={props.userId}
+  //         value="Promote to Owner" onClick={(e)=>{
+  //           e.preventDefault();
+  //           e.stopPropagation();
+  //           onClick("")
+  //         props.setDriveUsers({
+  //             driveId:props.driveId,
+  //             type:"To Owner",
+  //             userId:props.userId,
+  //             userRole:props.userRole
+  //           })
+  //         }
+  //         } /></div>
+  //         )
+  //     }
+  //     if (props.isOwner && props.userRole == "owner"){
+  //       if (!(props.userRole === 'owner' && props.numOwners < 2)){
+  //         //Only show demote if two or more owners
+  //       buttons.push(
+  //         <div key={`demote${props.userId}`}>
+  //           <Button 
+  //         data-doenet-removebutton={props.userId}
+  //         value="Demote to Admin" onClick={(e)=>{
+  //           e.preventDefault();
+  //           e.stopPropagation();
+  //           onClick("")
+  //           props.setDriveUsers({
+  //             driveId:props.driveId,
+  //             type:"To Admin",
+  //             userId:props.userId,
+  //             userRole:props.userRole
+  //           })
+  //         }
+  //         }/></div>
+  //         )
+  //       }
+  //     }
       
-      containerStyle = {backgroundColor:"#B8D2EA"}
-      emailStyle = {border:"solid 1px black"}
+     
+  // }
+  if(props.isSelected){
+    containerStyle = {backgroundColor:"#B8D2EA"}
+    emailStyle = {border:"solid 1px black"}
   }
   
   return <>
