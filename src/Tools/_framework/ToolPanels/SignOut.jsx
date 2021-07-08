@@ -1,23 +1,113 @@
-import React from 'react';
-// import { useHistory } from 'react-router-dom'
-// import { useRecoilCallback } from 'recoil';
-// import { toolViewAtom } from '../NewToolRoot';
+import React, { useState, useEffect } from 'react';
+import logo from '../../../Media/Doenet_Logo_Frontpage.png';
+import axios from 'axios';
 
-export default function SignOut(props){
-  // console.log(">>>===SignOut")
-  // let history = useHistory();
-  // const goToSignIn = useRecoilCallback(({set})=>()=>{
-  //   set(toolViewAtom,(was)=>{
-  //     let newObj = {...was};
-  //     newObj.currentMainPanel = "SignIn";
-  //     return newObj;
-  //   })
-  // })
+export default function SignOut(props) {
+  const [signOutAttempted, setSignOutAttempted] = useState(false);
 
-  return <div style={props.style}>
-    <h1>Sign Out</h1>
-  <p>put Sign Out here</p>
-  {/* <div><button onClick={goToSignIn}>Sign In</button></div> 
-  <div><button onClick={()=>history.push('/course')}>Go To Course</button></div> */}
-  </div>
+  useEffect(() => {
+    localStorage.clear(); //Clear out the profile
+
+    axios
+      .get('/api/signOut.php', {params: {}})
+      .then((resp) => {
+      // console.log(">>>signout resp",resp)
+      setSignOutAttempted(true);
+      })
+      .catch((error) => {
+        this.setState({ error: error });
+      });
+  }, []);
+
+  const vanillaCookies = document.cookie.split(';');
+
+  if (vanillaCookies.length === 1 && vanillaCookies[0] === '') {
+    return (
+      <div style={props.style}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '20',
+          }}
+        >
+          <img
+            style={{ width: '250px', height: '250px' }}
+            src={logo}
+            alt={
+              'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+            }
+          />
+          <div>
+            <h2>You are Signed Out!</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (signOutAttempted) {
+    return (
+      <div style={props.style}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '20',
+          }}
+        >
+          <img
+            style={{ width: '250px', height: '250px' }}
+            src={logo}
+            alt={
+              'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+            }
+          />
+          <div>
+            <h2>FAILED SIGN OUT</h2>
+            <p>Please manually remove your cookies.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+
+  return (
+    <div style={props.style}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: '20',
+        }}
+      >
+        <img
+          style={{ width: '250px', height: '250px' }}
+          src={logo}
+          alt={
+            'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
+          }
+        />
+        <div>
+          <h2>Signing you out...</h2>
+        </div>
+      </div>
+    </div>
+  );
 }
