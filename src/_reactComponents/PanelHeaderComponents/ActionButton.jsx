@@ -74,14 +74,14 @@ export default function ActionButton(props) {
   if (props.num === 'last') {
     actionButton.borderRadius = '0px 5px 5px 0px'
   }
-  function handleClick() {
-    if (props.onClick) props.onClick()
+  function handleClick(e) {
+    if (props.onClick) props.onClick(e)
   }
     return (
         <>
             <Container style={container}>
               <Label labelVisible={labelVisible}>{label}</Label>
-              <Button id="actionButton" style={actionButton} onClick={() => { handleClick() }}>{icon}{' '}{actionButton.value}</Button>
+              <Button id="actionButton" style={actionButton} onClick={(e) => { handleClick(e) }}>{icon}{' '}{actionButton.value}</Button>
             </Container>
             
         </>
