@@ -11,11 +11,6 @@ export const drivecardSelectedNodesAtom = atom({
   default:[]
 })
 
-export const allDriveCardsAtom = atom({
-  key:'allDriveCardsAtom',
-  default:[]
-})
-
 export const fetchDrivesQuery = atom({
   key:"fetchDrivesQuery",
   default: selector({

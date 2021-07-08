@@ -4,7 +4,7 @@ import axios from "axios";
 import Button from '../temp/Button'
 import { useRecoilCallback,selector, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { drivecardSelectedNodesAtom ,allDriveCardsAtom, fetchDrivesSelector, fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler'
+import { drivecardSelectedNodesAtom , fetchDrivesSelector, fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler'
 import { toolViewAtom, searchParamAtomFamily, paramObjAtom } from '../NewToolRoot';
 import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
