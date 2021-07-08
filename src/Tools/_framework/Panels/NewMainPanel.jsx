@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { atom, useRecoilCallback } from 'recoil';
 import { toolViewAtom } from '../NewToolRoot';
+import { selectedMenuPanelAtom } from './NewMenuPanel';
 
 export const mainPanelClickAtom = atom({
   key:"mainPanelClickAtom",
