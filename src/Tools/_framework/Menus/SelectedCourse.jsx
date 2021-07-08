@@ -18,7 +18,6 @@ export default function SelectedCourse(props){
 
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   if(selection.length === 1 && selection[0].role[0] === "Owner" ){
-    let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
 
     return <>
 
@@ -31,11 +30,11 @@ export default function SelectedCourse(props){
           />
       </>
   }else if(selection[0].role[0] === "Student"){
+    let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
+
     return (
       <>
-      {dIcon}
-      <h2>{selection[0].label}
-      </h2>
+        <h2>{dIcon} {selection[0].label}</h2>
       </>
     );
   }else{
