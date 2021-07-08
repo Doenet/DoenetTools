@@ -3,6 +3,7 @@ import { atom, useRecoilValue, useRecoilCallback, useRecoilState, useSetRecoilSt
 import { searchParamAtomFamily, toolViewAtom, paramObjAtom } from '../NewToolRoot';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
@@ -48,8 +49,7 @@ export default function CourseToolHandler(){
             });
         // }
         set(selectedMenuPanelAtom,""); //clear selection
-        set(mainPanelClickAtom,[])  //clear main panel click
-
+        set(mainPanelClickAtom,[{atom:globalSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
       }else if (tool === 'editor'){
         console.log(">>>editor!")
         // set(toolViewAtom,(was)=>{
