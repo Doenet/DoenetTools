@@ -5364,7 +5364,7 @@ dependencyTypeArray.push(SourceCompositeDependency);
 
 
 class AdapterSourceDependency extends Dependency {
-  static dependencyType = "adapterSourceDependency";
+  static dependencyType = "adapterSource";
 
   setUpParameters() {
 

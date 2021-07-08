@@ -10,6 +10,7 @@ export default class Function extends InlineComponent {
   static get stateVariablesShadowedForReference() {
     return [
       "variables", "numericalfs", "symbolicfs", "symbolic",
+      "domain",
       "nInputs", "nOutputs",
       "symbolic", "isInterpolatedFunction", "formula",
       "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema",
@@ -58,6 +59,9 @@ export default class Function extends InlineComponent {
     attributes.nOutputs = {
       createComponentOfType: "integer",
     };
+    attributes.domain = {
+      createComponentOfType: "_pointListComponent",
+    }
 
     // include attributes of graphical components
     // for case when function is adapted into a curve
@@ -436,6 +440,34 @@ export default class Function extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.domain = {
+      defaultValue: null,
+      returnDependencies: () => ({
+        domainAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "domain",
+          variableNames: ["points"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["domain"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              domain: dependencyValues.functionChild[0].stateValues.domain
+            }
+          }
+        } else if (dependencyValues.domainAttr !== null) {
+          return { newValues: { domain: dependencyValues.domainAttr.stateValues.points } };
+        } else {
+          return { useEssentialOrDefaultValue: { domain: { variablesToCheck: ["domain"] } } }
+        }
+      }
+    }
 
     stateVariableDefinitions.numericalfShadow = {
       defaultValue: null,
@@ -896,6 +928,10 @@ export default class Function extends InlineComponent {
               isInterpolatedFunction: {
                 dependencyType: "stateVariable",
                 variableName: "isInterpolatedFunction"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
               }
             }
           }
@@ -938,6 +974,10 @@ export default class Function extends InlineComponent {
               numericalfShadow: {
                 dependencyType: "stateVariable",
                 variableName: "numericalfShadow"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
               }
             }
           }
@@ -1058,6 +1098,10 @@ export default class Function extends InlineComponent {
               isInterpolatedFunction: {
                 dependencyType: "stateVariable",
                 variableName: "isInterpolatedFunction"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
               }
             }
           }
@@ -1092,6 +1136,10 @@ export default class Function extends InlineComponent {
               numericalfShadow: {
                 dependencyType: "stateVariable",
                 variableName: "numericalfShadow"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
               }
             }
           }
@@ -1289,6 +1337,10 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
             },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
           }
         } else {
           return {
@@ -1317,6 +1369,10 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "nOutputs"
             },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
 
           }
         }
@@ -1337,6 +1393,23 @@ export default class Function extends InlineComponent {
 
           let minimumAtPreviousRight = false;
 
+          let minx = -Infinity, maxx = Infinity;
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -Infinity;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = Infinity;
+                }
+              } catch (e) { }
+            }
+          }
+
           // since extrapolate for x < xs[0], formula based on coeffs[0]
           // is valid for x < xs[1]
           let c = coeffs[0];
@@ -1346,10 +1419,12 @@ export default class Function extends InlineComponent {
             // have quadratic.  Minimum only if c[2] > 0
             if (c[2] > 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x <= dx - eps) {
-                minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                minimumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  minimumAtPreviousRight = true;
+                }
               }
             }
           } else {
@@ -1361,10 +1436,12 @@ export default class Function extends InlineComponent {
 
               // critical point where choose +sqrtdiscrim is minimum
               let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-              if (x <= dx - eps) {
-                minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                minimumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  minimumAtPreviousRight = true;
+                }
               }
             }
           }
@@ -1377,15 +1454,20 @@ export default class Function extends InlineComponent {
               // have quadratic.  Minimum only if c[2] > 0
               if (c[2] > 0) {
                 let x = -c[1] / (2 * c[2]);
-                if (Math.abs(x) < eps) {
-                  if (minimumAtPreviousRight) {
-                    minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (minimumAtPreviousRight) {
+                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    minimumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                minimumAtPreviousRight = (Math.abs(x - dx) < eps);
-
               } else {
                 minimumAtPreviousRight = false;
               }
@@ -1398,14 +1480,20 @@ export default class Function extends InlineComponent {
 
                 // critical point where choose +sqrtdiscrim is minimum
                 let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-                if (Math.abs(x) < eps) {
-                  if (minimumAtPreviousRight) {
-                    minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (minimumAtPreviousRight) {
+                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    minimumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                minimumAtPreviousRight = (Math.abs(x - dx) < eps);
 
               } else {
                 minimumAtPreviousRight = false;
@@ -1420,12 +1508,14 @@ export default class Function extends InlineComponent {
             // have quadratic.  Minimum only if c[2] > 0
             if (c[2] > 0) {
               let x = -c[1] / (2 * c[2]);
-              if (Math.abs(x) < eps) {
-                if (minimumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (Math.abs(x) < eps) {
+                  if (minimumAtPreviousRight) {
+                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
+                } else if (x >= eps) {
                   minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-              } else if (x >= eps) {
-                minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             }
           } else {
@@ -1437,11 +1527,13 @@ export default class Function extends InlineComponent {
 
               // critical point where choose +sqrtdiscrim is minimum
               let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-              if (x >= eps) {
-                minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x) < eps) {
-                if (minimumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (x >= eps) {
                   minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x) < eps) {
+                  if (minimumAtPreviousRight) {
+                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 }
               }
             }
@@ -1476,10 +1568,28 @@ export default class Function extends InlineComponent {
 
           let f = dependencyValues.numericalf;
 
-          // for now, look for minima in interval -100*xscale to 100*xscale
+          // for now, look for minima in interval -100*xscale to 100*xscale,
+          // or domain if specified,
           // dividing interval into 1000 subintervals
           let minx = -100 * dependencyValues.xscale;
           let maxx = 100 * dependencyValues.xscale;
+
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -100 * dependencyValues.xscale;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = 100 * dependencyValues.xscale;
+                }
+              } catch (e) { }
+            }
+          }
+
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
@@ -1672,6 +1782,10 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
             },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
           }
 
         } else {
@@ -1701,7 +1815,11 @@ export default class Function extends InlineComponent {
             nOutputs: {
               dependencyType: "stateVariable",
               variableName: "nOutputs"
-            }
+            },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
           }
         }
       },
@@ -1721,6 +1839,23 @@ export default class Function extends InlineComponent {
 
           let maximumAtPreviousRight = false;
 
+          let minx = -Infinity, maxx = Infinity;
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -Infinity;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = Infinity;
+                }
+              } catch (e) { }
+            }
+          }
+
           // since extrapolate for x < xs[0], formula based on coeffs[0]
           // is valid for x < xs[1]
           let c = coeffs[0];
@@ -1730,10 +1865,12 @@ export default class Function extends InlineComponent {
             // have quadratic.  Maximum only if c[2] < 0
             if (c[2] < 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x <= dx - eps) {
-                maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                maximumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  maximumAtPreviousRight = true;
+                }
               }
             }
           } else {
@@ -1745,10 +1882,12 @@ export default class Function extends InlineComponent {
 
               // critical point where choose -sqrtdiscrim is maximum
               let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-              if (x <= dx - eps) {
-                maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                maximumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  maximumAtPreviousRight = true;
+                }
               }
             }
           }
@@ -1761,15 +1900,20 @@ export default class Function extends InlineComponent {
               // have quadratic.  Maximum only if c[2] < 0
               if (c[2] < 0) {
                 let x = -c[1] / (2 * c[2]);
-                if (Math.abs(x) < eps) {
-                  if (maximumAtPreviousRight) {
-                    maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (maximumAtPreviousRight) {
+                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    maximumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                maximumAtPreviousRight = (Math.abs(x - dx) < eps);
-
               } else {
                 maximumAtPreviousRight = false;
               }
@@ -1782,15 +1926,20 @@ export default class Function extends InlineComponent {
 
                 // critical point where choose -sqrtdiscrim is maximum
                 let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-                if (Math.abs(x) < eps) {
-                  if (maximumAtPreviousRight) {
-                    maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (maximumAtPreviousRight) {
+                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    maximumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                maximumAtPreviousRight = (Math.abs(x - dx) < eps);
-
               } else {
                 maximumAtPreviousRight = false;
               }
@@ -1804,12 +1953,14 @@ export default class Function extends InlineComponent {
             // have quadratic.  Maximum only if c[2] < 0
             if (c[2] < 0) {
               let x = -c[1] / (2 * c[2]);
-              if (Math.abs(x) < eps) {
-                if (maximumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (Math.abs(x) < eps) {
+                  if (maximumAtPreviousRight) {
+                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
+                } else if (x >= eps) {
                   maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-              } else if (x >= eps) {
-                maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             }
           } else {
@@ -1821,11 +1972,13 @@ export default class Function extends InlineComponent {
 
               // critical point where choose -sqrtdiscrim is maximum
               let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-              if (x >= eps) {
-                maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x) < eps) {
-                if (maximumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (x >= eps) {
                   maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x) < eps) {
+                  if (maximumAtPreviousRight) {
+                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 }
               }
             }
@@ -1860,10 +2013,28 @@ export default class Function extends InlineComponent {
 
           let f = (x) => -dependencyValues.numericalf(x);
 
-          // for now, look for maxima in interval -100*xscale to 100*xscale
+          // for now, look for maxima in interval -100*xscale to 100*xscale,
+          // or domain if specified,
           // dividing interval into 1000 subintervals
           let minx = -100 * dependencyValues.xscale;
           let maxx = 100 * dependencyValues.xscale;
+
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -100 * dependencyValues.xscale;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = 100 * dependencyValues.xscale;
+                }
+              } catch (e) { }
+            }
+          }
+
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
@@ -2285,13 +2456,24 @@ export function returnSymbolicFunctionFromFormula(dependencyValues, arrayKey) {
     return x => me.fromAst('\uff3f')
   }
 
+  let simplify = dependencyValues.simplify;
+  let expand = dependencyValues.expand;
+  let formula_transformed = formula.subscripts_to_strings();
+
+  if (dependencyValues.nInputs === 1) {
+    let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
+    return (x) => normalizeMathExpression({
+      value: formula_transformed.substitute({ [varString]: x }).strings_to_subscripts(),
+      simplify,
+      expand
+    })
+  }
+
   let varStrings = [];
   for (let i = 0; i < dependencyValues.nInputs; i++) {
     varStrings.push(dependencyValues.variables[i].subscripts_to_strings().tree)
   }
-  let simplify = dependencyValues.simplify;
-  let expand = dependencyValues.expand;
-  let formula_transformed = formula.subscripts_to_strings();
+
   return function (...xs) {
     let subArgs = {}
     for (let i = 0; i < dependencyValues.nInputs; i++) {
@@ -2328,6 +2510,40 @@ export function returnNumericalFunctionFromFormula(dependencyValues, arrayKey) {
   } catch (e) {
     return () => NaN;
   }
+
+  if (dependencyValues.nInputs === 1) {
+    let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
+
+    let minx = -Infinity, maxx = Infinity;
+    if (dependencyValues.domain !== null) {
+      let domain = dependencyValues.domain[0];
+      if (domain !== undefined) {
+        try {
+          minx = domain[0].evaluate_to_constant();
+          if (!Number.isFinite(minx)) {
+            minx = -Infinity;
+          }
+          maxx = domain[1].evaluate_to_constant();
+          if (!Number.isFinite(maxx)) {
+            maxx = Infinity;
+          }
+        } catch (e) { }
+      }
+    }
+
+    return function (x) {
+      if (x < minx || x > maxx) {
+        return NaN;
+      }
+      try {
+        return formula_f({ [varString]: x });
+      } catch (e) {
+        return NaN;
+      }
+    }
+
+  }
+
 
   let varStrings = [];
   for (let i = 0; i < dependencyValues.nInputs; i++) {
@@ -3442,11 +3658,28 @@ function returnInterpolatedFunction(dependencyValues) {
     return x => NaN;
   }
 
+  let minx = -Infinity, maxx = Infinity;
+  if (dependencyValues.domain !== null) {
+    let domain = dependencyValues.domain[0];
+    if (domain !== undefined) {
+      try {
+        minx = domain[0].evaluate_to_constant();
+        if (!Number.isFinite(minx)) {
+          minx = -Infinity;
+        }
+        maxx = domain[1].evaluate_to_constant();
+        if (!Number.isFinite(maxx)) {
+          maxx = Infinity;
+        }
+      } catch (e) { }
+    }
+  }
+
   let x0 = xs[0], xL = xs[xs.length - 1];
 
   return function (x) {
 
-    if (isNaN(x)) {
+    if (isNaN(x) || x < minx || x > maxx) {
       return NaN;
     }
 

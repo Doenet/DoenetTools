@@ -5,7 +5,7 @@ import Button from '../temp/Button'
 import { useRecoilCallback,selector, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom ,allDriveCardsAtom, fetchDrivesSelector, fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler'
-import { toolViewAtom } from '../NewToolRoot';
+import { toolViewAtom, searchParamAtomFamily, paramObjAtom } from '../NewToolRoot';
 import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { useMenuPanelController } from '../Panels/MenuPanel';
@@ -20,6 +20,18 @@ export default function DriveCardsNew(props){
   if(driveInfo.state == 'hasValue'){
     driveIdsAndLabelsInfo = driveInfo.contents.driveIdsAndLabels;
   }
+  // console.log(">>>===DriveCards");
+  const driveId = useRecoilValue(drivecardSelectedNodesAtom);
+  const setSelectedCourse = useRecoilCallback(({set})=>(driveIds)=>{
+    set(drivecardSelectedNodesAtom,driveIds)
+    set(selectedMenuPanelAtom,"SelectedCourse");
+  },[])
+  const setParamObj = useSetRecoilState(paramObjAtom);
+  // const goToNav = useRecoilCallback(({set})=>()=>{
+    // window.history.pushState('','','/new#/course?tool=navigation')
+    // set(searchParamAtomFamily('tool'), "navigation")
+
+  // },[])
 
 
     const tempChangeMenus = useRecoilCallback(({set})=>(newMenus,menusTitles,initOpen)=>{
@@ -40,6 +52,8 @@ export default function DriveCardsNew(props){
   { driveIdsAndLabelsInfo && <DriveCardWrapper 
       driveInfo={driveIdsAndLabelsInfo} driveDoubleClickCallback={()=>console.log(">>>double clicked")} drivePathSyncKey="main"
        types={['course']} isOneDriveSelect={false} />}
+  
+  <div><button onClick={(e)=>{e.stopPropagation();setParamObj({tool:'navigation'});}}>Go To navigation</button></div>
 
 
   </div>
