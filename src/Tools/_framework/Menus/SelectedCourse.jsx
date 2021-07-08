@@ -37,6 +37,21 @@ export default function SelectedCourse(props){
         <h2>{dIcon} {selection[0].label}</h2>
       </>
     );
+  }else if(selection.length > 1 && selection[0].role[0] === "Owner" ){
+    return (
+      <>
+        <h2> {selection.length} Items Selected</h2>
+        <Button width="menu" value="Make Copy" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+        }}/>
+           <Button width="menu" value="Delete Course" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          
+        }}/>
+      </>
+    );
   }else{
     return '';
   }
