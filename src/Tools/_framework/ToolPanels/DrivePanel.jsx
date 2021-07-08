@@ -3,6 +3,7 @@ import React from 'react';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import { toolViewAtom, searchParamAtomFamily, paramObjAtom } from '../NewToolRoot';
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
+import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
 // let encodeParams = p => Object.entries(p).map(kv => 
 //   kv.map(encodeURIComponent).join("=")).join("&");
@@ -24,6 +25,8 @@ export default function DrivePanel(props){
   // })
 
   const setSelections = useRecoilCallback(({set})=>(selections)=>{
+    console.log(">>>selections",selections)
+    set(selectedMenuPanelAtom,"SelectedDoenetId");
     set(globalSelectedNodesAtom,selections);
   })
 
@@ -39,11 +42,13 @@ export default function DrivePanel(props){
   return <div style={props.style}><h1>drive</h1>
   <p>put drive here</p>
   <div>path: {path}</div>
-  <div><button onClick={()=>setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f1'; return newObj; })}>path to f1</button></div>
-  <div><button onClick={()=>setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f2'; return newObj; })}>path to f2</button></div>
-  <div><button onClick={()=>setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f3'; return newObj; })}>path to f3</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f1'; return newObj; })}}>path to f1</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f2'; return newObj; })}}>path to f2</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f3'; return newObj; })}}>path to f3</button></div>
   <hr />
-  <div><button onClick={()=>setSelections(['f1'])}>select f1</button></div>
-  <div><button onClick={()=>setSelections(['f1','f2'])}>select f1 and f2</button></div>
+  {/* set(selectedMenuPanelAtom,"SelectedDoenetId"); //replace selection */}
+
+  <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
   </div>
 }
