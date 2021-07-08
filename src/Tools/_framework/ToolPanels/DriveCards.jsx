@@ -35,7 +35,7 @@ export default function DriveCardsNew(props){
 
   // const [count,setCount] = useState(0)
   // let history = useHistory();
-  return <div style={props.style}><h1>Drive Cards</h1>
+  return <div style={props.style}>
 
   { driveIdsAndLabelsInfo && <DriveCardWrapper 
       driveInfo={driveIdsAndLabelsInfo} driveDoubleClickCallback={()=>console.log(">>>double clicked")} drivePathSyncKey="main"
