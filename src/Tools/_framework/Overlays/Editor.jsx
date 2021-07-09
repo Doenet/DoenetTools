@@ -4,7 +4,6 @@ import Tool from "../Tool";
 import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import  VisibilitySensor from 'react-visibility-sensor';
 import Button from "../temp/Button";
 import { nanoid } from 'nanoid';
 
@@ -460,61 +459,6 @@ function TextEditor(props){
 
   const editorInit = useRecoilValue(editorInitAtom);
   if (!editorInit){return null;}
-
-  const options = {
-      mode: 'xml',
-      autoRefresh:true,
-      // theme: 'neo',
-      // theme: 'base16-light',
-      theme: 'xq-light',
-      lineNumbers: true,
-      indentUnit : 2,
-      // smartIndent : true,
-      matchTags : true,
-      // autoCloseTags: true,
-      matchBrackets: true,
-      lineWrapping: true,
-      // autoCloseBrackets: true,
-      // hintOptions: {schemaInfo: tags},
-      extraKeys : {
-        Tab: (cm) => {
-          var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-          cm.replaceSelection(spaces);
-        },
-        Enter : (cm) => {
-          cm.replaceSelection("\n")
-          setTimeout( () => cm.execCommand("indentAuto"), 1);
-        },
-        "Ctrl-Space" : "autocomplete",
-        "Cmd-/" : (cm) => {
-          let selections = cm.getSelections();
-          if(selections[0] == ""){
-            let line = cm.getCursor().line;
-            let content = cm.getLine(line) 
-            if(content.substring(0,4) === "<!--"){
-              content = content.substring(5,content.length-3) + "\n"
-            } else {
-              content = "<!-- "+ content + " -->\n";
-            }
-            cm.replaceRange(content,{line : line, ch: 0}, {line: line + 1, ch: 0});
-            // This set cursor doesn't seem to work...
-            setTimeout(cm.setCursor(line,Math.max(content.length-1,0)),1);
-            return;
-          }
-          // Might be non-obvious behavior. Should it comment/uncomment all of the selections?
-          // Shouldn't come up too often.
-          selections = selections.map((s) => s.trim().substring(0,4) !== "<!--" ? "<!-- " + s + " -->": s.trim().substring(5,s.length-3))
-          // let selectionsPos = cm.listSelections().map(({anchor,head}) => {return {anchor : anchor, head : {line : head.line, ch: head.ch + "<!--  -->".length}}}) ;
-          // console.log(">>pos",selectionsPos);
-          //the around option here is supposed to keep the replacing text selected, but it doesn't work.
-          //Not a huge issue,but needs to be fixed at some point
-          cm.replaceSelections(selections,"around");
-          //neither does setting it manaully... 
-          // cm.setSelection(selectionsPos[0].anchor,selectionsPos[0].head)
-
-        }
-      }
-  }
 
   return <>
 
