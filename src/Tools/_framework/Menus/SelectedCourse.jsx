@@ -40,18 +40,19 @@ export default function SelectedCourse(props){
       </>
     );
   }else if(selection.length > 1 && selection[0].role[0] === "Owner" ){
-    console.log(">>>selection",selection);
     return (
       <>
-        <h2> {selection.length} Items Selected</h2>
-        <Button width="menu" value="Make Copy" onClick={(e)=>{
-          // e.preventDefault();
-          // e.stopPropagation();
+        <h2> {selection.length} Courses Selected</h2>
+        <Button width="menu" value="Make Copy(Soon)" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(">> made copy of courses")
         }}/><br />
-           <Button width="menu" value="Delete Course" onClick={(e)=>{
-          // e.preventDefault();
-          // e.stopPropagation();
-          
+           <Button width="menu" value="Delete Course(Soon)" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(">> Deleted selected courses")
+
         }}/>
            {/* <Button width="menu" value="Delete Course" alert onClick={()=>{
     // alert("Delete Drive")
@@ -291,7 +292,6 @@ let ownersList = (
   driveUsers?.contents?.owners.length > 0 ? 
 <select multiple onChange={(e)=>{selectedOwnerFn(e.target.value)}}>
      {driveUsers?.contents?.owners.map((item,i) => {
-       console.log(">>>item",item);
        return (
         <UserOption userId={item.userId} screenName={item.screenName} email={item.email}/>
        )
@@ -605,7 +605,7 @@ function NewUser(props){
     }}
     /></label>
   </div>
-   <Button value={`+ ${props.type}`} onClick={()=>addUser()}/>
+   <Button value={`${props.type}`} onClick={()=>addUser()}/>
     
     </>
 
