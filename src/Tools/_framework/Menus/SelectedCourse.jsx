@@ -17,6 +17,8 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 export default function SelectedCourse(props){
 
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
+  const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
+
   if(selection.length === 1 && selection[0].role[0] === "Owner" ){
 
     return <>
@@ -38,6 +40,7 @@ export default function SelectedCourse(props){
       </>
     );
   }else if(selection.length > 1 && selection[0].role[0] === "Owner" ){
+    console.log(">>>selection",selection);
     return (
       <>
         <h2> {selection.length} Items Selected</h2>
@@ -50,6 +53,23 @@ export default function SelectedCourse(props){
           // e.stopPropagation();
           
         }}/>
+           {/* <Button width="menu" value="Delete Course" alert onClick={()=>{
+    // alert("Delete Drive")
+   let selectionArr = [];
+    for(let x=0;x< selection.length;x++){
+      selectionArr.push(selection[x].driveId);
+    }
+      
+      setDrivesInfo({
+        color:'abc',
+        label:'abcd',
+        image:'ancds',
+        newDriveId:selectionArr,
+        type:"delete drive"
+      })
+    // }
+    
+  }}/> */}
       </>
     );
   }else{
