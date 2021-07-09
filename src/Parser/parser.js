@@ -14,6 +14,7 @@ export function parse(inText) {
  */
 //TODO skip comments
 //TODO accomdate Is, StartTag and StartCloseTag no longer being ignored
+//TODO handle macros?
 export function parseAndCompile(inText){
     function compileElement(cursor){
         if(cursor.name != "Element"){

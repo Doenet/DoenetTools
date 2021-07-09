@@ -7,6 +7,7 @@ entity {
   Element |
   Comment |
   MismatchedCloseTag |
+  Macro |
   incompleteStartCloseTag
 }
 
@@ -18,6 +19,7 @@ Element {
 topLevel {
   Text |
   Comment |
+  Macro |
   Element
 }
 
@@ -42,7 +44,7 @@ Attribute {
   AttributeName Is AttributeValue
 }
 
-AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference)* "\"" }
+AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference | Macro)* "\"" }
 
 Comment { "<!--" commentContent* "-->" }
 
@@ -70,9 +72,11 @@ Comment { "<!--" commentContent* "-->" }
 
   TagName { identifier }
 
+  Macro { "$" identifier}
+
   AttributeName { identifier }
 
-  attributeContent { !["&]+ }
+  attributeContent { "$" |  !["&$ \t\r\n]  !["&$]* }
 
   EntityReference { "&" ![#; ]+ ";" }
 
@@ -80,13 +84,16 @@ Comment { "<!--" commentContent* "-->" }
 
   Is { "=" }
 
-  Text { ![<&]+ }
+  Text { ![<&$] ![<&$]* }
 
   space { std.whitespace+ }
 
-  @precedence {attributeContent, space}
+  @precedence {Macro, attributeContent}
+
   
-  @precedence {Text, space}
+  @precedence {attributeContent, space}
+
+  @precedence {space, Text}
 
 }
 
