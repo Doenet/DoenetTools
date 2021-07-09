@@ -259,66 +259,27 @@ const DriveInfoPanel = function(props){
       }
     }
   }
-  return <>
-  <h2 data-cy="infoPanelItemLabel">{dIcon} {panelDriveLabel}</h2>
-  <label>Name : <input type="text" 
-  value={driveLabel} 
-  onChange={(e)=>setDriveLabel(e.target.value)} 
-  onKeyDown={(e)=>{
-    if (e.keyCode === 13){
-      setPanelDriveLabel(driveLabel)
-      setDrivesInfo({
-        color:props.color,
-        label:driveLabel,
-        image:props.image,
-        newDriveId:props.driveId,
-        type:"update drive label",
-      })
-    }
-  }}
-  onBlur={()=>{
-    setPanelDriveLabel(driveLabel)
-    setDrivesInfo({
-      color:props.color,
-      label:driveLabel,
-      image:props.image,
-      newDriveId:props.driveId,
-      type:"update drive label",
-    })
-  }}/></label>
-  <br />
-  <br />
-  <label>Image :  
-  <DoenetDriveCardMenu
-  key={`colorMenu${props.driveId}`}
-  colors={driveColors} 
-  initialValue={props.color}
-  callback={(color)=>{
-        setDrivesInfo({
-          color,
-          label:driveLabel,
-          image:props.image,
-          newDriveId:props.driveId,
-          type:"update drive color"
-        })
-  }}
-  />
-  </label>
+  let star = <FontAwesomeIcon icon={faUserCircle}/>;
 
-  <br />
-          {addOwners}
+  const UserOption = (props) =>(
+    <>
+  <option value={props.userId}>{props.screenName} {props.email}</option>
 
-{driveUsers?.contents?.owners.length > 0 ? <select multiple onChange={(e)=>{selectedOwnerFn(e.target.value)}}>
+  </>
+    ) ;
+let ownersList = (
+  driveUsers?.contents?.owners.length > 0 ? 
+<select multiple onChange={(e)=>{selectedOwnerFn(e.target.value)}}>
      {driveUsers?.contents?.owners.map((item,i) => {
+       console.log(">>>item",item);
        return (
-         <option value={item.userId}>{item.email}</option>
+        <UserOption userId={item.userId} screenName={item.screenName} email={item.email}/>
        )
      })}
-    </select>: ''}   
-
-
-  <br />
-<>
+    </select>: ''
+)
+let ownerPerms = (
+  <>
   <Button width="menu"
         data-doenet-removebutton={selectedOwner.userId}
         value="Demote to Admin" onClick={(e)=>{
@@ -347,53 +308,118 @@ const DriveInfoPanel = function(props){
           }
           }/>
           </>
-          <br />
 
-
-          {addAdmins}
-          <br />
-    {driveUsers?.contents?.admins.length > 0 ? <select multiple onChange={(e)=>{selectedAdminFn(e.target.value)}}>
+)
+let adminsList =(
+  driveUsers?.contents?.admins.length > 0 ? <select multiple onChange={(e)=>{selectedAdminFn(e.target.value)}}>
      {driveUsers?.contents?.admins.map((item,i) => {
        return (
          <option value={item.userId}>{item.email}</option>
        )
      })}
-    </select> : ''}
-    <>
-    <Button width="menu"
-        data-doenet-removebutton={selectedAdmin.userId}
-        value="Promote to Owner" onClick={(e)=>{
+    </select> : ''
+)
+let adminPerms =(
+  <>
+  <Button width="menu"
+      data-doenet-removebutton={selectedAdmin.userId}
+      value="Promote to Owner" onClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+      setDriveUsers({
+          driveId:driveId,
+          type:"To Owner",
+          userId:selectedAdmin.userId,
+          userRole:"admin"
+        })
+      }
+      } /><br />
+       <Button width="menu"
+          data-doenet-removeButton={selectedAdmin.userId}
+        value="Remove" 
+        onClick={(e)=>{
           e.preventDefault();
           e.stopPropagation();
-        setDriveUsers({
+          setDriveUsers({
             driveId:driveId,
-            type:"To Owner",
+            type:"Remove User",
             userId:selectedAdmin.userId,
             userRole:"admin"
           })
         }
-        } /><br />
-         <Button width="menu"
-            data-doenet-removeButton={selectedAdmin.userId}
-          value="Remove" 
-          onClick={(e)=>{
-            e.preventDefault();
-            e.stopPropagation();
-            setDriveUsers({
-              driveId:driveId,
-              type:"Remove User",
-              userId:selectedAdmin.userId,
-              userRole:"admin"
-            })
-          }
-          }/>
-          </>
-  <br />
-  {selectedAdmin && buttons}
+        }/>
+        </>
+)
+  return (
+    <>
+      <h2 data-cy="infoPanelItemLabel">
+        {dIcon} {panelDriveLabel}
+      </h2>
+      <label>
+        Name :{' '}
+        <input
+          type="text"
+          value={driveLabel}
+          onChange={(e) => setDriveLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              setPanelDriveLabel(driveLabel);
+              setDrivesInfo({
+                color: props.color,
+                label: driveLabel,
+                image: props.image,
+                newDriveId: props.driveId,
+                type: 'update drive label',
+              });
+            }
+          }}
+          onBlur={() => {
+            setPanelDriveLabel(driveLabel);
+            setDrivesInfo({
+              color: props.color,
+              label: driveLabel,
+              image: props.image,
+              newDriveId: props.driveId,
+              type: 'update drive label',
+            });
+          }}
+        />
+      </label>
+      <br />
+      <br />
+      <label>
+        Image :
+        <DoenetDriveCardMenu
+          key={`colorMenu${props.driveId}`}
+          colors={driveColors}
+          initialValue={props.color}
+          callback={(color) => {
+            setDrivesInfo({
+              color,
+              label: driveLabel,
+              image: props.image,
+              newDriveId: props.driveId,
+              type: 'update drive color',
+            });
+          }}
+        />
+      </label>
 
-  {deleteCourseButton}
+      <br />
+      {addOwners}
+      {ownersList}
+      <br />
+      {ownerPerms}
+      <br />
+      {addAdmins}
+      <br />
+      {adminsList}
+      {adminPerms}
+      <br />
 
-  </>
+      {deleteCourseButton}
+    </>
+  );
 }
 
 function User(props){
