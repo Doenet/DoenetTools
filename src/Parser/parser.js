@@ -18,14 +18,15 @@ export function parse(inText) {
 export function parseAndCompile(inText){
     function compileElement(cursor){
         if(cursor.name != "Element"){
-            console.error(">>> Doesn't really make sense to call this on a non-element, right?",cursor);
             throw Error("compileElement() called on a non-Element");
         }
 
         cursor.firstChild();
 
         if (cursor.name === "OpenTag"){
+            //skip the start tag node
             cursor.firstChild();
+            cursor.nextSibling()
             let tagName = inText.substring(cursor.from,cursor.to);
 
             let attrs = [];
@@ -33,8 +34,7 @@ export function parseAndCompile(inText){
 
                 //All of the siblings must be Attributes, but we're checking just in case the grammar changes
                 if(cursor.name != "Attribute"){
-                    console.error(">>>Invalid non-terminal child of OpenTag, expected an Attribute and got: ",cursor);
-                    throw Error("Expected an Attribute in OpenTag");
+                    throw Error("Expected an Attribute in OpenTag, got ", cursor);
                 }
 
                 //Attributes always have exactly two children, an AttributeName and an Attribute Value
@@ -42,6 +42,7 @@ export function parseAndCompile(inText){
                 cursor.firstChild();
                 let attrName = inText.substring(cursor.from,cursor.to);
                 cursor.nextSibling();
+                //TODO see if one can have a macro and other attribute contents
                 //boundry fuddling to ignore the quotes
                 let attrValue = inText.substring(cursor.from+1,cursor.to-1);
 
@@ -65,29 +66,36 @@ export function parseAndCompile(inText){
             // the text case, in which case we'll just push a string into the children,
             // and the element case, in which case we recurse
 
+            //Corrosponds to the entity non-terminal in the grammar
             while(cursor.nextSibling()){
                 if(cursor.name === "Text"){
                     //don't necesarily need trim if not wanted
-                    let txt = inText.substring(cursor.from,cursor.to).trim();
+                    let txt = inText.substring(cursor.from,cursor.to).trimEnd();
                     if(txt !== ""){
-                        element.children.push(inText.substring(cursor.from,cursor.to).trim())
+                        element.children.push(txt);
                     }
                 } else if (cursor.name === "Element") {
                     element.children.push(compileElement(cursor.node.cursor))
                 } else if (cursor.name === "CloseTag") {
                     // Will always be the matching tag (and the last tag in the list)
                     break;
+                } else if (cursor.name === "Macro"){
+                    //add the macro to the children, ignoring the dollar sign in the name.
+                    //TODO decide if this format (a singleton object with the tag macroName) is ideal.
+                    element.children.push({macroName : inText.substring(cursor.from+1,cursor.to)});
+                } else if (cursor.name === "Comment") {
+                    //ignore comments
+                    continue;
                 } else {
                     // There are a couple of other things in the entity non-terminal, but nothing of immediate importance
-                    // TODO if decided to be desireable
-                    console.error("Non text/element non-terminal not supported", cursor)
-                    throw Error();
+                    throw Error("Non text/element non-terminal not supported as child of compile Element");
                 }
             }
             return element;
 
         } else if (cursor.name === "SelfClosingTag"){
             cursor.firstChild();
+            cursor.nextSibling();
 
             let tagName = inText.substring(cursor.from,cursor.to);
 
@@ -95,8 +103,7 @@ export function parseAndCompile(inText){
             while(cursor.nextSibling()){
                 //All of the siblings must be Attributes, but we're checking just in case the grammar changes
                 if(cursor.name != "Attribute"){
-                    console.error("how could this possibly not be an Attribute",cursor);
-                    throw Error("Expected an Attribute in OpenTag");
+                    throw Error("Expected an Attribute in SelfClosingTag");
                 }
                 //Attributes always have exactly two children, an AttributeName and an Attribute Value
                 //We scrape the content of both from the in string and add them to the attribute array here
@@ -119,7 +126,7 @@ export function parseAndCompile(inText){
             
         } else {
             //Unreachable case, see the grammar for why
-            throw Error(">>>Huh?");
+            throw Error("Non SelfClosingTag/OpenTag in Element. How did you do that?");
         }
     }
      

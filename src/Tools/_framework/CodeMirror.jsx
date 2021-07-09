@@ -8,7 +8,6 @@ import {completeFromSchema} from '@codemirror/lang-xml';
 import {parser} from "../../Parser/doenet";
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 import { atom, useRecoilState } from "recoil";
-import { showNode } from "../../Parser/parser";
 
 const matchTagState = atom({
     key: 'matchTagState',
