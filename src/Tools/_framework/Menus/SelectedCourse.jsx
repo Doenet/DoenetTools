@@ -44,7 +44,7 @@ export default function SelectedCourse(props){
         <Button width="menu" value="Make Copy" onClick={(e)=>{
           // e.preventDefault();
           // e.stopPropagation();
-        }}/>
+        }}/><br />
            <Button width="menu" value="Delete Course" onClick={(e)=>{
           // e.preventDefault();
           // e.stopPropagation();
@@ -65,8 +65,6 @@ const DriveInfoPanel = function(props){
   const driveId = props.driveId;
   const [driveUsers,setDriveUsers] = useRecoilStateLoadable(fetchDriveUsers(driveId));
   const [selectedUserId,setSelectedUserId] = useState("");
-  const [shouldAddOwners,setAddOwners] = useState(false);
-  const [shouldAddAdmins,setAddAdmins] = useState(false);
 
   if (driveUsers.state === "loading"){ return null;}
     if (driveUsers.state === "hasError"){ 
@@ -84,26 +82,15 @@ const DriveInfoPanel = function(props){
   let buttons = [];
 
   let addOwners = null;
-  let addOwnersButton = null;
-  if (isOwner){
-    addOwnersButton = <Button width="menu" value="+ Add Owner" onClick={()=>{
-      setAddOwners(true);
-    }} />
-  }
+
   
 
-  if (shouldAddOwners){ 
-    addOwners = <NewUser open={setAddOwners} driveId={driveId} type="Add Owner" setDriveUsers={setDriveUsers}/>
-    addOwnersButton = null;
-  }
+  addOwners = <NewUser  driveId={driveId} type="Add Owner" setDriveUsers={setDriveUsers}/>
+  
   let addAdmins = null;
-  let addAdminsButton = <Button width="menu" value="+ Add Administrator" onClick={()=>{
-    setAddAdmins(true);
-  }} />
-  if (shouldAddAdmins){
-    addAdmins = <NewUser open={setAddAdmins} driveId={driveId} type="Add Admin" setDriveUsers={setDriveUsers}/>
-    addAdminsButton = null;
-  }
+
+    addAdmins = <NewUser  driveId={driveId} type="Add Admin" setDriveUsers={setDriveUsers}/>
+ 
 
 
 
@@ -174,7 +161,7 @@ const DriveInfoPanel = function(props){
             userRole:"admin"
           })
         }
-        } /><br /></div>
+        } /></div>
         )
         buttons.push(
           <div key={`remove${selectedAdmin.userId}`}>
@@ -263,6 +250,15 @@ const DriveInfoPanel = function(props){
       }
     }
   }
+  const selectedAdminFn = (userId) =>{
+    for (let admin of driveUsers?.contents?.admins){
+  
+      if (admin.userId === userId){
+        selectedAdmin = admin;
+  
+      }
+    }
+  }
   return <>
   <h2 data-cy="infoPanelItemLabel">{dIcon} {panelDriveLabel}</h2>
   <label>Name : <input type="text" 
@@ -308,15 +304,19 @@ const DriveInfoPanel = function(props){
   }}
   />
   </label>
-   <select multiple onChange={(e)=>{selectedOwnerFn(e.target.value)}}>
+
+  <br />
+          {addOwners}
+
+{driveUsers?.contents?.owners.length > 0 ? <select multiple onChange={(e)=>{selectedOwnerFn(e.target.value)}}>
      {driveUsers?.contents?.owners.map((item,i) => {
        return (
          <option value={item.userId}>{item.email}</option>
        )
      })}
-    </select>
+    </select>: ''}   
 
-  {addOwners}
+
   <br />
 <>
   <Button width="menu"
@@ -348,14 +348,48 @@ const DriveInfoPanel = function(props){
           }/>
           </>
           <br />
-          {addOwnersButton}
 
 
-  {admins}
-  {addAdmins}
+          {addAdmins}
+          <br />
+    {driveUsers?.contents?.admins.length > 0 ? <select multiple onChange={(e)=>{selectedAdminFn(e.target.value)}}>
+     {driveUsers?.contents?.admins.map((item,i) => {
+       return (
+         <option value={item.userId}>{item.email}</option>
+       )
+     })}
+    </select> : ''}
+    <>
+    <Button width="menu"
+        data-doenet-removebutton={selectedAdmin.userId}
+        value="Promote to Owner" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+        setDriveUsers({
+            driveId:driveId,
+            type:"To Owner",
+            userId:selectedAdmin.userId,
+            userRole:"admin"
+          })
+        }
+        } /><br />
+         <Button width="menu"
+            data-doenet-removeButton={selectedAdmin.userId}
+          value="Remove" 
+          onClick={(e)=>{
+            e.preventDefault();
+            e.stopPropagation();
+            setDriveUsers({
+              driveId:driveId,
+              type:"Remove User",
+              userId:selectedAdmin.userId,
+              userRole:"admin"
+            })
+          }
+          }/>
+          </>
   <br />
   {selectedAdmin && buttons}
-  {addAdminsButton}
 
   {deleteCourseButton}
 
@@ -488,7 +522,7 @@ function NewUser(props){
           email,
           callback
         })
-      props.open(false);
+        setEmail('');
     }else{
       //Toast invalid email
       console.log(`Not Added: Invalid email ${email}`)
@@ -524,10 +558,8 @@ function NewUser(props){
       addUser();
     }}
     /></label>
-  </div><ButtonGroup>
-   <Button value="Submit" onClick={()=>addUser()}/>
-    <Button value="Cancel" onClick={()=>props.open(false)}/>
-  </ButtonGroup>
+  </div>
+   <Button value={`+ ${props.type}`} onClick={()=>addUser()}/>
     
     </>
 
