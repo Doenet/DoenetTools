@@ -4,6 +4,7 @@ import styled from "styled-components";
 import {Spring} from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
 
 const SliderContainer = styled.div`
@@ -132,13 +133,10 @@ function generateNumericLabels (points, div_width, point_start_val,SVs) {
       for(let i=1; i<countToShow;i++){
         displayPoints.push(Math.round((length/countToShow) * i));
       } 
-      // console.log(">>>displayPoints",displayPoints);
-      // console.log(">>>countToShow",countToShow);
         if(index == 0){
           return  <Label key = {point} x = "0px">{point}</Label>
         }
         else if(displayPoints.includes(point)){
-          // console.log(">>>>divWidth",div_width * index, "length",length,"index",index);
            return  <Label key = {point} x = {`${(index * div_width)}px`}>{point}</Label>
         }
         else if(length  ==  index + 1 ){
@@ -165,6 +163,7 @@ function generateNumericLabels (points, div_width, point_start_val,SVs) {
   }
 
 }
+
 function findMaxValueWidth(points){
   let currWidth = points.reduce(function(a,b){
     return a.length > b.length ? a : b;
@@ -174,7 +173,6 @@ return currWidth.toString().length * 12;
 
 function generateTextLabels (points, div_width,SVs) {
   let maxValueWidth = findMaxValueWidth(points);
-  console.log(">>>maxValueWidth",maxValueWidth);
   const length = Object.keys(points).length;
 
   let showAllItems = false;
@@ -238,6 +236,7 @@ function generateTextLabels (points, div_width,SVs) {
 
 
 }
+
 function xPositionToValue(ref, div_width, start_val){ 
   return (start_val + (ref/div_width));
 }
@@ -259,12 +258,10 @@ function nearestValue(refval, points){
   return [val, index];
 }
 
-
-
-
 export default function Slider(props) {
   let [name, SVs, actions] = useDoenetRender(props);
-  //console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+//   console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+// console.log(SVs)
 
   const containerRef = useRef(null);
 // console.log("SVs",SVs);
@@ -276,7 +273,7 @@ export default function Slider(props) {
   const [offsetLeft, setOffsetLeft] = useState(0);
   const startValue = (SVs.sliderType === "text") ? 0 : Math.min(...SVs.items);
   const endValue = (SVs.sliderType === "text") ? 0 : Math.max(...SVs.items);
-  const divisionWidth = SVs.sliderType === "text" ? SVs.width.size/(SVs.items.length - 1) : SVs.width.size/(endValue - startValue);
+  let divisionWidth = SVs.sliderType === "text" ? SVs.width.size/(SVs.items.length - 1) : SVs.width.size/(SVs.items.length);
 
   const [index, setIndex] = useState(0);
    const width = (SVs.width.size);
@@ -293,7 +290,9 @@ export default function Slider(props) {
         setThumbValue(SVs.value);
         setIndex(SVs.index);
         if(!(SVs.sliderType === "text")){
-            setThumbXPos((SVs.value - startValue)*divisionWidth);
+
+            setThumbXPos((SVs.index/(SVs.items.length -1))*SVs.width.size);
+            // setThumbXPos((SVs.value - startValue)*divisionWidth);
         }else{
             setThumbXPos((SVs.index)*divisionWidth);
         }
@@ -307,10 +306,10 @@ export default function Slider(props) {
   if(SVs.disabled) {
     let controls = '';
     if(SVs.showControls){
-      controls = <>
+      controls = <ButtonGroup>
                 <Button value="Prev"  onClick = {(e)=>handlePrevious(e)} disabled />
                 <Button value="Next" onClick = {(e)=>handleNext(e)} disabled />
-                </>
+                </ButtonGroup>
     }else{
       controls = null;
     }
@@ -344,63 +343,17 @@ export default function Slider(props) {
         </SubContainer2>
       </SliderContainer>
     );
-}
-function handleDragEnter(e) {
-    setIsMouseDown(true);
-    setThumbXPos(e.nativeEvent.clientX - offsetLeft);
-
-    if(!(SVs.sliderType === "text")){
-        let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
-        let valindexpair = nearestValue(refval, SVs.items);
-        
-        setThumbValue(valindexpair[0]);
-        setIndex(valindexpair[1]);
-
-        actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
-    }else{
-        let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
-        setIndex(i);
-        setThumbValue(SVs.items[i]);
-
-        actions.changeValue({ value: SVs.items[i], transient: true});
-    }
-}
-
-
-
-function handleDragExit(e) {
-    if(!isMouseDown){
-        return;
     }
 
-    setIsMouseDown(false);
+    function handleDragEnter(e) {
+        setIsMouseDown(true);
 
-    if (!(SVs.sliderType === "text")){
-        let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
-        let valindexpair = nearestValue(refval, SVs.items);
-        setThumbValue(valindexpair[0]);
-        setThumbXPos((valindexpair[0] - startValue)*divisionWidth);
-        setIndex(valindexpair[1]);
-
-        actions.changeValue({ value: SVs.items[valindexpair[1]]});
-        
-    }else{
-        let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
-        setIndex(i);
-        setThumbValue(SVs.items[i]);
-        setThumbXPos(i*divisionWidth);
-
-        actions.changeValue({ value: SVs.items[i]});
-
-    }
-}
-
-function handleDragThrough(e) {
-    if(isMouseDown){
         setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+
         if(!(SVs.sliderType === "text")){
             let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
             let valindexpair = nearestValue(refval, SVs.items);
+            
             setThumbValue(valindexpair[0]);
             setIndex(valindexpair[1]);
 
@@ -413,42 +366,94 @@ function handleDragThrough(e) {
             actions.changeValue({ value: SVs.items[i], transient: true});
         }
     }
-}
 
-function handleNext(e) {
-    if(index === SVs.items.length - 1){
-        return;
+    function handleDragExit(e) {
+        if(!isMouseDown){
+            return;
+        }
+
+        setIsMouseDown(false);
+
+        if (!(SVs.sliderType === "text")){
+            //Find the new index based on clientX and total width
+            const ratio = (e.nativeEvent.clientX - offsetLeft)/SVs.width.size;
+            const selectedIndex = Math.min(Math.max(Math.round(ratio*SVs.items.length), 0), SVs.items.length - 1)
+
+            setThumbValue(SVs.items[selectedIndex]);
+            setThumbXPos(selectedIndex*divisionWidth);
+            setIndex(selectedIndex);
+
+            actions.changeValue({ value: SVs.items[selectedIndex]});
+        }else{
+            let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
+            setIndex(i);
+            setThumbValue(SVs.items[i]);
+
+            setThumbXPos(i*divisionWidth);
+
+            actions.changeValue({ value: SVs.items[i]});
+
+        }
     }
 
-    if(!(SVs.sliderType === "text")){
-        setThumbXPos((SVs.items[index+1] - startValue) * divisionWidth);
-    }else{
-        setThumbXPos((index+1)*divisionWidth);
+    function handleDragThrough(e) {
+        if(isMouseDown){
+
+            setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+            if(!(SVs.sliderType === "text")){
+                let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+                let valindexpair = nearestValue(refval, SVs.items);
+                setThumbValue(valindexpair[0]);
+                setIndex(valindexpair[1]);
+
+                actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
+            }else{
+                let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
+                setIndex(i);
+                setThumbValue(SVs.items[i]);
+
+                actions.changeValue({ value: SVs.items[i], transient: true});
+            }
+        }
     }
 
-    
-    actions.changeValue({ value: SVs.items[index+1]});
-    setThumbValue(SVs.items[index+1]);
-    setIndex(index + 1);
+    function handleNext(e) {
+        if(index === SVs.items.length - 1){
+            return;
+        }
 
-}
+        if(!(SVs.sliderType === "text")){
 
-function handlePrevious(e) {
-    if(index === 0){
-        return;
+            setThumbXPos((SVs.items[index+1] - startValue) * divisionWidth);
+        }else{
+            setThumbXPos((index+1)*divisionWidth);
+        }
+
+        
+        actions.changeValue({ value: SVs.items[index+1]});
+        setThumbValue(SVs.items[index+1]);
+        setIndex(index + 1);
+
     }
 
-    if(!(SVs.sliderType === "text")){
-        setThumbXPos((SVs.items[index-1] - startValue) * divisionWidth);
-    }else{
-        setThumbXPos((index-1)*divisionWidth);
+    function handlePrevious(e) {
+        if(index === 0){
+            return;
+        }
+
+        if(!(SVs.sliderType === "text")){
+
+            setThumbXPos((SVs.items[index-1] - startValue) * divisionWidth);
+        }else{
+            setThumbXPos((index-1)*divisionWidth);
+        }
+
+        actions.changeValue({ value: SVs.items[index-1]});
+
+        setThumbValue(SVs.items[index-1]);
+        setIndex(index - 1);
     }
 
-    actions.changeValue({ value: SVs.items[index-1]});
-
-    setThumbValue(SVs.items[index-1]);
-    setIndex(index - 1);
-}
   let labels = '';
   if(SVs.sliderType === 'text'){
     labels = generateTextLabels(SVs.items, divisionWidth, SVs)
@@ -463,7 +468,7 @@ function handlePrevious(e) {
   }
   let controls = '';
   if(SVs.showControls){
-    controls =  <>
+    controls =  <ButtonGroup>
     <Button
       value="Prev"
       onClick={(e) => handlePrevious(e)}
@@ -474,7 +479,7 @@ function handlePrevious(e) {
       onClick={(e) => handleNext(e)}
       data-cy="nextbutton"
     ></Button>
-  </>
+  </ButtonGroup>
   }else{
     null
   }
@@ -500,110 +505,3 @@ function handlePrevious(e) {
   );
   
 }
-
-// let [name, SVs, actions] = useDoenetRender(props);
-//   // let [handlePos,setHandlePos] = useState(100);
-
-
-//   if (SVs.hidden) {
-//     return null;
-//   }
-
-
-//   return (
-//     <StyledSlider width = {`${500}px`} >
-//       <Spring
-//           to={{ x: 0 }}>
-//           {props => <StyledThumb style={{left: `${props.x - 3}px`}}/>}
-//       </Spring>
-//       {/* {(props.showTicks === false) ? null : (props.isText ? generateTextLabels(props.points, divisionWidth) : generateNumericLabels(props.points, divisionWidth, startValue))} */}
-//     </StyledSlider>
-//   )
-
-{/* <>
-      <div> {name}'s Slider Value {SVs.items[SVs.index]} </div>
-      <button onClick={() => actions.changeValue({ value: SVs.items[SVs.index - 1] })}>Prev</button>
-      <button onClick={() => actions.changeValue({ value: SVs.items[SVs.index + 1] })}>Next</button>
-    </> */}
-{/* 
-<slider>
-<number>1</number>
-<number>2</number>
-<number>3</number>
-</slider>
-
-
-<slider>
-<text>cat</text>
-<text>dog</text>
-<text>mouse</text>
-</slider>
-
-<slider>
-<sequence>
-<from>-10</from>
-<to>10</to>
-<step>2</step>
-</sequence>
-</slider> 
-*/}
-
-
-
-
-// export default class Slider extends DoenetRenderer {
-//   constructor(props) {
-//     super(props);
-
-//     this.handleInput = this.handleInput.bind(this);
-
-//     this.state = {
-//     }
-
-
-//     console.log("this.doenetSvData");
-//     console.log(this.doenetSvData);
-//     // console.log(this.doenetSvData.items)
-//     // console.log(this.doenetSvData.index)
-//     // console.log(this.doenetSvData.sliderType);
-//     // console.log(this.actions);
-//     // console.log(props.rendererUpdateMethods[this.componentName])
-
-
-
-//   }
-
-
-//   handleInput(e, inputState) {
-
-
-//   }
-
-
-
-//   render() {
-
-//     console.log('RENDER')
-
-//     if (this.doenetSvData.hidden) {
-//       return null;
-//     }
-
-//     console.log("Current Value")
-//     console.log(this.doenetSvData.items[this.doenetSvData.index]);
-
-
-
-//     return (
-//       <>
-//         <div> {this.componentName}'s Slider Value {this.doenetSvData.items[this.doenetSvData.index]} </div>
-//         <button onClick={() => this.actions.changeValue({ value: this.doenetSvData.items[this.doenetSvData.index - 1] })}>Prev</button>
-//         <button onClick={() => this.actions.changeValue({ value: this.doenetSvData.items[this.doenetSvData.index + 1] })}>Next</button>
-//       </>
-//     );
-
-
-
-//   }
-// }
-
