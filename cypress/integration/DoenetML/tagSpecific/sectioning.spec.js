@@ -96,15 +96,15 @@ describe('Sectioning Tag Tests', function () {
       let s221PcaAnchor = cesc("#" + components["/s221Pca"].replacements[0].componentName);
       let s222CaAnchor = cesc("#" + components["/s222Ca"].replacements[0].componentName);
       let s222PcaAnchor = cesc("#" + components["/s222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       let weight = [1, 1, 2, 1, 0.5, 1, 1, 1, 3]
       let totWeight = weight.reduce((a, b) => a + b);
@@ -441,15 +441,15 @@ describe('Sectioning Tag Tests', function () {
       let s221PcaAnchor = cesc("#" + components["/s221Pca"].replacements[0].componentName);
       let s222CaAnchor = cesc("#" + components["/s222Ca"].replacements[0].componentName);
       let s222PcaAnchor = cesc("#" + components["/s222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')
@@ -844,15 +844,15 @@ describe('Sectioning Tag Tests', function () {
       let s221PcaAnchor = cesc("#" + components["/s221Pca"].replacements[0].componentName);
       let s222CaAnchor = cesc("#" + components["/s222Ca"].replacements[0].componentName);
       let s222PcaAnchor = cesc("#" + components["/s222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')

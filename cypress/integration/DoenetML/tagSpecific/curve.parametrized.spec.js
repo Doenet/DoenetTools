@@ -292,8 +292,8 @@ describe('Curve Tag Tests', function () {
     <text>a</text>
     <graph>
     <curve>
-    <function variable="q">5q^3</function>
-    <function variable="u">3u^5</function>
+    <function variables="q">5q^3</function>
+    <function variables="u">3u^5</function>
     </curve>
     </graph>
     `}, "*");
@@ -322,8 +322,8 @@ describe('Curve Tag Tests', function () {
     <text>a</text>
     <graph>
     <curve parMin="-1" parMax="0.5">
-      <function variable="t">5t^3</function>
-      <function variable="t">3t^5</function>
+      <function variables="t">5t^3</function>
+      <function variables="t">3t^5</function>
     </curve>
     </graph>
     `}, "*");
@@ -390,8 +390,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <curve>
-    <function variable="t" formula='t$_mathinput1+1' />
-    <function variable="t" formula='t^3-$_mathinput1' />
+    <function variables="t" formula='t$_mathinput1+1' />
+    <function variables="t" formula='t^3-$_mathinput1' />
     </curve>
     </graph>
     `}, "*");
@@ -430,8 +430,8 @@ describe('Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <curve parMin="$_mathinput1" parMax="$_mathinput2">
-    <function variable="s">s^3</function>
-    <function variable="s">sin(2s)</function>
+    <function variables="s">s^3</function>
+    <function variables="s">sin(2s)</function>
     </curve>
     
     <point x='7' y='1'>

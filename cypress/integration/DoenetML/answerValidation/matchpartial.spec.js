@@ -43,28 +43,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + ' textarea';
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + ' textarea';
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + ' textarea';
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + ' textarea';
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -361,28 +361,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -677,28 +677,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -995,28 +995,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -1313,28 +1313,28 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -1622,14 +1622,14 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -1807,56 +1807,56 @@ describe('Match partial validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
       let mathinput4PartialAnchor = cesc('#' + mathinput4Name + '_partial');
       let mathinput4IncorrectAnchor = cesc('#' + mathinput4Name + '_incorrect');
 
-      let mathinput5Name = components['/_answer5'].stateValues.inputChild.componentName
+      let mathinput5Name = components['/_answer5'].stateValues.inputChildren[0].componentName
       let mathinput5Anchor = cesc('#' + mathinput5Name) + " textarea";
       let mathinput5SubmitAnchor = cesc('#' + mathinput5Name + '_submit');
       let mathinput5CorrectAnchor = cesc('#' + mathinput5Name + '_correct');
       let mathinput5PartialAnchor = cesc('#' + mathinput5Name + '_partial');
       let mathinput5IncorrectAnchor = cesc('#' + mathinput5Name + '_incorrect');
 
-      let mathinput6Name = components['/_answer6'].stateValues.inputChild.componentName
+      let mathinput6Name = components['/_answer6'].stateValues.inputChildren[0].componentName
       let mathinput6Anchor = cesc('#' + mathinput6Name) + " textarea";
       let mathinput6SubmitAnchor = cesc('#' + mathinput6Name + '_submit');
       let mathinput6CorrectAnchor = cesc('#' + mathinput6Name + '_correct');
       let mathinput6PartialAnchor = cesc('#' + mathinput6Name + '_partial');
       let mathinput6IncorrectAnchor = cesc('#' + mathinput6Name + '_incorrect');
 
-      let mathinput7Name = components['/_answer7'].stateValues.inputChild.componentName
+      let mathinput7Name = components['/_answer7'].stateValues.inputChildren[0].componentName
       let mathinput7Anchor = cesc('#' + mathinput7Name) + " textarea";
       let mathinput7SubmitAnchor = cesc('#' + mathinput7Name + '_submit');
       let mathinput7CorrectAnchor = cesc('#' + mathinput7Name + '_correct');
       let mathinput7PartialAnchor = cesc('#' + mathinput7Name + '_partial');
       let mathinput7IncorrectAnchor = cesc('#' + mathinput7Name + '_incorrect');
 
-      let mathinput8Name = components['/_answer8'].stateValues.inputChild.componentName
+      let mathinput8Name = components['/_answer8'].stateValues.inputChildren[0].componentName
       let mathinput8Anchor = cesc('#' + mathinput8Name) + " textarea";
       let mathinput8SubmitAnchor = cesc('#' + mathinput8Name + '_submit');
       let mathinput8CorrectAnchor = cesc('#' + mathinput8Name + '_correct');

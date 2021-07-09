@@ -866,21 +866,21 @@ describe('Specifying single variant document tests', function () {
 
   });
 
-  it('document with variant control specifying variants', () => {
+  it('document with variant control specifying variantNames', () => {
 
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>1</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -928,14 +928,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>2</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -984,14 +984,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>3</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -1040,14 +1040,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>3a</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -1094,14 +1094,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>4</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -1149,14 +1149,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>5</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -1204,14 +1204,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>6</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -1259,14 +1259,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>7</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -1314,14 +1314,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>8</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -1369,14 +1369,14 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>9</text>
-    <variantControl nvariants="5" variants="avocado  broccoli   cArrot  dill Eggplant"/>
+    <variantControl nvariants="5" variantNames="avocado  broccoli   cArrot  dill Eggplant"/>
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="Dill"><math>d</math></option>
-      <option selectForVariants="carrot"><math>c</math></option>
-      <option selectForVariants="eggplant"><math>e</math></option>
-      <option selectForVariants="avocado"><math>a</math></option>
-      <option selectForVariants="broccoli"><math>b</math></option>
+      <option selectForVariantNames="Dill"><math>d</math></option>
+      <option selectForVariantNames="carrot"><math>c</math></option>
+      <option selectForVariantNames="eggplant"><math>e</math></option>
+      <option selectForVariantNames="avocado"><math>a</math></option>
+      <option selectForVariantNames="broccoli"><math>b</math></option>
     </select>
     </p>
     <p>Selected variable repeated: <copy name="x2" tname="x" /></p>
@@ -2070,14 +2070,14 @@ describe('Specifying single variant document tests', function () {
 
   });
 
-  it('document with variant control partially specifying seeds and variants', () => {
+  it('document with variant control partially specifying seeds and variantNames', () => {
 
     cy.log("specify first variant index")
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="4" seeds="50283  25018  " variants="d h" />
+    <variantControl nvariants="4" seeds="50283  25018  " variantNames="d h" />
     <p>
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
@@ -2117,7 +2117,7 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>c</text>
-    <variantControl nvariants="4" seeds="50283  25018  " variants="d h" />
+    <variantControl nvariants="4" seeds="50283  25018  " variantNames="d h" />
     <p>
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
@@ -2157,7 +2157,7 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>e</text>
-    <variantControl nvariants="4" seeds="50283  25018 " variants="d h" />
+    <variantControl nvariants="4" seeds="50283  25018 " variantNames="d h" />
     <p>
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
@@ -2198,7 +2198,7 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <text>g</text>
-    <variantControl nvariants="4" seeds="50283  25018 " variants="d h" />
+    <variantControl nvariants="4" seeds="50283  25018 " variantNames="d h" />
     <p>
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
@@ -2445,7 +2445,7 @@ describe('Specifying single variant document tests', function () {
 
   });
 
-  it('document with variant control specifying fractional variants', () => {
+  it('document with variant control specifying fractional number of variants', () => {
 
     cy.log("specify third variant index")
     cy.window().then((win) => {
@@ -2490,7 +2490,7 @@ describe('Specifying single variant document tests', function () {
 
   });
 
-  it('document with variant control specifying negative fractional variants', () => {
+  it('document with variant control specifying negative fractional number of variants', () => {
 
     cy.log("specify first variant index")
     cy.window().then((win) => {
@@ -2945,14 +2945,14 @@ describe('Specifying single variant document tests', function () {
     
         <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
           <option><problem newNamespace><title>A word problem</title>
-            <variantControl nvariants="5" variants="a b c d e" />
+            <variantControl nvariants="5" variantNames="a b c d e" />
             <p>Word:
               <select>
-                <option selectForVariants="b"><text>bad</text></option>
-                <option selectForVariants="a"><text>angry</text></option>
-                <option selectForVariants="d"><text>drab</text></option>
-                <option selectForVariants="e"><text>excoriated</text></option>
-                <option selectForVariants="c"><text>churlish</text></option>
+                <option selectForVariantNames="b"><text>bad</text></option>
+                <option selectForVariantNames="a"><text>angry</text></option>
+                <option selectForVariantNames="d"><text>drab</text></option>
+                <option selectForVariantNames="e"><text>excoriated</text></option>
+                <option selectForVariantNames="c"><text>churlish</text></option>
               </select>
             </p>
           </problem></option>
@@ -3088,14 +3088,14 @@ describe('Specifying single variant document tests', function () {
 
     <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
       <option><problem newNamespace><title>A word problem</title>
-        <variantControl nvariants="5" variants="a b c d e" />
+        <variantControl nvariants="5" variantNames="a b c d e" />
         <p>Word:
           <select>
-            <option selectForVariants="b"><text>bad</text></option>
-            <option selectForVariants="a"><text>angry</text></option>
-            <option selectForVariants="d"><text>drab</text></option>
-            <option selectForVariants="e"><text>excoriated</text></option>
-            <option selectForVariants="c"><text>churlish</text></option>
+            <option selectForVariantNames="b"><text>bad</text></option>
+            <option selectForVariantNames="a"><text>angry</text></option>
+            <option selectForVariantNames="d"><text>drab</text></option>
+            <option selectForVariantNames="e"><text>excoriated</text></option>
+            <option selectForVariantNames="c"><text>churlish</text></option>
           </select>
         </p>
       </problem></option>

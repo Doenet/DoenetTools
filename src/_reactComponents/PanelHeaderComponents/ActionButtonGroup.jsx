@@ -4,7 +4,7 @@ import styled, { ThemeProvider } from 'styled-components';
 const actionGroup = {
   margin: "0px -2px 0px -2px",
   borderRadius: '0',
-  padding: '0px 12px 0px 10px'
+  padding: '0px 12px 0px 10px',
 };
 
 const ActionButtonGroup = (props) => {
@@ -22,7 +22,9 @@ const ActionButtonGroup = (props) => {
       .concat(React.cloneElement(elem[elem.length - 1], {num: 'last'}));
   }
   return (
-    <ThemeProvider theme={actionGroup}>{elem}</ThemeProvider>
+    <div style={{display: 'flex'}}>
+      <ThemeProvider theme={actionGroup}>{elem}</ThemeProvider>
+    </div>
   )
 }
 

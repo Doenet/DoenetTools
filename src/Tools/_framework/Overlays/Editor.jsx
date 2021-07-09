@@ -4,7 +4,9 @@ import Tool from "../Tool";
 import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import Button from "../temp/Button";
+import  VisibilitySensor from 'react-visibility-sensor';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+
 import { nanoid } from 'nanoid';
 
 import { 
@@ -86,7 +88,7 @@ function ReturnToEditingButton(props){
 
   if (activeVersionId === ""){ return null; }
 
-  return <Button callback={()=> returnToEditing(props.doenetId) } value="Return to current version" />
+  return <Button onClick={()=> returnToEditing(props.doenetId) } value="Return to current version" />
 }
 
 function EditorInfoPanel(props){
@@ -530,7 +532,7 @@ function DoenetViewerUpdateButton(){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Update" callback={()=>{setViewerDoenetML((old)=>{
+  return <Button value="Update" onClick={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
     newInfo.doenetML = editorDoenetML;
     newInfo.updateNumber = old.updateNumber+1;
@@ -575,7 +577,7 @@ function NameCurrentVersionControl(props){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Save Version" callback={()=>saveVersion(props.doenetId)} />
+  return <Button value="Save Version" onClick={()=>saveVersion(props.doenetId)} />
 }
 
 function TempEditorHeaderBar(props){

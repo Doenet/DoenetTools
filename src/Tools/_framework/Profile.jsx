@@ -36,17 +36,21 @@ export default function Profile(props){
     const viewToolObj = await snapshot.getPromise(toolViewAtom)
     let newViewToolObj = {...viewToolObj}
  
-    set(profileToolViewStashAtom,newViewToolObj);
+    set(profileToolViewStashAtom,{toolViewAtom:newViewToolObj,href:location.href});
+
+    const url = location.origin + location.pathname + "#/settings"; 
+    // location.href = url;
+    window.history.pushState('','',url)
 
     set(toolViewAtom,(was)=>{
       let newObj = {...was}
-      newObj.curentMenuPanels = []
-      newObj.menuPanelsInitOpen = []
-      newObj.menuPanelsTitles = []
+      newObj.currentMenus = []
+      newObj.menusInitOpen = []
+      newObj.menusTitles = []
       newObj.currentMainPanel = "AccountSettings"
       newObj.supportPanelOptions = []
       newObj.supportPanelTitles = []
-      newObj.hasNoMenuPanels = true
+      newObj.hasNoMenuPanel = true
       newObj.headerControls = ["CloseProfileButton"]
       newObj.headerControlsPositions = ["Right"]
   

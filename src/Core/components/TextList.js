@@ -37,12 +37,12 @@ export default class TextList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let groupIntoTextsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({componentType: "text"});
-    let breakStringsIntoTextsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({componentType: "text"});
+    let groupIntoTextsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType: "text" });
+    let breakStringsIntoTextsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({ componentType: "text" });
 
     sugarInstructions.push({
-      replacementFunction: function ({ matchedChildren, isAttributeComponent = false }) {
-        if (isAttributeComponent) {
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+        if (isAttributeComponent && !createdFromMacro) {
           return groupIntoTextsSeparatedBySpaces({ matchedChildren });
         } else {
           return breakStringsIntoTextsBySpaces({ matchedChildren })

@@ -1,10 +1,14 @@
-import React, { useContext, useState, useEffect, lazy, useRef, Suspense } from 'react';
-import { atom, atomFamily, useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil';
+import React, { useState, lazy, useRef, Suspense } from 'react';
+import { atom,  useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import Profile from '../Profile';
 
+export const selectedMenuPanelAtom = atom({
+  key:"selectedMenuPanelAtom",
+  default:null
+}) 
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -43,17 +47,6 @@ const MenuHeaderButton = styled.button`
   height: 100%;
 
 `;
-
-export const activeMenuPanel = atomFamily({
-  key: 'activeMenuPanelAtom',
-  default: 0,
-});
-
-export const useMenuPanelController = () => {
-  const stackId = useStackId();
-  const menuAtomControl = useSetRecoilState(activeMenuPanel(stackId));
-  return menuAtomControl;
-};
 
 const Logo = styled.div`
 background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
@@ -105,12 +98,7 @@ border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} 
 margin-top: 2px;
 `
 
-export const selectedMenuPanelAtom = atom({
-  key:"selectedMenuPanelAtom",
-  default:null
-}) 
-
-function SelectionMenuPanel(props){
+function SelectionMenu(props){
 
   return <>
     <div style={{
@@ -130,7 +118,7 @@ function SelectionMenuPanel(props){
   </>
 }
 
-function MenuPanel(props){
+function Menu(props){
   let isInitOpen = props.isInitOpen;
   if (!isInitOpen){isInitOpen = false;}
   let [isOpen,setIsOpen] = useState(isInitOpen);
@@ -163,58 +151,96 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
+export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
+// console.log(">>>===MenuPanel")
 
   //These maintain the panels' state
-  const viewPanels = useRef([])
-  const currentSelectedPanel = useRecoilValue(selectedMenuPanelAtom);
+  const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
+  let toolMenus = useRef([]);
+  let lastToolMenus = useRef([]);
+  let toolMenusDictionary = useRef({}); 
   // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
 
   const LazyObj = useRef({
-    TestControl:lazy(() => import('../MenuPanels/TestControl')),
-    ToastTest:lazy(() => import('../MenuPanels/ToastTest')),
-    SelectPanel:lazy(() => import('../MenuPanels/SelectPanel')),
+    SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
+    SelectedDoenetId:lazy(() => import('../Menus/SelectedDoenetId')),
+    CreateCourse:lazy(() => import('../Menus/CreateCourse')),
+    CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
+    AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
+    EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
   }).current;
 
   let selectionPanel = null;
-  if (currentSelectedPanel){
-    const panelToUse = LazyObj[currentSelectedPanel];
+  if (currentSelectionMenu){
+    const panelToUse = LazyObj[currentSelectionMenu];
     //protect from typos
     if (panelToUse){
-      const key = `SelectionMenuPanel${currentSelectedPanel}`
-      selectionPanel = <SelectionMenuPanel key={key}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-      {React.createElement(panelToUse,{key})}
-      </Suspense></SelectionMenuPanel>
+      const key = `SelectionMenu${currentSelectionMenu}`
+      selectionPanel = <SelectionMenu key={key}>
+        <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+        {React.createElement(panelToUse,{key})}
+        </Suspense></SelectionMenu>
     }
   }
 
-  function buildMenuPanel({key,type,title,visible,initOpen}){
-    // console.log(">>>build",{key,type,visible})
+  
+
+
+  function buildMenu({key,type,title,visible,initOpen}){
     let hideStyle = null;
     if (!visible){
       hideStyle = 'none';
     }
     
-    // {React.createElement(LazyObj[type],{key,style:{color: "red", backgroundColor: "blue"}})}
-    return <MenuPanel key={key} title={title} isInitOpen={initOpen}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
-    </Suspense></MenuPanel>
+    return <div key={key} style={{display:hideStyle}} ><Menu title={title} isInitOpen={initOpen} >
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+    {React.createElement(LazyObj[type],{key})}
+    </Suspense></Menu></div>
   } 
 
- 
-  if (viewPanels.current.length === 0 && currentPanels.length > 0){
-    for (let [i,panelName] of Object.entries(currentPanels)){
-        const mpKey = `${panelName}`;
-        const isOpen = initOpen[i]
-        const title = panelTitles[i]
 
-    viewPanels.current.push(buildMenuPanel({key:mpKey,type:panelName,title,visible:true,initOpen:isOpen}))
+  //TODO: 
+  // handle more than one of the same panel type
+  // match order of panel types 
+  // toolMenus.current = []
+
+
+  //Show menus
+  for (let [i,menuName] of Object.entries(currentMenus)){
+    if (!lastToolMenus.current.includes(menuName)){
+        const mKey = `${menuName}`;
+        const isOpen = initOpen[i]
+        const title = menusTitles[i]
+      if (toolMenusDictionary.current[mKey]){
+          //Show index
+          let menuIndex = toolMenusDictionary.current[mKey].index
+          toolMenus.current[menuIndex] = buildMenu({key:mKey,type:menuName,title,visible:true,initOpen:isOpen})
+
+      }else{
+          //Make a new visible menu
+          toolMenus.current.push(buildMenu({key:mKey,type:menuName,title,visible:true,initOpen:isOpen}))
+          toolMenusDictionary.current[mKey] = {index:toolMenus.current.length - 1,title}
+      }
     }
   }
 
-  
+  //Hide menus
+  for (let menuName of lastToolMenus.current){
+    if (!currentMenus.includes(menuName)){
+      //Hide menu
+      const mKey = `${menuName}`;
+
+      let menuIndex = toolMenusDictionary.current[mKey].index
+      toolMenus.current[menuIndex] = buildMenu({key:mKey,type:menuName,title:"",visible:false,initOpen:false})
+
+    }
+  }
+
+    lastToolMenus.current = currentMenus;
+
+
   return (
     <MenuPanelsWrapper hide={hide}>
      <MenuPanelsCap fix={menuPanelsOpen}>
@@ -229,17 +255,18 @@ export default function MenuPanels({ hide, panelTitles=[], currentPanels=[], ini
           />
         </span>
         <span >
-          <CloseButton onClick={()=>setMenuPanelsOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
+          <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
         </span>
         
-          {/* {anchor} */}
+          {/* {anchorImage} */}
       </MenuPanelsCap>
     {selectionPanel}
-    {viewPanels.current}
+    <div>{toolMenus.current}</div>
+   {/* {toolMenus.current} */}
     {/* {userPanels} */}
-    <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
+    {/* <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
       <EditMenuPanels onClick={()=>console.log('>>>edit menu panels')}>+</EditMenuPanels>
-    </div>
+    </div> */}
 
     </MenuPanelsWrapper>
   );

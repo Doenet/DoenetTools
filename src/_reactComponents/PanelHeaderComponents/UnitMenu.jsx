@@ -17,6 +17,7 @@ const Textfield = styled.input`
 const Label = styled.p`
   font-size: 14px;
   display: none;
+  margin-right: 5px;
   text-align: center;
   ${(props) =>
     props.visible === "True" &&
@@ -164,11 +165,13 @@ export default function UnitMenu(props) {
       if (listOfDefaults && listOfDefaults.includes(unit.charAt(0).toUpperCase() + unit.slice(1))) {
         setCurrentUnit("-");
         setCurrentValue(unit.charAt(0).toUpperCase() + unit.slice(1));
+        if (props.onChange) props.onChange('')
       }
     }
     
     function changeValue(e) {
-      setCurrentValue(e.target.value)
+      setCurrentValue(e.target.value);
+      if (props.onChange) props.onChange(e.target.value + ' ' + currentUnit)
     }
 
     function enterKey(e, textfield) {

@@ -10,7 +10,7 @@ import InfiniteSlider from '../_framework/temp/InfiniteSlider'
 import "../_framework/doenet.css";
 import Textinput from "../_framework/Textinput";
 import Switch from "../_framework/Switch";
-import GlobalFont from '../../_utils/GlobalFont';
+// import GlobalFont from '../../_utils/GlobalFont';
 import axios from "axios";
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -88,7 +88,7 @@ export default function DoenetProfile(props) {
     if (profile.signedIn === '0') {
       return (
         <>
-          <GlobalFont />
+          {/* <GlobalFont /> */}
           <Tool>
             <headerPanel title="Account Settings"></headerPanel>
   

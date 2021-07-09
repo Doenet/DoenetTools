@@ -125,17 +125,17 @@ export default function CodeMirror(props){
     const doenetSchema = {
         //TODO update schema to be more complete.
         elements: [
-            {
-                name: "p",
-            },
-            {
-                name: "div",
-            },
-            {
-                name: "mathInput",
-                children: [],
-                attributes: [{name: "test"}]
-            }
+            // {
+            //     name: "p",
+            // },
+            // {
+            //     name: "div",
+            // },
+            // {
+            //     name: "mathInput",
+            //     children: [],
+            //     attributes: [{name: "TEST"}]
+            // }
         ]
     }
 

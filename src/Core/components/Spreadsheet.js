@@ -39,7 +39,36 @@ export default class Spreadsheet extends BaseComponent {
       createComponentOfType: "_componentSize",
     }
 
-
+    attributes.columnHeaders = {
+      createComponentOfType: "boolean",
+      createStateVariable: "columnHeaders",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    }
+    attributes.rowHeaders = {
+      createComponentOfType: "boolean",
+      createStateVariable: "rowHeaders",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    }
+    attributes.fixedRowsTop = {
+      createComponentOfType: "integer",
+      createStateVariable: "fixedRowsTop",
+      defaultValue: 0,
+      clamp: [0, Infinity],
+      public: true,
+      forRenderer: true,
+    };
+    attributes.fixedColumnsLeft = {
+      createComponentOfType: "integer",
+      createStateVariable: "fixedColumnsLeft",
+      defaultValue: 0,
+      clamp: [0, Infinity],
+      public: true,
+      forRenderer: true,
+    };
     return attributes;
   }
 
@@ -188,7 +217,7 @@ export default class Spreadsheet extends BaseComponent {
         heightAttr: {
           dependencyType: "attributeComponent",
           attributeName: "height",
-          variableName: "componentSize"
+          variableNames: ["componentSize"]
         },
         numRows: {
           dependencyType: "stateVariable",

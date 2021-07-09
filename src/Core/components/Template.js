@@ -1,5 +1,6 @@
-import { deepClone } from '../utils/deepFunctions';
 import CompositeComponent from './abstract/CompositeComponent';
+import { deepClone } from '../utils/deepFunctions';
+import { processAssignNames } from '../utils/serializedStateProcessing';
 
 export default class Template extends CompositeComponent {
   static componentType = "template";
@@ -7,6 +8,10 @@ export default class Template extends CompositeComponent {
   static treatAsComponentForRecursiveReplacements = true;
   static includeBlankStringChildren = true;
   static renderedDefault = false;
+
+  static assignNamesToReplacements = true;
+  static originalNamesAreConsistent = true;
+
 
   static keepChildrenSerialized({ serializedComponent }) {
     if (serializedComponent.children === undefined) {
@@ -78,7 +83,9 @@ export default class Template extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component }) {
+  static createSerializedReplacements({ component, componentInfoObjects }) {
+    // console.log(`create serialized replacements for ${component.componentName}`)
+    // console.log(component.stateValues.rendered);
 
     if (!component.stateValues.rendered) {
       return { replacements: [] };
@@ -86,7 +93,18 @@ export default class Template extends CompositeComponent {
 
       let replacements = deepClone(component.state.serializedChildren.value);
 
-      return { replacements }
+      let processResult = processAssignNames({
+        assignNames: component.doenetAttributes.assignNames,
+        serializedComponents: replacements,
+        parentName: component.componentName,
+        parentCreatesNewNamespace: component.attributes.newNamespace,
+        componentInfoObjects,
+        originalNamesAreConsistent: component.attributes.newNamespace || !component.doenetAttributes.assignNames,
+      });
+
+      return { replacements: processResult.serializedComponents };
+
+
     }
 
   }

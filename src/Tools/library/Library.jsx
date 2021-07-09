@@ -51,7 +51,7 @@ import DriveCards from "../../_reactComponents/Drive/DriveCards";
 import "../../_reactComponents/Drive/drivecard.css";
 import DoenetDriveCardMenu from "../../_reactComponents/Drive/DoenetDriveCardMenu";
 import '../../_utils/util.css';
-import GlobalFont from '../../_utils/GlobalFont';
+// import GlobalFont from '../../_utils/GlobalFont';
 import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper , ProfileContext } from '../_framework/ToolRoot';
@@ -133,7 +133,7 @@ function User(props){
               <Button 
               data-doenet-removeButton={props.userId}
             value="Remove" 
-            callback={(e)=>{
+            onClick={(e)=>{
               e.preventDefault();
               e.stopPropagation();
               onClick("")
@@ -159,7 +159,7 @@ function User(props){
           <div key={`promote${props.userId}`}>
             <Button 
           data-doenet-removebutton={props.userId}
-          value="Promote to Owner" callback={(e)=>{
+          value="Promote to Owner" onClick={(e)=>{
             e.preventDefault();
             e.stopPropagation();
             onClick("")
@@ -180,7 +180,7 @@ function User(props){
           <div key={`demote${props.userId}`}>
             <Button 
           data-doenet-removebutton={props.userId}
-          value="Demote to Admin" callback={(e)=>{
+          value="Demote to Admin" onClick={(e)=>{
             e.preventDefault();
             e.stopPropagation();
             onClick("")
@@ -275,8 +275,8 @@ function NewUser(props){
     }}
     /></label>
   </div>
-    <Button value="Submit" callback={()=>addUser()}/>
-    <Button value="Cancel" callback={()=>props.open(false)}/>
+    <Button value="Submit" onClick={()=>addUser()}/>
+    <Button value="Cancel" onClick={()=>props.open(false)}/>
     </>
 
 }
@@ -309,7 +309,7 @@ const DriveInfoPanel = function(props){
   let addOwners = null;
   let addOwnersButton = null;
   if (isOwner){
-    addOwnersButton = <Button value="+ Add Owner" callback={()=>{
+    addOwnersButton = <Button value="+ Add Owner" onClick={()=>{
       setAddOwners(true);
     }} />
   }
@@ -320,7 +320,7 @@ const DriveInfoPanel = function(props){
     addOwnersButton = null;
   }
   let addAdmins = null;
-  let addAdminsButton = <Button value="+ Add Administrator" callback={()=>{
+  let addAdminsButton = <Button value="+ Add Administrator" onClick={()=>{
     setAddAdmins(true);
   }} />
   if (shouldAddAdmins){
@@ -376,7 +376,7 @@ const DriveInfoPanel = function(props){
   let deleteCourseButton = null;
   if (isOwner){
     deleteCourseButton = <>
-    <Button value="Delete Course" callback={()=>{
+    <Button value="Delete Course" onClick={()=>{
     // alert("Delete Drive")
     setDrivesInfo({
       color:props.color,
@@ -502,7 +502,7 @@ const FolderInfoPanel = function(props){
   }}/></label>
   <br />
   <br />
-  <Button data-cy="deleteFolderButton" value="Delete Folder" callback={()=>{
+  <Button data-cy="deleteFolderButton" value="Delete Folder" onClick={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
@@ -577,7 +577,7 @@ const DoenetMLInfoPanel = function(props){
   }}/></label>
   <br />
   <br />
-  <Button value="Edit DoenetML" callback={()=>{
+  <Button value="Edit DoenetML" onClick={()=>{
     openOverlay({
       type:"editor",
       doenetId:itemInfo.doenetId,
@@ -589,7 +589,7 @@ const DoenetMLInfoPanel = function(props){
   }} />
   <br />
   <br />
-  <Button data-cy="deleteDoenetMLButton" value="Delete DoenetML" callback={()=>{
+  <Button data-cy="deleteDoenetMLButton" value="Delete DoenetML" onClick={()=>{
     const result = deleteItem({
       driveIdFolderId: {driveId:itemInfo.driveId, folderId:itemInfo.parentFolderId},
       itemId:itemInfo.itemId,
@@ -733,7 +733,7 @@ function AddCourseDriveButton(){
     addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
   }
 
-  return <Button value="Create a New Course" data-cy="createNewCourseButton" callback={()=>{
+  return <Button value="Create a New Course" data-cy="createNewCourseButton" onClick={()=>{
     let driveId = null;
     let newDriveId = nanoid();
     let label = "Untitled";
@@ -787,7 +787,7 @@ function AddMenuPanel(props){
   <Button 
     value="Add Folder" 
     data-cy="addFolderButton"
-    callback={()=>{
+    onClick={()=>{
       const result = addItem({
         driveIdFolderId: {driveId: driveId, folderId: folderId},
         label: "Untitled",
@@ -809,7 +809,7 @@ function AddMenuPanel(props){
   <Button 
     value="Add DoenetML" 
     data-cy="addDoenetMLButton"
-    callback={()=>{
+    onClick={()=>{
       const result = addItem({
         driveIdFolderId: {driveId: driveId, folderId: folderId},
         label:"Untitled",
@@ -833,7 +833,7 @@ function AddMenuPanel(props){
   </div>
   <div>
     <label>URL <input size="10" type="text" onChange={(e)=>setURLLink(e.target.value)} value={URLLink}/></label>
-  <Button callback={()=>{
+  <Button onClick={()=>{
     setFolderInfo({instructionType:"addItem",
     label:URLLabel === "" ? "Untitled" : URLLabel,
     url:URLLink,
@@ -945,7 +945,7 @@ export default function Library(props) {
 
   if (profile.signedIn === "0" && !window.Cypress){
     return (<>
-     <GlobalFont/>
+     {/* <GlobalFont/> */}
     <Tool>
 
       <headerPanel title="Library">
@@ -992,7 +992,7 @@ export default function Library(props) {
 
   return (
     <>
-    <GlobalFont/>
+    {/* <GlobalFont/> */}
     <URLPathSync route={props.route}/>
     <Tool>
       <navPanel isInitOpen>
