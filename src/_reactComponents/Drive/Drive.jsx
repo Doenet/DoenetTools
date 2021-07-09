@@ -59,13 +59,8 @@ import getSortOrder from '../../_utils/sort/LexicographicalRankingSort';
 import { BreadcrumbContext } from '../Breadcrumb';
 import { drivecardSelectedNodesAtom } from '../../Tools/library/Library';
 import '../../_utils/util.css';
-import {
-  useDragShadowCallbacks,
-  useSortFolder,
-  useCopyItems,
-} from './DriveActions';
+import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
 import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel';
-import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import { loadAssignmentSelector } from '../../Tools/course/Course';
 import useSockets from '../Sockets';
@@ -2211,14 +2206,12 @@ function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const [addToast, ToastType] = useToast();
   const { replaceDragShadow, removeDragShadow, cleanUpDragShadow } =
     useDragShadowCallbacks();
-  const { copyItems, onCopyItemsError } = useCopyItems();
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
   const optionKeyPressed = useKeyPressedListener('Alt'); // Listen for option key events
   const optionKeyPressedRef = useRef(optionKeyPressed);
-  const { moveItems } = useSockets('drive');
+  const { moveItems, copyItems } = useSockets('drive');
 
   useEffect(() => {
     setDragState((dragState) => ({
@@ -2226,7 +2219,7 @@ function useDnDCallbacks() {
       copyMode: optionKeyPressed,
     }));
     optionKeyPressedRef.current = optionKeyPressed;
-  }, [optionKeyPressed]);
+  }, [optionKeyPressed, setDragState]);
 
   const onDragStart = ({ ev = null, nodeId, driveId, onDragStartCallback }) => {
     let draggedItemsId = new Set();
@@ -2292,27 +2285,12 @@ function useDnDCallbacks() {
       const copyMode = dragState.copyMode || draggingAcrossDrives;
 
       if (copyMode) {
-        const result = copyItems({
+        copyItems({
           items: globalSelectedNodes,
           targetDriveId,
           targetFolderId,
           index,
         });
-
-        result
-          .then(([resp]) => {
-            if (resp.value?.data?.success) {
-              addToast(
-                `Copied ${replaceDragShadowResp?.numItems} item(s)`,
-                ToastType.SUCCESS,
-              );
-            } else {
-              onCopyItemsError({ errorMessage: resp?.reason });
-            }
-          })
-          .catch((e) => {
-            onCopyItemsError({ errorMessage: e.message });
-          });
       } else {
         moveItems(replaceDragShadowResp);
       }

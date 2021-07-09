@@ -23,7 +23,6 @@ import {
   useRecoilState,
   useRecoilValue,
   selector,
-  selectorFamily,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilCallback,
@@ -37,7 +36,6 @@ import 'codemirror/theme/material.css';
  */
 import Drive, {
   globalSelectedNodesAtom,
-  folderDictionary,
   folderDictionaryFilterSelector,
   clearDriveAndItemSelections,
   fetchDrivesSelector,
@@ -518,7 +516,6 @@ const FolderInfoPanel = function (props) {
       folderId: itemInfo.parentFolderId,
     }),
   );
-  const [addToast, ToastType] = useToast();
   const { deleteItem, renameItem } = useSockets('drive');
 
   const [label, setLabel] = useState(itemInfo.label);
@@ -597,7 +594,6 @@ const DoenetMLInfoPanel = function (props) {
       folderId: itemInfo.parentFolderId,
     }),
   );
-  const [addToast, ToastType] = useToast();
 
   const [label, setLabel] = useState(itemInfo.label);
 
@@ -935,7 +931,7 @@ function AddMenuPanel(props) {
   );
 }
 
-function AutoSelect(props) {
+function AutoSelect() {
   const { activateMenuPanel } = useToolControlHelper();
 
   const infoLoad = useRecoilValueLoadable(selectedInformation);
@@ -1005,7 +1001,6 @@ export function URLPathSync(props) {
     }
     init.current = false;
   }, [drivePath]);
-
   return null;
 }
 
@@ -1013,14 +1008,6 @@ export default function Library(props) {
   // console.log("=== 📚 Doenet Library Tool",props);
 
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
-  const {
-    addItem,
-    onAddItemError,
-    deleteItem,
-    onDeleteItemError,
-    moveItems,
-    onMoveItemsError,
-  } = useSockets('drive');
 
   // const setSupportVisiblity = useSetRecoilState(supportVisible);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);

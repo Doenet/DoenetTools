@@ -700,67 +700,6 @@ export const useSortFolder = () => {
   return { sortFolder, invalidateSortCache, onSortFolderError };
 };
 
-export const useRenameItem = () => {
-  const [addToast, ToastType] = useToast();
-  const renameItem = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async ({ driveIdFolderId, itemId, itemType, newLabel }) => {
-        const fInfo = await snapshot.getPromise(
-          folderDictionary(driveIdFolderId),
-        );
-
-        // Rename in folder
-        let newFInfo = { ...fInfo };
-        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
-        newFInfo['contentsDictionary'][itemId] = {
-          ...fInfo.contentsDictionary[itemId],
-        };
-        newFInfo['contentsDictionary'][itemId].label = newLabel;
-
-        // Rename in database
-        const rndata = {
-          instruction: 'rename',
-          driveId: driveIdFolderId.driveId,
-          itemId: itemId,
-          label: newLabel,
-        };
-
-        const renamepayload = {
-          params: rndata,
-        };
-        const result = axios.get('/api/updateItem.php', renamepayload);
-
-        result.then((resp) => {
-          if (resp.data.success) {
-            set(folderDictionary(driveIdFolderId), newFInfo);
-            // If a folder, update the label in the child folder
-            if (itemType === 'Folder') {
-              set(
-                folderDictionary({
-                  driveId: driveIdFolderId.driveId,
-                  folderId: itemId,
-                }),
-                (old) => {
-                  let newFolderInfo = { ...old };
-                  newFolderInfo.folderInfo = { ...old.folderInfo };
-                  newFolderInfo.folderInfo.label = newLabel;
-                  return newFolderInfo;
-                },
-              );
-            }
-          }
-        });
-        return result;
-      },
-  );
-
-  const onRenameItemError = ({ errorMessage = null }) => {
-    addToast(`Rename item error: ${errorMessage}`, ToastType.ERROR);
-  };
-
-  return { renameItem, onRenameItemError };
-};
-
 export const useAssignmentCallbacks = () => {
   const [addToast, ToastType] = useToast();
 

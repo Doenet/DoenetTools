@@ -1,5 +1,9 @@
-import { nanoid } from 'nanoid';
+/**
+ * External deps
+ */
 import React, { useCallback, useEffect, useState } from 'react';
+import axios from 'axios';
+import { nanoid } from 'nanoid';
 import {
   atom,
   selector,
@@ -9,6 +13,9 @@ import {
   useRecoilCallback,
 } from 'recoil';
 import { Manager } from 'socket.io-client';
+/**
+ * Internal deps
+ */
 import { useToast } from '../Tools/_framework/Toast';
 import {
   folderCacheDirtyAtom,
@@ -59,27 +66,67 @@ export default function useSockets(nsp) {
   const [namespace] = useState(nsp);
   const socket = useRecoilValue(sockets(namespace));
   const dragShadowId = 'dragShadow';
-  // const { addItem, onAddItemError, deleteItem, onDeleteItemError} = useDriveBindings()
 
   const acceptNewItem = useRecoilCallback(
-    ({ set }) =>
-      (payload, newObj, newItem) => {
+    ({ snapshot, set }) =>
+      async ({
+        driveId,
+        parentFolderId,
+        doenetId,
+        versionId,
+        itemId,
+        itemType,
+        label,
+        sortOrder,
+        creationDate,
+        url,
+        selectedItemId,
+      }) => {
+        // create default item
+        const newItem = {
+          parentFolderId,
+          doenetId,
+          versionId,
+          itemId,
+          itemType,
+          label,
+          sortOrder,
+          creationDate, //get this from sever??
+          isPublished: '0',
+          url,
+          urlDescription: null,
+          urlId: null,
+        };
+
+        // insert into sort order
+        const fInfo = await snapshot.getPromise(
+          folderDictionary({
+            driveId: driveId,
+            folderId: parentFolderId,
+          }),
+        );
+        let newObj = JSON.parse(JSON.stringify(fInfo));
+        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+        let index = newDefaultOrder.indexOf(selectedItemId);
+        newDefaultOrder.splice(index + 1, 0, itemId);
+        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
+        newObj.contentsDictionary[itemId] = newItem;
+
         // Insert item info into destination folder
         set(
           folderDictionary({
-            driveId: payload.driveId,
-            folderId: payload.parentFolderId,
+            driveId: driveId,
+            folderId: parentFolderId,
           }),
           newObj,
         );
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
 
-        // Update folderDictionary when new item is of type Folder
-        if (payload.type === 'Folder') {
+        // addtional folder type updates
+        if (itemType === 'Folder') {
           set(
             folderDictionary({
-              driveId: payload.driveId,
-              folderId: payload.itemId,
+              driveId: driveId,
+              folderId: itemId,
             }),
             {
               folderInfo: newItem,
@@ -88,6 +135,8 @@ export default function useSockets(nsp) {
             },
           );
         }
+
+        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
       },
     [addToast, ToastType.SUCCESS],
   );
@@ -194,25 +243,12 @@ export default function useSockets(nsp) {
       }) => {
         // Item creation
         const dt = new Date();
-        const creationDate = formatDate(dt);
-        const itemId = nanoid();
-        const doenetId = nanoid();
-        const newItem = {
-          assignmentId: null,
-          doenetId,
-          contentId: null,
-          creationDate,
-          isPublished: '0',
-          itemId,
-          itemType: itemType,
-          label: label,
-          parentFolderId: driveIdFolderId.folderId,
-          url: url,
-          urlDescription: null,
-          urlId: null,
-          sortOrder: '',
-        };
+        const creationDate = formatDate(dt); //TODO: get from sever
+        const itemId = nanoid(); //TODO: remove
+        const doenetId = nanoid(); //Id per file
+        const versionId = nanoid(); //Id per named version / data collection site
 
+        //generate sort order
         const fInfo = await snapshot.getPromise(
           folderDictionary(driveIdFolderId),
         );
@@ -224,29 +260,36 @@ export default function useSockets(nsp) {
           nodeObjs: newObj.contentsDictionary,
           defaultFolderChildrenIds: newDefaultOrder,
         });
-        newItem.sortOrder = newOrder;
-        newDefaultOrder.splice(index + 1, 0, itemId);
-        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
-        newObj.contentsDictionary[itemId] = newItem;
 
-        const versionId = nanoid();
         const payload = {
           driveId: driveIdFolderId.driveId,
           parentFolderId: driveIdFolderId.folderId,
-          itemId,
           doenetId,
+          itemId,
           versionId,
           label: label,
           type: itemType,
-          sortOrder: newItem.sortOrder,
+          sortOrder: newOrder,
+          selectedItemId,
+          creationDate,
+          url,
         };
-        socket.emit('add_doenetML', payload, newObj, newItem, (respData) => {
-          if (respData.success) {
-            acceptNewItem(payload, newObj, newItem);
-          } else {
-            onAddItemError({ errorMessage: respData });
-          }
-        });
+
+        const resp = await axios.get('/api/addItem.php', { params: payload });
+
+        if (resp.data.success) {
+          acceptNewItem(payload);
+        } else {
+          onAddItemError({ errorMessage: resp.data.message });
+        }
+
+        // socket.emit('add_doenetML', payload, newObj, newItem, (respData) => {
+        //   if (respData.success) {
+        //     acceptNewItem(payload, newObj, newItem);
+        //   } else {
+        //     onAddItemError({ errorMessage: respData });
+        //   }
+        // });
       },
   );
 
@@ -546,7 +589,7 @@ export default function useSockets(nsp) {
   };
 
   const renameItem = useRecoilCallback(
-    ({ snapshot, set }) =>
+    ({ snapshot }) =>
       async ({ driveIdFolderId, itemId, itemType, newLabel }) => {
         const fInfo = await snapshot.getPromise(
           folderDictionary(driveIdFolderId),
@@ -582,6 +625,293 @@ export default function useSockets(nsp) {
   const onRenameItemError = ({ errorMessage = null }) => {
     addToast(`Rename item error: ${errorMessage}`, ToastType.ERROR);
   };
+
+  /**
+   * @param {Object[]} items - items to be copied { driveId, driveInstanceId,
+   *  itemId, parentFolderId }
+   * @param {string} targetDriveId - destination drive ID
+   * @param {string} targetFolderId - destination folder ID
+   * @param {string} index - insertion index in destination folder
+   */
+  const copyItems = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async ({ items = [], targetDriveId, targetFolderId, index }) => {
+        // Interrupt copy action if items is empty
+        if (items.length === 0) {
+          throw 'No items to be copied';
+        }
+
+        let destinationFolderObj = await snapshot.getPromise(
+          folderDictionary({
+            driveId: targetDriveId,
+            folderId: targetFolderId,
+          }),
+        );
+        let newDestinationFolderObj = JSON.parse(
+          JSON.stringify(destinationFolderObj),
+        );
+        const insertIndex = index ?? 0;
+        let newSortOrder = '';
+        const dt = new Date();
+        const creationTimestamp = formatDate(dt);
+        let globalDictionary = {};
+        let globalContentIds = {};
+
+        for (let item of items) {
+          if (!item.driveId || !item.driveInstanceId || !item.itemId)
+            throw 'Invalid arguments error';
+
+          // Deselect currently selected items
+          let selectedItem = {
+            driveId: item.driveId,
+            driveInstanceId: item.driveInstanceId,
+            itemId: item.itemId,
+          };
+          set(selectedDriveItemsAtom(selectedItem), false);
+
+          // Clone target item and its children
+          const { newItemId, newItem } = await cloneItem({
+            snapshot,
+            globalDictionary,
+            globalContentIds,
+            creationTimestamp,
+            item,
+            targetDriveId,
+            targetFolderId,
+          });
+
+          // Specify copy in label when copying within same drive
+          if (item.driveId === targetDriveId) {
+            const newItemLabel = `Copy of ${newItem.label}`;
+            newItem.label = newItemLabel;
+          }
+
+          // Generate sortOrder for cloned item
+          const cleanDefaultOrder = newDestinationFolderObj['contentIds'][
+            'defaultOrder'
+          ].filter((itemId) => itemId !== dragShadowId);
+          newSortOrder = getLexicographicOrder({
+            index: insertIndex,
+            nodeObjs: newDestinationFolderObj.contentsDictionary,
+            defaultFolderChildrenIds: cleanDefaultOrder,
+          });
+          newItem.sortOrder = newSortOrder;
+
+          // Insert root of cloned tree/item into destination
+          newDestinationFolderObj['contentsDictionary'][newItemId] = newItem;
+          newDestinationFolderObj['contentIds']['defaultOrder'].splice(
+            insertIndex,
+            0,
+            newItemId,
+          );
+        }
+
+        // Clear global selection
+        set(globalSelectedNodesAtom, []);
+
+        let promises = [];
+        for (let newItemId of Object.keys(globalDictionary)) {
+          let newItem = globalDictionary[newItemId];
+
+          const addItemsParams = {
+            driveId: targetDriveId,
+            parentFolderId: newItem.parentFolderId,
+            itemId: newItemId,
+            doenetId: newItem.doenetId,
+            versionId: newItem.versionId,
+            label: newItem.label,
+            type: newItem.itemType,
+            sortOrder: newItem.sortOrder,
+            isNewCopy: '1',
+          };
+
+          // Clone DoenetML
+          if (newItem.itemType === 'DoenetML') {
+            const newDoenetML = cloneDoenetML({
+              item: newItem,
+              timestamp: creationTimestamp,
+            });
+
+            promises.push(axios.post('/api/saveNewVersion.php', newDoenetML));
+
+            // Unify new doenetId
+            // addItemsParams["doenetId"] = newDoenetML?.doenetId;
+          }
+
+          const result = axios.get('/api/addItem.php', {
+            params: addItemsParams,
+          });
+          promises.push(result);
+        }
+
+        Promise.allSettled(promises).then(([result]) => {
+          if (result.value?.data?.success) {
+            // Update destination folder
+            set(
+              folderDictionary({
+                driveId: targetDriveId,
+                folderId: targetFolderId,
+              }),
+              newDestinationFolderObj,
+            );
+
+            // Add new cloned items into folderDictionary
+            for (let newItemId of Object.keys(globalDictionary)) {
+              let newItem = globalDictionary[newItemId];
+              if (newItem.itemType === 'Folder') {
+                // BFS tree-walk to iterate through tree nodes
+                let queue = [newItemId];
+                while (queue.length) {
+                  const size = queue.length;
+                  for (let i = 0; i < size; i++) {
+                    const currentItemId = queue.shift();
+                    const currentItem = globalDictionary[currentItemId];
+                    if (currentItem.itemType !== 'Folder') continue;
+
+                    // Build contentsDictionary
+                    let contentsDictionary = {};
+                    for (let childContentId of globalContentIds[
+                      currentItemId
+                    ]) {
+                      contentsDictionary = {
+                        ...contentsDictionary,
+                        [childContentId]: globalDictionary[childContentId],
+                      };
+                    }
+
+                    // Build folder info object
+                    const currentFolderInfoObj = {
+                      folderInfo: currentItem,
+                      contentsDictionary,
+                      contentIds: {
+                        [sortOptions.DEFAULT]: globalContentIds[currentItemId],
+                      },
+                    };
+
+                    // Add current folder into folderDictionary
+                    set(
+                      folderDictionary({
+                        driveId: targetDriveId,
+                        folderId: currentItemId,
+                      }),
+                      currentFolderInfoObj,
+                    );
+
+                    queue = [...queue, ...globalContentIds[currentItemId]];
+                  }
+                }
+              }
+            }
+
+            // Mark current folder as dirty
+            set(
+              folderCacheDirtyAtom({
+                driveId: targetDriveId,
+                folderId: targetFolderId,
+              }),
+              true,
+            );
+          }
+        });
+
+        const result = await Promise.allSettled(promises);
+        return result;
+      },
+  );
+
+  const cloneItem = async ({
+    snapshot,
+    globalDictionary = {},
+    globalContentIds = {},
+    creationTimestamp,
+    item,
+    targetDriveId,
+    targetFolderId,
+  }) => {
+    // Retrieve info of target item from parentFolder
+    const itemParentFolder = await snapshot.getPromise(
+      folderDictionary({
+        driveId: item.driveId,
+        folderId: item.parentFolderId,
+      }),
+    );
+    const itemInfo = itemParentFolder['contentsDictionary'][item.itemId];
+
+    // Clone item (Note this should be the source of new ids)
+    const newItem = { ...itemInfo };
+    const newItemId = nanoid();
+    newItem.itemId = newItemId;
+    newItem.doenetId = nanoid();
+    newItem.versionId = nanoid();
+    newItem.previousDoenetId = itemInfo.doenetId;
+
+    if (itemInfo.itemType === 'Folder') {
+      const { contentIds } = await snapshot.getPromise(
+        folderDictionary({ driveId: item.driveId, folderId: item.itemId }),
+      );
+      globalContentIds[newItemId] = [];
+      for (let contentId of contentIds[sortOptions.DEFAULT]) {
+        let subItem = {
+          ...item,
+          parentFolderId: item.itemId,
+          itemId: contentId,
+        };
+        let result = await cloneItem({
+          snapshot,
+          globalDictionary,
+          globalContentIds,
+          creationTimestamp,
+          item: subItem,
+          targetFolderId: newItemId,
+          targetDriveId,
+        });
+        const newSubItemId = result.newItemId;
+        globalContentIds[newItemId].push(newSubItemId);
+      }
+    }
+
+    newItem.parentFolderId = targetFolderId;
+    newItem.creationDate = creationTimestamp;
+    globalDictionary[newItemId] = newItem;
+
+    return { newItemId, newItem };
+  };
+
+  const cloneDoenetML = ({ item, timestamp }) => {
+    let newVersion = {
+      title: item.label,
+      doenetId: item.doenetId,
+      // doenetId: nanoid(),
+      contentId: item.contentId,
+      versionId: item.versionId,
+      timestamp,
+      isDraft: '0',
+      isNamed: '1',
+      isNewCopy: '1',
+      doenetML: item.doenetML,
+      previousDoenetId: item.previousDoenetId,
+    };
+    return newVersion;
+  };
+
+  const onCopyItemsError = ({ errorMessage = null }) => {
+    addToast(`Copy item(s) error: ${errorMessage}`, ToastType.ERROR);
+  };
+
+  // result
+  //   .then(([resp]) => {
+  //     if (resp.value?.data?.success) {
+  //       addToast(
+  //         `Copied ${replaceDragShadowResp?.numItems} item(s)`,
+  //         ToastType.SUCCESS,
+  //       );
+  //     } else {
+  //       onCopyItemsError({ errorMessage: resp?.reason });
+  //     }
+  //   })
+  //   .catch((e) => {
+  //     onCopyItemsError({ errorMessage: e.message });
+  //   });
 
   const [bindings] = useState({
     drive: [
@@ -630,13 +960,10 @@ export default function useSockets(nsp) {
 
   return {
     addItem,
-    onAddItemError,
     deleteItem,
-    onDeleteItemError,
     moveItems,
-    onMoveItemsError,
     renameItem,
-    onRenameItemError,
+    copyItems,
   };
 }
 
@@ -655,3 +982,16 @@ const formatDate = (dt) => {
 
   return formattedDate;
 };
+// const newItem = {
+//   parentFolderId: driveIdFolderId.folderId,
+//   doenetId,
+//   itemId,
+//   itemType: itemType,
+//   label: label,
+//   creationDate,
+//   isPublished: '0',
+//   url: url,
+//   urlDescription: null,
+//   urlId: null,
+//   sortOrder: '',
+// };
