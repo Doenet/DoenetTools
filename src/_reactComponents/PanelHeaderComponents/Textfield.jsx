@@ -3,7 +3,7 @@ import { doenetComponentForegroundInactive } from "./theme"
 
 export default function Textfield(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
-
+  const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
   //Assume small
   var textfield = {
         margin: '0px',
@@ -22,7 +22,7 @@ export default function Textfield(props) {
     }
     
     var container = {
-        display: 'flex',
+        display: `${align}`,
         width: 'auto',
         alignItems: 'flex-end'
     }

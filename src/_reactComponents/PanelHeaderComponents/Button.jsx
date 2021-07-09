@@ -96,7 +96,7 @@ export default function Button(props) {
   }
     return (
         <>
-            <Container style={container}>
+            <Container style={container} align={align}>
               <Label labelVisible={labelVisible}>{label}</Label>
               <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>

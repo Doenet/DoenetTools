@@ -3,7 +3,9 @@ import { doenetMainBlue } from "./theme";
 
 export default function ToggleButton(props) {
     const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
-    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
+    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+    const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
+
     //Assume small
     var toggleButton = {
         margin: '0px',
@@ -28,7 +30,7 @@ export default function ToggleButton(props) {
     }
     
     var container = {
-        display: 'flex',
+        display: `${align}`,
         width: 'auto',
         alignItems: 'center'
     }

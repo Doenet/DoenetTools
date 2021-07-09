@@ -84,7 +84,7 @@ export default function ActionButton(props) {
   }
     return (
         <>
-            <Container style={container}>
+            <Container style={container} align={align}>
               <Label labelVisible={labelVisible}>{label}</Label>
               <Button id="actionButton" style={actionButton} onClick={(e) => { handleClick(e) }}>{icon}{' '}{actionButton.value}</Button>
             </Container>
