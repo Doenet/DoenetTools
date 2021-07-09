@@ -38,7 +38,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -149,7 +149,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -258,7 +258,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -332,14 +332,14 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = cesc(components['/_answer2'].stateValues.inputChild.componentName)
+      let mathinput2Name = cesc(components['/_answer2'].stateValues.inputChildren[0].componentName)
       let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -423,7 +423,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -534,7 +534,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -645,7 +645,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -744,7 +744,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -844,14 +844,14 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
       let mathinputPartialAnchor = '#' + mathinputName + '_partial';
       let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
 
-      let mathinput2Name = cesc(components['/_answer2'].stateValues.inputChild.componentName)
+      let mathinput2Name = cesc(components['/_answer2'].stateValues.inputChildren[0].componentName)
       let mathinput2Anchor = '#' + mathinput2Name + ' textarea';
       let mathinput2SubmitAnchor = '#' + mathinput2Name + '_submit';
       let mathinput2CorrectAnchor = '#' + mathinput2Name + '_correct';
@@ -929,7 +929,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1019,7 +1019,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1101,7 +1101,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
@@ -1184,7 +1184,7 @@ describe('Allow error in numbers validation tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName)
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
       let mathinputAnchor = '#' + mathinputName + ' textarea';
       let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
       let mathinputCorrectAnchor = '#' + mathinputName + '_correct';

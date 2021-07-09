@@ -83,9 +83,11 @@ export default class MathInput extends DoenetRenderer {
     let expression;
 
     text = substituteUnicodeInLatexString(text);
+
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
     });
+
     try {
       expression = fromLatex(text);
     } catch (e) {
@@ -506,6 +508,9 @@ function substituteUnicodeInLatexString(latexString) {
     ['\u03C8', '\\psi '], // 'ψ'
     ['\u03A9', '\\Omega '], // 'Ω'
     ['\u03C9', '\\omega '], // 'ω'
+    ['\u2212', '-'], // minus sign
+    ['\u22C5', ' \\cdot '], // dot operator
+    ['\u00B7', ' \\cdot '], // middle dot
   ]
 
   for (let sub of substitutions) {

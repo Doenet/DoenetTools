@@ -91,14 +91,14 @@ export default function Button(props) {
   // if (props.value) {
   //     button.value = props.value;
   // };
-  function handleClick() {
-    if (props.onClick) props.onClick()
+  function handleClick(e) {
+    if (props.onClick) props.onClick(e)
   }
     return (
         <>
-            <Container style={container} align={align}>
+            <Container style={container}>
               <Label labelVisible={labelVisible}>{label}</Label>
-              <ButtonStyling style={button} {...props} onClick={() => { handleClick() }}>{icon}{' '}{button.value}</ButtonStyling>
+              <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>
         </>
     )

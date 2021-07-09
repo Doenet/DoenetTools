@@ -37,8 +37,8 @@ export default class BooleanList extends InlineComponent {
     let breakStringsIntoBooleansBySpaces = returnBreakStringsIntoComponentTypeBySpaces({componentType: "boolean"});
 
     sugarInstructions.push({
-      replacementFunction: function ({ matchedChildren, isAttributeComponent = false }) {
-        if (isAttributeComponent) {
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+        if (isAttributeComponent && !createdFromMacro) {
           return groupIntoBooleansSeparatedBySpaces({ matchedChildren });
         } else {
           return breakStringsIntoBooleansBySpaces({ matchedChildren })

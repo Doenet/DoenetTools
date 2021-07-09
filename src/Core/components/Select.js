@@ -51,12 +51,25 @@ export default class Select extends CompositeComponent {
         type = "math";
       }
 
-      if (!["math", "text", "number"].includes(type)) {
+      if (!["math", "text", "number", "boolean"].includes(type)) {
         console.warn(`Invalid type ${type}`);
         type = "math";
       }
 
       // break any string by white space and wrap pieces with option and type
+
+      let convertState = function(s) {
+        if(type==="math") {
+          return me.fromAst(textToAst.convert(s));
+        } else if (type==="number") {
+          return Number(s);
+        } else if(type==="boolean") {
+          return s.toLowerCase() === "true";
+        } else {
+          return s;
+        }
+      }
+
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
@@ -64,7 +77,7 @@ export default class Select extends CompositeComponent {
             ...a,
             ...c.state.value.split(/\s+/)
               .filter(s => s)
-              .map(s => type === "math" ? me.fromAst(textToAst.convert(s)) : (type === "number" ? Number(s) : s))
+              .map(convertState)
               .map(s => ({
                 componentType: "option",
                 children: [{
@@ -154,7 +167,7 @@ export default class Select extends CompositeComponent {
         optionChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroOptions",
-          variableNames: ["selectForVariants", "selectWeight"]
+          variableNames: ["selectForVariantNames", "selectWeight"]
         },
       }),
       definition({ dependencyValues }) {
@@ -187,7 +200,7 @@ export default class Select extends CompositeComponent {
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
-          for (let variantName of optionChild.stateValues.selectForVariants) {
+          for (let variantName of optionChild.stateValues.selectForVariantNames) {
             let variantLower = variantName.toLowerCase();
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];
@@ -576,14 +589,10 @@ export default class Select extends CompositeComponent {
           return { success: false }
         }
       } else if (componentType === "withReplacement") {
-        // calculate withReplacement only if has its implicitValue or value set directly
+        // calculate withReplacement only if has its value set directly
         // or if has a child that is a string
         let foundValid = false;
         if (child.state !== undefined) {
-          if (child.state.implicitValue !== undefined) {
-            withReplacement = child.state.implicitValue;
-            foundValid = true;
-          }
           if (child.state.value !== undefined) {
             withReplacement = child.state.value;
             foundValid = true;

@@ -1469,20 +1469,20 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('variants specified, select single', () => {
+  it('variant names specified, select single', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variants="aVocado  broCColi   carrot  Dill eggplanT"/>
+    <variantControl nvariants="5" variantNames="aVocado  broCColi   carrot  Dill eggplanT"/>
 
     <p>Selected variable:
     <select assignnames="(x)">
-      <option selectForVariants="dill"><math>d</math></option>
-      <option selectForVariants="Carrot"><math>c</math></option>
-      <option selectForVariants="eggPlant"><math>e</math></option>
-      <option selectForVariants="avocadO"><math>a</math></option>
-      <option selectForVariants="broccOli"><math>b</math></option>
+      <option selectForVariantNames="dill"><math>d</math></option>
+      <option selectForVariantNames="Carrot"><math>c</math></option>
+      <option selectForVariantNames="eggPlant"><math>e</math></option>
+      <option selectForVariantNames="avocadO"><math>a</math></option>
+      <option selectForVariantNames="broccOli"><math>b</math></option>
     </select>
     </p>
 
@@ -1516,21 +1516,21 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('variants specified, select multiple', () => {
+  it('variant names specified, select multiple', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <variantControl nvariants="5" variants="avocado  brOccoli   carrot  dill    eggPlant  "/>
+    <variantControl nvariants="5" variantNames="avocado  brOccoli   carrot  dill    eggPlant  "/>
 
     <p>Selected variables:
     <aslist>
     <select assignnames="(x)  (y)  (z)" numbertoselect="3">
-      <option selectForVariants="dill  carrot  avocado"><math>d</math></option>
-      <option selectForVariants="cArrOt eggplant eggplant"><math>c</math></option>
-      <option selectForVariants="eggplant  broccoli  dilL"><math>e</math></option>
-      <option selectForVariants="aVocado   avocado   broccoli"><math>a</math></option>
-      <option selectForVariants="  broccoli     caRRot     dill    "><math>b</math></option>
+      <option selectForVariantNames="dill  carrot  avocado"><math>d</math></option>
+      <option selectForVariantNames="cArrOt eggplant eggplant"><math>c</math></option>
+      <option selectForVariantNames="eggplant  broccoli  dilL"><math>e</math></option>
+      <option selectForVariantNames="aVocado   avocado   broccoli"><math>a</math></option>
+      <option selectForVariantNames="  broccoli     caRRot     dill    "><math>b</math></option>
     </select>
     </aslist>
     </p>
@@ -1708,6 +1708,39 @@ describe('Select Tag Tests', function () {
         let num = components['/n' + ind].stateValues.value;
         expect([2, 3, 5, 7, 11, 13, 17, 19].includes(num)).eq(true);
       }
+    })
+  });
+
+  it('select boolean as sugar', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aslist>
+    <select type="boolean" assignnames="(b1) (b2) (b3) (b4) (b5) (b6) (b7) (b8) (b9) (b10) (b11) (b12) (b13) (b14) (b15) (b16) (b17) (b18) (b19) (b20)" numbertoselect="20" withReplacement>
+      true false
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let foundTrue = false, foundFalse = false;
+      for (let ind = 1; ind <= 20; ind++) {
+        let bool = components['/b' + ind].stateValues.value;
+        expect([true, false].includes(bool)).eq(true);
+        if(bool === true) {
+          foundTrue = true;
+        } else {
+          foundFalse = true;
+        }
+      }
+      expect(foundTrue).be.true;
+      expect(foundFalse).be.true;
     })
   });
 

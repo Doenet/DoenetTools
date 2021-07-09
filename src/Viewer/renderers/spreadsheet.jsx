@@ -7,11 +7,6 @@ import { sizeToCSS } from './utils/css';
 
 
 export default class SpreadsheetRenderer extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-
-    // this.hf = HyperFormula.buildEmpty({ licenseKey: "agpl-v3" });
-  }
 
   render() {
     if (this.doenetSvData.hidden) {
@@ -24,8 +19,8 @@ export default class SpreadsheetRenderer extends DoenetRenderer {
       <HotTable
         licenseKey='non-commercial-and-evaluation'
         data={this.doenetSvData.cells.map(x => [...x])}
-        colHeaders={true}
-        rowHeaders={true}
+        colHeaders={this.doenetSvData.columnHeaders}
+        rowHeaders={this.doenetSvData.rowHeaders}
         width={sizeToCSS(this.doenetSvData.width)}
         height={sizeToCSS(this.doenetSvData.height)}
         // beforeChange={this.actions.onChange} 
@@ -33,8 +28,8 @@ export default class SpreadsheetRenderer extends DoenetRenderer {
         formulas={{
           engine: HyperFormula
         }}
-        // fixedRowsTop={1}
-        // fixedColumnsLeft={1}
+        fixedRowsTop={this.doenetSvData.fixedRowsTop}
+        fixedColumnsLeft={this.doenetSvData.fixedColumnsLeft}
         // contextMenu={
         //   {
         //     items: {

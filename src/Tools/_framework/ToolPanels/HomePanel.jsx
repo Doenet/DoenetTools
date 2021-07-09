@@ -6,7 +6,8 @@ import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput"
 import logo from '../../../Media/Doenet_Logo_Frontpage.png';
 import styled from 'styled-components';
 import './homepage.css' ;
-import Button from '../temp/Button';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+
 
 const Headings = styled.h1`
   line-height: 1.1em;
@@ -90,21 +91,14 @@ const Footer = styled.div`
 `;
 
 export default function HomePage(props){
-  console.log(">>>===HomePage")
+  // console.log(">>>===HomePage")
   let history = useHistory();
-  const goToSignIn = useRecoilCallback(({set})=>()=>{
-    set(toolViewAtom,(was)=>{
-      let newObj = {...was};
-      newObj.currentMainPanel = "SignIn"
-      return newObj;
-    })
-  })
+
   const jwt = Cookies.get();
   let isSignedIn = false;
   if (Object.keys(jwt).includes('JWT_JS')) {
     isSignedIn = true;
   }
-console.log(">>>isSignedIn",isSignedIn)
 
   return <div style = {props.style}>
         <DoenetLogo>
@@ -146,7 +140,7 @@ console.log(">>>isSignedIn",isSignedIn)
               
             </ParagraphTags>
           </SectionText>
- {isSignedIn ? <div onClick={()=>history.push('/course')}><Button size = "medium" value = "Go to Course" /></div> : <div onClick={goToSignIn}><Button size = "medium" value = "Sign In" /></div>}
+ {isSignedIn ? <div ><Button size = "medium"  onClick={()=>history.push('/course')} value = "Go to Course" /></div> : <div ><Button onClick={()=>history.push('/SignIn')} size = "medium" value = "Sign In" /></div>}
 
         </CloudColorSection>
 

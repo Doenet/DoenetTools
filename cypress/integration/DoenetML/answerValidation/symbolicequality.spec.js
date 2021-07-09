@@ -47,28 +47,28 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
       let mathinput2PartialAnchor = cesc('#' + mathinput2Name + '_partial');
       let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
 
-      let mathinput3Name = components['/_answer3'].stateValues.inputChild.componentName
+      let mathinput3Name = components['/_answer3'].stateValues.inputChildren[0].componentName
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
       let mathinput3CorrectAnchor = cesc('#' + mathinput3Name + '_correct');
       let mathinput3PartialAnchor = cesc('#' + mathinput3Name + '_partial');
       let mathinput3IncorrectAnchor = cesc('#' + mathinput3Name + '_incorrect');
 
-      let mathinput4Name = components['/_answer4'].stateValues.inputChild.componentName
+      let mathinput4Name = components['/_answer4'].stateValues.inputChildren[0].componentName
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
       let mathinput4SubmitAnchor = cesc('#' + mathinput4Name + '_submit');
       let mathinput4CorrectAnchor = cesc('#' + mathinput4Name + '_correct');
@@ -197,14 +197,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -305,7 +305,7 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><copy simplify="numbersPreserveOrder" tname="_math1" /></award>
+      <award symbolicEquality="true" simplifyOnCompare="numbersPreserveOrder">$_math1</award>
     </answer>
     </p>
     
@@ -320,14 +320,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -428,7 +428,7 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>1x^2+2-0x^2+3+x^2+3x^2+7+4</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><copy simplify="numbers" tname="_math1" /></award>
+      <award symbolicEquality="true" simplifyOnCompare="numbers">$_math1</award>
     </answer>
     </p>
     
@@ -443,14 +443,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -540,7 +540,7 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>6x^2 -3x +8x-4 + (2x-3)(4-x)</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><copy simplify tname="_math1" /></award>
+      <award symbolicEquality="true" simplifyOnCompare>$_math1</award>
     </answer>
     </p>
     
@@ -555,14 +555,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
@@ -651,7 +651,7 @@ describe('Symbolic equality tests', function () {
     <p>
     <math>(2x-3)(4-x) + sin(x)^2+cos(x)^2</math>: 
     <answer size="20">
-      <award symbolicEquality="true"><copy simplify expand tname="_math1" /></award>
+      <award symbolicEquality="true" simplifyOnCompare expandOnCompare>$_math1</award>
     </answer>
     </p>
     
@@ -666,14 +666,14 @@ describe('Symbolic equality tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
       let mathinputPartialAnchor = cesc('#' + mathinputName + '_partial');
       let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
 
-      let mathinput2Name = components['/_answer2'].stateValues.inputChild.componentName
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
       let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
