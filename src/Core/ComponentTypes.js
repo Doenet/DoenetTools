@@ -87,6 +87,8 @@ import AttractToAngles from './components/AttractToAngles';
 import ConditionalContent from './components/ConditionalContent';
 import AsList from './components/AsList';
 import Spreadsheet from './components/Spreadsheet';
+import DiscreteSimulationResultList from './components/DiscreteSimulationResultList';
+import DiscreteSimulationResultPolyline from './components/DiscreteSimulationResultPolyline';
 import Cell from './components/Cell';
 import Row from './components/Row';
 import Column from './components/Column';
@@ -204,6 +206,8 @@ const componentTypeArray = [
   Sequence,
   Slider,
   Spreadsheet,
+  DiscreteSimulationResultList,
+  DiscreteSimulationResultPolyline,
   Cell,
   Row,
   Column,
