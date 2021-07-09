@@ -90,7 +90,6 @@ Comment { "<!--" commentContent* "-->" }
 
   @precedence {Macro, attributeContent}
 
-  
   @precedence {attributeContent, space}
 
   @precedence {space, Text}

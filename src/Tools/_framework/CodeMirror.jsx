@@ -7,7 +7,7 @@ import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp
 import {completeFromSchema} from '@codemirror/lang-xml';
 import {parser} from "../../Parser/doenet";
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
-import { atom, constSelector, useRecoilState } from "recoil";
+import { atom, useRecoilState } from "recoil";
 import { showNode } from "../../Parser/parser";
 
 const matchTagState = atom({
@@ -15,7 +15,6 @@ const matchTagState = atom({
     default: false,
 });
 export default function CodeMirror(props){
-    console.log("EXIST");
     let [matchTagEnabled, setMatchTagEnabled] = useRecoilState(matchTagState);
     let view = props.editorRef;
     let parent = useRef(null);
@@ -27,10 +26,6 @@ export default function CodeMirror(props){
     });
 
     function changeFunc(tr) {
-        const cursorPos = tr.newSelection.main.from;
-        let node = syntaxTree(tr.state).resolve(cursorPos,-1);
-        console.log(showNode(node.parent === null ? node : node.parent));
-        console.log("EXIWST2");
         if(tr.docChanged){
             let value = tr.state.sliceDoc();
             props.onBeforeChange(value);
