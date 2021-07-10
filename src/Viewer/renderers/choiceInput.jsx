@@ -131,8 +131,12 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
         }
       }
 
+      let svData = this.doenetSvData;
       let optionsList = this.doenetSvData.choiceTexts.map(function (s, i) {
-        return <option key={i + 1} value={i + 1}>{s}</option>
+        if(svData.choicesHidden[i]) {
+          return null;
+        }
+        return <option key={i + 1} value={i + 1} disabled={svData.choicesDisabled[i]} >{s}</option>
       });
 
 
@@ -149,7 +153,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
           value={value}
           disabled={this.doenetSvData.disabled}
         >
-          <option></option>
+          <option hidden={true} value="">{this.doenetSvData.placeHolder}</option>
           {optionsList}
         </select>
         {checkWorkButton}
@@ -252,9 +256,13 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       let disabled = this.doenetSvData.disabled;
       let keyBeginning = inputKey + '_choice';
       let children = this.children;
+      let svData = this.doenetSvData;
       let choiceDoenetTags = this.doenetSvData.choiceOrder
         .map(v => children[v - 1])
         .map(function (child, i) {
+          if(svData.choicesHidden[i]) {
+            return null;
+          }
           return <li key={inputKey + '_choice' + (i + 1)}>
             <input
               type="radio"
@@ -263,7 +271,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
               value={i + 1}
               checked={selectedIndices.includes(i + 1)}
               onChange={onChangeHandler}
-              disabled={disabled}
+              disabled={disabled || svData.choicesDisabled[i]}
             />
             <label htmlFor={keyBeginning + (i + 1) + "_input"}>
               {child}
