@@ -89,6 +89,13 @@ export default class Choiceinput extends Input {
       createComponentOfType: "text"
     };
 
+    attributes.placeHolder = {
+      createComponentOfType: "text",
+      createStateVariable: "placeHolder",
+      defaultValue: "",
+      forRenderer: true,
+    }
+
     return attributes;
   }
 
@@ -286,6 +293,14 @@ export default class Choiceinput extends Input {
       additionalStateVariablesDefined: [{
         variableName: "choicePreselects",
         isArray: true,
+      }, {
+        variableName: "choicesDisabled",
+        isArray: true,
+        forRenderer: true,
+      }, {
+        variableName: "choicesHidden",
+        isArray: true,
+        forRenderer: true,
       }],
       public: true,
       componentType: "text",
@@ -310,7 +325,7 @@ export default class Choiceinput extends Input {
           choiceChildren: {
             dependencyType: "child",
             childLogicName: "atLeastZeroChoices",
-            variableNames: ["text", "preSelect"]
+            variableNames: ["text", "preSelect", "disabled", "hidden"]
           },
         };
 
@@ -325,6 +340,8 @@ export default class Choiceinput extends Input {
           newValues: {
             choiceTexts: choiceChildrenOrdered.map(x => x.stateValues.text),
             choicePreselects: choiceChildrenOrdered.map(x => x.stateValues.preSelect),
+            choicesDisabled: choiceChildrenOrdered.map(x => x.stateValues.disabled),
+            choicesHidden: choiceChildrenOrdered.map(x => x.stateValues.hidden),
           }
         }
       }

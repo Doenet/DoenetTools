@@ -111,7 +111,8 @@ export default class FunctionIterates extends InlineComponent {
 
         if (
           !functionComp || dependencyValues.nDimensions === 0 ||
-          !(Array.isArray(initialValue.tree)
+          !(dependencyValues.nDimensions === 1 ||
+            Array.isArray(initialValue.tree)
             && ["vector", "tuple"].includes(initialValue.tree[0])
             && initialValue.tree.length === dependencyValues.nDimensions + 1
           )
