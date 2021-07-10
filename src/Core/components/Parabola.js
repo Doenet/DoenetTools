@@ -38,6 +38,7 @@ export default class Parabola extends Curve {
     let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
 
     stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+    stateVariableDefinitions.graphXmin = curveStateVariableDefinitions.graphXmin;
 
     stateVariableDefinitions.curveType = {
       forRenderer: true,
@@ -50,7 +51,7 @@ export default class Parabola extends Curve {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parMax: NaN } })
+      definition: () => ({ newValues: { parMax: +Infinity } })
     }
 
     stateVariableDefinitions.parMin = {
@@ -58,7 +59,7 @@ export default class Parabola extends Curve {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parMin: NaN } })
+      definition: () => ({ newValues: { parMin: -Infinity } })
     }
 
     // variable to store essential value of a
