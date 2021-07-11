@@ -22,6 +22,8 @@ import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 import { selectedMenuPanelAtom } from './Panels/NewMenuPanel';
 import { mainPanelClickAtom } from './Panels/NewMainPanel';
+import { useHistory } from 'react-router';
+
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -257,7 +259,7 @@ export default function ToolRoot(props){
   // console.log(">>> lastURL.current" , lastURL.current)
   const lastURLProp = lastURL.current;
   if (location.href !== lastURL.current ){
-    // console.log(">>>URL CHANGED!")
+    // console.log(">>>URL CHANGED!!!!!!!!!!!!!!!!!!!!!!!!!!")
     let searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
     // console.log(">>>searchParamObj",searchParamObj)
     setUrlChangeSourceParamObjAtom(searchParamObj);
@@ -413,6 +415,7 @@ function RecoilSearchParamUpdater(prop){
   // let urlSourceParamObj = useRecoilValue(urlChangeSourceParamObjAtom);
   let currentParamObj = useRef({});
   let lastPathName = useRef("");
+  let history = useHistory();
 
   let isURLSourceFLAG = false;
   if (JSON.stringify(urlSourceParamObj) !== JSON.stringify(currentParamObj.current)){
@@ -465,13 +468,14 @@ function RecoilSearchParamUpdater(prop){
   // let urlParamsObj = Object.fromEntries(new URLSearchParams(urlSearchParams));
   const url = location.origin + location.pathname + "#" + pathname + '?' + encodeParams(eventSourceParamObj);
     if (!currentParamObj.current?.tool){ 
-      //If page didn't have a tool update url without pushing on to history
-      // console.log(">>> replace",url)
+     //If page didn't have a tool update url without pushing on to history
       window.history.replaceState('','',url)
     }else{
-      // console.log(">>> push",url)
-      window.history.pushState('','',url)
+      const route =  pathname + '?' + encodeParams(eventSourceParamObj);
+      history.push(route)
+    //   window.history.pushState('','',url)
     }
+
     prop.setURL(url)
   }
 
