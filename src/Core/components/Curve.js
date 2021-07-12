@@ -288,7 +288,7 @@ export default class Curve extends GraphicalComponent {
           variableNames: ["domain"]
         },
         adapterSourceDomain: {
-          dependencyType: "adapterSource",
+          dependencyType: "adapterSourceStateVariable",
           variableName: "domain"
         },
       }),
@@ -368,7 +368,7 @@ export default class Curve extends GraphicalComponent {
           variableNames: ["domain"]
         },
         adapterSourceDomain: {
-          dependencyType: "adapterSource",
+          dependencyType: "adapterSourceStateVariable",
           variableName: "domain"
         },
       }),
