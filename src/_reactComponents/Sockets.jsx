@@ -407,9 +407,7 @@ export default function useSockets(nsp) {
         //   destinationFolderObj.folderInfo.parentFolderId,
       };
 
-      const resp = await axios.post('/api/moveItems.php', {
-        params: payload,
-      });
+      const resp = await axios.post('/api/moveItems.php', payload);
 
       if (resp.data.success) {
         acceptMoveItems(payload, newDestinationFolderObj, editedCache);
