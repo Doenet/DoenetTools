@@ -342,7 +342,7 @@ export default function Drive(props) {
   }
 }
 
-let loadDriveInfoQuery = selectorFamily({
+export let loadDriveInfoQuery = selectorFamily({
   key: 'loadDriveInfoQuery',
   get:
     (driveId) =>
