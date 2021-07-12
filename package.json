@@ -19,7 +19,7 @@
     "reset_volumes": "docker volume rm doenet_node_modules doenet_vendor",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\"",
     "lint": "eslint \"src/**/*.{js,jsx}\"",
-    "realtime": "node realtime/realtime.js"
+    "realtime": "node realtime/realtime.js",
     "compile_grammar": "npx lezer-generator --output src/Parser/doenet.js src/Parser/doenet.grammar"
   },
   "dependencies": {

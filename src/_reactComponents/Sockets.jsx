@@ -63,8 +63,10 @@ const sockets = atomFamily({
  */
 export default function useSockets(nsp) {
   const [addToast, ToastType] = useToast();
-  const [namespace] = useState(nsp);
-  const socket = useRecoilValue(sockets(namespace));
+
+  // realtime upgrade
+  // const [namespace] = useState(nsp);
+  // const socket = useRecoilValue(sockets(namespace));
   const dragShadowId = 'dragShadow';
   const { acceptAddItem, acceptDeleteItem, acceptMoveItems, acceptRenameItem } =
     useAcceptBindings();
@@ -413,20 +415,8 @@ export default function useSockets(nsp) {
   );
 
   const renameItem = useRecoilCallback(
-    ({ snapshot }) =>
+    () =>
       async ({ driveIdFolderId, itemId, itemType, newLabel }) => {
-        const fInfo = await snapshot.getPromise(
-          folderDictionary(driveIdFolderId),
-        );
-
-        // Rename in folder
-        let newFInfo = { ...fInfo };
-        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
-        newFInfo['contentsDictionary'][itemId] = {
-          ...fInfo.contentsDictionary[itemId],
-        };
-        newFInfo['contentsDictionary'][itemId].label = newLabel;
-
         // Rename in database
         const payload = {
           instruction: 'rename',
@@ -436,13 +426,25 @@ export default function useSockets(nsp) {
           label: newLabel,
           type: itemType,
         };
-        socket.emit('update_file_name', payload, newFInfo, (respData) => {
-          if (respData.success) {
-            acceptRenameItem(payload, newFInfo);
-          } else {
-            addToast(`Rename item error: ${respData.message}`, ToastType.ERROR);
-          }
+
+        const resp = await axios.get('/api/updateItem.php', {
+          params: payload,
         });
+
+        if (resp.data.success) {
+          acceptRenameItem(payload);
+        } else {
+          addToast(`Rename item error: ${resp.data.message}`, ToastType.ERROR);
+        }
+
+        // realtime upgrade
+        // socket.emit('update_file_name', payload, newFInfo, (respData) => {
+        //   if (respData.success) {
+        //     acceptRenameItem(payload, newFInfo);
+        //   } else {
+        //     addToast(`Rename item error: ${respData.message}`, ToastType.ERROR);
+        //   }
+        // });
       },
   );
 
@@ -729,50 +731,52 @@ export default function useSockets(nsp) {
   //     onCopyItemsError({ errorMessage: e.message });
   //   });
 
-  const [bindings] = useState({
-    drive: [
-      {
-        eventName: 'connection',
-        callback: () => {
-          console.log('Socket', socket.id, 'connected');
-        },
-      },
-      {
-        eventName: 'remote_add_doenetML',
-        callback: acceptAddItem,
-      },
-      {
-        eventName: 'remote_add_folder',
-        callback: acceptAddItem,
-      },
-      {
-        eventName: 'remote_delete_doenetML',
-        callback: acceptDeleteItem,
-      },
-      {
-        eventName: 'remote_update_file_locaiton',
-        callback: acceptMoveItems,
-      },
-      {
-        eventName: 'remote_update_file_name',
-        callback: acceptRenameItem,
-      },
-    ],
-  });
+  // realtime upgrade
+  // const [bindings] = useState({
+  //   drive: [
+  //     {
+  //       eventName: 'connection',
+  //       callback: () => {
+  //         console.log('Socket', socket.id, 'connected');
+  //       },
+  //     },
+  //     {
+  //       eventName: 'remote_add_doenetML',
+  //       callback: acceptAddItem,
+  //     },
+  //     {
+  //       eventName: 'remote_add_folder',
+  //       callback: acceptAddItem,
+  //     },
+  //     {
+  //       eventName: 'remote_delete_doenetML',
+  //       callback: acceptDeleteItem,
+  //     },
+  //     {
+  //       eventName: 'remote_update_file_locaiton',
+  //       callback: acceptMoveItems,
+  //     },
+  //     {
+  //       eventName: 'remote_update_file_name',
+  //       callback: acceptRenameItem,
+  //     },
+  //   ],
+  // });
 
-  useEffect(() => {
-    // console.log('>>>configure', namespace);
-    bindings[namespace].map((bind) => {
-      if (!socket.hasListeners(bind.eventName)) {
-        socket.on(bind.eventName, bind.callback);
-      }
-    });
-    return () => {
-      // console.log('>>>disconnect', namespace);
-      // socket.disconnect();
-      //TODO: socket disconnect logic
-    };
-  }, [bindings, socket, namespace]);
+  // realtime upgrade
+  // useEffect(() => {
+  //   // console.log('>>>configure', namespace);
+  //   bindings[namespace].map((bind) => {
+  //     if (!socket.hasListeners(bind.eventName)) {
+  //       socket.on(bind.eventName, bind.callback);
+  //     }
+  //   });
+  //   return () => {
+  //     // console.log('>>>disconnect', namespace);
+  //     // socket.disconnect();
+  //     //TODO: socket disconnect logic
+  //   };
+  // }, [bindings, socket, namespace]);
 
   return {
     addItem,
@@ -969,31 +973,44 @@ function useAcceptBindings() {
   );
 
   const acceptRenameItem = useRecoilCallback(
-    ({ set }) =>
-      (payload, newFInfo) => {
+    ({ snapshot, set }) =>
+      async ({ driveId, folderId, itemId, label, type }) => {
+        const fInfo = await snapshot.getPromise(
+          folderDictionary({ driveId, folderId }),
+        );
+
+        // Rename in folder
+        let newFInfo = { ...fInfo };
+        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        newFInfo['contentsDictionary'][itemId] = {
+          ...fInfo.contentsDictionary[itemId],
+        };
+        newFInfo['contentsDictionary'][itemId].label = label;
+
         set(
           folderDictionary({
-            driveId: payload.driveId,
-            folderId: payload.folderId,
+            driveId,
+            folderId,
           }),
           newFInfo,
         );
+
         // If a folder, update the label in the child folder
-        if (payload.type === 'Folder') {
+        if (type === 'Folder') {
           set(
             folderDictionary({
-              driveId: payload.driveId,
-              folderId: payload.itemId,
+              driveId,
+              itemId,
             }),
             (old) => {
               let newFolderInfo = { ...old };
               newFolderInfo.folderInfo = { ...old.folderInfo };
-              newFolderInfo.folderInfo.label = payload.label;
+              newFolderInfo.folderInfo.label = label;
               return newFolderInfo;
             },
           );
         }
-        addToast(`Renamed item to '${payload.label}'`, ToastType.SUCCESS);
+        addToast(`Renamed item to '${label}'`, ToastType.SUCCESS);
       },
   );
 
