@@ -255,14 +255,10 @@ export default class SelectFromSequence extends Sequence {
           return { success: false }
         }
       } else if (componentType === "withReplacement") {
-        // calculate withReplacement only if has its implicitValue or value set directly 
+        // calculate withReplacement only if has its value set directly 
         // or if has a child that is a string
         let foundValid = false;
         if (child.state !== undefined) {
-          if (child.state.implicitValue !== undefined) {
-            withReplacement = child.state.implicitValue;
-            foundValid = true;
-          }
           if (child.state.value !== undefined) {
             withReplacement = child.state.value;
             foundValid = true;
@@ -539,20 +535,21 @@ function makeSelection({ dependencyValues }) {
         throw Error("All indices specified for select must be integers");
       }
       let n = dependencyValues.length;
-      desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
+      desiredIndices = desiredIndices.map(x => ((((x - 1) % n) + n) % n) + 1);
 
       // assume that we have an excluded combination 
       // until we determine that we aren't matching an excluded combination
       let isExcludedCombination = true;
 
       let selectedValues = [];
-      for (let index of desiredIndices) {
+      for (let [indNumber, indexFrom1] of desiredIndices.entries()) {
+        let indexFrom0 = indexFrom1 - 1;
         let componentValue = dependencyValues.from;
-        if (index > 0) {
+        if (indexFrom0 > 0) {
           if (dependencyValues.type === "math") {
-            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(index))).expand().simplify();
+            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(indexFrom0))).expand().simplify();
           } else {
-            componentValue += dependencyValues.step * index;
+            componentValue += dependencyValues.step * indexFrom0;
           }
         }
 
@@ -574,11 +571,11 @@ function makeSelection({ dependencyValues }) {
         // check if matches the corresponding component of an excluded combination
         let matchedExcludedCombinationIndex = false
         if (dependencyValues.type === "math") {
-          if (dependencyValues.excludedCombinations.some(x => [x, index].equals(componentValue))) {
+          if (dependencyValues.excludedCombinations.some(x => x[indNumber].equals(componentValue))) {
             matchedExcludedCombinationIndex = true;
           }
         } else {
-          if (dependencyValues.excludedCombinations.some(x => x[index] === componentValue)) {
+          if (dependencyValues.excludedCombinations.some(x => x[indNumber] === componentValue)) {
             matchedExcludedCombinationIndex = true;
           }
         }
@@ -619,21 +616,60 @@ function makeSelection({ dependencyValues }) {
 
   } else {
 
-    let numberPossibilities = dependencyValues.length - dependencyValues.exclude.length;
+    let numberPossibilitiesLowerBound = dependencyValues.length - dependencyValues.exclude.length;
 
     if (dependencyValues.withReplacement) {
-      numberPossibilities = Math.pow(numberPossibilities, dependencyValues.numberToSelect);
+      numberPossibilitiesLowerBound = Math.pow(numberPossibilitiesLowerBound, dependencyValues.numberToSelect);
     } else {
-      let n = numberPossibilities;
+      let n = numberPossibilitiesLowerBound;
       for (let i = 1; i < dependencyValues.numberToSelect; i++) {
-        numberPossibilities *= n - i;
+        numberPossibilitiesLowerBound *= n - i;
       }
     }
 
-    // console.log(`numberPossibilities: ${numberPossibilities}`)
+    if (numberCombinationsExcluded > 0.7 * numberPossibilitiesLowerBound) {
+      // may have excluded over 70% of combinations
+      // need to determine actual number of possibilities
+      // to see if really have excluded that many combinations
 
-    if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
-      throw Error("Excluded over 70% of combinations in selectFromSequence");
+      let numberPossibilities = 0;
+      for (let ind = 0; ind < dependencyValues.length; ind++) {
+        let componentValue = dependencyValues.from;
+        if (ind > 0) {
+          if (dependencyValues.type === "math") {
+            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(ind))).expand().simplify();
+          } else {
+            componentValue += dependencyValues.step * ind;
+          }
+        }
+
+        if (dependencyValues.type === "math") {
+          if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
+            continue;
+          }
+        } else {
+          if (dependencyValues.exclude.includes(componentValue)) {
+            continue;
+          }
+        }
+
+        numberPossibilities++;
+
+      }
+
+      if (dependencyValues.withReplacement) {
+        numberPossibilities = Math.pow(numberPossibilities, dependencyValues.numberToSelect);
+      } else {
+        let n = numberPossibilities;
+        for (let i = 1; i < dependencyValues.numberToSelect; i++) {
+          numberPossibilities *= n - i;
+        }
+      }
+
+      if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
+        throw Error("Excluded over 70% of combinations in selectFromSequence");
+      }
+
     }
 
     // with 200 chances with at least 70% success,
@@ -727,19 +763,19 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
 
         // random number in [0, 1)
         let rand = rng();
-        // random integer from 0 to length-1
-        selectedIndex = Math.floor(rand * stateValues.length);
+        // random integer from 1 to length
+        selectedIndex = Math.floor(rand * stateValues.length) + 1;
 
         if (!withReplacement && selectedIndices.includes(selectedIndex)) {
           continue;
         }
 
         componentValue = stateValues.from;
-        if (selectedIndex > 0) {
+        if (selectedIndex > 1) {
           if (stateValues.type === "math") {
-            componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(selectedIndex))).expand().simplify();
+            componentValue = componentValue.add(stateValues.step.multiply(me.fromAst(selectedIndex - 1))).expand().simplify();
           } else {
-            componentValue += stateValues.step * selectedIndex;
+            componentValue += stateValues.step * (selectedIndex - 1);
           }
         }
 
@@ -820,11 +856,11 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
 
       // random number in [0, 1)
       let rand = rng();
-      // random integer from 0 to numPossibleValues-1
-      let selectedIndex = Math.floor(rand * numPossibleValues);
+      // random integer from 1 to numPossibleValues
+      let selectedIndex = Math.floor(rand * numPossibleValues + 1);
 
       selectedIndices.push(selectedIndex)
-      selectedValues.push(possibleValues[selectedIndex]);
+      selectedValues.push(possibleValues[selectedIndex - 1]);
     }
 
     return { selectedValues, selectedIndices };
@@ -834,7 +870,7 @@ function selectValuesAndIndices({ stateValues, numberUniqueRequired = 1, numberT
   // need to select more than one value without replacement
   // shuffle array and choose first elements
   // https://stackoverflow.com/a/12646864
-  let possibleIndices = [...Array(possibleValues.length).keys()];
+  let possibleIndices = [...Array(possibleValues.length).keys()].map(x => x + 1);
   for (let i = possibleValues.length - 1; i > 0; i--) {
     const rand = rng();
     const j = Math.floor(rand * (i + 1));

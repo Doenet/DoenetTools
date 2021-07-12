@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Function Operator Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 
@@ -210,7 +210,7 @@ describe('Function Operator Tag Tests', function () {
     </math>
 
     <p><m>f($x) =
-    <function name="f" variable="$x" formula="$formula" />
+    <function name="f" variables="$x" formula="$formula" />
     </m></p>
 
     <p><m>f'($x) =
@@ -334,21 +334,21 @@ describe('Function Operator Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <function name="f1">sin(x)</function>
-      <function name="f2" variable="y">e^(2y)</function>
+      <function name="f2" variables="y">e^(2y)</function>
       <function name="f3">xyz</function>
-      <function name="f4" variable="z">xyz</function>
+      <function name="f4" variables="z">xyz</function>
       <derivative name="d1"><function>x^2</function></derivative>
       <derivative name="d2"><math>x^2</math></derivative>
       <derivative name="d3"><function formula="x^2sin(z)" /></derivative>
-      <derivative name="d4" variable="z">x^2sin(z)</derivative>
+      <derivative name="d4" variables="z">x^2sin(z)</derivative>
       <derivative name="d5"><copy tname="f1" /></derivative>
       <derivative name="d6"><copy tname="f2" /></derivative>
       <derivative name="d7"><copy tname="f3" /></derivative>
       <derivative name="d8"><copy tname="f4" /></derivative>
-      <derivative variable="q" name="d9"><copy tname="f1" /></derivative>
-      <derivative variable="q" name="d10"><copy tname="f2" /></derivative>
-      <derivative variable="q" name="d11"><copy tname="f3" /></derivative>
-      <derivative variable="q" name="d12"><copy tname="f4" /></derivative>
+      <derivative variables="q" name="d9"><copy tname="f1" /></derivative>
+      <derivative variables="q" name="d10"><copy tname="f2" /></derivative>
+      <derivative variables="q" name="d11"><copy tname="f3" /></derivative>
+      <derivative variables="q" name="d12"><copy tname="f4" /></derivative>
       `}, "*");
     });
 
@@ -422,13 +422,13 @@ describe('Function Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       for (let x = -10; x <= 10; x += 0.5) {
-        expect(components["/_function1"].stateValues.f(x)).eq((x - 3) ** 2 + 4);
-        expect(components["/_derivative1"].stateValues.f(x)).eq(2 * (x - 3));
-        expect(components["/_derivative2"].stateValues.f(x)).eq(2);
-        expect(components["/_derivative3"].stateValues.f(x)).eq(0);
-        expect(components["/_derivative4"].stateValues.f(x)).eq(0);
-        expect(components["/_derivative5"].stateValues.f(x)).eq(0);
-        expect(components["/_derivative6"].stateValues.f(x)).eq(0);
+        expect(components["/_function1"].stateValues.fs[0](x)).eq((x - 3) ** 2 + 4);
+        expect(components["/_derivative1"].stateValues.fs[0](x)).eq(2 * (x - 3));
+        expect(components["/_derivative2"].stateValues.fs[0](x)).eq(2);
+        expect(components["/_derivative3"].stateValues.fs[0](x)).eq(0);
+        expect(components["/_derivative4"].stateValues.fs[0](x)).eq(0);
+        expect(components["/_derivative5"].stateValues.fs[0](x)).eq(0);
+        expect(components["/_derivative6"].stateValues.fs[0](x)).eq(0);
 
       }
     })
@@ -460,21 +460,21 @@ describe('Function Operator Tag Tests', function () {
       // make sure we don't get within dx of a grid point
       for (let x = -10.02412412; x <= 10; x += 0.5) {
 
-        let f0 = components["/_function1"].stateValues.f(x);
-        let f1 = components["/_function1"].stateValues.f(x + dx);
-        let fp05 = components["/_derivative1"].stateValues.f(x + dx / 2);
+        let f0 = components["/_function1"].stateValues.fs[0](x);
+        let f1 = components["/_function1"].stateValues.fs[0](x + dx);
+        let fp05 = components["/_derivative1"].stateValues.fs[0](x + dx / 2);
         expect(fp05).closeTo((f1 - f0) / dx, 1E-6)
 
-        let fpn05 = components["/_derivative1"].stateValues.f(x - dx / 2);
-        let fpp0 = components["/_derivative2"].stateValues.f(x);
+        let fpn05 = components["/_derivative1"].stateValues.fs[0](x - dx / 2);
+        let fpp0 = components["/_derivative2"].stateValues.fs[0](x);
         expect(fpp0).closeTo((fp05 - fpn05) / dx, 1E-6)
 
-        let fpp1 = components["/_derivative2"].stateValues.f(x + dx);
-        let fppp05 = components["/_derivative3"].stateValues.f(x + dx / 2);
+        let fpp1 = components["/_derivative2"].stateValues.fs[0](x + dx);
+        let fppp05 = components["/_derivative3"].stateValues.fs[0](x + dx / 2);
         expect(fppp05).closeTo((fpp1 - fpp0) / dx, 1E-6)
 
-        let fpppn05 = components["/_derivative3"].stateValues.f(x - dx / 2);
-        let fpppp0 = components["/_derivative4"].stateValues.f(x);
+        let fpppn05 = components["/_derivative3"].stateValues.fs[0](x - dx / 2);
+        let fpppp0 = components["/_derivative4"].stateValues.fs[0](x);
         expect(fpppp0).closeTo((fppp05 - fpppn05) / dx, 1E-6)
 
       }
@@ -501,7 +501,7 @@ describe('Function Operator Tag Tests', function () {
     </math>
 
     <p><m>f($x) =
-    <function name="f" variable="$x" formula="$formula" />
+    <function name="f" variables="$x" formula="$formula" />
     </m></p>
 
     <p><m>f'($x) =

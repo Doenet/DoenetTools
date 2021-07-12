@@ -1,7 +1,7 @@
 describe('Boolean Operator Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('not', () => {

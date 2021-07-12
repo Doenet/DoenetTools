@@ -1,7 +1,7 @@
 describe('Graph Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 
@@ -85,7 +85,7 @@ describe('Graph Tag Tests', function () {
     <text>a</text>
     <graph>
       <function>x^2</function>
-      <function variable="t" stylenumber="2" label="g">t^3</function>
+      <function variables="t" stylenumber="2" label="g">t^3</function>
     </graph>
     `}, "*");
     });

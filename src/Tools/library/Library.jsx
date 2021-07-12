@@ -25,11 +25,9 @@ import {
   selector,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
-  useRecoilCallback,
-} from 'recoil';
-import axios from 'axios';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
+  useRecoilCallback
+} from "recoil";
+import axios from "axios";
 
 /**
  * Internal dependencies
@@ -50,7 +48,7 @@ import DriveCards from '../../_reactComponents/Drive/DriveCards';
 import '../../_reactComponents/Drive/drivecard.css';
 import DoenetDriveCardMenu from '../../_reactComponents/Drive/DoenetDriveCardMenu';
 import '../../_utils/util.css';
-import GlobalFont from '../../_utils/GlobalFont';
+// import GlobalFont from '../../_utils/GlobalFont';
 import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
@@ -917,7 +915,7 @@ function AddMenuPanel(props) {
   </div>
   <div>
     <label>URL <input size="10" type="text" onChange={(e)=>setURLLink(e.target.value)} value={URLLink}/></label>
-  <Button callback={()=>{
+  <Button onClick={()=>{
     setFolderInfo({instructionType:"addItem",
     label:URLLabel === "" ? "Untitled" : URLLabel,
     url:URLLink,
@@ -1033,11 +1031,10 @@ export default function Library(props) {
 
   const profile = useContext(ProfileContext);
 
-  if (profile.signedIn === '0' && !window.Cypress) {
-    return (
-      <>
-        <GlobalFont />
-        <Tool>
+  if (profile.signedIn === "0" && !window.Cypress){
+    return (<>
+     {/* <GlobalFont/> */}
+    <Tool>
           <headerPanel title="Library"></headerPanel>
 
           <mainPanel>
@@ -1101,7 +1098,7 @@ export default function Library(props) {
 
   return (
     <>
-      <GlobalFont />
+    {/* <GlobalFont/> */}
       <URLPathSync route={props.route} />
       <Tool>
         <navPanel isInitOpen>
@@ -1201,13 +1198,46 @@ export default function Library(props) {
           </div>
         </supportPanel>
 
-        <menuPanel title="Selected" isInitOpen>
-          <ItemInfo />
-        </menuPanel>
-        <menuPanel title="+ Add Items" isInitOpen>
-          <AddMenuPanel route={props.route} />
-        </menuPanel>
-      </Tool>
+        urlClickBehavior="select" 
+        doenetMLDoubleClickCallback={(info)=>{
+          openOverlay({
+            type:"editor",
+            doenetId: info.item.doenetId,
+            title: info.item.label,
+            driveId: info.driveId,
+            folderId: info.item.parentFolderId,
+            itemId: info.item.itemId
+          });
+        }}
+        />
+      </Container>
+
+      <div 
+        onClick={
+          cleardrivecardSelection
+        }
+        tabIndex={0}
+        className={routePathDriveId ? '' : 'mainPanelStyle' }
+        >
+       <DriveCards
+       drivePathSyncKey="support"
+       types={['course']}
+      //  subTypes={['Administrator']}
+       />
+        </div>
+      </supportPanel>
+
+      <menuPanel title="Selected" isInitOpen>
+        <ItemInfo  />
+      </menuPanel>
+      <menuPanel title="+ Add Items" isInitOpen>
+       <AddMenuPanel route={props.route} />
+      </menuPanel>
+
+     
+
+     
+    </Tool>
     </>
   );
 }

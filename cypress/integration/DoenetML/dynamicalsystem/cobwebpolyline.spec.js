@@ -1,7 +1,7 @@
 describe('CobwebPolyline Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 
@@ -10,7 +10,7 @@ describe('CobwebPolyline Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <function name='f' hide='true' variable='x'>1/3*x*(3-x)+x</function>
+  <function name='f' hide='true' variables='x'>1/3*x*(3-x)+x</function>
   <number hide="true" name="nPoints">1</number>
 
   <point name="P1" hide="true" x="-1.5" y="0">

@@ -46,14 +46,14 @@ export default class Point extends GraphicalComponent {
     };
 
     attributes.displayDigits = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDigits",
       defaultValue: 10,
       public: true,
     };
 
     attributes.displayDecimals = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDecimals",
       defaultValue: null,
       public: true,
@@ -97,7 +97,8 @@ export default class Point extends GraphicalComponent {
         result.newAttributes = {
           xs: {
             componentType: "mathList",
-            children: result.newChildren
+            children: result.newChildren,
+            skipSugar: true,
           }
         },
           delete result.newChildren;

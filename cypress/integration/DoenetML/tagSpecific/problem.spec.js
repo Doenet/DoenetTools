@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Problem Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 
@@ -94,15 +94,15 @@ describe('Problem Tag Tests', function () {
       let p221PcaAnchor = cesc("#" + components["/p221Pca"].replacements[0].componentName);
       let p222CaAnchor = cesc("#" + components["/p222Ca"].replacements[0].componentName);
       let p222PcaAnchor = cesc("#" + components["/p222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')
@@ -512,15 +512,15 @@ describe('Problem Tag Tests', function () {
       let p221PcaAnchor = cesc("#" + components["/p221Pca"].replacements[0].componentName);
       let p222CaAnchor = cesc("#" + components["/p222Ca"].replacements[0].componentName);
       let p222PcaAnchor = cesc("#" + components["/p222Pca"].replacements[0].componentName);
-      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChild.componentName) + " textarea";
-      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChild.componentName) + " textarea";
+      let mathinput1Anchor = cesc('#' + components['/_answer1'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput2Anchor = cesc('#' + components['/_answer2'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput3Anchor = cesc('#' + components['/_answer3'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput4Anchor = cesc('#' + components['/_answer4'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput5Anchor = cesc('#' + components['/_answer5'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput6Anchor = cesc('#' + components['/_answer6'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput7Anchor = cesc('#' + components['/_answer7'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput8Anchor = cesc('#' + components['/_answer8'].stateValues.inputChildren[0].componentName) + " textarea";
+      let mathinput9Anchor = cesc('#' + components['/_answer9'].stateValues.inputChildren[0].componentName) + " textarea";
 
       cy.get(docCaAnchor).should('have.text', '0')
       cy.get(docPcaAnchor).should('have.text', '0')
@@ -898,7 +898,7 @@ describe('Problem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputName = components['/twox'].stateValues.inputChildren[0].componentName
       let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
       let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
       let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
@@ -914,7 +914,7 @@ describe('Problem Tag Tests', function () {
       cy.get(twoxInputIncorrectAnchor).should('not.exist');
 
 
-      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputName = components['/hello'].stateValues.inputChildren[0].componentName
       let helloInputAnchor = cesc('#' + helloInputName + "_input");
       let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
       let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
@@ -1106,7 +1106,7 @@ describe('Problem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputName = components['/twox'].stateValues.inputChildren[0].componentName
       let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
       let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
       let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
@@ -1122,7 +1122,7 @@ describe('Problem Tag Tests', function () {
       cy.get(twoxInputIncorrectAnchor).should('not.exist');
 
 
-      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputName = components['/hello'].stateValues.inputChildren[0].componentName
       let helloInputAnchor = cesc('#' + helloInputName + "_input");
       let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
       let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
@@ -1314,7 +1314,7 @@ describe('Problem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputName = components['/twox'].stateValues.inputChildren[0].componentName
       let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
       let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
       let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
@@ -1330,7 +1330,7 @@ describe('Problem Tag Tests', function () {
       cy.get(twoxInputIncorrectAnchor).should('not.exist');
 
 
-      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputName = components['/hello'].stateValues.inputChildren[0].componentName
       let helloInputAnchor = cesc('#' + helloInputName + "_input");
       let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
       let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
@@ -1525,7 +1525,7 @@ describe('Problem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputName = components['/twox'].stateValues.inputChildren[0].componentName
       let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
       let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
       let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
@@ -1541,7 +1541,7 @@ describe('Problem Tag Tests', function () {
       cy.get(twoxInputIncorrectAnchor).should('not.exist');
 
 
-      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputName = components['/hello'].stateValues.inputChildren[0].componentName
       let helloInputAnchor = cesc('#' + helloInputName + "_input");
       let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
       let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');
@@ -1755,7 +1755,7 @@ describe('Problem Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let twoxInputName = components['/twox'].stateValues.inputChild.componentName
+      let twoxInputName = components['/twox'].stateValues.inputChildren[0].componentName
       let twoxInputAnchor = cesc('#' + twoxInputName) + " textarea";
       let twoxInputSubmitAnchor = cesc('#' + twoxInputName + '_submit');
       let twoxInputCorrectAnchor = cesc('#' + twoxInputName + '_correct');
@@ -1771,7 +1771,7 @@ describe('Problem Tag Tests', function () {
       cy.get(twoxInputIncorrectAnchor).should('not.exist');
 
 
-      let helloInputName = components['/hello'].stateValues.inputChild.componentName
+      let helloInputName = components['/hello'].stateValues.inputChildren[0].componentName
       let helloInputAnchor = cesc('#' + helloInputName + "_input");
       let helloInputSubmitAnchor = cesc('#' + helloInputName + '_submit');
       let helloInputCorrectAnchor = cesc('#' + helloInputName + '_correct');

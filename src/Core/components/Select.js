@@ -51,12 +51,25 @@ export default class Select extends CompositeComponent {
         type = "math";
       }
 
-      if (!["math", "text", "number"].includes(type)) {
+      if (!["math", "text", "number", "boolean"].includes(type)) {
         console.warn(`Invalid type ${type}`);
         type = "math";
       }
 
       // break any string by white space and wrap pieces with option and type
+
+      let convertState = function(s) {
+        if(type==="math") {
+          return me.fromAst(textToAst.convert(s));
+        } else if (type==="number") {
+          return Number(s);
+        } else if(type==="boolean") {
+          return s.toLowerCase() === "true";
+        } else {
+          return s;
+        }
+      }
+
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
@@ -64,7 +77,7 @@ export default class Select extends CompositeComponent {
             ...a,
             ...c.state.value.split(/\s+/)
               .filter(s => s)
-              .map(s => type === "math" ? me.fromAst(textToAst.convert(s)) : (type === "number" ? Number(s) : s))
+              .map(convertState)
               .map(s => ({
                 componentType: "option",
                 children: [{
@@ -154,7 +167,7 @@ export default class Select extends CompositeComponent {
         optionChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroOptions",
-          variableNames: ["selectForVariants", "selectWeight"]
+          variableNames: ["selectForVariantNames", "selectWeight"]
         },
       }),
       definition({ dependencyValues }) {
@@ -187,12 +200,12 @@ export default class Select extends CompositeComponent {
 
         let availableVariants = {};
         for (let [ind, optionChild] of dependencyValues.optionChildren.entries()) {
-          for (let variantName of optionChild.stateValues.selectForVariants) {
+          for (let variantName of optionChild.stateValues.selectForVariantNames) {
             let variantLower = variantName.toLowerCase();
             if (availableVariants[variantLower] === undefined) {
               availableVariants[variantLower] = [];
             }
-            availableVariants[variantLower].push(ind);
+            availableVariants[variantLower].push(ind + 1);
           }
         }
 
@@ -293,7 +306,7 @@ export default class Select extends CompositeComponent {
               throw Error("All indices specified for select must be integers");
             }
             let n = dependencyValues.nOptions
-            desiredIndices = desiredIndices.map(x => ((x % n) + n) % n);
+            desiredIndices = desiredIndices.map(x => ((((x - 1) % n) + n) % n) + 1);
 
             return {
               makeEssential: { selectedIndices: true },
@@ -351,7 +364,7 @@ export default class Select extends CompositeComponent {
 
         //https://stackoverflow.com/a/44081700
         let cumulativeWeights = selectWeightByChild.reduce((a, x, i) => [...a, x + (a[i - 1] || 0)], []);
-        let indsRemaining = [...Array(cumulativeWeights.length).keys()];
+        let indsRemaining = [...Array(cumulativeWeights.length).keys()].map(x => x + 1);
 
         for (let ind = 0; ind < dependencyValues.numberToSelect; ind++) {
 
@@ -470,7 +483,7 @@ export default class Select extends CompositeComponent {
     for (let selectedIndex of component.stateValues.selectedIndices) {
 
 
-      let selectedChildName = component.stateValues.optionChildren[selectedIndex].componentName;
+      let selectedChildName = component.stateValues.optionChildren[selectedIndex - 1].componentName;
 
       let selectedChild = components[selectedChildName];
 
@@ -576,14 +589,10 @@ export default class Select extends CompositeComponent {
           return { success: false }
         }
       } else if (componentType === "withReplacement") {
-        // calculate withReplacement only if has its implicitValue or value set directly
+        // calculate withReplacement only if has its value set directly
         // or if has a child that is a string
         let foundValid = false;
         if (child.state !== undefined) {
-          if (child.state.implicitValue !== undefined) {
-            withReplacement = child.state.implicitValue;
-            foundValid = true;
-          }
           if (child.state.value !== undefined) {
             withReplacement = child.state.value;
             foundValid = true;

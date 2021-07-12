@@ -3,7 +3,7 @@ import me from 'math-expressions';
 describe('SelectFromSequence Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
   })
 
@@ -454,6 +454,49 @@ describe('SelectFromSequence Tag Tests', function () {
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample18" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample19" from="-4" to="2" excludecombinations="$ec ($e1 2) ($e2 $e3)" /></aslist></p>
     <p><aslist><selectfromsequence step="2" exclude="0" numbertoselect="2" name="sample20" from="-4" to="2" excludecombinations="$ec2 $ec3 $ec4" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let allowedCombinations = [[-4, 2], [-2, -4], [2, -2]];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
+        let num1 = components['/sample' + ind].replacements[0].stateValues.value;
+        let num2 = components['/sample' + ind].replacements[1].stateValues.value;
+
+        expect(allowedCombinations.some(v => v[0] === num1 && v[1] === num2)).eq(true);
+      }
+    })
+  });
+
+  it('select two even numbers from -4 to 2, excluding 0 and combinations, exclude extras', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample1" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample2" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample3" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample4" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample5" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample6" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample7" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample8" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample9" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample10" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample11" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample12" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample13" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample14" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample15" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample16" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample17" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample18" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample19" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
+    <p><aslist><selectfromsequence step="2" exclude="0 3 4 5 6 7 8" numbertoselect="2" name="sample20" from="-4" to="2" excludecombinations="(-4 -2) (-2 2) (2 -4)" /></aslist></p>
     `}, "*");
     });
 
@@ -1269,6 +1312,49 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
+  it('select multiple maths with excludes and excludecombinations, exclude extras', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample1" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample2" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample3" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample4" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample5" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample6" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample7" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample8" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample9" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample10" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample11" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample12" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample13" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample14" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample15" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample16" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample17" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample18" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample19" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    <p><aslist><selectfromsequence type="math" from="x" step="y" length="4" exclude="x+2y 2z q y" numbertoselect="2" name="sample20" excludecombinations="(x x+y) (x+y x+3y) (x+3y x)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let allowedCombinations = [[me.fromText('x'), me.fromText('x+3y')], [me.fromText('x+y'), me.fromText('x')], [me.fromText('x+3y'), me.fromText('x+y')]];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
+        let x1 = components['/sample' + ind].replacements[0].stateValues.value;
+        let x2 = components['/sample' + ind].replacements[1].stateValues.value;
+
+        expect(allowedCombinations.some(v => v[0].equals(x1) && v[1].equals(x2))).eq(true);
+      }
+    })
+  });
+
   it('select multiple letters with excludes and excludecombinations', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1344,6 +1430,49 @@ describe('SelectFromSequence Tag Tests', function () {
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample18" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample19" excludecombinations="$ec ($e1 m) ($e2 $e3)" /></aslist></p>
     <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p" numbertoselect="2" name="sample20" excludecombinations="$ec2 $ec3 (v $e3)" /></aslist></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    let allowedCombinations = [['m', 's'], ['s', 'v'], ['v', 'm']];
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 20; ind++) {
+        let x1 = components['/sample' + ind].replacements[0].stateValues.value;
+        let x2 = components['/sample' + ind].replacements[1].stateValues.value;
+
+        expect(allowedCombinations.some(v => v[0] === x1 && v[1] === x2)).eq(true);
+      }
+    })
+  });
+
+  it('select multiple letters with excludes and excludecombinations, exclude extras', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample1" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample2" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample3" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample4" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample5" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample6" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample7" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample8" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample9" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample10" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample11" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample12" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample13" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample14" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample15" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample16" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample17" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample18" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample19" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
+    <p><aslist><selectfromsequence type="letters" from="m" step="3" length="4" exclude="p q r z a" numbertoselect="2" name="sample20" excludecombinations="(m v) (s m) (v s)" /></aslist></p>
     `}, "*");
     });
 

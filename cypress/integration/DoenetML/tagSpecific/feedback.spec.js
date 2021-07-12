@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Feedback Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('feedback from answer value or credit', () => {
@@ -35,7 +35,7 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
@@ -120,7 +120,7 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
 
@@ -350,7 +350,7 @@ describe('Feedback Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName)
-      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
+      let choiceinputName = components['/_answer1'].stateValues.inputChildren[0].componentName;
       let choiceinputAnchor = cesc('#' + choiceinputName);
       let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
 
@@ -428,7 +428,7 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
 
       cy.log('Test value displayed in browser')
@@ -487,7 +487,7 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -611,7 +611,7 @@ describe('Feedback Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName);
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';

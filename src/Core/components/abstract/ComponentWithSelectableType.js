@@ -2,6 +2,7 @@ import BaseComponent from './BaseComponent';
 import me from 'math-expressions';
 import { convertValueToMathExpression, textToAst } from '../../utils/math';
 import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstrings';
+import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from '../commonsugar/lists';
 
 export class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentWithSelectableType";
@@ -145,6 +146,9 @@ export class ComponentWithSelectableType extends BaseComponent {
 export class ComponentListWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentListWithSelectableType";
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.type = {
@@ -156,44 +160,33 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    function breakIntoTypesBySpacesAndAddType({ matchedChildren, componentAttributes, parentAttributes }) {
-
-      let type = componentAttributes.type;
-      if (!type) {
-        type = parentAttributes.type;
-      }
-      if (!type) {
-        type = "number";
-      } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
-        console.warn(`Invalid type ${type}, setting type to number`);
-        type = "number";
-      }
-
-      let componentType = type === "letters" ? "text" : type;
-
-      // break any string by white space and wrap with componentType
-      matchedChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
-          return [
-            ...a,
-            ...c.state.value.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({ componentType, children: [{ componentType: "string", state: { value: s } }] }))
-          ]
-        } else {
-          return [...a, c]
-        }
-      }, []);
-
-      return {
-        success: true,
-        newChildren: matchedChildren
-      }
-    }
-
     sugarInstructions.push({
-      replacementFunction: breakIntoTypesBySpacesAndAddType
-    })
+      replacementFunction: function ({ matchedChildren,
+        componentAttributes, parentAttributes,
+        isAttributeComponent = false, createdFromMacro = false
+      }) {
+        let type = componentAttributes.type;
+        if (!type) {
+          type = parentAttributes.type;
+        }
+        if (!type) {
+          type = "number";
+        } else if (!["number", "letters", "math", "text", "boolean"].includes(type)) {
+          console.warn(`Invalid type ${type}, setting type to number`);
+          type = "number";
+        }
+
+        let componentType = type === "letters" ? "text" : type;
+
+        if (isAttributeComponent && !createdFromMacro) {
+          let groupIntoComponentTypesSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType });
+          return groupIntoComponentTypesSeparatedBySpaces({ matchedChildren });
+        } else {
+          let breakStringsIntoComponentTypesBySpaces = returnBreakStringsIntoComponentTypeBySpaces({ componentType });
+          return breakStringsIntoComponentTypesBySpaces({ matchedChildren })
+        }
+      }
+    });
 
 
     return sugarInstructions;

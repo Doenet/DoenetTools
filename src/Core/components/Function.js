@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { normalizeMathExpression } from '../utils/math';
+import { normalizeMathExpression, returnNVariables } from '../utils/math';
 import { returnDefaultStyleDefinitions } from '../utils/style';
 
 export default class Function extends InlineComponent {
@@ -9,9 +9,13 @@ export default class Function extends InlineComponent {
 
   static get stateVariablesShadowedForReference() {
     return [
-      "variable", "numericalf", "symbolicf", "symbolic",
-      "isInterpolatedFunction", "formula",
-      "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema"
+      "variables", "numericalfs", "symbolicfs", "symbolic",
+      "domain",
+      "nInputs", "nOutputs",
+      "symbolic", "isInterpolatedFunction", "formula",
+      "prescribedPoints", "prescribedMinima", "prescribedMaxima", "prescribedExtrema",
+      "displayDigits", "displayDecimals", "displaySmallAsZero",
+      "nPrescribedPoints"
     ]
   };
 
@@ -49,6 +53,15 @@ export default class Function extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.nInputs = {
+      createComponentOfType: "integer",
+    };
+    attributes.nOutputs = {
+      createComponentOfType: "integer",
+    };
+    attributes.domain = {
+      createComponentOfType: "_pointListComponent",
+    }
 
     // include attributes of graphical components
     // for case when function is adapted into a curve
@@ -95,12 +108,24 @@ export default class Function extends InlineComponent {
     attributes.throughSlopes = {
       createComponentOfType: "mathList"
     }
-    attributes.variable = {
-      createComponentOfType: "variable"
+    attributes.variables = {
+      createComponentOfType: "variables"
     }
     attributes.symbolic = {
       createComponentOfType: "boolean"
     }
+
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+    };
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+    };
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+    };
 
     return attributes;
   }
@@ -212,6 +237,238 @@ export default class Function extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      componentType: "integer",
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["displayDigits"],
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displayDecimalsAttr !== null) {
+          return {
+            newValues: {
+              displayDigits: dependencyValues.displayDecimalsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionChild.length === 1 && !usedDefault.functionChild[0]) {
+          return {
+            newValues: {
+              displayDigits: dependencyValues.functionChild[0].stateValues.displayDigits
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { displayDigits: { variablesToCheck: ["displayDigits"] } }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.displayDecimals = {
+      public: true,
+      componentType: "integer",
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["displayDecimals"],
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displayDecimalsAttr !== null) {
+          return {
+            newValues: {
+              displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionChild.length === 1 && !usedDefault.functionChild[0]) {
+          return {
+            newValues: {
+              displayDecimals: dependencyValues.functionChild[0].stateValues.displayDecimals
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { displayDecimals: { variablesToCheck: ["displayDecimals"] } }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.displaySmallAsZero = {
+      public: true,
+      componentType: "number",
+      defaultValue: 0,
+      returnDependencies: () => ({
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displaySmallAsZero",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["displaySmallAsZero"],
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displayDecimalsAttr !== null) {
+          return {
+            newValues: {
+              displaySmallAsZero: dependencyValues.displayDecimalsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionChild.length === 1 && !usedDefault.functionChild[0]) {
+          return {
+            newValues: {
+              displaySmallAsZero: dependencyValues.functionChild[0].stateValues.displaySmallAsZero
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { displaySmallAsZero: { variablesToCheck: ["displaySmallAsZero"] } }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.nInputs = {
+      defaultValue: 1,
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        nInputsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nInputs",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["nInputs"]
+        },
+        variablesAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "variables",
+          variableNames: ["nComponents"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              nInputs: dependencyValues.functionChild[0].stateValues.nInputs
+            }
+          }
+        } else if (dependencyValues.nInputsAttr !== null) {
+          let nInputs = dependencyValues.nInputsAttr.stateValues.value;
+          if (!(nInputs >= 0)) {
+            nInputs = 1;
+          }
+          return { newValues: { nInputs } };
+        } else if (dependencyValues.variablesAttr !== null) {
+          return { newValues: { nInputs: dependencyValues.variablesAttr.stateValues.nComponents } }
+        } else {
+          return { useEssentialOrDefaultValue: { nInputs: { variablesToCheck: ["nInputs"] } } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.nOutputs = {
+      defaultValue: 1,
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        nOutputsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "nOutputs",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["nOutputs"]
+        },
+        formulaAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "formula",
+          variableNames: ["value"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              nOutputs: dependencyValues.functionChild[0].stateValues.nOutputs
+            }
+          }
+        } else if (dependencyValues.nOutputsAttr !== null) {
+          let nOutputs = dependencyValues.nOutputsAttr.stateValues.value;
+          if (!(nOutputs >= 0)) {
+            nOutputs = 1;
+          }
+          return { newValues: { nOutputs } };
+        } else if (dependencyValues.formulaAttr !== null) {
+          let formula = dependencyValues.formulaAttr.stateValues.value;
+          let formulaIsVectorValued = Array.isArray(formula.tree) &&
+            ["tuple", "vector"].includes(formula.tree[0]);
+
+          let nOutputs = 1;
+          if (formulaIsVectorValued) {
+            nOutputs = formula.tree.length - 1;
+          }
+          return { newValues: { nOutputs } }
+        } else {
+          return { useEssentialOrDefaultValue: { nOutputs: { variablesToCheck: ["nOutputs"] } } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.domain = {
+      defaultValue: null,
+      returnDependencies: () => ({
+        domainAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "domain",
+          variableNames: ["points"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atMostOneFunction",
+          variableNames: ["domain"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.functionChild.length === 1) {
+          return {
+            newValues: {
+              domain: dependencyValues.functionChild[0].stateValues.domain
+            }
+          }
+        } else if (dependencyValues.domainAttr !== null) {
+          return { newValues: { domain: dependencyValues.domainAttr.stateValues.points } };
+        } else {
+          return { useEssentialOrDefaultValue: { domain: { variablesToCheck: ["domain"] } } }
+        }
+      }
+    }
+
     stateVariableDefinitions.numericalfShadow = {
       defaultValue: null,
       returnDependencies: () => ({}),
@@ -302,55 +559,94 @@ export default class Function extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.variable = {
+    stateVariableDefinitions.variables = {
+      isArray: true,
       public: true,
       componentType: "variable",
-      defaultValue: me.fromAst("x"),
-      returnDependencies: () => ({
-        variableAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "variable",
-          variableNames: ["value"],
-        },
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneFunction",
-          variableNames: ["variable"],
-        },
-        parentVariableForChild: {
-          dependencyType: "parentStateVariable",
-          variableName: "variableForChild"
-        },
-        isInterpolatedFunction: {
+      entryPrefixes: ["variable"],
+      returnArraySizeDependencies: () => ({
+        nInputs: {
           dependencyType: "stateVariable",
-          variableName: "isInterpolatedFunction"
-        }
+          variableName: "nInputs",
+        },
       }),
-      definition: function ({ dependencyValues, usedDefault }) {
-        if (dependencyValues.isInterpolatedFunction) {
-          return { newValues: { variable: me.fromAst('\uff3f') } };
-        } else if (dependencyValues.functionChild.length === 1) {
-          if (dependencyValues.variableAttr !== null) {
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nInputs];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          variablesAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "variables",
+            variableNames: ["variables"],
+          },
+          parentVariableForChild: {
+            dependencyType: "parentStateVariable",
+            variableName: "variableForChild"
+          },
+          isInterpolatedFunction: {
+            dependencyType: "stateVariable",
+            variableName: "isInterpolatedFunction"
+          },
+          functionChild: {
+            dependencyType: "child",
+            childLogicName: "atMostOneFunction",
+          },
+        };
+
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            functionChild: {
+              dependencyType: "child",
+              childLogicName: "atMostOneFunction",
+              variableNames: ["variable" + (Number(arrayKey) + 1)],
+            },
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey }
+      },
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arraySize, arrayKeys, usedDefault }) {
+        if (globalDependencyValues.isInterpolatedFunction) {
+          return { newValues: { variables: Array(arraySize[0]).fill(me.fromAst('\uff3f')) } };
+        } else if (globalDependencyValues.functionChild.length === 1) {
+          if (globalDependencyValues.variablesAttr !== null) {
             console.warn("Variable for function is ignored when it has a function child")
           }
-          return { newValues: { variable: dependencyValues.functionChild[0].stateValues.variable } }
-        } else if (dependencyValues.variableAttr !== null) {
-          return { newValues: { variable: dependencyValues.variableAttr.stateValues.value } }
-        } else if (dependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
-          return { newValues: { variable: dependencyValues.parentVariableForChild } }
+          let variables = {};
+          for (let arrayKey of arrayKeys) {
+            variables[arrayKey] = dependencyValuesByKey[arrayKey].functionChild[0]
+              .stateValues["variable" + (Number(arrayKey) + 1)];
+          }
+          return { newValues: { variables } }
+        } else if (globalDependencyValues.variablesAttr !== null) {
+          let variablesSpecified = globalDependencyValues.variablesAttr.stateValues.variables;
+          return {
+            newValues: {
+              variables: returnNVariables(arraySize[0], variablesSpecified)
+            }
+          }
+        } else if (globalDependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
+          return { newValues: { variables: Array(arraySize[0]).fill(globalDependencyValues.parentVariableForChild) } }
         } else {
           return {
-            useEssentialOrDefaultValue: {
-              variable: { variablesToCheck: ["variable"] }
+            newValues: {
+              variables: returnNVariables(arraySize[0], [])
             }
           }
         }
       }
     }
 
+    stateVariableDefinitions.variable = {
+      isAlias: true,
+      targetVariableName: "variable1"
+    };
+
     stateVariableDefinitions.formula = {
       public: true,
-      componentType: "formula",
+      componentType: "math",
       defaultValue: me.fromAst(0),
       returnDependencies: () => ({
         formulaAttr: {
@@ -372,18 +668,18 @@ export default class Function extends InlineComponent {
 
         if (dependencyValues.isInterpolatedFunction) {
           return { newValues: { formula: me.fromAst('\uff3f') } };
-        } else if (dependencyValues.formulaAttr !== null) {
-
-          return {
-            newValues: {
-              formula: dependencyValues.formulaAttr.stateValues.value
-            }
-          }
         } else if (dependencyValues.functionChild.length === 1) {
 
           return {
             newValues: {
               formula: dependencyValues.functionChild[0].stateValues.formula
+            }
+          }
+        } else if (dependencyValues.formulaAttr !== null) {
+
+          return {
+            newValues: {
+              formula: dependencyValues.formulaAttr.stateValues.value
             }
           }
         } else {
@@ -600,249 +896,400 @@ export default class Function extends InlineComponent {
     }
 
 
-    stateVariableDefinitions.symbolicf = {
+    stateVariableDefinitions.symbolicfs = {
+      isArray: true,
+      entryPrefixes: ["symbolicf"],
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
-      returnDependencies({ stateValues }) {
-
+      returnArraySizeDependencies: () => ({
+        nOutputs: {
+          dependencyType: "stateVariable",
+          variableName: "nOutputs"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nOutputs];
+      },
+      returnArrayDependenciesByKey({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
           return {
-            xs: {
-              dependencyType: "stateVariable",
-              variableName: "xs"
-            },
-            coeffs: {
-              dependencyType: "stateVariable",
-              variableName: "coeffs"
-            },
-            interpolationPoints: {
-              dependencyType: "stateVariable",
-              variableName: "interpolationPoints"
-            },
-            isInterpolatedFunction: {
-              dependencyType: "stateVariable",
-              variableName: "isInterpolatedFunction"
+            globalDependencies: {
+              xs: {
+                dependencyType: "stateVariable",
+                variableName: "xs"
+              },
+              coeffs: {
+                dependencyType: "stateVariable",
+                variableName: "coeffs"
+              },
+              interpolationPoints: {
+                dependencyType: "stateVariable",
+                variableName: "interpolationPoints"
+              },
+              isInterpolatedFunction: {
+                dependencyType: "stateVariable",
+                variableName: "isInterpolatedFunction"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
+              }
             }
           }
         } else {
           return {
-            formula: {
-              dependencyType: "stateVariable",
-              variableName: "formula",
-            },
-            variable: {
-              dependencyType: "stateVariable",
-              variableName: "variable",
-            },
-            functionChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneFunction",
-              variableNames: ["symbolicf"],
-            },
-            simplify: {
-              dependencyType: "stateVariable",
-              variableName: "simplify"
-            },
-            expand: {
-              dependencyType: "stateVariable",
-              variableName: "expand"
-            },
-            isInterpolatedFunction: {
-              dependencyType: "stateVariable",
-              variableName: "isInterpolatedFunction"
-            },
-            symbolicfShadow: {
-              dependencyType: "stateVariable",
-              variableName: "symbolicfShadow"
-            },
-            numericalfShadow: {
-              dependencyType: "stateVariable",
-              variableName: "numericalfShadow"
+            globalDependencies: {
+              formula: {
+                dependencyType: "stateVariable",
+                variableName: "formula",
+              },
+              variables: {
+                dependencyType: "stateVariable",
+                variableName: "variables",
+              },
+              nInputs: {
+                dependencyType: "stateVariable",
+                variableName: "nInputs",
+              },
+              functionChild: {
+                dependencyType: "child",
+                childLogicName: "atMostOneFunction",
+                variableNames: ["symbolicfs"],
+              },
+              simplify: {
+                dependencyType: "stateVariable",
+                variableName: "simplify"
+              },
+              expand: {
+                dependencyType: "stateVariable",
+                variableName: "expand"
+              },
+              isInterpolatedFunction: {
+                dependencyType: "stateVariable",
+                variableName: "isInterpolatedFunction"
+              },
+              symbolicfShadow: {
+                dependencyType: "stateVariable",
+                variableName: "symbolicfShadow"
+              },
+              numericalfShadow: {
+                dependencyType: "stateVariable",
+                variableName: "numericalfShadow"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
+              }
             }
           }
         }
       },
-      definition: function ({ dependencyValues, usedDefault }) {
+      arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys }) {
 
-        if (dependencyValues.isInterpolatedFunction) {
-          let numericalf = returnInterpolatedFunction(dependencyValues);
-          return {
-            newValues: {
-              symbolicf: function (x) {
+        if (globalDependencyValues.isInterpolatedFunction) {
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            if (arrayKey === "0") {
+              let numericalf = returnInterpolatedFunction(globalDependencyValues);
+              symbolicfs[arrayKey] = function (x) {
                 me.fromAst(numericalf(x.evaluate_to_constant()))
               }
+            } else {
+              symbolicfs[arrayKey] = x => me.fromAst('\uff3f');
             }
           }
-        } else if (dependencyValues.functionChild.length === 1) {
           return {
-            newValues: {
-              symbolicf: dependencyValues.functionChild[0].stateValues.symbolicf
-            }
+            newValues: { symbolicfs }
+          }
+        } else if (globalDependencyValues.functionChild.length === 1) {
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            symbolicfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
+              .symbolicfs[arrayKey];
+          }
+          return {
+            newValues: { symbolicfs }
           }
         } else if (!usedDefault.formula) {
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey);
+          }
           return {
-            newValues: {
-              symbolicf: returnSymbolicFunctionFromFormula(dependencyValues)
+            newValues: { symbolicfs }
+          }
+        } else if (globalDependencyValues.symbolicfShadow) {
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            if (arrayKey === "0") {
+              symbolicfs[arrayKey] = globalDependencyValues.symbolicfShadow;
+            } else {
+              symbolicfs[arrayKey] = x => me.fromAst('\uff3f');
             }
           }
-        } else if (dependencyValues.symbolicfShadow) {
           return {
-            newValues: { symbolicf: dependencyValues.symbolicfShadow }
+            newValues: { symbolicfs }
           }
 
-        } else if (dependencyValues.numericalfShadow) {
-          return {
-            newValues: {
-              symbolicf: function (x) {
+        } else if (globalDependencyValues.numericalfShadow) {
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            if (arrayKey === "0") {
+              symbolicfs[arrayKey] = function (x) {
                 let input = x.evaluate_to_constant();
-                if(input === null) {
+                if (input === null) {
                   return NaN;
                 }
-                return me.fromAst(dependencyValues.numericalfShadow(input))
+                return me.fromAst(globalDependencyValues.numericalfShadow(input))
               }
+            } else {
+              symbolicfs[arrayKey] = x => me.fromAst('\uff3f');
             }
           }
-        } else {
           return {
-            newValues: {
-              symbolicf: returnSymbolicFunctionFromFormula(dependencyValues)
-            }
+            newValues: { symbolicfs }
+          }
+        } else {
+          let symbolicfs = {};
+          for (let arrayKey of arrayKeys) {
+            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey);
+          }
+          return {
+            newValues: { symbolicfs }
           }
         }
       }
     }
 
+    stateVariableDefinitions.symbolicf = {
+      isAlias: true,
+      targetVariableName: "symbolicf1"
+    };
 
-    stateVariableDefinitions.numericalf = {
+
+    stateVariableDefinitions.numericalfs = {
+      isArray: true,
+      entryPrefixes: ["numericalf"],
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
-      returnDependencies({ stateValues }) {
-
+      returnArraySizeDependencies: () => ({
+        nOutputs: {
+          dependencyType: "stateVariable",
+          variableName: "nOutputs"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nOutputs];
+      },
+      returnArrayDependenciesByKey({ stateValues }) {
         if (stateValues.isInterpolatedFunction) {
           return {
-            xs: {
-              dependencyType: "stateVariable",
-              variableName: "xs"
-            },
-            coeffs: {
-              dependencyType: "stateVariable",
-              variableName: "coeffs"
-            },
-            interpolationPoints: {
-              dependencyType: "stateVariable",
-              variableName: "interpolationPoints"
-            },
-            isInterpolatedFunction: {
-              dependencyType: "stateVariable",
-              variableName: "isInterpolatedFunction"
+            globalDependencies: {
+              xs: {
+                dependencyType: "stateVariable",
+                variableName: "xs"
+              },
+              coeffs: {
+                dependencyType: "stateVariable",
+                variableName: "coeffs"
+              },
+              interpolationPoints: {
+                dependencyType: "stateVariable",
+                variableName: "interpolationPoints"
+              },
+              isInterpolatedFunction: {
+                dependencyType: "stateVariable",
+                variableName: "isInterpolatedFunction"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
+              }
             }
           }
         } else {
           return {
-            formula: {
-              dependencyType: "stateVariable",
-              variableName: "formula",
-            },
-            variable: {
-              dependencyType: "stateVariable",
-              variableName: "variable",
-            },
-            functionChild: {
-              dependencyType: "child",
-              childLogicName: "atMostOneFunction",
-              variableNames: ["numericalf"],
-            },
-            isInterpolatedFunction: {
-              dependencyType: "stateVariable",
-              variableName: "isInterpolatedFunction"
-            },
-            symbolicfShadow: {
-              dependencyType: "stateVariable",
-              variableName: "symbolicfShadow"
-            },
-            numericalfShadow: {
-              dependencyType: "stateVariable",
-              variableName: "numericalfShadow"
+            globalDependencies: {
+              formula: {
+                dependencyType: "stateVariable",
+                variableName: "formula",
+              },
+              variables: {
+                dependencyType: "stateVariable",
+                variableName: "variables",
+              },
+              nInputs: {
+                dependencyType: "stateVariable",
+                variableName: "nInputs",
+              },
+              functionChild: {
+                dependencyType: "child",
+                childLogicName: "atMostOneFunction",
+                variableNames: ["numericalfs"],
+              },
+              isInterpolatedFunction: {
+                dependencyType: "stateVariable",
+                variableName: "isInterpolatedFunction"
+              },
+              symbolicfShadow: {
+                dependencyType: "stateVariable",
+                variableName: "symbolicfShadow"
+              },
+              numericalfShadow: {
+                dependencyType: "stateVariable",
+                variableName: "numericalfShadow"
+              },
+              domain: {
+                dependencyType: "stateVariable",
+                variableName: "domain"
+              }
             }
           }
         }
       },
-      definition: function ({ dependencyValues, usedDefault }) {
-        if (dependencyValues.isInterpolatedFunction) {
-          return {
-            newValues: {
-              numericalf: returnInterpolatedFunction(dependencyValues)
+      arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys }) {
+        if (globalDependencyValues.isInterpolatedFunction) {
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            if (arrayKey === "0") {
+              numericalfs[arrayKey] = returnInterpolatedFunction(globalDependencyValues);
+            } else {
+              numericalfs[arrayKey] = x => me.fromAst('\uff3f');
             }
           }
-        }
-        else if (dependencyValues.functionChild.length === 1) {
           return {
-            newValues: {
-              numericalf: dependencyValues.functionChild[0].stateValues.numericalf
-            }
+            newValues: { numericalfs }
+          }
+        } else if (globalDependencyValues.functionChild.length === 1) {
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            numericalfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
+              .numericalfs[arrayKey];
+          }
+          return {
+            newValues: { numericalfs }
           }
         } else if (!usedDefault.formula) {
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            numericalfs[arrayKey] = returnNumericalFunctionFromFormula(globalDependencyValues, arrayKey);
+          }
           return {
-            newValues: {
-              numericalf: returnNumericalFunctionFromFormula(dependencyValues)
+            newValues: { numericalfs }
+          }
+        } else if (globalDependencyValues.numericalfShadow) {
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            if (arrayKey === "0") {
+              numericalfs[arrayKey] = globalDependencyValues.numericalfShadow;
+            } else {
+              numericalfs[arrayKey] = () => NaN;
             }
           }
-        } else if (dependencyValues.numericalfShadow) {
           return {
-            newValues: { numericalf: dependencyValues.numericalfShadow }
+            newValues: { numericalfs }
           }
-        } else if (dependencyValues.symbolicfShadow) {
-          return {
-            newValues: {
-              numericalf: function (x) {
+
+        } else if (globalDependencyValues.symbolicfShadow) {
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            if (arrayKey === "0") {
+              numericalfs[arrayKey] = function (x) {
                 let val = dependencyValues.symbolicfShadow(me.fromAst(x)).evaluate_to_constant();
                 if (val === null) {
                   val = NaN
                 }
                 return val;
               }
+            } else {
+              numericalfs[arrayKey] = () => NaN;
             }
           }
-        } else {
           return {
-            newValues: {
-              numericalf: returnNumericalFunctionFromFormula(dependencyValues)
-            }
+            newValues: { numericalfs }
+          }
+        } else {
+          let numericalfs = {};
+          for (let arrayKey of arrayKeys) {
+            numericalfs[arrayKey] = returnNumericalFunctionFromFormula(globalDependencyValues, arrayKey);
+          }
+          return {
+            newValues: { numericalfs }
           }
         }
       }
     }
 
+    // rather use alias, create actual numericalf
+    // state variable as we use it for an adapter
+    stateVariableDefinitions.numericalf = {
+      returnDependencies: () => ({
+        numericalf1: {
+          dependencyType: "stateVariable",
+          variableName: "numericalf1"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { numericalf: dependencyValues.numericalf1 } };
+      }
+    };
+
+
+    stateVariableDefinitions.fs = {
+      isArray: true,
+      entryPrefixes: ["f"],
+      returnArraySizeDependencies: () => ({
+        nOutputs: {
+          dependencyType: "stateVariable",
+          variableName: "nOutputs"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nOutputs];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let globalDependencies = {
+          symbolic: {
+            dependencyType: "stateVariable",
+            variableName: "symbolic",
+          }
+        }
+
+        let dependenciesByKey = {}
+        for (let arrayKey of arrayKeys) {
+          let varEnding = Number(arrayKey) + 1;
+          dependenciesByKey[arrayKey] = {
+            symbolicf: {
+              dependencyType: "stateVariable",
+              variableName: "symbolicf" + varEnding,
+            },
+            numericalf: {
+              dependencyType: "stateVariable",
+              variableName: "numericalf" + varEnding,
+            },
+          }
+        }
+
+        return { globalDependencies, dependenciesByKey };
+
+      },
+      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+        let fs = {};
+        if (globalDependencyValues.symbolic) {
+          for (let arrayKey of arrayKeys) {
+            fs[arrayKey] = dependencyValuesByKey[arrayKey].symbolicf;
+          }
+        } else {
+          for (let arrayKey of arrayKeys) {
+            fs[arrayKey] = dependencyValuesByKey[arrayKey].numericalf;
+          }
+        }
+        return { newValues: { fs } }
+      }
+    }
 
     stateVariableDefinitions.f = {
-      returnDependencies: () => ({
-        symbolic: {
-          dependencyType: "stateVariable",
-          variableName: "symbolic",
-        },
-        symbolicf: {
-          dependencyType: "stateVariable",
-          variableName: "symbolicf",
-        },
-        numericalf: {
-          dependencyType: "stateVariable",
-          variableName: "numericalf",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.symbolic) {
-          return {
-            newValues: {
-              f: dependencyValues.symbolicf
-            }
-          }
-        } else {
-          return {
-            newValues: {
-              f: dependencyValues.numericalf
-            }
-          }
-        }
-      }
-    }
+      isAlias: true,
+      targetVariableName: "f1"
+    };
 
     stateVariableDefinitions.latex = {
       public: true,
@@ -890,6 +1337,10 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
             },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
           }
         } else {
           return {
@@ -909,7 +1360,20 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
-            }
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs"
+            },
+            nOutputs: {
+              dependencyType: "stateVariable",
+              variableName: "nOutputs"
+            },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
+
           }
         }
       },
@@ -929,6 +1393,23 @@ export default class Function extends InlineComponent {
 
           let minimumAtPreviousRight = false;
 
+          let minx = -Infinity, maxx = Infinity;
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -Infinity;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = Infinity;
+                }
+              } catch (e) { }
+            }
+          }
+
           // since extrapolate for x < xs[0], formula based on coeffs[0]
           // is valid for x < xs[1]
           let c = coeffs[0];
@@ -938,10 +1419,12 @@ export default class Function extends InlineComponent {
             // have quadratic.  Minimum only if c[2] > 0
             if (c[2] > 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x <= dx - eps) {
-                minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                minimumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  minimumAtPreviousRight = true;
+                }
               }
             }
           } else {
@@ -953,10 +1436,12 @@ export default class Function extends InlineComponent {
 
               // critical point where choose +sqrtdiscrim is minimum
               let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-              if (x <= dx - eps) {
-                minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                minimumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  minimaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  minimumAtPreviousRight = true;
+                }
               }
             }
           }
@@ -969,15 +1454,20 @@ export default class Function extends InlineComponent {
               // have quadratic.  Minimum only if c[2] > 0
               if (c[2] > 0) {
                 let x = -c[1] / (2 * c[2]);
-                if (Math.abs(x) < eps) {
-                  if (minimumAtPreviousRight) {
-                    minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (minimumAtPreviousRight) {
+                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    minimumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                minimumAtPreviousRight = (Math.abs(x - dx) < eps);
-
               } else {
                 minimumAtPreviousRight = false;
               }
@@ -990,14 +1480,20 @@ export default class Function extends InlineComponent {
 
                 // critical point where choose +sqrtdiscrim is minimum
                 let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-                if (Math.abs(x) < eps) {
-                  if (minimumAtPreviousRight) {
-                    minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (minimumAtPreviousRight) {
+                        minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    minimumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  minimaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                minimumAtPreviousRight = (Math.abs(x - dx) < eps);
 
               } else {
                 minimumAtPreviousRight = false;
@@ -1012,12 +1508,14 @@ export default class Function extends InlineComponent {
             // have quadratic.  Minimum only if c[2] > 0
             if (c[2] > 0) {
               let x = -c[1] / (2 * c[2]);
-              if (Math.abs(x) < eps) {
-                if (minimumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (Math.abs(x) < eps) {
+                  if (minimumAtPreviousRight) {
+                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
+                } else if (x >= eps) {
                   minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-              } else if (x >= eps) {
-                minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             }
           } else {
@@ -1029,11 +1527,13 @@ export default class Function extends InlineComponent {
 
               // critical point where choose +sqrtdiscrim is minimum
               let x = (-2 * c[2] + sqrtdiscrim) / (6 * c[3]);
-              if (x >= eps) {
-                minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x) < eps) {
-                if (minimumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (x >= eps) {
                   minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x) < eps) {
+                  if (minimumAtPreviousRight) {
+                    minimaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 }
               }
             }
@@ -1057,12 +1557,39 @@ export default class Function extends InlineComponent {
 
           // no function child
 
+          // calculate only for functions from R -> R
+          if (!(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)) {
+            return {
+              newValues: {
+                allMinima: []
+              }
+            }
+          }
+
           let f = dependencyValues.numericalf;
 
-          // for now, look for minima in interval -100*xscale to 100*xscale
+          // for now, look for minima in interval -100*xscale to 100*xscale,
+          // or domain if specified,
           // dividing interval into 1000 subintervals
           let minx = -100 * dependencyValues.xscale;
           let maxx = 100 * dependencyValues.xscale;
+
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -100 * dependencyValues.xscale;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = 100 * dependencyValues.xscale;
+                }
+              } catch (e) { }
+            }
+          }
+
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
@@ -1255,6 +1782,10 @@ export default class Function extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
             },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
           }
 
         } else {
@@ -1276,7 +1807,19 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
-            }
+            },
+            nInputs: {
+              dependencyType: "stateVariable",
+              variableName: "nInputs"
+            },
+            nOutputs: {
+              dependencyType: "stateVariable",
+              variableName: "nOutputs"
+            },
+            domain: {
+              dependencyType: "stateVariable",
+              variableName: "domain"
+            },
           }
         }
       },
@@ -1296,6 +1839,23 @@ export default class Function extends InlineComponent {
 
           let maximumAtPreviousRight = false;
 
+          let minx = -Infinity, maxx = Infinity;
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -Infinity;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = Infinity;
+                }
+              } catch (e) { }
+            }
+          }
+
           // since extrapolate for x < xs[0], formula based on coeffs[0]
           // is valid for x < xs[1]
           let c = coeffs[0];
@@ -1305,10 +1865,12 @@ export default class Function extends InlineComponent {
             // have quadratic.  Maximum only if c[2] < 0
             if (c[2] < 0) {
               let x = -c[1] / (2 * c[2]);
-              if (x <= dx - eps) {
-                maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                maximumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  maximumAtPreviousRight = true;
+                }
               }
             }
           } else {
@@ -1320,10 +1882,12 @@ export default class Function extends InlineComponent {
 
               // critical point where choose -sqrtdiscrim is maximum
               let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-              if (x <= dx - eps) {
-                maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x - dx) < eps) {
-                maximumAtPreviousRight = true;
+              if (x + xs[0] >= minx && x + xs[0] <= maxx) {
+                if (x <= dx - eps) {
+                  maximaList.push([x + xs[0], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x - dx) < eps) {
+                  maximumAtPreviousRight = true;
+                }
               }
             }
           }
@@ -1336,15 +1900,20 @@ export default class Function extends InlineComponent {
               // have quadratic.  Maximum only if c[2] < 0
               if (c[2] < 0) {
                 let x = -c[1] / (2 * c[2]);
-                if (Math.abs(x) < eps) {
-                  if (maximumAtPreviousRight) {
-                    maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (maximumAtPreviousRight) {
+                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    maximumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                maximumAtPreviousRight = (Math.abs(x - dx) < eps);
-
               } else {
                 maximumAtPreviousRight = false;
               }
@@ -1357,15 +1926,20 @@ export default class Function extends InlineComponent {
 
                 // critical point where choose -sqrtdiscrim is maximum
                 let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-                if (Math.abs(x) < eps) {
-                  if (maximumAtPreviousRight) {
-                    maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                if (x + xs[i] >= minx) {
+                  if (x + xs[i] <= maxx) {
+                    if (Math.abs(x) < eps) {
+                      if (maximumAtPreviousRight) {
+                        maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                      }
+                    } else if (x >= eps && x <= dx - eps) {
+                      maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                    }
+                    maximumAtPreviousRight = (Math.abs(x - dx) < eps);
+                  } else {
+                    break;
                   }
-                } else if (x >= eps && x <= dx - eps) {
-                  maximaList.push([x + xs[i], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-                maximumAtPreviousRight = (Math.abs(x - dx) < eps);
-
               } else {
                 maximumAtPreviousRight = false;
               }
@@ -1379,12 +1953,14 @@ export default class Function extends InlineComponent {
             // have quadratic.  Maximum only if c[2] < 0
             if (c[2] < 0) {
               let x = -c[1] / (2 * c[2]);
-              if (Math.abs(x) < eps) {
-                if (maximumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (Math.abs(x) < eps) {
+                  if (maximumAtPreviousRight) {
+                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
+                } else if (x >= eps) {
                   maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
                 }
-              } else if (x >= eps) {
-                maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
               }
             }
           } else {
@@ -1396,11 +1972,13 @@ export default class Function extends InlineComponent {
 
               // critical point where choose -sqrtdiscrim is maximum
               let x = (-2 * c[2] - sqrtdiscrim) / (6 * c[3]);
-              if (x >= eps) {
-                maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
-              } else if (Math.abs(x) < eps) {
-                if (maximumAtPreviousRight) {
+              if (x + xs[xs.length - 2] >= minx && x + xs[xs.length - 2] <= maxx) {
+                if (x >= eps) {
                   maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                } else if (Math.abs(x) < eps) {
+                  if (maximumAtPreviousRight) {
+                    maximaList.push([x + xs[xs.length - 2], ((c[3] * x + c[2]) * x + c[1]) * x + c[0]]);
+                  }
                 }
               }
             }
@@ -1424,12 +2002,39 @@ export default class Function extends InlineComponent {
 
           // no function child
 
+          // calculate only for functions from R -> R
+          if (!(dependencyValues.nInputs === 1 && dependencyValues.nOutputs === 1)) {
+            return {
+              newValues: {
+                allMaxima: []
+              }
+            }
+          }
+
           let f = (x) => -dependencyValues.numericalf(x);
 
-          // for now, look for maxima in interval -100*xscale to 100*xscale
+          // for now, look for maxima in interval -100*xscale to 100*xscale,
+          // or domain if specified,
           // dividing interval into 1000 subintervals
           let minx = -100 * dependencyValues.xscale;
           let maxx = 100 * dependencyValues.xscale;
+
+          if (dependencyValues.domain !== null) {
+            let domain = dependencyValues.domain[0];
+            if (domain !== undefined) {
+              try {
+                minx = domain[0].evaluate_to_constant();
+                if (!Number.isFinite(minx)) {
+                  minx = -100 * dependencyValues.xscale;
+                }
+                maxx = domain[1].evaluate_to_constant();
+                if (!Number.isFinite(maxx)) {
+                  maxx = 100 * dependencyValues.xscale;
+                }
+              } catch (e) { }
+            }
+          }
+
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
@@ -1757,25 +2362,6 @@ export default class Function extends InlineComponent {
     }
 
 
-    // we make function child be a state variable
-    // as we need a state variable to determine other dependencies
-    // using stateVariablesDeterminingDependencies
-    stateVariableDefinitions.functionChild = {
-      returnDependencies: () => ({
-        functionChild: {
-          dependencyType: "child",
-          childLogicName: "atMostOneFunction"
-        }
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.functionChild.length === 1) {
-          return { newValues: { functionChild: dependencyValues.functionChild[0] } }
-        } else {
-          return { newValues: { functionChild: null } }
-        }
-      }
-    }
-
     stateVariableDefinitions.returnNumericalDerivatives = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       returnDependencies({ stateValues }) {
@@ -1853,31 +2439,123 @@ export default class Function extends InlineComponent {
 }
 
 
-export function returnSymbolicFunctionFromFormula(dependencyValues) {
+export function returnSymbolicFunctionFromFormula(dependencyValues, arrayKey) {
 
   let formula = dependencyValues.formula;
-  let varString = dependencyValues.variable.tree;
+
+  let formulaIsVectorValued = Array.isArray(formula.tree) &&
+    ["tuple", "vector"].includes(formula.tree[0]);
+
+  if (formulaIsVectorValued) {
+    try {
+      formula = formula.get_component(Number(arrayKey));
+    } catch (e) {
+      return x => me.fromAst('\uff3f')
+    }
+  } else if (arrayKey !== "0") {
+    return x => me.fromAst('\uff3f')
+  }
+
   let simplify = dependencyValues.simplify;
   let expand = dependencyValues.expand;
-  return (x) => normalizeMathExpression({
-    value: formula.substitute({ [varString]: x }),
-    simplify,
-    expand
-  })
+  let formula_transformed = formula.subscripts_to_strings();
+
+  if (dependencyValues.nInputs === 1) {
+    let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
+    return (x) => normalizeMathExpression({
+      value: formula_transformed.substitute({ [varString]: x }).strings_to_subscripts(),
+      simplify,
+      expand
+    })
+  }
+
+  let varStrings = [];
+  for (let i = 0; i < dependencyValues.nInputs; i++) {
+    varStrings.push(dependencyValues.variables[i].subscripts_to_strings().tree)
+  }
+
+  return function (...xs) {
+    let subArgs = {}
+    for (let i = 0; i < dependencyValues.nInputs; i++) {
+      subArgs[varStrings[i]] = xs[i];
+    }
+    return normalizeMathExpression({
+      value: formula_transformed.substitute(subArgs).strings_to_subscripts(),
+      simplify,
+      expand
+    })
+  }
 }
 
-export function returnNumericalFunctionFromFormula(dependencyValues) {
+export function returnNumericalFunctionFromFormula(dependencyValues, arrayKey) {
+
+  let formula = dependencyValues.formula;
+
+  let formulaIsVectorValued = Array.isArray(formula.tree) &&
+    ["tuple", "vector"].includes(formula.tree[0]);
+
+  if (formulaIsVectorValued) {
+    try {
+      formula = formula.get_component(Number(arrayKey));
+    } catch (e) {
+      return () => NaN;
+    }
+  } else if (arrayKey !== "0") {
+    return () => NaN;
+  }
 
   let formula_f;
   try {
-    formula_f = dependencyValues.formula.f();
+    formula_f = formula.subscripts_to_strings().f();
   } catch (e) {
-    formula_f = () => NaN;
+    return () => NaN;
   }
-  let varString = dependencyValues.variable.tree;
-  return function (x) {
+
+  if (dependencyValues.nInputs === 1) {
+    let varString = dependencyValues.variables[0].subscripts_to_strings().tree;
+
+    let minx = -Infinity, maxx = Infinity;
+    if (dependencyValues.domain !== null) {
+      let domain = dependencyValues.domain[0];
+      if (domain !== undefined) {
+        try {
+          minx = domain[0].evaluate_to_constant();
+          if (!Number.isFinite(minx)) {
+            minx = -Infinity;
+          }
+          maxx = domain[1].evaluate_to_constant();
+          if (!Number.isFinite(maxx)) {
+            maxx = Infinity;
+          }
+        } catch (e) { }
+      }
+    }
+
+    return function (x) {
+      if (x < minx || x > maxx) {
+        return NaN;
+      }
+      try {
+        return formula_f({ [varString]: x });
+      } catch (e) {
+        return NaN;
+      }
+    }
+
+  }
+
+
+  let varStrings = [];
+  for (let i = 0; i < dependencyValues.nInputs; i++) {
+    varStrings.push(dependencyValues.variables[i].subscripts_to_strings().tree)
+  }
+  return function (...xs) {
+    let fArgs = {}
+    for (let i = 0; i < dependencyValues.nInputs; i++) {
+      fArgs[varStrings[i]] = xs[i];
+    }
     try {
-      return formula_f({ [varString]: x });
+      return formula_f(fArgs);
     } catch (e) {
       return NaN;
     }
@@ -2980,11 +3658,28 @@ function returnInterpolatedFunction(dependencyValues) {
     return x => NaN;
   }
 
+  let minx = -Infinity, maxx = Infinity;
+  if (dependencyValues.domain !== null) {
+    let domain = dependencyValues.domain[0];
+    if (domain !== undefined) {
+      try {
+        minx = domain[0].evaluate_to_constant();
+        if (!Number.isFinite(minx)) {
+          minx = -Infinity;
+        }
+        maxx = domain[1].evaluate_to_constant();
+        if (!Number.isFinite(maxx)) {
+          maxx = Infinity;
+        }
+      } catch (e) { }
+    }
+  }
+
   let x0 = xs[0], xL = xs[xs.length - 1];
 
   return function (x) {
 
-    if (isNaN(x)) {
+    if (isNaN(x) || x < minx || x > maxx) {
       return NaN;
     }
 

@@ -3,7 +3,7 @@ import { doenetMainBlue } from "./theme";
 
 export default function ToggleButton(props) {
     const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
-    const [labelVisible, setLabelVisible] = useState(props.label ? 'inline' : 'none')
+    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
     //Assume small
     var toggleButton = {
         margin: '0px',
@@ -16,18 +16,21 @@ export default function ToggleButton(props) {
         padding: '0px 10px 0px 10px',
         cursor: 'pointer',
         fontSize: '12px',
-        textAlign: 'center'
+        textAlign: 'center',
+        width: 'auto'
       }
+      var icon = '';
     var label ={
         value: 'Label:',
         fontSize: '12px',
-        display: `${labelVisible}`
+        display: `${labelVisible}`,
+        marginRight: '5px'
     }
-    var icon = '';
-    if (props.size === "medium") {
-        toggleButton.height = '36px',
-        toggleButton.fontSize = '18px',
-        label.fontSize = '18px'
+    
+    var container = {
+        display: 'flex',
+        width: 'auto',
+        alignItems: 'center'
     }
     if (props.value || props.icon){
         if (props.value && props.icon){
@@ -54,15 +57,27 @@ export default function ToggleButton(props) {
         } if (isSelected === true) {
             setSelected(false)
         }
-        if (props.callback) props.callback();
+        if (props.onClick) props.onClick(isSelected);
     }
     if (props.label) {
-        label.value = props.label
+        label.value = props.label;
     }
+    if (props.width) {
+        if (props.width === "menu") {
+          toggleButton.width = '235px'
+          if (props.label) {
+            container.width = '235px';
+            toggleButton.width = '100%';
+          }
+        } 
+      }
     return (
         <>
-            <p style={label}>{label.value}</p>
-            <button id="toggleButton" style={toggleButton} onClick={() => { handleClick() }}>{icon}{' '}{toggleButton.value}</button>
+            <div style={container}>
+                <p style={label}>{label.value}</p>
+                <button id="toggleButton" style={toggleButton} onClick={() => { handleClick() }}>{icon}{' '}{toggleButton.value}</button>
+            </div>
+            
         </>
     )
 }

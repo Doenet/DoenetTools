@@ -281,7 +281,16 @@ export default class Curve extends GraphicalComponent {
         extrapolateForward: {
           dependencyType: "stateVariable",
           variableName: "extrapolateForward"
-        }
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroFunctions",
+          variableNames: ["domain"]
+        },
+        adapterSourceDomain: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "domain"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMax;
@@ -294,6 +303,29 @@ export default class Curve extends GraphicalComponent {
           parMax = dependencyValues.parMaxAttr.stateValues.value.evaluate_to_constant();
           if (!Number.isFinite(parMax)) {
             parMax = NaN;
+          }
+        } else if (dependencyValues.curveType === "function") {
+          let domain = null;
+          if (dependencyValues.functionChild.length === 1) {
+            domain = dependencyValues.functionChild[0].stateValues.domain;
+          } else {
+            domain = dependencyValues.adapterSourceDomain;
+          }
+          if (domain !== null) {
+            domain = domain[0];
+            try {
+              parMax = domain[1].evaluate_to_constant();
+              if (!Number.isFinite(parMax)) {
+                parMax = NaN;
+              }
+            } catch (e) { }
+          }
+          if (parMax === undefined) {
+            return {
+              useEssentialOrDefaultValue: {
+                parMax: { variablesToCheck: ["parMax"], defaultValue: Infinity }
+              }
+            }
           }
         } else {
           return {
@@ -329,7 +361,16 @@ export default class Curve extends GraphicalComponent {
         extrapolateBackward: {
           dependencyType: "stateVariable",
           variableName: "extrapolateBackward"
-        }
+        },
+        functionChild: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroFunctions",
+          variableNames: ["domain"]
+        },
+        adapterSourceDomain: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "domain"
+        },
       }),
       definition: function ({ dependencyValues }) {
         let parMin;
@@ -342,6 +383,29 @@ export default class Curve extends GraphicalComponent {
           parMin = dependencyValues.parMinAttr.stateValues.value.evaluate_to_constant();
           if (!Number.isFinite(parMin)) {
             parMin = NaN;
+          }
+        } else if (dependencyValues.curveType === "function") {
+          let domain = null;
+          if (dependencyValues.functionChild.length === 1) {
+            domain = dependencyValues.functionChild[0].stateValues.domain;
+          } else {
+            domain = dependencyValues.adapterSourceDomain;
+          }
+          if (domain !== null) {
+            domain = domain[0];
+            try {
+              parMin = domain[0].evaluate_to_constant();
+              if (!Number.isFinite(parMin)) {
+                parMin = NaN;
+              }
+            } catch (e) { }
+          }
+          if (parMin === undefined) {
+            return {
+              useEssentialOrDefaultValue: {
+                parMin: { variablesToCheck: ["parMin"], defaultValue: -Infinity }
+              }
+            }
           }
         } else {
           return {
@@ -1702,6 +1766,46 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.graphXmin = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "graphXmax",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmin",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmax",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.graphAncestor) {
+          return {
+            newValues: {
+              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
+              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
+              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
+              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              graphXmin: null, graphXmax: null,
+              graphYmin: null, graphYmax: null
+            }
+          }
+        }
+      }
+    }
+
 
     return stateVariableDefinitions;
   }
@@ -1808,6 +1912,8 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
   let flipFunction = dependencyValues.flipFunction;
   let f = dependencyValues.fs[0];
   let nDiscretizationPoints = dependencyValues.nDiscretizationPoints;
+  let parMax = dependencyValues.parMax;
+  let parMin = dependencyValues.parMin;
 
   return function (variables) {
 
@@ -1867,6 +1973,12 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     let minT = 0;
     let maxT = 1;
+    if (parMin !== -Infinity) {
+      minT = 1 / (Math.exp(-parMin / 10) + 1);
+    }
+    if (parMax !== -Infinity) {
+      maxT = 1 / (Math.exp(-parMax / 10) + 1);
+    }
 
     let Nsteps = nDiscretizationPoints;
     let delta = (maxT - minT) / Nsteps;
@@ -1904,20 +2016,73 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     let x1AtMin = -10 * Math.log(1 / tAtMin - 1);
     let x2AtMin = f(x1AtMin)
+
+
     if (flipFunction) {
       [x1AtMin, x2AtMin] = [x2AtMin, x1AtMin]
     }
 
+    let currentD2 = Math.pow(x1AtMin - x1, 2) + Math.pow(x2AtMin - x2, 2);
+
+    // check the actual endpoints
+    if (parMin !== -Infinity) {
+      let x1AtParMin, x2AtParMin;
+
+      if (flipFunction) {
+        x1AtParMin = f(parMin);
+        x2AtParMin = parMin;
+      } else {
+        x1AtParMin = parMin;
+        x2AtParMin = f(parMin);
+      }
+
+      let parMinD2 = Math.pow(x1AtParMin - x1, 2) + Math.pow(x2AtParMin - x2, 2);
+      if (parMinD2 < currentD2) {
+        x1AtMin = x1AtParMin;
+        x2AtMin = x2AtParMin;
+        currentD2 = parMinD2;
+      }
+
+    }
+    if (parMax !== Infinity) {
+      let x1AtParMax, x2AtParMax;
+
+      if (flipFunction) {
+        x1AtParMax = f(parMax);
+        x2AtParMax = parMax;
+      } else {
+        x1AtParMax = parMax;
+        x2AtParMax = f(parMax);
+      }
+
+      let parMaxD2 = Math.pow(x1AtParMax - x1, 2) + Math.pow(x2AtParMax - x2, 2);
+      if (parMaxD2 < currentD2) {
+        x1AtMin = x1AtParMax;
+        x2AtMin = x2AtParMax;
+        currentD2 = parMaxD2;
+
+      }
+    }
 
     // choose the nearest point treating as a function
     // if that point exists and isn't 10 times further
     // that the actual nearest point
     if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
-      let funD2 = Math.pow(x1AsFunction - x1, 2) + Math.pow(x2AsFunction - x2, 2);
-      let d2 = Math.pow(x1AtMin - x1, 2) + Math.pow(x2AtMin - x2, 2);
 
-      // 100 is 10 times distance, as working with squared distance
-      if (funD2 < 100 * d2) {
+      // We now have two candidates for the nearest point
+      // A: (x1AsFunction, x2AsFunction), found by treating as a function
+      // B: (x1Min, x2Min), the actual closest point
+      // We prefer A, as it is more natural for a function
+      // However, if B is ten times close, we'll use B
+      // If B is between eight and ten times closer, we'll try to find
+      // a point interpolating between A and B (by treating as a function)
+
+
+
+      let funD2 = Math.pow(x1AsFunction - x1, 2) + Math.pow(x2AsFunction - x2, 2);
+
+      // 64 is 8 times distance, as working with squared distance
+      if (funD2 < 64 * currentD2) {
         result = {
           x1: x1AsFunction,
           x2: x2AsFunction
@@ -1926,6 +2091,43 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
           result.x3 = 0;
         }
         return result;
+      }
+      // 100 is 10 times distance, as working with squared distance
+      if (funD2 < 100 * currentD2) {
+        // can we interpolate to find a point on the function between
+        // (x1AsFunction, x2AsFunction) and (x1Min, x2Min)?
+
+        let currentRatio = Math.sqrt(funD2 / currentD2);   // between 8 and 10
+        let a = (currentRatio - 8) / 2;   // between 0 and 1;
+
+        let x1try, x2try;
+        if (flipFunction) {
+          x2try = x2AsFunction * (1 - a) + x2AtMin * a;
+          x1try = f(x2try);
+        } else {
+          x1try = x1AsFunction * (1 - a) + x1AtMin * a;
+          x2try = f(x1try);
+        }
+        if (Number.isFinite(x1try) && Number.isFinite(x2try)) {
+          result = {
+            x1: x1try,
+            x2: x2try
+          }
+          if (variables.x3 !== undefined) {
+            result.x3 = 0;
+          }
+          return result;
+        } else {
+
+          result = {
+            x1: x1AsFunction,
+            x2: x2AsFunction
+          }
+          if (variables.x3 !== undefined) {
+            result.x3 = 0;
+          }
+          return result;
+        }
       }
 
     }

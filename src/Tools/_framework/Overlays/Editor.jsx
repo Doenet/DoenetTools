@@ -5,29 +5,20 @@ import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import  VisibilitySensor from 'react-visibility-sensor';
-import Button from "../temp/Button";
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+
 import { nanoid } from 'nanoid';
 
 import { 
   useRecoilValue, 
   atom, 
-  atomFamily,
-  // selector,
-  selectorFamily,
   useSetRecoilState,
   useRecoilState,
   useRecoilValueLoadable,
-  // useRecoilStateLoadable, 
   useRecoilCallback
 } from "recoil";
 import DoenetViewer from '../../../Viewer/DoenetViewer';
-import {Controlled as CodeMirror} from 'react-codemirror2'
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/xml/xml';
-// import 'codemirror/theme/material.css';
-import 'codemirror/theme/xq-light.css';
-// import 'codemirror/theme/neo.css';
-// import 'codemirror/theme/base16-light.css';
+import CodeMirror from '../CodeMirror';
 
 import './Editor.css';
 import { 
@@ -35,7 +26,6 @@ import {
   fileByContentId 
 } from '../../../_sharedRecoil/content';
 
-import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faExternalLinkAlt
@@ -98,7 +88,7 @@ function ReturnToEditingButton(props){
 
   if (activeVersionId === ""){ return null; }
 
-  return <Button callback={()=> returnToEditing(props.doenetId) } value="Return to current version" />
+  return <Button onClick={()=> returnToEditing(props.doenetId) } value="Return to current version" />
 }
 
 function EditorInfoPanel(props){
@@ -467,13 +457,6 @@ function TextEditor(props){
   if (activeVersionId !== ""){
     //Read Only without timers
     clearSaveTimeouts()
-    if (editorRef.current){
-      editorRef.current.options.readOnly = true;
-    }
-  }else{
-    if (editorRef.current){
-      editorRef.current.options.readOnly = false;
-    }
   }
 
   const editorInit = useRecoilValue(editorInitAtom);
@@ -521,7 +504,7 @@ function TextEditor(props){
           }
           // Might be non-obvious behavior. Should it comment/uncomment all of the selections?
           // Shouldn't come up too often.
-          selections = selections.map((s) => s.substring(0,4) !== "<!--" ? "<!-- " + s + " -->": s.substring(5,s.length-3))
+          selections = selections.map((s) => s.trim().substring(0,4) !== "<!--" ? "<!-- " + s + " -->": s.trim().substring(5,s.length-3))
           // let selectionsPos = cm.listSelections().map(({anchor,head}) => {return {anchor : anchor, head : {line : head.line, ch: head.ch + "<!--  -->".length}}}) ;
           // console.log(">>pos",selectionsPos);
           //the around option here is supposed to keep the replacing text selected, but it doesn't work.
@@ -557,18 +540,16 @@ function TextEditor(props){
     // editorRef.current.doc.redo();
   }}>Redo</button> */}
 
-  <VisibilitySensor onChange={(visible)=>{
+  {/* <VisibilitySensor onChange={(visible)=>{
     if (visible){
       editorRef.current.refresh();
     }  
-    }}>
+    }}> */}
     
 <CodeMirror
-  className="CodeMirror"
-  editorDidMount={editor => { editorRef.current = editor;  }}
-  value={textValue}
-  options={options}
-  onBeforeChange={(editor, data, value) => {
+  editorRef = {editorRef}
+  value={textValue} 
+  onBeforeChange={(value) => {
     if (activeVersionId === "") { //No timers when active version history
       setEditorDoenetML(value);
       if (timeout.current === null){
@@ -585,11 +566,18 @@ function TextEditor(props){
       }
     }
   }}
+
+  />
+{/* <CodeMirror
+  className="CodeMirror"
+  editorDidMount={editor => { editorRef.current = editor;  }}
+  value={textValue}
+  options={options}
   // onChange={(editor, data, value) => {
   // }}
-/>
+/> */}
 
-  </VisibilitySensor>
+  {/* </VisibilitySensor> */}
   </>
 }
 
@@ -599,7 +587,7 @@ function DoenetViewerUpdateButton(){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Update" callback={()=>{setViewerDoenetML((old)=>{
+  return <Button value="Update" onClick={()=>{setViewerDoenetML((old)=>{
     let newInfo = {...old};
     newInfo.doenetML = editorDoenetML;
     newInfo.updateNumber = old.updateNumber+1;
@@ -644,7 +632,7 @@ function NameCurrentVersionControl(props){
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Save Version" callback={()=>saveVersion(props.doenetId)} />
+  return <Button value="Save Version" onClick={()=>saveVersion(props.doenetId)} />
 }
 
 function TempEditorHeaderBar(props){
@@ -653,16 +641,59 @@ function TempEditorHeaderBar(props){
   </div>
 }
 
+const variantInfoAtom = atom({
+  key:"variantInfoAtom",
+  default:{index:null,name:null,lastUpdatedIndexOrName:null,requestedVariant:{index:1}}
+})
+
+const variantPanelAtom = atom({
+  key:"variantPanelAtom",
+  default:{index:null,name:null}
+})
+ 
 function DoenetViewerPanel(){
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const editorInit = useRecoilValue(editorInitAtom);
-
+  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
+  const setVariantPanel = useSetRecoilState(variantPanelAtom);
   if (!editorInit){ return null; }
 
   let attemptNumber = 1;
-  let requestedVariant = { index: attemptNumber }
   let solutionDisplayMode = "button";
+
+
+  if (variantInfo.lastUpdatedIndexOrName === 'Index'){
+    setVariantInfo((was)=>{
+      let newObj = {...was}; 
+      newObj.lastUpdatedIndexOrName = null; 
+      newObj.requestedVariant = {index:variantInfo.index};
+    return newObj})
+
+  }else if (variantInfo.lastUpdatedIndexOrName === 'Name'){
+    setVariantInfo((was)=>{
+      let newObj = {...was}; 
+      newObj.lastUpdatedIndexOrName = null; 
+      newObj.requestedVariant = {name:variantInfo.name};
+    return newObj})
+
+  }
+
+
+  function variantCallback(generatedVariantInfo, allPossibleVariants){
+    const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
+    cleanGeneratedVariant.lastUpdatedIndexOrName = null 
+    setVariantPanel({
+      index:cleanGeneratedVariant.index,
+      name:cleanGeneratedVariant.name,
+      allPossibleVariants
+    });
+    setVariantInfo((was)=>{
+      let newObj = {...was}
+      Object.assign(newObj,cleanGeneratedVariant)
+      return newObj;
+    });
+  }
   
   return <DoenetViewer
       // key={"doenetviewer" + viewerDoenetML?.updateNumber}
@@ -681,11 +712,71 @@ function DoenetViewerPanel(){
       allowLocalPageState={false}
       allowSaveSubmissions={false}
       allowSaveEvents={false}
-
-      requestedVariant={requestedVariant}
+      generatedVariantCallback={variantCallback}
+      requestedVariant={variantInfo.requestedVariant}
       /> 
 }
 
+function VariantPanel(){
+  const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
+  const [variantPanel,setVariantPanel] = useRecoilState(variantPanelAtom);
+  
+
+  function updateVariantInfoAtom(source){
+    // console.log(">>>updateVariantInfoAtom")
+    //Prevent calling when it didn't change
+    if (source === 'Index'){
+      if (variantPanel.index === variantInfo.index){
+        return;
+      }
+    }
+    if (source === 'Name'){
+      if (variantPanel.name === variantInfo.name){
+        return;
+      }
+    }
+    setVariantInfo((was)=>{
+      let newObj = {...was};
+      newObj.index = Number.isFinite(Number(variantPanel.index)) ? Number(variantPanel.index) : 0;
+      newObj.name = variantPanel.name;
+      newObj.lastUpdatedIndexOrName = source;
+      return newObj;
+    })
+  }
+
+  //In the case allPossibleVariants isn't defined it's an empty array
+  let allPossibleVariants = [];
+  if (variantPanel.allPossibleVariants){
+    allPossibleVariants = variantPanel.allPossibleVariants
+  }
+  let optionsList = allPossibleVariants.map(function (s, i) {
+    return <option key={i + 1} value={s}>{s}</option>
+  });
+
+  return <>
+  <div><label>Variant Index <input type="text" value={variantPanel.index} onKeyDown={(e)=>{
+    if (e.key ==='Enter'){ updateVariantInfoAtom('Index') }
+    }} onBlur={()=>updateVariantInfoAtom('Index')} onChange={(e)=>{setVariantPanel(
+      (was)=>{
+      let newObj = {...was}
+      newObj.index = e.target.value;
+      return newObj; })}}/></label></div>
+
+      <div><label>Variant Name 
+      <select value={variantPanel.name} onChange={(e)=>{
+        setVariantInfo((was)=>{
+          let newObj = {...was};
+          newObj.name = e.target.value;
+          newObj.lastUpdatedIndexOrName = 'Name';
+          return newObj;
+        })
+     
+      }}>
+      {optionsList}
+        </select></label></div>
+  </>
+}
+ 
 const editorInitAtom = atom({
   key:"editorInit",
   default:false
@@ -742,6 +833,9 @@ export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
       </menuPanel>
       <menuPanel title="Version history">
         <VersionHistoryPanel doenetId={doenetId} driveId={driveId} folderId={folderId} itemId={itemId}/>
+      </menuPanel>
+      <menuPanel title="Variant">
+        <VariantPanel  />
       </menuPanel>
       
     </Tool>

@@ -1,14 +1,19 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
+import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
 
 export default class MathList extends InlineComponent {
   static componentType = "mathList";
   static rendererType = "asList";
   static renderChildren = true;
 
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
   // when another component has a attribute that is a mathList,
   // use the maths state variable to populate that attribute
   static stateVariableForAttributeValue = "maths";
+  static primaryStateVariableForDefinition = "mathsShadow";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -49,35 +54,17 @@ export default class MathList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringsIntoMathsBySpaces = function ({ matchedChildren }) {
-
-      // break any string by white space and wrap pieces with math
-
-      let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
-          return [
-            ...a,
-            ...c.state.value.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
-                componentType: "math",
-                children: [{ componentType: "string", state: { value: s } }]
-              }))
-          ]
-        } else {
-          return [...a, c]
-        }
-      }, []);
-
-      return {
-        success: true,
-        newChildren: newChildren,
-      }
-    }
-
+    let groupIntoMathsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType: "math" });
+    let breakStringsIntoMathsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({ componentType: "math" });
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoMathsBySpaces
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+        if (isAttributeComponent && !createdFromMacro) {
+          return groupIntoMathsSeparatedBySpaces({ matchedChildren });
+        } else {
+          return breakStringsIntoMathsBySpaces({ matchedChildren })
+        }
+      }
     });
 
     return sugarInstructions;
@@ -125,6 +112,17 @@ export default class MathList extends InlineComponent {
       definition: () => ({ newValues: { overrideChildHide: true } })
     }
 
+    stateVariableDefinitions.mathsShadow = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          mathsShadow: { variablesToCheck: ["coords", "mathsShadow"] }
+        }
+      }),
+    }
+
+
     stateVariableDefinitions.nComponents = {
       public: true,
       componentType: "number",
@@ -140,6 +138,10 @@ export default class MathList extends InlineComponent {
           mergeMathLists: {
             dependencyType: "stateVariable",
             variableName: "mergeMathLists",
+          },
+          mathsShadow: {
+            dependencyType: "stateVariable",
+            variableName: "mathsShadow",
           }
         }
 
@@ -171,54 +173,58 @@ export default class MathList extends InlineComponent {
         let nComponents = 0;
         let childIndexByArrayKey = [];
 
-        if (dependencyValues.mergeMathLists) {
-          for (let [childInd, child] of dependencyValues.mathAndMathListChildren.entries()) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "mathList"
-            })) {
-              for (let i = 0; i < child.stateValues.nComponents; i++) {
-                childIndexByArrayKey[nComponents + i] = [childInd, i];
-              }
-              nComponents += child.stateValues.nComponents;
-
-            } else {
-
-              let childValue = child.stateValues.value;
-
-              if (childValue && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
-                let nPieces = childValue.tree.length - 1
-                for (let i = 0; i < nPieces; i++) {
-                  childIndexByArrayKey[i + nComponents] = [childInd, i];
+        if (dependencyValues.mathAndMathListChildren.length > 0) {
+          if (dependencyValues.mergeMathLists) {
+            for (let [childInd, child] of dependencyValues.mathAndMathListChildren.entries()) {
+              if (componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "mathList"
+              })) {
+                for (let i = 0; i < child.stateValues.nComponents; i++) {
+                  childIndexByArrayKey[nComponents + i] = [childInd, i];
                 }
-                nComponents += nPieces;
+                nComponents += child.stateValues.nComponents;
+
               } else {
+
+                let childValue = child.stateValues.value;
+
+                if (childValue && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
+                  let nPieces = childValue.tree.length - 1
+                  for (let i = 0; i < nPieces; i++) {
+                    childIndexByArrayKey[i + nComponents] = [childInd, i];
+                  }
+                  nComponents += nPieces;
+                } else {
+                  childIndexByArrayKey[nComponents] = [childInd, 0];
+                  nComponents += 1;
+                }
+
+              }
+            }
+          } else {
+            let nMathLists = 0;
+            for (let [childInd, child] of dependencyValues.mathAndMathListChildren.entries()) {
+              if (componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "mathList"
+              })) {
+                let mathListChild = dependencyValues.mathListChildren[nMathLists];
+                nMathLists++;
+                for (let i = 0; i < mathListChild.stateValues.nComponents; i++) {
+                  childIndexByArrayKey[nComponents + i] = [childInd, i];
+                }
+                nComponents += mathListChild.stateValues.nComponents;
+
+              } else {
+
                 childIndexByArrayKey[nComponents] = [childInd, 0];
                 nComponents += 1;
               }
-
             }
           }
-        } else {
-          let nMathLists = 0;
-          for (let [childInd, child] of dependencyValues.mathAndMathListChildren.entries()) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "mathList"
-            })) {
-              let mathListChild = dependencyValues.mathListChildren[nMathLists];
-              nMathLists++;
-              for (let i = 0; i < mathListChild.stateValues.nComponents; i++) {
-                childIndexByArrayKey[nComponents + i] = [childInd, i];
-              }
-              nComponents += mathListChild.stateValues.nComponents;
-
-            } else {
-
-              childIndexByArrayKey[nComponents] = [childInd, 0];
-              nComponents += 1;
-            }
-          }
+        } else if (dependencyValues.mathsShadow !== null) {
+          nComponents = dependencyValues.mathsShadow.length;
         }
 
         let maxNum = dependencyValues.maximumNumber;
@@ -261,6 +267,10 @@ export default class MathList extends InlineComponent {
           childIndexByArrayKey: {
             dependencyType: "stateVariable",
             variableName: "childIndexByArrayKey"
+          },
+          mathsShadow: {
+            dependencyType: "stateVariable",
+            variableName: "mathsShadow",
           }
         };
 
@@ -311,6 +321,8 @@ export default class MathList extends InlineComponent {
 
             }
 
+          } else if (globalDependencyValues.mathsShadow !== null) {
+            maths[arrayKey] = globalDependencyValues.mathsShadow[arrayKey];
           }
 
         }
@@ -395,28 +407,37 @@ export default class MathList extends InlineComponent {
         mergeMathLists: {
           dependencyType: "stateVariable",
           variableName: "mergeMathLists",
+        },
+        mathsShadow: {
+          dependencyType: "stateVariable",
+          variableName: "mathsShadow",
         }
       }),
       definition: function ({ dependencyValues }) {
         let latexs = [];
 
-        for (let child of dependencyValues.mathAndMathListChildren) {
+        if (dependencyValues.mathAndMathListChildren.length > 0) {
+          for (let child of dependencyValues.mathAndMathListChildren) {
 
-          if (child.stateValues.valueForDisplay) {
+            if (child.stateValues.valueForDisplay) {
 
-            let childValue = child.stateValues.valueForDisplay;
+              let childValue = child.stateValues.valueForDisplay;
 
-            if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
-              for (let i = 0; i < childValue.tree.length - 1; i++) {
-                latexs.push(childValue.get_component(i).toLatex());
+              if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
+                for (let i = 0; i < childValue.tree.length - 1; i++) {
+                  latexs.push(childValue.get_component(i).toLatex());
+                }
+              } else {
+                latexs.push(child.stateValues.latex);
               }
-            } else {
-              latexs.push(child.stateValues.latex);
-            }
 
-          } else {
-            latexs.push(...child.stateValues.latexs);
+            } else {
+              latexs.push(...child.stateValues.latexs);
+            }
           }
+        } else if (dependencyValues.mathsShadow !== null) {
+          latexs = dependencyValues.mathsShadow.map(x => x.toLatex())
+
         }
 
         let maxNum = dependencyValues.maximumNumber;
@@ -451,27 +472,35 @@ export default class MathList extends InlineComponent {
         mergeMathLists: {
           dependencyType: "stateVariable",
           variableName: "mergeMathLists",
+        },
+        mathsShadow: {
+          dependencyType: "stateVariable",
+          variableName: "mathsShadow",
         }
       }),
       definition: function ({ dependencyValues }) {
         let texts = [];
 
-        for (let child of dependencyValues.mathAndMathListChildren) {
+        if (dependencyValues.mathAndMathListChildren.length > 0) {
+          for (let child of dependencyValues.mathAndMathListChildren) {
 
-          if (child.stateValues.valueForDisplay) {
+            if (child.stateValues.valueForDisplay) {
 
-            let childValue = child.stateValues.valueForDisplay;
+              let childValue = child.stateValues.valueForDisplay;
 
-            if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
-              for (let i = 0; i < childValue.tree.length - 1; i++) {
-                texts.push(childValue.get_component(i).toString());
+              if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
+                for (let i = 0; i < childValue.tree.length - 1; i++) {
+                  texts.push(childValue.get_component(i).toString());
+                }
+              } else {
+                texts.push(child.stateValues.text);
               }
             } else {
-              texts.push(child.stateValues.text);
+              texts.push(...child.stateValues.texts);
             }
-          } else {
-            texts.push(...child.stateValues.texts);
           }
+        } else if (dependencyValues.mathsShadow !== null) {
+          texts = dependencyValues.mathsShadow.map(x => x.toString())
         }
 
         let maxNum = dependencyValues.maximumNumber;

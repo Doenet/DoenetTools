@@ -12,7 +12,7 @@ function cesc(s) {
 describe('Point Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
 
@@ -845,7 +845,7 @@ describe('Point Tag Tests', function () {
       expect(components['/a'].stateValues.value).closeTo(0, 1E-12);
 
     })
-    cy.visit('/test')
+    cy.visit('/cypressTest')
 
     cy.window().then((win) => {
       win.postMessage({
@@ -1069,6 +1069,57 @@ describe('Point Tag Tests', function () {
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(7,5)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+  });
+
+  it('point constrained to grid and line', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <line name="PhaseLine" equation="y=0" fixed styleNumber="3"/>
+    <point x="-1.5" y="7.9">
+      <constraints>
+        <constrainToGrid/>
+        <constrainto>$PhaseLine</constrainto>
+      </constraints>
+    </point>
+  </graph>
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-1);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -1, 0]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−1,0)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+
+    cy.log(`move point`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 8.5, y: -6.2 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(9);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
+      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 9, 0]);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9,0)')
     });
     cy.get('#\\/_boolean1').should('have.text', "true")
   });
@@ -7226,21 +7277,12 @@ describe('Point Tag Tests', function () {
         expect(components['/_point1'].stateValues.nDimensions).eq(1);
         expect(components['/_point1'].stateValues.xs.length).eq(1);
         expect(components['/_point1'].stateValues.xs[0].tree).eq('＿');
-        expect(components['/_point1'].stateValues.x1.tree).eq('＿');
-        expect(components['/_point1'].stateValues.x2).eq(undefined);
-        expect(components['/_point1'].stateValues.x3).eq(undefined);
         expect(point2.stateValues.nDimensions).eq(1);
         expect(point2.stateValues.xs.length).eq(1);
         expect(point2.stateValues.xs[0].tree).eq('＿');
-        expect(point2.stateValues.x1.tree).eq('＿');
-        expect(point2.stateValues.x2).eq(undefined);
-        expect(point2.stateValues.x3).eq(undefined);
         expect(point3.stateValues.nDimensions).eq(1);
         expect(point3.stateValues.xs.length).eq(1);
         expect(point3.stateValues.xs[0].tree).eq('＿');
-        expect(point3.stateValues.x1.tree).eq('＿');
-        expect(point3.stateValues.x2).eq(undefined);
-        expect(point3.stateValues.x3).eq(undefined);
 
       });
 
@@ -7265,23 +7307,14 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.xs.length).eq(2);
           expect(components['/_point1'].stateValues.xs[0].tree).eq('a');
           expect(components['/_point1'].stateValues.xs[1].tree).eq('b');
-          expect(components['/_point1'].stateValues.x1.tree).eq('a');
-          expect(components['/_point1'].stateValues.x2.tree).eq('b');
-          expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
           expect(point2.stateValues.xs.length).eq(2);
           expect(point2.stateValues.xs[0].tree).eq('a');
           expect(point2.stateValues.xs[1].tree).eq('b');
-          expect(point2.stateValues.x1.tree).eq('a');
-          expect(point2.stateValues.x2.tree).eq('b');
-          expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
           expect(point3.stateValues.xs.length).eq(2);
           expect(point3.stateValues.xs[0].tree).eq('a');
           expect(point3.stateValues.xs[1].tree).eq('b');
-          expect(point3.stateValues.x1.tree).eq('a');
-          // expect(point3.stateValues.x2.tree).eq('b');
-          expect(point3.stateValues.x3).eq(undefined);
 
         });
 
@@ -7308,21 +7341,12 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.nDimensions).eq(1);
           expect(components['/_point1'].stateValues.xs.length).eq(1);
           expect(components['/_point1'].stateValues.xs[0].tree).eq('q');
-          expect(components['/_point1'].stateValues.x1.tree).eq('q');
-          expect(components['/_point1'].stateValues.x2).eq(undefined);
-          expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(1);
           expect(point2.stateValues.xs.length).eq(1);
           expect(point2.stateValues.xs[0].tree).eq('q');
-          expect(point2.stateValues.x1.tree).eq('q');
-          expect(point2.stateValues.x2).eq(undefined);
-          expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(1);
           expect(point3.stateValues.xs.length).eq(1);
           expect(point3.stateValues.xs[0].tree).eq('q');
-          expect(point3.stateValues.x1.tree).eq('q');
-          expect(point3.stateValues.x2).eq(undefined);
-          expect(point3.stateValues.x3).eq(undefined);
 
         });
 
@@ -7350,25 +7374,16 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.xs[0].tree).eqls(["*", 2, "x"]);
           expect(components['/_point1'].stateValues.xs[1].tree).eqls(["/", "u", "v"]);
           expect(components['/_point1'].stateValues.xs[2].tree).eqls(["^", "w", 2]);
-          expect(components['/_point1'].stateValues.x1.tree).eqls(["*", 2, "x"]);;
-          expect(components['/_point1'].stateValues.x2.tree).eqls(["/", "u", "v"]);
-          expect(components['/_point1'].stateValues.x3.tree).eqls(["^", "w", 2]);
           expect(point2.stateValues.nDimensions).eq(3);
           expect(point2.stateValues.xs.length).eq(3);
           expect(point2.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
           expect(point2.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
           expect(point2.stateValues.xs[2].tree).eqls(["^", "w", 2]);
-          expect(point2.stateValues.x1.tree).eqls(["*", 2, "x"]);
-          expect(point2.stateValues.x2.tree).eqls(["/", "u", "v"]);
-          expect(point2.stateValues.x3.tree).eqls(["^", "w", 2]);
           expect(point3.stateValues.nDimensions).eq(3);
           expect(point3.stateValues.xs.length).eq(3);
           expect(point3.stateValues.xs[0].tree).eqls(["*", 2, "x"]);
           expect(point3.stateValues.xs[1].tree).eqls(["/", "u", "v"]);
           expect(point3.stateValues.xs[2].tree).eqls(["^", "w", 2]);
-          expect(point3.stateValues.x1.tree).eqls(["*", 2, "x"]);
-          // expect(point3.stateValues.x2.tree).eqls(["/", "u", "v"]);
-          // expect(point3.stateValues.x3.tree).eqls(["^", "w", 2]);
 
         });
 
@@ -7398,23 +7413,14 @@ describe('Point Tag Tests', function () {
           expect(components['/_point1'].stateValues.xs.length).eq(2);
           expect(components['/_point1'].stateValues.xs[0].tree).eq('p');
           expect(components['/_point1'].stateValues.xs[1].tree).eq('q');
-          expect(components['/_point1'].stateValues.x1.tree).eq('p');
-          expect(components['/_point1'].stateValues.x2.tree).eq('q');
-          expect(components['/_point1'].stateValues.x3).eq(undefined);
           expect(point2.stateValues.nDimensions).eq(2);
           expect(point2.stateValues.xs.length).eq(2);
           expect(point2.stateValues.xs[0].tree).eq('p');
           expect(point2.stateValues.xs[1].tree).eq('q');
-          expect(point2.stateValues.x1.tree).eq('p');
-          expect(point2.stateValues.x2.tree).eq('q');
-          expect(point2.stateValues.x3).eq(undefined);
           expect(point3.stateValues.nDimensions).eq(2);
           expect(point3.stateValues.xs.length).eq(2);
           expect(point3.stateValues.xs[0].tree).eq('p');
           expect(point3.stateValues.xs[1].tree).eq('q');
-          expect(point3.stateValues.x1.tree).eq('p');
-          // expect(point3.stateValues.x2.tree).eq('q');
-          expect(point3.stateValues.x3).eq(undefined);
 
         });
 

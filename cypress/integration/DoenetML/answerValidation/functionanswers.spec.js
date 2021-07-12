@@ -1,7 +1,7 @@
 describe('Function answer validation tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('simple function of input', () => {

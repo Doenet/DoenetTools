@@ -60,16 +60,16 @@ function Test() {
 
 
 
-  //For Cypress Test Use
-  window.onmessage = (e) => {
-    if (e.data.doenetML !== undefined) {
-      //Only if defined
-      if (e.data.requestedVariant) {
-        requestedVariant.current = e.data.requestedVariant;
-      }
-      setDoenetML(e.data.doenetML);
-    }
-  };
+  // //For Cypress Test Use
+  // window.onmessage = (e) => {
+  //   if (e.data.doenetML !== undefined) {
+  //     //Only if defined
+  //     if (e.data.requestedVariant) {
+  //       requestedVariant.current = e.data.requestedVariant;
+  //     }
+  //     setDoenetML(e.data.doenetML);
+  //   }
+  // };
 
   //Don't construct core until we have the doenetML defined
   if (doenetML === null) {

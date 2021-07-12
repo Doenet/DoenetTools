@@ -21,8 +21,10 @@ import Hex from 'crypto-js/enc-hex'
 
 export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
-    externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback }) {
+    externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback, coreId }) {
     // console.time('start up time');
+
+    this.coreId = coreId;
 
     this.numerics = new Numerics();
     this.flags = new Proxy(flags, readOnlyProxyHandler); //components shouldn't modify flags
@@ -48,7 +50,7 @@ export default class Core {
 
     this.coreUpdatedCallback = coreUpdatedCallback;
     this.coreReadyCallback = function () {
-      coreReadyCallback();
+      coreReadyCallback(this);
 
       this.requestRecordEvent({
         verb: "experienced",
@@ -247,9 +249,13 @@ export default class Core {
     // console.log("** components at the end of the core constructor **");
     // console.log(this._components);
 
+
     if (calledAsynchronously) {
+      // console.log(">>>calledAsynchronously") 
       this.coreReadyCallback()
     } else {
+      // console.log(">>>not calledAsynchronously")
+
       setTimeout(() => this.coreReadyCallback(), 0)
     }
 
@@ -259,7 +265,6 @@ export default class Core {
 
     let arrayOfSerializedComponents = [];
     let contentIdComponents = {};
-    let contentNameComponents = {};
 
     for (let doenetML of doenetMLs) {
 
@@ -273,7 +278,7 @@ export default class Core {
 
       // remove blank string children after applying macros,
       // as applying macros could create additional blank string children
-      serializeFunctions.removeBlankStringChildren(serializedComponents, this.standardComponentClasses)
+      serializeFunctions.removeBlankStringChildren(serializedComponents, this.componentInfoObjects)
 
       serializeFunctions.decodeXMLEntities(serializedComponents);
 
@@ -289,19 +294,12 @@ export default class Core {
         }
         contentIdComponents[contentId].push(...newContentComponents.contentIdComponents[contentId])
       }
-      for (let contentName in newContentComponents.contentNameComponents) {
-        if (contentNameComponents[contentName] === undefined) {
-          contentNameComponents[contentName] = []
-        }
-        contentNameComponents[contentName].push(...newContentComponents.contentNameComponents[contentName])
-      }
     }
 
     let contentIdList = Object.keys(contentIdComponents);
-    let contentNameList = Object.keys(contentNameComponents);
-    if (contentIdList.length + contentNameList.length > 0) {
-      // found copies with contentIds or contentNames
-      // so look up those contentIds/contentNames,
+    if (contentIdList.length > 0) {
+      // found copies with contentIds 
+      // so look up those contentIds
       // convert to doenetMLs, and recurse on those doenetMLs
 
       let mergeContentIdNameSerializedComponentsIntoCopy = function ({
@@ -324,21 +322,6 @@ export default class Core {
           }
         }
 
-        for (let [ind, contentName] of contentNameList.entries()) {
-          // results from content names immediately follow those from content ids
-          let serializedComponentsForContentName = fullSerializedComponents[ind + contentIdList.length];
-          for (let originalCopyWithUri of contentNameComponents[contentName]) {
-            if (originalCopyWithUri.children === undefined) {
-              originalCopyWithUri.children = [];
-            }
-            originalCopyWithUri.children.push({
-              componentType: "externalContent",
-              children: JSON.parse(JSON.stringify(serializedComponentsForContentName)),
-              attributes: { newNamespace: true },
-              doenetAttributes: { createUniqueName: true }
-            });
-          }
-        }
 
         // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedComponents
         // so we call it with the contentIds and serializedComponents from that context
@@ -353,9 +336,9 @@ export default class Core {
 
       let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
 
-        // if (!success) {
-        //   console.warn(message);
-        // }
+        if (!success) {
+          console.warn(message);
+        }
 
         // check to see if got the contentIds requested
         for (let [ind, contentId] of contentIdList.entries()) {
@@ -365,7 +348,7 @@ export default class Core {
         }
 
         // check to see if the doenetMLs hash to the contentIds
-        let expectedN = contentIdList.length + contentNameList.length;
+        let expectedN = contentIdList.length;
         for (let ind = 0; ind < expectedN; ind++) {
           let contentId = newContentIds[ind];
           if (contentId) {
@@ -376,11 +359,7 @@ export default class Core {
             }
           } else {
             // wasn't able to retrieve content
-            if (ind < contentIdList.length) {
-              console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
-            } else {
-              console.warn(`Unable to retrieve content with contentName = ${contentNameList[ind - contentIdList.length]}`)
-            }
+            console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
             newDoenetMLs[ind] = "";
           }
         }
@@ -394,7 +373,6 @@ export default class Core {
 
       this.externalFunctions.contentIdsToDoenetMLs({
         contentIds: contentIdList,
-        contentNames: contentNameList,
         callBack: recurseToAdditionalDoenetMLs
       });
 
@@ -428,7 +406,7 @@ export default class Core {
 
       parent = this._components[parentName];
       if (!parent) {
-        console.warn(`Cannot add children to parent ${parenetName} as ${parentName} does not exist`)
+        console.warn(`Cannot add children to parent ${parentName} as ${parentName} does not exist`)
         return [];
       }
 
@@ -870,11 +848,10 @@ export default class Core {
       }
     }
 
-    for (let child of component.activeChildren) {
-      if (child.componentName) {
-        let additionalParentsWithNotReady = this.expandCompositesOfDescendants(child, forceExpandComposites);
-        parentsWithCompositesNotReady.push(...additionalParentsWithNotReady);
-      }
+    for (let childName in component.allChildren) {
+      let child = this._components[childName]
+      let additionalParentsWithNotReady = this.expandCompositesOfDescendants(child, forceExpandComposites);
+      parentsWithCompositesNotReady.push(...additionalParentsWithNotReady);
     }
     // console.log(`done expanding composites of descendants of ${component.componentName}`)
 
@@ -987,7 +964,7 @@ export default class Core {
           longNameId += componentInd;
         }
 
-        componentName = createUniqueName(serializedComponent.componentType, longNameId);
+        componentName = createUniqueName(serializedComponent.componentType.toLowerCase(), longNameId);
 
         // add namespace
         componentName = namespaceForUnamed + componentName;
@@ -1036,6 +1013,10 @@ export default class Core {
     this.parameterStack.push();
     let sharedParameters = this.parameterStack.parameters;
 
+    if (componentClass.descendantCompositesMustHaveAReplacement) {
+      sharedParameters.compositesMustHaveAReplacement = true;
+      sharedParameters.compositesDefaultReplacementType = componentClass.descendantCompositesDefaultReplacementType;
+    }
 
     // check if component has any attributes to propagate to descendants
     let attributesPropagated = this.propagateAncestorProps({
@@ -1083,7 +1064,7 @@ export default class Core {
         // look for variantControl child
         for (let [ind, child] of serializedChildren.entries()) {
           if (child.componentType === "variantControl" || (
-            child.createdComponent && components[child.componentName].componentType === "variantControl"
+            child.createdComponent && this._components[child.componentName].componentType === "variantControl"
           )) {
             variantControlInd = ind;
             variantControlChild = child;
@@ -1481,7 +1462,7 @@ export default class Core {
     // If a class is not supposed to have blank string children,
     // it is still possible that it received blank string children from a composite.
     // Hence filter out any blank string children that it might have
-    if (!parent.constructor.includeBlankStringChildren) {
+    if (!parent.constructor.includeBlankStringChildren || parent.constructor.removeBlankStringChildrenPostSugar) {
       let activeChildren = [];
       let foundBlank = false;
       let ind = 0;
@@ -1517,15 +1498,7 @@ export default class Core {
       }
     }
 
-    let nActiveChildrenChanged = true;
-
-    if (previousActiveChildren) {
-      nActiveChildrenChanged = previousActiveChildren.length !== parent.activeChildren.length;
-    }
-
-    this.dependencies.addBlockersFromChangedActiveChildren({
-      parent, nActiveChildrenChanged
-    });
+    this.dependencies.addBlockersFromChangedActiveChildren({ parent });
 
     let ind = this.derivingChildResults.indexOf(parent.componentName);
 
@@ -2466,8 +2439,10 @@ export default class Core {
       }
 
 
-      stateVarDef.definition = function ({ dependencyValues }) {
-        if (dependencyValues.adapterTargetVariable === undefined) {
+      stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
+        if (dependencyValues.adapterTargetVariable === undefined
+          || usedDefault.adapterTargetVariable
+        ) {
           return {
             useEssentialOrDefaultValue: {
               [varName]: { variablesToCheck: varName }
@@ -3116,7 +3091,7 @@ export default class Core {
         stateDef.arrayDefinitionByKey = function ({
           globalDependencyValues, dependencyValuesByKey, arrayKeys
         }) {
-          // console.log(`shadow array definition by key`)
+          // console.log(`shadow array definition by key for ${varName}`)
           // console.log(JSON.parse(JSON.stringify(globalDependencyValues)))
           // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
           // console.log(JSON.parse(JSON.stringify(arrayKeys)))
@@ -3200,7 +3175,7 @@ export default class Core {
           }
           return dependencies;
         };
-        stateDef.definition = function ({ dependencyValues }) {
+        stateDef.definition = function ({ dependencyValues, usedDefault }) {
           let result = {
             alwaysShadow: [varName]
           }
@@ -3211,7 +3186,12 @@ export default class Core {
               [varName]: dependencyValues.targetVariableComponentType
             }
           }
-          result.newValues = { [varName]: dependencyValues.targetVariable }
+
+          if (usedDefault.targetVariable && "defaultValue" in stateDef) {
+            result.useEssentialOrDefaultValue = { [varName]: { variablesToCheck: [varName] } }
+          } else {
+            result.newValues = { [varName]: dependencyValues.targetVariable }
+          }
 
           return result;
 
@@ -3378,6 +3358,10 @@ export default class Core {
 
     if (arrayStateVarObj.basedOnArrayKeyStateVariables) {
       stateVarObj.basedOnArrayKeyStateVariables = true;
+    }
+
+    if (arrayStateVarObj.determineIfShadowData) {
+      stateVarObj.determineIfShadowData = arrayStateVarObj.determineIfShadowData;
     }
 
     // if any of the additional state variables defined are arrays,
@@ -4422,7 +4406,13 @@ export default class Core {
 
   createArraySizeStateVariable({ stateVarObj, component, stateVariable }) {
 
-    let arraySizeStateVar = `__array_size_${stateVariable}`;
+    let allStateVariablesAffected = [stateVariable];
+    if (stateVarObj.additionalStateVariablesDefined) {
+      allStateVariablesAffected.push(...stateVarObj.additionalStateVariablesDefined);
+    }
+    allStateVariablesAffected.sort();
+
+    let arraySizeStateVar = `__array_size_` + allStateVariablesAffected.join('_');
     stateVarObj.arraySizeStateVariable = arraySizeStateVar;
 
     let originalStateVariablesDeterminingDependencies;
@@ -4438,21 +4428,25 @@ export default class Core {
     }
 
 
-    // if state variable is a shadow,
-    // then the array size state variable has already been created
-    // to shadow target array size state variable
-    // Just make it mark the array's arraySize as stale on markStale
-    if (stateVarObj.isShadow) {
-      let arraySizeStateVarObj = component.state[arraySizeStateVar];
-      arraySizeStateVarObj.markStale = function () {
-        stateVarObj.arraySizeStale = true;
-        return {};
+    // If array size state variable has already been created,
+    // either it was created due to being shadowed 
+    // or from an additional state variable defined.
+    // If it is shadowing target array size state variable,
+    // make it mark the array's arraySize as stale on markStale
+    if (component.state[arraySizeStateVar]) {
+      if (component.state[arraySizeStateVar].isShadow) {
+        let arraySizeStateVarObj = component.state[arraySizeStateVar];
+        arraySizeStateVarObj.markStale = function () {
+          for (let varName of allStateVariablesAffected) {
+            component.state[varName].arraySizeStale = true;
+          }
+          return {};
+        }
       }
       return;
     }
 
     component.state[arraySizeStateVar] = {
-      alwaysShadow: true,
       returnDependencies: stateVarObj.returnArraySizeDependencies,
       definition({ dependencyValues }) {
         let arraySize = stateVarObj.returnArraySize({ dependencyValues });
@@ -4464,16 +4458,16 @@ export default class Core {
         return { newValues: { [arraySizeStateVar]: arraySize } }
       },
       markStale() {
-        stateVarObj.arraySizeStale = true;
+        for (let varName of allStateVariablesAffected) {
+          component.state[varName].arraySizeStale = true;
+        }
         return {};
       }
     };
 
-    // Make the array size state variable's dependencies depend on
-    // anything that the array state variable's dependencies depend on
-    // (as the returnArraySizeDependencies function could use those).
-    if (originalStateVariablesDeterminingDependencies) {
-      component.state[arraySizeStateVar].stateVariablesDeterminingDependencies = originalStateVariablesDeterminingDependencies;
+    if (stateVarObj.stateVariablesDeterminingArraySizeDependencies) {
+      component.state[arraySizeStateVar].stateVariablesDeterminingDependencies
+        = stateVarObj.stateVariablesDeterminingArraySizeDependencies;
     }
 
 
@@ -6544,6 +6538,12 @@ export default class Core {
       component.replacements = [];
     }
 
+    // evaluate readyToExpandWhenResolved
+    // to make sure all dependencies needed to calculate
+    // replacement changes are resolved
+    // TODO: why must we evaluate and not just resolve it?
+    component.stateValues.readyToExpandWhenResolved;
+
     const replacementChanges = component.constructor.calculateReplacementChanges({
       component: proxiedComponent,
       componentChanges,
@@ -7666,7 +7666,7 @@ export default class Core {
           childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
         }
       }
-      if(childLogicMessage) {
+      if (childLogicMessage) {
         console.warn(childLogicMessage)
       }
     }

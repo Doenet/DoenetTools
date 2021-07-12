@@ -1,7 +1,7 @@
 describe('Curve Tag Bezier Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   function checkBezierCurve({ curve, throughPoints, directions, controlVectors }) {

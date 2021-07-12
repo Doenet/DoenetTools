@@ -250,13 +250,11 @@ export default class BaseComponent {
         defaultValue: false,
         public: true,
       },
-      disabled: {
+      disable: {
         createComponentOfType: "boolean",
-        createStateVariable: "disabled",
+        createStateVariable: "disable",
         defaultValue: flags.readOnly ? true : false,
         public: true,
-        forRenderer: true,
-        propagateToDescendants: true
       },
       modifyIndirectly: {
         createComponentOfType: "boolean",
@@ -333,7 +331,7 @@ export default class BaseComponent {
           variableName: "hidden"
         },
         adapterSourceHidden: {
-          dependencyType: "adapterSourceDependency",
+          dependencyType: "adapterSourceStateVariable",
           variableName: "hidden"
         },
       }),
@@ -344,6 +342,40 @@ export default class BaseComponent {
             || dependencyValues.sourceCompositeHidden === true
             || dependencyValues.adapterSourceHidden === true
             || (dependencyValues.hide === true && !dependencyValues.parentOverrideChildHide)
+        }
+      })
+    }
+
+    stateVariableDefinitions.disabled = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      returnDependencies: () => ({
+        disable: {
+          dependencyType: "stateVariable",
+          variableName: "disable",
+          variablesOptional: true,
+        },
+        parentDisabled: {
+          dependencyType: "parentStateVariable",
+          variableName: "disabled"
+        },
+        sourceCompositeDisabled: {
+          dependencyType: "sourceCompositeStateVariable",
+          variableName: "disabled"
+        },
+        adapterSourceDisabled: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "disabled"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          disabled:  // check === true so null gives false
+            dependencyValues.parentDisabled === true
+            || dependencyValues.sourceCompositeDisabled === true
+            || dependencyValues.adapterSourceDisabled === true
+            || dependencyValues.disable === true
         }
       })
     }
@@ -399,6 +431,7 @@ export default class BaseComponent {
     let defAttributesToCopy = [
       "returnDependencies", "definition",
       "inverseDefinition", "stateVariablesDeterminingDependencies",
+      "stateVariablesDeterminingArraySizeDependencies",
       "isArray", "nDimensions",
       "returnArraySizeDependencies", "returnArraySize",
       "returnArrayDependenciesByKey", "arrayDefinitionByKey",

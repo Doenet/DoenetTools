@@ -11,7 +11,7 @@ function cesc(s) {
 describe('Answer Tag Tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   it('answer sugar from one string', () => {
@@ -30,7 +30,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
@@ -180,7 +180,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
@@ -304,7 +304,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
 
@@ -380,7 +380,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
@@ -533,7 +533,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy2'].replacements[0];
@@ -679,7 +679,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
@@ -812,7 +812,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy2'].replacements[0];
@@ -936,7 +936,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy1'].replacements[0];
@@ -1140,7 +1140,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/_copy3'].replacements[0];
@@ -1335,7 +1335,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let text1 = components['/_copy1'].replacements[0];
@@ -1502,7 +1502,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/s/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/s/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let math1 = components['/s/_copy1'].replacements[0];
@@ -1689,6 +1689,533 @@ describe('Answer Tag Tests', function () {
   <answer>
   <award><when><math><copy prop="immediateValue" tname="_mathinput1" isResponse />+<copy prop="immediateValue" tname="_mathinput2" isResponse /></math> = <math>3x</math></when></award>
   <award credit="0.5"><when><math><copy prop="immediateValue" tname="_mathinput1" />+<copy prop="immediateValue" tname="_mathinput2" /></math> = <math>3</math></when></award>
+  </answer></p>
+  <p>First current response: <copy name="cr" prop="currentResponse" tname="_answer1" /></p>
+  <p>First current response again: <copy name="cr1" prop="currentResponse1" tname="_answer1" /></p>
+  <p>Second current response: <copy name="cr2" prop="currentResponse2" tname="_answer1" /></p>
+  <p>Both current responses together: <copy name="crs" prop="currentResponses" tname="_answer1" /></p>
+  <p>First submitted response: <copy name="sr" prop="submittedResponse" tname="_answer1" componentType="math" /></p>
+  <p>First submitted response again: <copy name="sr1" prop="submittedResponse1" tname="_answer1" componentType="math" /></p>
+  <p>Second submitted response: <copy name="sr2" prop="submittedResponse2" tname="_answer1" componentType="math" /></p>
+  <p>Both submitted responses together: <copy name="srs" prop="submittedResponses" tname="_answer1" /></p>
+  <p>Credit for submitted responses: <copy name="ca" prop="creditAchieved" tname="_answer1" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let cr = components['/cr'].replacements[0];
+      let crAnchor = cesc('#' + cr.componentName);
+      let cr1 = components['/cr1'].replacements[0];
+      let cr1Anchor = cesc('#' + cr1.componentName);
+      let cr2 = components['/cr2'].replacements[0];
+      let cr2Anchor = cesc('#' + cr2.componentName);
+      let crsa = components['/crs'].replacements[0];
+      let crsaAnchor = cesc('#' + crsa.componentName);
+      let crsb = components['/crs'].replacements[1];
+      let crsbAnchor = cesc('#' + crsb.componentName);
+      let sr = components['/sr'].replacements[0];
+      let srAnchor = cesc('#' + sr.componentName);
+      let sr1 = components['/sr1'].replacements[0];
+      let sr1Anchor = cesc('#' + sr1.componentName);
+      let sr2 = components['/sr2'].replacements[0];
+      let sr2Anchor = cesc('#' + sr2.componentName);
+      // let srsa = components['/srs'].replacements[0];
+      // let srsaAnchor = cesc('#' + srsa.componentName);
+      // let srsb = components['/srs'].replacements[1];
+      // let srsbAnchor = cesc('#' + srsb.componentName);
+      let ca = components['/ca'].replacements[0];
+      let caAnchor = cesc('#' + ca.componentName);
+
+      cy.log('Test value displayed in browser')
+      // cy.get('#\\/_mathinput1_input').should('have.value', '');
+      // cy.get('#\\/_mathinput2_input').should('have.value', '');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      // cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      // cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then((win) => {
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['\uFF3F', '\uFF3F']);
+        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('\uFF3F')
+        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls('\uFF3F')
+        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect(components['/_mathinput1'].stateValues.value.tree).eq('\uFF3F');
+        // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(components['/_mathinput2'].stateValues.value.tree).eq('\uFF3F');
+        // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(cr.stateValues.value.tree).eq('\uFF3F')
+        expect(cr1.stateValues.value.tree).eq('\uFF3F')
+        expect(cr2.stateValues.value.tree).eq('\uFF3F')
+        expect(crsa.stateValues.value.tree).eq('\uFF3F')
+        expect(crsb.stateValues.value.tree).eq('\uFF3F')
+        expect(sr.stateValues.value.tree).eq('\uFF3F')
+        expect(sr1.stateValues.value.tree).eq('\uFF3F')
+        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsa.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsb.stateValues.value.tree).eq('\uFF3F')
+        expect(ca.stateValues.value).eq(0)
+      });
+
+      cy.log("Enter a correct answer in")
+      cy.get('#\\/_mathinput1 textarea').type(`x+y`, { force: true }).blur();
+      cy.get('#\\/_mathinput2 textarea').type(`2x-y`, { force: true }).blur();
+
+      cy.log('Test value displayed in browser')
+      // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
+      // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2x−y')
+      });
+      cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x+y')
+      });
+      cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2x−y')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      // cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      // cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      //   expect(text.trim()).equal('＿')
+      // });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.log('Test internal values')
+      cy.window().then((win) => {
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+        expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+        expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
+        expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+        expect(components['/_answer1'].stateValues.submittedResponses).eqls([])
+        expect(components['/_answer1'].stateValues.submittedResponse1).eqls(undefined)
+        expect(components['/_answer1'].stateValues.submittedResponse2).eqls(undefined)
+        expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+        // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+        // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eq('\uFF3F');
+        expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+        expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+        expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+        expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+        expect(sr.stateValues.value.tree).eq('\uFF3F')
+        expect(sr1.stateValues.value.tree).eq('\uFF3F')
+        expect(sr2.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsa.stateValues.value.tree).eq('\uFF3F')
+        // expect(srsb.stateValues.value.tree).eq('\uFF3F')
+        expect(ca.stateValues.value).eq(0)
+      });
+
+
+      cy.log("Submit answer")
+      cy.get('#\\/_answer1_submit').click();
+
+      // wrap to get submitted response anchors
+      cy.window().then((win) => {
+        sr = components['/sr'].replacements[0];
+        srAnchor = cesc('#' + sr.componentName);
+        sr1 = components['/sr1'].replacements[0];
+        sr1Anchor = cesc('#' + sr1.componentName);
+        sr2 = components['/sr2'].replacements[0];
+        sr2Anchor = cesc('#' + sr2.componentName);
+        let srsa = components['/srs'].replacements[0];
+        let srsaAnchor = cesc('#' + srsa.componentName);
+        let srsb = components['/srs'].replacements[1];
+        let srsbAnchor = cesc('#' + srsb.componentName);
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x+y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '2x-y');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(caAnchor).should('have.text', '1')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls(["+", 'x', 'y']);
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(cr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(cr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(cr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(crsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(crsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(ca.stateValues.value).eq(1)
+        });
+
+
+        cy.log("Enter partially correct answer")
+        cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}x`, { force: true }).blur();
+        cy.get('#\\/_mathinput2 textarea').type(`{rightarrow}{rightarrow}{rightarrow}{rightarrow}{backspace}{backspace}{backspace}{backspace}3-x`, { force: true }).blur();
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x+y')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('2x−y')
+        });
+        cy.get(caAnchor).should('have.text', '1')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls([["+", 'x', 'y'], ["+", ['*', 2, 'x'], ['-', 'y']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls(["+", 'x', 'y']);
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']]);
+          expect(cr.stateValues.value.tree).eqls('x')
+          expect(cr1.stateValues.value.tree).eqls('x')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('x')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr1.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(sr2.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(srsa.stateValues.value.tree).eqls(["+", 'x', 'y'])
+          expect(srsb.stateValues.value.tree).eqls(["+", ['*', 2, 'x'], ['-', 'y']])
+          expect(ca.stateValues.value).eq(1)
+        });
+
+        cy.log("Submit answer")
+        cy.get('#\\/_answer1_submit').click();
+
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'x');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(caAnchor).should('have.text', '0.5')
+
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('x');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(cr.stateValues.value.tree).eqls('x')
+          expect(cr1.stateValues.value.tree).eqls('x')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('x')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls('x')
+          expect(sr1.stateValues.value.tree).eqls('x')
+          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(srsa.stateValues.value.tree).eqls('x')
+          expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(ca.stateValues.value).eq(0.5)
+        });
+
+        cy.log("Enter incorrect answer")
+        cy.get('#\\/_mathinput1 textarea').type(`{rightarrow}{backspace}y`, { force: true }).blur();
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('x')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(caAnchor).should('have.text', '0.5')
+
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['x', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('x');
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('x');
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(cr.stateValues.value.tree).eqls('y')
+          expect(cr1.stateValues.value.tree).eqls('y')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('y')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls('x')
+          expect(sr1.stateValues.value.tree).eqls('x')
+          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(srsa.stateValues.value.tree).eqls('x')
+          expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(ca.stateValues.value).eq(0.5)
+        });
+
+        cy.log("Submit answer")
+        cy.get('#\\/_answer1_submit').click();
+
+        cy.log('Test value displayed in browser')
+        // cy.get('#\\/_mathinput1_input').should('have.value', 'y');
+        // cy.get('#\\/_mathinput2_input').should('have.value', '3-x');
+
+        cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(crsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(crsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(srsaAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('y')
+        });
+        cy.get(srsbAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim()).equal('3−x')
+        });
+        cy.get(caAnchor).should('have.text', '0')
+
+        cy.log('Test internal values')
+        cy.window().then((win) => {
+          expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
+          expect(components['/_answer1'].stateValues.currentResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.currentResponse1.tree).eqls('y');
+          expect(components['/_answer1'].stateValues.currentResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_answer1'].stateValues.submittedResponses.map(x => x.tree)).eqls(['y', ["+", 3, ['-', 'x']]]);
+          expect(components['/_answer1'].stateValues.submittedResponse1.tree).eqls('y');
+          expect(components['/_answer1'].stateValues.submittedResponse2.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(components['/_mathinput1'].stateValues.value.tree).eqls('y');
+          // expect(components['/_mathinput1'].stateValues.submittedValue.tree).eqls('y');
+          expect(components['/_mathinput2'].stateValues.value.tree).eqls(["+", 3, ['-', 'x']]);
+          // expect(components['/_mathinput2'].stateValues.submittedValue.tree).eqls(["+", 3, ['-', 'x']]);
+          expect(cr.stateValues.value.tree).eqls('y')
+          expect(cr1.stateValues.value.tree).eqls('y')
+          expect(cr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(crsa.stateValues.value.tree).eqls('y')
+          expect(crsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(sr.stateValues.value.tree).eqls('y')
+          expect(sr1.stateValues.value.tree).eqls('y')
+          expect(sr2.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(srsa.stateValues.value.tree).eqls('y')
+          expect(srsb.stateValues.value.tree).eqls(["+", 3, ['-', 'x']])
+          expect(ca.stateValues.value).eq(0)
+        });
+
+      })
+
+    })
+  });
+
+  it('full answer tag, two inputs inside answer, shorter form', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Enter values that sum to <m>3x</m>: 
+  <answer>
+  <mathinput /> <mathinput/>
+  <award><when>$_mathinput1+$_mathinput2 = 3x</when></award>
+  <award credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
   </answer></p>
   <p>First current response: <copy name="cr" prop="currentResponse" tname="_answer1" /></p>
   <p>First current response again: <copy name="cr1" prop="currentResponse1" tname="_answer1" /></p>
@@ -2984,7 +3511,7 @@ describe('Answer Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let answer1 = components['/_map1'].replacements[0].replacements[1].activeChildren[3];
-      let mathinput1Name = answer1.stateValues.inputChild.componentName;
+      let mathinput1Name = answer1.stateValues.inputChildren[0].componentName;
       let mathinput1 = components[mathinput1Name]
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
@@ -2996,7 +3523,7 @@ describe('Answer Tag Tests', function () {
       let sr1Anchor = cesc('#' + sr1.componentName);
 
       let answer2 = components['/_map1'].replacements[1].replacements[1].activeChildren[3];
-      let mathinput2Name = answer2.stateValues.inputChild.componentName;
+      let mathinput2Name = answer2.stateValues.inputChildren[0].componentName;
       let mathinput2 = components[mathinput2Name]
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
@@ -3008,7 +3535,7 @@ describe('Answer Tag Tests', function () {
       let sr2Anchor = cesc('#' + sr2.componentName);
 
       let answer3 = components['/_map1'].replacements[2].replacements[1].activeChildren[3];
-      let mathinput3Name = answer3.stateValues.inputChild.componentName;
+      let mathinput3Name = answer3.stateValues.inputChildren[0].componentName;
       let mathinput3 = components[mathinput3Name]
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
@@ -3311,7 +3838,7 @@ describe('Answer Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
 
       let answer1 = components['/a/_answer1'];
-      let mathinput1Name = answer1.stateValues.inputChild.componentName;
+      let mathinput1Name = answer1.stateValues.inputChildren[0].componentName;
       let mathinput1 = components[mathinput1Name]
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
       let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
@@ -3323,7 +3850,7 @@ describe('Answer Tag Tests', function () {
       let sr1Anchor = cesc('#' + sr1.componentName);
 
       let answer2 = components['/b/_answer1'];
-      let mathinput2Name = answer2.stateValues.inputChild.componentName;
+      let mathinput2Name = answer2.stateValues.inputChildren[0].componentName;
       let mathinput2 = components[mathinput2Name]
       let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
       let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
@@ -3335,7 +3862,7 @@ describe('Answer Tag Tests', function () {
       let sr2Anchor = cesc('#' + sr2.componentName);
 
       let answer3 = components['/c/_answer1'];
-      let mathinput3Name = answer3.stateValues.inputChild.componentName;
+      let mathinput3Name = answer3.stateValues.inputChildren[0].componentName;
       let mathinput3 = components[mathinput3Name]
       let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
       let mathinput3SubmitAnchor = cesc('#' + mathinput3Name + '_submit');
@@ -3632,7 +4159,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -3661,6 +4188,38 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
+      cy.log("Add space")
+      cy.get(mathinputAnchor).type(`{end} `, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+yz');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter")
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Delete space")
+      cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+yz');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter")
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
       cy.log("Add letter")
       cy.get(mathinputAnchor).type(`{end}z`, { force: true });
       // cy.get(mathinputAnchor).should('have.value', 'x+yz');
@@ -3669,11 +4228,11 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
-      cy.log("Delete letter")
+      cy.log("Delete letter (no longer goes back to saying correct)")
       cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
-      cy.get(mathinputSubmitAnchor).should('not.exist');
-      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
@@ -3685,8 +4244,16 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
-      cy.log("Back to correct")
+      cy.log("Back to correct (no longer goes back to saying correct)")
       cy.get(mathinputAnchor).type(`{end}+y`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+y');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter")
+      cy.get(mathinputAnchor).type(`{enter}`, { force: true });
       // cy.get(mathinputAnchor).should('have.value', 'x+y');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('be.visible');
@@ -3717,12 +4284,12 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
-      cy.log("Delete letter")
+      cy.log("Delete letter (no longer goes back to saying incorrect)")
       cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
       // cy.get(mathinputAnchor).should('have.value', 'x');
-      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
-      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete all")
@@ -3734,8 +4301,16 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputPartialAnchor).should('not.exist');
 
 
-      cy.log("Restore incorrect submitted answer")
+      cy.log("Restore incorrect submitted answer (no longer goes back to saying incorrect)")
       cy.get(mathinputAnchor).type(`x`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(mathinputSubmitAnchor).click();
       // cy.get(mathinputAnchor).should('have.value', 'x');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
@@ -3766,13 +4341,13 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
-      cy.log("Delete letter")
+      cy.log("Delete letter (no longer goes back to saying partially correct)")
       cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
       // cy.get(mathinputAnchor).should('have.value', 'x+z');
-      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
-      cy.get(mathinputPartialAnchor).should('have.text', '32 %');
+      cy.get(mathinputPartialAnchor).should('not.exist');
 
       cy.log("Delete more")
       cy.get(mathinputAnchor).type(`{end}{backspace}{backspace}`, { force: true });
@@ -3782,13 +4357,54 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('not.exist');
 
-      cy.log("Back to partial")
+      cy.log("Back to partial (no longer goes back to saying partially correct)")
       cy.get(mathinputAnchor).type(`{end}+z`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+z');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(mathinputSubmitAnchor).click();
       // cy.get(mathinputAnchor).should('have.value', 'x+z');
       cy.get(mathinputSubmitAnchor).should('not.exist');
       cy.get(mathinputCorrectAnchor).should('not.exist');
       cy.get(mathinputIncorrectAnchor).should('not.exist');
       cy.get(mathinputPartialAnchor).should('have.text', '32 %');
+
+      cy.log("Enter invalid answer")
+      cy.get(mathinputAnchor).type(`{end}/`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+z');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(mathinputSubmitAnchor).click();
+      // cy.get(mathinputAnchor).should('have.value', 'x+z/');
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Another invalid answer shows submit button again")
+      cy.get(mathinputAnchor).type(`{end}^`, { force: true });
+      // cy.get(mathinputAnchor).should('have.value', 'x+z/^');
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(mathinputSubmitAnchor).click();
+      // cy.get(mathinputAnchor).should('have.value', 'x+z/^');
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+      cy.get(mathinputPartialAnchor).should('not.exist');
+
     })
   });
 
@@ -3808,7 +4424,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let textinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let textinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let textinputAnchor = cesc('#' + textinputName + '_input');
       let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
       let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
@@ -3845,11 +4461,11 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
-      cy.log("Delete letter")
+      cy.log("Delete letter (no longer goes back to saying correct)")
       cy.get(textinputAnchor).type(`{backspace}`);
       cy.get(textinputAnchor).should('have.value', 'hello there');
-      cy.get(textinputSubmitAnchor).should('not.exist');
-      cy.get(textinputCorrectAnchor).should('be.visible');
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
       cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
@@ -3864,13 +4480,37 @@ describe('Answer Tag Tests', function () {
       cy.log("Back to correct")
       cy.get(textinputAnchor).type(`re`);
       cy.get(textinputAnchor).should('have.value', 'hello there');
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+      cy.get(textinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter")
+      cy.get(textinputAnchor).type(`{enter}`);
+      cy.get(textinputAnchor).should('have.value', 'hello there');
+      cy.get(textinputSubmitAnchor).should('not.exist');
+      cy.get(textinputCorrectAnchor).should('be.visible');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+      cy.get(textinputPartialAnchor).should('not.exist');
+
+      cy.log("Add a space")
+      cy.get(textinputAnchor).type(` `);
+      cy.get(textinputAnchor).should('have.value', 'hello there ');
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+      cy.get(textinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter")
+      cy.get(textinputAnchor).type(`{enter}`);
+      cy.get(textinputAnchor).should('have.value', 'hello there ');
       cy.get(textinputSubmitAnchor).should('not.exist');
       cy.get(textinputCorrectAnchor).should('be.visible');
       cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
       cy.log("Delete again")
-      cy.get(textinputAnchor).type(`{backspace}{backspace}`);
+      cy.get(textinputAnchor).type(`{backspace}{backspace}{backspace}`);
       cy.get(textinputAnchor).should('have.value', 'hello the');
       cy.get(textinputSubmitAnchor).should('be.visible');
       cy.get(textinputCorrectAnchor).should('not.exist');
@@ -3893,12 +4533,12 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
-      cy.log("Delete letter")
+      cy.log("Delete letter (no longer goes back to saying incorrect)")
       cy.get(textinputAnchor).type(`{backspace}`);
       cy.get(textinputAnchor).should('have.value', 'hello the');
-      cy.get(textinputSubmitAnchor).should('not.exist');
+      cy.get(textinputSubmitAnchor).should('be.visible');
       cy.get(textinputCorrectAnchor).should('not.exist');
-      cy.get(textinputIncorrectAnchor).should('be.visible');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
       cy.log("Delete all")
@@ -3909,9 +4549,16 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
-
-      cy.log("Restore incorrect submitted answer")
+      cy.log("Restore incorrect submitted answer (no longer goes back to saying incorrect)")
       cy.get(textinputAnchor).type(`hello the`);
+      cy.get(textinputAnchor).should('have.value', 'hello the');
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+      cy.get(textinputPartialAnchor).should('not.exist');
+
+      cy.log("Press enter")
+      cy.get(textinputAnchor).type(`{enter}`);
       cy.get(textinputAnchor).should('have.value', 'hello the');
       cy.get(textinputSubmitAnchor).should('not.exist');
       cy.get(textinputCorrectAnchor).should('not.exist');
@@ -3942,13 +4589,13 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
-      cy.log("Delete letter")
+      cy.log("Delete letter (no longer goes back to saying partially correct)")
       cy.get(textinputAnchor).type(`{backspace}`);
       cy.get(textinputAnchor).should('have.value', 'bye');
-      cy.get(textinputSubmitAnchor).should('not.exist');
+      cy.get(textinputSubmitAnchor).should('be.visible');
       cy.get(textinputCorrectAnchor).should('not.exist');
       cy.get(textinputIncorrectAnchor).should('not.exist');
-      cy.get(textinputPartialAnchor).should('have.text', '32 %');
+      cy.get(textinputPartialAnchor).should('not.exist');
 
       cy.log("Delete more")
       cy.get(textinputAnchor).type(`{backspace}{backspace}`);
@@ -3958,8 +4605,16 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputIncorrectAnchor).should('not.exist');
       cy.get(textinputPartialAnchor).should('not.exist');
 
-      cy.log("Back to partial")
+      cy.log("Back to partial (no longer goes back to saying partially correct)")
       cy.get(textinputAnchor).type(`ye`);
+      cy.get(textinputAnchor).should('have.value', 'bye');
+      cy.get(textinputSubmitAnchor).should('be.visible');
+      cy.get(textinputCorrectAnchor).should('not.exist');
+      cy.get(textinputIncorrectAnchor).should('not.exist');
+      cy.get(textinputPartialAnchor).should('not.exist');
+
+      cy.log("Click submit button")
+      cy.get(textinputSubmitAnchor).click();
       cy.get(textinputAnchor).should('have.value', 'bye');
       cy.get(textinputSubmitAnchor).should('not.exist');
       cy.get(textinputCorrectAnchor).should('not.exist');
@@ -4026,12 +4681,12 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
 
-    cy.log("Delete letter")
+    cy.log("Delete letter (no longer goes back to saying correct)")
     cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}', { force: true });
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('correct')
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
     })
+    cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
 
@@ -4046,8 +4701,17 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
 
-    cy.log("Delete letter")
+    cy.log("Delete letter (no longer goes back to saying correct)")
     cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true });
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
@@ -4085,12 +4749,18 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
 
-    cy.log("Don't lose track this is correct answer")
+    cy.log("Don't go back to saying correct if return to previous answer")
     cy.get('#\\/_mathinput1 textarea').blur();
-    // ideally, this was supposed to work without blurring mathinput2,
-    // but it now requires blur because we need value as well as immediateValue of mathinput2
-    // to change back to correct answer (as value is now a dependency of immediateValue)
     cy.get('#\\/_mathinput2 textarea').type('{end}{backspace}', { force: true }).blur();
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('correct')
@@ -4125,15 +4795,23 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
 
-    cy.log("Add letter back")
+    cy.log("Add letter back (no longer goes back to saying partially correct)")
     cy.get('#\\/_mathinput1 textarea').type('{end}x', { force: true });
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-
 
     cy.log("Enter incorrect answer")
     cy.get('#\\/_mathinput1 textarea').type(`{end}{backspace}y`, { force: true }).blur();
@@ -4165,8 +4843,17 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
 
-    cy.log("Add letter back")
+    cy.log("Add letter back (no longer goes back to saying incorrect)")
     cy.get('#\\/_mathinput2 textarea').type('{end}x', { force: true });
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').type("{enter}", { force: true });
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
@@ -4242,17 +4929,16 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
 
-    cy.log("Delete letter")
+    cy.log("Delete letter (no longer goes back to saying correct)")
     cy.get('#\\/_textinput1_input').type('{backspace}');
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('correct')
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
     })
+    cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
-
 
     cy.log("Type letter in input2")
     cy.get('#\\/_textinput1_input').blur();
@@ -4266,17 +4952,16 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
 
-    cy.log("Delete letter")
+    cy.log("Delete letter (no longer goes back to saying correct)")
     cy.get('#\\/_textinput2_input').type('{backspace}');
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
-    cy.get('#\\/_answer1_submit').should('not.exist');
-    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
-      expect(text.trim().toLowerCase()).equal('correct')
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
     })
+    cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
-
 
     cy.log("Type letter in input1")
     cy.get('#\\/_textinput1_input').type('z');
@@ -4311,12 +4996,20 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').should('not.exist');
 
-
-    cy.log("Don't lose track this is correct answer")
-    // ideally, this was supposed to work without blurring textinput2,
-    // but it now requires blur because we need value as well as immediateValue of textinput2
-    // to change back to correct answer (as value is now a dependency of immediateValue)
+    cy.log("Don't go back to saying correct if return to previous answer")
     cy.get('#\\/_textinput2_input').type('{backspace}').blur();
+    cy.get('#\\/_textinput1_input').should('have.value', 'rain');
+    cy.get('#\\/_textinput2_input').should('have.value', 'snow');
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
     cy.get('#\\/_answer1_submit').should('not.exist');
@@ -4362,17 +5055,25 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
 
-    cy.log("Add letter back")
+    cy.log("Add letter back (no longer to back to saying partially correct)")
     cy.get('#\\/_textinput2_input').type('w');
     cy.get('#\\/_textinput1_input').should('have.value', 'x');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').should('not.exist');
     cy.get('#\\/_answer1_partial').invoke('text').then((text) => {
       expect(text.trim().toLowerCase()).equal('50% correct')
     })
-
 
     cy.log("Enter incorrect answer")
     cy.get('#\\/_textinput2_input').clear().type(`y`).blur();
@@ -4410,10 +5111,20 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
 
-    cy.log("Add letter back")
+    cy.log("Add letter back (no longer go back to saying incorrect")
     cy.get('#\\/_textinput2_input').type('y');
     cy.get('#\\/_textinput1_input').should('have.value', 'x');
     cy.get('#\\/_textinput2_input').should('have.value', 'y');
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').type("{enter}", { force: true });
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
@@ -4777,8 +5488,30 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.log("Remembers submitted answer")
+    cy.log("Does not remember previously submitted answer")
     cy.get('#\\/_choiceinput1').select(`cat`);
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'cat')
+    cy.get("#\\/sr").should('have.text', 'cat')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
+    });
+
+    cy.log("Submit answer")
+    cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_submit').should('not.exist');
     cy.get('#\\/_choiceinput1_correct').should('not.exist');
     cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
@@ -5005,8 +5738,30 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.log("Remembers submitted answer")
+    cy.log("Does not remember previously submitted answer")
     cy.get('#\\/_choiceinput1').select(`cat`);
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'cat')
+    cy.get("#\\/sr").should('have.text', 'cat')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
+    });
+
+    cy.log("Submit answer")
+    cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_submit').should('not.exist');
     cy.get('#\\/_choiceinput1_correct').should('not.exist');
     cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
@@ -5235,8 +5990,31 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.log("Remembers submitted answer")
+    cy.log("Does not remember previously submitted answer")
     cy.get('#\\/_choiceinput1').select(`cat`);
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'cat')
+    cy.get("#\\/sr").should('have.text', 'cat')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
+    });
+
+
+    cy.log("Submit answer")
+    cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_submit').should('not.exist');
     cy.get('#\\/_choiceinput1_correct').should('not.exist');
     cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
@@ -5259,480 +6037,6 @@ describe('Answer Tag Tests', function () {
 
 
 
-  });
-
-  it.skip('answer with sugared inline choiceinput', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p>The animal is a <answer inline>
-    <choice credit="0.5">cat</choice>
-    <choice credit="1">dog</choice>
-    <choice>monkey</choice>
-  </answer>.</p>
-  <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
-  <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
-  `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
-
-      cy.get(choiceinputAnchor).should('have.value', '');
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      let indexByName = {};
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        for (let [ind, val] of components[choiceinputName].stateValues.choiceTexts.entries()) {
-          indexByName[val] = ind + 1;
-        }
-
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([]);
-
-      });
-
-      cy.log("Select correct answer")
-      cy.get(choiceinputAnchor).select(`dog`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["dog"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([]);
-      });
-
-      cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('be.visible');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["dog"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-      cy.log("Select incorrect answer")
-      cy.get(choiceinputAnchor).select(`monkey`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-      cy.log("Press enter on submit button")
-      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('be.visible');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["monkey"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
-      });
-
-      cy.log("Select partially correct answer")
-      cy.get(choiceinputAnchor).select(`cat`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["monkey"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
-      });
-
-      cy.log("Press enter on submit button")
-      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["cat"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["cat"]]);
-      });
-
-      cy.log("Select incorrect answer again")
-      cy.get(choiceinputAnchor).select(`monkey`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-
-      cy.log("Remembers submitted answer")
-      cy.get(choiceinputAnchor).select(`cat`);
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["cat"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["cat"]]);
-      });
-
-    })
-  });
-
-  it.skip('answer with sugared inline choiceinput, fixedorder', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p>The animal is a <answer inline fixedorder>
-    <choice credit="0.5">cat</choice>
-    <choice credit="1">dog</choice>
-    <choice>monkey</choice>
-  </answer>.</p>
-  <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
-  <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
-  `}, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
-
-      cy.get(choiceinputAnchor).should('have.value', '');
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get(choiceinputAnchor).should('have.text', 'catdogmonkey');
-
-      cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      let indexByName = { cat: 1, dog: 2, monkey: 3 };
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        for (let [ind, val] of components[choiceinputName].stateValues.choiceTexts.entries()) {
-          expect(indexByName[val]).eq(ind + 1);
-        }
-
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([]);
-
-      });
-
-      cy.log("Select correct answer")
-      cy.get(choiceinputAnchor).select(`dog`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["dog"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([]);
-      });
-
-      cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('be.visible');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["dog"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-      cy.log("Select incorrect answer")
-      cy.get(choiceinputAnchor).select(`monkey`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-      cy.log("Press enter on submit button")
-      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('be.visible');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["monkey"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
-      });
-
-      cy.log("Select partially correct answer")
-      cy.get(choiceinputAnchor).select(`cat`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["monkey"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
-      });
-
-      cy.log("Press enter on submit button")
-      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["cat"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["cat"]]);
-      });
-
-      cy.log("Select incorrect answer again")
-      cy.get(choiceinputAnchor).select(`monkey`);
-      cy.get(choiceinputSubmitAnchor).should('be.visible');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-      cy.log("Remembers correct answer")
-      cy.get(choiceinputAnchor).select(`cat`);
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('have.text', '50 %');
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["cat"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["cat"]]);
-      });
-
-
-    })
   });
 
   it('answer with block choiceinput', () => {
@@ -5956,8 +6260,33 @@ describe('Answer Tag Tests', function () {
     });
 
 
-    cy.log("Remembers submitted answer")
+    cy.log("Does not remember previously submitted answer")
     cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
+    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'cat')
+    cy.get("#\\/sr").should('have.text', 'cat')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
+      expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(["cat"]);
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"]]);
+      // expect(components['/_choiceinput1'].stateValues.submittedValues).eqls(["cat"]);
+      // expect(components['/_choiceinput1'].stateValues.submittedIndices).eqls([indexByName["cat"]]);
+    });
+
+
+    cy.log("Submit answer")
+    cy.get('#\\/_choiceinput1_submit').click();
     cy.get('#\\/_choiceinput1_submit').should('not.exist');
     cy.get('#\\/_choiceinput1_correct').should('not.exist');
     cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
@@ -6038,264 +6367,6 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_choiceinput1_partial').should('not.exist');
 
 
-  });
-
-  it.skip('answer with sugared block choiceinput', () => {
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <p>The animal is a:</p>
-  <answer>
-    <choice credit="0.5">cat</choice>
-    <choice credit="1">dog</choice>
-    <choice>monkey</choice>
-  </answer>
-  <p>Current response: <text name="cr"><copy prop="currentResponse" tname="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" tname="_answer1" componentType="text" /></text></p>
-  <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" tname="_answer1" /></number></p>
-  `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-      let choiceinputName = components['/_answer1'].stateValues.inputChild.componentName;
-      let choiceinputAnchor = cesc('#' + choiceinputName);
-      let choiceinputSubmitAnchor = cesc('#' + choiceinputName + '_submit');
-      let choiceinputCorrectAnchor = cesc('#' + choiceinputName + '_correct');
-      let choiceinputIncorrectAnchor = cesc('#' + choiceinputName + '_incorrect');
-      let choiceinputPartialAnchor = cesc('#' + choiceinputName + '_partial');
-
-      cy.get(choiceinputAnchor).should('have.value', '');
-      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('check work')
-      })
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', '')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      let indexByName = {};
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-
-        for (let [ind, val] of components[choiceinputName].stateValues.choiceTexts.entries()) {
-          indexByName[val] = ind + 1;
-        }
-
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls([]);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([]);
-
-      });
-
-      cy.log("Select correct answer")
-      cy.get(choiceinputAnchor).contains(`dog`).click({ force: true });
-      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('check work')
-      })
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', '')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls([]);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["dog"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls([]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([]);
-      });
-
-      cy.log("Click submit button")
-      cy.get(choiceinputSubmitAnchor).click();
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('correct')
-      })
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'dog')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['dog']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["dog"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["dog"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-      cy.log("Select incorrect answer")
-      cy.get(choiceinputAnchor).contains(`monkey`).click({ force: true });
-      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('check work')
-      })
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'dog')
-      cy.get("#\\/credit").should('have.text', '1')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-      cy.log("Press enter on submit button")
-      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('incorrect')
-      });
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["monkey"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
-      });
-
-      cy.log("Select partially correct answer")
-      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
-      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('check work')
-      })
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'monkey')
-      cy.get("#\\/credit").should('have.text', '0')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["monkey"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["monkey"]]);
-      });
-
-      cy.log("Press enter on submit button")
-      cy.get(choiceinputSubmitAnchor).type(`{enter}`, { force: true });
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('50% correct')
-      })
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["cat"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["cat"]]);
-      });
-
-
-      cy.log("Select incorrect answer again")
-      cy.get(choiceinputAnchor).contains(`monkey`).click({ force: true });
-      cy.get(choiceinputSubmitAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('check work')
-      })
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).should('not.exist');
-
-      cy.get("#\\/cr").should('have.text', 'monkey')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["monkey"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["dog"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["dog"]]);
-      });
-
-
-      cy.log("Remembers submitted answer")
-      cy.get(choiceinputAnchor).contains(`cat`).click({ force: true });
-      cy.get(choiceinputSubmitAnchor).should('not.exist');
-      cy.get(choiceinputCorrectAnchor).should('not.exist');
-      cy.get(choiceinputIncorrectAnchor).should('not.exist');
-      cy.get(choiceinputPartialAnchor).invoke('text').then((text) => {
-        expect(text.trim().toLowerCase()).equal('50% correct')
-      })
-
-      cy.get("#\\/cr").should('have.text', 'cat')
-      cy.get("#\\/sr").should('have.text', 'cat')
-      cy.get("#\\/credit").should('have.text', '0.5')
-
-      cy.window().then((win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
-        expect(components['/_answer1'].stateValues.currentResponses).eqls(['cat']);
-        expect(components['/_answer1'].stateValues.submittedResponses).eqls(['cat']);
-        expect(components[choiceinputName].stateValues.selectedValues).eqls(["cat"]);
-        expect(components[choiceinputName].stateValues.selectedIndices).eqls([indexByName["cat"]]);
-        // expect(components[choiceinputName].stateValues.submittedValues).eqls(["cat"]);
-        // expect(components[choiceinputName].stateValues.submittedIndices).eqls([indexByName["cat"]]);
-      });
-
-
-
-    })
   });
 
   it('answer with variable number of choices', () => {
@@ -6699,7 +6770,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName);
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -6864,7 +6935,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChild.componentName);
+      let choiceinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName);
       let choiceinputAnchor = '#' + choiceinputName;
       let choiceinputSubmitAnchor = '#' + choiceinputName + '_submit';
       let choiceinputCorrectAnchor = '#' + choiceinputName + '_correct';
@@ -7248,7 +7319,7 @@ describe('Answer Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let mathinputName = components['/_answer1'].stateValues.inputChild.componentName
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
@@ -7355,6 +7426,129 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('consider as responses', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        <p>Enter two 2D points, where second to upward and to the right of the first:
+         <mathinput name="P" /> <mathinput name="Q" /></p>
+        
+        <setup>
+          <point name="PP" coords="$P" />
+          <point name="QQ" coords="$Q" />
+        </setup>
+
+        <answer name="a">
+          <considerAsResponses>$P $Q</considerAsResponses>
+         <award><when>$(QQ{prop='x'}) > $(PP{prop='x'}) and $(QQ{prop='y'}) > $(PP{prop='y'})</when></award>
+        </answer>
+        
+        <p>Current responses <aslist><copy name="cr" prop="currentResponses" tname="a" componentType="math" nComponents="2" /></aslist></p>
+        <p>Submitted responses <aslist><copy name="sr" prop="submittedResponses" tname="a" componentType="math" nComponents="2" /></aslist></p>
+        <p>Credit: <copy name="ca" prop="creditAchieved" tname="a" /></p>
+ `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let cr1Anchor = cesc('#' + components['/cr'].replacements[0].componentName);
+      let cr2Anchor = cesc('#' + components['/cr'].replacements[1].componentName);
+      let sr1Anchor = cesc('#' + components['/sr'].replacements[0].componentName);
+      let sr2Anchor = cesc('#' + components['/sr'].replacements[1].componentName);
+      let caAnchor = cesc('#' + components['/ca'].replacements[0].componentName);
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.window().then((win) => {
+        expect(components["/a"].stateValues.nResponses).eq(2)
+      });
+
+      cy.get('#\\/P textarea').type("(2,3){enter}", { force: true })
+      cy.get('#\\/Q textarea').type("(3,4){enter}", { force: true })
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('＿')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+
+      cy.get('#\\/P textarea').type("{home}{rightArrow}{rightArrow}{backspace}5{enter}", { force: true })
+      cy.get('#\\/Q textarea').type("{end}{leftArrow}{backspace}1{enter}", { force: true })
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(2,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,4)')
+      });
+      cy.get(caAnchor).should('have.text', '1')
+
+      cy.get('#\\/a_submit').click();
+
+      cy.get(cr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(cr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(sr1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(5,3)')
+      });
+      cy.get(sr2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('(3,1)')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+    })
+  });
+
   it('immediate value used for submit button', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -7445,6 +7639,20 @@ describe('Answer Tag Tests', function () {
 
       cy.get("#\\/val textarea").type("{end}{backspace}3", { force: true });
 
+      cy.get(submitAnchor).should('be.visible');
+      cy.get(correctAnchor).should('not.exist');
+      cy.get(incorrectAnchor).should('not.exist');
+
+      cy.get(crAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(srAnchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      });
+      cy.get(caAnchor).should('have.text', '0')
+
+
+      cy.get('#\\/a_submit').click();
       cy.get(submitAnchor).should('not.exist');
       cy.get(correctAnchor).should('not.exist');
       cy.get(incorrectAnchor).should('be.visible');
@@ -7505,25 +7713,25 @@ describe('Answer Tag Tests', function () {
   it('choiceinput credit from boolean', () => {
 
     let options = ["meow", "woof", "squeak", "blub"]
-    for (let ind = 0; ind < 4; ind++) {
+    for (let ind = 1; ind <= 4; ind++) {
 
       cy.window().then((win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variants="cat dog mouse fish"/>
+        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal)" hide>
-          <option selectForVariants="cat">
+          <option selectForVariantNames="cat">
             <text>cat</text>
           </option>
-          <option selectForVariants="dog">
+          <option selectForVariantNames="dog">
             <text>dog</text>
           </option>
-          <option selectForVariants="mouse">
+          <option selectForVariantNames="mouse">
             <text>mouse</text>
           </option>
-          <option selectForVariants="fish">
+          <option selectForVariantNames="fish">
             <text>fish</text>
           </option>
         </select>
@@ -7546,9 +7754,9 @@ describe('Answer Tag Tests', function () {
 
       cy.get('#\\/_text1').should('have.text', `${ind}`);  // to wait until loaded
 
-      for (let ind2 = 0; ind2 < 4; ind2++) {
+      for (let ind2 = 1; ind2 <= 4; ind2++) {
 
-        cy.get('#\\/_choiceinput1').contains(options[ind2]).click({ force: true });
+        cy.get('#\\/_choiceinput1').contains(options[ind2 - 1]).click({ force: true });
 
         cy.get('#\\/_choiceinput1_submit').click();
         cy.get('#\\/_choiceinput1_submit').should('not.exist');
@@ -7567,25 +7775,25 @@ describe('Answer Tag Tests', function () {
   it('award credit from boolean', () => {
 
     let options = ["meow", "woof", "squeak", "blub"]
-    for (let ind = 0; ind < 4; ind++) {
+    for (let ind = 1; ind <= 4; ind++) {
 
       cy.window().then((win) => {
         win.postMessage({
           doenetML: `
         <text>${ind}</text>
-        <variantControl nvariants="4" variants="cat dog mouse fish"/>
+        <variantControl nvariants="4" variantNames="cat dog mouse fish"/>
   
         <select assignNames="(animal sound)" hide>
-          <option selectForVariants="cat">
+          <option selectForVariantNames="cat">
             <text>cat</text><text>meow</text>
           </option>
-          <option selectForVariants="dog">
+          <option selectForVariantNames="dog">
             <text>dog</text><text>woof</text>
           </option>
-          <option selectForVariants="mouse">
+          <option selectForVariantNames="mouse">
             <text>mouse</text><text>squeak</text>
           </option>
-          <option selectForVariants="fish">
+          <option selectForVariantNames="fish">
             <text>fish</text><text>blub</text>
           </option>
         </select>
@@ -7609,16 +7817,16 @@ describe('Answer Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
 
-        let textinputName = components['/ans'].stateValues.inputChild.componentName
+        let textinputName = components['/ans'].stateValues.inputChildren[0].componentName
         let textinputAnchor = cesc('#' + textinputName + '_input');
         let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
         let textinputCorrectAnchor = cesc('#' + textinputName + '_correct');
         let textinputIncorrectAnchor = cesc('#' + textinputName + '_incorrect');
 
 
-        for (let ind2 = 0; ind2 < 4; ind2++) {
+        for (let ind2 = 1; ind2 <= 4; ind2++) {
 
-          cy.get(textinputAnchor).clear().type(options[ind2]);
+          cy.get(textinputAnchor).clear().type(options[ind2 - 1]);
           cy.get(textinputSubmitAnchor).click();
 
           cy.get(textinputSubmitAnchor).should('not.exist');
@@ -7646,9 +7854,9 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi1" />
         <mathinput name="mi2" />
         <answer nAwardsCredited="$nawards" name="a">
-          <award feedbackText="First is  " credit="0.4" targetsAreResponses="mi1"><when>$mi1 > 3</when></award>
-          <award feedbackText="Second is  " credit="0.4" targetsAreResponses="mi2"><when>$mi2 > 3</when></award>
-          <award feedbackText="Distinct and  " credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
+          <award feedbackText="First is greater than 3" credit="0.4" targetsAreResponses="mi1"><when>$mi1 > 3</when></award>
+          <award feedbackText="Second is greater than 3" credit="0.4" targetsAreResponses="mi2"><when>$mi2 > 3</when></award>
+          <award feedbackText="Distinct and greater than 3" credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
           <award feedbackText="At least the first is a number" credit="0"><when><isNumber>$mi1</isNumber></when></award>
           <award feedbackText="At least the second is a number" credit="0"><when>isnumber($mi2)</when></award>
         </answer>
@@ -7824,7 +8032,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7856,7 +8064,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7888,7 +8096,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -7920,8 +8128,8 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
@@ -7949,9 +8157,9 @@ describe('Answer Tag Tests', function () {
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
-    cy.get('#\\/fb3').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
+    cy.get('#\\/fb3').should('have.text', 'Distinct and greater than 3')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 
@@ -7978,7 +8186,7 @@ describe('Answer Tag Tests', function () {
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb1').should('have.text', 'Distinct and greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -8009,7 +8217,7 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('40% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
     cy.get('#\\/fb2').should('not.exist')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
@@ -8040,8 +8248,8 @@ describe('Answer Tag Tests', function () {
       expect(text.trim().toLowerCase()).equal('80% correct')
     })
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
     cy.get('#\\/fb3').should('not.exist')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
@@ -8069,9 +8277,9 @@ describe('Answer Tag Tests', function () {
     cy.get(incorrectAnchor).should('not.exist');
     cy.get(partialAnchor).should('not.exist');
 
-    cy.get('#\\/fb1').should('have.text', 'First is  ')
-    cy.get('#\\/fb2').should('have.text', 'Second is  ')
-    cy.get('#\\/fb3').should('have.text', 'Distinct and  ')
+    cy.get('#\\/fb1').should('have.text', 'First is greater than 3')
+    cy.get('#\\/fb2').should('have.text', 'Second is greater than 3')
+    cy.get('#\\/fb3').should('have.text', 'Distinct and greater than 3')
     cy.get('#\\/fb4').should('not.exist')
     cy.get('#\\/fb5').should('not.exist')
 
@@ -8383,6 +8591,127 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('nSubmissions', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer>
+    <award><math>x+y</math></award>
+  </answer></p>
+  <p><answer type="text">hello</answer></p>
+  <p>Number of submissions 1: <copy tname="_answer1" prop="nSubmissions" assignNames="nsubs1" /></p>
+  <p>Number of submissions 2: <copy tname="_answer2" prop="nSubmissions" assignNames="nsubs2" /></p>
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/nsubs1').should('have.text', 0);
+    cy.get('#\\/nsubs2').should('have.text', 0);
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/_answer1"].stateValues.nSubmissions).eq(0);
+      expect(components["/nsubs1"].stateValues.value).eq(0);
+      expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+      expect(components["/nsubs2"].stateValues.value).eq(0);
+
+      let mathinputName = components['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+
+      let textinputName = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let textinputAnchor = cesc('#' + textinputName + "_input");
+      let textinputSubmitAnchor = cesc('#' + textinputName + '_submit');
+
+      cy.get(mathinputAnchor).type("x+y{enter}", { force: true });
+
+
+      cy.get('#\\/nsubs1').should('have.text', 1)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs1"].stateValues.value).eq(1);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+      cy.get(mathinputAnchor).type("{end}{backspace}{backspace}", { force: true });
+
+      cy.get('#\\/nsubs1').should('have.text', 1)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs1"].stateValues.value).eq(1);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+      cy.get(textinputAnchor).type("h").blur();
+      cy.get('#\\/nsubs1').should('have.text', 1)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs1"].stateValues.value).eq(1);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+
+      cy.get(mathinputSubmitAnchor).click()
+
+      cy.get('#\\/nsubs1').should('have.text', 2)
+      cy.get('#\\/nsubs2').should('have.text', 0).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs1"].stateValues.value).eq(2);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(0);
+        expect(components["/nsubs2"].stateValues.value).eq(0);
+      })
+
+      cy.get(textinputSubmitAnchor).click()
+
+      cy.get('#\\/nsubs1').should('have.text', 2)
+      cy.get('#\\/nsubs2').should('have.text', 1).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs1"].stateValues.value).eq(2);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs2"].stateValues.value).eq(1);
+      })
+
+
+      cy.get(textinputAnchor).clear().type("hello").blur();
+      cy.get(mathinputAnchor).type("{end}+y", { force: true }).blur();
+
+      cy.get('#\\/nsubs1').should('have.text', 2)
+      cy.get('#\\/nsubs2').should('have.text', 1).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs1"].stateValues.value).eq(2);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs2"].stateValues.value).eq(1);
+      })
+
+
+      cy.get(mathinputSubmitAnchor).click()
+      cy.get('#\\/nsubs1').should('have.text', 3)
+      cy.get('#\\/nsubs2').should('have.text', 1).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(components["/nsubs1"].stateValues.value).eq(3);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(1);
+        expect(components["/nsubs2"].stateValues.value).eq(1);
+      })
+
+      cy.get(textinputSubmitAnchor).click()
+      cy.get('#\\/nsubs1').should('have.text', 3)
+      cy.get('#\\/nsubs2').should('have.text', 2).then(() => {
+        expect(components["/_answer1"].stateValues.nSubmissions).eq(3);
+        expect(components["/nsubs1"].stateValues.value).eq(3);
+        expect(components["/_answer2"].stateValues.nSubmissions).eq(2);
+        expect(components["/nsubs2"].stateValues.value).eq(2);
+      })
+
+
+    })
+  });
 
 
 })

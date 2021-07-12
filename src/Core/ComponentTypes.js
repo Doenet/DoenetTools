@@ -17,6 +17,7 @@ import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
 import * as SideBySide from './components/SideBySide';
 import * as Indexing from './components/Indexing';
+import * as Divisions from './components/Divisions';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -86,12 +87,16 @@ import AttractToAngles from './components/AttractToAngles';
 import ConditionalContent from './components/ConditionalContent';
 import AsList from './components/AsList';
 import Spreadsheet from './components/Spreadsheet';
+import DiscreteSimulationResultList from './components/DiscreteSimulationResultList';
+import DiscreteSimulationResultPolyline from './components/DiscreteSimulationResultPolyline';
 import Cell from './components/Cell';
 import Row from './components/Row';
 import Column from './components/Column';
 import CellBlock from './components/CellBlock';
+import Tabular from './components/Tabular';
 import Table from './components/Table';
-import Variants from './components/Variants';
+import Figure from './components/Figure';
+import VariantNames from './components/VariantNames';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
 import SelectFromSequence from './components/SelectFromSequence';
@@ -112,7 +117,6 @@ import Solution from './components/Solution';
 import IntComma from './components/IntComma';
 import Pluralize from './components/Pluralize';
 import Feedback from './components/Feedback';
-import Container from './components/Container';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
@@ -123,6 +127,7 @@ import Lorem from './components/Lorem';
 import UpdateValue from './components/UpdateValue';
 import CallAction from './components/CallAction';
 import TriggerSet from './components/TriggerSet';
+import FunctionIterates from './components/FunctionIterates';
 
 
 //Extended
@@ -165,6 +170,7 @@ const componentTypeArray = [
   ...Object.values(SideBySide),
   ...Object.values(ComponentWithSelectableType),
   ...Object.values(Indexing),
+  ...Object.values(Divisions),
   Document,
   StringComponent,
   Text, TextList,
@@ -200,11 +206,15 @@ const componentTypeArray = [
   Sequence,
   Slider,
   Spreadsheet,
+  DiscreteSimulationResultList,
+  DiscreteSimulationResultPolyline,
   Cell,
   Row,
   Column,
   CellBlock,
+  Tabular,
   Table,
+  Figure,
   Markers,
   Panel,
   Map, Sources,
@@ -219,7 +229,7 @@ const componentTypeArray = [
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
-  Seeds, Variants, VariantControl,
+  Seeds, VariantNames, VariantControl,
   SelectFromSequence, Select,
   Group,
   AnimateFromSequence,
@@ -236,7 +246,6 @@ const componentTypeArray = [
   IntComma,
   Pluralize,
   Feedback,
-  Container,
   CollaborateGroups,
   CollaborateGroupSetup,
   ConsiderAsResponses,
@@ -247,6 +256,7 @@ const componentTypeArray = [
   UpdateValue,
   CallAction,
   TriggerSet,
+  FunctionIterates,
 
   BaseComponent,
   InlineComponent,

@@ -1,7 +1,7 @@
 describe('factor polynomial tests', function () {
 
   beforeEach(() => {
-    cy.visit('/test')
+    cy.visit('/cypressTest')
   })
 
   // Note: even after develop a better factoring test,
@@ -14,55 +14,72 @@ describe('factor polynomial tests', function () {
         doenetML: `
     <p><text>a</text></p>
     <setup>
-      <math name="poly">x^2-1</math>
-      <math name="ansSimplify"  simplify>$ans</math>
-      <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
-      <text name="minus">-</text>
-      <text name="mult">*</text>
-      <text name="div">/</text>
-      <conditionalContent assignNames="(ansNoMinus postMinusOperator)">
-        <case condition="$originalOperator=$minus">
-          <extractMath type="operand" operandNumber="1" name="temp">$ansSimplify</extractMath>
-          <extractMathOperator>$temp</extractMathOperator>
-        </case>
-        <else>$ansSimplify $originalOperator</else>
-      </conditionalContent>
-      <conditionalContent assignNames="(numerator denominator numeratorOperator)">
-        <case condition="$postMinusOperator=$div">
-          <extractMath type="operand" operandNumber="1" name="temp2">$ansNoMinus</extractMath>
-          <extractMath type="operand" operandNumber="2">$ansNoMinus</extractMath>
-          <extractMathOperator>$temp2</extractMathOperator>
-        </case>
-        <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
-      </conditionalContent>
-    </setup>
-  
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
-    
-    <p>Answer <mathinput name="ans" /></p>
+    <math name="poly">x^2-1</math>
+    <math name="polyExpandSimplify" simplify expand>$poly</math>
+    <math name="ansSimplify" simplify>$ans</math>
+    <math name="ansExpandSimplify" simplify expand>$ans</math>
+    <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
+    <text name="minus">-</text>
+    <text name="mult">*</text>
+    <text name="div">/</text>
+    <text name="pow">^</text>
+    <text name="add">+</text>
+    <conditionalContent assignNames="(ansNoMinus postMinusOperator)">
+      <case condition="$originalOperator=$minus">
+        <extractMath type="operand" operandNumber="1" name="temp">$ansSimplify</extractMath>
+        <extractMathOperator>$temp</extractMathOperator>
+      </case>
+      <else>$ansSimplify $originalOperator</else>
+    </conditionalContent>
+    <conditionalContent assignNames="(numerator denominator numeratorOperator)">
+      <case condition="$postMinusOperator=$div">
+        <extractMath type="operand" operandNumber="1" name="temp2">$ansNoMinus</extractMath>
+        <extractMath type="operand" operandNumber="2">$ansNoMinus</extractMath>
+        <extractMathOperator>$temp2</extractMathOperator>
+      </case>
+      <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
+    </conditionalContent>
+    <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
+    <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+    <conditionalContent assignNames="(innerPiece innerOperator)">
+      <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
+        <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
+        <extractMathOperator>$temp3</extractMathOperator>
+      </case>
+      <else>$numerator $numeratorOperator</else>
+    </conditionalContent>
+  </setup>
 
-    <answer name="check">
-      <award>
-        <when>
-          $ans = $poly
-          and
-          $numeratorOperator = $mult
+  <p>Question: Factor the polynomial $polyExpandSimplify.</p>
+  
+  <p>Answer <mathinput name="ans" /></p>
+
+  <answer name="check" symbolicEquality>
+    <award>
+      <when>
+        $ansExpandSimplify = $polyExpandSimplify
+        and
+        (
+          (
+            $innerOperator = $pow 
+            and
+            <extractMathOperator><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></extractMathOperator> = $add
+          )
+          or
+          $innerOperator = $mult
           and
           <isNumber>$denominator</isNumber>
           and
           (
-            <extractMath type="numberOfOperands">$numerator</extractMath> = 3
-            or not
-            (
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
-              or
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
-            )
+            <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+            or 
+            not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
           )
-        </when>
-      </award>
-    </answer>
-    `}, "*");
+        )
+      </when>
+    </award>
+  </answer>
+      `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');
@@ -166,6 +183,20 @@ describe('factor polynomial tests', function () {
     cy.get('#\\/check_submit').click();
     cy.get('#\\/check_correct').should('be.visible')
 
+    cy.log('sqrt(x^2-1)^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtx^2{rightArrow}-1{rightArrow}^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
+
+    cy.log('sqrt(2x^2-2)sqrt((x^2-1)/2)')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrt2x^2{rightArrow}-2{rightArrow}sqrt(x^2{rightArrow}-1)/2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
+
+    cy.log('sqrt(4x^2-4)sqrt(x^2-1)/4')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrt4x^2{rightArrow}-4{rightArrow}sqrt(x^2{rightArrow}-1)/4{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
 
   });
 
@@ -176,11 +207,15 @@ describe('factor polynomial tests', function () {
     <p><text>a</text></p>
     <setup>
       <math name="poly">4x^2-4</math>
-      <math name="ansSimplify"  simplify>$ans</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
       <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
       <text name="minus">-</text>
       <text name="mult">*</text>
       <text name="div">/</text>
+      <text name="pow">^</text>
+      <text name="add">+</text>
       <conditionalContent assignNames="(ansNoMinus postMinusOperator)">
         <case condition="$originalOperator=$minus">
           <extractMath type="operand" operandNumber="1" name="temp">$ansSimplify</extractMath>
@@ -196,28 +231,41 @@ describe('factor polynomial tests', function () {
         </case>
         <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
       </conditionalContent>
+      <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
+      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <conditionalContent assignNames="(innerPiece innerOperator)">
+        <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
+          <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
+          <extractMathOperator>$temp3</extractMathOperator>
+        </case>
+        <else>$numerator $numeratorOperator</else>
+      </conditionalContent>
     </setup>
   
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check">
+    <answer name="check" symbolicEquality>
       <award>
         <when>
-          $ans = $poly
-          and
-          $numeratorOperator = $mult
-          and
-          <isNumber>$denominator</isNumber>
+          $ansExpandSimplify = $polyExpandSimplify
           and
           (
-            <extractMath type="numberOfOperands">$numerator</extractMath> = 3
-            or not
             (
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
-              or
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
+              $innerOperator = $pow 
+              and
+              <extractMathOperator><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></extractMathOperator> = $add
+            )
+            or
+            $innerOperator = $mult
+            and
+            <isNumber>$denominator</isNumber>
+            and
+            (
+              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              or 
+              not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
             )
           )
         </when>
@@ -299,11 +347,15 @@ describe('factor polynomial tests', function () {
     <p><text>a</text></p>
     <setup>
       <math name="poly">(6z-4)(5z+10)</math>
-      <math name="ansSimplify"  simplify>$ans</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
       <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
       <text name="minus">-</text>
       <text name="mult">*</text>
       <text name="div">/</text>
+      <text name="pow">^</text>
+      <text name="add">+</text>
       <conditionalContent assignNames="(ansNoMinus postMinusOperator)">
         <case condition="$originalOperator=$minus">
           <extractMath type="operand" operandNumber="1" name="temp">$ansSimplify</extractMath>
@@ -319,28 +371,41 @@ describe('factor polynomial tests', function () {
         </case>
         <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
       </conditionalContent>
+      <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
+      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <conditionalContent assignNames="(innerPiece innerOperator)">
+        <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
+          <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
+          <extractMathOperator>$temp3</extractMathOperator>
+        </case>
+        <else>$numerator $numeratorOperator</else>
+      </conditionalContent>
     </setup>
   
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check">
-      <award>
+    <answer name="check" symbolicEquality simplifyOnCompare>
+      <award simplifyOnCompare expandOnCompare>
         <when>
-          $ans = $poly
-          and
-          $numeratorOperator = $mult
-          and
-          <isNumber>$denominator</isNumber>
+          $ansExpandSimplify = $polyExpandSimplify
           and
           (
-            <extractMath type="numberOfOperands">$numerator</extractMath> = 3
-            or not
             (
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
-              or
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
+              $innerOperator = $pow 
+              and
+              <extractMathOperator><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></extractMathOperator> = $add
+            )
+            or
+            $innerOperator = $mult
+            and
+            <isNumber>$denominator</isNumber>
+            and
+            (
+              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              or 
+              not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
             )
           )
         </when>
@@ -395,11 +460,15 @@ describe('factor polynomial tests', function () {
     <p><text>a</text></p>
     <setup>
       <math name="poly">(3q+2r)(6s+8t)</math>
-      <math name="ansSimplify"  simplify>$ans</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
       <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
       <text name="minus">-</text>
       <text name="mult">*</text>
       <text name="div">/</text>
+      <text name="pow">^</text>
+      <text name="add">+</text>
       <conditionalContent assignNames="(ansNoMinus postMinusOperator)">
         <case condition="$originalOperator=$minus">
           <extractMath type="operand" operandNumber="1" name="temp">$ansSimplify</extractMath>
@@ -415,28 +484,41 @@ describe('factor polynomial tests', function () {
         </case>
         <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
       </conditionalContent>
+      <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
+      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <conditionalContent assignNames="(innerPiece innerOperator)">
+        <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
+          <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
+          <extractMathOperator>$temp3</extractMathOperator>
+        </case>
+        <else>$numerator $numeratorOperator</else>
+      </conditionalContent>
     </setup>
   
-    <p>Question: Factor the polynomial <math expand simplify>$poly</math>.</p>
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check">
+    <answer name="check" symbolicEquality>
       <award>
         <when>
-          $ans = $poly
-          and
-          $numeratorOperator = $mult
-          and
-          <isNumber>$denominator</isNumber>
+          $ansExpandSimplify = $polyExpandSimplify
           and
           (
-            <extractMath type="numberOfOperands">$numerator</extractMath> = 3
-            or not
             (
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
-              or
-              <isNumber><extractMath type="operand" operandNumber="1">$numerator</extractMath></isNumber>
+              $innerOperator = $pow 
+              and
+              <extractMathOperator><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></extractMathOperator> = $add
+            )
+            or
+            $innerOperator = $mult
+            and
+            <isNumber>$denominator</isNumber>
+            and
+            (
+              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              or 
+              not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
             )
           )
         </when>
@@ -486,6 +568,134 @@ describe('factor polynomial tests', function () {
     cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4t+3s)2(2r+3q){enter}', { force: true });
     cy.get('#\\/check_submit').click();
     cy.get('#\\/check_correct').should('be.visible')
+
+  });
+
+  it('factor (2x+4)^2', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p><text>a</text></p>
+    <setup>
+      <math name="poly">(2x+4)^2</math>
+      <math name="polyExpandSimplify" simplify expand>$poly</math>
+      <math name="ansSimplify" simplify>$ans</math>
+      <math name="ansExpandSimplify" simplify expand>$ans</math>
+      <extractMathOperator name="originalOperator">$ansSimplify</extractMathOperator>
+      <text name="minus">-</text>
+      <text name="mult">*</text>
+      <text name="div">/</text>
+      <text name="pow">^</text>
+      <text name="add">+</text>
+      <conditionalContent assignNames="(ansNoMinus postMinusOperator)">
+        <case condition="$originalOperator=$minus">
+          <extractMath type="operand" operandNumber="1" name="temp">$ansSimplify</extractMath>
+          <extractMathOperator>$temp</extractMathOperator>
+        </case>
+        <else>$ansSimplify $originalOperator</else>
+      </conditionalContent>
+      <conditionalContent assignNames="(numerator denominator numeratorOperator)">
+        <case condition="$postMinusOperator=$div">
+          <extractMath type="operand" operandNumber="1" name="temp2">$ansNoMinus</extractMath>
+          <extractMath type="operand" operandNumber="2">$ansNoMinus</extractMath>
+          <extractMathOperator>$temp2</extractMathOperator>
+        </case>
+        <else>$ansNoMinus <math>1</math> $postMinusOperator</else>
+      </conditionalContent>
+      <extractMath type="operand" operandNumber="1" name="numeratorOperand1">$numerator</extractMath>
+      <extractMath type="numberOfOperands" name="numeratorNumOperands">$numerator</extractMath>
+      <conditionalContent assignNames="(innerPiece innerOperator)">
+        <case condition="$numeratorOperator=$mult and isnumber($numeratorOperand1) and $numeratorNumOperands = 2" >
+          <extractMath type="operand" operandNumber="2" name="temp3">$numerator</extractMath>
+          <extractMathOperator>$temp3</extractMathOperator>
+        </case>
+        <else>$numerator $numeratorOperator</else>
+      </conditionalContent>
+    </setup>
+  
+    <p>Question: Factor the polynomial $polyExpandSimplify.</p>
+    
+    <p>Answer <mathinput name="ans" /></p>
+
+    <answer name="check" symbolicEquality>
+      <award>
+        <when>
+          $ansExpandSimplify = $polyExpandSimplify
+          and
+          (
+            (
+              $innerOperator = $pow 
+              and
+              <extractMathOperator><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></extractMathOperator> = $add
+            )
+            or
+            $innerOperator = $mult
+            and
+            <isNumber>$denominator</isNumber>
+            and
+            (
+              <extractMath type="numberOfOperands">$innerPiece</extractMath> = 3
+              or 
+              not <isNumber><extractMath type="operand" operandNumber="1">$innerPiece</extractMath></isNumber>
+            )
+          )
+        </when>
+      </award>
+    </answer>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.log('4x^2+16x+16')
+    cy.get('#\\/ans textarea').type('4x^2{rightArrow}+16x+16{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
+
+    cy.log('4(x^2+4x+4)')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4(x^2{rightArrow}+4x+4){enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
+
+    cy.log('4(x+2)(x+2)')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4(x+2)(x+2){enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_correct').should('be.visible')
+
+    cy.log('4(x+2)^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4(x+2)^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_correct').should('be.visible')
+
+    cy.log('(2x+4)^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2x+4)^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_correct').should('be.visible')
+
+    cy.log('(2(x+2))^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2(x+2))^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_correct').should('be.visible')
+
+    cy.log('(x+4+x)^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(x+4+x)^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_correct').should('be.visible')
+
+    cy.log('(4x+8)(x+2)')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4x+8)(x+2){enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_correct').should('be.visible')
+
+    cy.log('4sqrt(x^2+4x+4)^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}4sqrtx^2{rightArrow}+4x+4{rightArrow}^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
+
+    cy.log('sqrt(4x^2+16x+16)^2')
+    cy.get('#\\/ans textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrt4x^2{rightArrow}+16x+16{rightArrow}^2{enter}', { force: true });
+    cy.get('#\\/check_submit').click();
+    cy.get('#\\/check_incorrect').should('be.visible')
 
   });
 

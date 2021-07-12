@@ -83,9 +83,11 @@ export default class MathInput extends DoenetRenderer {
     let expression;
 
     text = substituteUnicodeInLatexString(text);
-    let fromLatex = getCustomFromLatex({
+
+    let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
     });
+
     try {
       expression = fromLatex(text);
     } catch (e) {
@@ -97,39 +99,32 @@ export default class MathInput extends DoenetRenderer {
   }
 
   updateImmediateValueFromLatex(text) {
-    // update immediateValue to the math expression corresponding to text
-    // if the math expression corresponding to text is different 
-    // from the current math expression
 
-    // to detect changes only due to a different value
-    // (and not to other differences, in particular to representation of scientific notation)
-    // convert the latexValue to a math expression rather than using the current math expression
+    // The check whether or not to call the updateImmediateValue action is subtle.
+    // We need to achieve two effects:
+    // 1. Do not call the updateImmediateValue action
+    // when mathQuill invokes onChange from render()
+    // due to differences in latex format between it and math-expressions.
+    // 2. Call the updateImmediateValue action
+    // whenever the user types anything into the input
+    // even if it does not change the underlying math expression
+
     let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
-
-    this.latexValue = text;
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
-    if (!newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)) {
+
+    let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
+      || (!this.latexValueSetInRender && text !== this.latexValue);
+
+    // Note: must set this.latexValue before calling updateImmediateValue action
+    this.latexValue = text;
+    this.latexValueSetInRender = false;
+
+    if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
         mathExpression: newMathExpression
       });
     }
-
-    // //evalute math expression
-    //   let nextPreviewValue = newMathExpression.toLatex();
-
-    //   if (nextPreviewValue === "＿"){
-    //     //Error
-    //     clearTimeout(this.timer)
-    //     this.timer = setTimeout(()=>{
-    //       this.previewValue = "Err";
-    //       this.forceUpdate();
-    //     },1000)
-    //   }else{
-    //     //No Error
-    //     clearTimeout(this.timer)
-    //     this.previewValue = nextPreviewValue;
-    //   }
 
 
   }
@@ -246,6 +241,7 @@ export default class MathInput extends DoenetRenderer {
       if (this.latexValue === '\uFF3F') {
         this.latexValue = "";
       }
+      this.latexValueSetInRender = true;
       this.valueToRevertTo = this.doenetSvData.value;
       this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
       // this.latexValueToRevertTo = this.latexValue;
@@ -370,13 +366,13 @@ export default class MathInput extends DoenetRenderer {
             config={{
               autoCommands: "sqrt pi theta integral infinity",
               autoOperatorNames: 'arg deg det dim exp gcd hom ker lg lim ln log max min'
-              + ' Pr'
-              + ' sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth'
-              + ' sin cos tan sec cosec csc cotan cot ctg'
-              + ' arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg'
-              + ' sinh cosh tanh sech cosech csch cotanh coth ctgh'
-              + ' arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh'
-              + ' arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh',
+                + ' Pr'
+                + ' sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth'
+                + ' sin cos tan sec cosec csc cotan cot ctg'
+                + ' arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg'
+                + ' sinh cosh tanh sech cosech csch cotanh coth ctgh'
+                + ' arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh'
+                + ' arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh',
               handlers: {
                 enter: this.handlePressEnter
               }
@@ -459,7 +455,7 @@ var appliedFunctionSymbols = [
   'count', 'mod'
 ];
 
-function getCustomFromLatex({ functionSymbols }) {
+function getFromLatex({ functionSymbols }) {
   return x => me.fromAst((new me.converters.latexToAstObj({
     appliedFunctionSymbols, functionSymbols
   })).convert(x))
@@ -512,6 +508,9 @@ function substituteUnicodeInLatexString(latexString) {
     ['\u03C8', '\\psi '], // 'ψ'
     ['\u03A9', '\\Omega '], // 'Ω'
     ['\u03C9', '\\omega '], // 'ω'
+    ['\u2212', '-'], // minus sign
+    ['\u22C5', ' \\cdot '], // dot operator
+    ['\u00B7', ' \\cdot '], // middle dot
   ]
 
   for (let sub of substitutions) {

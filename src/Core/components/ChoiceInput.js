@@ -89,6 +89,13 @@ export default class Choiceinput extends Input {
       createComponentOfType: "text"
     };
 
+    attributes.placeHolder = {
+      createComponentOfType: "text",
+      createStateVariable: "placeHolder",
+      defaultValue: "",
+      forRenderer: true,
+    }
+
     return attributes;
   }
 
@@ -152,7 +159,7 @@ export default class Choiceinput extends Input {
         let numberChoices = dependencyValues.choiceChildren.length;
         let choiceOrder;
         if (!dependencyValues.randomizeOrder) {
-          choiceOrder = [...Array(numberChoices).keys()]
+          choiceOrder = [...Array(numberChoices).keys()].map(x => x + 1)
         } else {
 
           // if desiredIndices is specfied, use those
@@ -166,7 +173,7 @@ export default class Choiceinput extends Input {
                 if (!desiredChoiceOrder.every(Number.isInteger)) {
                   throw Error("All indices specified for choiceInput must be integers");
                 }
-                if (!desiredChoiceOrder.every(x => x >= 0 && x < numberChoices)) {
+                if (!desiredChoiceOrder.every(x => x >= 1 && x <= numberChoices)) {
                   console.warn("Ignoring indices specified for choiceInput as some indices out of range.")
                 } else {
 
@@ -184,7 +191,7 @@ export default class Choiceinput extends Input {
 
           // shuffle order every time get new children
           // https://stackoverflow.com/a/12646864
-          choiceOrder = [...Array(numberChoices).keys()]
+          choiceOrder = [...Array(numberChoices).keys()].map(x => x + 1)
           for (let i = numberChoices - 1; i > 0; i--) {
             const rand = dependencyValues.selectRng();
             const j = Math.floor(rand * (i + 1));
@@ -272,7 +279,7 @@ export default class Choiceinput extends Input {
       definition: function ({ dependencyValues }) {
 
         let numberChoices = dependencyValues.choiceChildren.length;
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
 
         return {
           newValues: {
@@ -286,6 +293,14 @@ export default class Choiceinput extends Input {
       additionalStateVariablesDefined: [{
         variableName: "choicePreselects",
         isArray: true,
+      }, {
+        variableName: "choicesDisabled",
+        isArray: true,
+        forRenderer: true,
+      }, {
+        variableName: "choicesHidden",
+        isArray: true,
+        forRenderer: true,
       }],
       public: true,
       componentType: "text",
@@ -310,7 +325,7 @@ export default class Choiceinput extends Input {
           choiceChildren: {
             dependencyType: "child",
             childLogicName: "atLeastZeroChoices",
-            variableNames: ["text", "preSelect"]
+            variableNames: ["text", "preSelect", "disabled", "hidden"]
           },
         };
 
@@ -318,13 +333,15 @@ export default class Choiceinput extends Input {
       },
       arrayDefinitionByKey({ globalDependencyValues }) {
         let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(
-          i => globalDependencyValues.choiceChildren[i]
+          i => globalDependencyValues.choiceChildren[i - 1]
         );
 
         return {
           newValues: {
             choiceTexts: choiceChildrenOrdered.map(x => x.stateValues.text),
             choicePreselects: choiceChildrenOrdered.map(x => x.stateValues.preSelect),
+            choicesDisabled: choiceChildrenOrdered.map(x => x.stateValues.disabled),
+            choicesHidden: choiceChildrenOrdered.map(x => x.stateValues.hidden),
           }
         }
       }
@@ -354,7 +371,7 @@ export default class Choiceinput extends Input {
         },
       }),
       definition({ dependencyValues }) {
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
 
         if (dependencyValues.bindValueTo !== null) {
           let choiceTexts = choiceChildrenOrdered.map(x => x.stateValues.text.toLowerCase().trim())
@@ -449,7 +466,7 @@ export default class Choiceinput extends Input {
           let desiredText = "";
           if (desiredStateVariableValues.allSelectedIndices.length > 0) {
             let ind = desiredStateVariableValues.allSelectedIndices[0] - 1;
-            let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+            let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
             let selectedChild = choiceChildrenOrdered[ind];
             if (selectedChild) {
               desiredText = selectedChild.stateValues.text;
@@ -685,7 +702,7 @@ export default class Choiceinput extends Input {
       definition({ dependencyValues }) {
 
         let submittedIndices = [];
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
 
         for (let [ind, choiceChild] of choiceChildrenOrdered.entries()) {
           if (choiceChild.stateValues.submitted) {
@@ -699,12 +716,12 @@ export default class Choiceinput extends Input {
 
         let instructions = [];
 
-        for (let [ind, childIndex] of dependencyValues.choiceOrder.entries()) {
+        for (let [ind, choiceInd] of dependencyValues.choiceOrder.entries()) {
           instructions.push({
             setDependency: "choiceChildren",
             desiredValue: desiredStateVariableValues.submittedIndices.includes(ind + 1),
             variableIndex: 0,
-            childIndex
+            childIndex: choiceInd - 1
           })
         }
 
@@ -735,7 +752,7 @@ export default class Choiceinput extends Input {
       }),
       definition({ dependencyValues }) {
 
-        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i]);
+        let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
 
         let feedbacks = [];
 

@@ -1,6 +1,6 @@
 import Input from './abstract/Input';
 import me from 'math-expressions';
-import { getCustomFromText, getCustomFromLatex, roundForDisplay, } from '../utils/math';
+import { getFromText, getFromLatex, roundForDisplay, } from '../utils/math';
 
 export default class MathInput extends Input {
   constructor(args) {
@@ -67,21 +67,23 @@ export default class MathInput extends Input {
       public: true,
     }
     attributes.displayDigits = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDigits",
       defaultValue: 10,
       public: true,
     };
     attributes.displayDecimals = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "displayDecimals",
       defaultValue: null,
       public: true,
     };
     attributes.displaySmallAsZero = {
-      createComponentOfType: "boolean",
+      createComponentOfType: "number",
       createStateVariable: "displaySmallAsZero",
-      defaultValue: false,
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
       public: true,
     };
     attributes.bindValueTo = {
@@ -99,6 +101,11 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      stateVariablesPrescribingAdditionalAttributes: {
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -168,6 +175,11 @@ export default class MathInput extends Input {
       public: true,
       componentType: "math",
       forRenderer: true,
+      stateVariablesPrescribingAdditionalAttributes: {
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -361,7 +373,7 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
 
   let expression;
   if (format === "latex") {
-    let fromLatex = getCustomFromLatex({
+    let fromLatex = getFromLatex({
       functionSymbols
     });
     try {
@@ -371,7 +383,7 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
       expression = me.fromAst('\uFF3F');
     }
   } else if (format === "text") {
-    let fromText = getCustomFromText({
+    let fromText = getFromText({
       functionSymbols
     });
     try {

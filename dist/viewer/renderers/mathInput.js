@@ -30,7 +30,7 @@ export default class MathInput extends DoenetRenderer {
   calculateMathExpressionFromLatex(text) {
     let expression;
     text = substituteUnicodeInLatexString(text);
-    let fromLatex = getCustomFromLatex({
+    let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols
     });
     try {
@@ -277,7 +277,7 @@ var appliedFunctionSymbols = [
   "count",
   "mod"
 ];
-function getCustomFromLatex({functionSymbols}) {
+function getFromLatex({functionSymbols}) {
   return (x) => me.fromAst(new me.converters.latexToAstObj({
     appliedFunctionSymbols,
     functionSymbols

@@ -17,8 +17,13 @@ export class Title extends TextOrInline {
   static rendererType = "textOrInline";
 }
 
-export class Variant extends TextFromSingleStringChild {
-  static componentType = "variant";
+export class Caption extends TextOrInline {
+  static componentType = "caption";
+  static rendererType = "textOrInline";
+}
+
+export class VariantName extends TextFromSingleStringChild {
+  static componentType = "variantName";
   static rendererType = "text";
 }
 

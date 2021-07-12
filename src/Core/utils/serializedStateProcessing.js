@@ -241,19 +241,26 @@ export function doenetMLToSerializedComponents(doenetML, init = true) {
   return json;
 }
 
-export function removeBlankStringChildren(serializedComponents, standardComponentClasses) {
+export function removeBlankStringChildren(serializedComponents, componentInfoObjects) {
 
   for (let component of serializedComponents) {
     if (component.children) {
-      let componentClass = standardComponentClasses[component.componentType];
+      let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
       if (componentClass && !componentClass.includeBlankStringChildren) {
         component.children = component.children.filter(
           x => x.componentType !== "string" || x.state.value.trim() !== ""
         )
       }
 
-      removeBlankStringChildren(component.children, standardComponentClasses)
+      removeBlankStringChildren(component.children, componentInfoObjects)
 
+    }
+
+    for (let attr in component.attributes) {
+      let comp = component.attributes[attr];
+      if (comp.children) {
+        removeBlankStringChildren([comp], componentInfoObjects)
+      }
     }
   }
 
@@ -262,7 +269,6 @@ export function removeBlankStringChildren(serializedComponents, standardComponen
 export function findContentCopies({ serializedComponents }) {
 
   let contentIdComponents = {};
-  let contentNameComponents = {};
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "copy") {
       if (serializedComponent.attributes) {
@@ -284,20 +290,13 @@ export function findContentCopies({ serializedComponents }) {
 
           if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
 
-            let uriEnd = uri.substring(7);
-
-            if (uriEnd.substring(0, 10).toLowerCase() === "contentid=") {
-              let contentId = uriEnd.substring(10);
+            let result = uri.match(/[:&]contentid=([^&]+)/i);
+            if (result) {
+              let contentId = result[1];
               if (contentIdComponents[contentId] === undefined) {
                 contentIdComponents[contentId] = [];
               }
               contentIdComponents[contentId].push(serializedComponent);
-            } else if (uriEnd.substring(0, 12).toLowerCase() === "contentname=") {
-              let contentName = uriEnd.substring(12);
-              if (contentNameComponents[contentName] === undefined) {
-                contentNameComponents[contentName] = [];
-              }
-              contentNameComponents[contentName].push(serializedComponent);
             }
 
           }
@@ -307,23 +306,17 @@ export function findContentCopies({ serializedComponents }) {
       if (serializedComponent.children !== undefined) {
         let results = findContentCopies({ serializedComponents: serializedComponent.children })
 
-        // append results on to contentIdComponents and contentNameComponents
+        // append results on to contentIdComponents
         for (let contentId in results.contentIdComponents) {
           if (contentIdComponents[contentId] === undefined) {
             contentIdComponents[contentId] = [];
           }
           contentIdComponents[contentId].push(...results.contentIdComponents[contentId]);
         }
-        for (let contentName in results.contentNameComponents) {
-          if (contentNameComponents[contentName] === undefined) {
-            contentNameComponents[contentName] = [];
-          }
-          contentNameComponents[contentName].push(...results.contentNameComponents[contentName]);
-        }
       }
     }
   }
-  return { contentIdComponents, contentNameComponents };
+  return { contentIdComponents };
 }
 
 export function addDocumentIfItsMissing(serializedComponents) {
@@ -429,24 +422,34 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
 export function componentFromAttribute({ attrObj, value, componentInfoObjects, flags }) {
   if (attrObj.createComponentOfType) {
     let newComponent;
-    if (value === true &&
-      componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: attrObj.createComponentOfType,
-        baseComponentType: "boolean",
-      })) {
-      // special case where had prop with no value
-      // so its value was set to be boolean true (rather than string)
-      // in this case, set state directly in component
+
+    // set to string, as if had an attribute with no value, would get true
+    value = String(value);
+    let valueLower = value.toLowerCase();
+
+    if (valueLower === "true" && attrObj.valueForTrue !== undefined) {
       newComponent = {
         componentType: attrObj.createComponentOfType,
-        state: { implicitValue: true }
+        state: { value: attrObj.valueForTrue }
+      };
+    } else if (valueLower === "false" && attrObj.valueForFalse !== undefined) {
+      newComponent = {
+        componentType: attrObj.createComponentOfType,
+        state: { value: attrObj.valueForFalse }
+      };
+    } else if (componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: attrObj.createComponentOfType,
+      baseComponentType: "boolean",
+    }) && ["true", "false"].includes(valueLower)) {
+      newComponent = {
+        componentType: attrObj.createComponentOfType,
+        state: { value: valueLower === "true" }
       };
     } else {
-      // use String() just in case have a boolean true (i.e., had prop with no value)
       newComponent = {
         componentType: attrObj.createComponentOfType,
         children: [
-          { componentType: "string", state: { value: String(value) } }
+          { componentType: "string", state: { value } }
         ]
       };
     }
@@ -900,11 +903,17 @@ function createEvaluateIfFindMatchedClosingParens({
     // recurse on pieces
     let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
 
-    let inputArray = pieces.map(x => ({
-      componentType: "math",
-      doenetAttributes: { createdFromMacro: true },
-      children: x
-    }))
+    let inputArray = pieces.map(x => {
+      if (x.length === 1 && x[0].componentType !== "string") {
+        return x[0]
+      } else {
+        return {
+          componentType: "math",
+          doenetAttributes: { createdFromMacro: true },
+          children: x
+        }
+      }
+    })
 
     let evaluateComponent = {
       componentType: "evaluate",
@@ -922,7 +931,6 @@ function createEvaluateIfFindMatchedClosingParens({
         }
       }
     }
-
 
     let replacements = [evaluateComponent];
 
@@ -999,14 +1007,14 @@ export function decodeXMLEntities(serializedComponents) {
 export function applySugar({ serializedComponents, parentParametersFromSugar = {},
   parentAttributes = {},
   componentInfoObjects,
-  parentUniqueId = ""
+  parentUniqueId = "",
+  isAttributeComponent = false,
 }) {
 
   for (let [componentInd, component] of serializedComponents.entries()) {
     let componentType = component.componentType;
     let componentClass = componentInfoObjects.allComponentClasses[componentType];
     if (!componentClass) {
-      console.log(componentInfoObjects.allComponentClasses)
       throw Error(`Unrecognized component type ${componentType}`)
     }
     let uniqueId = parentUniqueId + '|' + componentType + componentInd;
@@ -1026,100 +1034,113 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
       let newParentParametersFromSugar = {};
 
-      for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
+      if (!component.skipSugar) {
 
-        if (component.children.length === 0) {
-          break;
-        }
+        for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
 
-        let childTypes = component.children
-          .map(x => x.componentType === "string" ? "s" : "n")
-          .join("");
-
-        if (sugarInstruction.childrenRegex) {
-          let match = childTypes.match(sugarInstruction.childrenRegex);
-
-          if (!match || match[0].length !== component.children.length) {
-            // sugar pattern didn't match all children
-            // so don't apply sugar
-
-            continue;
+          if (component.children.length === 0) {
+            break;
           }
 
-        }
+          let childTypes = component.children
+            .map(x => x.componentType === "string" ? "s" : "n")
+            .join("");
 
+          if (sugarInstruction.childrenRegex) {
+            let match = childTypes.match(sugarInstruction.childrenRegex);
 
-        let matchedChildren = deepClone(component.children);
+            if (!match || match[0].length !== component.children.length) {
+              // sugar pattern didn't match all children
+              // so don't apply sugar
 
-        let nNonStrings = 0;
-        for (let child of matchedChildren) {
-          if (child.componentType !== "string") {
-            child.preSugarInd = nNonStrings;
-            nNonStrings++;
-          }
-        }
-
-        let sugarResults = sugarInstruction.replacementFunction({
-          matchedChildren,
-          parentParametersFromSugar,
-          parentAttributes,
-          componentAttributes,
-          uniqueId: uniqueId + '|sugar' + sugarInd,
-          componentInfoObjects
-        });
-
-        // console.log("sugarResults")
-        // console.log(sugarResults)
-
-        if (sugarResults.success) {
-
-          if (sugarResults.newChildren) {
-            let newChildren = sugarResults.newChildren;
-            let preSugarIndsFound = findPreSugarIndsAndMarkFromSugar(newChildren);
-
-            if (preSugarIndsFound.length !== nNonStrings ||
-              !preSugarIndsFound.every((v, i) => v === i)
-            ) {
-              console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
-            } else {
-
-              component.children = newChildren;
-
-              if (sugarResults.parametersForChildrenSugar) {
-                Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
-              }
-            }
-          } else if (sugarResults.newAttributes) {
-            let newAttributes = sugarResults.newAttributes;
-
-            let preSugarIndsFound = [];
-
-            for (let attr in newAttributes) {
-              preSugarIndsFound.push(...findPreSugarIndsAndMarkFromSugar(newAttributes[attr].children));
-            }
-
-            if (preSugarIndsFound.length !== nNonStrings ||
-              !preSugarIndsFound.sort().every((v, i) => v === i)
-            ) {
-              console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
-            } else {
-
-              if (!component.attributes) {
-                component.attributes = {}
-              }
-              Object.assign(component.attributes, newAttributes)
-              component.children = [];
-
-              if (sugarResults.parametersForChildrenSugar) {
-                Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
-              }
+              continue;
             }
 
           }
 
-        }
 
+          let matchedChildren = deepClone(component.children);
+
+          let nNonStrings = 0;
+          for (let child of matchedChildren) {
+            if (child.componentType !== "string") {
+              child.preSugarInd = nNonStrings;
+              nNonStrings++;
+            }
+          }
+
+          let createdFromMacro = false;
+          if (component.doenetAttributes && component.doenetAttributes.createdFromMacro) {
+            createdFromMacro = true;
+          }
+
+          let sugarResults = sugarInstruction.replacementFunction({
+            matchedChildren,
+            parentParametersFromSugar,
+            parentAttributes,
+            componentAttributes,
+            uniqueId: uniqueId + '|sugar' + sugarInd,
+            componentInfoObjects,
+            isAttributeComponent,
+            createdFromMacro
+          });
+
+          // console.log("sugarResults")
+          // console.log(sugarResults)
+
+          if (sugarResults.success) {
+
+            if (sugarResults.newChildren) {
+              let newChildren = sugarResults.newChildren;
+              let preSugarIndsFound = findPreSugarIndsAndMarkFromSugar(newChildren);
+
+              if (preSugarIndsFound.length !== nNonStrings ||
+                !preSugarIndsFound.every((v, i) => v === i)
+              ) {
+                console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
+              } else {
+
+                component.children = newChildren;
+
+                if (sugarResults.parametersForChildrenSugar) {
+                  Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
+                }
+              }
+            } else if (sugarResults.newAttributes) {
+              let newAttributes = sugarResults.newAttributes;
+
+              let preSugarIndsFound = [];
+
+              for (let attr in newAttributes) {
+                preSugarIndsFound.push(...findPreSugarIndsAndMarkFromSugar(newAttributes[attr].children));
+              }
+
+              if (preSugarIndsFound.length !== nNonStrings ||
+                !preSugarIndsFound.sort().every((v, i) => v === i)
+              ) {
+                console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
+              } else {
+
+                if (!component.attributes) {
+                  component.attributes = {}
+                }
+                Object.assign(component.attributes, newAttributes)
+                component.children = [];
+
+                if (sugarResults.parametersForChildrenSugar) {
+                  Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
+                }
+              }
+
+            }
+
+          }
+
+        }
       }
+
+      // Note: don't pass in isAttributeComponent
+      // as that flag should be set just for the top level attribute component
 
       applySugar({
         serializedComponents: component.children,
@@ -1141,6 +1162,7 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
             parentAttributes: componentAttributes,
             componentInfoObjects,
             parentUniqueId: uniqueId,
+            isAttributeComponent: true,
           })
         }
       }
@@ -1349,7 +1371,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         longNameId += componentInd + "|" + indOffset + "|" + createNameContext;
       }
 
-      prescribedName = createUniqueName(componentType, longNameId);
+      prescribedName = createUniqueName(componentType.toLowerCase(), longNameId);
     }
 
     if (!assignNames && useOriginalNames
@@ -1736,9 +1758,6 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
       //     let uniqueVariantsComp = variantControlChild.attributes.uniqueVariants;
 
       //     if (uniqueVariantsComp.state !== undefined) {
-      //       if (uniqueVariantsComp.state.implicitValue !== undefined) {
-      //         uniqueVariants = uniqueVariantsComp.state.implicitValue;
-      //       }
       //       if (uniqueVariantsComp.state.value !== undefined) {
       //         uniqueVariants = uniqueVariantsComp.state.value;
       //       }
@@ -1931,7 +1950,7 @@ export function processAssignNames({
 
         // give component itself an unreachable name
         let longNameId = parentName + "|assignName|" + indForNames.toString();
-        component.doenetAttributes.prescribedName = createUniqueName(component.componentType, longNameId);
+        component.doenetAttributes.prescribedName = createUniqueName(component.componentType.toLowerCase(), longNameId);
 
         let componentName = parentName;
         if (!parentCreatesNewNamespace) {
@@ -1962,7 +1981,7 @@ export function processAssignNames({
         name = component.originalName.slice(originalNamespace.length + 1);
       } else {
         let longNameId = parentName + "|assignName|" + (indForNames).toString();
-        name = createUniqueName(component.componentType, longNameId);
+        name = createUniqueName(component.componentType.toLowerCase(), longNameId);
       }
     }
 

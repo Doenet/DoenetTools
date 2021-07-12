@@ -1,10 +1,13 @@
 import InlineComponent from './abstract/InlineComponent';
-import me from 'math-expressions';
+import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
 
 export default class NumberList extends InlineComponent {
   static componentType = "numberList";
   static rendererType = "asList";
   static renderChildren = true;
+
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
 
   static stateVariableForAttributeValue = "numbers";
 
@@ -24,7 +27,7 @@ export default class NumberList extends InlineComponent {
       defaultValue: null,
       public: true,
     };
-    
+
     return attributes;
   }
 
@@ -32,35 +35,17 @@ export default class NumberList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringsIntoNumbersBySpaces = function ({ matchedChildren }) {
-
-      // break any string by white space and wrap pieces with number
-
-      let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
-          return [
-            ...a,
-            ...c.state.value.split(/\s+/)
-              .filter(s => s)
-              .map(s => ({
-                componentType: "number",
-                children: [{ componentType: "string", state: { value: s } }]
-              }))
-          ]
-        } else {
-          return [...a, c]
-        }
-      }, []);
-
-      return {
-        success: true,
-        newChildren: newChildren,
-      }
-    }
-
+    let groupIntoNumbersSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType: "number" });
+    let breakStringsIntoNumbersBySpaces = returnBreakStringsIntoComponentTypeBySpaces({ componentType: "number" });
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoNumbersBySpaces
+      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+        if (isAttributeComponent && !createdFromMacro) {
+          return groupIntoNumbersSeparatedBySpaces({ matchedChildren });
+        } else {
+          return breakStringsIntoNumbersBySpaces({ matchedChildren })
+        }
+      }
     });
 
     return sugarInstructions;

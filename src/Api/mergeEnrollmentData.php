@@ -123,9 +123,10 @@ if (($id != "0" && in_array($id,$db_empids,FALSE)) || in_array($email,$db_emails
 	canPublishItemsAndFolders,
 	canViewUnreleasedItemsAndFolders,
 	canViewUnassignedItemsAndFolders,
-	canChangeAllDriveSettings)
+	canChangeAllDriveSettings,
+	role)
 	VALUES
-	('$userId','$driveId','1','0','0','0','0','0','0','0','0','0','0')
+	('$userId','$driveId','1','0','0','0','0','0','0','0','0','0','0','Student')
 	";
 	$result = $conn->query($sql);
 
