@@ -99,7 +99,7 @@ export default function useSockets(nsp) {
   const addItem = useRecoilCallback(({ snapshot }) =>
     /**
      * Create a new item
-     * @param {itemOptions} param0 configuration for new Item
+     * @param {addOptions} param0 configuration for new Item
      */
     async ({ driveIdFolderId, label, type, selectedItemId = null, url = null }) => {
       // Item creation
@@ -154,7 +154,6 @@ export default function useSockets(nsp) {
       // });
     },
   );
-
   /**
    * remove items from the database
    */
@@ -431,7 +430,6 @@ export default function useSockets(nsp) {
       // );
     },
   );
-
   const renameItem = useRecoilCallback(
     () =>
       async ({ driveIdFolderId, itemId, itemType, newLabel }) => {
