@@ -57,247 +57,89 @@ const sockets = atomFamily({
 });
 
 /**
- * Hook access to realtime sockets, supports conection to drive and chat
- *
- * @param {string} nsp namespace connect to
+ * Hook to access realtime functions, supports drive and chat namespaces
+ * @param {string} nsp - namespace to connect to
+ * @returns add, delete, move, and rename item functions
  */
 export default function useSockets(nsp) {
   const [addToast, ToastType] = useToast();
   const [namespace] = useState(nsp);
   const socket = useRecoilValue(sockets(namespace));
   const dragShadowId = 'dragShadow';
+  const { acceptNewItem, acceptDelete, acceptMove, acceptRename } =
+    useAcceptBindings();
 
-  const acceptNewItem = useRecoilCallback(
-    ({ snapshot, set }) =>
-      async ({
-        driveId,
-        parentFolderId,
-        doenetId,
-        versionId,
-        itemId,
-        itemType,
-        label,
-        sortOrder,
-        creationDate,
-        url,
-        selectedItemId,
-      }) => {
-        // create default item
-        const newItem = {
-          parentFolderId,
-          doenetId,
-          versionId,
-          itemId,
-          itemType,
-          label,
-          sortOrder,
-          creationDate, //get this from sever??
-          isPublished: '0',
-          url,
-          urlDescription: null,
-          urlId: null,
-        };
-
-        // insert into sort order
-        const fInfo = await snapshot.getPromise(
-          folderDictionary({
-            driveId: driveId,
-            folderId: parentFolderId,
-          }),
-        );
-        let newObj = JSON.parse(JSON.stringify(fInfo));
-        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-        let index = newDefaultOrder.indexOf(selectedItemId);
-        newDefaultOrder.splice(index + 1, 0, itemId);
-        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
-        newObj.contentsDictionary[itemId] = newItem;
-
-        // Insert item info into destination folder
-        set(
-          folderDictionary({
-            driveId: driveId,
-            folderId: parentFolderId,
-          }),
-          newObj,
-        );
-
-        // addtional folder type updates
-        if (itemType === 'Folder') {
-          set(
-            folderDictionary({
-              driveId: driveId,
-              folderId: itemId,
-            }),
-            {
-              folderInfo: newItem,
-              contentsDictionary: {},
-              contentIds: { [sortOptions.DEFAULT]: [] },
-            },
-          );
-        }
-
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-      },
-    [addToast, ToastType.SUCCESS],
-  );
-
-  const acceptDelete = useRecoilCallback(
-    ({ set }) =>
-      (payload, newFInfo, label) => {
-        set(
-          folderDictionary({
-            driveId: payload.driveId,
-            folderId: payload.parentFolderId,
-          }),
-          newFInfo,
-        );
-        addToast(`Deleted item '${label}'`, ToastType.SUCCESS);
-      },
-  );
-
-  const acceptMove = useRecoilCallback(
-    ({ set }) =>
-      (payload, newDestinationFolderObj, editedCache) => {
-        // Clear global selection
-        set(globalSelectedNodesAtom, []);
-
-        // Add all to destination
-        set(
-          folderDictionary({
-            driveId: payload.destinationDriveId,
-            folderId: payload.destinationItemId,
-          }),
-          newDestinationFolderObj,
-        );
-
-        // Remove from sources
-        for (let driveId of Object.keys(editedCache)) {
-          for (let parentFolderId of Object.keys(editedCache[driveId])) {
-            set(
-              folderDictionary({
-                driveId: driveId,
-                folderId: parentFolderId,
-              }),
-              editedCache[driveId][parentFolderId],
-            );
-            // Mark modified folders as dirty
-            set(
-              folderCacheDirtyAtom({
-                driveId: driveId,
-                folderId: parentFolderId,
-              }),
-              true,
-            );
-          }
-        }
-
-        // Mark current folder as dirty
-        set(
-          folderCacheDirtyAtom({
-            driveId: payload.destinationDriveId,
-            folderId: payload.destinationItemId,
-          }),
-          true,
-        );
-      },
-  );
-
-  const acceptRename = useRecoilCallback(({ set }) => (payload, newFInfo) => {
-    set(
-      folderDictionary({
-        driveId: payload.driveId,
-        folderId: payload.folderId,
-      }),
-      newFInfo,
-    );
-    // If a folder, update the label in the child folder
-    if (payload.type === 'Folder') {
-      set(
-        folderDictionary({
-          driveId: payload.driveId,
-          folderId: payload.itemId,
-        }),
-        (old) => {
-          let newFolderInfo = { ...old };
-          newFolderInfo.folderInfo = { ...old.folderInfo };
-          newFolderInfo.folderInfo.label = payload.label;
-          return newFolderInfo;
-        },
-      );
-    }
-    addToast(`Renamed item to '${payload.label}'`, ToastType.SUCCESS);
-  });
+  /**
+   * @typedef itemOptions
+   * @property {Object} driveIdFolderId - object containing the target drive and folder Ids
+   * @property {string} driveIdFolderId.driveId
+   * @property {string} driveIdFolderId.folderId
+   * @property {string} label - display name of the new item
+   * @property {string} type - type of item being added, one of DoenetML, Folder, or Url
+   * @property {string} [selectedItemId=null] the item to insert the new item after in the sort order
+   * @property {string} [url=null] hyperlink for url type items
+   */
 
   /**
    * create and add a new folder or doenetML
-   *
+   * @param {itemOptions} itemOptions - configuration {@link itemOptions} for new Item
    */
-  const addItem = useRecoilCallback(
-    ({ snapshot }) =>
-      async ({
-        driveIdFolderId,
-        label,
-        itemType,
-        selectedItemId = null,
-        url = null,
-      }) => {
-        // Item creation
-        const dt = new Date();
-        const creationDate = formatDate(dt); //TODO: get from sever
-        const itemId = nanoid(); //TODO: remove
-        const doenetId = nanoid(); //Id per file
-        const versionId = nanoid(); //Id per named version / data collection site
+  const addItem = useRecoilCallback(({ snapshot }) =>
+    /**
+     * Create a new item
+     * @param {itemOptions} param0 configuration for new Item
+     */
+    async ({ driveIdFolderId, label, type, selectedItemId = null, url = null }) => {
+      // Item creation
+      const dt = new Date();
+      const creationDate = formatDate(dt); //TODO: get from sever
+      const itemId = nanoid(); //TODO: remove
+      const doenetId = nanoid(); //Id per file
+      const versionId = nanoid(); //Id per named version / data collection site
 
-        //generate sort order
-        const fInfo = await snapshot.getPromise(
-          folderDictionary(driveIdFolderId),
-        );
-        let newObj = JSON.parse(JSON.stringify(fInfo));
-        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
-        let index = newDefaultOrder.indexOf(selectedItemId);
-        const newOrder = getLexicographicOrder({
-          index,
-          nodeObjs: newObj.contentsDictionary,
-          defaultFolderChildrenIds: newDefaultOrder,
-        });
+      //generate sort order
+      const fInfo = await snapshot.getPromise(
+        folderDictionary(driveIdFolderId),
+      );
+      let newObj = JSON.parse(JSON.stringify(fInfo));
+      let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+      let index = newDefaultOrder.indexOf(selectedItemId);
+      const newOrder = getLexicographicOrder({
+        index,
+        nodeObjs: newObj.contentsDictionary,
+        defaultFolderChildrenIds: newDefaultOrder,
+      });
 
-        const payload = {
-          driveId: driveIdFolderId.driveId,
-          parentFolderId: driveIdFolderId.folderId,
-          doenetId,
-          itemId,
-          versionId,
-          label: label,
-          type: itemType,
-          sortOrder: newOrder,
-          selectedItemId,
-          creationDate,
-          url,
-        };
+      const payload = {
+        driveId: driveIdFolderId.driveId,
+        parentFolderId: driveIdFolderId.folderId,
+        doenetId,
+        itemId,
+        versionId,
+        type,
+        label: label,
+        sortOrder: newOrder,
+        selectedItemId,
+        creationDate,
+        url,
+      };
 
-        const resp = await axios.get('/api/addItem.php', { params: payload });
+      const resp = await axios.get('/api/addItem.php', { params: payload });
 
-        if (resp.data.success) {
-          acceptNewItem(payload);
-        } else {
-          onAddItemError({ errorMessage: resp.data.message });
-        }
+      if (resp.data.success) {
+        acceptNewItem(payload);
+      } else {
+        addToast(`Add item error: ${resp.data.message}`, ToastType.ERROR);
+      }
 
-        // socket.emit('add_doenetML', payload, newObj, newItem, (respData) => {
-        //   if (respData.success) {
-        //     acceptNewItem(payload, newObj, newItem);
-        //   } else {
-        //     onAddItemError({ errorMessage: respData });
-        //   }
-        // });
-      },
-  );
-
-  const onAddItemError = useCallback(
-    ({ errorMessage = null }) => {
-      addToast(`Add item error: ${errorMessage}`, ToastType.ERROR);
+      // socket.emit('add_doenetML', payload, newObj, newItem, (respData) => {
+      //   if (respData.success) {
+      //     acceptNewItem(payload, newObj, newItem);
+      //   } else {
+      //     onAddItemError({ errorMessage: respData });
+      //   }
+      // });
     },
-    [addToast, ToastType.ERROR],
   );
 
   const deleteItem = useRecoilCallback(
@@ -357,6 +199,8 @@ export default function useSockets(nsp) {
         });
       },
   );
+
+  // addItem({driveIdFolderId: {}})
 
   const onDeleteItemError = useCallback(
     ({ errorMessage = null }) => {
@@ -965,6 +809,173 @@ export default function useSockets(nsp) {
     renameItem,
     copyItems,
   };
+}
+
+function useAcceptBindings() {
+  const [addToast, ToastType] = useToast();
+
+  const acceptNewItem = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async ({
+        driveId,
+        parentFolderId,
+        doenetId,
+        versionId,
+        itemId,
+        type,
+        label,
+        sortOrder,
+        creationDate,
+        url,
+        selectedItemId,
+      }) => {
+        // create default item
+        const newItem = {
+          parentFolderId,
+          doenetId,
+          versionId,
+          itemId,
+          itemType: type,
+          label,
+          sortOrder,
+          creationDate, //get this from sever??
+          isPublished: '0',
+          url,
+          urlDescription: null,
+          urlId: null,
+        };
+
+        // insert into sort order
+        const fInfo = await snapshot.getPromise(
+          folderDictionary({
+            driveId: driveId,
+            folderId: parentFolderId,
+          }),
+        );
+        let newObj = JSON.parse(JSON.stringify(fInfo));
+        let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
+        let index = newDefaultOrder.indexOf(selectedItemId);
+        newDefaultOrder.splice(index + 1, 0, itemId);
+        newObj.contentIds[sortOptions.DEFAULT] = newDefaultOrder;
+        newObj.contentsDictionary[itemId] = newItem;
+
+        // Insert item info into destination folder
+        set(
+          folderDictionary({
+            driveId: driveId,
+            folderId: parentFolderId,
+          }),
+          newObj,
+        );
+
+        // addtional folder type updates
+        if (type === 'Folder') {
+          set(
+            folderDictionary({
+              driveId: driveId,
+              folderId: itemId,
+            }),
+            {
+              folderInfo: newItem,
+              contentsDictionary: {},
+              contentIds: { [sortOptions.DEFAULT]: [] },
+            },
+          );
+        }
+
+        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+      },
+    [addToast, ToastType.SUCCESS],
+  );
+
+  const acceptDelete = useRecoilCallback(
+    ({ set }) =>
+      (payload, newFInfo, label) => {
+        set(
+          folderDictionary({
+            driveId: payload.driveId,
+            folderId: payload.parentFolderId,
+          }),
+          newFInfo,
+        );
+        addToast(`Deleted item '${label}'`, ToastType.SUCCESS);
+      },
+  );
+
+  const acceptMove = useRecoilCallback(
+    ({ set }) =>
+      (payload, newDestinationFolderObj, editedCache) => {
+        // Clear global selection
+        set(globalSelectedNodesAtom, []);
+
+        // Add all to destination
+        set(
+          folderDictionary({
+            driveId: payload.destinationDriveId,
+            folderId: payload.destinationItemId,
+          }),
+          newDestinationFolderObj,
+        );
+
+        // Remove from sources
+        for (let driveId of Object.keys(editedCache)) {
+          for (let parentFolderId of Object.keys(editedCache[driveId])) {
+            set(
+              folderDictionary({
+                driveId: driveId,
+                folderId: parentFolderId,
+              }),
+              editedCache[driveId][parentFolderId],
+            );
+            // Mark modified folders as dirty
+            set(
+              folderCacheDirtyAtom({
+                driveId: driveId,
+                folderId: parentFolderId,
+              }),
+              true,
+            );
+          }
+        }
+
+        // Mark current folder as dirty
+        set(
+          folderCacheDirtyAtom({
+            driveId: payload.destinationDriveId,
+            folderId: payload.destinationItemId,
+          }),
+          true,
+        );
+      },
+  );
+
+  const acceptRename = useRecoilCallback(({ set }) => (payload, newFInfo) => {
+    set(
+      folderDictionary({
+        driveId: payload.driveId,
+        folderId: payload.folderId,
+      }),
+      newFInfo,
+    );
+    // If a folder, update the label in the child folder
+    if (payload.type === 'Folder') {
+      set(
+        folderDictionary({
+          driveId: payload.driveId,
+          folderId: payload.itemId,
+        }),
+        (old) => {
+          let newFolderInfo = { ...old };
+          newFolderInfo.folderInfo = { ...old.folderInfo };
+          newFolderInfo.folderInfo.label = payload.label;
+          return newFolderInfo;
+        },
+      );
+    }
+    addToast(`Renamed item to '${payload.label}'`, ToastType.SUCCESS);
+  });
+
+  return { acceptNewItem, acceptDelete, acceptMove, acceptRename };
 }
 
 const formatDate = (dt) => {
