@@ -813,7 +813,7 @@ function AddCourseDriveButton() {
     <Button
       value="Create a New Course"
       data-cy="createNewCourseButton"
-      callback={() => {
+      onClick={() => {
         let driveId = null;
         let newDriveId = nanoid();
         let label = 'Untitled';
