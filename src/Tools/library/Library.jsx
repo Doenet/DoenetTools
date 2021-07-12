@@ -887,11 +887,11 @@ function AddMenuPanel(props) {
       <Button
         value="Add Folder"
         data-cy="addFolderButton"
-        callback={() => {
+        onClick={() => {
           addItem({
             driveIdFolderId: { driveId: driveId, folderId: folderId },
             label: 'Untitled',
-            itemType: 'Folder',
+            type: 'Folder',
           });
         }}
       />
@@ -900,11 +900,11 @@ function AddMenuPanel(props) {
       <Button
         value="Add DoenetML"
         data-cy="addDoenetMLButton"
-        callback={() => {
+        onClick={() => {
           addItem({
             driveIdFolderId: { driveId: driveId, folderId: folderId },
             label: 'Untitled',
-            itemType: 'DoenetML',
+            type: 'DoenetML',
           });
         }}
       />
