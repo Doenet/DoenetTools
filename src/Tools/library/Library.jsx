@@ -25,9 +25,9 @@ import {
   selector,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
-  useRecoilCallback
-} from "recoil";
-import axios from "axios";
+  useRecoilCallback,
+} from 'recoil';
+import axios from 'axios';
 
 /**
  * Internal dependencies
@@ -1031,10 +1031,11 @@ export default function Library(props) {
 
   const profile = useContext(ProfileContext);
 
-  if (profile.signedIn === "0" && !window.Cypress){
-    return (<>
-     {/* <GlobalFont/> */}
-    <Tool>
+  if (profile.signedIn === '0' && !window.Cypress) {
+    return (
+      <>
+        {/* <GlobalFont/> */}
+        <Tool>
           <headerPanel title="Library"></headerPanel>
 
           <mainPanel>
@@ -1098,7 +1099,7 @@ export default function Library(props) {
 
   return (
     <>
-    {/* <GlobalFont/> */}
+      {/* <GlobalFont/> */}
       <URLPathSync route={props.route} />
       <Tool>
         <navPanel isInitOpen>
@@ -1198,46 +1199,13 @@ export default function Library(props) {
           </div>
         </supportPanel>
 
-        urlClickBehavior="select" 
-        doenetMLDoubleClickCallback={(info)=>{
-          openOverlay({
-            type:"editor",
-            doenetId: info.item.doenetId,
-            title: info.item.label,
-            driveId: info.driveId,
-            folderId: info.item.parentFolderId,
-            itemId: info.item.itemId
-          });
-        }}
-        />
-      </Container>
-
-      <div 
-        onClick={
-          cleardrivecardSelection
-        }
-        tabIndex={0}
-        className={routePathDriveId ? '' : 'mainPanelStyle' }
-        >
-       <DriveCards
-       drivePathSyncKey="support"
-       types={['course']}
-      //  subTypes={['Administrator']}
-       />
-        </div>
-      </supportPanel>
-
-      <menuPanel title="Selected" isInitOpen>
-        <ItemInfo  />
-      </menuPanel>
-      <menuPanel title="+ Add Items" isInitOpen>
-       <AddMenuPanel route={props.route} />
-      </menuPanel>
-
-     
-
-     
-    </Tool>
+        <menuPanel title="Selected" isInitOpen>
+          <ItemInfo />
+        </menuPanel>
+        <menuPanel title="+ Add Items" isInitOpen>
+          <AddMenuPanel route={props.route} />
+        </menuPanel>
+      </Tool>
     </>
   );
 }
