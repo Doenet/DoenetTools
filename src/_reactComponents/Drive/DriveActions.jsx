@@ -721,7 +721,7 @@ export const useAssignmentCallbacks = () => {
   };
   const publishAssignment = useRecoilCallback(
     ({ set }) =>
-      ({ driveIdFolderId, itemId, payload }) => {
+      ({ driveIdFolderId, itemId }) => {
         set(folderDictionary(driveIdFolderId), (old) => {
           let newObj = JSON.parse(JSON.stringify(old));
           let newItemObj = newObj.contentsDictionary[itemId];
