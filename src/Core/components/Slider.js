@@ -1,5 +1,6 @@
 import { roundForDisplay } from '../utils/math';
 import BaseComponent from './abstract/BaseComponent';
+import me from 'math-expressions';
 
 export default class Slider extends BaseComponent {
   constructor(args) {
@@ -765,9 +766,22 @@ function invertSliderValue({ desiredStateVariableValues, stateValues }) {
   // console.log(desiredStateVariableValues)
   // console.log(stateValues);
 
+  let preliminaryValue = desiredStateVariableValues.value;
+  if(stateValues.type === "text") {
+    preliminaryValue = preliminaryValue.toString();
+  } else {
+    if(preliminaryValue instanceof me.class) {
+      preliminaryValue = preliminaryValue.evaluate_to_constant();
+      if(preliminaryValue === null) {
+        return {success: false}
+      }
+    } else {
+      preliminaryValue = Number(preliminaryValue);
+    }
+  }
 
   let newIndex = findIndexOfClosestValidValue({
-    preliminaryValue: desiredStateVariableValues.value,
+    preliminaryValue,
     valueToIndex: stateValues.valueToIndex,
     type: stateValues.type,
     items: stateValues.items,
