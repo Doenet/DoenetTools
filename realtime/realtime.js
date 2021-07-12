@@ -84,28 +84,21 @@
 
   driveSpace.on('connection', (socket) => {
     console.log('connected', socket.id);
-    socket.on('add_drive', ({ driveId, label, image, color }, cb) => {
-      console.log('>>>recived add_drive');
-    });
 
-    socket.on(
-      'add_folder',
-      (
-        {
-          driveId,
-          parentFolderId,
-          itemId,
-          doenetId,
-          versionId,
-          label,
-          type,
-          sortOrder,
-        },
-        cb,
-      ) => {
-        console.log('>>>recived add_folder');
-      },
-    );
+    socket.on('add_drive', (payload, cb) => {
+      axios
+        .get('addDrive.php', {
+          params: payload,
+          headers: socket.request.headers,
+        })
+        .then((resp) => {
+          cb(resp.data);
+          socket.broadcast.emit('remote_add_drive');
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
 
     socket.on('add_doenetML', (payload, newObj, newItem, cb) => {
       axios
