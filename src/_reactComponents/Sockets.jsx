@@ -66,7 +66,7 @@ export default function useSockets(nsp) {
   const [namespace] = useState(nsp);
   const socket = useRecoilValue(sockets(namespace));
   const dragShadowId = 'dragShadow';
-  const { acceptNewItem, acceptDelete, acceptMove, acceptRename } =
+  const { acceptAddItem, acceptDeleteItem, acceptMoveItems, acceptRenameItem } =
     useAcceptBindings();
 
   /**
@@ -127,14 +127,15 @@ export default function useSockets(nsp) {
       const resp = await axios.get('/api/addItem.php', { params: payload });
 
       if (resp.data.success) {
-        acceptNewItem(payload);
+        acceptAddItem(payload);
       } else {
         addToast(`Add item error: ${resp.data.message}`, ToastType.ERROR);
       }
 
-      // socket.emit('add_doenetML', payload, newObj, newItem, (respData) => {
+      // realtime upgrade
+      // socket.emit('add_doenetML', payload, (respData) => {
       //   if (respData.success) {
-      //     acceptNewItem(payload, newObj, newItem);
+      //     acceptNewItem(payload);
       //   } else {
       //     onAddItemError({ errorMessage: respData });
       //   }
@@ -142,71 +143,40 @@ export default function useSockets(nsp) {
     },
   );
 
+  /**
+   * remove items from the database
+   */
   const deleteItem = useRecoilCallback(
-    ({ snapshot, set }) =>
+    () =>
       async ({ driveIdFolderId, driveInstanceId = null, itemId, label }) => {
-        const fInfo = await snapshot.getPromise(
-          folderDictionary(driveIdFolderId),
-        );
-        const globalSelectedNodes = await snapshot.getPromise(
-          globalSelectedNodesAtom,
-        );
-        const item = {
-          driveId: driveIdFolderId.driveId,
-          driveInstanceId: driveInstanceId,
-          itemId: itemId,
-        };
-        const selectedDriveItems = await snapshot.getPromise(
-          selectedDriveItemsAtom(item),
-        );
-
-        // Remove from selection
-        if (selectedDriveItems) {
-          set(selectedDriveItemsAtom(item), false);
-          let newGlobalItems = [];
-          for (let gItem of globalSelectedNodes) {
-            if (gItem.itemId !== itemId) {
-              newGlobalItems.push(gItem);
-            }
-          }
-          set(globalSelectedNodesAtom, newGlobalItems);
-        }
-
-        // Remove from folder
-        let newFInfo = { ...fInfo };
-        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
-        delete newFInfo['contentsDictionary'][itemId];
-        newFInfo.folderInfo = { ...fInfo.folderInfo };
-        newFInfo.contentIds = {};
-        newFInfo.contentIds[sortOptions.DEFAULT] = [
-          ...fInfo.contentIds[sortOptions.DEFAULT],
-        ];
-        const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(itemId);
-        newFInfo.contentIds[sortOptions.DEFAULT].splice(index, 1);
-
         // Remove from database
         const payload = {
           driveId: driveIdFolderId.driveId,
           parentFolderId: driveIdFolderId.folderId,
           itemId: itemId,
+          label,
+          driveInstanceId,
         };
-        socket.emit('delete_doenetML', payload, newFInfo, (respData) => {
-          if (respData.success) {
-            acceptDelete(payload, newFInfo, label);
-          } else {
-            onDeleteItemError({ errorMessage: respData.message });
-          }
+
+        const resp = await axios.get('/api/deleteItem.php', {
+          params: payload,
         });
+
+        if (resp.data.success) {
+          acceptDeleteItem(payload);
+        } else {
+          addToast(`Delete item error: ${resp.data.message}`, ToastType.ERROR);
+        }
+
+        // realtime upgrade
+        // socket.emit('delete_doenetML', payload, newFInfo, (respData) => {
+        //   if (respData.success) {
+        //     acceptDelete(payload, newFInfo, label);
+        //   } else {
+        //     onDeleteItemError({ errorMessage: respData.message });
+        //   }
+        // });
       },
-  );
-
-  // addItem({driveIdFolderId: {}})
-
-  const onDeleteItemError = useCallback(
-    ({ errorMessage = null }) => {
-      addToast(`Delete item error: ${errorMessage}`, ToastType.ERROR);
-    },
-    [addToast, ToastType.ERROR],
   );
 
   const moveItems = useRecoilCallback(
@@ -406,31 +376,41 @@ export default function useSockets(nsp) {
 
         const payload = {
           sourceDriveId: globalSelectedNodes[0].driveId,
+          destinationDriveId: targetDriveId,
+          destinationItemId: targetFolderId,
+          newSortOrder,
           selectedItemIds,
           selectedItemChildrenIds: driveIdChanged,
-          destinationItemId: targetFolderId,
-          destinationParentFolderId:
-            destinationFolderObj.folderInfo.parentFolderId,
-          destinationDriveId: targetDriveId,
-          newSortOrder,
+          // destinationParentFolderId:
+          //   destinationFolderObj.folderInfo.parentFolderId,
         };
-        socket.emit(
-          'update_file_location',
-          payload,
-          newDestinationFolderObj,
-          editedCache,
-          (respData) => {
-            if (respData.success) {
-              acceptMove(payload, newDestinationFolderObj, editedCache);
-            }
-          },
-        );
+
+        const resp = await axios.post('/api/moveItems.php', {
+          params: payload,
+        });
+
+        if (resp.data.success) {
+          acceptMoveItems(payload, newDestinationFolderObj, editedCache);
+        } else {
+          addToast(`Move item(s) error: ${resp.data.message}`, ToastType.ERROR);
+        }
+
+        // realtime upgrade
+        // socket.emit(
+        //   'update_file_location',
+        //   payload,
+        //   newDestinationFolderObj,
+        //   editedCache,
+        //   (respData) => {
+        //     if (respData.success) {
+        //       acceptMove(payload, newDestinationFolderObj, editedCache);
+        //     } else {
+        //       addToast(`Move item(s) error: ${respData.message}`, ToastType.ERROR);
+        //     }
+        //   },
+        // );
       },
   );
-
-  const onMoveItemsError = ({ errorMessage = null }) => {
-    addToast(`Move item(s) error: ${errorMessage}`, ToastType.ERROR);
-  };
 
   const renameItem = useRecoilCallback(
     ({ snapshot }) =>
@@ -458,17 +438,13 @@ export default function useSockets(nsp) {
         };
         socket.emit('update_file_name', payload, newFInfo, (respData) => {
           if (respData.success) {
-            acceptRename(payload, newFInfo);
+            acceptRenameItem(payload, newFInfo);
           } else {
-            // addToast
+            addToast(`Rename item error: ${respData.message}`, ToastType.ERROR);
           }
         });
       },
   );
-
-  const onRenameItemError = ({ errorMessage = null }) => {
-    addToast(`Rename item error: ${errorMessage}`, ToastType.ERROR);
-  };
 
   /**
    * @param {Object[]} items - items to be copied { driveId, driveInstanceId,
@@ -738,10 +714,6 @@ export default function useSockets(nsp) {
     return newVersion;
   };
 
-  const onCopyItemsError = ({ errorMessage = null }) => {
-    addToast(`Copy item(s) error: ${errorMessage}`, ToastType.ERROR);
-  };
-
   // result
   //   .then(([resp]) => {
   //     if (resp.value?.data?.success) {
@@ -767,29 +739,29 @@ export default function useSockets(nsp) {
       },
       {
         eventName: 'remote_add_doenetML',
-        callback: acceptNewItem,
+        callback: acceptAddItem,
       },
       {
         eventName: 'remote_add_folder',
-        callback: acceptNewItem,
+        callback: acceptAddItem,
       },
       {
         eventName: 'remote_delete_doenetML',
-        callback: acceptDelete,
+        callback: acceptDeleteItem,
       },
       {
         eventName: 'remote_update_file_locaiton',
-        callback: acceptMove,
+        callback: acceptMoveItems,
       },
       {
         eventName: 'remote_update_file_name',
-        callback: acceptRename,
+        callback: acceptRenameItem,
       },
     ],
   });
 
   useEffect(() => {
-    console.log('>>>configure', namespace);
+    // console.log('>>>configure', namespace);
     bindings[namespace].map((bind) => {
       if (!socket.hasListeners(bind.eventName)) {
         socket.on(bind.eventName, bind.callback);
@@ -814,7 +786,10 @@ export default function useSockets(nsp) {
 function useAcceptBindings() {
   const [addToast, ToastType] = useToast();
 
-  const acceptNewItem = useRecoilCallback(
+  /**
+   * execute local changes after a successful local or remote item addtion
+   */
+  const acceptAddItem = useRecoilCallback(
     ({ snapshot, set }) =>
       async ({
         driveId,
@@ -888,13 +863,57 @@ function useAcceptBindings() {
     [addToast, ToastType.SUCCESS],
   );
 
-  const acceptDelete = useRecoilCallback(
-    ({ set }) =>
-      (payload, newFInfo, label) => {
+  /**
+   * execute local changes after successful remote item deletion
+   */
+  const acceptDeleteItem = useRecoilCallback(
+    ({ snapshot, set }) =>
+      async ({ driveId, parentFolderId, itemId, driveInstanceId, label }) => {
+        const fInfo = await snapshot.getPromise(
+          folderDictionary({ driveId, parentFolderId }),
+        );
+        const globalSelectedNodes = await snapshot.getPromise(
+          globalSelectedNodesAtom,
+        );
+
+        const item = {
+          driveId,
+          driveInstanceId,
+          itemId,
+        };
+
+        const selectedDriveItems = await snapshot.getPromise(
+          selectedDriveItemsAtom(item),
+        );
+
+        // Remove from selection
+        if (selectedDriveItems) {
+          set(selectedDriveItemsAtom(item), false);
+          let newGlobalItems = [];
+          for (let gItem of globalSelectedNodes) {
+            if (gItem.itemId !== itemId) {
+              newGlobalItems.push(gItem);
+            }
+          }
+          set(globalSelectedNodesAtom, newGlobalItems);
+        }
+
+        // Remove from folder
+        let newFInfo = { ...fInfo };
+        newFInfo['contentsDictionary'] = { ...fInfo.contentsDictionary };
+        delete newFInfo['contentsDictionary'][itemId];
+        newFInfo.folderInfo = { ...fInfo.folderInfo };
+        newFInfo.contentIds = {};
+        newFInfo.contentIds[sortOptions.DEFAULT] = [
+          ...fInfo.contentIds[sortOptions.DEFAULT],
+        ];
+        const index = newFInfo.contentIds[sortOptions.DEFAULT].indexOf(itemId);
+        newFInfo.contentIds[sortOptions.DEFAULT].splice(index, 1);
+
         set(
           folderDictionary({
-            driveId: payload.driveId,
-            folderId: payload.parentFolderId,
+            driveId,
+            parentFolderId,
           }),
           newFInfo,
         );
@@ -902,7 +921,7 @@ function useAcceptBindings() {
       },
   );
 
-  const acceptMove = useRecoilCallback(
+  const acceptMoveItems = useRecoilCallback(
     ({ set }) =>
       (payload, newDestinationFolderObj, editedCache) => {
         // Clear global selection
@@ -949,33 +968,41 @@ function useAcceptBindings() {
       },
   );
 
-  const acceptRename = useRecoilCallback(({ set }) => (payload, newFInfo) => {
-    set(
-      folderDictionary({
-        driveId: payload.driveId,
-        folderId: payload.folderId,
-      }),
-      newFInfo,
-    );
-    // If a folder, update the label in the child folder
-    if (payload.type === 'Folder') {
-      set(
-        folderDictionary({
-          driveId: payload.driveId,
-          folderId: payload.itemId,
-        }),
-        (old) => {
-          let newFolderInfo = { ...old };
-          newFolderInfo.folderInfo = { ...old.folderInfo };
-          newFolderInfo.folderInfo.label = payload.label;
-          return newFolderInfo;
-        },
-      );
-    }
-    addToast(`Renamed item to '${payload.label}'`, ToastType.SUCCESS);
-  });
+  const acceptRenameItem = useRecoilCallback(
+    ({ set }) =>
+      (payload, newFInfo) => {
+        set(
+          folderDictionary({
+            driveId: payload.driveId,
+            folderId: payload.folderId,
+          }),
+          newFInfo,
+        );
+        // If a folder, update the label in the child folder
+        if (payload.type === 'Folder') {
+          set(
+            folderDictionary({
+              driveId: payload.driveId,
+              folderId: payload.itemId,
+            }),
+            (old) => {
+              let newFolderInfo = { ...old };
+              newFolderInfo.folderInfo = { ...old.folderInfo };
+              newFolderInfo.folderInfo.label = payload.label;
+              return newFolderInfo;
+            },
+          );
+        }
+        addToast(`Renamed item to '${payload.label}'`, ToastType.SUCCESS);
+      },
+  );
 
-  return { acceptNewItem, acceptDelete, acceptMove, acceptRename };
+  return {
+    acceptAddItem,
+    acceptDeleteItem,
+    acceptMoveItems,
+    acceptRenameItem,
+  };
 }
 
 const formatDate = (dt) => {
