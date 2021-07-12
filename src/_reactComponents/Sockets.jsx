@@ -26,6 +26,11 @@ import {
   sortOptions,
 } from './Drive/Drive';
 
+/**
+ * a stored manger to allow for multiplexed socket connections.
+ * The dangerouslyAllowMutability flag must be set to stop dev mode
+ * object freezing in recoil
+ */
 const socketManger = atom({
   key: 'socketManger',
   default: selector({
@@ -40,6 +45,11 @@ const socketManger = atom({
   dangerouslyAllowMutability: true,
 });
 
+/**
+ * keyed by namespace. Binding cannot be donw here until a set function is
+ * allowed to exist (atom effects?). The dangerouslyAllowMutability
+ * flag must be set to stop dev mode object freezing in recoil
+ */
 const sockets = atomFamily({
   key: 'socketStore',
   default: selectorFamily({
@@ -59,7 +69,7 @@ const sockets = atomFamily({
 /**
  * Hook to access realtime functions, supports drive and chat namespaces
  * @param {string} nsp - namespace to connect to
- * @returns add, delete, move, and rename item functions
+ * @returns {Object} {@link addItem}, {@link deleteItem}, {@link moveItems}, {@link renameItem}, and {@link copyItems} item functions
  */
 export default function useSockets(nsp) {
   const [addToast, ToastType] = useToast();
