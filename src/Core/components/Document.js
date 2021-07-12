@@ -16,7 +16,7 @@ export default class Document extends BaseComponent {
     let attributes = super.createAttributesObject(args);
 
     delete attributes.hide;
-    delete attributes.disabled;
+    delete attributes.disable;
     delete attributes.modifyIndirectly;
     delete attributes.fixed;
     delete attributes.styleNumber;
@@ -628,7 +628,7 @@ export default class Document extends BaseComponent {
       sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
       sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
       sharedParameters.selectRng = variantControlChild.state.selectRng.value;
-      sharedParameters.allPossibleVariants = variantControlChild.state.variants.value;
+      sharedParameters.allPossibleVariants = variantControlChild.state.variantNames.value;
     }
 
     // seed rng for random numbers predictably from variant using selectRng

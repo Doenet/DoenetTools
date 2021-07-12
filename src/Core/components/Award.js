@@ -43,7 +43,7 @@ export default class Award extends BaseComponent {
       defaultValue: "none",
       toLowerCase: true,
       valueTransformations: { "": "full", "true": "full" },
-      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
+      validValues: ["none", "full", "numbers", "numberspreserveorder"],
       public: true,
       propagateToDescendants: true,
     };
@@ -185,7 +185,7 @@ export default class Award extends BaseComponent {
         mathChild: {
           dependencyType: "child",
           childLogicName: "exactlyOneMath",
-          variableNames: ["value", "unordered", "expand", "simplify"]
+          variableNames: ["value", "unordered"]
         },
         textChild: {
           dependencyType: "child",
@@ -446,8 +446,6 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
   let expandOnCompare = dependencyValues.expandOnCompare;
 
   let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
-  let canOverrideSimplifyOnCompare = usedDefault.simplifyOnCompare;
-  let canOverrideExpandOnCompare = usedDefault.expandOnCompare;
 
   if (dependencyValues.textChild.length === 1) {
     dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
@@ -457,24 +455,6 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
     dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = child;
     if (canOverrideUnorderedCompare && child.stateValues.unordered) {
       unorderedCompare = true;
-    }
-
-    if (canOverrideExpandOnCompare && child.stateValues.expand) {
-      expandOnCompare = true;
-    }
-
-    if (canOverrideSimplifyOnCompare) {
-      if (child.stateValues.simplify === "full") {
-        simplifyOnCompare = "full";
-      } else if (child.stateValues.simplify === "numbers") {
-        if (simplifyOnCompare !== "full") {
-          simplifyOnCompare = "numbers";
-        }
-      } else if (child.stateValues.simplify === "numberspreserveorder") {
-        if (simplifyOnCompare !== "full" && simplifyOnCompare !== "numbers") {
-          simplifyOnCompare = "numberspreserveorder";
-        }
-      }
     }
 
   }

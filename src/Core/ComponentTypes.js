@@ -87,6 +87,8 @@ import AttractToAngles from './components/AttractToAngles';
 import ConditionalContent from './components/ConditionalContent';
 import AsList from './components/AsList';
 import Spreadsheet from './components/Spreadsheet';
+import DiscreteSimulationResultList from './components/DiscreteSimulationResultList';
+import DiscreteSimulationResultPolyline from './components/DiscreteSimulationResultPolyline';
 import Cell from './components/Cell';
 import Row from './components/Row';
 import Column from './components/Column';
@@ -94,7 +96,7 @@ import CellBlock from './components/CellBlock';
 import Tabular from './components/Tabular';
 import Table from './components/Table';
 import Figure from './components/Figure';
-import Variants from './components/Variants';
+import VariantNames from './components/VariantNames';
 import Seeds from './components/Seeds';
 import VariantControl from './components/VariantControl';
 import SelectFromSequence from './components/SelectFromSequence';
@@ -204,6 +206,8 @@ const componentTypeArray = [
   Sequence,
   Slider,
   Spreadsheet,
+  DiscreteSimulationResultList,
+  DiscreteSimulationResultPolyline,
   Cell,
   Row,
   Column,
@@ -225,7 +229,7 @@ const componentTypeArray = [
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
   AsList,
-  Seeds, Variants, VariantControl,
+  Seeds, VariantNames, VariantControl,
   SelectFromSequence, Select,
   Group,
   AnimateFromSequence,

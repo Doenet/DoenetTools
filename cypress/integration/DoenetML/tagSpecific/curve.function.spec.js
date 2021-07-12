@@ -211,7 +211,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph>
     <curve>
-    <function variable="a">a^3-a</function>
+    <function variables="a">a^3-a</function>
     </curve>
     </graph>
     `}, "*");
@@ -271,7 +271,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph>
     <curve flipfunction>
-    <function variable="a">a^3-a</function>
+    <function variables="a">a^3-a</function>
     </curve>
     </graph>
     `}, "*");
@@ -296,7 +296,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph>
     <curve>
-      <function variable="u">
+      <function variables="u">
         u^4-5u^2
       </function>
     </curve>
@@ -359,7 +359,7 @@ describe('Function curve Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <curve flipFunction><function variable="u">
+    <curve flipFunction><function variables="u">
       u^4-5u^2
     </function></curve>
     

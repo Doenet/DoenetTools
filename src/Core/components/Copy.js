@@ -23,7 +23,7 @@ export default class Copy extends CompositeComponent {
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
-    delete attributes.disabled;
+    delete attributes.disable;
     delete attributes.modifyIndirectly;
     delete attributes.fixed;
     delete attributes.styleNumber;
@@ -774,20 +774,6 @@ export default class Copy extends CompositeComponent {
 
     let compositeAttributesObj = this.createAttributesObject({ flags });
 
-    // resolve determine dependencies of replacementSources
-    // so any array entry prop is created
-    let resolveResult = resolveItem({
-      componentName: component.componentName,
-      type: "determineDependencies",
-      stateVariable: "replacementSources",
-      dependency: "__determine_dependencies",
-      expandComposites: false
-    });
-
-    if (!resolveResult.success) {
-      throw Error(`Couldn't resolve determineDependencies of replacementSources of ${component.componentName}`)
-    }
-
 
     if (component.stateValues.serializedComponentsForContentId) {
       // Note: any attributes (other than hide) specified on copy are ignored
@@ -860,6 +846,43 @@ export default class Copy extends CompositeComponent {
       });
 
       return { replacements: verificationResult.replacements };
+
+    }
+
+
+    // resolve determine dependencies of replacementSources
+    // and resolve recalculateDownstreamComponents of its target dependencies
+    // so any array entry prop is created
+    let resolveResult = resolveItem({
+      componentName: component.componentName,
+      type: "determineDependencies",
+      stateVariable: "replacementSources",
+      dependency: "__determine_dependencies",
+      expandComposites: false
+    });
+
+    if (!resolveResult.success) {
+      throw Error(`Couldn't resolve determineDependencies of replacementSources of ${component.componentName}`)
+    }
+
+    for (let ind in component.stateValues.replacementSourceIdentities) {
+
+      let thisPropName = component.stateValues.effectivePropNameBySource[ind];
+
+      if (thisPropName) {
+        resolveResult = resolveItem({
+          componentName: component.componentName,
+          type: "recalculateDownstreamComponents",
+          stateVariable: "replacementSources",
+          dependency: "target" + ind,
+          expandComposites: false
+        });
+
+        if (!resolveResult.success) {
+          throw Error(`Couldn't resolve recalculateDownstreamComponents for target${ind} of replacementSources of ${component.componentName}`)
+        }
+
+      }
 
     }
 
@@ -1017,10 +1040,10 @@ export default class Copy extends CompositeComponent {
     let requiredComponentType = component.attributes.componentType;
     let requiredLength = component.stateValues.nComponentsSpecified;
 
-    if(!requiredComponentType) {
+    if (!requiredComponentType) {
       // must have be here due to composites needing a replacement
       requiredComponentType = component.sharedParameters.compositesDefaultReplacementType;
-      if(!requiredComponentType) {
+      if (!requiredComponentType) {
         throw Error(`A component class specified descendantCompositesMustHaveAReplacement but didn't specify descendantCompositesDefaultReplacementType`)
       }
       requiredLength = 1;
@@ -1276,6 +1299,44 @@ export default class Copy extends CompositeComponent {
       }
 
       return replacementChanges;
+    }
+
+
+    // resolve determine dependencies of replacementSources
+    // and resolve recalculateDownstreamComponents of its target dependencies
+    // so any array entry prop is created
+    let resolveResult = resolveItem({
+      componentName: component.componentName,
+      type: "determineDependencies",
+      stateVariable: "replacementSources",
+      dependency: "__determine_dependencies",
+      expandComposites: false
+    });
+
+    if (!resolveResult.success) {
+      throw Error(`Couldn't resolve determineDependencies of replacementSources of ${component.componentName}`)
+    }
+
+
+    for (let ind in component.stateValues.replacementSourceIdentities) {
+
+      let thisPropName = component.stateValues.effectivePropNameBySource[ind];
+
+      if (thisPropName) {
+        resolveResult = resolveItem({
+          componentName: component.componentName,
+          type: "recalculateDownstreamComponents",
+          stateVariable: "replacementSources",
+          dependency: "target" + ind,
+          expandComposites: false
+        });
+
+        if (!resolveResult.success) {
+          throw Error(`Couldn't resolve recalculateDownstreamComponents for target${ind} of replacementSources of ${component.componentName}`)
+        }
+
+      }
+
     }
 
 

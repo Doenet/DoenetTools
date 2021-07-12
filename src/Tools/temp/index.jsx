@@ -1,122 +1,15 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { useRecoilState,RecoilRoot, useRecoilValue } from 'recoil';
-import Drive, {folderDictionaryFilterAtom,folderDictionaryFilterSelector} from '../../_reactComponents/Drive/Drive';
-import MathInput from './MathInput';
+import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
 
 
-// import axios from 'axios';
-
-// const Test = () => {
-//   return (
-//     <div
-//       style={{
-//         display: 'grid',
-//         grid:
-//           '"nav header menu" auto "nav extra menu" 1fr "nav footer menu" auto / auto 1fr auto',
-//         height: '85vh',
-//         gap: '4px',
-//       }}
-//     >
-//       <DragPanel
-//         direction={handleDirection.DOWN}
-//         gridArea={'header'}
-//         panelSize={60}
-//       >
-//         Test teawteateateatateatea
-//       </DragPanel>
-//       <DragPanel direction={handleDirection.RIGHT} gridArea={'nav'} isInitOpen>
-//         Test teawteateateatateatea
-//       </DragPanel>
-//       <DragPanel direction={handleDirection.LEFT} gridArea={'menu'}>
-//         Test teawteateateatateatea
-//       </DragPanel>
-//       <DragPanel direction={handleDirection.UP} gridArea={'footer'}>
-//         Test teawteateateatateatea
-//       </DragPanel>
-//       <div style={{ gridArea: 'extra', backgroundColor: 'red' }} />
-//     </div>
-//   );
-// };
-// ReactDOM.render(<Test />, document.getElementById('root'));
-
-// function DynamicLoad(props) {
-
-//   let [components,setComponents] = useState([])
-
-//   useEffect(()=>{
-//       let loader = import("/renderers/one.js")
-//       loader.then((resp)=>{
-//         const one = resp.default({text:'this is from static path'});
-//         setComponents([<React.Fragment key='1'>{one}</React.Fragment>])
-//       })
-
-//   },[])
-
-//   // let loader = import("/temp/one.js")
-//   // loader.then((resp)=>{
-//   //   // console.log(">>>resp",resp.default(3));
-//   //   const component = resp.default;
-//   //   console.log(">>>component",component)
-//   //   setComponents([<>{component}</>])
-//   // })
-
-
-//   // const One = lazy(() => import('./one.jsx'));
-//   // const Two = lazy(() => import('./two.jsx'));
-
-//   // axios.get('/api/test.php').then((resp) => console.log('>>>resp', resp.data));
-
-//   return (
-//     <>
-//       {/* <div>{loaded}</div> */}
-//       {/* <Suspense fallback={<div>Components are Loading...</div>}>
-//         <One />
-//         <Two />
-//       </Suspense> */}
-//       {/* <Suspense fallback={<div>Three is Loading...</div>}>
-//         <Three />
-//       </Suspense> */}
-
-//       {components}
-//       <p>This is a p tag</p>
-//     </>
-//   );
-// }
-
-  // <DynamicLoad />,
-
-
-
-function Demo(props) {
-  const [myAtom,setMyAtom] = useRecoilState(folderDictionaryFilterAtom({driveId:"94Kbcv37ZlVH6qLtQDY9g"}));
-  const [myAtom2,setMyAtom2] = useRecoilState(folderDictionaryFilterAtom({driveId:"rrUE5eriLBarSSGb0OXog"}));
-  const filterValue = useRecoilValue(folderDictionaryFilterSelector({driveId:"94Kbcv37ZlVH6qLtQDY9g",folderId:"94Kbcv37ZlVH6qLtQDY9g"}));
-  const filterValue2 = useRecoilValue(folderDictionaryFilterSelector({driveId:"rrUE5eriLBarSSGb0OXog",folderId:"rrUE5eriLBarSSGb0OXog"}));
-  console.log(">>>contentIds",filterValue.contentIds.defaultOrder);
-  console.log(">>>contentIds2",filterValue2.contentIds.defaultOrder);
-  return (
-    <>
-
-<button onClick={()=>setMyAtom("Released Only")}>set atom</button>
-<p>{myAtom}</p>
-<br />
-<button onClick={()=>setMyAtom2("Released Only")}>set atom 2</button>
-    {/* <Drive driveId="n4Dc63X426CTRpgrG58nq"/> */}
-  <p>{myAtom2}</p>
-
-  </>
-  )
-  ;
-  
-}
 ReactDOM.render(
-      <RecoilRoot>
-        
-        <MathInput />
-
-        
-      </RecoilRoot>
+  <DateTime
+    showArrowButtons={false}
+    precision="second"
+    time = {false}
+    callBack={(date) => console.log(date)}
+  />
   ,
   document.getElementById('root'),
 );

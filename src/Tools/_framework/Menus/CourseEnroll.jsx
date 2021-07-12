@@ -1,6 +1,7 @@
 import React from 'react';
 import { useToast } from '@Toast';
-import Button from '../temp/Button';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+
 
 export default function CourseEnroll(props){
   const [toast, toastType] = useToast();
@@ -8,8 +9,8 @@ export default function CourseEnroll(props){
   
   return <div style={props.style}>
     <div>Enter Enrollment code</div>
-  {/* <Button onClick={()=>toast('Stub Enrolled in Course!', toastType.SUCCESS)} value="Enroll" /> */}
-  <button onClick={()=>toast('Stub Enrolled in Course!', toastType.SUCCESS)}>Enroll</button>
+  {/* <Button width="menu" onClick={()=>toast('Stub Enrolled in Course!', toastType.SUCCESS)} value="Enroll">Enroll</Button> */}
+  <Button onClick={()=>toast('Stub Enrolled in Course!', toastType.SUCCESS)} value="Enroll">Enroll</Button>
  
   </div>
 }

@@ -386,8 +386,8 @@ describe('factor polynomial tests', function () {
     
     <p>Answer <mathinput name="ans" /></p>
 
-    <answer name="check" symbolicEquality>
-      <award>
+    <answer name="check" symbolicEquality simplifyOnCompare>
+      <award simplifyOnCompare expandOnCompare>
         <when>
           $ansExpandSimplify = $polyExpandSimplify
           and

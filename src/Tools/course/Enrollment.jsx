@@ -79,7 +79,7 @@ export default function Enrollment(params) {
         <td>{rowData.empId}</td>
         <td>{rowData.email}</td>
         <td>{rowData.dateEnrolled}</td>
-        <td> <Button value="Withdraw" callback={(e) => withDrawLearners(e,rowData.email)} /></td>
+        <td> <Button value="Withdraw" onClick={(e) => withDrawLearners(e,rowData.email)} /></td>
       </tr>,
     );
   }
@@ -147,7 +147,7 @@ export default function Enrollment(params) {
             <p>Data Needs to have a heading marked "id"</p>
             <p>No Data Imported</p>
             <Button
-              callback={() => setProcess('Display Enrollment')}
+              onClick={() => setProcess('Display Enrollment')}
               value="OK"
             />
           </div>
@@ -250,7 +250,7 @@ export default function Enrollment(params) {
             <Button
               value="Merge"
               key="merge"
-              callback={() => {
+              onClick={() => {
                 const payload = {
                   driveId,
                   mergeHeads,
@@ -276,7 +276,7 @@ export default function Enrollment(params) {
 
             <Button
               key="cancel"
-              callback={() => setProcess('Display Enrollment')}
+              onClick={() => setProcess('Display Enrollment')}
               value="Cancel"
             ></Button>
           </>
@@ -356,7 +356,7 @@ export default function Enrollment(params) {
           <Button value="Enroll Learners"></Button>
         )}
       </div>
-      {/* {<Button value = "Enroll Learners enter" callback={()=>enrollLearners()} ></Button>} */}
+      {/* {<Button value = "Enroll Learners enter" onClick={()=>enrollLearners()} ></Button>} */}
       {enrollmentTable}
       <div>
         <label>Email:</label>
@@ -368,7 +368,7 @@ export default function Enrollment(params) {
           placeholder="example@example.com"
           onChange={handleChange}
         />
-        <Button value="Enroll" callback={(e) => enrollManual(e)} />
+        <Button value="Enroll" onClick={(e) => enrollManual(e)} />
       </div>
 
     </>

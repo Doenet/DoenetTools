@@ -233,7 +233,7 @@ export default class BooleanComponent extends InlineComponent {
         if (dependencyValues.stringMathTextBooleanChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              value: { variablesToCheck: ["value", "implicitValue"] }
+              value: { variablesToCheck: ["value"] }
             }
           }
         } else if (dependencyValues.parsedExpression === null) {

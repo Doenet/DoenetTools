@@ -135,7 +135,7 @@ export default class When extends BooleanComponent {
         mathChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
-          variableNames: ["value", "expand", "simplify"]
+          variableNames: ["value"]
         },
         booleanChildrenByCode: {
           dependencyType: "stateVariable",
@@ -185,8 +185,6 @@ export default class When extends BooleanComponent {
         let expandOnCompare = dependencyValues.expandOnCompare;
 
         let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
-        let canOverrideSimplifyOnCompare = usedDefault.simplifyOnCompare;
-        let canOverrideExpandOnCompare = usedDefault.expandOnCompare;
 
         // if compare attributes haven't been explicitly prescribed by <when>
         // or one of its ancestors
@@ -198,29 +196,6 @@ export default class When extends BooleanComponent {
           if (canOverrideUnorderedCompare && child.stateValues.unordered) {
             unorderedCompare = true;
           }
-        }
-
-        // check math children for additional attributes
-        for (let child of dependencyValues.mathChildren) {
-
-          if (canOverrideExpandOnCompare && child.stateValues.expand) {
-            expandOnCompare = true;
-          }
-
-          if (canOverrideSimplifyOnCompare) {
-            if (child.stateValues.simplify === "full") {
-              simplifyOnCompare = "full";
-            } else if (child.stateValues.simplify === "numbers") {
-              if (simplifyOnCompare !== "full") {
-                simplifyOnCompare = "numbers";
-              }
-            } else if (child.stateValues.simplify === "numberspreserveorder") {
-              if (simplifyOnCompare !== "full" && simplifyOnCompare !== "numbers") {
-                simplifyOnCompare = "numberspreserveorder";
-              }
-            }
-          }
-
         }
 
         let fractionSatisfied = evaluateLogic({

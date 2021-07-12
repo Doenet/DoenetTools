@@ -736,7 +736,7 @@ describe('CallAction Tag Tests', function () {
 
       let g = components["/g"];
 
-      let mathinputName = components['/ans'].stateValues.inputChild.componentName
+      let mathinputName = components['/ans'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
       let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
       let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');

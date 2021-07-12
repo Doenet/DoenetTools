@@ -6,6 +6,8 @@ import {
   useRecoilValue,
   useRecoilCallback,
   useRecoilValueLoadable,
+  useSetRecoilState,
+  useRecoilState,
 } from 'recoil';
 import styled from 'styled-components';
 import Toast from './Toast';
@@ -18,6 +20,9 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
+import { selectedMenuPanelAtom } from './Panels/NewMenuPanel';
+import { mainPanelClickAtom } from './Panels/NewMainPanel';
+import { useHistory } from 'react-router';
 
 
 const ToolContainer = styled(animated.div)`
@@ -66,6 +71,16 @@ export const searchParamAtomFamily = atomFamily({
   default: "",
 })
 
+export const paramObjAtom = atom({
+  key:"paramObjAtom",
+  default:{}
+})
+
+const urlChangeSourceParamObjAtom = atom({
+  key:"urlChangeSourceParamObjAtom",
+  default:{}
+})
+
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
@@ -86,12 +101,13 @@ export const toolViewAtom = atom({
 // toolHandler:"CourseToolHandler",
 
 let toolsObj = {
-  home:{
-    pageName:"Home",
+  
+  content:{
+    pageName:"Content",
     currentMenus:[],
     menusTitles:[],
     menusInitOpen:[],
-    currentMainPanel:"HomePanel",
+    currentMainPanel:"Content",
     supportPanelOptions:[],
     supportPanelTitles:[],
     supportPanelIndex:0,
@@ -101,12 +117,12 @@ let toolsObj = {
     pageName:"Course",
     toolHandler:"CourseToolHandler",
   },
-  content:{
-    pageName:"Content",
+  home:{
+    pageName:"Home",
     currentMenus:[],
     menusTitles:[],
     menusInitOpen:[],
-    currentMainPanel:"Content",
+    currentMainPanel:"HomePanel",
     supportPanelOptions:[],
     supportPanelTitles:[],
     supportPanelIndex:0,
@@ -119,7 +135,43 @@ let toolsObj = {
     currentMainPanel:"NotFound",
     supportPanelOptions:[],
     hasNoMenuPanel: true,
-  }
+  },
+  settings:{
+    pageName:"Settings",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"AccountSettings",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+    headerControls: ["CloseProfileButton"],
+    headerControlsPositions: ["Right"]
+  },
+  signin:{
+    pageName:"SignIn",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"SignIn",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  signout:{
+    pageName:"SignOut",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"SignOut",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  
 }
 
 // function EmptyPanel(props){
@@ -141,9 +193,10 @@ export default function ToolRoot(props){
   const lastSupportPanelKey = useRef(null)
   const supportPanelDictionary = useRef({}) //key -> {index, type}
   // const [supportContentObj,setSupportContentObj] = useState({})
-  const [menuPanelsOpen,setMenuPanelsOpen] = useState(true)
+  const [menusOpen,setMenusOpen] = useState(true)
 
   const setPage = useRecoilCallback(({set})=> (tool,origPath)=>{
+    console.log(">>> Root setPAge",tool,origPath)
     if (tool === ""){ 
       // location.href = `#home/`
       window.history.replaceState('','','/new#/home')
@@ -161,18 +214,9 @@ export default function ToolRoot(props){
         set(toolViewAtom,newTool);
       }
     }
-  })
+    set(selectedMenuPanelAtom,""); //clear selection
+    set(mainPanelClickAtom,[])  //clear main panel click
 
-  const setSearchParam = useRecoilCallback(({set,snapshot})=>(paramObj)=>{
-    //Track when tool isn't defined so the controlers get refreshed
-    let clearTool = true;
-    for (const [key,value] of Object.entries(paramObj)){
-      if (key === 'tool'){clearTool = false;}
-      set(searchParamAtomFamily(key),value)
-    }
-    if (clearTool){
-      set(searchParamAtomFamily('tool'),'')
-    }
   })
 
   const LazyPanelObj = useRef({
@@ -183,6 +227,8 @@ export default function ToolRoot(props){
     Content:lazy(() => import('./ToolPanels/Content')),
     DriveCards:lazy(() => import('./ToolPanels/DriveCards')),
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
+    SignOut:lazy(() => import('./ToolPanels/SignOut')),
+    DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -197,17 +243,28 @@ export default function ToolRoot(props){
   //   CourseToolHandler:lazy(() => import('./ToolHandlers/CourseToolHandler')),
   // }).current;
 
+  const lastURL = useRef("")
+
+
+  let setUrlChangeSourceParamObjAtom = useSetRecoilState(urlChangeSourceParamObjAtom);
+
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
       console.error(profile.contents)
       return null;}
-      // console.log(">>>===ToolRoot")
-      console.log(">>>===ToolRoot toolViewInfo",toolViewInfo) 
 
-  const searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
-  setSearchParam(searchParamObj);
-  // console.log(">>>buildPanel searchParamObj",searchParamObj)
-  //TODO: Send to recoilcallback set selectorFam
+  console.log(">>>===ToolRoot")
+  
+  // console.log(">>> location.href ",location.href )
+  // console.log(">>> lastURL.current" , lastURL.current)
+  const lastURLProp = lastURL.current;
+  if (location.href !== lastURL.current ){
+    // console.log(">>>URL CHANGED!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    let searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
+    // console.log(">>>searchParamObj",searchParamObj)
+    setUrlChangeSourceParamObjAtom(searchParamObj);
+    lastURL.current = location.href;
+  }
 
   function buildPanel({key,type,visible}){
     let hideStyle = null;
@@ -222,8 +279,6 @@ export default function ToolRoot(props){
 
   const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
   if (toolViewInfo.pageName.toLowerCase() !== lcpath){
-    console.log(">>>Changed Tool!!!!!!! toolViewInfo",toolViewInfo)
-
   //Need to update path
     setPage(lcpath,props.route.location.pathname)
     // return null; 
@@ -324,12 +379,12 @@ export default function ToolRoot(props){
     supportPanel = <SupportPanel hide={false} panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
-  let menus = <MenuPanel hide={true} />;
-  if (menuPanelsOpen && !toolViewInfo.hasNoMenuPanel){
-    menus = <MenuPanel hide={false} setMenuPanelsOpen={setMenuPanelsOpen} menuPanelsOpen={menuPanelsOpen} panelTitles={toolViewInfo.menusTitles} currentPanels={toolViewInfo.currentMenus} initOpen={toolViewInfo.menusInitOpen}/>
+  let menus = <MenuPanel key='menuPanel' hide={true} />;
+  if (menusOpen && !toolViewInfo.hasNoMenuPanel){
+    menus = <MenuPanel key='menuPanel' hide={false} setMenusOpen={setMenusOpen} menusOpen={menusOpen} menusTitles={toolViewInfo.menusTitles} currentMenus={toolViewInfo.currentMenus} initOpen={toolViewInfo.menusInitOpen}/>
   }
 
-  let profileInMainPanel = !menuPanelsOpen;
+  let profileInMainPanel = !menusOpen;
   if (toolViewInfo.hasNoMenuPanel){
     profileInMainPanel = false;
   }
@@ -338,7 +393,7 @@ export default function ToolRoot(props){
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenuPanelsOpen={setMenuPanelsOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
       support={supportPanel}
       />
     
@@ -346,8 +401,96 @@ export default function ToolRoot(props){
     </ToolContainer>
     <Toast />
     {toolHandler}
+    <RecoilSearchParamUpdater lastURL={lastURLProp} setURL={(newURL)=>{
+      lastURL.current = newURL;
+      // console.log(">>>setURL newURL",newURL)
+    }} />
   </ProfileContext.Provider>
 } 
+
+function RecoilSearchParamUpdater(prop){
+  let [eventSourceParamObj,setEventSourceParamObj] = useRecoilState(paramObjAtom);
+  let [urlSourceParamObj,setUrlSourceParamObj] = useRecoilState(urlChangeSourceParamObjAtom);
+  // let eventSourceParamObj = useRecoilValue(paramObjAtom);
+  // let urlSourceParamObj = useRecoilValue(urlChangeSourceParamObjAtom);
+  let currentParamObj = useRef({});
+  let lastPathName = useRef("");
+  let history = useHistory();
+
+  let isURLSourceFLAG = false;
+  if (JSON.stringify(urlSourceParamObj) !== JSON.stringify(currentParamObj.current)){
+    //URL is the source of parameter change
+    isURLSourceFLAG = true;
+  }
+  let isEventSourceFLAG = false;
+  if (JSON.stringify(eventSourceParamObj) !== JSON.stringify(currentParamObj.current)){
+    //Event is the source of parameter change
+    isEventSourceFLAG = true;
+  }
+
+  const setSearchParamAtom = useRecoilCallback(({set})=> (paramObj)=>{
+    //Only set atom if parameter has changed
+    for (const [key,value] of Object.entries(paramObj)){
+      if (currentParamObj.current[key] !== value){
+        // console.log(`>>>CHANGED so SET key: ${key} value: ${value} **********`)
+        set(searchParamAtomFamily(key),value)
+      }
+    }
+    //If not defined then clear atom
+    for (const key of Object.keys(currentParamObj.current)){
+      if (!paramObj[key]){
+        // console.log(`>>>clear!!!  -${key}- **********`)
+        set(searchParamAtomFamily(key),"") 
+      }
+    }
+  })
+
+  // console.log("\n>>>RecoilSearchParamUpdater")
+  // console.log(">>> isURLSourceFLAG",isURLSourceFLAG)
+  // console.log(">>> isEventSourceFLAG",isEventSourceFLAG)
+  // console.log(">>> eventSourceParamObj",eventSourceParamObj)
+  // console.log(">>> urlSourceParamObj",urlSourceParamObj)
+  // console.log(">>> currentParamObj.current",currentParamObj.current)
+
+  if (isURLSourceFLAG){
+    setSearchParamAtom(urlSourceParamObj);
+  }else if (isEventSourceFLAG){
+    setSearchParamAtom(eventSourceParamObj);
+  }
+ 
+
+  //Update URL if parameters are not up to date
+  let [pathname,urlSearchParams] = location.hash.split("?");
+  pathname = pathname.replace("#","")
+  if (!urlSearchParams){ urlSearchParams = {} }
+
+  if (isEventSourceFLAG){
+  // let urlParamsObj = Object.fromEntries(new URLSearchParams(urlSearchParams));
+  const url = location.origin + location.pathname + "#" + pathname + '?' + encodeParams(eventSourceParamObj);
+    if (!currentParamObj.current?.tool){ 
+     //If page didn't have a tool update url without pushing on to history
+      window.history.replaceState('','',url)
+    }else{
+      const route =  pathname + '?' + encodeParams(eventSourceParamObj);
+      history.push(route)
+    //   window.history.pushState('','',url)
+    }
+
+    prop.setURL(url)
+  }
+
+  // console.log(">>>----------------------------------\n\n")
+
+  lastPathName.current = pathname;
+  if (isURLSourceFLAG){
+    currentParamObj.current = urlSourceParamObj;
+    setEventSourceParamObj(urlSourceParamObj);
+  }else if (isEventSourceFLAG){
+    currentParamObj.current = eventSourceParamObj;
+    setUrlSourceParamObj(eventSourceParamObj);
+  }
+  return null;
+}
 
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);

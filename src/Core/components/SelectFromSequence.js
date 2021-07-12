@@ -255,14 +255,10 @@ export default class SelectFromSequence extends Sequence {
           return { success: false }
         }
       } else if (componentType === "withReplacement") {
-        // calculate withReplacement only if has its implicitValue or value set directly 
+        // calculate withReplacement only if has its value set directly 
         // or if has a child that is a string
         let foundValid = false;
         if (child.state !== undefined) {
-          if (child.state.implicitValue !== undefined) {
-            withReplacement = child.state.implicitValue;
-            foundValid = true;
-          }
           if (child.state.value !== undefined) {
             withReplacement = child.state.value;
             foundValid = true;
@@ -620,21 +616,60 @@ function makeSelection({ dependencyValues }) {
 
   } else {
 
-    let numberPossibilities = dependencyValues.length - dependencyValues.exclude.length;
+    let numberPossibilitiesLowerBound = dependencyValues.length - dependencyValues.exclude.length;
 
     if (dependencyValues.withReplacement) {
-      numberPossibilities = Math.pow(numberPossibilities, dependencyValues.numberToSelect);
+      numberPossibilitiesLowerBound = Math.pow(numberPossibilitiesLowerBound, dependencyValues.numberToSelect);
     } else {
-      let n = numberPossibilities;
+      let n = numberPossibilitiesLowerBound;
       for (let i = 1; i < dependencyValues.numberToSelect; i++) {
-        numberPossibilities *= n - i;
+        numberPossibilitiesLowerBound *= n - i;
       }
     }
 
-    // console.log(`numberPossibilities: ${numberPossibilities}`)
+    if (numberCombinationsExcluded > 0.7 * numberPossibilitiesLowerBound) {
+      // may have excluded over 70% of combinations
+      // need to determine actual number of possibilities
+      // to see if really have excluded that many combinations
 
-    if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
-      throw Error("Excluded over 70% of combinations in selectFromSequence");
+      let numberPossibilities = 0;
+      for (let ind = 0; ind < dependencyValues.length; ind++) {
+        let componentValue = dependencyValues.from;
+        if (ind > 0) {
+          if (dependencyValues.type === "math") {
+            componentValue = componentValue.add(dependencyValues.step.multiply(me.fromAst(ind))).expand().simplify();
+          } else {
+            componentValue += dependencyValues.step * ind;
+          }
+        }
+
+        if (dependencyValues.type === "math") {
+          if (dependencyValues.exclude.some(x => x.equals(componentValue))) {
+            continue;
+          }
+        } else {
+          if (dependencyValues.exclude.includes(componentValue)) {
+            continue;
+          }
+        }
+
+        numberPossibilities++;
+
+      }
+
+      if (dependencyValues.withReplacement) {
+        numberPossibilities = Math.pow(numberPossibilities, dependencyValues.numberToSelect);
+      } else {
+        let n = numberPossibilities;
+        for (let i = 1; i < dependencyValues.numberToSelect; i++) {
+          numberPossibilities *= n - i;
+        }
+      }
+
+      if (numberCombinationsExcluded > 0.7 * numberPossibilities) {
+        throw Error("Excluded over 70% of combinations in selectFromSequence");
+      }
+
     }
 
     // with 200 chances with at least 70% success,

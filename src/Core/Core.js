@@ -336,9 +336,9 @@ export default class Core {
 
       let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
 
-        // if (!success) {
-        //   console.warn(message);
-        // }
+        if (!success) {
+          console.warn(message);
+        }
 
         // check to see if got the contentIds requested
         for (let [ind, contentId] of contentIdList.entries()) {
@@ -848,11 +848,10 @@ export default class Core {
       }
     }
 
-    for (let child of component.activeChildren) {
-      if (child.componentName) {
-        let additionalParentsWithNotReady = this.expandCompositesOfDescendants(child, forceExpandComposites);
-        parentsWithCompositesNotReady.push(...additionalParentsWithNotReady);
-      }
+    for (let childName in component.allChildren) {
+      let child = this._components[childName]
+      let additionalParentsWithNotReady = this.expandCompositesOfDescendants(child, forceExpandComposites);
+      parentsWithCompositesNotReady.push(...additionalParentsWithNotReady);
     }
     // console.log(`done expanding composites of descendants of ${component.componentName}`)
 
@@ -965,7 +964,7 @@ export default class Core {
           longNameId += componentInd;
         }
 
-        componentName = createUniqueName(serializedComponent.componentType, longNameId);
+        componentName = createUniqueName(serializedComponent.componentType.toLowerCase(), longNameId);
 
         // add namespace
         componentName = namespaceForUnamed + componentName;
@@ -3092,7 +3091,7 @@ export default class Core {
         stateDef.arrayDefinitionByKey = function ({
           globalDependencyValues, dependencyValuesByKey, arrayKeys
         }) {
-          // console.log(`shadow array definition by key`)
+          // console.log(`shadow array definition by key for ${varName}`)
           // console.log(JSON.parse(JSON.stringify(globalDependencyValues)))
           // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)))
           // console.log(JSON.parse(JSON.stringify(arrayKeys)))
@@ -3176,7 +3175,7 @@ export default class Core {
           }
           return dependencies;
         };
-        stateDef.definition = function ({ dependencyValues }) {
+        stateDef.definition = function ({ dependencyValues, usedDefault }) {
           let result = {
             alwaysShadow: [varName]
           }
@@ -3187,7 +3186,12 @@ export default class Core {
               [varName]: dependencyValues.targetVariableComponentType
             }
           }
-          result.newValues = { [varName]: dependencyValues.targetVariable }
+
+          if (usedDefault.targetVariable && "defaultValue" in stateDef) {
+            result.useEssentialOrDefaultValue = { [varName]: { variablesToCheck: [varName] } }
+          } else {
+            result.newValues = { [varName]: dependencyValues.targetVariable }
+          }
 
           return result;
 
@@ -3354,6 +3358,10 @@ export default class Core {
 
     if (arrayStateVarObj.basedOnArrayKeyStateVariables) {
       stateVarObj.basedOnArrayKeyStateVariables = true;
+    }
+
+    if (arrayStateVarObj.determineIfShadowData) {
+      stateVarObj.determineIfShadowData = arrayStateVarObj.determineIfShadowData;
     }
 
     // if any of the additional state variables defined are arrays,
@@ -4398,7 +4406,13 @@ export default class Core {
 
   createArraySizeStateVariable({ stateVarObj, component, stateVariable }) {
 
-    let arraySizeStateVar = `__array_size_${stateVariable}`;
+    let allStateVariablesAffected = [stateVariable];
+    if (stateVarObj.additionalStateVariablesDefined) {
+      allStateVariablesAffected.push(...stateVarObj.additionalStateVariablesDefined);
+    }
+    allStateVariablesAffected.sort();
+
+    let arraySizeStateVar = `__array_size_` + allStateVariablesAffected.join('_');
     stateVarObj.arraySizeStateVariable = arraySizeStateVar;
 
     let originalStateVariablesDeterminingDependencies;
@@ -4414,21 +4428,25 @@ export default class Core {
     }
 
 
-    // if state variable is a shadow,
-    // then the array size state variable has already been created
-    // to shadow target array size state variable
-    // Just make it mark the array's arraySize as stale on markStale
-    if (stateVarObj.isShadow) {
-      let arraySizeStateVarObj = component.state[arraySizeStateVar];
-      arraySizeStateVarObj.markStale = function () {
-        stateVarObj.arraySizeStale = true;
-        return {};
+    // If array size state variable has already been created,
+    // either it was created due to being shadowed 
+    // or from an additional state variable defined.
+    // If it is shadowing target array size state variable,
+    // make it mark the array's arraySize as stale on markStale
+    if (component.state[arraySizeStateVar]) {
+      if (component.state[arraySizeStateVar].isShadow) {
+        let arraySizeStateVarObj = component.state[arraySizeStateVar];
+        arraySizeStateVarObj.markStale = function () {
+          for (let varName of allStateVariablesAffected) {
+            component.state[varName].arraySizeStale = true;
+          }
+          return {};
+        }
       }
       return;
     }
 
     component.state[arraySizeStateVar] = {
-      alwaysShadow: true,
       returnDependencies: stateVarObj.returnArraySizeDependencies,
       definition({ dependencyValues }) {
         let arraySize = stateVarObj.returnArraySize({ dependencyValues });
@@ -4440,7 +4458,9 @@ export default class Core {
         return { newValues: { [arraySizeStateVar]: arraySize } }
       },
       markStale() {
-        stateVarObj.arraySizeStale = true;
+        for (let varName of allStateVariablesAffected) {
+          component.state[varName].arraySizeStale = true;
+        }
         return {};
       }
     };
@@ -6517,6 +6537,12 @@ export default class Core {
     if (!component.replacements) {
       component.replacements = [];
     }
+
+    // evaluate readyToExpandWhenResolved
+    // to make sure all dependencies needed to calculate
+    // replacement changes are resolved
+    // TODO: why must we evaluate and not just resolve it?
+    component.stateValues.readyToExpandWhenResolved;
 
     const replacementChanges = component.constructor.calculateReplacementChanges({
       component: proxiedComponent,

@@ -5,6 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import Profile from '../Profile';
 
+export const selectedMenuPanelAtom = atom({
+  key:"selectedMenuPanelAtom",
+  default:null
+}) 
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -94,12 +98,7 @@ border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} 
 margin-top: 2px;
 `
 
-export const selectedMenuPanelAtom = atom({
-  key:"selectedMenuPanelAtom",
-  default:null
-}) 
-
-function SelectionMenuPanel(props){
+function SelectionMenu(props){
 
   return <>
     <div style={{
@@ -152,19 +151,25 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanel({ hide, panelTitles=[], currentPanels=[], initOpen=[], setMenuPanelsOpen, menuPanelsOpen }) {
-console.log(">>>===MenuPanel")
+export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
+// console.log(">>>===MenuPanel")
 
   //These maintain the panels' state
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
+  let toolMenus = useRef([]);
+  let lastToolMenus = useRef([]);
+  let toolMenusDictionary = useRef({}); 
   // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
 
   const LazyObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
+    SelectedDoenetId:lazy(() => import('../Menus/SelectedDoenetId')),
     CreateCourse:lazy(() => import('../Menus/CreateCourse')),
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
+    AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
+    EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
   }).current;
 
   let selectionPanel = null;
@@ -172,12 +177,16 @@ console.log(">>>===MenuPanel")
     const panelToUse = LazyObj[currentSelectionMenu];
     //protect from typos
     if (panelToUse){
-      const key = `SelectionMenuPanel${currentSelectionMenu}`
-      selectionPanel = <SelectionMenuPanel key={key}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-      {React.createElement(panelToUse,{key})}
-      </Suspense></SelectionMenuPanel>
+      const key = `SelectionMenu${currentSelectionMenu}`
+      selectionPanel = <SelectionMenu key={key}>
+        <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+        {React.createElement(panelToUse,{key})}
+        </Suspense></SelectionMenu>
     }
   }
+
+  
+
 
   function buildMenu({key,type,title,visible,initOpen}){
     let hideStyle = null;
@@ -185,22 +194,53 @@ console.log(">>>===MenuPanel")
       hideStyle = 'none';
     }
     
-    // {React.createElement(LazyObj[type],{key,style:{color: "red", backgroundColor: "blue"}})}
-    return <Menu key={key} title={title} isInitOpen={initOpen} style={{display:hideStyle}}><Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyObj[type],{key,style:{display:hideStyle}})}
-    </Suspense></Menu>
+    return <div key={key} style={{display:hideStyle}} ><Menu title={title} isInitOpen={initOpen} >
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+    {React.createElement(LazyObj[type],{key})}
+    </Suspense></Menu></div>
   } 
 
-  let toolMenus = []
-    for (let [i,panelName] of Object.entries(currentPanels)){
-        const mKey = `${panelName}`;
+
+  //TODO: 
+  // handle more than one of the same panel type
+  // match order of panel types 
+  // toolMenus.current = []
+
+
+  //Show menus
+  for (let [i,menuName] of Object.entries(currentMenus)){
+    if (!lastToolMenus.current.includes(menuName)){
+        const mKey = `${menuName}`;
         const isOpen = initOpen[i]
-        const title = panelTitles[i]
+        const title = menusTitles[i]
+      if (toolMenusDictionary.current[mKey]){
+          //Show index
+          let menuIndex = toolMenusDictionary.current[mKey].index
+          toolMenus.current[menuIndex] = buildMenu({key:mKey,type:menuName,title,visible:true,initOpen:isOpen})
 
-    toolMenus.push(buildMenu({key:mKey,type:panelName,title,visible:true,initOpen:isOpen}))
+      }else{
+          //Make a new visible menu
+          toolMenus.current.push(buildMenu({key:mKey,type:menuName,title,visible:true,initOpen:isOpen}))
+          toolMenusDictionary.current[mKey] = {index:toolMenus.current.length - 1,title}
+      }
     }
+  }
 
-  
+  //Hide menus
+  for (let menuName of lastToolMenus.current){
+    if (!currentMenus.includes(menuName)){
+      //Hide menu
+      const mKey = `${menuName}`;
+
+      let menuIndex = toolMenusDictionary.current[mKey].index
+      toolMenus.current[menuIndex] = buildMenu({key:mKey,type:menuName,title:"",visible:false,initOpen:false})
+
+    }
+  }
+
+    lastToolMenus.current = currentMenus;
+
+
   return (
     <MenuPanelsWrapper hide={hide}>
      <MenuPanelsCap fix={menuPanelsOpen}>
@@ -215,14 +255,14 @@ console.log(">>>===MenuPanel")
           />
         </span>
         <span >
-          <CloseButton onClick={()=>setMenuPanelsOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
+          <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
         </span>
         
           {/* {anchorImage} */}
       </MenuPanelsCap>
     {selectionPanel}
-    {toolMenus}
-
+    <div>{toolMenus.current}</div>
+   {/* {toolMenus.current} */}
     {/* {userPanels} */}
     {/* <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
       <EditMenuPanels onClick={()=>console.log('>>>edit menu panels')}>+</EditMenuPanels>

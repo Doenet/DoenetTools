@@ -21,6 +21,7 @@ const Container = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  width: auto;
 `;
 
 const Textfield = styled.input`
@@ -88,6 +89,13 @@ const MenuOptions = styled.button`
   }
 `;
 
+const Label = styled.p`
+  font-size: 12px;
+  display: ${props => props.labelVisible};
+  margin-right: 5px
+`
+
+
 export default function Increment(props) {
   var values;
   var sizes;
@@ -103,8 +111,8 @@ export default function Increment(props) {
   }
 
   function valueChange(data) {
-    if (props.onValueChange) {
-      props.onValueChange(data);
+    if (props.onChange) {
+      props.onChange(data);
     }
     setCurrentValue(data);
   }
@@ -238,9 +246,16 @@ export default function Increment(props) {
     document.getElementById("menu").style.display = "none";
   }
 
+  const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
+  var label = '';
+  if (props.label) {
+    label = props.label;
+  }
+
   return (
     <>
       <Container>
+      <Label labelVisible={labelVisible}>{label}</Label>
         <Textfield
           value={currentValue}
           onClick={() => {
