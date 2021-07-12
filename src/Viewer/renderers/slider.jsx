@@ -74,7 +74,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
   if (maxAbs === 0) {
     magnitudeOfMaxAbs = 1;
   }
-  let roundDecimals = 2 - magnitudeOfMaxAbs;
+  let roundDecimals = 5 - magnitudeOfMaxAbs;
 
   if (points.length === 0) {
 
@@ -166,7 +166,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let dTick = round_to_decimals(desiredDTick, roundDecimalsForTickSpacing)
       let numberOfTicks = Math.floor(tickSpan / dTick) + 1;
 
-      let roundDecimals = 2 - magnitudeOfMaxAbs;
+      let roundDecimals = 5 - magnitudeOfMaxAbs;
 
       tickValues = [...Array(numberOfTicks).keys()].map(i => SVs.from + dTick * i);
 
