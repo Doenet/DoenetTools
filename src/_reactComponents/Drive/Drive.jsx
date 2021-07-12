@@ -800,7 +800,6 @@ export const fetchDrivesSelector = selector({
     return get(fetchDrivesQuery);
   },
   set: ({ get, set }, labelTypeDriveIdColorImage) => {
-    let socket = get(socketsAtom);
     let driveData = get(fetchDrivesQuery);
     // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = { ...driveData };
@@ -886,9 +885,6 @@ export const fetchDrivesSelector = selector({
       set(fetchDrivesQuery, newDriveData);
 
       const payload = { params };
-      socket?.emit('add_drive', payload, (resp) => {
-        console.log('resp from add_drive:', resp);
-      });
       axios.get('/api/addDrive.php', payload);
       // .then((resp)=>console.log(">>>resp",resp.data))
     } else if (labelTypeDriveIdColorImage.type === 'new course drive') {
