@@ -7,7 +7,7 @@
 
 include 'db_connection.php';
 
-use Firebase\JWT\JWT;
+use \Firebase\JWT\JWT;
 // require_once "/var/www/html/vendor/autoload.php";
 require_once "vendor/autoload.php";
 $key = $ini_array['key'];
