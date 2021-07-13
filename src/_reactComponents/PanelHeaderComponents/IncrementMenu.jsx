@@ -92,7 +92,8 @@ const MenuOptions = styled.button`
 const Label = styled.p`
   font-size: 12px;
   display: ${props => props.labelVisible};
-  margin-right: 5px
+  margin-right: 5px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
 `
 
 
@@ -258,7 +259,7 @@ export default function Increment(props) {
   return (
     <>
       <Container align={align}>
-        <Label labelVisible={labelVisible}>{label}</Label>
+        <Label labelVisible={labelVisible} align={align}>{label}</Label>
         <Textfield
           value={currentValue}
           onClick={() => {

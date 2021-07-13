@@ -26,7 +26,8 @@ export default function ToggleButton(props) {
         value: 'Label:',
         fontSize: '12px',
         display: `${labelVisible}`,
-        marginRight: '5px'
+        marginRight: '5px',
+        marginBottom: `${align == 'flex' ? 'none' : '0px'}`
     }
     
     var container = {

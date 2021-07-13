@@ -26,7 +26,8 @@ Button.defaultProps = {
 const Label = styled.p`
   font-size: 12px;
   display: ${props => props.labelVisible};
-  margin-right: 5px
+  margin-right: 5px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
 `
 const Container = styled.div`
   display: ${props => props.align};
@@ -85,7 +86,7 @@ export default function ActionButton(props) {
     return (
         <>
             <Container style={container} align={align}>
-              <Label labelVisible={labelVisible}>{label}</Label>
+              <Label labelVisible={labelVisible} align={align}>{label}</Label>
               <Button id="actionButton" style={actionButton} onClick={(e) => { handleClick(e) }}>{icon}{' '}{actionButton.value}</Button>
             </Container>
             

@@ -29,7 +29,8 @@ ButtonStyling.defaultProps = {
 const Label = styled.p`
   font-size: 12px;
   display: ${props => props.labelVisible};
-  margin-right: 5px
+  margin-right: 5px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
 `
 const Container = styled.div`
   display: ${props => props.align};
@@ -97,7 +98,7 @@ export default function Button(props) {
     return (
         <>
             <Container style={container} align={align}>
-              <Label labelVisible={labelVisible}>{label}</Label>
+              <Label labelVisible={labelVisible} align={align}>{label}</Label>
               <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>
         </>

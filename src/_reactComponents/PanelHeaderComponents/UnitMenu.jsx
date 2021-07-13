@@ -27,9 +27,12 @@ const Label = styled.p`
 `;
 
 const Container = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
+`;
+
+const LabelContainer = styled.div`
+    display: ${props => props.align};
 `;
 
 const Units = styled.button`
@@ -92,6 +95,10 @@ export default function UnitMenu(props) {
     const [currentValue, setCurrentValue] = useState('');
     const [moveCursor, setMoveCursor] = useState(false);
     let initialClickLabelPosition = useRef(null);
+    var align = 'flex';
+    if (props.vertical) {
+      align = 'static';
+    }
 
     const updateValueDuringDrag = (e) => {
       // setCurrentValue(findNewValueDuringDrag(e, initialClickLabelPosition));
@@ -202,35 +209,37 @@ export default function UnitMenu(props) {
   
     return (
       <>
-        <Container>
-        <Label
-          visible={labelVisible}
-          onMouseDown={(e) => {
-            initialClickLabelPosition.current = [e.clientX, e.clientY]
-            start()
-          }}
-          className='noselect'
-        >
-          {labelvalue}
-        </Label>
-        <Textfield
-          id="text"
-          type="text"
-          value={currentValue}
-          onBlur={() => {
-            updateUnit();
-          }}
-          onKeyPress={() => {
-            enterKey(event, this);
-          }}
-          onChange={() => {changeValue(event)}}
-        ></Textfield>
-          <Units>
-            {currentUnit}
-            <Unit id="unit">{unitComponents}</Unit>
-          </Units>
-          
-        </Container>
+        <LabelContainer align={align}>
+          <Label
+            visible={labelVisible}
+            onMouseDown={(e) => {
+              initialClickLabelPosition.current = [e.clientX, e.clientY]
+              start()
+            }}
+            className='noselect'
+          >
+            {labelvalue}
+          </Label>
+          <Container>
+            <Textfield
+              id="text"
+              type="text"
+              value={currentValue}
+              onBlur={() => {
+                updateUnit();
+              }}
+              onKeyPress={() => {
+                enterKey(event, this);
+              }}
+              onChange={() => {changeValue(event)}}
+            ></Textfield>
+              <Units>
+                {currentUnit}
+                <Unit id="unit">{unitComponents}</Unit>
+              </Units>
+            
+          </Container>
+        </LabelContainer>
       </>
     );
   }

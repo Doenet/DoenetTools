@@ -351,6 +351,11 @@ export default function attempt() {
         propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: '},
         description: 'Adds label in front of the component. Dragging on the label will increment the value.'
         },
+        {name: 'Vertical Label',
+        propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} label="Label: " vertical>',
+        propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: ', vertical},
+        description: 'Adds label on top of the component. Dragging on the label will increment the value.'
+        },
         {name: 'onChange',
         propPreview: '<UnitMenu onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data), units: ['EM', 'PT', 'PX']},
