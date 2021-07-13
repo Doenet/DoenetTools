@@ -10,8 +10,8 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-// $driveId = $_REQUEST["driveId"];
-$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+$driveId = $_REQUEST["driveId"];
+// $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $label = mysqli_real_escape_string($conn,$_REQUEST["label"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
 
@@ -29,25 +29,25 @@ if ($type == "update drive label"){
 $result = $conn->query($sql); 
 }
 if ($type == "delete drive"){
-  $sql = "
-  UPDATE drive
-  SET isDeleted='1'
-  WHERE driveId = '$driveId'
-  ";
-$result = $conn->query($sql); 
-}
-//   for($k = 0; $k < count($driveId); $k++){
-
-//     $driveData = $driveId[$k];
-//     $sql = "
-//     UPDATE drive
-//     SET isDeleted='1'
-//     WHERE driveId = '$driveData'
-//     ";
-//     $result = $conn->query($sql);
-//   }
- 
+//   $sql = "
+//   UPDATE drive
+//   SET isDeleted='1'
+//   WHERE driveId = '$driveId'
+//   ";
+// $result = $conn->query($sql); 
 // }
+  for($k = 0; $k < count($driveId); $k++){
+
+    $driveData = $driveId[$k];
+    $sql = "
+    UPDATE drive
+    SET isDeleted='1'
+    WHERE driveId = '$driveData'
+    ";
+    $result = $conn->query($sql);
+  }
+ 
+}
 
 $response_arr = array(
   "success"=>$success
