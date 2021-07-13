@@ -235,6 +235,7 @@ export default function ToolRoot(props){
 
   const LazyControlObj = useRef({
     CloseProfileButton:lazy(() => import('./HeaderControls/CloseProfileButton')),
+    ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
   }).current;
 
   const LazyToolHandlerObj = useRef({

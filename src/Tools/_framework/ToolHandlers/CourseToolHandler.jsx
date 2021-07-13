@@ -281,6 +281,8 @@ export default function CourseToolHandler(props){
           supportPanelOptions:["DoenetMLEditor"],
           supportPanelTitles:["DoenetML Editor"],
           supportPanelIndex:0,
+          headerControls: ["ViewerUpdateButton"],
+          headerControlsPositions: ["Left"],
           toolHandler:"CourseToolHandler"
         })
         set(selectedMenuPanelAtom,""); //clear selection

@@ -8,9 +8,9 @@ import {
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
 
-const viewerDoenetMLAtom = atom({
+export const viewerDoenetMLAtom = atom({
   key:"viewerDoenetMLAtom",
-  default:"<p>test</p>"
+  default:""
 })
 
 export const textEditorDoenetMLAtom = atom({
@@ -28,7 +28,8 @@ export default function EditorViewer(props){
   console.log(">>>===EditorViewer")
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
+  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
+  const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     console.log(">>>initDoenetML doenetId",doenetId)
@@ -47,18 +48,24 @@ export default function EditorViewer(props){
   },[])
 
   useEffect(() => {
-    console.log(">>>doenetId updated!",doenetId)
-    initDoenetML(doenetId)
+    console.log(">>>paramDoenetId updated!",paramDoenetId)
+    initDoenetML(paramDoenetId)
     return () => {
       // setEditorInit(false);
     }
-}, [doenetId]);
+}, [paramDoenetId]);
 
 
   // return <div style={props.style}>
   // </div>
 
 
+ 
+  if (paramDoenetId !== initilizedDoenetId){
+    console.log(">>>CHANGING DoenetId!")
+    //DoenetML is changing to another DoenetID
+    return <div style={props.style}></div>
+  }
 
 
   // const editorInit = useRecoilValue(editorDoenetIdInitAtom);
