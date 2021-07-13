@@ -218,6 +218,10 @@ export default function attempt() {
           propPreview: '<Increment label="What: " vertical/>',
           propCode: {label: 'What: ', vertical},
           description: 'Adds label to component on top'},
+          {name: 'Alert',
+        propPreview: '<Increment alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (main coloring is red)'},
         {name: 'onChange',
         propPreview: '<Increment onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data)},
@@ -355,6 +359,11 @@ export default function attempt() {
         propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} label="Label: " vertical>',
         propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: ', vertical},
         description: 'Adds label on top of the component. Dragging on the label will increment the value.'
+        },
+        {name: 'Alert',
+        propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} alert>',
+        propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], alert},
+        description: 'Changes color to red'
         },
         {name: 'onChange',
         propPreview: '<UnitMenu onChange={(data) => console.log(data)} />',

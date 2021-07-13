@@ -5,13 +5,13 @@ export default function ToggleButton(props) {
     const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
     const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
     const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
-
+    const color = props.alert ? '#C1292E' : `${doenetMainBlue}`;
     //Assume small
     var toggleButton = {
         margin: '0px',
         height: '24px',
-        border: `2px solid ${doenetMainBlue}`,
-        color: `${doenetMainBlue}`,
+        border: `2px solid ${color}`,
+        color: `${color}`,
         backgroundColor: '#FFF',
         borderRadius: '5px',
         value: 'Toggle Button',
@@ -49,7 +49,7 @@ export default function ToggleButton(props) {
         }
     }
     if (isSelected === true) {
-        toggleButton.backgroundColor = `${doenetMainBlue}`;
+        toggleButton.backgroundColor = `${color}`;
         toggleButton.color = '#FFF';
         toggleButton.border = '2px solid #FFF';
         if (props.switch_value) toggleButton.value = props.switch_value

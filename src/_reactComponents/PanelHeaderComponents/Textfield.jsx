@@ -27,6 +27,10 @@ export default function Textfield(props) {
         width: 'auto',
         alignItems: 'flex-end'
     }
+
+    if (props.alert) {
+      textfield.border = '2px solid #C1292E'
+    }
     if (props.label) {
       label.value = props.label;
   }
