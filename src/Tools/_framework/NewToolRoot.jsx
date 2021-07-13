@@ -196,7 +196,7 @@ export default function ToolRoot(props){
   const [menusOpen,setMenusOpen] = useState(true)
 
   const setPage = useRecoilCallback(({set})=> (tool,origPath)=>{
-    console.log(">>> Root setPAge",tool,origPath)
+    // console.log(">>> Root setPAge",tool,origPath)
     if (tool === ""){ 
       // location.href = `#home/`
       window.history.replaceState('','','/new#/home')
@@ -229,6 +229,8 @@ export default function ToolRoot(props){
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
     SignOut:lazy(() => import('./ToolPanels/SignOut')),
     DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
+    EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
+    DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -281,8 +283,10 @@ export default function ToolRoot(props){
   if (toolViewInfo.pageName.toLowerCase() !== lcpath){
   //Need to update path
     setPage(lcpath,props.route.location.pathname)
-    // return null; 
+    return null; 
   }
+
+ 
 
   let toolHandler = null;
   if (toolViewInfo.toolHandler){
@@ -300,9 +304,11 @@ export default function ToolRoot(props){
    if (!toolViewInfo.currentMainPanel){
     MainPanelKey = 'Empty';
    }
+
    if (!mainPanelDictionary.current[MainPanelKey]){
      let type = toolViewInfo.currentMainPanel;
      if ( MainPanelKey === 'Empty'){type = 'Empty'}
+     console.log(">>>NEW MAIN PANEL!!!",type)
     //Doesn't exist so make new Main Panel
     mainPanelArray.current.push(buildPanel({key:MainPanelKey,type,visible:true}))
     mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type, visible:true}
