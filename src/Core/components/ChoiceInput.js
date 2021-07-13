@@ -39,7 +39,7 @@ export default class Choiceinput extends Input {
   // used when referencing this component without prop
   static get stateVariablesShadowedForReference() {
     return [
-      "choiceOrder", "allSelectedIndices", "indexMatchedByBoundValue"
+      "choiceOrder", "allSelectedIndices", "indicesMatchedByBoundValue"
     ]
   };
 
@@ -354,7 +354,7 @@ export default class Choiceinput extends Input {
       definition: () => ({ newValues: { componentType: "text" } })
     }
 
-    stateVariableDefinitions.indexMatchedByBoundValue = {
+    stateVariableDefinitions.indicesMatchedByBoundValue = {
       returnDependencies: () => ({
         choiceOrder: {
           dependencyType: "stateVariable",
@@ -370,6 +370,10 @@ export default class Choiceinput extends Input {
           attributeName: "bindValueTo",
           variableNames: ["value"],
         },
+        selectMultiple: {
+          dependencyType: "stateVariable",
+          variableName: "selectMultiple"
+        },
       }),
       definition({ dependencyValues }) {
         let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
@@ -377,14 +381,29 @@ export default class Choiceinput extends Input {
         if (dependencyValues.bindValueTo !== null) {
           let choiceTexts = choiceChildrenOrdered.map(x => x.stateValues.text.toLowerCase().trim())
           if (dependencyValues.bindValueTo.stateValues.value) {
-            let ind = choiceTexts.indexOf(dependencyValues.bindValueTo.stateValues.value.toLowerCase().trim());
-            if (ind !== -1) {
-              return { newValues: { indexMatchedByBoundValue: ind + 1 } }
+            if (dependencyValues.selectMultiple) {
+              let valuesToBind = dependencyValues.bindValueTo.stateValues.value.toLowerCase()
+                .split(",").map(x => x.trim());
+              let indicesMatchedByBoundValue = [];
+              for (let val of valuesToBind) {
+                let ind = choiceTexts.indexOf(val);
+                if (ind !== -1 && !indicesMatchedByBoundValue.includes(ind + 1)) {
+                  indicesMatchedByBoundValue.push(ind + 1);
+                }
+              }
+              indicesMatchedByBoundValue.sort((a, b) => a - b);
+              return { newValues: { indicesMatchedByBoundValue } }
+            } else {
+              let ind = choiceTexts.indexOf(dependencyValues.bindValueTo.stateValues.value.toLowerCase().trim());
+              if (ind !== -1) {
+                return { newValues: { indicesMatchedByBoundValue: [ind + 1] } }
+              }
             }
+
           }
         }
 
-        return { newValues: { indexMatchedByBoundValue: null } }
+        return { newValues: { indicesMatchedByBoundValue: [] } }
       }
     }
 
@@ -401,9 +420,9 @@ export default class Choiceinput extends Input {
             childLogicName: "atLeastZeroChoices",
             variableNames: ["text"]
           },
-          indexMatchedByBoundValue: {
+          indicesMatchedByBoundValue: {
             dependencyType: "stateVariable",
-            variableName: "indexMatchedByBoundValue"
+            variableName: "indicesMatchedByBoundValue"
           },
           preselectChoice: {
             dependencyType: "stateVariable",
@@ -423,14 +442,7 @@ export default class Choiceinput extends Input {
       },
       definition({ dependencyValues }) {
         if (dependencyValues.bindValueTo !== null) {
-          let allSelectedIndices;
-          if (dependencyValues.indexMatchedByBoundValue !== null) {
-            allSelectedIndices = [dependencyValues.indexMatchedByBoundValue];
-          } else {
-            allSelectedIndices = [];
-          }
-          return { newValues: { allSelectedIndices } }
-
+          return { newValues: { allSelectedIndices: dependencyValues.indicesMatchedByBoundValue } }
         } else {
           return {
             useEssentialOrDefaultValue: {
@@ -466,12 +478,15 @@ export default class Choiceinput extends Input {
         } else {
           let desiredText = "";
           if (desiredStateVariableValues.allSelectedIndices.length > 0) {
-            let ind = desiredStateVariableValues.allSelectedIndices[0] - 1;
             let choiceChildrenOrdered = dependencyValues.choiceOrder.map(i => dependencyValues.choiceChildren[i - 1]);
-            let selectedChild = choiceChildrenOrdered[ind];
-            if (selectedChild) {
-              desiredText = selectedChild.stateValues.text;
+            let selectedTexts = [];
+            for (let ind of desiredStateVariableValues.allSelectedIndices) {
+              let selectedChild = choiceChildrenOrdered[ind - 1];
+              if (selectedChild) {
+                selectedTexts.push(selectedChild.stateValues.text)
+              }
             }
+            desiredText = selectedTexts.join(", ");
           }
 
           return {
