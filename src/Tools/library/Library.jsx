@@ -137,7 +137,7 @@ function User(props) {
             <Button
               data-doenet-removeButton={props.userId}
               value="Remove"
-              callback={(e) => {
+              onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onClick('');
@@ -159,7 +159,7 @@ function User(props) {
           <Button
             data-doenet-removebutton={props.userId}
             value="Promote to Owner"
-            callback={(e) => {
+            onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               onClick('');
@@ -182,7 +182,7 @@ function User(props) {
             <Button
               data-doenet-removebutton={props.userId}
               value="Demote to Admin"
-              callback={(e) => {
+              onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onClick('');
@@ -291,8 +291,8 @@ function NewUser(props) {
           />
         </label>
       </div>
-      <Button value="Submit" callback={() => addUser()} />
-      <Button value="Cancel" callback={() => props.open(false)} />
+      <Button value="Submit" onClick={() => addUser()} />
+      <Button value="Cancel" onClick={() => props.open(false)} />
     </>
   );
 }
@@ -333,7 +333,7 @@ const DriveInfoPanel = function (props) {
     addOwnersButton = (
       <Button
         value="+ Add Owner"
-        callback={() => {
+        onClick={() => {
           setAddOwners(true);
         }}
       />
@@ -355,7 +355,7 @@ const DriveInfoPanel = function (props) {
   let addAdminsButton = (
     <Button
       value="+ Add Administrator"
-      callback={() => {
+      onClick={() => {
         setAddAdmins(true);
       }}
     />
@@ -422,7 +422,7 @@ const DriveInfoPanel = function (props) {
       <>
         <Button
           value="Delete Course"
-          callback={() => {
+          onClick={() => {
             // alert("Delete Drive")
             setDrivesInfo({
               color: props.color,
@@ -566,7 +566,7 @@ const FolderInfoPanel = function (props) {
       <Button
         data-cy="deleteFolderButton"
         value="Delete Folder"
-        callback={() => {
+        onClick={() => {
           deleteItem({
             driveIdFolderId: {
               driveId: itemInfo.driveId,
@@ -644,7 +644,7 @@ const DoenetMLInfoPanel = function (props) {
       <br />
       <Button
         value="Edit DoenetML"
-        callback={() => {
+        onClick={() => {
           openOverlay({
             type: 'editor',
             doenetId: itemInfo.doenetId,
@@ -660,7 +660,7 @@ const DoenetMLInfoPanel = function (props) {
       <Button
         data-cy="deleteDoenetMLButton"
         value="Delete DoenetML"
-        callback={() => {
+        onClick={() => {
           deleteItem({
             driveIdFolderId: {
               driveId: itemInfo.driveId,

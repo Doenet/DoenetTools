@@ -117,7 +117,7 @@ function User(props) {
         }, /* @__PURE__ */ React.createElement(Button, {
           "data-doenet-removeButton": props.userId,
           value: "Remove",
-          callback: (e) => {
+          onClick: (e) => {
             e.preventDefault();
             e.stopPropagation();
             onClick("");
@@ -137,7 +137,7 @@ function User(props) {
       }, /* @__PURE__ */ React.createElement(Button, {
         "data-doenet-removebutton": props.userId,
         value: "Promote to Owner",
-        callback: (e) => {
+        onClick: (e) => {
           e.preventDefault();
           e.stopPropagation();
           onClick("");
@@ -157,7 +157,7 @@ function User(props) {
         }, /* @__PURE__ */ React.createElement(Button, {
           "data-doenet-removebutton": props.userId,
           value: "Demote to Admin",
-          callback: (e) => {
+          onClick: (e) => {
             e.preventDefault();
             e.stopPropagation();
             onClick("");
@@ -235,10 +235,10 @@ function NewUser(props) {
     }
   }))), /* @__PURE__ */ React.createElement(Button, {
     value: "Submit",
-    callback: () => addUser()
+    onClick: () => addUser()
   }), /* @__PURE__ */ React.createElement(Button, {
     value: "Cancel",
-    callback: () => props.open(false)
+    onClick: () => props.open(false)
   }));
 }
 const DriveInfoPanel = function(props) {
@@ -271,7 +271,7 @@ const DriveInfoPanel = function(props) {
   if (isOwner) {
     addOwnersButton = /* @__PURE__ */ React.createElement(Button, {
       value: "+ Add Owner",
-      callback: () => {
+      onClick: () => {
         setAddOwners(true);
       }
     });
@@ -288,7 +288,7 @@ const DriveInfoPanel = function(props) {
   let addAdmins = null;
   let addAdminsButton = /* @__PURE__ */ React.createElement(Button, {
     value: "+ Add Administrator",
-    callback: () => {
+    onClick: () => {
       setAddAdmins(true);
     }
   });
@@ -344,7 +344,7 @@ const DriveInfoPanel = function(props) {
   if (isOwner) {
     deleteCourseButton = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
       value: "Delete Course",
-      callback: () => {
+      onClick: () => {
         setDrivesInfo({
           color: props.color,
           label: driveLabel,
@@ -442,7 +442,7 @@ const FolderInfoPanel = function(props) {
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     "data-cy": "deleteFolderButton",
     value: "Delete Folder",
-    callback: () => {
+    onClick: () => {
       deleteItem({
         driveIdFolderId: {
           driveId: itemInfo.driveId,
@@ -499,7 +499,7 @@ const DoenetMLInfoPanel = function(props) {
     }
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     value: "Edit DoenetML",
-    callback: () => {
+    onClick: () => {
       openOverlay({
         type: "editor",
         doenetId: itemInfo.doenetId,
@@ -512,7 +512,7 @@ const DoenetMLInfoPanel = function(props) {
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     "data-cy": "deleteDoenetMLButton",
     value: "Delete DoenetML",
-    callback: () => {
+    onClick: () => {
       deleteItem({
         driveIdFolderId: {
           driveId: itemInfo.driveId,
