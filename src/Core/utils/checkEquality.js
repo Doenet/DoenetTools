@@ -51,10 +51,13 @@ export default function checkEquality({
 
   if (object1 instanceof me.class) {
     haveMathExpressions = true;
-    if (!(object2 instanceof me.class)) {
+    object1 = object1.tuples_to_vectors();
+    if(object2 instanceof me.class) {
+      object2 = object2.tuples_to_vectors();
+    } else {
       // see if convert object2 to a math expression
       if (typeof object2 === "number" || typeof object2 === "string") {
-        object2 = me.fromAst(object2);
+        object2 = me.fromAst(object2).tuples_to_vectors();
       } else {
         // return not equal if only one is math-expression
         return { fraction_equal: 0 };
@@ -62,9 +65,10 @@ export default function checkEquality({
     }
   } else if (object2 instanceof me.class) {
     haveMathExpressions = true;
+    object2 = object2.tuples_to_vectors();
     // see if convert object1 to a math expression
     if (typeof object1 === "number" || typeof object1 === "string") {
-      object1 = me.fromAst(object1);
+      object1 = me.fromAst(object1).tuples_to_vectors();
     } else {
       // return not equal if only one is math-expression
       return { fraction_equal: 0 };
