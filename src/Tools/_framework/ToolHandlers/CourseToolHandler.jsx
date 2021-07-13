@@ -137,7 +137,7 @@ export const fetchDrivesSelector = selector({
         for(let x=0; x<labelTypeDriveIdColorImage.newDriveId.length ;x++){
           if (driveIdsAndLabelsLength[i].driveId === labelTypeDriveIdColorImage.newDriveId[x] ){
             newDriveData.driveIdsAndLabels.splice(i,1);
-            i = i - 1;
+            i = (i==0) ? i : i-1;
           }
         }
       }
