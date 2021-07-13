@@ -51,10 +51,11 @@ export default class Choiceinput extends Input {
       createStateVariable: "selectMultiple",
       defaultValue: false,
       public: true,
+      forRenderer: true,
     };
-    attributes.assignPartialCredit = {
+    attributes.matchPartial = {
       createComponentOfType: "boolean",
-      createStateVariable: "assignPartialCredit",
+      createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
     };
@@ -576,7 +577,7 @@ export default class Choiceinput extends Input {
       arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
         let selectedValues = {};
 
-        for (let arrayKey in arrayKeys) {
+        for (let arrayKey of arrayKeys) {
           selectedValues[arrayKey] = globalDependencyValues.choiceTexts[
             globalDependencyValues.selectedIndices[arrayKey] - 1
           ]
@@ -633,9 +634,9 @@ export default class Choiceinput extends Input {
           dependencyType: "stateVariable",
           variableName: "selectMultiple"
         },
-        assignPartialCredit: {
+        matchPartial: {
           dependencyType: "stateVariable",
-          variableName: "assignPartialCredit"
+          variableName: "matchPartial"
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -657,7 +658,7 @@ export default class Choiceinput extends Input {
               }
             }
           }
-          if (dependencyValues.assignPartialCredit) {
+          if (dependencyValues.matchPartial) {
             let denominator = nCorrectlySelected + nIncorrectlySelected + nIncorrectlyUnselected;
             if (denominator === 0) {
               creditAchievedIfSubmit = 1;
