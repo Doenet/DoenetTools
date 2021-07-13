@@ -1,6 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { convertAttributesForComponentType } from '../utils/copy';
 
 export default class Template extends CompositeComponent {
   static componentType = "template";
@@ -29,6 +30,9 @@ export default class Template extends CompositeComponent {
       defaultValue: this.renderedDefault,
       public: true,
     };
+    attributes.isResponse = {
+      leaveRaw: true,
+    }
     return attributes;
   }
 
@@ -92,6 +96,27 @@ export default class Template extends CompositeComponent {
     } else {
 
       let replacements = deepClone(component.state.serializedChildren.value);
+
+      for (let repl of replacements) {
+        // pass isResponse to replacements
+        let attributesFromComposite = {};
+
+        if ("isResponse" in component.attributes) {
+          attributesFromComposite = convertAttributesForComponentType({
+            attributes: { isResponse: component.attributes.isResponse },
+            componentType: repl.componentType,
+            componentInfoObjects,
+            compositeCreatesNewNamespace: component.attributes.newNamespace
+          })
+        }
+
+        if(!repl.attributes) {
+          repl.attributes = {};
+        }
+
+        Object.assign(repl.attributes, attributesFromComposite)
+
+      }
 
       let processResult = processAssignNames({
         assignNames: component.doenetAttributes.assignNames,

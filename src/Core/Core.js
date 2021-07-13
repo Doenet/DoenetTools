@@ -8,7 +8,7 @@ import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
 import { deepCompare, deepClone } from './utils/deepFunctions';
 import createStateProxyHandler from './StateProxyHandler';
-import { postProcessCopy } from './utils/copy';
+import { convertAttributesForComponentType, postProcessCopy } from './utils/copy';
 import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
@@ -1763,6 +1763,23 @@ export default class Core {
       componentName: nameOfCompositeMediatingTheShadow,
       uniqueIdentifiersUsed
     });
+
+    let compositeAttributesObj = component.constructor.createAttributesObject({ flags: this.flags });
+
+    for (let repl of serializedReplacements) {
+      // add attributes
+      if (!repl.attributes) {
+        repl.attributes = {};
+      }
+      let attributesFromComposite = convertAttributesForComponentType({
+        attributes: component.attributes,
+        componentType: repl.componentType,
+        componentInfoObjects: this.componentInfoObjects, 
+        compositeAttributesObj,
+        compositeCreatesNewNamespace: component.attributes.newNamespace
+      });
+      Object.assign(repl.attributes, attributesFromComposite)
+    }
 
 
     // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
@@ -7043,7 +7060,23 @@ export default class Core {
           componentName: shadowingComponent.shadows.compositeName
         });
 
+        let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject({ flags: this.flags });
 
+        for (let repl of newSerializedReplacements) {
+          // add attributes
+          if (!repl.attributes) {
+            repl.attributes = {};
+          }
+          let attributesFromComposite = convertAttributesForComponentType({
+            attributes: shadowingComponent.attributes,
+            componentType: repl.componentType,
+            componentInfoObjects: this.componentInfoObjects, 
+            compositeAttributesObj,
+            compositeCreatesNewNamespace: shadowingComponent.attributes.newNamespace
+          });
+          Object.assign(repl.attributes, attributesFromComposite)
+        }
+    
         if (shadowingComponent.constructor.assignNamesToReplacements) {
 
           let originalNamesAreConsistent = shadowingComponent.constructor.originalNamesAreConsistent
