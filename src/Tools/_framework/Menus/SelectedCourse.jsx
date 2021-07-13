@@ -19,8 +19,7 @@ export default function SelectedCourse(props){
 
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
-
-  if(selection.length === 1 && selection[0].role[0] === "Owner" ){
+  if(selection.length === 1 && selection[0]?.role[0] === "Owner" ){
 
     return <>
 
@@ -32,7 +31,7 @@ export default function SelectedCourse(props){
           driveId={selection[0].driveId} 
           />
       </>
-  }else if(selection[0].role[0] === "Student"){
+  }else if(selection[0]?.role[0] === "Student"){
     let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
 
     return (
