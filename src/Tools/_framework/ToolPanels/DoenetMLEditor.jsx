@@ -12,6 +12,8 @@ import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHand
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import axios from "axios";
+import { nanoid } from 'nanoid';
+
 
 const getSHAofContent = (doenetML)=>{
   if (doenetML === undefined){
@@ -45,7 +47,6 @@ export default function DoenetMLEditor(props){
   let autosavetimeout = useRef(null);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    console.log(">>>saveDraft doenetId",doenetId)
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newDraft = {...oldVersions.draft};
@@ -74,6 +75,37 @@ export default function DoenetMLEditor(props){
       // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})  
   });
 
+  const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+    const contentId = getSHAofContent(doenetML);
+    const timestamp = buildTimestamp();
+    const versionId = nanoid();
+
+    let newVersion = {
+      contentId,
+      versionId,
+      timestamp,
+      isDraft:'0',
+      isNamed:'0',
+      isReleased:'0',
+      title:'Autosave'
+    }
+    let newDBVersion = {...newVersion,
+      doenetML,
+      doenetId
+    }
+
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    let newVersions = {...oldVersions}
+    newVersions.autoSaves = [newVersion,...oldVersions.autoSaves]
+      set(itemHistoryAtom(doenetId),newVersions)
+      set(fileByContentId(contentId),doenetML);
+  
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+        .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
+  
+  });
+
   if (props.style.display === 'none'){
     //TODO: handle unmount
     return <div style={props.style}></div>
@@ -98,12 +130,12 @@ export default function DoenetMLEditor(props){
               timeout.current = null;
             },3000)
           }
-        //   if (autosavetimeout.current === null){
-        //     autosavetimeout.current = setTimeout(function(){
-        //       autoSave();
-        //       autosavetimeout.current = null;
-        //   },60000) //1 minute
-        //   }
+          if (autosavetimeout.current === null){
+            autosavetimeout.current = setTimeout(function(){
+              autoSave(initilizedDoenetId);
+              autosavetimeout.current = null;
+          },60000) //1 minute
+          }
         // }
       }}
     />
