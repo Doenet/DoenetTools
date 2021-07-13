@@ -26,10 +26,11 @@ Button.defaultProps = {
 const Label = styled.p`
   font-size: 12px;
   display: ${props => props.labelVisible};
-  margin-right: 5px
+  margin-right: 5px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
 `
 const Container = styled.div`
-  display: flex;
+  display: ${props => props.align};
   width: auto;
   align-items: center;
 `
@@ -37,6 +38,7 @@ const Container = styled.div`
 export default function ActionButton(props) {
   //Assume small
   var container = {};
+  var align = 'flex';
   var actionButton = {
         value: 'Action Button',
       };
@@ -53,6 +55,10 @@ export default function ActionButton(props) {
   var label = '';
   if (props.label) {
     label = props.label;
+    if (props.vertical){
+      align = 'static';
+      console.log('vertical')
+    }
   }
   var icon = '';
   if (props.value || props.icon){
@@ -83,8 +89,8 @@ export default function ActionButton(props) {
   }
     return (
         <>
-            <Container style={container}>
-              <Label labelVisible={labelVisible}>{label}</Label>
+            <Container style={container} align={align}>
+              <Label labelVisible={labelVisible} align={align}>{label}</Label>
               <Button id="actionButton" style={actionButton} onClick={(e) => { handleClick(e) }}>{icon}{' '}{actionButton.value}</Button>
             </Container>
             
