@@ -1917,6 +1917,10 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
   return function (variables) {
 
+    let x1 = variables.x1.evaluate_to_constant();
+    let x2 = variables.x2.evaluate_to_constant();
+
+
     // first find nearest point when treating a function
     // (or an inverse function)
     // which finds a the nearest point vertically
@@ -1925,19 +1929,67 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     let x1AsFunction, x2AsFunction;
     if (flipFunction) {
-      x2AsFunction = variables.x2.evaluate_to_constant();
+      x2AsFunction = x2;
       x1AsFunction = f(x2AsFunction);
     } else {
-      x1AsFunction = variables.x1.evaluate_to_constant();
+      x1AsFunction = x1;
       x2AsFunction = f(x1AsFunction);
     }
 
 
-    // next, find the nearest point over all
+    // compute values at the actual endpoints, if they exist
 
-    let x1 = variables.x1.evaluate_to_constant();
-    let x2 = variables.x2.evaluate_to_constant();
+    let x1AtLeftEndpoint, x2AtLeftEndpoint;
+    if (parMin !== -Infinity) {
 
+      if (flipFunction) {
+        x1AtLeftEndpoint = f(parMin);
+        x2AtLeftEndpoint = parMin;
+      } else {
+        x1AtLeftEndpoint = parMin;
+        x2AtLeftEndpoint = f(parMin);
+      }
+
+    }
+
+    let x1AtRightEndpoint, x2AtRightEndpoint;
+    if (parMax !== Infinity) {
+
+      if (flipFunction) {
+        x1AtRightEndpoint = f(parMax);
+        x2AtRightEndpoint = parMax;
+      } else {
+        x1AtRightEndpoint = parMax;
+        x2AtRightEndpoint = f(parMax);
+      }
+    }
+
+
+    // if function isn't defined at current variable value, replace with
+    // value at nearest endpoint
+
+    if (!(Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction))) {
+      let distLeft, distRight;
+      if (flipFunction) {
+        distLeft = Math.abs(parMin - x2);
+        distRight = Math.abs(parMax - x2);
+      } else {
+        distLeft = Math.abs(parMin - x1);
+        distRight = Math.abs(parMax - x1);
+      }
+
+      if(distLeft < distRight || !Number.isFinite(distRight)) {
+        x1AsFunction = x1AtLeftEndpoint;
+        x2AsFunction = x2AtLeftEndpoint;
+      } else {
+        x1AsFunction = x1AtRightEndpoint;
+        x2AsFunction = x2AtRightEndpoint;
+      }
+      
+    }
+
+
+    // if the point (x1,x2) isn't finite, we can't do anything more
     if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
       if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
         result = {
@@ -1953,6 +2005,8 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       }
 
     }
+
+    // next, find the overall nearest point from the curve to (x1,x2)
 
     let minfunc = function (t) {
       let x = -10 * Math.log(1 / t - 1);
@@ -2024,45 +2078,28 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     let currentD2 = Math.pow(x1AtMin - x1, 2) + Math.pow(x2AtMin - x2, 2);
 
-    // check the actual endpoints
+    // replace with endpoints if closer
+
     if (parMin !== -Infinity) {
-      let x1AtParMin, x2AtParMin;
-
-      if (flipFunction) {
-        x1AtParMin = f(parMin);
-        x2AtParMin = parMin;
-      } else {
-        x1AtParMin = parMin;
-        x2AtParMin = f(parMin);
+      let leftEndpointD2 = Math.pow(x1AtLeftEndpoint - x1, 2) + Math.pow(x2AtLeftEndpoint - x2, 2);
+      if (leftEndpointD2 < currentD2) {
+        x1AtMin = x1AtLeftEndpoint;
+        x2AtMin = x2AtLeftEndpoint;
+        currentD2 = leftEndpointD2;
       }
-
-      let parMinD2 = Math.pow(x1AtParMin - x1, 2) + Math.pow(x2AtParMin - x2, 2);
-      if (parMinD2 < currentD2) {
-        x1AtMin = x1AtParMin;
-        x2AtMin = x2AtParMin;
-        currentD2 = parMinD2;
-      }
-
     }
+
     if (parMax !== Infinity) {
-      let x1AtParMax, x2AtParMax;
 
-      if (flipFunction) {
-        x1AtParMax = f(parMax);
-        x2AtParMax = parMax;
-      } else {
-        x1AtParMax = parMax;
-        x2AtParMax = f(parMax);
+      let rightEndpointD2 = Math.pow(x1AtRightEndpoint - x1, 2) + Math.pow(x2AtRightEndpoint - x2, 2);
+      if (rightEndpointD2 < currentD2) {
+        x1AtMin = x1AtRightEndpoint;
+        x2AtMin = x2AtRightEndpoint;
+        currentD2 = rightEndpointD2;
       }
 
-      let parMaxD2 = Math.pow(x1AtParMax - x1, 2) + Math.pow(x2AtParMax - x2, 2);
-      if (parMaxD2 < currentD2) {
-        x1AtMin = x1AtParMax;
-        x2AtMin = x2AtParMax;
-        currentD2 = parMaxD2;
-
-      }
     }
+
 
     // choose the nearest point treating as a function
     // if that point exists and isn't 10 times further
