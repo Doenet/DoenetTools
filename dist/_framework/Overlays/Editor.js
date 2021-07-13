@@ -4,29 +4,23 @@ import axios from "../../_snowpack/pkg/axios.js";
 import sha256 from "../../_snowpack/pkg/crypto-js/sha256.js";
 import CryptoJS from "../../_snowpack/pkg/crypto-js.js";
 import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor.js";
-import Button from "../temp/Button.js";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import {
   useRecoilValue,
   atom,
-  atomFamily,
-  selectorFamily,
   useSetRecoilState,
   useRecoilState,
   useRecoilValueLoadable,
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
 import DoenetViewer from "../../viewer/DoenetViewer.js";
-import {Controlled as CodeMirror} from "../../_snowpack/pkg/react-codemirror2.js";
-import "../../_snowpack/pkg/codemirror/lib/codemirror.css.proxy.js";
-import "../../_snowpack/pkg/codemirror/mode/xml/xml.js";
-import "../../_snowpack/pkg/codemirror/theme/xq-light.css.proxy.js";
+import CodeMirror from "../CodeMirror.js";
 import "./Editor.css.proxy.js";
 import {
   itemHistoryAtom,
   fileByContentId
 } from "../../_sharedRecoil/content.js";
-import CollapseSection from "../../_reactComponents/PanelHeaderComponents/CollapseSection.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
   faExternalLinkAlt
@@ -79,7 +73,7 @@ function ReturnToEditingButton(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement(Button, {
-    callback: () => returnToEditing(props.doenetId),
+    onClick: () => returnToEditing(props.doenetId),
     value: "Return to current version"
   });
 }
@@ -392,13 +386,6 @@ function TextEditor(props) {
   }, []);
   if (activeVersionId !== "") {
     clearSaveTimeouts();
-    if (editorRef.current) {
-      editorRef.current.options.readOnly = true;
-    }
-  } else {
-    if (editorRef.current) {
-      editorRef.current.options.readOnly = false;
-    }
   }
   const editorInit = useRecoilValue(editorInitAtom);
   if (!editorInit) {
@@ -437,25 +424,15 @@ function TextEditor(props) {
           setTimeout(cm.setCursor(line, Math.max(content.length - 1, 0)), 1);
           return;
         }
-        selections = selections.map((s) => s.substring(0, 4) !== "<!--" ? "<!-- " + s + " -->" : s.substring(5, s.length - 3));
+        selections = selections.map((s) => s.trim().substring(0, 4) !== "<!--" ? "<!-- " + s + " -->" : s.trim().substring(5, s.length - 3));
         cm.replaceSelections(selections, "around");
       }
     }
   };
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(VisibilitySensor, {
-    onChange: (visible) => {
-      if (visible) {
-        editorRef.current.refresh();
-      }
-    }
-  }, /* @__PURE__ */ React.createElement(CodeMirror, {
-    className: "CodeMirror",
-    editorDidMount: (editor) => {
-      editorRef.current = editor;
-    },
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CodeMirror, {
+    editorRef,
     value: textValue,
-    options,
-    onBeforeChange: (editor, data, value) => {
+    onBeforeChange: (value) => {
       if (activeVersionId === "") {
         setEditorDoenetML(value);
         if (timeout.current === null) {
@@ -472,7 +449,7 @@ function TextEditor(props) {
         }
       }
     }
-  })));
+  }));
 }
 function DoenetViewerUpdateButton() {
   const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
@@ -483,7 +460,7 @@ function DoenetViewerUpdateButton() {
   }
   return /* @__PURE__ */ React.createElement(Button, {
     value: "Update",
-    callback: () => {
+    onClick: () => {
       setViewerDoenetML((old) => {
         let newInfo = {...old};
         newInfo.doenetML = editorDoenetML;
@@ -526,7 +503,7 @@ function NameCurrentVersionControl(props) {
   }
   return /* @__PURE__ */ React.createElement(Button, {
     value: "Save Version",
-    callback: () => saveVersion(props.doenetId)
+    onClick: () => saveVersion(props.doenetId)
   });
 }
 function TempEditorHeaderBar(props) {
@@ -538,7 +515,7 @@ function TempEditorHeaderBar(props) {
 }
 const variantInfoAtom = atom({
   key: "variantInfoAtom",
-  default: {index: null, name: null, lastUpdatedIndexOrName: null, requestedVariant: {index: 0}}
+  default: {index: null, name: null, lastUpdatedIndexOrName: null, requestedVariant: {index: 1}}
 });
 const variantPanelAtom = atom({
   key: "variantPanelAtom",

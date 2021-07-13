@@ -4,8 +4,9 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import React, {useState} from "../../_snowpack/pkg/react.js";
 const Container = styled.div`
   position: relative;
-  display: flex;
+  display: ${(props) => props.align};
   align-items: center;
+  width: auto;
 `;
 const Textfield = styled.input`
   border-radius: 5px;
@@ -67,11 +68,18 @@ const MenuOptions = styled.button`
     cursor: pointer;
   }
 `;
+const Label = styled.p`
+  font-size: 12px;
+  display: ${(props) => props.labelVisible};
+  margin-right: 5px;
+  margin-bottom: ${(props) => props.align == "flex" ? "none" : "0px"};
+`;
 export default function Increment(props) {
   var values;
   var sizes;
   var menuComponents = [];
   const [currentValue, setCurrentValue] = useState("");
+  var align = "flex";
   var decreaseIcon = "-";
   var increaseIcon = "+";
   if (props.values) {
@@ -82,12 +90,18 @@ export default function Increment(props) {
       icon: faAngleRight
     });
   }
+  function valueChange(data) {
+    if (props.onChange) {
+      props.onChange(data);
+    }
+    setCurrentValue(data);
+  }
   if (props.range) {
     for (let i = props.range[0]; i <= props.range[1]; i++) {
       menuComponents.push(/* @__PURE__ */ React.createElement(MenuOptions, {
         id: i,
         onClick: function(e) {
-          setCurrentValue(i);
+          valueChange(i);
         }
       }, i));
     }
@@ -98,7 +112,7 @@ export default function Increment(props) {
       menuComponents.push(/* @__PURE__ */ React.createElement(MenuOptions, {
         id: i,
         onClick: function(e) {
-          setCurrentValue(sizes[i]);
+          valueChange(sizes[i]);
         }
       }, sizes[i]));
     }
@@ -109,48 +123,48 @@ export default function Increment(props) {
       menuComponents.push(/* @__PURE__ */ React.createElement(MenuOptions, {
         id: i,
         onClick: function(e) {
-          setCurrentValue(values[i]);
+          valueChange(values[i]);
         }
       }, values[i]));
     }
   }
   function changeValue(e) {
-    setCurrentValue(e.target.value);
+    valueChange(e.target.value);
   }
   function decrement() {
     if (props.values) {
       var index = values.indexOf(currentValue);
       if (index !== -1 && index !== 0 && index < values.length) {
-        setCurrentValue(values[index - 1]);
+        valueChange(values[index - 1]);
       } else if (index === -1) {
-        setCurrentValue(values[0]);
+        valueChange(values[0]);
       } else {
-        setCurrentValue(values[values.length - 1]);
+        valueChange(values[values.length - 1]);
       }
     } else if (props.range) {
       if (props.range[0] <= Number(currentValue) - 1) {
-        setCurrentValue(Number(currentValue) - 1);
+        valueChange(Number(currentValue) - 1);
       }
     } else {
-      setCurrentValue(Number(currentValue) - 1);
+      valueChange(Number(currentValue) - 1);
     }
   }
   function increment() {
     if (props.values) {
       var index = values.indexOf(currentValue);
       if (index !== -1 && index < values.length - 1) {
-        setCurrentValue(values[index + 1]);
+        valueChange(values[index + 1]);
       } else if (index === -1) {
-        setCurrentValue(values[values.length - 1]);
+        valueChange(values[values.length - 1]);
       } else {
-        setCurrentValue(values[0]);
+        valueChange(values[0]);
       }
     } else if (props.range) {
       if (props.range[1] >= Number(currentValue) + 1) {
-        setCurrentValue(Number(currentValue) + 1);
+        valueChange(Number(currentValue) + 1);
       }
     } else {
-      setCurrentValue(Number(currentValue) + 1);
+      valueChange(Number(currentValue) + 1);
     }
   }
   function displayMenu() {
@@ -159,13 +173,26 @@ export default function Increment(props) {
   function hideMenu() {
     document.getElementById("menu").style.display = "none";
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Textfield, {
+  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
+  var label = "";
+  if (props.label) {
+    label = props.label;
+    if (props.vertical) {
+      align = "static";
+    }
+  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, {
+    align
+  }, /* @__PURE__ */ React.createElement(Label, {
+    labelVisible,
+    align
+  }, label), /* @__PURE__ */ React.createElement(Textfield, {
     value: currentValue,
     onClick: () => {
       displayMenu();
     },
-    onChange: () => {
-      changeValue(event);
+    onChange: (data) => {
+      changeValue(data);
     }
   }), /* @__PURE__ */ React.createElement(DecreaseButton, {
     onClick: () => {

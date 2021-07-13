@@ -42,9 +42,11 @@ export default class MathInput extends DoenetRenderer {
   }
   updateImmediateValueFromLatex(text) {
     let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
-    this.latexValue = text;
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
-    if (!newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)) {
+    let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized) || !this.latexValueSetInRender && text !== this.latexValue;
+    this.latexValue = text;
+    this.latexValueSetInRender = false;
+    if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
         mathExpression: newMathExpression
@@ -106,6 +108,7 @@ export default class MathInput extends DoenetRenderer {
       if (this.latexValue === "＿") {
         this.latexValue = "";
       }
+      this.latexValueSetInRender = true;
       this.valueToRevertTo = this.doenetSvData.value;
       this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
     }
@@ -327,7 +330,10 @@ function substituteUnicodeInLatexString(latexString) {
     ["Ψ", "\\Psi "],
     ["ψ", "\\psi "],
     ["Ω", "\\Omega "],
-    ["ω", "\\omega "]
+    ["ω", "\\omega "],
+    ["−", "-"],
+    ["⋅", " \\cdot "],
+    ["·", " \\cdot "]
   ];
   for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1]);

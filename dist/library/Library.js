@@ -1,4 +1,10 @@
-import React, {useEffect, useState, Suspense, useContext, useRef} from "../_snowpack/pkg/react.js";
+import React, {
+  useEffect,
+  useState,
+  Suspense,
+  useContext,
+  useRef
+} from "../_snowpack/pkg/react.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {
   faChalkboard,
@@ -7,26 +13,20 @@ import {
   faUserCircle
 } from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {
-  useHistory
-} from "../_snowpack/pkg/react-router-dom.js";
+import {useHistory} from "../_snowpack/pkg/react-router-dom.js";
 import {
   atom,
   useSetRecoilState,
   useRecoilState,
   useRecoilValue,
   selector,
-  selectorFamily,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
   useRecoilCallback
 } from "../_snowpack/pkg/recoil.js";
 import axios from "../_snowpack/pkg/axios.js";
-import "../_snowpack/pkg/codemirror/lib/codemirror.css.proxy.js";
-import "../_snowpack/pkg/codemirror/theme/material.css.proxy.js";
 import Drive, {
   globalSelectedNodesAtom,
-  folderDictionary,
   folderDictionaryFilterSelector,
   clearDriveAndItemSelections,
   fetchDrivesSelector,
@@ -35,22 +35,17 @@ import Drive, {
   fetchDrivesQuery,
   drivePathSyncFamily
 } from "../_reactComponents/Drive/Drive.js";
-import {
-  useAddItem,
-  useDeleteItem,
-  useRenameItem
-} from "../_reactComponents/Drive/DriveActions.js";
 import {BreadcrumbContainer} from "../_reactComponents/Breadcrumb/index.js";
 import Button from "../_reactComponents/PanelHeaderComponents/Button.js";
 import DriveCards from "../_reactComponents/Drive/DriveCards.js";
 import "../_reactComponents/Drive/drivecard.css.proxy.js";
 import DoenetDriveCardMenu from "../_reactComponents/Drive/DoenetDriveCardMenu.js";
 import "../_utils/util.css.proxy.js";
-// import GlobalFont from "../_utils/GlobalFont.js";
 import {driveColors, driveImages} from "../_reactComponents/Drive/util.js";
 import Tool from "../_framework/Tool.js";
 import {useToolControlHelper, ProfileContext} from "../_framework/ToolRoot.js";
 import {useToast} from "../_framework/Toast.js";
+import useSockets from "../_reactComponents/Sockets.js";
 function Container(props) {
   return /* @__PURE__ */ React.createElement("div", {
     style: {
@@ -405,29 +400,24 @@ const DriveInfoPanel = function(props) {
 };
 const FolderInfoPanel = function(props) {
   const itemInfo = props.itemInfo;
-  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
-  const {deleteItem, onDeleteItemError} = useDeleteItem();
-  const {renameItem, onRenameItemError} = useRenameItem();
-  const [addToast, ToastType] = useToast();
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({
+    driveId: itemInfo.driveId,
+    folderId: itemInfo.parentFolderId
+  }));
+  const {deleteItem, renameItem} = useSockets("drive");
   const [label, setLabel] = useState(itemInfo.label);
   let fIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faFolder
   });
   const renameItemCallback = (newLabel) => {
-    const result = renameItem({
-      driveIdFolderId: {driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId},
+    renameItem({
+      driveIdFolderId: {
+        driveId: itemInfo.driveId,
+        folderId: itemInfo.parentFolderId
+      },
       itemId: itemInfo.itemId,
       itemType: itemInfo.itemType,
       newLabel
-    });
-    result.then((resp) => {
-      if (resp.data.success) {
-        addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
-      } else {
-        onRenameItemError({errorMessage: resp.data.message});
-      }
-    }).catch((e) => {
-      onRenameItemError({errorMessage: e.message});
     });
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
@@ -453,49 +443,39 @@ const FolderInfoPanel = function(props) {
     "data-cy": "deleteFolderButton",
     value: "Delete Folder",
     callback: () => {
-      const result = deleteItem({
-        driveIdFolderId: {driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId},
+      deleteItem({
+        driveIdFolderId: {
+          driveId: itemInfo.driveId,
+          folderId: itemInfo.parentFolderId
+        },
         itemId: itemInfo.itemId,
-        driveInstanceId: itemInfo.driveInstanceId
-      });
-      result.then((resp) => {
-        if (resp.data.success) {
-          addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
-        } else {
-          onDeleteItemError({errorMessage: resp.data.message});
-        }
-      }).catch((e) => {
-        onDeleteItemError({errorMessage: e.message});
+        driveInstanceId: itemInfo.driveInstanceId,
+        label: itemInfo.label
       });
     }
   }));
 };
 const DoenetMLInfoPanel = function(props) {
   const itemInfo = props.itemInfo;
-  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId}));
-  const {deleteItem, onDeleteItemError} = useDeleteItem();
-  const [addToast, ToastType] = useToast();
-  const {renameItem, onRenameItemError} = useRenameItem();
+  const {deleteItem, renameItem} = useSockets("drive");
+  const setFolder = useSetRecoilState(folderDictionaryFilterSelector({
+    driveId: itemInfo.driveId,
+    folderId: itemInfo.parentFolderId
+  }));
   const [label, setLabel] = useState(itemInfo.label);
   const {openOverlay} = useToolControlHelper();
   let dIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
   });
   const renameItemCallback = (newLabel) => {
-    const result = renameItem({
-      driveIdFolderId: {driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId},
+    renameItem({
+      driveIdFolderId: {
+        driveId: itemInfo.driveId,
+        folderId: itemInfo.parentFolderId
+      },
       itemId: itemInfo.itemId,
       itemType: itemInfo.itemType,
       newLabel
-    });
-    result.then((resp) => {
-      if (resp.data.success) {
-        addToast(`Renamed item to '${newLabel}'`, ToastType.SUCCESS);
-      } else {
-        onRenameItemError({errorMessage: resp.data.message});
-      }
-    }).catch((e) => {
-      onRenameItemError({errorMessage: e.message});
     });
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
@@ -533,19 +513,14 @@ const DoenetMLInfoPanel = function(props) {
     "data-cy": "deleteDoenetMLButton",
     value: "Delete DoenetML",
     callback: () => {
-      const result = deleteItem({
-        driveIdFolderId: {driveId: itemInfo.driveId, folderId: itemInfo.parentFolderId},
+      deleteItem({
+        driveIdFolderId: {
+          driveId: itemInfo.driveId,
+          folderId: itemInfo.parentFolderId
+        },
         itemId: itemInfo.itemId,
-        driveInstanceId: itemInfo.driveInstanceId
-      });
-      result.then((resp) => {
-        if (resp.data.success) {
-          addToast(`Deleted item '${itemInfo?.label}'`, ToastType.SUCCESS);
-        } else {
-          onDeleteItemError({errorMessage: resp.data.message});
-        }
-      }).catch((e) => {
-        onDeleteItemError({errorMessage: e.message});
+        driveInstanceId: itemInfo.driveInstanceId,
+        label: itemInfo.label
       });
     }
   }));
@@ -589,7 +564,6 @@ const ItemInfo = function() {
         itemInfo
       });
     }
-    x;
   }
 };
 function AddCourseDriveButton() {
@@ -605,20 +579,25 @@ function AddCourseDriveButton() {
       color,
       subType: "Administrator"
     };
-    const payload = {params: {
-      driveId: newDriveId,
-      isPublic: "0",
-      label,
-      type: "new course drive",
-      image,
-      color
-    }};
+    const payload = {
+      params: {
+        driveId: newDriveId,
+        isPublic: "0",
+        label,
+        type: "new course drive",
+        image,
+        color
+      }
+    };
     const result = axios.get("/api/addDrive.php", payload);
     result.then((resp) => {
       if (resp.data.success) {
         set(fetchDrivesQuery, (oldDrivesInfo) => {
           let newDrivesInfo = {...oldDrivesInfo};
-          newDrivesInfo.driveIdsAndLabels = [newDrive, ...oldDrivesInfo.driveIdsAndLabels];
+          newDrivesInfo.driveIdsAndLabels = [
+            newDrive,
+            ...oldDrivesInfo.driveIdsAndLabels
+          ];
           return newDrivesInfo;
         });
       }
@@ -631,13 +610,19 @@ function AddCourseDriveButton() {
   return /* @__PURE__ */ React.createElement(Button, {
     value: "Create a New Course",
     "data-cy": "createNewCourseButton",
-    callback: () => {
+    onClick: () => {
       let driveId = null;
       let newDriveId = nanoid();
       let label = "Untitled";
       let image = driveImages[Math.floor(Math.random() * driveImages.length)];
       let color = driveColors[Math.floor(Math.random() * driveColors.length)];
-      const result = createNewDrive({label, driveId, newDriveId, image, color});
+      const result = createNewDrive({
+        label,
+        driveId,
+        newDriveId,
+        image,
+        color
+      });
       result.then((resp) => {
         if (resp.data.success) {
           addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
@@ -656,9 +641,8 @@ function AddMenuPanel(props) {
     path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
   }
   let [driveId, folderId] = path.split(":");
-  const [_, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}));
-  const {addItem, onAddItemError} = useAddItem();
-  const [addToast, ToastType] = useToast();
+  const [, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId, folderId}));
+  const {addItem} = useSockets("drive");
   let addDrives = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("p", null, "Failed to make add course drive button")
   }, /* @__PURE__ */ React.createElement(AddCourseDriveButton, null)));
@@ -668,44 +652,26 @@ function AddMenuPanel(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h3", null, "Folder"), /* @__PURE__ */ React.createElement(Button, {
     value: "Add Folder",
     "data-cy": "addFolderButton",
-    callback: () => {
-      const result = addItem({
+    onClick: () => {
+      addItem({
         driveIdFolderId: {driveId, folderId},
         label: "Untitled",
-        itemType: "Folder"
-      });
-      result.then((resp) => {
-        if (resp.data?.success) {
-          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-        } else {
-          onAddItemError({errorMessage: resp.data});
-        }
-      }).catch((e) => {
-        onAddItemError({errorMessage: e.message});
+        type: "Folder"
       });
     }
   }), /* @__PURE__ */ React.createElement("h3", null, "DoenetML"), /* @__PURE__ */ React.createElement(Button, {
     value: "Add DoenetML",
     "data-cy": "addDoenetMLButton",
-    callback: () => {
-      const result = addItem({
+    onClick: () => {
+      addItem({
         driveIdFolderId: {driveId, folderId},
         label: "Untitled",
-        itemType: "DoenetML"
-      });
-      result.then((resp) => {
-        if (resp.data.success) {
-          addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-        } else {
-          onAddItemError({errorMessage: resp.data});
-        }
-      }).catch((e) => {
-        onAddItemError({errorMessage: e.message});
+        type: "DoenetML"
       });
     }
   }));
 }
-function AutoSelect(props) {
+function AutoSelect() {
   const {activateMenuPanel} = useToolControlHelper();
   const infoLoad = useRecoilValueLoadable(selectedInformation);
   if (infoLoad?.contents?.number > 0) {
@@ -725,7 +691,12 @@ export function URLPathSync(props) {
       let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
       if (urlParamsObj?.path) {
         const [routePathDriveId, routePathFolderId, pathItemId, type] = urlParamsObj.path.split(":");
-        setDrivePath({driveId: routePathDriveId, parentFolderId: routePathFolderId, itemId: pathItemId, type});
+        setDrivePath({
+          driveId: routePathDriveId,
+          parentFolderId: routePathFolderId,
+          itemId: pathItemId,
+          type
+        });
       }
     }
     sourceOfPathChange.current = false;
@@ -759,9 +730,7 @@ export default function Library(props) {
   let routePathDriveId = "";
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
   if (urlParamsObj?.path !== void 0) {
-    [
-      routePathDriveId
-    ] = urlParamsObj.path.split(":");
+    [routePathDriveId] = urlParamsObj.path.split(":");
   }
   useEffect(() => {
     if (routePathDriveId === "") {
@@ -771,14 +740,23 @@ export default function Library(props) {
   const history = useHistory();
   const profile = useContext(ProfileContext);
   if (profile.signedIn === "0" && !window.Cypress) {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, 
-      // /* @__PURE__ */ React.createElement(GlobalFont, null), 
-      /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
       title: "Library"
     }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
-      style: {border: "1px solid grey", borderRadius: "20px", margin: "auto", marginTop: "10%", padding: "10px", width: "50%"}
+      style: {
+        border: "1px solid grey",
+        borderRadius: "20px",
+        margin: "auto",
+        marginTop: "10%",
+        padding: "10px",
+        width: "50%"
+      }
     }, /* @__PURE__ */ React.createElement("div", {
-      style: {textAlign: "center", alignItems: "center", marginBottom: "20px"}
+      style: {
+        textAlign: "center",
+        alignItems: "center",
+        marginBottom: "20px"
+      }
     }, /* @__PURE__ */ React.createElement("h2", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Library currently requires sign in for use"), /* @__PURE__ */ React.createElement("button", {
       style: {background: "#1a5a99", borderRadius: "5px"}
     }, /* @__PURE__ */ React.createElement("a", {
@@ -797,9 +775,7 @@ export default function Library(props) {
   let supportBreadcrumbContainer = /* @__PURE__ */ React.createElement(BreadcrumbContainer, {
     drivePathSyncKey: "support"
   });
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, 
-    // /* @__PURE__ */ React.createElement(GlobalFont, null), 
-    /* @__PURE__ */ React.createElement(URLPathSync, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(URLPathSync, {
     route: props.route
   }), /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("navPanel", {
     isInitOpen: true
