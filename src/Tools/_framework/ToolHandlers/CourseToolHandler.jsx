@@ -287,6 +287,22 @@ export default function CourseToolHandler(props){
         })
         set(selectedMenuPanelAtom,""); //clear selection
         set(mainPanelClickAtom,[])  //clear main panel click
+      }else if (tool === 'enrollment'){
+        set(toolViewAtom,{
+          pageName:"Course",
+          currentMainPanel:"Enrollment",
+          currentMenus:[], 
+          menusTitles:[],
+          menusInitOpen:[],
+          supportPanelOptions:[],
+          supportPanelTitles:[],
+          supportPanelIndex:0,
+          headerControls: ["CloseProfileButton"],
+          headerControlsPositions: ["Right"],
+          toolHandler:"CourseToolHandler"
+        })
+        set(selectedMenuPanelAtom,""); //clear selection
+        set(mainPanelClickAtom,[])  //clear main panel click
       }else{
         console.log(">>>Course Tool Handler: didn't match!")
       }
