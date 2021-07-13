@@ -451,22 +451,40 @@ function TextEditor(props) {
     }
   }));
 }
-function DoenetViewerUpdateButton() {
-  const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
-  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+function DoenetViewerUpdateButton(props) {
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
+  const saveDraft = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    set(viewerDoenetMLAtom, (old) => {
+      let newInfo = {...old};
+      newInfo.doenetML = doenetML;
+      newInfo.updateNumber = old.updateNumber + 1;
+      return newInfo;
+    });
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.doenetId));
+    let newVersion = {...oldVersions.draft};
+    const contentId = getSHAofContent(doenetML);
+    newVersion.contentId = contentId;
+    newVersion.timestamp = buildTimestamp();
+    let oldVersionsReplacement = {...oldVersions};
+    oldVersionsReplacement.draft = newVersion;
+    set(itemHistoryAtom(props.doenetId), oldVersionsReplacement);
+    set(fileByContentId(contentId), doenetML);
+    localStorage.setItem(contentId, doenetML);
+    let newDBVersion = {
+      ...newVersion,
+      doenetML,
+      doenetId: props.doenetId
+    };
+    axios.post("/api/saveNewVersion.php", newDBVersion);
+  }, []);
   if (activeVersionId !== "") {
     return null;
   }
   return /* @__PURE__ */ React.createElement(Button, {
     value: "Update",
     onClick: () => {
-      setViewerDoenetML((old) => {
-        let newInfo = {...old};
-        newInfo.doenetML = editorDoenetML;
-        newInfo.updateNumber = old.updateNumber + 1;
-        return newInfo;
-      });
+      saveDraft(props.doenetId);
     }
   });
 }
@@ -670,7 +688,9 @@ export default function Editor({doenetId, title, driveId, folderId, itemId}) {
     title
   }, /* @__PURE__ */ React.createElement(ReturnToEditingButton, {
     doenetId
-  })), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(DoenetViewerUpdateButton, null)), /* @__PURE__ */ React.createElement("div", {
+  })), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(DoenetViewerUpdateButton, {
+    doenetId
+  })), /* @__PURE__ */ React.createElement("div", {
     style: {overflowY: "scroll", height: "calc(100vh - 84px)"}
   }, /* @__PURE__ */ React.createElement(DoenetViewerPanel, null))), /* @__PURE__ */ React.createElement("supportPanel", {
     isInitOpen: true
