@@ -247,6 +247,7 @@ const DriveCardWrapper = (props) => {
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  setDrivecardSelection([]);
                   setParamObj({tool:'navigation',path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`}); 
                 }}
               >
