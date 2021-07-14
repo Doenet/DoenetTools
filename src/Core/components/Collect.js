@@ -389,7 +389,7 @@ export default class Collect extends CompositeComponent {
 
     } else {
 
-      let serializedCopy = [collectedComponent.serialize({ forCopy: true })];
+      let serializedCopy = [collectedComponent.serialize({ forLink: true })];
 
       serializedReplacements = postProcessCopy({
         serializedComponents: serializedCopy,
