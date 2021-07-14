@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
-import { useRecoilCallback, atom } from 'recoil';
+import React from 'react';
+import { useRecoilCallback, atom, useRecoilValueLoadable } from 'recoil';
 
 import styled from 'styled-components';
-import { ProfileContext, toolViewAtom } from './NewToolRoot';
+import { profileAtom, toolViewAtom } from './NewToolRoot';
 
 const ProfilePicture = styled.button`
 background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
@@ -28,10 +28,11 @@ export const profileToolViewStashAtom = atom({
   key: "profileToolViewStashAtom",
   default:{},
 })
+
  
 export default function Profile(props){
-  const profile = useContext(ProfileContext)
-  const profilePicName = profile.profilePicture;
+  const profile = useRecoilValueLoadable(profileAtom);
+  const profilePicName = profile.contents.profilePicture;
   const displaySettings = useRecoilCallback(({set,snapshot})=> async ()=>{
     const viewToolObj = await snapshot.getPromise(toolViewAtom)
     let newViewToolObj = {...viewToolObj}
@@ -57,6 +58,11 @@ export default function Profile(props){
       return newObj;
     }) 
   })
+
+  if (profile.state === "loading"){ return null;}
+    if (profile.state === "hasError"){ 
+      console.error(profile.contents)
+      return null;}
 
 
   // let profilePicName = "cat";

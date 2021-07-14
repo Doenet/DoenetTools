@@ -1,9 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
     useRecoilCallback,
+    useRecoilValueLoadable,
   } from "recoil";
 import styled from "styled-components";
-import { profileAtom, ProfileContext } from '../NewToolRoot';
+import { profileAtom } from '../NewToolRoot';
 import { a } from '@react-spring/web'
 import InfiniteSlider from '../temp/InfiniteSlider'
 import "../doenet.css";
@@ -63,14 +64,19 @@ export default function DoenetProfile(props) {
         //console.log(">>> ", newProfile);
       }
     )
+    const profile = useRecoilValueLoadable(profileAtom);
 
-    const profile = useContext(ProfileContext);
-    const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
-
-    //console.log(">>> init photo", initPhoto)
+    const [initPhoto, setInitPhoto] = useState(profile.contents.profilePicture)
+    // console.log(">>>settings profile",profile)
+    // console.log(">>> init photo", initPhoto)
 
     let [editMode, setEditMode] = useState(false);
     let [pic, setPic] = useState(0);
+
+    if (profile.state === "loading"){ return null;}
+    if (profile.state === "hasError"){ 
+      console.error(profile.contents)
+      return null;}
 
     //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
 

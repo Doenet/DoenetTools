@@ -42,7 +42,6 @@ const ToolContainer = styled(animated.div)`
   box-sizing: border-box;
 `;
 
-export const ProfileContext = React.createContext({});
 
 export const profileAtom = atom({
   key: "profileAtom",
@@ -87,104 +86,11 @@ export const toolViewAtom = atom({
     pageName:"Init",
   }
 })
-// currentMenus:[],
-// menusTitles:[],
-// menusInitOpen:[],
-// currentMainPanel:"",
-// supportPanelOptions:[],
-// supportPanelTitles:[],
-// supportPanelIndex:0,
-// hasNoMenuPanel: true,
-// headerControls:["CloseProfileButton"],
-// headerControlsPositions:["Right"], 
-// hasNoMenuPanel: true,
-// toolHandler:"CourseToolHandler",
 
-let toolsObj = {
-  
-  content:{
-    pageName:"Content",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"Content",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
-  },
-  course:{
-    pageName:"Course",
-    toolHandler:"CourseToolHandler",
-  },
-  home:{
-    pageName:"Home",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"HomePanel",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
-  },
-  notfound:{
-    pageName:"Notfound",
-    currentMenus:[],
-    menusInitOpen:[],
-    currentMainPanel:"NotFound",
-    supportPanelOptions:[],
-    hasNoMenuPanel: true,
-  },
-  settings:{
-    pageName:"Settings",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"AccountSettings",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
-    headerControls: ["CloseProfileButton"],
-    headerControlsPositions: ["Right"]
-  },
-  signin:{
-    pageName:"SignIn",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"SignIn",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
-  },
-  signout:{
-    pageName:"SignOut",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"SignOut",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
-  },
-  
-}
-
-// function EmptyPanel(props){
-//   return <div style={props.style}></div>
-// }
-
-let encodeParams = p => Object.entries(p).map(kv => 
-  kv.map(encodeURIComponent).join("=")).join("&");
    
 export default function ToolRoot(props){
   // console.log(">>>ToolRoot props",props) 
 
-  const profile = useRecoilValueLoadable(profileAtom)
   const toolViewInfo = useRecoilValue(toolViewAtom);
   const mainPanelArray = useRef([])
   const lastMainPanelKey = useRef(null)
@@ -251,10 +157,6 @@ export default function ToolRoot(props){
 
   let setUrlChangeSourceParamObjAtom = useSetRecoilState(urlChangeSourceParamObjAtom);
 
-  if (profile.state === "loading"){ return null;}
-    if (profile.state === "hasError"){ 
-      console.error(profile.contents)
-      return null;}
 
   console.log(">>>===ToolRoot")
   
@@ -395,7 +297,7 @@ export default function ToolRoot(props){
   if (toolViewInfo.hasNoMenuPanel){
     profileInMainPanel = false;
   }
-  return <ProfileContext.Provider value={profile.contents}>
+  return <>
     {/* <GlobalFont key='globalfont' /> */}
     <ToolContainer >
       {menus}
@@ -412,8 +314,102 @@ export default function ToolRoot(props){
       lastURL.current = newURL;
       // console.log(">>>setURL newURL",newURL)
     }} />
-  </ProfileContext.Provider>
+  </>
 } 
+
+// currentMenus:[],
+// menusTitles:[],
+// menusInitOpen:[],
+// currentMainPanel:"",
+// supportPanelOptions:[],
+// supportPanelTitles:[],
+// supportPanelIndex:0,
+// hasNoMenuPanel: true,
+// headerControls:["CloseProfileButton"],
+// headerControlsPositions:["Right"], 
+// hasNoMenuPanel: true,
+// toolHandler:"CourseToolHandler",
+
+let toolsObj = {
+  
+  content:{
+    pageName:"Content",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"Content",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  course:{
+    pageName:"Course",
+    toolHandler:"CourseToolHandler",
+  },
+  home:{
+    pageName:"Home",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"HomePanel",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  notfound:{
+    pageName:"Notfound",
+    currentMenus:[],
+    menusInitOpen:[],
+    currentMainPanel:"NotFound",
+    supportPanelOptions:[],
+    hasNoMenuPanel: true,
+  },
+  settings:{
+    pageName:"Settings",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"AccountSettings",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+    headerControls: ["CloseProfileButton"],
+    headerControlsPositions: ["Right"]
+  },
+  signin:{
+    pageName:"SignIn",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"SignIn",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  signout:{
+    pageName:"SignOut",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"SignOut",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: true,
+  },
+  
+}
+
+// function EmptyPanel(props){
+//   return <div style={props.style}></div>
+// }
+
+let encodeParams = p => Object.entries(p).map(kv => 
+  kv.map(encodeURIComponent).join("=")).join("&");
 
 function RecoilSearchParamUpdater(prop){
   let [eventSourceParamObj,setEventSourceParamObj] = useRecoilState(paramObjAtom);
