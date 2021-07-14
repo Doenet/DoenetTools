@@ -28,7 +28,8 @@ export default class Vector extends DoenetRenderer {
       strokeColor: this.doenetSvData.selectedStyle.markerColor,
       highlightStrokeColor: this.doenetSvData.selectedStyle.markerColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle)
+      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      lastArrow: {type: 1, size: 3, highlightSize: 3}
     };
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
       jsxVectorAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
@@ -236,14 +237,18 @@ export default class Vector extends DoenetRenderer {
   }
   componentDidMount() {
     if (!this.props.board) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      if (window.MathJax) {
+        window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
+        window.MathJax.Hub.processSectionDelay = 0;
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      }
     }
   }
   componentDidUpdate() {
     if (!this.props.board) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      if (window.MathJax) {
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      }
     }
   }
   render() {

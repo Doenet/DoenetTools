@@ -36,7 +36,7 @@ export default class Graph extends DoenetRenderer {
         label: {
           offset: [-5, -15]
         },
-        minorTicks: 5,
+        minorTicks: 4,
         precision: 4
       };
       if (!this.doenetSvData.displayYAxis) {

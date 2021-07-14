@@ -50,5 +50,9 @@ export default function DrivePanel(props){
 
   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
+  <hr />
+
+  <div><button onClick={(e)=>{e.stopPropagation();setParamObj({tool:'editor',doenetId:'JRP26MJwT93KkydNtBQpO'})}}>Edit c1</button></div>
+
   </div>
 }

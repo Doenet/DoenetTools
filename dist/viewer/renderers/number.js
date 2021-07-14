@@ -4,14 +4,18 @@ export default class Number extends DoenetRenderer {
   static initializeChildrenOnConstruction = false;
   componentDidMount() {
     if (this.doenetSvData.renderAsMath) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      if (window.MathJax) {
+        window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
+        window.MathJax.Hub.processSectionDelay = 0;
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      }
     }
   }
   componentDidUpdate() {
     if (this.doenetSvData.renderAsMath) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      if (window.MathJax) {
+        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      }
     }
   }
   render() {

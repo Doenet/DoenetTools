@@ -5,19 +5,37 @@ export default class Table extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
-    let table = [];
-    for (let [rowNum, rowData] of this.doenetSvData.renderedChildNumberByRowCol.entries()) {
-      let row = rowData.map((childInd, colInd) => /* @__PURE__ */ React.createElement("td", {
-        key: "col" + colInd
-      }, this.children[childInd]));
-      table.push(/* @__PURE__ */ React.createElement("tr", {
-        key: "row" + rowNum
-      }, row));
+    let heading = null;
+    let childrenToRender = [...this.children];
+    let title;
+    if (this.doenetSvData.titleChildName) {
+      let titleChildInd;
+      for (let [ind, child] of this.children.entries()) {
+        if (child.props.componentInstructions.componentName === this.doenetSvData.titleChildName) {
+          titleChildInd = ind;
+          break;
+        }
+      }
+      title = this.children[titleChildInd];
+      childrenToRender.splice(titleChildInd, 1);
+    } else {
+      title = this.doenetSvData.title;
     }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("table", {
+    if (!this.doenetSvData.suppressTableNameInCaption) {
+      let tableName = /* @__PURE__ */ React.createElement("strong", null, this.doenetSvData.tableName);
+      if (title) {
+        title = /* @__PURE__ */ React.createElement(React.Fragment, null, tableName, ": ", title);
+      } else {
+        title = tableName;
+      }
+    }
+    heading = /* @__PURE__ */ React.createElement("div", {
+      id: this.componentName + "_title"
+    }, title);
+    return /* @__PURE__ */ React.createElement("div", {
       id: this.componentName
-    }, /* @__PURE__ */ React.createElement("tbody", null, table)));
+    }, /* @__PURE__ */ React.createElement("a", {
+      name: this.componentName
+    }), heading, childrenToRender);
   }
 }

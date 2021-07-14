@@ -99,8 +99,9 @@ export function convertAttributesForComponentType({
   let newAttributes = {};
 
   for (let attr in attributes) {
-    if (attr in compositeAttributesObj) {
-      // skip any attributes in copy
+    if (attr in compositeAttributesObj && !compositeAttributesObj[attr].leaveRaw) {
+      // skip any attributes in the composite itself
+      // unless specifically marked to not be processed for the composite
       continue;
     }
 

@@ -765,6 +765,165 @@ describe('ChoiceInput Tag Tests', function () {
     })
   });
 
+  it('bind value to choiceinput, select multiple', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput bindValueTo="$_textinput1" randomizeOrder selectMultiple>
+      <choice>caT</choice>
+      <choice>  dog </choice>
+      <choice>Monkey</choice>
+    </choiceinput>
+
+    <p>Select by typing: <textinput prefill="monkey" /></p>
+
+    <copy name="copy" inline tname="_choiceinput1" />
+
+    <p>Selected values: <aslist>
+    <copy prop='selectedvalues' tname="_choiceinput1" />
+    <copy prop='selectedvalues' tname="copy" />
+    </aslist></p>
+    <p>Selected indices: <aslist>
+    <copy prop='selectedindices' tname="_choiceinput1" />
+    <copy prop='selectedindices' tname="copy" />
+    </aslist></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    let originalChoices = ["caT", "  dog ", "Monkey"]
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choice2Anchor = cesc('#' + components["/copy"].replacements[0].componentName);
+
+      let choiceOrder = components["/_choiceinput1"].stateValues.choiceOrder;
+      let choices = choiceOrder.map(x => originalChoices[x - 1]);
+
+
+      let checkChoices = function (selectedChoices, inputText) {
+        console.log(selectedChoices)
+
+        selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b))
+
+        let selectedIndices = selectedChoices.map(x => choices.indexOf(x) + 1);
+
+        for (let i = 1; i <= 3; i++) {
+          if (selectedIndices.includes(i)) {
+            cy.get(`#\\/_choiceinput1_choice${i}_input`).should('be.checked')
+          } else {
+            cy.get(`#\\/_choiceinput1_choice${i}_input`).should('not.be.checked')
+          }
+        }
+        cy.get(choice2Anchor).invoke('val').should('deep.equal', selectedIndices.map(x => String(x)))
+        let selectedChoicesString = [...selectedChoices, ...selectedChoices].join(", ")
+        let selectedIndicesString = [...selectedIndices, ...selectedIndices].join(", ")
+        cy.get('#\\/_p2').should('have.text', `Selected values: ${selectedChoicesString}`)
+        cy.get('#\\/_p3').should('have.text', `Selected indices: ${selectedIndicesString}`)
+
+        cy.get('#\\/_textinput1_input').should('have.value', inputText)
+
+        cy.window().then((win) => {
+          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(selectedChoices)
+          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls(selectedIndices)
+          expect(components['/copy'].replacements[0].stateValues.selectedValues).eqls(selectedChoices)
+          expect(components['/copy'].replacements[0].stateValues.selectedIndices).eqls(selectedIndices)
+        })
+      }
+
+      checkChoices(["Monkey"], "monkey")
+
+
+      cy.log('select cat from first input');
+      let selectedChoices = ["caT", "Monkey"];
+      let selectedIndex = choices.indexOf(selectedChoices[0]) + 1;
+      selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b))
+      let inputText = selectedChoices.join(", ");
+      cy.get(`#\\/_choiceinput1_choice${selectedIndex}_input`).click();
+      checkChoices(selectedChoices, inputText)
+
+      cy.log('Type Dog')
+      selectedChoices = ["  dog "];
+      inputText = "Dog";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoices, inputText)
+
+      cy.log('Type cat  ,DOG')
+      selectedChoices = ["  dog ", "caT"];
+      inputText = "cat   ,DOG";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoices, inputText)
+
+
+      cy.log('select monkey, dog from second input');
+      selectedChoices = ["  dog ", "Monkey"];
+      let selectedIndices = selectedChoices.map(x => choices.indexOf(x) + 1);
+      selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b))
+      inputText = selectedChoices.join(", ");
+      cy.get(choice2Anchor).select(selectedIndices.map(String));
+      checkChoices(selectedChoices, inputText)
+
+      cy.log('type no cat');
+      selectedChoices = [];
+      inputText = "no cat";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoices, inputText)
+
+      cy.log('type cat, no dog');
+      selectedChoices = ["caT"];
+      inputText = "cat, no dog";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoices, inputText)
+
+      cy.log('type dog, no monkey,   CAT   ');
+      selectedChoices = ["  dog ", "caT"];
+      inputText = "dog, no monkey,   CAT   ";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoices, inputText)
+
+
+      cy.log('select all from second input');
+      selectedChoices = [ "Monkey", "  dog ", "caT"];
+      selectedIndices = selectedChoices.map(x => choices.indexOf(x) + 1);
+      selectedChoices.sort((a, b) => choices.indexOf(a) - choices.indexOf(b))
+      inputText = selectedChoices.join(", ");
+      cy.get(choice2Anchor).select(selectedIndices.map(String));
+      checkChoices(selectedChoices, inputText)
+
+
+      cy.log('type no dog at end');
+      inputText += ", no dog";
+      cy.get('#\\/_textinput1_input').type(`{end}, no dog{enter}`)
+      checkChoices(selectedChoices, inputText)
+
+      cy.log('type dog,  DOG');
+      selectedChoices = ["  dog "];
+      inputText = "dog,  DOG";
+      cy.get('#\\/_textinput1_input').clear().type(`${inputText}{enter}`)
+      checkChoices(selectedChoices, inputText)
+
+
+      cy.log('select cat from first input');
+      selectedChoices = ["  dog ", "caT"];
+      selectedIndex = choices.indexOf(selectedChoices[1]) + 1;
+      inputText = selectedChoices.join(", ");
+      cy.get(`#\\/_choiceinput1_choice${selectedIndex}_input`).click();
+      checkChoices(selectedChoices, inputText)
+
+      cy.log('deselect dog from first input');
+      selectedIndex = choices.indexOf(selectedChoices[0]) + 1;
+      selectedChoices = ["caT"];
+      inputText = selectedChoices.join(", ");
+      cy.get(`#\\/_choiceinput1_choice${selectedIndex}_input`).click();
+      checkChoices(selectedChoices, inputText)
+
+    })
+  });
+
   it('preselect choices', () => {
 
     cy.window().then((win) => {
@@ -1226,5 +1385,274 @@ describe('ChoiceInput Tag Tests', function () {
     }
 
   });
+
+  it('select multiple with block choiceinput', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput randomizeOrder selectMultiple>
+      <choice>cat</choice>
+      <choice>dog</choice>
+      <choice>monkey</choice>
+      <choice>mouse</choice>
+    </choiceinput>
+
+    <p>Selected values: <aslist><copy prop='selectedvalues' tname="_choiceinput1" /></aslist></p>
+    <p>Selected indices: <aslist><copy prop='selectedindices' tname="_choiceinput1" /></aslist></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    let originalChoices = ["cat", "dog", "monkey", "mouse"];
+    cy.get('#\\/_p1').should('have.text', 'Selected values: ')
+    cy.get('#\\/_p2').should('have.text', 'Selected indices: ')
+
+    let choices, choiceOrder;
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
+      choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
+      expect(choices.length).eq(4);
+      expect(originalChoices.includes(choices[0])).eq(true);
+      expect(originalChoices.includes(choices[1])).eq(true);
+      expect(originalChoices.includes(choices[2])).eq(true);
+      expect(originalChoices.includes(choices[3])).eq(true);
+      expect(choices[1]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[0]);
+      expect(choices[3]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[2]);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(components['/_choiceinput1'].stateValues.inline).eq(false);
+      expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
+      expect(components['/_choiceinput1'].stateValues.selectMultiple).eq(true);
+      expect(components['/_choice1'].stateValues.selected).eq(false);
+      expect(components['/_choice2'].stateValues.selected).eq(false);
+      expect(components['/_choice3'].stateValues.selected).eq(false);
+      expect(components['/_choice4'].stateValues.selected).eq(false);
+
+    });
+
+    cy.log('select options in order')
+
+    for (let i = 0; i < 4; i++) {
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected values: ' + choices.slice(0, i + 1).join(", "))
+        cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(i + 1).keys()].map(x => x + 1).join(", "))
+      });
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
+        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) <= i);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) <= i);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) <= i);
+
+      });
+    }
+
+
+    cy.log('deselect options in order')
+
+    for (let i = 0; i < 4; i++) {
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected values: ' + choices.slice(i + 1).join(", "))
+        cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(3 - i).keys()].map(x => x + 2 + i).join(", "))
+      });
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
+        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) > i);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) > i);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) > i);
+
+      });
+    }
+
+    cy.log('select options in reverse order')
+
+    for (let i = 3; i >= 0; i--) {
+      cy.get(`#\\/_choiceinput1_choice${i + 1}_input`).click().then(() => {
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected values: ' + choices.slice(i).join(", "))
+        cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(4 - i).keys()].map(x => x + 1 + i).join(", "))
+      });
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
+        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) >= i);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) >= i);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) >= i);
+
+      });
+    }
+
+  });
+
+  it('select multiple with inline choiceinput', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput inline randomizeOrder selectMultiple>
+      <choice>cat</choice>
+      <choice>dog</choice>
+      <choice>monkey</choice>
+      <choice>mouse</choice>
+    </choiceinput>
+
+    <p>Selected values: <aslist><copy prop='selectedvalues' tname="_choiceinput1" /></aslist></p>
+    <p>Selected indices: <aslist><copy prop='selectedindices' tname="_choiceinput1" /></aslist></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get("#\\/_choiceinput1").invoke('val').should('deep.equal', [])
+
+    let originalChoices = ["cat", "dog", "monkey", "mouse"];
+    cy.get('#\\/_p1').should('have.text', 'Selected values: ')
+    cy.get('#\\/_p2').should('have.text', 'Selected indices: ')
+
+    let choices, choiceOrder;
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      choices = [...components['/_choiceinput1'].stateValues.choiceTexts];
+      choiceOrder = [...components['/_choiceinput1'].stateValues.choiceOrder];
+      expect(choices.length).eq(4);
+      expect(originalChoices.includes(choices[0])).eq(true);
+      expect(originalChoices.includes(choices[1])).eq(true);
+      expect(originalChoices.includes(choices[2])).eq(true);
+      expect(originalChoices.includes(choices[3])).eq(true);
+      expect(choices[1]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[0]);
+      expect(choices[2]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[0]);
+      expect(choices[3]).not.eq(choices[1]);
+      expect(choices[3]).not.eq(choices[2]);
+      expect(components['/_choiceinput1'].stateValues.selectedValues).eqls([])
+      expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([])
+      expect(components['/_choiceinput1'].stateValues.inline).eq(true);
+      expect(components['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
+      expect(components['/_choiceinput1'].stateValues.selectMultiple).eq(true);
+      expect(components['/_choice1'].stateValues.selected).eq(false);
+      expect(components['/_choice2'].stateValues.selected).eq(false);
+      expect(components['/_choice3'].stateValues.selected).eq(false);
+      expect(components['/_choice4'].stateValues.selected).eq(false);
+
+    });
+
+    cy.log('select options in order')
+
+    for (let i = 0; i < 4; i++) {
+
+      cy.get(`#\\/_choiceinput1`).select([...Array(i + 1).keys()].map(x => String(x + 1))).then(() => {
+
+        let selectedInds = [...Array(i + 1).keys()].map(x => String(x + 1))
+        cy.get("#\\/_choiceinput1").invoke('val').should('deep.equal', selectedInds);
+
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected values: ' + choices.slice(0, i + 1).join(", "))
+        cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(i + 1).keys()].map(x => x + 1).join(", "))
+      });
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(0, i + 1))
+        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(i + 1).keys()].map(x => x + 1))
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) <= i);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) <= i);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) <= i);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) <= i);
+
+      });
+    }
+
+
+
+    cy.log('deselect options in order')
+
+    for (let i = 0; i < 4; i++) {
+
+      cy.window().then((win) => {
+
+        let indicesToSelect = [...Array(3 - i).keys()].map(x => String(x + 2 + i));
+        if (i === 3) {
+          indicesToSelect = [''];
+        }
+
+        cy.get(`#\\/_choiceinput1`).select(indicesToSelect).then(() => {
+
+          let selectedInds = [...Array(3 - i).keys()].map(x => String(x + 2 + i))
+          cy.get("#\\/_choiceinput1").invoke('val').should('deep.equal', selectedInds);
+
+          // make this asynchronous so that choices is populated before line is executed
+          cy.get('#\\/_p1').should('have.text', 'Selected values: ' + choices.slice(i + 1).join(", "))
+          cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(3 - i).keys()].map(x => x + 2 + i).join(", "))
+        });
+
+        cy.window().then((win) => {
+
+          let components = Object.assign({}, win.state.components);
+          expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i + 1))
+          expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(3 - i).keys()].map(x => x + 2 + i))
+          expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) > i);
+          expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) > i);
+          expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) > i);
+          expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) > i);
+
+        });
+      })
+    }
+
+
+    cy.log('select options in reverse order')
+
+    for (let i = 3; i >= 0; i--) {
+      cy.get(`#\\/_choiceinput1`).select([...Array(4 - i).keys()].map(x => String(x + 1 + i))).then(() => {
+
+        let selectedInds = [...Array(4 - i).keys()].map(x => String(x + 1 + i));
+        cy.get("#\\/_choiceinput1").invoke('val').should('deep.equal', selectedInds);
+
+        // make this asynchronous so that choices is populated before line is executed
+        cy.get('#\\/_p1').should('have.text', 'Selected values: ' + choices.slice(i).join(", "))
+        cy.get('#\\/_p2').should('have.text', 'Selected indices: ' + [...Array(4 - i).keys()].map(x => x + 1 + i).join(", "))
+      });
+
+      cy.window().then((win) => {
+
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_choiceinput1'].stateValues.selectedValues).eqls(choices.slice(i))
+        expect(components['/_choiceinput1'].stateValues.selectedIndices).eqls([...Array(4 - i).keys()].map(x => x + 1 + i))
+        expect(components['/_choice1'].stateValues.selected).eq(choiceOrder.indexOf(1) >= i);
+        expect(components['/_choice2'].stateValues.selected).eq(choiceOrder.indexOf(2) >= i);
+        expect(components['/_choice3'].stateValues.selected).eq(choiceOrder.indexOf(3) >= i);
+        expect(components['/_choice4'].stateValues.selected).eq(choiceOrder.indexOf(4) >= i);
+
+      });
+    }
+
+  });
+
 
 });

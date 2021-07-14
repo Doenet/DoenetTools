@@ -1,4 +1,4 @@
-describe('Curve Tag Tests', function () {
+describe('Parameterized Curve Tag Tests', function () {
 
   beforeEach(() => {
     cy.visit('/cypressTest')

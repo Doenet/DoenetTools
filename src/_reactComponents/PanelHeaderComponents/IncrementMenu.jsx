@@ -19,14 +19,14 @@ For given values:
 
 const Container = styled.div`
   position: relative;
-  display: flex;
+  display: ${props => props.align};
   align-items: center;
   width: auto;
 `;
 
 const Textfield = styled.input`
   border-radius: 5px;
-  border: 2px solid black;
+  border: ${props => props.alert ? '2px solid #C1292E' : '2px solid black'};
   z-index: 0;
   height: 24px;
   width: 46px;
@@ -92,7 +92,8 @@ const MenuOptions = styled.button`
 const Label = styled.p`
   font-size: 12px;
   display: ${props => props.labelVisible};
-  margin-right: 5px
+  margin-right: 5px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
 `
 
 
@@ -101,7 +102,7 @@ export default function Increment(props) {
   var sizes;
   var menuComponents = [];
   const [currentValue, setCurrentValue] = useState("");
-
+  var align = 'flex';
   //Button icons
   var decreaseIcon = "-";
   var increaseIcon = "+";
@@ -250,13 +251,21 @@ export default function Increment(props) {
   var label = '';
   if (props.label) {
     label = props.label;
+    if (props.vertical) {
+      align = 'static';
+    }
+  }
+  var alert = false; 
+  if (props.alert) {
+    alert = true;
   }
 
   return (
     <>
-      <Container>
-      <Label labelVisible={labelVisible}>{label}</Label>
+      <Container align={align}>
+        <Label labelVisible={labelVisible} align={align}>{label}</Label>
         <Textfield
+          alert={alert}
           value={currentValue}
           onClick={() => {
             displayMenu();

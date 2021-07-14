@@ -15,15 +15,18 @@ const Textfield = styled.input`
 const Label = styled.p`
   font-size: 14px;
   display: none;
+  margin-right: 5px;
   text-align: center;
   ${(props) => props.visible === "True" && css`
       display: inline;
     `};
 `;
 const Container = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
+`;
+const LabelContainer = styled.div`
+    display: ${(props) => props.align};
 `;
 const Units = styled.button`
   background-color: #1a5a99;
@@ -80,6 +83,10 @@ export default function UnitMenu(props) {
   const [currentValue, setCurrentValue] = useState("");
   const [moveCursor, setMoveCursor] = useState(false);
   let initialClickLabelPosition = useRef(null);
+  var align = "flex";
+  if (props.vertical) {
+    align = "static";
+  }
   const updateValueDuringDrag = (e) => {
     setCurrentValue(incrementUsingCurrentValue(e, initialClickLabelPosition, currentValue));
   };
@@ -144,10 +151,14 @@ export default function UnitMenu(props) {
     if (listOfDefaults && listOfDefaults.includes(unit.charAt(0).toUpperCase() + unit.slice(1))) {
       setCurrentUnit("-");
       setCurrentValue(unit.charAt(0).toUpperCase() + unit.slice(1));
+      if (props.onChange)
+        props.onChange("");
     }
   }
   function changeValue(e) {
     setCurrentValue(e.target.value);
+    if (props.onChange)
+      props.onChange(e.target.value + " " + currentUnit);
   }
   function enterKey(e, textfield) {
     var code = e.keyCode ? e.keyCode : e.which;
@@ -168,14 +179,16 @@ export default function UnitMenu(props) {
       selected: i === unitIndex ? "True" : "False"
     }, listOfOptions[i]));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Label, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LabelContainer, {
+    align
+  }, /* @__PURE__ */ React.createElement(Label, {
     visible: labelVisible,
     onMouseDown: (e) => {
       initialClickLabelPosition.current = [e.clientX, e.clientY];
       start();
     },
     className: "noselect"
-  }, labelvalue), /* @__PURE__ */ React.createElement(Textfield, {
+  }, labelvalue), /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Textfield, {
     id: "text",
     type: "text",
     value: currentValue,
@@ -190,5 +203,5 @@ export default function UnitMenu(props) {
     }
   }), /* @__PURE__ */ React.createElement(Units, null, currentUnit, /* @__PURE__ */ React.createElement(Unit, {
     id: "unit"
-  }, unitComponents))));
+  }, unitComponents)))));
 }
