@@ -2,12 +2,16 @@ import React from "../../_snowpack/pkg/react.js";
 import DoenetRenderer from "./DoenetRenderer.js";
 export default class MathRenderer extends DoenetRenderer {
   componentDidMount() {
-    window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-    window.MathJax.Hub.processSectionDelay = 0;
-    window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+    if (window.MathJax) {
+      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
+      window.MathJax.Hub.processSectionDelay = 0;
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+    }
   }
   componentDidUpdate() {
-    window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+    if (window.MathJax) {
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+    }
   }
   render() {
     if (this.doenetSvData.hidden) {

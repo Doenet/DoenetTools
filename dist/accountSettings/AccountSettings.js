@@ -10,7 +10,6 @@ import InfiniteSlider from "../_framework/temp/InfiniteSlider.js";
 import "../_framework/doenet.css.proxy.js";
 import Textinput from "../_framework/Textinput.js";
 import Switch from "../_framework/Switch.js";
-// import GlobalFont from "../_utils/GlobalFont.js";
 import axios from "../_snowpack/pkg/axios.js";
 import {faTimes} from "../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../_snowpack/pkg/@fortawesome/react-fontawesome.js";
@@ -59,9 +58,7 @@ export default function DoenetProfile(props) {
   const translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto));
   const translateditems = translatednames.map((picture) => `/media/profile_pictures_copy/${picture}.jpg`);
   if (profile.signedIn === "0") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ 
-      // React.createElement(GlobalFont, null), 
-      /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
       title: "Account Settings"
     }), /* @__PURE__ */ React.createElement("mainPanel", null, /* @__PURE__ */ React.createElement("div", {
       style: {

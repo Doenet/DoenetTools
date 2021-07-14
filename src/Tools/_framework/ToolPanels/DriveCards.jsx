@@ -4,12 +4,12 @@ import axios from "axios";
 import Button from '../temp/Button'
 import { useRecoilCallback,selector, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { drivecardSelectedNodesAtom , fetchDrivesSelector, fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler'
+import { drivecardSelectedNodesAtom  } from '../ToolHandlers/CourseToolHandler'
 import { toolViewAtom, searchParamAtomFamily, paramObjAtom } from '../NewToolRoot';
 import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { useMenuPanelController } from '../Panels/MenuPanel';
-import { drivePathSyncFamily, loadDriveInfoQuery } from '../../../_reactComponents/Drive/Drive';
+import {fetchDrivesQuery, drivePathSyncFamily, loadDriveInfoQuery } from '../../../_reactComponents/Drive/NewDrive';
 import Measure from 'react-measure';
 
 export default function DriveCardsNew(props){
@@ -247,6 +247,7 @@ const DriveCardWrapper = (props) => {
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  setDrivecardSelection([]);
                   setParamObj({tool:'navigation',path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`}); 
                 }}
               >

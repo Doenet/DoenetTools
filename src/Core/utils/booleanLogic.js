@@ -387,6 +387,10 @@ export function evaluateLogic({ logicTree,
         return tree.trim();
       }
 
+      if(typeof tree === "number") {
+        return tree.toString();
+      }
+
       // multiple words would become multiplication
       if (!(recurse && Array.isArray(tree) && tree[0] === "*")) {
         console.warn("Invalid format for boolean condition");
@@ -397,7 +401,7 @@ export function evaluateLogic({ logicTree,
       return tree.slice(1).map(extractText).join(' ');
     };
 
-    // every operand must be a text or string that is true or false
+    // every operand must be a text or string
     operands = operands.map(x => extractText(x, true));
 
 

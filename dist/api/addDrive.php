@@ -66,9 +66,9 @@ $sql = "
 INSERT INTO drive_user
 (userId,driveId,canViewDrive,canDeleteDrive,canShareDrive,canAddItemsAndFolders,
 canDeleteItemsAndFolders,canMoveItemsAndFolders,canRenameItemsAndFolders,
-canPublishItemsAndFolders,canViewUnreleasedItemsAndFolders,canViewUnassignedItemsAndFolders,canChangeAllDriveSettings)
+canPublishItemsAndFolders,canViewUnreleasedItemsAndFolders,canViewUnassignedItemsAndFolders,canChangeAllDriveSettings,role)
 VALUES
-('$userId','$driveId','1','1','1','1','1','1','1','1','1','1','1')
+('$userId','$driveId','1','1','1','1','1','1','1','1','1','1','1','Owner')
 ";
 $result = $conn->query($sql); 
 

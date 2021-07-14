@@ -1,6 +1,6 @@
 import React,{useState} from 'react';
 import { useRecoilValue,useSetRecoilState,useRecoilStateLoadable } from 'recoil';
-import { fetchDrivesSelector ,fetchDriveUsers} from '../../../_reactComponents/Drive/Drive';
+import {fetchDrivesSelector,fetchDriveUsers} from '../../../_reactComponents/Drive/NewDrive';
 import { 
   faChalkboard,
   faCode,
@@ -18,8 +18,7 @@ export default function SelectedCourse(props){
 
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
-
-  if(selection.length === 1 && selection[0].role[0] === "Owner" ){
+  if(selection.length === 1 && selection[0]?.role[0] === "Owner" ){
 
     return <>
 
@@ -31,7 +30,7 @@ export default function SelectedCourse(props){
           driveId={selection[0].driveId} 
           />
       </>
-  }else if(selection[0].role[0] === "Student"){
+  }else if(selection[0]?.role[0] === "Student"){
     let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
 
     return (
@@ -48,13 +47,9 @@ export default function SelectedCourse(props){
           e.stopPropagation();
           console.log(">> made copy of courses")
         }}/><br />
-           <Button width="menu" value="Delete Course(Soon)" onClick={(e)=>{
+          <Button width="menu" value="Delete Course" alert onClick={(e)=>{
           e.preventDefault();
           e.stopPropagation();
-          console.log(">> Deleted selected courses")
-
-        }}/>
-           {/* <Button width="menu" value="Delete Course" alert onClick={()=>{
     // alert("Delete Drive")
    let selectionArr = [];
     for(let x=0;x< selection.length;x++){
@@ -70,7 +65,7 @@ export default function SelectedCourse(props){
       })
     // }
     
-  }}/> */}
+  }}/>
       </>
     );
   }else{

@@ -144,7 +144,7 @@ export default class FunctionIterates extends InlineComponent {
           }
         } else {
           if (dependencyValues.nDimensions === 1) {
-            let numericalf = functionComp.stateValues.numericals[0];
+            let numericalf = functionComp.stateValues.numericalfs[0];
             let value = initialValue.evaluate_to_constant();
             if (value === null) {
               allIterates = Array(nIterates).fill(me.fromAst('\uff3f'));

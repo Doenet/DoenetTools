@@ -11,18 +11,10 @@ export default class Answer extends DoenetRenderer {
     if (this.doenetSvData.submitAllAnswersAtAncestor) {
       submitAnswer = this.actions.submitAllAnswers;
     }
-    let inputChildToRender = null;
-    if (this.doenetSvData.inputChild) {
-      if (this.doenetSvData.inputChild) {
-        let inputChildInd;
-        for (let [ind, child] of this.children.entries()) {
-          if (child.props.componentInstructions.componentName === this.doenetSvData.inputChild.componentName) {
-            inputChildInd = ind;
-            break;
-          }
-        }
-        inputChildToRender = this.children[inputChildInd];
-      }
+    let inputChildrenToRender = null;
+    if (this.doenetSvData.inputChildren.length > 0) {
+      let inputChildNames = this.doenetSvData.inputChildren.map((x) => x.componentName);
+      inputChildrenToRender = this.children.filter((child) => inputChildNames.includes(child.props.componentInstructions.componentName));
     }
     if (!this.doenetSvData.delegateCheckWork) {
       let validationState = "unvalidated";
@@ -106,13 +98,13 @@ export default class Answer extends DoenetRenderer {
         id: this.componentName
       }, /* @__PURE__ */ React.createElement("a", {
         name: this.componentName
-      }), inputChildToRender, checkworkComponent);
+      }), inputChildrenToRender, checkworkComponent);
     } else {
       return /* @__PURE__ */ React.createElement("span", {
         id: this.componentName
       }, /* @__PURE__ */ React.createElement("a", {
         name: this.componentName
-      }), inputChildToRender);
+      }), inputChildrenToRender);
     }
   }
 }

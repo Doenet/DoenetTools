@@ -6,13 +6,14 @@ import {styleTags, tags as t} from "@codemirror/highlight"
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
 import {completeFromSchema} from '@codemirror/lang-xml';
 import {parser} from "../../Parser/doenet";
-import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+// import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 import { atom, useRecoilState } from "recoil";
 
 const matchTagState = atom({
     key: 'matchTagState',
     default: false,
 });
+
 export default function CodeMirror(props){
     let [matchTagEnabled, setMatchTagEnabled] = useRecoilState(matchTagState);
     let view = props.editorRef;
@@ -153,23 +154,23 @@ export default function CodeMirror(props){
     });
 
     //should rewrite using compartments once a more formal config component is established
-    function toggleMatchTag(){
-        if(matchTagEnabled){
-            view.current.dispatch({
-                effects: StateEffect.reconfigure.of(doenetExtensions)
-              });
-              setMatchTagEnabled(false);
-        } else{
-            view.current.dispatch({
-                effects: StateEffect.appendConfig.of(EditorState.transactionFilter.of(matchTag))
-            });
-            setMatchTagEnabled(true);
-        }
-    }
+    // function toggleMatchTag(){
+    //     if(matchTagEnabled){
+    //         view.current.dispatch({
+    //             effects: StateEffect.reconfigure.of(doenetExtensions)
+    //           });
+    //           setMatchTagEnabled(false);
+    //     } else{
+    //         view.current.dispatch({
+    //             effects: StateEffect.appendConfig.of(EditorState.transactionFilter.of(matchTag))
+    //         });
+    //         setMatchTagEnabled(true);
+    //     }
+    // }
 
     return (
         <>
-        <ToggleButton value="Enable matching tags" switch_value="Disable matching tags" callback={toggleMatchTag}/>
+        {/* <ToggleButton value="Enable matching tags" switch_value="Disable matching tags" callback={toggleMatchTag}/> */}
         <div ref={parent} ></div>
         </>
     )

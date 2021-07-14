@@ -25,6 +25,8 @@ module.exports = {
     'src/_reactComponents': '/_reactComponents',
     'src/_sharedRecoil': '/_sharedRecoil',
     'src/_utils': '/_utils',
+    'src/Tools/new': '/new',
+
   },
   plugins: [
     '@snowpack/plugin-react-refresh',
