@@ -1,4 +1,4 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useState} from "../../_snowpack/pkg/react.js";
 import styled, {ThemeProvider, css} from "../../_snowpack/pkg/styled-components.js";
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
@@ -11,8 +11,7 @@ const Button = styled.button`
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
   cursor: pointer;
-  font-size: 12px
- ;
+  font-size: 12px;
 `;
 Button.defaultProps = {
   theme: {
@@ -21,33 +20,74 @@ Button.defaultProps = {
     padding: "0px 10px 0px 10px"
   }
 };
+const Label = styled.p`
+  font-size: 12px;
+  display: ${(props) => props.labelVisible};
+  margin-right: 5px;
+  margin-bottom: ${(props) => props.align == "flex" ? "none" : "0px"};
+`;
+const Container = styled.div`
+  display: ${(props) => props.align};
+  width: auto;
+  align-items: center;
+`;
 export default function ActionButton(props) {
+  var container = {};
+  var align = "flex";
   var actionButton = {
     value: "Action Button"
   };
-  if (props.size === "medium") {
-    actionButton.height = "36px", actionButton.fontSize = "18px";
+  if (props.width) {
+    if (props.width === "menu") {
+      actionButton.width = "235px";
+      if (props.label) {
+        container.width = "235px";
+        actionButton.width = "100%";
+      }
+    }
   }
-  ;
-  if (props.value) {
-    actionButton.value = props.value;
+  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
+  var label = "";
+  if (props.label) {
+    label = props.label;
+    if (props.vertical) {
+      align = "static";
+      console.log("vertical");
+    }
   }
-  ;
+  var icon = "";
+  if (props.value || props.icon) {
+    if (props.value && props.icon) {
+      icon = props.icon;
+      actionButton.value = props.value;
+    } else if (props.value) {
+      actionButton.value = props.value;
+    } else if (props.icon) {
+      icon = props.icon;
+      actionButton.value = "";
+    }
+  }
   if (props.num === "first") {
     actionButton.borderRadius = "5px 0px 0px 5px";
   }
   if (props.num === "last") {
     actionButton.borderRadius = "0px 5px 5px 0px";
   }
-  function handleClick() {
-    if (props.callback)
-      props.callback();
+  function handleClick(e) {
+    if (props.onClick)
+      props.onClick(e);
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, {
+    style: container,
+    align
+  }, /* @__PURE__ */ React.createElement(Label, {
+    labelVisible,
+    align
+  }, label), /* @__PURE__ */ React.createElement(Button, {
     id: "actionButton",
     style: actionButton,
-    onClick: () => {
-      handleClick();
+    onClick: (e) => {
+      handleClick(e);
     }
-  }, actionButton.value));
+  }, icon, " ", actionButton.value)));
 }

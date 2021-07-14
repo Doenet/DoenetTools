@@ -1,6 +1,6 @@
-import { r as react } from './common/index-f66788ca.js';
-import { p as propTypes } from './common/index-4bda1d4e.js';
-import { c as createCommonjsModule, g as getDefaultExportFromCjs } from './common/_commonjsHelpers-f5d70792.js';
+import { r as react } from './common/index-61a7c514.js';
+import { p as propTypes } from './common/index-01840a39.js';
+import { c as createCommonjsModule, g as getDefaultExportFromCjs } from './common/_commonjsHelpers-b3efd043.js';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -1178,7 +1178,7 @@ function useDropzone() {
     dispatch({
       type: 'reset'
     });
-  }, [multiple, accept, minSize, maxSize, maxFiles, getFilesFromEvent, onDrop, onDropAccepted, onDropRejected, noDragEventsBubbling]);
+  }, [multiple, accept, minSize, maxSize, maxFiles, getFilesFromEvent, onDrop, onDropAccepted, onDropRejected, noDragEventsBubbling, validator]);
 
   var composeHandler = function composeHandler(fn) {
     return disabled ? null : fn;
@@ -1316,13 +1316,7 @@ function reducer(state, action) {
       });
 
     case 'reset':
-      return _objectSpread(_objectSpread({}, state), {}, {
-        isFileDialogActive: false,
-        isDragActive: false,
-        draggedFiles: [],
-        acceptedFiles: [],
-        fileRejections: []
-      });
+      return _objectSpread({}, initialState);
 
     default:
       return state;

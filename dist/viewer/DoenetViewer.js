@@ -4,6 +4,7 @@ import axios from "../_snowpack/pkg/axios.js";
 import sha256 from "../_snowpack/pkg/crypto-js/sha256.js";
 import CryptoJS from "../_snowpack/pkg/crypto-js.js";
 import me from "../_snowpack/pkg/math-expressions.js";
+import {nanoid} from "../_snowpack/pkg/nanoid.js";
 export function serializedComponentsReplacer(key, value) {
   if (value !== value) {
     return {objectType: "special-numeric", stringValue: "NaN"};
@@ -63,8 +64,10 @@ class DoenetViewerChild extends Component {
       this.requestedVariant = JSON.parse(variant, serializedComponentsReviver);
       this.requestedVariantFromDatabase = true;
     }
+    this.coreId = nanoid();
     if (this.props.core) {
-      this.core = new this.props.core({
+      new this.props.core({
+        coreId: this.coreId,
         coreReadyCallback: this.coreReady,
         coreUpdatedCallback: this.update,
         doenetML: this.doenetML,
@@ -79,7 +82,8 @@ class DoenetViewerChild extends Component {
         requestedVariant: this.requestedVariant
       });
     } else {
-      this.core = new Core({
+      new Core({
+        coreId: this.coreId,
         coreReadyCallback: this.coreReady,
         coreUpdatedCallback: this.update,
         doenetML: this.doenetML,
@@ -95,16 +99,17 @@ class DoenetViewerChild extends Component {
       });
     }
   }
-  coreReady() {
-    this.generatedVariant = this.core.document.stateValues.generatedVariantInfo;
-    this.allPossibleVariants = [...this.core.document.sharedParameters.allPossibleVariants];
+  coreReady(core) {
+    this.core = core;
+    this.generatedVariant = core.document.stateValues.generatedVariantInfo;
+    this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
     if (this.props.generatedVariantCallback) {
       this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
     }
     if (this.cumulativeStateVariableChanges) {
       let nFailures = Infinity;
       while (nFailures > 0) {
-        let result = this.core.executeUpdateStateVariables({
+        let result = core.executeUpdateStateVariables({
           newStateVariableValues: this.cumulativeStateVariableChanges
         });
         if (!(result.nFailures && result.nFailures < nFailures)) {
@@ -117,13 +122,13 @@ class DoenetViewerChild extends Component {
     }
     let renderPromises = [];
     let rendererClassNames = [];
-    for (let rendererClassName of this.core.rendererTypesInDocument) {
+    for (let rendererClassName of core.rendererTypesInDocument) {
       rendererClassNames.push(rendererClassName);
       renderPromises.push(import(`./renderers/${rendererClassName}.js`));
     }
     renderersloadComponent(renderPromises, rendererClassNames).then((rendererClasses) => {
       this.rendererClasses = rendererClasses;
-      let documentComponentInstructions = this.core.renderedComponentInstructions[this.core.documentName];
+      let documentComponentInstructions = core.renderedComponentInstructions[core.documentName];
       let documentRendererClass = this.rendererClasses[documentComponentInstructions.rendererType];
       this.documentRenderer = React.createElement(documentRendererClass, {
         key: documentComponentInstructions.componentName,
@@ -145,7 +150,7 @@ class DoenetViewerChild extends Component {
   }
   localStateChanged({
     newStateVariableValues,
-    contentId: contentId2,
+    contentId,
     sourceOfUpdate,
     transient = false
   }) {
@@ -168,14 +173,14 @@ class DoenetViewerChild extends Component {
     let changeString = JSON.stringify(this.cumulativeStateVariableChanges, serializedComponentsReplacer);
     let variantString = JSON.stringify(this.generatedVariant, serializedComponentsReplacer);
     const data = {
-      contentId: contentId2,
+      contentId,
       stateVariables: changeString,
       attemptNumber: this.attemptNumber,
       doenetId: this.props.doenetId,
       variant: variantString
     };
     if (this.allowLocalPageState) {
-      localStorage.setItem(`${contentId2}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({stateVariables: changeString, variant: variantString}));
+      localStorage.setItem(`${contentId}${this.props.doenetId}${this.attemptNumber}`, JSON.stringify({stateVariables: changeString, variant: variantString}));
     }
     if (!this.allowSavePageState) {
       return;
@@ -297,8 +302,8 @@ class DoenetViewerChild extends Component {
     let promises = [];
     let newDoenetMLs = {};
     let newContentIds = contentIds;
-    for (let contentId2 of contentIds) {
-      promises.push(axios.get(`/media/${contentId2}.doenet`));
+    for (let contentId of contentIds) {
+      promises.push(axios.get(`/media/${contentId}.doenet`));
     }
     Promise.all(promises).then((resps) => {
       newDoenetMLs = resps.map((x) => x.data);
@@ -314,6 +319,7 @@ class DoenetViewerChild extends Component {
       } else {
         message = `Could not retrieve contentIds ${newContentIds.join(",")}`;
       }
+      message += ": " + err.message;
       callBack({
         success: false,
         message,
@@ -371,7 +377,7 @@ class DoenetViewerChild extends Component {
         this.doenetML = localStorage.getItem(this.contentId);
         if (!this.doenetML) {
           try {
-            axios.get(`/media/${contentId}.doenet`).then((resp) => {
+            axios.get(`/media/${this.contentId}.doenet`).then((resp) => {
               this.doenetML = resp.data;
               localStorage.setItem(this.contentId, this.doenetML);
               this.forceUpdate();
