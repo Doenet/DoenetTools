@@ -228,8 +228,10 @@ export default function CourseToolHandler(props){
         set(toolViewAtom,{
           pageName:"Course",
           currentMainPanel:"DriveCards",
-          currentMenus:["CreateCourse","CourseEnroll"],
-          menusTitles:["Create Course","Enroll"],
+          currentMenus:["CreateCourse"],
+          menusTitles:["Create Course"],
+          // currentMenus:["CreateCourse","CourseEnroll"],
+          // menusTitles:["Create Course","Enroll"],
           menusInitOpen:[true,false],
           toolHandler:"CourseToolHandler"
         })
@@ -244,10 +246,8 @@ export default function CourseToolHandler(props){
             set(toolViewAtom,{
               pageName:"Course",
               currentMainPanel:"DrivePanel",
-              currentMenus:["AddDriveItems"],
-              menusTitles:["Add Items"],
-              // currentMenus:["AddDriveItems","EnrollStudents"],
-              // menusTitles:["Add Items","Enrollment"],
+              currentMenus:["AddDriveItems","EnrollStudents"],
+              menusTitles:["Add Items","Enrollment"],
               menusInitOpen:[true,false],
               toolHandler:"CourseToolHandler"
             })
