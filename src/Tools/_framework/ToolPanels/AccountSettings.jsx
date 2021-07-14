@@ -1,9 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
     useRecoilCallback,
+    useRecoilValueLoadable,
   } from "recoil";
 import styled from "styled-components";
-import { profileAtom, ProfileContext } from '../NewToolRoot';
+import { profileAtom } from '../NewToolRoot';
 import { a } from '@react-spring/web'
 import InfiniteSlider from '../temp/InfiniteSlider'
 import "../doenet.css";
@@ -31,11 +32,11 @@ const Image = styled(a.div)`
 
 
 const PROFILE_PICTURES = ['bird', 'cat', 'dog', 'emu', 'fox', 'horse', 'penguin', 'quokka', 'squirrel', 'swan', 'tiger', 'turtle', 'anonymous'];
-const picture_items = PROFILE_PICTURES.map(picture => {
-  let path = `/media/profile_pictures/${picture}.jpg`
-  let url = `url("${path}")`
-  return {css: url}
-})
+// const picture_items = PROFILE_PICTURES.map(picture => {
+//   let path = `/media/profile_pictures/${picture}.jpg`
+//   let url = `url("${path}")`
+//   return {css: url}
+// })
 
 
 
@@ -51,26 +52,27 @@ const translateArray = (arr, k) => arr.concat(arr).slice(k, k+arr.length)
 
 export default function DoenetProfile(props) {
 
-    const setProfile = useRecoilCallback(
-      ({set}) => async (newProfile) => {
-        const url = '/api/saveProfile.php'
-        const data = {
-          ...newProfile
-        }
+    const setProfile = useRecoilCallback(({set}) => (newProfile) => {
+        const data = { ...newProfile }
         localStorage.setItem('Profile', JSON.stringify(data));
         set(profileAtom,  data)
-        await axios.post(url, data);
-        //console.log(">>> ", newProfile);
+        axios.post('/api/saveProfile.php', data)
+        // .then((resp)=>{console.log(">>>save profile resp.data",resp.data)})
       }
     )
+    const loadProfile = useRecoilValueLoadable(profileAtom);
+    let profile = loadProfile.contents;
 
-    const profile = useContext(ProfileContext);
     const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
 
-    //console.log(">>> init photo", initPhoto)
 
-    let [editMode, setEditMode] = useState(false);
-    let [pic, setPic] = useState(0);
+    // let [editMode, setEditMode] = useState(false);
+    // let [pic, setPic] = useState(0);
+
+    if (profile.state === "loading"){ return null;}
+    if (profile.state === "hasError"){ 
+      console.error(profile)
+      return null;}
 
     //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
 
@@ -121,32 +123,7 @@ export default function DoenetProfile(props) {
               <div style = {{margin: "auto", width: "70%"}}>
                 <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
                   <div style = {{width: "150px", height: "150px", margin: "auto"}}>
-                  {/* {editMode ?
-                  <>
-                  <div style = {{float: "right"}}><FontAwesomeIcon onClick = {e => {
-                    let data = {...profile}
-                    data.profilePicture = pic
-                    setProfile(data)
-                    setEditMode(false)
-                  }} style = {{color: "#444", position: "absolute", zIndex: "2", textAlign: "right"}} icon={faTimes}/></div>
-                  <InfiniteSlider items={translateArray(picture_items, PROFILE_PICTURES.indexOf(profile.profilePicture))} showButtons={editMode} showCounter={false} callBack = {(i) => {
-                    setPic(translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(profile.profilePicture))[i-1])
-                  }}>
-                    {({ css }, i) => {
-                      // console.log(">>> pic index ", i);
-                      
-                      // setPicIndex(i)
-                      return (
-                        <Content>
-                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
-                        </Content>
-                      )
-                    }}
-                  </InfiniteSlider></> : 
-                    <Content onClick = {e => setEditMode(true)}>
-                      <Image style={{ backgroundImage: `url('/media/profile_pictures/${profile.profilePicture}.jpg')`, borderRadius: '50%' }} />
-                    </Content>
-                  } */}
+                
                   <InfiniteSlider fileNames = {translateditems} showButtons={true} showCounter={false} callBack = {(i) => {
                     //console.log(translatednames[i])
                     let data = {...profile}
