@@ -195,10 +195,14 @@ export const fetchDrivesSelector = selector({
 
     }else if (labelTypeDriveIdColorImage.type === "delete drive"){
       //Find matching drive and update label
-      for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
-        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId ){
-          newDriveData.driveIdsAndLabels.splice(i,1);
-          break;
+      let driveIdsAndLabelsLength = newDriveData.driveIdsAndLabels;
+      // for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
+        for(let i = 0; i< driveIdsAndLabelsLength.length; i++){
+        for(let x=0; x<labelTypeDriveIdColorImage.newDriveId.length ;x++){
+          if (driveIdsAndLabelsLength[i].driveId === labelTypeDriveIdColorImage.newDriveId[x] ){
+            newDriveData.driveIdsAndLabels.splice(i,1);
+            i = (i==0) ? i : i-1;
+          }
         }
       }
       //Set drive
