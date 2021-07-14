@@ -4,7 +4,7 @@ import "./theme.css";
 
 const Textfield = styled.input`
   border-radius: 5px;
-  border: 2px solid black;
+  border: ${props => props.alert};
   z-index: 0;
   height: 24px;
   width: 48px;
@@ -206,6 +206,11 @@ export default function UnitMenu(props) {
         </Unitoption>
       );
     }
+
+    var alert = '2px solid black';
+    if (props.alert) {
+      alert = '2px solid #C1292E';
+    }
   
     return (
       <>
@@ -225,6 +230,7 @@ export default function UnitMenu(props) {
               id="text"
               type="text"
               value={currentValue}
+              alert={alert}
               onBlur={() => {
                 updateUnit();
               }}

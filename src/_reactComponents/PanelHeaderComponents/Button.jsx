@@ -89,6 +89,10 @@ export default function Button(props) {
         button.value = ''
     }
 }
+
+if (props.alert) {
+  button.backgroundColor = '#C1292E'
+}
   // if (props.value) {
   //     button.value = props.value;
   // };

@@ -26,7 +26,7 @@ const Container = styled.div`
 
 const Textfield = styled.input`
   border-radius: 5px;
-  border: 2px solid black;
+  border: ${props => props.alert ? '2px solid #C1292E' : '2px solid black'};
   z-index: 0;
   height: 24px;
   width: 46px;
@@ -255,12 +255,17 @@ export default function Increment(props) {
       align = 'static';
     }
   }
+  var alert = false; 
+  if (props.alert) {
+    alert = true;
+  }
 
   return (
     <>
       <Container align={align}>
         <Label labelVisible={labelVisible} align={align}>{label}</Label>
         <Textfield
+          alert={alert}
           value={currentValue}
           onClick={() => {
             displayMenu();
