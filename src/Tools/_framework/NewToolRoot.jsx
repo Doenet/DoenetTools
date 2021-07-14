@@ -131,6 +131,7 @@ export default function ToolRoot(props){
     DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
+    Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -308,6 +309,42 @@ let navigationObj = {
       // menusTitles:["Create Course","Enroll"],
       menusInitOpen:[true,false],
       toolHandler:"CourseToolHandler"
+    },
+    navigation:{
+      pageName:"Course",
+      currentMainPanel:"DrivePanel",
+      currentMenus:["AddDriveItems","EnrollStudents"],
+      menusTitles:["Add Items","Enrollment"],
+      menusInitOpen:[true,false],
+      toolHandler:"CourseToolHandler"
+    },
+    editor:{
+      pageName:"Course",
+      currentMainPanel:"EditorViewer",
+      currentMenus:["DoenetMLSettings","VersionHistory","Variant"], 
+      menusTitles:["Settings","Version History","Variant"],
+      menusInitOpen:[false,false,false],
+      supportPanelOptions:["DoenetMLEditor"],
+      supportPanelTitles:["DoenetML Editor"],
+      supportPanelIndex:0,
+      headerControls: ["ViewerUpdateButton"],
+      headerControlsPositions: ["Left"],
+      toolHandler:"CourseToolHandler"
+    }
+  },
+  enrollment:{
+    default:{
+      pageName:"Enrollment",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"Enrollment",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+      headerControls: ["BackButton"],
+      headerControlsPositions: ["Right"]
     }
   },
   home:{
