@@ -9,7 +9,7 @@ import { searchParamAtomFamily, paramObjAtom, pageToolViewAtom } from '../NewToo
 import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { useMenuPanelController } from '../Panels/MenuPanel';
-import {fetchDrivesQuery, drivePathSyncFamily, loadDriveInfoQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { drivePathSyncFamily, loadDriveInfoQuery } from '../../../_reactComponents/Drive/Drive';
 import Measure from 'react-measure';
 
 export default function DriveCardsNew(props){
