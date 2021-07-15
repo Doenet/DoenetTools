@@ -3,6 +3,7 @@ import { applyMacros, componentFromAttribute } from "./serializedStateProcessing
 
 export function postProcessCopy({ serializedComponents, componentName,
   addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
+  addDontLinkToCopies = false,
   init = true
 }) {
 
@@ -39,6 +40,13 @@ export function postProcessCopy({ serializedComponents, componentName,
         component.downstreamDependencies = downDep;
       }
 
+      if(component.componentType === "copy" && addDontLinkToCopies) {
+        if(!component.attributes) {
+          component.attributes = {};
+        }
+        component.attributes.link = false;
+      }
+
     } else {
       uniqueIdentifierBase = identifierPrefix + component.componentType + "|shadowUnnamed";
     }
@@ -50,6 +58,7 @@ export function postProcessCopy({ serializedComponents, componentName,
       serializedComponents: component.children,
       componentName,
       addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+      addDontLinkToCopies,
       init: false
     });
 
@@ -61,6 +70,7 @@ export function postProcessCopy({ serializedComponents, componentName,
             serializedComponents: [attrComp],
             componentName,
             addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+            addDontLinkToCopies,
             init: false,
           })[0];
       }
@@ -71,6 +81,7 @@ export function postProcessCopy({ serializedComponents, componentName,
         serializedComponents: component.replacements,
         componentName,
         addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
+        addDontLinkToCopies,
         init: false
       });
     }
