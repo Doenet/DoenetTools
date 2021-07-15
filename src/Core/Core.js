@@ -1748,7 +1748,7 @@ export default class Core {
 
     // we'll copy the replacements of the shadowed composite
     // and make those be the replacements of the shadowing composite
-    let serializedReplacements = shadowedComposite.replacements.map(x => x.serialize({ forCopy: true }));
+    let serializedReplacements = shadowedComposite.replacements.map(x => x.serialize({ forLink: true }));
 
     // Have three composites involved:
     // 1. the shadowing composite (component, the one we're trying to expand)
@@ -6165,7 +6165,7 @@ export default class Core {
           continue;
         }
 
-        let shadowingSerializeChildren = newChildren.map(x => x.serialize({ forCopy: true }))
+        let shadowingSerializeChildren = newChildren.map(x => x.serialize({ forLink: true }))
         shadowingSerializeChildren = postProcessCopy({
           serializedComponents: shadowingSerializeChildren,
           componentName: shadowingParent.shadows.compositeName
@@ -7054,7 +7054,7 @@ export default class Core {
 
         // TODO: not using uniqueIdentifiers used here
         // is this a problem?
-        let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forCopy: true }))
+        let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forLink: true }))
         newSerializedReplacements = postProcessCopy({
           serializedComponents: newSerializedReplacements,
           componentName: shadowingComponent.shadows.compositeName
