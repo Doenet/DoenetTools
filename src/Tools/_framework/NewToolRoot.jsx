@@ -264,7 +264,8 @@ export default function ToolRoot(props){
     </ToolContainer>
     <Toast />
    
-    <RootController key='root_controller' toolRootMenusAndPanels={toolRootMenusAndPanels} setToolRootMenusAndPanels={setToolRootMenusAndPanels}/>
+    {/* <RootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/> */}
+    <MemoizedRootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/>
   </>
 } 
 
@@ -316,7 +317,7 @@ let navigationObj = {
       currentMenus:["AddDriveItems","EnrollStudents"],
       menusTitles:["Add Items","Enrollment"],
       menusInitOpen:[true,false],
-      toolHandler:"CourseToolHandler"
+      toolHandler:"CourseToolHandler",
     },
     editor:{
       pageName:"Course",
@@ -422,7 +423,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     key:"pageToolViewAtom",
     default:{page:"init",tool:"",view:""}
   })
-
+  const MemoizedRootController = React.memo(RootController)
   function RootController(props){
     const [recoilPageToolView,setRecoilPageToolView ] = useRecoilState(pageToolViewAtom);
     let lastPageToolView = useRef({page:"init",tool:"",view:""});
@@ -432,19 +433,22 @@ let encodeParams = p => Object.entries(p).map(kv =>
     let history = useHistory();
 
     let locationStr = `${location.pathname}${location.search}`;
-    let isURLChange = false;
     let nextPageToolView = {page:"",tool:"",view:""};
     let nextMenusAndPanels = null;
+    console.log("\n>>>===RootController")
 
+    console.log(">>>Beginning lastPageToolView",lastPageToolView.current)
+
+    //URL change test
+    let isURLChange = false;
     if (locationStr !== lastLocationStr.current){
       isURLChange = true;
       nextPageToolView.page = location.pathname.replaceAll("/","").toLowerCase();
       if (nextPageToolView.page === ""){
         nextPageToolView.page = 'home';
         const url = window.location.origin + window.location.pathname + "#home";;
-          // console.log(">>>Go to home URL!!!",location,url);
-          //update url without pushing on to history
-          window.history.replaceState('','',url)
+        //update url without pushing on to history
+        window.history.replaceState('','',url)
       }
       let searchParamObj = Object.fromEntries(new URLSearchParams(location.search))
       nextPageToolView.tool = searchParamObj['tool'];
@@ -453,44 +457,58 @@ let encodeParams = p => Object.entries(p).map(kv =>
         nextPageToolView.tool = '';
       }
     }
+
+    //Recoil change test
     let isRecoilChange = false;
     if (JSON.stringify(lastPageToolView.current) !== JSON.stringify(recoilPageToolView)){
       isRecoilChange = true;
       // console.log(">>>Recoil change nextPageToolView = recoilPageToolView",recoilPageToolView)
       if (recoilPageToolView.back){
-        // console.log(">>>BACK!!!!!",backPageToolView.current)
         setRecoilPageToolView(backPageToolView.current)
         return null;
       }
       nextPageToolView = {...recoilPageToolView}
       
     }
+  
+    console.log(">>>location",location)
+
+
     if (!isURLChange && !isRecoilChange){
-      nextPageToolView = lastPageToolView.current;
+      //Just updating traking variables
+      // nextPageToolView = lastPageToolView.current;
+    console.log(">>>lastLocationStr before",lastLocationStr.current)
+
+      lastLocationStr.current = locationStr;
+      // lastPageToolView.current = nextPageToolView;
+    
+    console.log(">>>lastLocationStr after",lastLocationStr.current)
+    console.log(">>>lastPageToolView",lastPageToolView.current)
+    console.log(">>>No Change!")
+
+    return null;
     }
 
-    console.log("\n>>>===RootController")
-    console.log(">>>location",location)
     console.log(">>>isURLChange",isURLChange)
     console.log(">>>isRecoilChange",isRecoilChange)
-    // console.log(">>>props.toolRootMenusAndPanels",props.toolRootMenusAndPanels)
+
+
+        // console.log(">>>props.toolRootMenusAndPanels",props.toolRootMenusAndPanels)
     // console.log(">>>recoilPageToolView",recoilPageToolView)
-    console.log(">>>nextPageToolView",nextPageToolView)
-    // console.log(">>>lastPageToolView",lastPageToolView.current)
 
       //TODO: handle page == "" and tool changed
       //TODO: handle page == "" and tool == "" and view changed
-
+    
     if (lastPageToolView.current.page !== nextPageToolView.page){
       //Page changed!
-      console.log(">>>page changed!!!",nextPageToolView)
+      // console.log(">>>page changed!!!",nextPageToolView)
       if (nextPageToolView.tool === ""){
         //Load default
         
         nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
         if (Object.keys(nextMenusAndPanels).includes("defaultTool")){
            const url = window.location.origin + window.location.pathname + "#" + location.pathname + '?' + encodeParams({tool:nextMenusAndPanels.defaultTool});
-          console.log(">>>Default Tool Not given!!! update URL!!!",location,url);
+          // console.log(">>>Default Tool Not given!!! update URL!!!",location,url);
           //update url without pushing on to history
           window.history.replaceState('','',url)
           nextMenusAndPanels = navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
@@ -502,44 +520,48 @@ let encodeParams = p => Object.entries(p).map(kv =>
       }
     }else if (lastPageToolView.current.tool !== nextPageToolView.tool){
       //Tool changed!
-      console.log(">>>TOOL CHANGED!!!!")
+      // console.log(">>>TOOL CHANGED!!!!")
       //TODO: Check for default view
       nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
 
     }else if (lastPageToolView.current.view !== nextPageToolView.view){
       //View changed!
-      console.log(">>>VIEW CHANGED!!!!")
+      // console.log(">>>VIEW CHANGED!!!!")
 
     }
 
 
     //Update recoil isURLChange
     if (isURLChange){
+      console.log(">>>Set recoil to ",nextPageToolView)
       setRecoilPageToolView(nextPageToolView);
     }
 
 
+    console.log(">>>Directions for what to do nextPageToolView",nextPageToolView)
+    console.log(">>>Compare lastPageToolView",lastPageToolView.current)
    
 
     if (JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) && nextMenusAndPanels){
-      console.log(">>>CHANGE DETECTED!!! UPDATE TOOL ROOT!!!!",nextMenusAndPanels)
+      console.log(">>>UPDATE TOOL ROOT!")
       backPageToolView.current = lastPageToolView.current;  //Set back for back button
       if (isRecoilChange){
-        //push url
+        //push url with no refresh
         let tool = nextPageToolView.tool;
         let pathname = '/' + recoilPageToolView.page;
         let search = '?' + encodeParams({tool});
         if (tool === "" || tool === undefined){
           search = "";
         }
+        const urlPush = pathname + search;
+        // const url = window.location.origin + window.location.pathname + "#" + urlPush;
 
-        let urlPush = pathname + search;
- 
-        console.log(">>>urlPush",urlPush)
+          
         //Don't add to the url history if it's the same location the browser is at
-        if (location.pathname !== pathname && location.search !== search){
-          console.log(">>>push!!!")
-          history.push(urlPush)
+        if (location.pathname !== pathname || location.search !== search){
+          history.push(urlPush);
+          //update url without pushing on to history
+          // window.history.pushState('','',url)
         }
       }
       props.setToolRootMenusAndPanels(nextMenusAndPanels)
