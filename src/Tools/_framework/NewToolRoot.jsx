@@ -160,7 +160,7 @@ export default function ToolRoot(props){
     </Suspense>
   } 
 
-  console.log(">>>toolRootMenusAndPanels",toolRootMenusAndPanels)
+  // console.log(">>>toolRootMenusAndPanels",toolRootMenusAndPanels)
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
 
@@ -431,6 +431,24 @@ let encodeParams = p => Object.entries(p).map(kv =>
     let lastLocationStr = useRef("");
     let location = useLocation();
     let history = useHistory();
+    let lastSearchObj = useRef({});
+
+     const setSearchParamAtom = useRecoilCallback(({set})=> (paramObj)=>{
+    //Only set atom if parameter has changed
+    for (const [key,value] of Object.entries(paramObj)){
+      if (lastSearchObj.current[key] !== value){
+        // console.log(`>>>CHANGED so SET key: ${key} value: ${value}  **********`)
+        set(searchParamAtomFamily(key),value)
+      }
+    }
+    //If not defined then clear atom
+    for (const key of Object.keys(lastSearchObj.current)){
+      if (!paramObj[key]){
+        // console.log(`>>>clear!!!  -${key}- **********`)
+        set(searchParamAtomFamily(key),"") 
+      }
+    }
+  })
 
     let locationStr = `${location.pathname}${location.search}`;
     let nextPageToolView = {page:"",tool:"",view:""};
@@ -470,9 +488,9 @@ let encodeParams = p => Object.entries(p).map(kv =>
       
     }
   
-    console.log(">>>location",location)
-    console.log(">>>isURLChange",isURLChange)
-    console.log(">>>isRecoilChange",isRecoilChange)
+    // console.log(">>>location",location)
+    // console.log(">>>isURLChange",isURLChange)
+    // console.log(">>>isRecoilChange",isRecoilChange)
 
     if (!isURLChange && !isRecoilChange){
       //Just updating traking variables
@@ -508,203 +526,63 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }
 
 
+    let searchObj = {}
+
     //Update recoil isURLChange
     if (isURLChange){
       setRecoilPageToolView(nextPageToolView);
+      searchObj = Object.fromEntries(new URLSearchParams(location.search))
+      setSearchParamAtom(searchObj)
     }
 
-
-    console.log(">>>Directions for what to do nextPageToolView",nextPageToolView)
-    console.log(">>>Compare lastPageToolView",lastPageToolView.current)
    
 
-    if (JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) && nextMenusAndPanels){
-      console.log(">>>UPDATE TOOL ROOT!")
+    // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
+    //Only update ToolRoot if nextMenusAndPanels was indicated as a change
+    if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) ){
+      // console.log(">>>UPDATE TOOL ROOT!")
       backPageToolView.current = lastPageToolView.current;  //Set back for back button
-      if (isRecoilChange){
-        //push url with no refresh
-        let tool = nextPageToolView.tool;
-        let pathname = '/' + recoilPageToolView.page;
-        let search = '?' + encodeParams({tool});
-        if (tool === "" || tool === undefined){
-          search = "";
-        }
-        console.log(">>>search",search)
-        const urlPush = pathname + search;
-          
-        //Don't add to the url history if it's the same location the browser is at
-        if (location.pathname !== pathname || location.search !== search){
-          history.push(urlPush);
-        }
-      }
+      
       props.setToolRootMenusAndPanels(nextMenusAndPanels)
     }
 
+
+    if (isRecoilChange){
+      //push url with no refresh
+      let tool = nextPageToolView.tool;
+      let pathname = '/' + recoilPageToolView.page;
+      searchObj = {...recoilPageToolView.params}
+      if (tool !== "" && tool !== undefined){
+        searchObj = {tool,...recoilPageToolView.params};
+      }
+
+      let search = "";
+      if (Object.keys(searchObj).length > 0){
+        search = '?' + encodeParams(searchObj);
+      }
+      
+      const urlPush = pathname + search;
+
+      // console.log(">>>location.search !== search",location.search !== search)
+      // console.log(">>>location.search ",location.search )
+      // console.log(">>>search",search)
+
+      if (location.search !== search){
+        setSearchParamAtom(searchObj)
+      }
+        
+      //Don't add to the url history if it's the same location the browser is at
+      if (location.pathname !== pathname || location.search !== search){
+        // console.log(">>>UPDATE URL!",urlPush)
+        history.push(urlPush);
+      }
+    }
+    lastSearchObj.current = searchObj;
     lastLocationStr.current = locationStr;
     lastPageToolView.current = nextPageToolView;
     return null;
   }
 
-
-
-
-
-
-  // const setRecoil = useRecoilCallback(({set,snapshot})=> async (recoilArray)=>{
-      // const atomArray = await snapshot.getPromise(mainPanelClickAtom)
-      // // console.log(">>>mpOnClick",atomArray)
-      // for (let obj of atomArray){
-      //   set(obj.atom,obj.value)
-      //   // console.log(">>>obj",obj)
-      // }
-    // })
-
-  // const LazyFooterObj = useRef({
-  //   CourseToolHandler:lazy(() => import('./ToolHandlers/CourseToolHandler')),
-  // }).current;
-
-  // const lastURL = useRef("")
-
-
-  // let setUrlChangeSourceParamObjAtom = useSetRecoilState(urlChangeSourceParamObjAtom);
- // console.log(">>> location.href ",location.href )
-  // console.log(">>> lastURL.current" , lastURL.current)
-  // const lastURLProp = lastURL.current;
-  // if (location.href !== lastURL.current ){
-  //   // console.log(">>>URL CHANGED!!!!!!!!!!!!!!!!!!!!!!!!!!")
-  //   let searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
-  //   // console.log(">>>searchParamObj",searchParamObj)
-  //   setUrlChangeSourceParamObjAtom(searchParamObj);
-  //   lastURL.current = location.href;
-  // }
-
-   // const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
-  // if (toolRootMenusAndPanels.pageName.toLowerCase() !== lcpath){
-  // //Need to update path
-  //   setPage(lcpath,props.route.location.pathname)
-  //   return null; 
-  // }
-
-   // let toolHandler = null;
-  // if (toolRootMenusAndPanels.toolHandler){
-  //   const ToolHandlerKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.toolHandler}`;
-  //   const handler = LazyToolHandlerObj[toolRootMenusAndPanels.toolHandler];
-  //   if (handler){
-  //     toolHandler = <Suspense key={ToolHandlerKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-  //     {React.createElement(handler,{key:ToolHandlerKey})}
-  //     </Suspense>
-  //   }
-  // }
-
-  // const setPage = useRecoilCallback(({set})=> (tool,origPath)=>{
-  //   // console.log(">>> Root setPAge",tool,origPath)
-  //   if (tool === ""){ 
-  //     // location.href = `#home/`
-  //     window.history.replaceState('','','/new#/home')
-
-  //   }else{
-  //     let newTool = toolsObj[tool];
-  
-  //     if (!newTool){ 
-  //       let newParams = {};
-  //       newParams["path"] = `${origPath}`;
-  //       const ePath = encodeParams(newParams);
-  //     location.href = `#/notfound?${ePath}`
-  //     }else{
-  
-  //       set(toolViewAtom,newTool);
-  //     }
-  //   }
-  //   set(selectedMenuPanelAtom,""); //clear selection
-  //   set(mainPanelClickAtom,[])  //clear main panel click
-
-  // })
-
-
-// function old(prop){
-
-  // let [eventSourceParamObj,setEventSourceParamObj] = useRecoilState(paramObjAtom);
-  // let [urlSourceParamObj,setUrlSourceParamObj] = useRecoilState(urlChangeSourceParamObjAtom);
-  // // let eventSourceParamObj = useRecoilValue(paramObjAtom);
-  // // let urlSourceParamObj = useRecoilValue(urlChangeSourceParamObjAtom);
-  // let currentParamObj = useRef({});
-  // let lastPathName = useRef("");
-  // let history = useHistory();
-  
-
-  // let isURLSourceFLAG = false;
-  // if (JSON.stringify(urlSourceParamObj) !== JSON.stringify(currentParamObj.current)){
-  //   //URL is the source of parameter change
-  //   isURLSourceFLAG = true;
-  // }
-  // let isEventSourceFLAG = false;
-  // if (JSON.stringify(eventSourceParamObj) !== JSON.stringify(currentParamObj.current)){
-  //   //Event is the source of parameter change
-  //   isEventSourceFLAG = true;
-  // }
-
-  // const setSearchParamAtom = useRecoilCallback(({set})=> (paramObj)=>{
-  //   //Only set atom if parameter has changed
-  //   for (const [key,value] of Object.entries(paramObj)){
-  //     if (currentParamObj.current[key] !== value){
-  //       // console.log(`>>>CHANGED so SET key: ${key} value: ${value} **********`)
-  //       set(searchParamAtomFamily(key),value)
-  //     }
-  //   }
-  //   //If not defined then clear atom
-  //   for (const key of Object.keys(currentParamObj.current)){
-  //     if (!paramObj[key]){
-  //       // console.log(`>>>clear!!!  -${key}- **********`)
-  //       set(searchParamAtomFamily(key),"") 
-  //     }
-  //   }
-  // })
-
-  // // console.log(">>> isURLSourceFLAG",isURLSourceFLAG)
-  // // console.log(">>> isEventSourceFLAG",isEventSourceFLAG)
-  // // console.log(">>> eventSourceParamObj",eventSourceParamObj)
-  // // console.log(">>> urlSourceParamObj",urlSourceParamObj)
-  // // console.log(">>> currentParamObj.current",currentParamObj.current)
-
-  // if (isURLSourceFLAG){
-  //   setSearchParamAtom(urlSourceParamObj);
-  // }else if (isEventSourceFLAG){
-  //   setSearchParamAtom(eventSourceParamObj);
-  // }
- 
-
-  // //Update URL if parameters are not up to date
-  // let [pathname,urlSearchParams] = location.hash.split("?");
-  // pathname = pathname.replace("#","")
-  // if (!urlSearchParams){ urlSearchParams = {} }
-
-  // if (isEventSourceFLAG){
-  // // let urlParamsObj = Object.fromEntries(new URLSearchParams(urlSearchParams));
-  // const url = location.origin + location.pathname + "#" + pathname + '?' + encodeParams(eventSourceParamObj);
-  //   if (!currentParamObj.current?.tool){ 
-  //    //If page didn't have a tool update url without pushing on to history
-  //     window.history.replaceState('','',url)
-  //   }else{
-  //     const route =  pathname + '?' + encodeParams(eventSourceParamObj);
-  //     history.push(route)
-  //   //   window.history.pushState('','',url)
-  //   }
-
-  //   prop.setURL(url)
-  // }
-
-  // // console.log(">>>----------------------------------\n\n")
-
-  // lastPathName.current = pathname;
-  // if (isURLSourceFLAG){
-  //   currentParamObj.current = urlSourceParamObj;
-  //   setEventSourceParamObj(urlSourceParamObj);
-  // }else if (isEventSourceFLAG){
-  //   currentParamObj.current = eventSourceParamObj;
-  //   setUrlSourceParamObj(eventSourceParamObj);
-  // }
-//   return null;
-// }
 
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
