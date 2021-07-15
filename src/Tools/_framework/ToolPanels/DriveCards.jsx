@@ -52,7 +52,7 @@ const DriveCardWrapper = (props) => {
  
   const [drivecardSelectedValue,setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom)
   const setOpenMenuPanel = useMenuPanelController();
-  const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
+  // const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
   const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
   // console.log(" columnJSX drivesInfo",drivecardInfo)
   const setParamObj = useSetRecoilState(paramObjAtom);
@@ -85,22 +85,25 @@ const DriveCardWrapper = (props) => {
     return { ...child, xy, width: (width / columns), height: 250};
   });
 
+  const setSelectedCourseMenu = useRecoilCallback(({set})=> ()=>{
+    set(selectedMenuPanelAtom,"SelectedCourse");
+    });
 
-  if(driveCardPath.driveId !== ""){
-    return null;
-  }
- 
 
- 
+  // if(driveCardPath.driveId !== ""){
+  //   return null;
+  // }
 
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
-      setDrivecardPath({
+      setParamObj({
+        tool:'navigation',
         driveId:item.driveId,
         parentFolderId:item.driveId,
         itemId:item.driveId,
-        type:"Drive"
-      })
+        path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`
+      });
+
     }
   };
 
@@ -109,10 +112,6 @@ const DriveCardWrapper = (props) => {
       setDrivecardSelection([item]);
     }
   };
-
-  const setSelectedCourseMenu = useRecoilCallback(({set})=> ()=>{
-    set(selectedMenuPanelAtom,"SelectedCourse");
-    });
 
 
 
@@ -235,6 +234,7 @@ const DriveCardWrapper = (props) => {
               }}
             >
               <div
+                role="button"
                 style={{ height: "100%" ,outline:"none"}}
                 tabIndex={index + 1}
                 onClick={(e) => {
@@ -247,7 +247,7 @@ const DriveCardWrapper = (props) => {
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setParamObj({tool:'navigation',path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`}); 
+                  setParamObj({tool:'navigation',path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`});
                 }}
               >
                   <DriveCard

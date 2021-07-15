@@ -61,6 +61,7 @@ import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import {loadAssignmentSelector} from '../../Tools/course/Course';
 import useSockets from '../Sockets';
+import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
@@ -257,29 +258,30 @@ const dragShadowId = "dragShadow";
 
 export default function Drive(props){
   // console.log("=== Drive")
-  
+
   const isNav = useContext(IsNavContext);
 
   const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
-  if (drivesAvailable.state === "loading"){ return null;}
-  if (drivesAvailable.state === "hasError"){ 
-    console.error(drivesAvailable.contents)
-    return null;}
+  const { driveIdsAndLabels } = drivesAvailable.getValue()
 
+  // if (drivesAvailable.state === "loading"){
+  //   return null;
+  // }
+  // if (drivesAvailable.state === "hasError"){
+  //   console.error(drivesAvailable.contents)
+  //   return null;
+  // }
 
   if (props.types){
     let drives = [];
     for (let type of props.types){
-      for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
+      for (let driveObj of driveIdsAndLabels){
         if (driveObj.type === type && driveObj.subType === 'Administrator'){
           drives.push(
-          <React.Fragment key={`drive${driveObj.driveId}${isNav}`} ><Router ><Switch>
-           <Route path="/" render={(routeprops)=>
-            <Suspense fallback={<div></div>}>
-              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj} />
+            <Suspense fallback={<div>loading Drive...</div>}>
+              <DriveRouted driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj} key={`drive${driveObj.driveId}${isNav}`}/>
             </Suspense>
-           }></Route>
-         </Switch></Router></React.Fragment>)
+          )
         }
       }
     }
@@ -288,13 +290,10 @@ export default function Drive(props){
   }else if (props.driveId){
     for (let driveObj of drivesAvailable.contents.driveIdsAndLabels){
         if (driveObj.driveId === props.driveId){
-         return <Router><Switch>
-           <Route path="/" render={(routeprops)=>
-            <Suspense fallback={<div></div>}>
-              <DriveRouted route={{...routeprops}} driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
-            </Suspense>
-           }></Route>
-         </Switch></Router>
+         return (
+          <Suspense fallback={<div>loading Drive...</div>}>
+            <DriveRouted driveId={driveObj.driveId} label={driveObj.label} isNav={isNav} {...props} driveObj={driveObj}/>
+          </Suspense>)
         }
     }
     console.warn("Don't have a drive with driveId ",props.id)
@@ -577,20 +576,22 @@ function DriveHeader(props){
 } 
 
 function DriveRouted(props){
-  // console.log("=== DriveRouted")
-  let columnTypes = []
-  if (props.columnTypes){ columnTypes = props.columnTypes} //Protect against not being defined
+  console.log("=== DriveRouted")
+  let columnTypes = props.columnTypes ?? [] //Protect against not being defined
 
   const [numColumns,setNumColumns] = useState(1);
   
   const { onDragEnterInvalidArea, registerDropTarget, unregisterDropTarget } = useDnDCallbacks();
-  const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey))
+  // const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey))
+  const path = useRecoilValue(searchParamAtomFamily('path'));
+  const [driveId, parentFolderId, itemId] = path.split(":");
+
 
   let hideUnpublished = false; //Default to showing unpublished
   if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(props.driveId))
   let driveInstanceId = useRef("");
-  const path = Object.fromEntries(new URLSearchParams(props.route.location.search))?.path;
+
   useUpdateBreadcrumb({driveId: props.driveId, driveLabel: props.driveObj.label, path: path}); 
 
 
@@ -602,9 +603,9 @@ function DriveRouted(props){
   //Use Route to determine path variables
   let pathFolderId = props.driveId; //default 
 
-  let routePathDriveId = drivePath.driveId;
-  let routePathFolderId = drivePath.parentFolderId;  
-  let pathItemId = drivePath.itemId;  
+  let routePathDriveId = driveId;
+  let routePathFolderId = parentFolderId;  
+  let pathItemId = itemId;  
   if (routePathFolderId !== ""){pathFolderId = routePathFolderId}
 
 
@@ -614,6 +615,7 @@ function DriveRouted(props){
     rootFolderId = props.driveId;
   }
   
+  //TODO: this flag should not be needed
   if (!props.isNav && (routePathDriveId === "" || props.driveId !== routePathDriveId)) return <></>;
 
   let heading = null;

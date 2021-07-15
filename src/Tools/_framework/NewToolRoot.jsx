@@ -229,10 +229,12 @@ export default function ToolRoot(props){
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
     SignOut:lazy(() => import('./ToolPanels/SignOut')),
     DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
+    Playground: lazy(() => import('./ToolPanels/Playground'))
   }).current;
 
   const LazyControlObj = useRef({
     CloseProfileButton:lazy(() => import('./HeaderControls/CloseProfileButton')),
+    BreadCrumb: lazy(() => import('./HeaderControls/BreadCrumb')),
   }).current;
 
   const LazyToolHandlerObj = useRef({
@@ -318,9 +320,11 @@ export default function ToolRoot(props){
       if (controlObj){
         const key = `headerControls${MainPanelKey}`;
         headerControlsPositions.push(toolViewInfo.headerControlsPositions[i])
-        headerControls.push(<Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-        {React.createElement(controlObj,{key:{key}})}
-        </Suspense>)
+        headerControls.push(
+          <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+            {React.createElement(controlObj,{key:{key}})}
+          </Suspense>
+          )
       }
     }
   }

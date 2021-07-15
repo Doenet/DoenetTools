@@ -1152,6 +1152,7 @@ export default function Library(props) {
           </div>
 
           <div
+            role='button'
             onClick={cleardrivecardSelection}
             data-cy="mainPanel"
             tabIndex={0}

@@ -3,8 +3,9 @@ import { atom, useRecoilValue,selector, useRecoilCallback, useRecoilState, useSe
 import { searchParamAtomFamily, toolViewAtom, paramObjAtom } from '../NewToolRoot';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
+import { folderDictionary, globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import axios from "axios";
+import { nanoid } from 'nanoid';
 
 export const drivecardSelectedNodesAtom = atom({
   key:'drivecardSelectedNodesAtom',
@@ -158,8 +159,8 @@ export default function CourseToolHandler(props){
     //   window.history.replaceState('','','/new#/course?tool=courseChooser')
     // }
     // if (tool === lastAtomTool){ return; }
-
-      if (tool === 'courseChooser'){
+    switch(tool) {
+      case 'courseChooser':
         set(toolViewAtom,(was)=>{
           let newObj = {...was}
           newObj.currentMainPanel = "DriveCards";
@@ -170,23 +171,26 @@ export default function CourseToolHandler(props){
         });
         set(selectedMenuPanelAtom,""); //clear selection
         set(mainPanelClickAtom,[{atom:drivecardSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
-      }else if (tool === 'navigation'){
+        break;
+      case 'navigation':
         // if (role === "Student"){
           //TODO
         // }else if (role === "Owner" || role === "Admin"){
-            set(toolViewAtom,(was)=>{
-              let newObj = {...was}
-              newObj.currentMainPanel = "DrivePanel";
-              newObj.currentMenus = ["AddDriveItems","EnrollStudents"];
-              newObj.menusTitles = ["Add Items","Enrollment"];
-              newObj.menusInitOpen = [true,false];
-
-              return newObj;
-            });
+          set(toolViewAtom,{
+            pageName:"Course",
+            toolHandler:"CourseToolHandler",
+            currentMainPanel: "DrivePanel",
+            headerControls: ["BreadCrumb"],
+            headerControlsPositions: ["Left"],
+            currentMenus: ["AddDriveItems","EnrollStudents"],
+            menusTitles: ["Add Items","Enrollment"],
+            menusInitOpen: [true,false],
+          });
         // }
         set(selectedMenuPanelAtom,""); //clear selection
         set(mainPanelClickAtom,[{atom:globalSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
-      }else if (tool === 'editor'){
+        break;
+      case 'editor':
         console.log(">>>editor!")
         // set(toolViewAtom,(was)=>{
         //   let newObj = {...was}
@@ -195,9 +199,22 @@ export default function CourseToolHandler(props){
         // });
         set(selectedMenuPanelAtom,""); //clear selection
         set(mainPanelClickAtom,[])  //clear main panel click
-      }else{
-        console.log(">>>Course Tool Handler: didn't match!")
-      }
+        break;
+      case 'playground':
+        set(toolViewAtom, {
+          currentMainPanel: 'Playground',
+          currentMenus: [],
+          menusTitles: [],
+          menusInitOpen: [],
+          pageName:"Course",
+          toolHandler:"CourseToolHandler",
+        })
+        set(selectedMenuPanelAtom, "")
+        set(mainPanelClickAtom, [])
+        break;
+      default:
+        console.error(">>>Course Tool Handler: didn't match!")
+    }
   })
   const atomTool = useRecoilValue(searchParamAtomFamily('tool')) 
   const setParamObj = useSetRecoilState(paramObjAtom);
