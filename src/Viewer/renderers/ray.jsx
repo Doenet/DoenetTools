@@ -1,7 +1,7 @@
 import React from 'react';
 import DoenetRenderer from './DoenetRenderer';
 
-export default class Line extends DoenetRenderer {
+export default class Ray extends DoenetRenderer {
   constructor(props) {
     super(props)
 
@@ -17,14 +17,14 @@ export default class Line extends DoenetRenderer {
 
   createGraphicalObject() {
 
-    if (this.doenetSvData.numericalPoints.length !== 2 ||
-      this.doenetSvData.numericalPoints.some(x => x.length !== 2)
+    if (this.doenetSvData.numericalEndpoint.length !== 2 ||
+      this.doenetSvData.numericalThroughpoint.length !== 2
     ) {
       return;
     }
 
     //things to be passed to JSXGraph as attributes
-    var jsxLineAttributes = {
+    var jsxRayAttributes = {
       name: this.doenetSvData.label,
       visible: !this.doenetSvData.hidden,
       withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
@@ -34,56 +34,55 @@ export default class Line extends DoenetRenderer {
       highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
       strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
       dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      straightFirst: false,
     };
 
     if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxLineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+      jsxRayAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.rayWidth;
     }
 
 
     let through = [
-      [...this.doenetSvData.numericalPoints[0]],
-      [...this.doenetSvData.numericalPoints[1]]
+      [...this.doenetSvData.numericalEndpoint],
+      [...this.doenetSvData.numericalThroughpoint]
     ];
 
-    console.log(through);
+    this.rayJXG = this.props.board.create('line', through, jsxRayAttributes);
 
-    this.lineJXG = this.props.board.create('line', through, jsxLineAttributes);
-
-    this.lineJXG.on('drag', function (e) {
+    this.rayJXG.on('drag', function (e) {
       this.dragged = true;
       this.onDragHandler(e);
     }.bind(this));
 
-    this.lineJXG.on('up', function (e) {
+    this.rayJXG.on('up', function (e) {
       if (this.dragged) {
-        this.actions.finalizeLinePosition();
+        this.actions.finalizeRayPosition();
       }
     }.bind(this));
 
-    this.lineJXG.on('down', function (e) {
+    this.rayJXG.on('down', function (e) {
       this.dragged = false;
       this.pointerAtDown = [e.x, e.y];
       this.pointsAtDown = [
-        [...this.lineJXG.point1.coords.scrCoords],
-        [...this.lineJXG.point2.coords.scrCoords]
+        [...this.rayJXG.point1.coords.scrCoords],
+        [...this.rayJXG.point2.coords.scrCoords]
       ]
 
     }.bind(this));
 
     this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
 
-    return this.lineJXG;
+    return this.rayJXG;
 
   }
 
   deleteGraphicalObject() {
-    this.props.board.removeObject(this.lineJXG);
-    delete this.lineJXG;
+    this.props.board.removeObject(this.rayJXG);
+    delete this.rayJXG;
   }
 
   componentWillUnmount() {
-    if (this.lineJXG) {
+    if (this.rayJXG) {
       this.deleteGraphicalObject();
     }
   }
@@ -96,19 +95,19 @@ export default class Line extends DoenetRenderer {
       return;
     }
 
-    if (this.lineJXG === undefined) {
+    if (this.rayJXG === undefined) {
       return this.createGraphicalObject();
     }
 
-    if (this.doenetSvData.numericalPoints.length !== 2 ||
-      this.doenetSvData.numericalPoints.some(x => x.length !== 2)
+    if (this.doenetSvData.numericalEndpoint.length !== 2 ||
+      this.doenetSvData.numericalThroughpoint.length !== 2
     ) {
       return this.deleteGraphicalObject();
     }
 
     let validCoords = true;
 
-    for (let coords of [this.doenetSvData.numericalPoints[0], this.doenetSvData.numericalPoints[1]]) {
+    for (let coords of [this.doenetSvData.numericalEndpoint, this.doenetSvData.numericalThroughpoint]) {
       if (!Number.isFinite(coords[0])) {
         validCoords = false;
       }
@@ -117,42 +116,42 @@ export default class Line extends DoenetRenderer {
       }
     }
 
-    this.lineJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalPoints[0]);
-    this.lineJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalPoints[1]);
+    this.rayJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoint);
+    this.rayJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalThroughpoint);
 
     let visible = !this.doenetSvData.hidden;
 
     if (validCoords) {
-      let actuallyChangedVisibility = this.lineJXG.visProp["visible"] !== visible;
-      this.lineJXG.visProp["visible"] = visible;
-      this.lineJXG.visPropCalc["visible"] = visible;
+      let actuallyChangedVisibility = this.rayJXG.visProp["visible"] !== visible;
+      this.rayJXG.visProp["visible"] = visible;
+      this.rayJXG.visPropCalc["visible"] = visible;
 
       if (actuallyChangedVisibility) {
         // at least for point, this function is incredibly slow, so don't run it if not necessary
         // TODO: figure out how to make label disappear right away so don't need to run this function
-        this.lineJXG.setAttribute({ visible: visible })
+        this.rayJXG.setAttribute({ visible: visible })
       }
 
     } else {
-      this.lineJXG.visProp["visible"] = false;
-      this.lineJXG.visPropCalc["visible"] = false;
-      // this.lineJXG.setAttribute({visible: false})
+      this.rayJXG.visProp["visible"] = false;
+      this.rayJXG.visPropCalc["visible"] = false;
+      // this.rayJXG.setAttribute({visible: false})
     }
 
-    this.lineJXG.name = this.doenetSvData.label;
-    // this.lineJXG.visProp.withlabel = this.showlabel && this.label !== "";
+    this.rayJXG.name = this.doenetSvData.label;
+    // this.rayJXG.visProp.withlabel = this.showlabel && this.label !== "";
 
     let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     if (withlabel != this.previousWithLabel) {
-      this.lineJXG.setAttribute({ withlabel: withlabel });
+      this.rayJXG.setAttribute({ withlabel: withlabel });
       this.previousWithLabel = withlabel;
     }
 
-    this.lineJXG.needsUpdate = true;
-    this.lineJXG.update()
-    if (this.lineJXG.hasLabel) {
-      this.lineJXG.label.needsUpdate = true;
-      this.lineJXG.label.update();
+    this.rayJXG.needsUpdate = true;
+    this.rayJXG.update()
+    if (this.rayJXG.hasLabel) {
+      this.rayJXG.label.needsUpdate = true;
+      this.rayJXG.label.update();
     }
     this.props.board.updateRenderer();
 
@@ -160,7 +159,7 @@ export default class Line extends DoenetRenderer {
 
   onDragHandler(e) {
     let pointCoords = this.calculatePointPositions(e);
-    this.actions.moveLine({
+    this.actions.moveRay({
       point1coords: pointCoords[0],
       point2coords: pointCoords[1],
       transient: true
@@ -192,36 +191,13 @@ export default class Line extends DoenetRenderer {
     return pointCoords;
   }
 
-  componentDidMount() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-        window.MathJax.Hub.processSectionDelay = 0;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-      }
-    }
-  }
-
-  componentDidUpdate() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-      }
-    }
-  }
-
   render() {
 
     if (this.props.board) {
       return <><a name={this.componentName} />{this.children}</>
     }
 
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    let mathJaxify = "\\(" + this.doenetSvData.equation + "\\)";
-    return <><a name={this.componentName} /><span id={this.componentName}>{mathJaxify}</span></>
+    return null;
   }
 }
 
