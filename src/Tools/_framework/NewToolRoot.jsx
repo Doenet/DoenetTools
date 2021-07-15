@@ -429,6 +429,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     let backPageToolView = useRef({page:"init",tool:"",view:""});
     let lastLocationStr = useRef("");
     let location = useLocation();
+    let history = useHistory();
 
     let locationStr = `${location.pathname}${location.search}`;
     let isURLChange = false;
@@ -437,11 +438,11 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
     if (locationStr !== lastLocationStr.current){
       isURLChange = true;
-      nextPageToolView.page = location.pathname.replace("/","").toLowerCase();
+      nextPageToolView.page = location.pathname.replaceAll("/","").toLowerCase();
       if (nextPageToolView.page === ""){
         nextPageToolView.page = 'home';
         const url = window.location.origin + window.location.pathname + "#home";;
-          console.log(">>>Go to home URL!!!",location,url);
+          // console.log(">>>Go to home URL!!!",location,url);
           //update url without pushing on to history
           window.history.replaceState('','',url)
       }
@@ -455,13 +456,14 @@ let encodeParams = p => Object.entries(p).map(kv =>
     let isRecoilChange = false;
     if (JSON.stringify(lastPageToolView.current) !== JSON.stringify(recoilPageToolView)){
       isRecoilChange = true;
-      console.log(">>>Recoil change nextPageToolView = recoilPageToolView",recoilPageToolView)
+      // console.log(">>>Recoil change nextPageToolView = recoilPageToolView",recoilPageToolView)
       if (recoilPageToolView.back){
-        console.log(">>>BACK!!!!!",backPageToolView.current)
+        // console.log(">>>BACK!!!!!",backPageToolView.current)
         setRecoilPageToolView(backPageToolView.current)
         return null;
       }
       nextPageToolView = {...recoilPageToolView}
+      
     }
     if (!isURLChange && !isRecoilChange){
       nextPageToolView = lastPageToolView.current;
@@ -484,6 +486,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
       console.log(">>>page changed!!!",nextPageToolView)
       if (nextPageToolView.tool === ""){
         //Load default
+        
         nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
         if (Object.keys(nextMenusAndPanels).includes("defaultTool")){
            const url = window.location.origin + window.location.pathname + "#" + location.pathname + '?' + encodeParams({tool:nextMenusAndPanels.defaultTool});
@@ -493,6 +496,8 @@ let encodeParams = p => Object.entries(p).map(kv =>
           nextMenusAndPanels = navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
         }
       }else{
+        // console.log(">>>navigationObj[nextPageToolView.page]",navigationObj[nextPageToolView.page])
+        // console.log(">>>nextPageToolView",nextPageToolView)
         nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
       }
     }else if (lastPageToolView.current.tool !== nextPageToolView.tool){
@@ -519,7 +524,24 @@ let encodeParams = p => Object.entries(p).map(kv =>
     if (JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) && nextMenusAndPanels){
       console.log(">>>CHANGE DETECTED!!! UPDATE TOOL ROOT!!!!",nextMenusAndPanels)
       backPageToolView.current = lastPageToolView.current;  //Set back for back button
+      if (isRecoilChange){
+        //push url
+        let tool = nextPageToolView.tool;
+        let pathname = '/' + recoilPageToolView.page;
+        let search = '?' + encodeParams({tool});
+        if (tool === "" || tool === undefined){
+          search = "";
+        }
 
+        let urlPush = pathname + search;
+ 
+        console.log(">>>urlPush",urlPush)
+        //Don't add to the url history if it's the same location the browser is at
+        if (location.pathname !== pathname && location.search !== search){
+          console.log(">>>push!!!")
+          history.push(urlPush)
+        }
+      }
       props.setToolRootMenusAndPanels(nextMenusAndPanels)
     }
 
