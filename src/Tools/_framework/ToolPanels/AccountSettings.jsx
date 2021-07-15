@@ -85,7 +85,7 @@ export default function DoenetProfile(props) {
     const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
 
     if (profile.signedIn === '0') {
-      return (
+      return (<div style = {props.style}>
               <div
                 style={{
                   ...props.style,
@@ -116,10 +116,11 @@ export default function DoenetProfile(props) {
                   </button>
                 </div>
               </div>
+              </div>
       );
     }
 
-    return (
+    return (<div style = {props.style}>
         
               <div style = {{...props.style, margin: "auto", width: "70%"}}>
                 <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
@@ -271,6 +272,7 @@ export default function DoenetProfile(props) {
                 >
                 </Switch>
                 <p>Course Designer</p>
+              </div>
               </div>
     )
 }

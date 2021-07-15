@@ -22,7 +22,7 @@ import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 import { selectedMenuPanelAtom } from './Panels/NewMenuPanel';
 import { mainPanelClickAtom } from './Panels/NewMainPanel';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 
 
 const ToolContainer = styled(animated.div)`
@@ -83,15 +83,31 @@ const urlChangeSourceParamObjAtom = atom({
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
-    pageName:"Init",
+    pageName:"init",
   }
 })
 
-   
+// **** ToolRoot ****
+//Keep  as simple as we can
+//Keep refreshes to a minimum 
+//Don't use recoil in ToolRoot
+
 export default function ToolRoot(props){
   // console.log(">>>ToolRoot props",props) 
 
-  const toolViewInfo = useRecoilValue(toolViewAtom);
+  const [toolRootMenusAndPanels,setToolRootMenusAndPanels] = useState({
+    pageName:"init",
+    currentMenus:[],
+    menusTitles:[],
+    menusInitOpen:[],
+    currentMainPanel:"Empty",
+    supportPanelOptions:[],
+    supportPanelTitles:[],
+    supportPanelIndex:0,
+    hasNoMenuPanel: false,
+    headerControls:[],
+    headerControlsPositions:[]
+  });
   const mainPanelArray = useRef([])
   const lastMainPanelKey = useRef(null)
   const mainPanelDictionary = useRef({}) //key -> {index, type}
@@ -101,29 +117,7 @@ export default function ToolRoot(props){
   // const [supportContentObj,setSupportContentObj] = useState({})
   const [menusOpen,setMenusOpen] = useState(true)
 
-  const setPage = useRecoilCallback(({set})=> (tool,origPath)=>{
-    // console.log(">>> Root setPAge",tool,origPath)
-    if (tool === ""){ 
-      // location.href = `#home/`
-      window.history.replaceState('','','/new#/home')
-
-    }else{
-      let newTool = toolsObj[tool];
   
-      if (!newTool){ 
-        let newParams = {};
-        newParams["path"] = `${origPath}`;
-        const ePath = encodeParams(newParams);
-      location.href = `#/notfound?${ePath}`
-      }else{
-  
-        set(toolViewAtom,newTool);
-      }
-    }
-    set(selectedMenuPanelAtom,""); //clear selection
-    set(mainPanelClickAtom,[])  //clear main panel click
-
-  })
 
   const LazyPanelObj = useRef({
     Empty:lazy(() => import('./ToolPanels/Empty')),
@@ -137,10 +131,11 @@ export default function ToolRoot(props){
     DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
+    Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
   }).current;
 
   const LazyControlObj = useRef({
-    CloseProfileButton:lazy(() => import('./HeaderControls/CloseProfileButton')),
+    BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
   }).current;
 
@@ -148,28 +143,11 @@ export default function ToolRoot(props){
     CourseToolHandler:lazy(() => import('./ToolHandlers/CourseToolHandler')),
   }).current;
 
-  // const LazyFooterObj = useRef({
-  //   CourseToolHandler:lazy(() => import('./ToolHandlers/CourseToolHandler')),
-  // }).current;
-
-  const lastURL = useRef("")
-
-
-  let setUrlChangeSourceParamObjAtom = useSetRecoilState(urlChangeSourceParamObjAtom);
-
+  
 
   console.log(">>>===ToolRoot")
   
-  // console.log(">>> location.href ",location.href )
-  // console.log(">>> lastURL.current" , lastURL.current)
-  const lastURLProp = lastURL.current;
-  if (location.href !== lastURL.current ){
-    // console.log(">>>URL CHANGED!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    let searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search))
-    // console.log(">>>searchParamObj",searchParamObj)
-    setUrlChangeSourceParamObjAtom(searchParamObj);
-    lastURL.current = location.href;
-  }
+ 
 
   function buildPanel({key,type,visible}){
     let hideStyle = null;
@@ -182,35 +160,12 @@ export default function ToolRoot(props){
     </Suspense>
   } 
 
-  const lcpath = props.route.location.pathname.replaceAll('/','').toLowerCase();
-  if (toolViewInfo.pageName.toLowerCase() !== lcpath){
-  //Need to update path
-    setPage(lcpath,props.route.location.pathname)
-    return null; 
-  }
+  // console.log(">>>toolRootMenusAndPanels",toolRootMenusAndPanels)
 
- 
-
-  let toolHandler = null;
-  if (toolViewInfo.toolHandler){
-    const ToolHandlerKey = `${toolViewInfo.pageName}-${toolViewInfo.toolHandler}`;
-    const handler = LazyToolHandlerObj[toolViewInfo.toolHandler];
-    if (handler){
-      toolHandler = <Suspense key={ToolHandlerKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-      {React.createElement(handler,{key:ToolHandlerKey})}
-      </Suspense>
-    }
-   
-  }
-
-   let MainPanelKey = `${toolViewInfo.pageName}-${toolViewInfo.currentMainPanel}`;
-   if (!toolViewInfo.currentMainPanel){
-    MainPanelKey = 'Empty';
-   }
+   let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
 
    if (!mainPanelDictionary.current[MainPanelKey]){
-     let type = toolViewInfo.currentMainPanel;
-     if ( MainPanelKey === 'Empty'){type = 'Empty'}
+     let type = toolRootMenusAndPanels.currentMainPanel;
      console.log(">>>NEW MAIN PANEL!!!",type)
     //Doesn't exist so make new Main Panel
     mainPanelArray.current.push(buildPanel({key:MainPanelKey,type,visible:true}))
@@ -219,14 +174,14 @@ export default function ToolRoot(props){
 
   let headerControls = null;
   let headerControlsPositions = null;
-  if (toolViewInfo.headerControls){
+  if (toolRootMenusAndPanels.headerControls){
     headerControls = [];
     headerControlsPositions = [];
-    for (const [i,controlName] of Object.entries(toolViewInfo.headerControls)){
+    for (const [i,controlName] of Object.entries(toolRootMenusAndPanels.headerControls)){
       const controlObj = LazyControlObj[controlName]
       if (controlObj){
         const key = `headerControls${MainPanelKey}`;
-        headerControlsPositions.push(toolViewInfo.headerControlsPositions[i])
+        headerControlsPositions.push(toolRootMenusAndPanels.headerControlsPositions[i])
         headerControls.push(<Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
         {React.createElement(controlObj,{key:{key}})}
         </Suspense>)
@@ -258,12 +213,12 @@ export default function ToolRoot(props){
    let supportPanel = <SupportPanel hide={true} >{supportPanelArray.current}</SupportPanel>;
 
 
-   if (toolViewInfo.supportPanelOptions && toolViewInfo.supportPanelOptions.length > 0){
-    const SupportPanelKey = `${toolViewInfo.pageName}-${toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
+   if (toolRootMenusAndPanels.supportPanelOptions && toolRootMenusAndPanels.supportPanelOptions.length > 0){
+    const SupportPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex]}-${toolRootMenusAndPanels.supportPanelIndex}`;
     if (!supportPanelDictionary.current[SupportPanelKey]){
      //Doesn't exist so make new Support Panel
-     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex],visible:true}))
-     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex], visible:true}
+     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex],visible:true}))
+     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex], visible:true}
     }
     
     //Show current panel and hide last panel
@@ -285,20 +240,19 @@ export default function ToolRoot(props){
  
     lastSupportPanelKey.current = SupportPanelKey;
     
-    supportPanel = <SupportPanel hide={false} panelTitles={toolViewInfo.supportPanelTitles} panelIndex={toolViewInfo.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
+    supportPanel = <SupportPanel hide={false} panelTitles={toolRootMenusAndPanels.supportPanelTitles} panelIndex={toolRootMenusAndPanels.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
   }
 
   let menus = <MenuPanel key='menuPanel' hide={true} />;
-  if (menusOpen && !toolViewInfo.hasNoMenuPanel){
-    menus = <MenuPanel key='menuPanel' hide={false} setMenusOpen={setMenusOpen} menusOpen={menusOpen} menusTitles={toolViewInfo.menusTitles} currentMenus={toolViewInfo.currentMenus} initOpen={toolViewInfo.menusInitOpen}/>
+  if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel){
+    menus = <MenuPanel key='menuPanel' hide={false} setMenusOpen={setMenusOpen} menusOpen={menusOpen} menusTitles={toolRootMenusAndPanels.menusTitles} currentMenus={toolRootMenusAndPanels.currentMenus} initOpen={toolRootMenusAndPanels.menusInitOpen}/>
   }
 
   let profileInMainPanel = !menusOpen;
-  if (toolViewInfo.hasNoMenuPanel){
+  if (toolRootMenusAndPanels.hasNoMenuPanel){
     profileInMainPanel = false;
   }
   return <>
-    {/* <GlobalFont key='globalfont' /> */}
     <ToolContainer >
       {menus}
       <ContentPanel 
@@ -309,11 +263,9 @@ export default function ToolRoot(props){
       {/* <FooterPanel><button onClick={()=>props.route.history.push('/Test')}>test</button></FooterPanel> */}
     </ToolContainer>
     <Toast />
-    {toolHandler}
-    <RecoilSearchParamUpdater lastURL={lastURLProp} setURL={(newURL)=>{
-      lastURL.current = newURL;
-      // console.log(">>>setURL newURL",newURL)
-    }} />
+   
+    {/* <RootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/> */}
+    <MemoizedRootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/>
   </>
 } 
 
@@ -325,122 +277,172 @@ export default function ToolRoot(props){
 // supportPanelTitles:[],
 // supportPanelIndex:0,
 // hasNoMenuPanel: true,
-// headerControls:["CloseProfileButton"],
+// headerControls:["BackButton"],
 // headerControlsPositions:["Right"], 
 // hasNoMenuPanel: true,
 // toolHandler:"CourseToolHandler",
 
-let toolsObj = {
+let navigationObj = {
   
   content:{
-    pageName:"Content",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"Content",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
+    default:{
+      pageName:"Content",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"Content",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+    }
   },
   course:{
-    pageName:"Course",
-    toolHandler:"CourseToolHandler",
+    default:{
+      defaultTool:'courseChooser'
+    },
+    courseChooser:{
+      pageName:"Course",
+      currentMainPanel:"DriveCards",
+      currentMenus:["CreateCourse"],
+      menusTitles:["Create Course"],
+      // currentMenus:["CreateCourse","CourseEnroll"],
+      // menusTitles:["Create Course","Enroll"],
+      menusInitOpen:[true,false],
+      toolHandler:"CourseToolHandler"
+    },
+    navigation:{
+      pageName:"Course",
+      currentMainPanel:"DrivePanel",
+      currentMenus:["AddDriveItems","EnrollStudents"],
+      menusTitles:["Add Items","Enrollment"],
+      menusInitOpen:[true,false],
+      toolHandler:"CourseToolHandler",
+    },
+    editor:{
+      pageName:"Course",
+      currentMainPanel:"EditorViewer",
+      currentMenus:["DoenetMLSettings","VersionHistory","Variant"], 
+      menusTitles:["Settings","Version History","Variant"],
+      menusInitOpen:[false,false,false],
+      supportPanelOptions:["DoenetMLEditor"],
+      supportPanelTitles:["DoenetML Editor"],
+      supportPanelIndex:0,
+      headerControls: ["ViewerUpdateButton"],
+      headerControlsPositions: ["Left"],
+      toolHandler:"CourseToolHandler"
+    }
+  },
+  enrollment:{
+    default:{
+      pageName:"Enrollment",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"Enrollment",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+      headerControls: ["BackButton"],
+      headerControlsPositions: ["Right"]
+    }
   },
   home:{
-    pageName:"Home",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"HomePanel",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
+    default:{
+      pageName:"Home",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"HomePanel",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+    }
   },
   notfound:{
-    pageName:"Notfound",
-    currentMenus:[],
-    menusInitOpen:[],
-    currentMainPanel:"NotFound",
-    supportPanelOptions:[],
-    hasNoMenuPanel: true,
+    default:{
+      pageName:"Notfound",
+      currentMenus:[],
+      menusInitOpen:[],
+      currentMainPanel:"NotFound",
+      supportPanelOptions:[],
+      hasNoMenuPanel: true,
+    }
   },
   settings:{
-    pageName:"Settings",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"AccountSettings",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
-    headerControls: ["CloseProfileButton"],
-    headerControlsPositions: ["Right"]
+    default:{
+      pageName:"Settings",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"AccountSettings",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+      headerControls: ["BackButton"],
+      headerControlsPositions: ["Right"]
+    }
   },
   signin:{
-    pageName:"SignIn",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"SignIn",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
+    default:{
+      pageName:"SignIn",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"SignIn",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+    }
   },
   signout:{
-    pageName:"SignOut",
-    currentMenus:[],
-    menusTitles:[],
-    menusInitOpen:[],
-    currentMainPanel:"SignOut",
-    supportPanelOptions:[],
-    supportPanelTitles:[],
-    supportPanelIndex:0,
-    hasNoMenuPanel: true,
+    default:{
+      pageName:"SignOut",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"SignOut",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+    }
   },
   
 }
 
-// function EmptyPanel(props){
-//   return <div style={props.style}></div>
-// }
 
 let encodeParams = p => Object.entries(p).map(kv => 
   kv.map(encodeURIComponent).join("=")).join("&");
 
-function RecoilSearchParamUpdater(prop){
-  let [eventSourceParamObj,setEventSourceParamObj] = useRecoilState(paramObjAtom);
-  let [urlSourceParamObj,setUrlSourceParamObj] = useRecoilState(urlChangeSourceParamObjAtom);
-  // let eventSourceParamObj = useRecoilValue(paramObjAtom);
-  // let urlSourceParamObj = useRecoilValue(urlChangeSourceParamObjAtom);
-  let currentParamObj = useRef({});
-  let lastPathName = useRef("");
-  let history = useHistory();
+  export const pageToolViewAtom = atom({
+    key:"pageToolViewAtom",
+    default:{page:"init",tool:"",view:""}
+  })
+  const MemoizedRootController = React.memo(RootController)
+  function RootController(props){
+    const [recoilPageToolView,setRecoilPageToolView ] = useRecoilState(pageToolViewAtom);
+    let lastPageToolView = useRef({page:"init",tool:"",view:""});
+    let backPageToolView = useRef({page:"init",tool:"",view:""});
+    let lastLocationStr = useRef("");
+    let location = useLocation();
+    let history = useHistory();
+    let lastSearchObj = useRef({});
 
-  let isURLSourceFLAG = false;
-  if (JSON.stringify(urlSourceParamObj) !== JSON.stringify(currentParamObj.current)){
-    //URL is the source of parameter change
-    isURLSourceFLAG = true;
-  }
-  let isEventSourceFLAG = false;
-  if (JSON.stringify(eventSourceParamObj) !== JSON.stringify(currentParamObj.current)){
-    //Event is the source of parameter change
-    isEventSourceFLAG = true;
-  }
-
-  const setSearchParamAtom = useRecoilCallback(({set})=> (paramObj)=>{
+     const setSearchParamAtom = useRecoilCallback(({set})=> (paramObj)=>{
     //Only set atom if parameter has changed
     for (const [key,value] of Object.entries(paramObj)){
-      if (currentParamObj.current[key] !== value){
-        // console.log(`>>>CHANGED so SET key: ${key} value: ${value} **********`)
+      if (lastSearchObj.current[key] !== value){
+        // console.log(`>>>CHANGED so SET key: ${key} value: ${value}  **********`)
         set(searchParamAtomFamily(key),value)
       }
     }
     //If not defined then clear atom
-    for (const key of Object.keys(currentParamObj.current)){
+    for (const key of Object.keys(lastSearchObj.current)){
       if (!paramObj[key]){
         // console.log(`>>>clear!!!  -${key}- **********`)
         set(searchParamAtomFamily(key),"") 
@@ -448,52 +450,139 @@ function RecoilSearchParamUpdater(prop){
     }
   })
 
-  // console.log("\n>>>RecoilSearchParamUpdater")
-  // console.log(">>> isURLSourceFLAG",isURLSourceFLAG)
-  // console.log(">>> isEventSourceFLAG",isEventSourceFLAG)
-  // console.log(">>> eventSourceParamObj",eventSourceParamObj)
-  // console.log(">>> urlSourceParamObj",urlSourceParamObj)
-  // console.log(">>> currentParamObj.current",currentParamObj.current)
+    let locationStr = `${location.pathname}${location.search}`;
+    let nextPageToolView = {page:"",tool:"",view:""};
+    let nextMenusAndPanels = null;
+    console.log("\n>>>===RootController")
 
-  if (isURLSourceFLAG){
-    setSearchParamAtom(urlSourceParamObj);
-  }else if (isEventSourceFLAG){
-    setSearchParamAtom(eventSourceParamObj);
-  }
- 
 
-  //Update URL if parameters are not up to date
-  let [pathname,urlSearchParams] = location.hash.split("?");
-  pathname = pathname.replace("#","")
-  if (!urlSearchParams){ urlSearchParams = {} }
-
-  if (isEventSourceFLAG){
-  // let urlParamsObj = Object.fromEntries(new URLSearchParams(urlSearchParams));
-  const url = location.origin + location.pathname + "#" + pathname + '?' + encodeParams(eventSourceParamObj);
-    if (!currentParamObj.current?.tool){ 
-     //If page didn't have a tool update url without pushing on to history
-      window.history.replaceState('','',url)
-    }else{
-      const route =  pathname + '?' + encodeParams(eventSourceParamObj);
-      history.push(route)
-    //   window.history.pushState('','',url)
+    //URL change test
+    let isURLChange = false;
+    if (locationStr !== lastLocationStr.current){
+      isURLChange = true;
+      nextPageToolView.page = location.pathname.replaceAll("/","").toLowerCase();
+      if (nextPageToolView.page === ""){
+        nextPageToolView.page = 'home';
+        const url = window.location.origin + window.location.pathname + "#home";;
+        //update url without pushing on to history
+        window.history.replaceState('','',url)
+      }
+      let searchParamObj = Object.fromEntries(new URLSearchParams(location.search))
+      nextPageToolView.tool = searchParamObj['tool'];
+      if (!nextPageToolView.tool){
+        //Check for a page's default tool
+        nextPageToolView.tool = '';
+      }
     }
 
-    prop.setURL(url)
+    //Recoil change test
+    let isRecoilChange = false;
+    if (JSON.stringify(lastPageToolView.current) !== JSON.stringify(recoilPageToolView)){
+      isRecoilChange = true;
+      // console.log(">>>Recoil change nextPageToolView = recoilPageToolView",recoilPageToolView)
+      if (recoilPageToolView.back){
+        setRecoilPageToolView(backPageToolView.current)
+        return null;
+      }
+      nextPageToolView = {...recoilPageToolView}
+      
+    }
+  
+    // console.log(">>>location",location)
+    // console.log(">>>isURLChange",isURLChange)
+    // console.log(">>>isRecoilChange",isRecoilChange)
+
+    if (!isURLChange && !isRecoilChange){
+      //Just updating traking variables
+      lastLocationStr.current = locationStr;
+    return null;
+    }
+
+      //TODO: handle page == "" and tool changed
+      //TODO: handle page == "" and tool == "" and view changed
+    
+    if (lastPageToolView.current.page !== nextPageToolView.page){
+      //Page changed!
+      if (nextPageToolView.tool === ""){
+        //Load default
+        
+        nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
+        if (Object.keys(nextMenusAndPanels).includes("defaultTool")){
+           const url = window.location.origin + window.location.pathname + "#" + location.pathname + '?' + encodeParams({tool:nextMenusAndPanels.defaultTool});
+          //update url without pushing on to history
+          window.history.replaceState('','',url)
+          nextMenusAndPanels = navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
+        }
+      }else{
+        nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
+      }
+    }else if (lastPageToolView.current.tool !== nextPageToolView.tool){
+      //TODO: Check for default view
+      nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
+
+    }else if (lastPageToolView.current.view !== nextPageToolView.view){
+      //View changed!
+
+    }
+
+
+    let searchObj = {}
+
+    //Update recoil isURLChange
+    if (isURLChange){
+      setRecoilPageToolView(nextPageToolView);
+      searchObj = Object.fromEntries(new URLSearchParams(location.search))
+      setSearchParamAtom(searchObj)
+    }
+
+   
+
+    // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
+    //Only update ToolRoot if nextMenusAndPanels was indicated as a change
+    if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) ){
+      // console.log(">>>UPDATE TOOL ROOT!")
+      backPageToolView.current = lastPageToolView.current;  //Set back for back button
+      
+      props.setToolRootMenusAndPanels(nextMenusAndPanels)
+    }
+
+
+    if (isRecoilChange){
+      //push url with no refresh
+      let tool = nextPageToolView.tool;
+      let pathname = '/' + recoilPageToolView.page;
+      searchObj = {...recoilPageToolView.params}
+      if (tool !== "" && tool !== undefined){
+        searchObj = {tool,...recoilPageToolView.params};
+      }
+
+      let search = "";
+      if (Object.keys(searchObj).length > 0){
+        search = '?' + encodeParams(searchObj);
+      }
+      
+      const urlPush = pathname + search;
+
+      // console.log(">>>location.search !== search",location.search !== search)
+      // console.log(">>>location.search ",location.search )
+      // console.log(">>>search",search)
+
+      if (location.search !== search){
+        setSearchParamAtom(searchObj)
+      }
+        
+      //Don't add to the url history if it's the same location the browser is at
+      if (location.pathname !== pathname || location.search !== search){
+        // console.log(">>>UPDATE URL!",urlPush)
+        history.push(urlPush);
+      }
+    }
+    lastSearchObj.current = searchObj;
+    lastLocationStr.current = locationStr;
+    lastPageToolView.current = nextPageToolView;
+    return null;
   }
 
-  // console.log(">>>----------------------------------\n\n")
-
-  lastPathName.current = pathname;
-  if (isURLSourceFLAG){
-    currentParamObj.current = urlSourceParamObj;
-    setEventSourceParamObj(urlSourceParamObj);
-  }else if (isEventSourceFLAG){
-    currentParamObj.current = eventSourceParamObj;
-    setUrlSourceParamObj(eventSourceParamObj);
-  }
-  return null;
-}
 
 const LoadingFallback = styled.div`
   background-color: hsl(0, 0%, 99%);
