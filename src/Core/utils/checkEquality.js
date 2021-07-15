@@ -484,7 +484,7 @@ export default function checkEquality({
     let minN = Math.min(nelts1, nelts2);
     for (let i = 0; i < minN; i++) {
       let sub_results = checkEquality({
-        object1: object1[i], object2: object2[i],
+        object1: me.fromAst(object1[i]), object2: me.fromAst(object2[i]),
         isUnordered: false, partialMatches: false,
         matchExactLocations: false,
         symbolicEquality,
@@ -529,7 +529,7 @@ export default function checkEquality({
     for (let i = 0; i < nelts1; i++) {
       for (let j = 0; j < nelts2; j++) {
         let sub_results = checkEquality({
-          object1: object1[i], object2: object2[j],
+          object1: me.fromAst(object1[i]), object2: me.fromAst(object2[j]),
           isUnordered: false, partialMatches: false,
           matchExactLocations: false,
           symbolicEquality,
@@ -569,7 +569,7 @@ export default function checkEquality({
       }
 
       let sub_results = checkEquality({
-        object1: expr1, object2: expr2,
+        object1: me.fromAst(expr1), object2: me.fromAst(expr2),
         isUnordered: false, partialMatches: false,
         matchExactLocations: false,
         symbolicEquality,
