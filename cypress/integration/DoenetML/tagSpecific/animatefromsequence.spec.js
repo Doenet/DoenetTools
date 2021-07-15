@@ -400,7 +400,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   <text>a</text>
 
   <p name="pa">value: $a</p> 
-  <slider name="a" initialNumber="89.8"><sequence from="1" to="100" step="0.1" /></slider>
+  <slider name="a" initialValue="89.8" from="1" to="100" step="0.1" />
 
 
 

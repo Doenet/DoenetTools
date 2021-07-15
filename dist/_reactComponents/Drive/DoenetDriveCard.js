@@ -58,6 +58,8 @@ const DriveCard = (props) => {
     style: {backgroundColor: props.isSelected ? "rgb(184, 210, 234)" : ""}
   }, /* @__PURE__ */ React.createElement(LabelContainer, null, /* @__PURE__ */ React.createElement("b", {
     "data-cy": "driveCardLabel"
-  }, props.label))));
+  }, props.label)), props?.role?.map((item, i) => {
+    return /* @__PURE__ */ React.createElement(LabelContainer, null, item);
+  })));
 };
 export default DriveCard;

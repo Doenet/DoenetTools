@@ -48,17 +48,32 @@
 
 
 
-// import { createGlobalStyle } from '../_snowpack/pkg/styled-components.js';
 
-// import OpenSansRegularWoffTwo from '../media/fonts/files/open-sans-v18-latin-regular.woff2.proxy.js';
-// import OpenSansRegularItalicWoffTwo from '../media/fonts/files/open-sans-v18-latin-italic.woff2.proxy.js';
-// import OpenSansBoldWoffTwo from '../media/fonts/files/open-sans-v18-latin-700.woff2.proxy.js';
-// import OpenSansItalicBoldWoffTwo from '../media/fonts/files/open-sans-v18-latin-700italic.woff2.proxy.js';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { createGlobalStyle } from 'styled-components';
+
+// import OpenSansRegularWoffTwo from '../Media/fonts/files/open-sans-v18-latin-regular.woff2';
+// import OpenSansRegularItalicWoffTwo from '../Media/fonts/files/open-sans-v18-latin-italic.woff2';
+// import OpenSansBoldWoffTwo from '../Media/fonts/files/open-sans-v18-latin-700.woff2';
+// import OpenSansItalicBoldWoffTwo from '../Media/fonts/files/open-sans-v18-latin-700italic.woff2';
  
-// import OpenSansRegularWoff from '../media/fonts/files/open-sans-v18-latin-regular.woff.proxy.js';
-// import OpenSansRegularItalicWoff from '../media/fonts/files/open-sans-v18-latin-italic.woff.proxy.js';
-// import OpenSansBoldWoff from '../media/fonts/files/open-sans-v18-latin-700.woff.proxy.js';
-// import OpenSansItalicBoldWoff from '../media/fonts/files/open-sans-v18-latin-700italic.woff.proxy.js';
+// import OpenSansRegularWoff from '../Media/fonts/files/open-sans-v18-latin-regular.woff';
+// import OpenSansRegularItalicWoff from '../Media/fonts/files/open-sans-v18-latin-italic.woff';
+// import OpenSansBoldWoff from '../Media/fonts/files/open-sans-v18-latin-700.woff';
+// import OpenSansItalicBoldWoff from '../Media/fonts/files/open-sans-v18-latin-700italic.woff';
  
 // const GlobalFont = createGlobalStyle`
 //   @font-face {

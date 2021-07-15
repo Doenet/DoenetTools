@@ -483,7 +483,16 @@ export default function checkEquality({
 
     let minN = Math.min(nelts1, nelts2);
     for (let i = 0; i < minN; i++) {
-      let sub_results = check_equality(object1[i], object2[i]);
+      let sub_results = checkEquality({
+        object1: object1[i], object2: object2[i],
+        isUnordered: false, partialMatches: false,
+        matchExactLocations: false,
+        symbolicEquality,
+        simplify, expand,
+        allowedErrorInNumbers: false,
+        allowedErrorIsAbsolute: false,
+        nSignErrorsMatched: 0,
+      })
       n_matches += sub_results.fraction_equal;
     }
 
@@ -519,8 +528,16 @@ export default function checkEquality({
 
     for (let i = 0; i < nelts1; i++) {
       for (let j = 0; j < nelts2; j++) {
-        let sub_results = check_equality(object1[i], object2[j]);
-
+        let sub_results = checkEquality({
+          object1: object1[i], object2: object2[j],
+          isUnordered: false, partialMatches: false,
+          matchExactLocations: false,
+          symbolicEquality,
+          simplify, expand,
+          allowedErrorInNumbers: false,
+          allowedErrorIsAbsolute: false,
+          nSignErrorsMatched: 0,
+        })
         C[i + 1][j + 1] = Math.max(C[i][j] + sub_results.fraction_equal,
           C[i + 1][j], C[i][j + 1])
       }
@@ -551,8 +568,16 @@ export default function checkEquality({
         continue;
       }
 
-      let sub_results = check_equality(expr1, expr2);
-
+      let sub_results = checkEquality({
+        object1: expr1, object2: expr2,
+        isUnordered: false, partialMatches: false,
+        matchExactLocations: false,
+        symbolicEquality,
+        simplify, expand,
+        allowedErrorInNumbers: false,
+        allowedErrorIsAbsolute: false,
+        nSignErrorsMatched: 0,
+      })
       if (sub_results.fraction_equal > best_match) {
         best_match = sub_results.fraction_equal;
         best_match_ind = i;

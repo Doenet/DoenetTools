@@ -1,12 +1,11 @@
-@top Document { misc (Element misc)+ }
+@top Document { topLevel+ }
 
 entity {
   Text |
   EntityReference |
   CharacterReference |
-  Cdata |
   Element |
-  comment |
+  Comment |
   MismatchedCloseTag |
   incompleteStartCloseTag
 }
@@ -16,65 +15,58 @@ Element {
   SelfClosingTag
 }
 
+topLevel {
+  Text |
+  Comment |
+  Element
+}
+
 OpenTag[closedBy=CloseTag] {
-  startTag space* TagName space* (Attribute space*)* endTag
+  StartTag TagName Attribute* endTag
 }
 
 SelfClosingTag {
-  startTag space* TagName space* (Attribute space*)* selfCloseEndTag
+  StartTag TagName Attribute* selfCloseEndTag
 }
 
 CloseTag[openedBy=OpenTag] {
-  startCloseTag space* TagName space* endTag
+  StartCloseTag TagName  endTag
 }
 
 MismatchedCloseTag {
-  mismatchedStartCloseTag space* TagName space* endTag
+  mismatchedStartCloseTag TagName endTag
 }
 
 Attribute {
-  AttributeName space* is space* AttributeValue
-}
-
-misc {
-  (comment | space )*
+  AttributeName |
+  AttributeName Is AttributeValue
 }
 
 AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference)* "\"" }
 
-comment { "<!--" commentContent* "-->" }
-
-
-Cdata { cdataStart cdataContent* "]]>" }
+Comment { "<!--" commentContent* "-->" }
 
 @context elementContext from "./tokens.js"
 
 @external tokens startTag from "./tokens.js" {
-  startTag
-  startCloseTag
-  mismatchedStartCloseTag
-  incompleteStartCloseTag
+  StartTag[closedBy="SelfCloseEndTag EndTag"]
+  StartCloseTag
+  mismatchedStartCloseTag[@name=StartCloseTag]
+  incompleteStartCloseTag[@name=StartCloseTag]
 }
 
 @external tokens commentContent from "./tokens.js" { commentContent }
-@external tokens cdataContent from "./tokens.js" { cdataContent }
 
 @tokens {
   endTag { ">" }
 
   selfCloseEndTag { "/>" }
 
-  nameStart {
-    ":" | std.asciiLetter | "_" |
-    $[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D] |
-    $[\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD\u{10000}-\u{EFFFF}]
-  }
-
   nameChar {
-    nameStart | "-" | "." | std.digit | $[\u00B7\u0300-\u036F\u203F-\u2040]
+    std.asciiLetter | "-" | "_" | std.digit 
   }
 
-  identifier { nameStart nameChar* }
+  identifier { nameChar+ }
 
   TagName { identifier }
 
@@ -82,17 +74,22 @@ Cdata { cdataStart cdataContent* "]]>" }
 
   attributeContent { !["&]+ }
 
-  is { "=" }
-
   EntityReference { "&" ![#; ]+ ";" }
 
   CharacterReference { "&#" ![; ]+ ";" }
 
+  Is { "=" }
+
   Text { ![<&]+ }
 
-  cdataStart { "<![" ("cdata" | "CDATA") "[" }
+  space { std.whitespace+ }
 
-  space { (" " | "\t" | "\r" | "\n")+ }
+  @precedence {attributeContent, space}
+  
+  @precedence {Text, space}
+
 }
+
+@skip { space }
 
 @detectDelim

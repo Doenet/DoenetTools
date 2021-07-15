@@ -581,18 +581,49 @@ function TextEditor(props){
   </>
 }
 
-function DoenetViewerUpdateButton(){
-  const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
-  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+function DoenetViewerUpdateButton(props){
+  // const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
+  // const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
+
+  const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    set(viewerDoenetMLAtom,(old)=>{
+      let newInfo = {...old};
+      newInfo.doenetML = doenetML;
+      newInfo.updateNumber = old.updateNumber+1;
+      return newInfo;
+    })
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.doenetId));
+
+    let newVersion = {...oldVersions.draft};
+  
+    const contentId = getSHAofContent(doenetML);
+
+    newVersion.contentId = contentId;
+    newVersion.timestamp = buildTimestamp();
+
+    let oldVersionsReplacement = {...oldVersions};
+    oldVersionsReplacement.draft = newVersion;
+    set(itemHistoryAtom(props.doenetId),oldVersionsReplacement)
+    set(fileByContentId(contentId),doenetML)
+    // set(fileByContentId(contentId),{data:doenetML})
+
+    //Save in localStorage
+    localStorage.setItem(contentId,doenetML)
+
+    let newDBVersion = {...newVersion,
+      doenetML,
+      doenetId:props.doenetId
+    }
+       axios.post("/api/saveNewVersion.php",newDBVersion)
+// .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})  
+  },[]);
+
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Update" onClick={()=>{setViewerDoenetML((old)=>{
-    let newInfo = {...old};
-    newInfo.doenetML = editorDoenetML;
-    newInfo.updateNumber = old.updateNumber+1;
-    return newInfo;
-  })}} />
+
+  return <Button value="Update" onClick={()=>{saveDraft(props.doenetId)}} />
 }
 
 function NameCurrentVersionControl(props){
@@ -819,7 +850,7 @@ export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
       </headerPanel>
 
       <mainPanel>
-        <div><DoenetViewerUpdateButton  /></div>
+        <div><DoenetViewerUpdateButton doenetId={doenetId} /></div>
         <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div>
       </mainPanel>
 

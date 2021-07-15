@@ -143,6 +143,130 @@ describe('FunctionIterates Tag Tests', function () {
 
   })
 
+
+  it('1D user-defined numerical function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Choose variable for function: <mathinput name="x" prefill="x" />.
+  Let <m>f($x) =</m> <mathinput name="fformula" prefill="3x" />.
+  Let <m>u = </m> <mathinput name="u" prefill="2" />.  Let <m>n=</m> <mathinput name="n" prefill="3" />
+  Then</p>
+  <ul>
+  <map assignNames="(l1) (l2) (l3) (l4) (l5) (l6) (l7)">
+    <template><li newnamespace><m>f^{$i}(u) = <copy componentIndex="$i" tname="../iterates" assignNames="iter" /></m></li></template>
+    <sources indexAlias="i"><sequence length="$n" /></sources>
+  </map>
+  </ul>
+
+  <p hide><function name="f" variables="$x" formula="$fformula" /><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" tname="fis"  name="iterates" /></p>
+  
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f1(u)=6')
+    })
+    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f2(u)=18')
+    })
+    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f3(u)=54')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/l1/iter"].stateValues.value.tree).eqls(6)
+      expect(components["/l2/iter"].stateValues.value.tree).eqls(18)
+      expect(components["/l3/iter"].stateValues.value.tree).eqls(54)
+    })
+
+    cy.log('change function, nIterates, and initial')
+    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}2x^2{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/u textarea').type("{end}{backspace}{backspace}1/4{enter}", { force: true });
+
+
+    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f1(u)=0.125')
+    })
+    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f2(u)=0.03125')
+    })
+    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f3(u)=0.001953125')
+    })
+    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f4(u)=0.000007629394531')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/l1/iter"].stateValues.value.tree).eqls(0.125)
+      expect(components["/l2/iter"].stateValues.value.tree).eqls(0.03125)
+      expect(components["/l3/iter"].stateValues.value.tree).eqls(0.001953125)
+      expect(components["/l4/iter"].stateValues.value.tree).eqls(0.00000762939453125)
+    })
+
+    cy.log('change variable')
+    cy.get('#\\/x textarea').type("{end}{backspace}y{enter}", { force: true });
+
+    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f1(u)=NaN')
+    })
+    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f2(u)=NaN')
+    })
+    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f3(u)=NaN')
+    })
+    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f4(u)=NaN')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/l1/iter"].stateValues.value.tree).eqls(NaN)
+      expect(components["/l2/iter"].stateValues.value.tree).eqls(NaN)
+      expect(components["/l3/iter"].stateValues.value.tree).eqls(NaN)
+      expect(components["/l4/iter"].stateValues.value.tree).eqls(NaN)
+    })
+
+    cy.log('change function to match variable')
+    cy.get('#\\/fformula textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}y+5{enter}", { force: true });
+    cy.get('#\\/n textarea').type("{end}{backspace}5{enter}", { force: true });
+
+    cy.get('#\\/l1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f1(u)=5.25')
+    })
+    cy.get('#\\/l2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f2(u)=10.25')
+    })
+    cy.get('#\\/l3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f3(u)=15.25')
+    })
+    cy.get('#\\/l4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f4(u)=20.25')
+    })
+    cy.get('#\\/l5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('f5(u)=25.25')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/l1/iter"].stateValues.value.tree).eqls(5.25)
+      expect(components["/l2/iter"].stateValues.value.tree).eqls(10.25)
+      expect(components["/l3/iter"].stateValues.value.tree).eqls(15.25)
+      expect(components["/l4/iter"].stateValues.value.tree).eqls(20.25)
+      expect(components["/l5/iter"].stateValues.value.tree).eqls(25.25)
+    })
+
+  })
+
   it('2D linear function', () => {
     cy.window().then((win) => {
       win.postMessage({
