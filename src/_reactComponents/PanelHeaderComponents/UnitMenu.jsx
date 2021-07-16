@@ -12,6 +12,7 @@ const Textfield = styled.input`
   padding: 0px 36px 0px 2px;
   text-align: center;
   resize: none;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'default'}
 `;
 
 const Label = styled.p`
@@ -36,17 +37,17 @@ const LabelContainer = styled.div`
 `;
 
 const Units = styled.button`
-  background-color: #1a5a99;
+  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
   border-radius: 0px 3px 3px 0px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: white;
+  color: ${props => props.disabled ? 'black' : 'white'};
   font-size: 12px;
   right: 36px;
   :hover {
-    cursor: pointer;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   }
 `;
 
@@ -59,7 +60,7 @@ const Unit = styled.div`
   border: 2px black;
   border-radius: 5px;
   ${Units}:hover & {
-    display: block;
+    display: ${props => props.disabled ? 'none' : 'block'};
   }
 `;
 
@@ -211,6 +212,11 @@ export default function UnitMenu(props) {
     if (props.alert) {
       alert = '2px solid #C1292E';
     }
+
+    var disabled = false;
+  if (props.disabled) {
+    disabled = true;
+  }
   
     return (
       <>
@@ -227,6 +233,7 @@ export default function UnitMenu(props) {
           </Label>
           <Container>
             <Textfield
+              disabled={disabled}
               id="text"
               type="text"
               value={currentValue}
@@ -239,9 +246,9 @@ export default function UnitMenu(props) {
               }}
               onChange={() => {changeValue(event)}}
             ></Textfield>
-              <Units>
+              <Units disabled={disabled}>
                 {currentUnit}
-                <Unit id="unit">{unitComponents}</Unit>
+                <Unit id="unit" disabled={disabled}>{unitComponents}</Unit>
               </Units>
             
           </Container>

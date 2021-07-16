@@ -57,7 +57,7 @@ export default function DoenetProfile(props) {
         localStorage.setItem('Profile', JSON.stringify(data));
         set(profileAtom,  data)
         axios.post('/api/saveProfile.php', data)
-        // .then((resp)=>{console.log(">>>save profile resp.data",resp.data)})
+         // .then((resp)=>{console.log(">>>save profile resp.data",resp.data)})
       }
     )
     const loadProfile = useRecoilValueLoadable(profileAtom);
@@ -85,9 +85,10 @@ export default function DoenetProfile(props) {
     const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
 
     if (profile.signedIn === '0') {
-      return (
+      return (<div style = {props.style}>
               <div
                 style={{
+                  ...props.style,
                   border: '1px solid grey',
                   borderRadius: '20px',
                   margin: 'auto',
@@ -115,20 +116,23 @@ export default function DoenetProfile(props) {
                   </button>
                 </div>
               </div>
+              </div>
       );
     }
 
-    return (
+    return (<div style = {props.style}>
         
-              <div style = {{margin: "auto", width: "70%"}}>
+              <div style = {{...props.style, margin: "auto", width: "70%"}}>
                 <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
                   <div style = {{width: "150px", height: "150px", margin: "auto"}}>
                 
                   <InfiniteSlider fileNames = {translateditems} showButtons={true} showCounter={false} callBack = {(i) => {
                     //console.log(translatednames[i])
                     let data = {...profile}
-                    data.profilePicture = translatednames[i]
-                    setProfile(data)
+                    if(data.profilePicture !== translatednames[i]){
+                      data.profilePicture = translatednames[i]
+                      setProfile(data)
+                    }
                     //setPic(translatednames[i])
                   }}>
                     {({ css }, i) => {
@@ -268,6 +272,7 @@ export default function DoenetProfile(props) {
                 >
                 </Switch>
                 <p>Course Designer</p>
+              </div>
               </div>
     )
 }

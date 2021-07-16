@@ -432,7 +432,7 @@ export default class NumberComponent extends InlineComponent {
               number = NaN;
             }
 
-            if (Number.isFinite(number)) {
+            if (Number.isFinite(number) || number === Infinity || number === -Infinity) {
               return { newValues: { value: number } };
 
             }

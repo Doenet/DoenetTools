@@ -122,7 +122,21 @@ function Container(props) {
 //   <hr />
 //   {/* set(selectedMenuPanelAtom,"SelectedDoenetId"); //replace selection */}
 
-//   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
-//   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
-//   <div><button onClick={(e)=>{e.stopPropagation();setParamObj({tool:'playground'})}}>go to playground</button></div>
-//   </div>
+  
+  return <div style={props.style}><h1>drive</h1>
+  <p>put drive here</p>
+  <div>path: {path}</div>
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f1'}}))}}>path to f1</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f2'}}))}}>path to f2</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f3'}}))}}>path to f3</button></div>
+  <hr />
+  {/* set(selectedMenuPanelAtom,"SelectedDoenetId"); //replace selection */}
+
+  <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
+  <hr />
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>{ let newObj = {...was};newObj['tool'] = 'editor'; newObj['params']={doenetId:'JRP26MJwT93KkydNtBQpO'}; return newObj; })}}>Edit c1</button></div>
+
+
+  </div>
+}

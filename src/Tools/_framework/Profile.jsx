@@ -1,8 +1,8 @@
 import React from 'react';
-import { useRecoilCallback, atom, useRecoilValueLoadable } from 'recoil';
+import { useRecoilCallback, atom, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 
 import styled from 'styled-components';
-import { profileAtom, toolViewAtom } from './NewToolRoot';
+import { profileAtom, pageToolViewAtom } from './NewToolRoot';
 
 const ProfilePicture = styled.button`
 background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
@@ -33,31 +33,7 @@ export const profileToolViewStashAtom = atom({
 export default function Profile(props){
   const profile = useRecoilValueLoadable(profileAtom);
   const profilePicName = profile.contents.profilePicture;
-  const displaySettings = useRecoilCallback(({set,snapshot})=> async ()=>{
-    const viewToolObj = await snapshot.getPromise(toolViewAtom)
-    let newViewToolObj = {...viewToolObj}
- 
-    set(profileToolViewStashAtom,{toolViewAtom:newViewToolObj,href:location.href});
-
-    const url = location.origin + location.pathname + "#/settings"; 
-    // location.href = url;
-    window.history.pushState('','',url)
-
-    set(toolViewAtom,(was)=>{
-      let newObj = {...was}
-      newObj.currentMenus = []
-      newObj.menusInitOpen = []
-      newObj.menusTitles = []
-      newObj.currentMainPanel = "AccountSettings"
-      newObj.supportPanelOptions = []
-      newObj.supportPanelTitles = []
-      newObj.hasNoMenuPanel = true
-      newObj.headerControls = ["CloseProfileButton"]
-      newObj.headerControlsPositions = ["Right"]
-  
-      return newObj;
-    }) 
-  })
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   if (profile.state === "loading"){ return null;}
     if (profile.state === "hasError"){ 
@@ -69,5 +45,5 @@ export default function Profile(props){
 // return <ProfilePicture pic={profilePicName} onClick={()=>{location.href = '/accountSettings/'}}/>
 return <ProfilePicture pic={profilePicName} 
 margin={props.margin} 
-onClick={()=>displaySettings()}/>
+onClick={()=>setPageToolView({page:'settings',tool:'',view:''})}/>
 }

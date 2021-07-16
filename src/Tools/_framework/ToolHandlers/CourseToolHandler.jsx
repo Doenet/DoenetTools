@@ -287,7 +287,7 @@ export default function CourseToolHandler(props){
           supportPanelOptions:[],
           supportPanelTitles:[],
           supportPanelIndex:0,
-          headerControls: ["CloseProfileButton"],
+          headerControls: ["BackButton"],
           headerControlsPositions: ["Right"],
           toolHandler:"CourseToolHandler"
         })
