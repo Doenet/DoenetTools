@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useRef} from "react";
 import {basicSetup} from "@codemirror/basic-setup";
 import {EditorState, Transaction, StateEffect} from "@codemirror/state";
+import {selectLine,deleteLine} from "@codemirror/commands"
 import {EditorView, keymap} from "@codemirror/view";
 import {styleTags, tags as t} from "@codemirror/highlight"
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
@@ -64,6 +65,7 @@ export default function CodeMirror({editorRef,onBeforeChange,value}){
         doenet(doenetSchema),
         EditorView.lineWrapping,
         tabExtension,
+        cutExtension,
         EditorState.changeFilter.of(changeFunc)
     ],[changeFunc]); 
 
@@ -98,13 +100,30 @@ export default function CodeMirror({editorRef,onBeforeChange,value}){
 //tab = 2 spaces
 const tab = "  ";
 const tabCommand = ({state,dispatch}) => {
-dispatch(state.update(state.replaceSelection(tab), {scrollIntoView: true, annotations: Transaction.userEvent.of("input")}));
-return true
+    dispatch(state.update(state.replaceSelection(tab), {scrollIntoView: true, annotations: Transaction.userEvent.of("input")}));
+    return true
 }
 
 const tabExtension = keymap.of([{
-key : "Tab",
-run : tabCommand
+    key : "Tab",
+    run : tabCommand
+}])
+
+const cutCommand = ({state,dispatch}) => {
+    //if the selection isn't empty
+    if(state.selection.main.empty){
+        selectLine({state: state, dispatch: dispatch});
+        document.execCommand("copy");
+        deleteLine(view.current);
+    } else {
+        document.execCommand("copy");
+        dispatch(state.update(state.replaceSelection(""), {scrollIntoView: true, annotations: Transaction.userEvent.of("input")}));
+    }
+    return true;
+}
+const cutExtension = keymap.of([{
+    key : "Mod-x",
+    run : cutCommand 
 }])
 
 const doenetSchema = {
