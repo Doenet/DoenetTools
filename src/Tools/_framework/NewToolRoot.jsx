@@ -123,7 +123,7 @@ export default function ToolRoot(props){
     DriveCards:lazy(() => import('./ToolPanels/DriveCards')),
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
     SignOut:lazy(() => import('./ToolPanels/SignOut')),
-    DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
+    NavigationPanel:lazy(() => import('./ToolPanels/NavigationPanel')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
@@ -309,7 +309,7 @@ let navigationObj = {
     },
     navigation:{
       pageName:"Course",
-      currentMainPanel:"DrivePanel",
+      currentMainPanel:"NavigationPanel",
       currentMenus:["AddDriveItems","EnrollStudents"],
       menusTitles:["Add Items","Enrollment"],
       menusInitOpen:[true,false],

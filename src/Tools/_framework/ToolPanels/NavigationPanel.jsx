@@ -1,27 +1,17 @@
+/**
+ * External dependencies
+ */
 import React, { Suspense, useCallback } from 'react';
-// import { useLocation } from 'react-router';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
-import {
-  toolViewAtom,
-  searchParamAtomFamily,
-  paramObjAtom,
-  pageToolViewAtom,
-} from '../NewToolRoot';
-import Drive, {
-  clearDriveAndItemSelections,
-  globalSelectedNodesAtom,
-  selectedDriveItemsAtom,
-} from '../../../_reactComponents/Drive/NewDrive';
-import {
-  drivecardSelectedNodesAtom,
-  fetchDrivesSelector,
-  fetchDrivesQuery,
-} from '../ToolHandlers/CourseToolHandler';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+/**
+ * Internal dependencies
+ */
+import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+import Drive from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 
-export default function DrivePanel() {
+export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
 
@@ -58,9 +48,8 @@ export default function DrivePanel() {
           <Container>
             <Drive
               path={path}
-              filter={() => {}}
+              filter={filter}
               columnTypes={['Released', 'Public']}
-              drivePathSyncKey="main"
               urlClickBehavior="select"
               doubleClickCallback={doubleClickCallback}
             />
