@@ -25,7 +25,7 @@ export default function DrivePanel() {
   const clearSelections = useRecoilCallback(
     ({ snapshot, set }) =>
       () => {
-        const { globalItemsSelected } = snapshot
+        const globalItemsSelected = snapshot
           .getLoadable(globalSelectedNodesAtom)
           .getValue();
         for (let itemObj of globalItemsSelected) {
@@ -59,7 +59,7 @@ export default function DrivePanel() {
               drivePathSyncKey="main"
               urlClickBehavior="select"
               doubleClickCallback={(info) => {
-                // clearSelections();
+                clearSelections();
                 if (info.type === 'Folder') {
                   setParamObj((was) => ({
                     ...was,
