@@ -15,17 +15,14 @@ import { useToast, toastType } from '../Toast';
 export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
-  const addToast = useToast();
+  const toast = useToast();
 
   useEffect(() => {
     if (path === '') {
-      addToast(
-        'Missing drive path data, please select a course',
-        toastType.ERROR,
-      );
+      toast('Missing drive path data, please select a course', toastType.ERROR);
       setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
     }
-  }, [path, addToast, setPageToolView]);
+  }, [path, toast, setPageToolView]);
 
   const filter = useCallback((item) => item.released === '1', []);
 

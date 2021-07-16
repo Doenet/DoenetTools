@@ -1,9 +1,9 @@
 import React from 'react';
-import { useToast } from '@Toast';
+import { useToast, toastType } from '@Toast';
 
 
 export default function ToastTest(props){
-  const [toast, toastType] = useToast();
+  const toast= useToast();
   
   return <div style={props.style}>
   

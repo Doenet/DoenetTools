@@ -51,7 +51,6 @@ import {
   useDragShadowCallbacks,
   useSortFolder,
 } from './DriveActions';
-import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import {loadAssignmentSelector} from '../../Tools/course/Course';
 import useSockets from '../Sockets';
@@ -1741,7 +1740,6 @@ function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const [addToast, ToastType] = useToast();
   const {replaceDragShadow, removeDragShadow, cleanUpDragShadow} = useDragShadowCallbacks();
   const {moveItems, copyItems } = useSockets('drive');
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
