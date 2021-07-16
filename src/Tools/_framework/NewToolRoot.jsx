@@ -504,9 +504,12 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
       //TODO: handle page == "" and tool changed
       //TODO: handle page == "" and tool == "" and view changed
-    
+    let isPageChange = false;
+    let isToolChange = false;
+    let isViewChange = false;
     if (lastPageToolView.current.page !== nextPageToolView.page){
       //Page changed!
+      isPageChange = true;
       if (nextPageToolView.tool === ""){
         //Load default
         
@@ -520,7 +523,20 @@ let encodeParams = p => Object.entries(p).map(kv =>
       }else{
         nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
       }
-      //Load and Update Navigation Leave
+     
+    }else if (lastPageToolView.current.tool !== nextPageToolView.tool){
+      //Tool Changed
+      isToolChange = true;
+      //TODO: Check for default view
+      nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
+
+    }else if (lastPageToolView.current.view !== nextPageToolView.view){
+      //View changed!
+      isViewChange = true;
+    }
+
+ //Load and Update Navigation Leave
+    if (isPageChange || isToolChange || isViewChange){
       if (leaveComponentName.current){
         const key = `leave${leaveComponentName.current}`
         leaveComponent = <Suspense key={key} fallback={null}>
@@ -531,13 +547,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
       if (nextMenusAndPanels.onLeave){
         leaveComponentName.current = nextMenusAndPanels.onLeave
       }
-    }else if (lastPageToolView.current.tool !== nextPageToolView.tool){
-      //TODO: Check for default view
-      nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
-
-    }else if (lastPageToolView.current.view !== nextPageToolView.view){
-      //View changed!
-
     }
 
 
