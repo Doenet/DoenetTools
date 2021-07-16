@@ -16,7 +16,7 @@ import { Manager } from 'socket.io-client';
 /**
  * Internal deps
  */
-import { useToast } from '../Tools/_framework/Toast';
+import { useToast, toastType } from '../Tools/_framework/Toast';
 import {
   folderCacheDirtyAtom,
   folderDictionary,
@@ -78,7 +78,7 @@ export const itemType = Object.freeze({
  * @returns {Object} {@link addItem}, {@link deleteItem}, {@link moveItems}, {@link renameItem}, and {@link copyItems} item functions
  */
 export default function useSockets(nsp) {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   // realtime upgrade
   // const [namespace] = useState(nsp);
@@ -147,7 +147,7 @@ export default function useSockets(nsp) {
       if (resp.data.success) {
         acceptAddItem(payload);
       } else {
-        addToast(`Add item error: ${resp.data.message}`, ToastType.ERROR);
+        addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
       }
 
       // realtime upgrade
@@ -182,7 +182,7 @@ export default function useSockets(nsp) {
         if (resp.data.success) {
           acceptDeleteItem(payload);
         } else {
-          addToast(`Delete item error: ${resp.data.message}`, ToastType.ERROR);
+          addToast(`Delete item error: ${resp.data.message}`, toastType.ERROR);
         }
 
         // realtime upgrade
@@ -417,7 +417,7 @@ export default function useSockets(nsp) {
       if (resp.data.success) {
         acceptMoveItems(payload, newDestinationFolderObj, editedCache);
       } else {
-        addToast(`Move item(s) error: ${resp.data.message}`, ToastType.ERROR);
+        addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
       }
 
       // realtime upgrade
@@ -430,7 +430,7 @@ export default function useSockets(nsp) {
       //     if (respData.success) {
       //       acceptMove(payload, newDestinationFolderObj, editedCache);
       //     } else {
-      //       addToast(`Move item(s) error: ${respData.message}`, ToastType.ERROR);
+      //       addToast(`Move item(s) error: ${respData.message}`, toastType.ERROR);
       //     }
       //   },
       // );
@@ -456,7 +456,7 @@ export default function useSockets(nsp) {
         if (resp.data.success) {
           acceptRenameItem(payload);
         } else {
-          addToast(`Rename item error: ${resp.data.message}`, ToastType.ERROR);
+          addToast(`Rename item error: ${resp.data.message}`, toastType.ERROR);
         }
 
         // realtime upgrade
@@ -464,7 +464,7 @@ export default function useSockets(nsp) {
         //   if (respData.success) {
         //     acceptRenameItem(payload, newFInfo);
         //   } else {
-        //     addToast(`Rename item error: ${respData.message}`, ToastType.ERROR);
+        //     addToast(`Rename item error: ${respData.message}`, toastType.ERROR);
         //   }
         // });
       },
@@ -743,7 +743,7 @@ export default function useSockets(nsp) {
   //     if (resp.value?.data?.success) {
   //       addToast(
   //         `Copied ${replaceDragShadowResp?.numItems} item(s)`,
-  //         ToastType.SUCCESS,
+  //         toastType.SUCCESS,
   //       );
   //     } else {
   //       onCopyItemsError({ errorMessage: resp?.reason });
@@ -810,7 +810,7 @@ export default function useSockets(nsp) {
 }
 
 function useAcceptBindings() {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   /**
    * execute local changes after a successful local or remote item addtion
@@ -884,9 +884,9 @@ function useAcceptBindings() {
           );
         }
 
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        addToast(`Add new item 'Untitled'`, toastType.SUCCESS);
       },
-    [addToast, ToastType.SUCCESS],
+    [addToast],
   );
 
   /**
@@ -943,7 +943,7 @@ function useAcceptBindings() {
           }),
           newFInfo,
         );
-        addToast(`Deleted item '${label}'`, ToastType.SUCCESS);
+        addToast(`Deleted item '${label}'`, toastType.SUCCESS);
       },
   );
 
@@ -1032,7 +1032,7 @@ function useAcceptBindings() {
             },
           );
         }
-        addToast(`Renamed item to '${label}'`, ToastType.SUCCESS);
+        addToast(`Renamed item to '${label}'`, toastType.SUCCESS);
       },
   );
 

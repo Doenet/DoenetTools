@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { Suspense, useCallback } from 'react';
+import React, { Suspense, useCallback, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 /**
  * Internal dependencies
@@ -10,10 +10,22 @@ import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import Drive from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
+import { useToast, toastType } from '../Toast';
 
 export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
+  const addToast = useToast();
+
+  useEffect(() => {
+    if (path === '') {
+      addToast(
+        'Missing drive path data, please select a course',
+        toastType.ERROR,
+      );
+      setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
+    }
+  }, [path, addToast, setPageToolView]);
 
   const filter = useCallback((item) => item.released === '1', []);
 

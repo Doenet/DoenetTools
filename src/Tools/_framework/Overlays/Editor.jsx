@@ -35,7 +35,7 @@ import {
   faClipboard
  } from '@fortawesome/free-regular-svg-icons';
 
-import { useToast } from '../../_framework/Toast';
+import { useToast, toastType } from '../../_framework/Toast';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { folderDictionary } from '../../../_reactComponents/Drive/Drive';
 
@@ -92,7 +92,7 @@ function ReturnToEditingButton(props){
 }
 
 function EditorInfoPanel(props){
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   const link = `http://${window.location.host}/content/#/?doenetId=${props.doenetId}`
 
@@ -101,7 +101,7 @@ function EditorInfoPanel(props){
   <div>Load time (soon) </div>
   <div>Most recent release 
   
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   <button onClick={()=>{
     
   }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
@@ -171,7 +171,7 @@ function RenameVersionControl(props){
 }
 
 function ClipboardLinkButtons(props){
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   if (!props.contentId){
     console.error("Component only handles contentId at this point")
@@ -181,7 +181,7 @@ function ClipboardLinkButtons(props){
 
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div> 
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
   </CopyToClipboard>
 

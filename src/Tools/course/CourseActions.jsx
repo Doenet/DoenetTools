@@ -11,7 +11,7 @@ import { useRecoilCallback } from 'recoil';
  */
 
 import { assignmentDictionary } from '../course/Course';
-import Toast, { useToast } from '../../Tools/_framework/Toast';
+import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { 
   itemHistoryAtom, 
 } from '../../_sharedRecoil/content';
@@ -39,7 +39,7 @@ const formatFutureDate = (dt) => {
   return formattedFutureDate;
 }
 export const useAssignment = () => {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   const addContentAssignment = useRecoilCallback(
     ({ snapshot, set }) => async (props) => {
@@ -351,7 +351,7 @@ export const useAssignment = () => {
   );
 
   const onAssignmentError = ({ errorMessage = null }) => {
-    addToast(`${errorMessage}`, ToastType.ERROR);
+    addToast(`${errorMessage}`, toastType.ERROR);
   };
   return {
     addContentAssignment,
