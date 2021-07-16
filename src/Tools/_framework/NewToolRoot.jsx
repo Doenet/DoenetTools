@@ -75,11 +75,6 @@ export const paramObjAtom = atom({
   default:{}
 })
 
-const urlChangeSourceParamObjAtom = atom({
-  key:"urlChangeSourceParamObjAtom",
-  default:{}
-})
-
 export const toolViewAtom = atom({
   key: "toolViewAtom",
   default:{
@@ -318,6 +313,7 @@ let navigationObj = {
       menusTitles:["Add Items","Enrollment"],
       menusInitOpen:[true,false],
       toolHandler:"CourseToolHandler",
+      onLeave:"NavigationLeave",
     },
     editor:{
       pageName:"Course",
@@ -450,6 +446,14 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }
   })
 
+  const LazyEnterLeaveObj = useRef({
+    NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
+  }).current;
+
+  
+    let enterComponent = null; //Lazy loaded entering component
+    let leaveComponent = null; //Lazy loaded leaving component
+    let leaveComponentName = useRef(null); //Name of the component to load if we leave
     let locationStr = `${location.pathname}${location.search}`;
     let nextPageToolView = {page:"",tool:"",view:""};
     let nextMenusAndPanels = null;
@@ -516,6 +520,17 @@ let encodeParams = p => Object.entries(p).map(kv =>
       }else{
         nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
       }
+      //Load and Update Navigation Leave
+      if (leaveComponentName.current){
+        const key = `leave${leaveComponentName.current}`
+        leaveComponent = <Suspense key={key} fallback={null}>
+        {React.createElement(LazyEnterLeaveObj[leaveComponentName.current],{key})}
+        </Suspense>
+      }
+      leaveComponentName.current = null;
+      if (nextMenusAndPanels.onLeave){
+        leaveComponentName.current = nextMenusAndPanels.onLeave
+      }
     }else if (lastPageToolView.current.tool !== nextPageToolView.tool){
       //TODO: Check for default view
       nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
@@ -580,7 +595,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
     lastSearchObj.current = searchObj;
     lastLocationStr.current = locationStr;
     lastPageToolView.current = nextPageToolView;
-    return null;
+    return <>
+    {leaveComponent}
+    {enterComponent}
+    </>;
   }
 
 
