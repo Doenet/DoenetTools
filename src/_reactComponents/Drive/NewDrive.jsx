@@ -20,10 +20,6 @@ import {
  } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  HashRouter as Router,
-  Switch,
-  Route,
-  useHistory,
   Link
 } from "react-router-dom";
 import {
@@ -36,7 +32,6 @@ import {
   useRecoilStateLoadable,
   useRecoilState,
   useRecoilValue,
-  useRecoilCallback,
 } from 'recoil';
 
 /**
@@ -56,12 +51,10 @@ import {
   useDragShadowCallbacks,
   useSortFolder,
 } from './DriveActions';
-import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
 import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import {loadAssignmentSelector} from '../../Tools/course/Course';
 import useSockets from '../Sockets';
-import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",

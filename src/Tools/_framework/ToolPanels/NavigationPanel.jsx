@@ -2,7 +2,7 @@
  * External dependencies
  */
 import React, { Suspense, useCallback } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 /**
  * Internal dependencies
  */
@@ -15,7 +15,7 @@ export default function NavigationPanel() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
 
-  const filter = useCallback(() => {}, []);
+  const filter = useCallback((item) => item.released === '1', []);
 
   const doubleClickCallback = useCallback(
     (info) => {
@@ -65,8 +65,8 @@ function Container(props) {
     <div
       style={{
         maxWidth: '850px',
-        // border: "1px red solid",
         margin: '10px 20px',
+        // border: "1px red solid",
       }}
     >
       {props.children}

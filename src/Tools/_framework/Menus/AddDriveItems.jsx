@@ -2,7 +2,7 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { useToast } from '@Toast';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import useSockets from '../../../_reactComponents/Sockets';
+import useSockets, { itemType } from '../../../_reactComponents/Sockets';
 import { searchParamAtomFamily } from '../NewToolRoot';
 
 export default function AddDriveItems(props) {
@@ -10,7 +10,7 @@ export default function AddDriveItems(props) {
   const [driveId, parentFolderId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');
-  const { addItem, itemType } = useSockets('drive');
+  const { addItem } = useSockets('drive');
   return (
     <div style={props.style}>
       <div>
@@ -18,7 +18,7 @@ export default function AddDriveItems(props) {
           width="menu"
           onClick={() =>
             addItem({
-              driveIdFolderId: { driveId, parentFolderId },
+              driveIdFolderId: { driveId, folderId: parentFolderId },
               type: itemType.FOLDER,
             })
           }
@@ -42,7 +42,7 @@ export default function AddDriveItems(props) {
           width="menu"
           onClick={() =>
             addItem({
-              driveIdFolderId: { driveId, parentFolderId },
+              driveIdFolderId: { driveId, folderId: parentFolderId },
               type: itemType.DOENETML,
             })
           }

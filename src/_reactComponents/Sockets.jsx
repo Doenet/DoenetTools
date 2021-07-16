@@ -66,7 +66,7 @@ const sockets = atomFamily({
   dangerouslyAllowMutability: true,
 });
 
-const itemType = Object.freeze({
+export const itemType = Object.freeze({
   FOLDER: 'Folder',
   DOENETML: 'DoenetML',
   URL: 'Url',
@@ -107,14 +107,14 @@ export default function useSockets(nsp) {
      * Create a new item
      * @param {addOptions} param0 configuration for new Item
      */
-    async ({ driveIdFolderId, label, type, selectedItemId = null, url = null }) => {
+    async ({ driveIdFolderId, type, label = 'Untitled', selectedItemId = null, url = null }) => {
       // Item creation
       const dt = new Date();
       const creationDate = formatDate(dt); //TODO: get from sever
       const itemId = nanoid(); //TODO: remove
       const doenetId = nanoid(); //Id per file
       const versionId = nanoid(); //Id per named version / data collection site
-
+      console.log(driveIdFolderId);
       //generate sort order
       const fInfo = await snapshot.getPromise(
         folderDictionary(driveIdFolderId),
@@ -806,7 +806,6 @@ export default function useSockets(nsp) {
     moveItems,
     renameItem,
     copyItems,
-    itemType,
   };
 }
 
