@@ -5,7 +5,10 @@ export default function ToggleButton(props) {
     const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
     const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none');
     const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
-    const color = props.alert ? '#C1292E' : `${doenetMainBlue}`;
+    var color = props.alert ? '#C1292E' : `${doenetMainBlue}`;
+    if (props.disabled) {
+        color = '#e2e2e2';
+    }
     //Assume small
     var toggleButton = {
         margin: '0px',
@@ -21,6 +24,9 @@ export default function ToggleButton(props) {
         textAlign: 'center',
         width: 'auto'
       }
+      if (props.disabled) {
+        toggleButton.cursor = 'not-allowed';
+    }
       var icon = '';
     var label ={
         value: 'Label:',

@@ -62,6 +62,7 @@ const List = styled.ul`
 export default function attempt() {
   const font = () => {};
   const vertical = () => {};
+  const disabled = () => {};
 
 //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -106,6 +107,10 @@ export default function attempt() {
           propPreview: '<ActionButton onClick={() => console.log("clicked")} />',
           propCode: {onClick: () => console.log("clicked")},
           description: 'Function called when button is clicked'},
+          {name: 'Disabled',
+          propPreview: '<ActionButton disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -168,6 +173,10 @@ export default function attempt() {
           propPreview: '<Button onClick={() => console.log("clicked")} />',
           propCode: {onClick: () => console.log("clicked")},
           description: 'Function called when button is clicked'},
+          {name: 'Disabled',
+          propPreview: '<Button disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -226,6 +235,10 @@ export default function attempt() {
         propPreview: '<Increment onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data)},
         description: 'Function called when data changes'},
+        {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -245,6 +258,10 @@ export default function attempt() {
         //   propPreview: '<Increment label="What: "/>',
         //   propCode: {label: 'What: ', width: 'menu'},
         //   description: 'Adds label to componenet'},
+        {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -280,6 +297,10 @@ export default function attempt() {
       propPreview: '<Textfield onChange={(data) => console.log(data)} />',
       propCode: {onChange: (data) => console.log(data)},
       description: 'Function called when data changes'},
+      {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -331,6 +352,10 @@ export default function attempt() {
         propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
         propCode: {onClick: (data) => console.log(data)},
         description: 'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)'},
+        {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -369,6 +394,10 @@ export default function attempt() {
         propPreview: '<UnitMenu onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data), units: ['EM', 'PT', 'PX']},
         description: 'Function called when data changes'},
+        {name: 'Disabled',
+          propPreview: '<UnitMenu disabled />',
+          propCode: {disabled, units: ['EM', 'PT', 'PX']},
+          description: 'Makes button not able to be used.'},
         ]
       },
     {
