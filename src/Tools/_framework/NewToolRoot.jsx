@@ -178,9 +178,11 @@ export default function ToolRoot(props){
       if (controlObj){
         const key = `headerControls${MainPanelKey}`;
         headerControlsPositions.push(toolRootMenusAndPanels.headerControlsPositions[i])
-        headerControls.push(<Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-        {React.createElement(controlObj,{key:{key}})}
-        </Suspense>)
+        headerControls.push(
+          <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+            {React.createElement(controlObj,{key:{key}})}
+          </Suspense>
+        )
       }
     }
   }
@@ -612,8 +614,8 @@ const LoadingFallback = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 2em;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 `;
 
 

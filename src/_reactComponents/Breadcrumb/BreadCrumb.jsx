@@ -113,8 +113,8 @@ export default function BreadCrumb({ path }) {
   ));
 
   return (
-    <div style={{ margin: '10px 20px', maxWidth: '850px' }}>
+    <>
       {returnToCourseChooser} {children}
-    </div>
+    </>
   );
 }
