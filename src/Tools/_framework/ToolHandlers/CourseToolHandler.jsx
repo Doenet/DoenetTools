@@ -277,7 +277,7 @@ export default function CourseToolHandler(props){
         set(selectedMenuPanelAtom,""); //clear selection
         set(mainPanelClickAtom,[])  //clear main panel click
         break;
-      case 'playground':
+      case 'enrollment':
         set(toolViewAtom,{
           pageName:"Course",
           currentMainPanel:"Enrollment",

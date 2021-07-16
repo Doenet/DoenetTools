@@ -116,7 +116,7 @@ export default function BreadCrumb() {
   }
 
   return (
-    <div style={{ margin: '10px' }}>
+    <div style={{ margin: '10px 20px', maxWidth: '850px' }}>
       {leftmostBreadcrumb} {children}
     </div>
   );

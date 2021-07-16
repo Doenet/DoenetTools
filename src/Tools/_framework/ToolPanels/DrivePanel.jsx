@@ -25,7 +25,7 @@ export default function DrivePanel() {
   const clearSelections = useRecoilCallback(
     ({ snapshot, set }) =>
       () => {
-        const globalItemsSelected = snapshot
+        const { globalItemsSelected } = snapshot
           .getLoadable(globalSelectedNodesAtom)
           .getValue();
         for (let itemObj of globalItemsSelected) {
@@ -45,24 +45,49 @@ export default function DrivePanel() {
     [],
   );
   const setParamObj = useSetRecoilState(paramObjAtom);
+  const path = useRecoilValue(searchParamAtomFamily('path'));
 
   return (
     <BreadcrumbProvider>
       <DropTargetsProvider>
         <Suspense fallback={<div>loading Drive...</div>}>
-          <Drive
-            types={['content', 'course']}
-            columnTypes={['Released', 'Public']}
-            drivePathSyncKey="main"
-            urlClickBehavior="select"
-            doenetMLDoubleClickCallback={(info) => {
-              clearSelections();
-              setParamObj({ tool: 'editor', doenetId: info.item.doenetId });
-            }}
-          />
+          <Container>
+            <Drive
+              path={path}
+              // types={['content', 'course']}
+              columnTypes={['Released', 'Public']}
+              drivePathSyncKey="main"
+              urlClickBehavior="select"
+              doubleClickCallback={(info) => {
+                // clearSelections();
+                if (info.type === 'Folder') {
+                  setParamObj((was) => ({
+                    ...was,
+                    path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
+                  }));
+                } else if (info.type === 'DoenetML') {
+                  setParamObj({ tool: 'editor', doenetId: info.item.doenetId });
+                }
+              }}
+            />
+          </Container>
         </Suspense>
       </DropTargetsProvider>
     </BreadcrumbProvider>
+  );
+}
+
+function Container(props) {
+  return (
+    <div
+      style={{
+        maxWidth: '850px',
+        // border: "1px red solid",
+        margin: '10px 20px',
+      }}
+    >
+      {props.children}
+    </div>
   );
 }
 
