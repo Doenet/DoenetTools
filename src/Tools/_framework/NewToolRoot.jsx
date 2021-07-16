@@ -1,12 +1,9 @@
-import React, { useState, lazy, Suspense, useRef, useEffect } from 'react';
+import React, { useState, lazy, Suspense, useRef } from 'react';
 import {
   atom,
   selector,
   atomFamily,
-  useRecoilValue,
   useRecoilCallback,
-  useRecoilValueLoadable,
-  useSetRecoilState,
   useRecoilState,
 } from 'recoil';
 import styled from 'styled-components';
@@ -20,8 +17,7 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
-import { selectedMenuPanelAtom } from './Panels/NewMenuPanel';
-import { mainPanelClickAtom } from './Panels/NewMainPanel';
+
 import { useHistory, useLocation } from 'react-router';
 
 
@@ -75,20 +71,13 @@ export const paramObjAtom = atom({
   default:{}
 })
 
-export const toolViewAtom = atom({
-  key: "toolViewAtom",
-  default:{
-    pageName:"init",
-  }
-})
-
 // **** ToolRoot ****
 //Keep  as simple as we can
 //Keep refreshes to a minimum 
 //Don't use recoil in ToolRoot
 
-export default function ToolRoot(props){
-  // console.log(">>>ToolRoot props",props) 
+export default function ToolRoot(){
+  console.log(">>>===ToolRoot ") 
 
   const [toolRootMenusAndPanels,setToolRootMenusAndPanels] = useState({
     pageName:"init",
@@ -133,15 +122,6 @@ export default function ToolRoot(props){
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
   }).current;
-
-  const LazyToolHandlerObj = useRef({
-    CourseToolHandler:lazy(() => import('./ToolHandlers/CourseToolHandler')),
-  }).current;
-
-  
-
-  console.log(">>>===ToolRoot")
-  
  
 
   function buildPanel({key,type,visible}){
@@ -154,8 +134,6 @@ export default function ToolRoot(props){
     {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
     </Suspense>
   } 
-
-  // console.log(">>>toolRootMenusAndPanels",toolRootMenusAndPanels)
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
 
@@ -275,7 +253,7 @@ export default function ToolRoot(props){
 // headerControls:["BackButton"],
 // headerControlsPositions:["Right"], 
 // hasNoMenuPanel: true,
-// toolHandler:"CourseToolHandler",
+
 
 let navigationObj = {
   
@@ -304,7 +282,6 @@ let navigationObj = {
       // currentMenus:["CreateCourse","CourseEnroll"],
       // menusTitles:["Create Course","Enroll"],
       menusInitOpen:[true,false],
-      toolHandler:"CourseToolHandler"
     },
     navigation:{
       pageName:"Course",
@@ -312,7 +289,6 @@ let navigationObj = {
       currentMenus:["AddDriveItems","EnrollStudents"],
       menusTitles:["Add Items","Enrollment"],
       menusInitOpen:[true,false],
-      toolHandler:"CourseToolHandler",
       onLeave:"NavigationLeave",
     },
     editor:{
@@ -324,9 +300,8 @@ let navigationObj = {
       supportPanelOptions:["DoenetMLEditor"],
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
-      headerControls: ["ViewerUpdateButton"],
-      headerControlsPositions: ["Left"],
-      toolHandler:"CourseToolHandler"
+      headerControls: ["ViewerUpdateButton","BackButton"],
+      headerControlsPositions: ["Left","Right"],
     }
   },
   enrollment:{
@@ -419,6 +394,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     key:"pageToolViewAtom",
     default:{page:"init",tool:"",view:""}
   })
+  
   const MemoizedRootController = React.memo(RootController)
   function RootController(props){
     const [recoilPageToolView,setRecoilPageToolView ] = useRecoilState(pageToolViewAtom);
@@ -540,7 +516,8 @@ let encodeParams = p => Object.entries(p).map(kv =>
       if (leaveComponentName.current){
         const key = `leave${leaveComponentName.current}`
         leaveComponent = <Suspense key={key} fallback={null}>
-        {React.createElement(LazyEnterLeaveObj[leaveComponentName.current],{key})}
+        {/* {React.createElement(LazyEnterLeaveObj[leaveComponentName.current],{key})} */}
+        {React.createElement(LazyEnterLeaveObj[leaveComponentName.current])}
         </Suspense>
       }
       leaveComponentName.current = null;
