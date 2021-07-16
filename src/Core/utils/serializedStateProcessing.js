@@ -537,12 +537,17 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
     if (component.componentType === "string") {
 
-      let str = component.state.value;
-      let result = findFirstFullMacroInString(str);
+      let startInd = 0;
+      while (startInd < component.state.value.length) {
 
-      if (result.success) {
+        let str = component.state.value;
+        let result = findFirstFullMacroInString(str.slice(startInd));
 
-        let firstIndMatched = result.firstIndMatched;
+        if (!result.success) {
+          break;
+        }
+
+        let firstIndMatched = result.firstIndMatched + startInd;
         let matchLength = result.matchLength;
         let nDollarSigns = result.nDollarSigns;
 
@@ -588,6 +593,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           if (!matchOpeningParens) {
             // if don't match function,
             // don't replace double dollar sign macro
+            startInd = firstIndMatched + 2;
             continue;
           }
 
@@ -620,6 +626,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           if (!evaluateResult.success) {
             // if couldn't create evaluate,
             // don't replace double dollar macro
+            startInd = firstIndMatched + 2;
             continue;
           }
 
@@ -665,6 +672,12 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           // as well as the component made from the macro)
           componentInd++;
         }
+
+        // break out of loop processing string,
+        // as finished current one 
+        // (possibly breaking it into pieces, so will address remainder as other component)
+
+        break;
 
       }
     }
@@ -869,86 +882,86 @@ function createEvaluateIfFindMatchedClosingParens({
 
   let result = findFirstUnmatchedClosingParens(remainingComponents);
 
-  if (result.success) {
-    // found unmatched closing parenthesis, so is the one
-    // matching the opening parenthesis
+  if (!result.success) {
+    return result;
+  }
+  // found unmatched closing parenthesis, so is the one
+  // matching the opening parenthesis
 
-    let lastComponentInd = result.componentInd;
+  let lastComponentInd = result.componentInd;
 
-    remainingComponents = remainingComponents.slice(0, lastComponentInd + 1);
+  remainingComponents = remainingComponents.slice(0, lastComponentInd + 1);
 
-    let lastComponentOfFunction = remainingComponents[lastComponentInd];
+  let lastComponentOfFunction = remainingComponents[lastComponentInd];
 
-    let stringAfterFunction = "";
+  let stringAfterFunction = "";
 
-    // if have text after closing parenthesis
-    // save in stringAfterFunction
-    if (result.charInd + 1 < lastComponentOfFunction.state.value.length) {
-      stringAfterFunction = lastComponentOfFunction.state.value.substring(result.charInd + 1);
-    }
+  // if have text after closing parenthesis
+  // save in stringAfterFunction
+  if (result.charInd + 1 < lastComponentOfFunction.state.value.length) {
+    stringAfterFunction = lastComponentOfFunction.state.value.substring(result.charInd + 1);
+  }
 
-    // remove closing parenthesis and any subsequent text
-    // from the last component
-    if (result.charInd > 0) {
-      lastComponentOfFunction.state.value
-        = lastComponentOfFunction.state.value.substring(0, result.charInd)
+  // remove closing parenthesis and any subsequent text
+  // from the last component
+  if (result.charInd > 0) {
+    lastComponentOfFunction.state.value
+      = lastComponentOfFunction.state.value.substring(0, result.charInd)
+  } else {
+    // remove this component altogether as there is nothing left
+    remainingComponents = remainingComponents.slice(0, lastComponentInd);
+  }
+
+
+  let breakResults = breakEmbeddedStringByCommas({ childrenList: remainingComponents });
+
+  // recurse on pieces
+  let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
+
+  let inputArray = pieces.map(x => {
+    if (x.length === 1 && x[0].componentType !== "string") {
+      return x[0]
     } else {
-      // remove this component altogether as there is nothing left
-      remainingComponents = remainingComponents.slice(0, lastComponentInd);
-    }
-
-
-    let breakResults = breakEmbeddedStringByCommas({ childrenList: remainingComponents });
-
-    // recurse on pieces
-    let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
-
-    let inputArray = pieces.map(x => {
-      if (x.length === 1 && x[0].componentType !== "string") {
-        return x[0]
-      } else {
-        return {
-          componentType: "math",
-          doenetAttributes: { createdFromMacro: true },
-          children: x
-        }
+      return {
+        componentType: "math",
+        doenetAttributes: { createdFromMacro: true },
+        children: x
       }
+    }
+  })
+
+  let evaluateComponent = {
+    componentType: "evaluate",
+    doenetAttributes: { createdFromMacro: true },
+    attributes: {
+      function: {
+        componentType: "function",
+        doenetAttributes: { createdFromMacro: true },
+        children: componentsFromMacro
+      },
+      input: {
+        componentType: "mathList",
+        doenetAttributes: { createdFromMacro: true },
+        children: inputArray
+      }
+    }
+  }
+
+  let replacements = [evaluateComponent];
+
+  // if have text after function
+  // include string component at end containing that text
+  if (stringAfterFunction.length > 0) {
+    replacements.push({
+      componentType: "string",
+      state: { value: stringAfterFunction }
     })
+  }
 
-    let evaluateComponent = {
-      componentType: "evaluate",
-      doenetAttributes: { createdFromMacro: true },
-      attributes: {
-        function: {
-          componentType: "function",
-          doenetAttributes: { createdFromMacro: true },
-          children: componentsFromMacro
-        },
-        input: {
-          componentType: "mathList",
-          doenetAttributes: { createdFromMacro: true },
-          children: inputArray
-        }
-      }
-    }
-
-    let replacements = [evaluateComponent];
-
-    // if have text after function
-    // include string component at end containing that text
-    if (stringAfterFunction.length > 0) {
-      replacements.push({
-        componentType: "string",
-        state: { value: stringAfterFunction }
-      })
-    }
-
-    return {
-      success: true,
-      componentsFromMacro: replacements,
-      lastComponentIndMatched: lastComponentInd,
-    }
-
+  return {
+    success: true,
+    componentsFromMacro: replacements,
+    lastComponentIndMatched: lastComponentInd,
   }
 
 

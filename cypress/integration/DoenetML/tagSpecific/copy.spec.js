@@ -413,8 +413,8 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <mathinput />
 
-    <p hide="false">
-      <aslist hide="false">
+    <p>
+      <aslist>
         <sequence type="letters" from="a" length="$_mathinput1" />
       </aslist>
     </p>
@@ -592,6 +592,29 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('macros after failed double macro', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <text name="t">hi</text>
+    <text name="u">bye</text>
+    <p>$t, $$t, $ $u,
+    $t, $$u, $u</p>
+    <p>$u, $$t(, $t,
+    $u, $$u, $t</p>
+    <p>$t, $$$t, $5, $u, $$5, $t, $$$5, $u</p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/_p1').should('have.text', "hi, $$t, $ bye,\n    hi, $$u, bye")
+    cy.get('#\\/_p2').should('have.text', "bye, $$t(, hi,\n    bye, $$u, hi")
+    cy.get('#\\/_p3').should('have.text', "hi, $$$t, $5, bye, $$5, hi, $$$5, bye")
+  })
+
   it('copy ignores hide by default', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -613,7 +636,6 @@ describe('Copy Tag Tests', function () {
 
 
   });
-
 
   it('copy keeps hidden children hidden', () => {
     cy.window().then((win) => {
