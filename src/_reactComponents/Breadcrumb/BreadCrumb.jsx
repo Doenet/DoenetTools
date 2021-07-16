@@ -1,17 +1,14 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  folderDictionary,
-  fetchDrivesQuery,
-} from '../../../_reactComponents/Drive/NewDrive';
+import { folderDictionary, fetchDrivesQuery } from '../Drive/NewDrive';
 import {
   useRecoilValue,
   atomFamily,
   selectorFamily,
   useSetRecoilState,
 } from 'recoil';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 
 const breadcrumbItemAtomFamily = atomFamily({
   key: 'breadcrumbItemAtomFamily',
@@ -51,11 +48,11 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb() {
-  const path = useRecoilValue(searchParamAtomFamily('path'));
+export default function BreadCrumb({ path }) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
+  //TODO reivew for multi drive
   const items = useRecoilValue(
     breadcrumbItemAtomFamily({
       driveId: driveId,
@@ -63,12 +60,24 @@ export default function BreadCrumb() {
     }),
   );
 
+  const goToFolder = useCallback(
+    (driveId, folderId) => {
+      setPageToolView((was) => ({
+        ...was,
+        params: {
+          path: `${driveId}:${folderId}:${folderId}:Folder`,
+        },
+      }));
+    },
+    [setPageToolView],
+  );
+
   //Don't show up if not in a drive
   if (driveId === '') {
     return null;
   }
 
-  let leftmostBreadcrumb = (
+  const returnToCourseChooser = (
     <span
       role="button"
       tabIndex="0"
@@ -85,42 +94,27 @@ export default function BreadCrumb() {
     </span>
   );
 
-  let reversed = [...items];
-  reversed.reverse();
-
-  let children = [];
-  for (let item of reversed) {
-    children.push(
-      <span
-        role="button"
-        tabIndex="0"
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            setPageToolView((was) => ({
-              ...was,
-              params: {
-                path: `${driveId}:${item.folderId}:${item.folderId}:Folder`,
-              },
-            }));
-          }
-        }}
-        onClick={() => {
-          setPageToolView((was) => ({
-            ...was,
-            params: {
-              path: `${driveId}:${item.folderId}:${item.folderId}:Folder`,
-            },
-          }));
-        }}
-      >
-        {item.label} /{' '}
-      </span>,
-    );
-  }
+  const children = [...items].reverse().map((item) => (
+    <span
+      role="button"
+      tabIndex="0"
+      key={item.folderId}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          goToFolder(driveId, item.folderId);
+        }
+      }}
+      onClick={() => {
+        goToFolder(driveId, item.folderId);
+      }}
+    >
+      {item.label} /{' '}
+    </span>
+  ));
 
   return (
     <div style={{ margin: '10px 20px', maxWidth: '850px' }}>
-      {leftmostBreadcrumb} {children}
+      {returnToCourseChooser} {children}
     </div>
   );
 }

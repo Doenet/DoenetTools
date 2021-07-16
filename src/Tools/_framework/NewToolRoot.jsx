@@ -132,7 +132,7 @@ export default function ToolRoot(props){
   const LazyControlObj = useRef({
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
-    BreadCrumb: lazy(() => import('./HeaderControls/BreadCrumb')),
+    NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
   }).current;
 
   const LazyToolHandlerObj = useRef({
@@ -313,7 +313,7 @@ let navigationObj = {
       currentMenus:["AddDriveItems","EnrollStudents"],
       menusTitles:["Add Items","Enrollment"],
       menusInitOpen:[true,false],
-      headerControls: ["BreadCrumb"],
+      headerControls: ["NavigationBreadCrumb"],
       headerControlsPositions: ["Left"],
       toolHandler:"CourseToolHandler",
       onLeave:"NavigationLeave",
