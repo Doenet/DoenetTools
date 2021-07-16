@@ -462,6 +462,9 @@ let encodeParams = p => Object.entries(p).map(kv =>
       isRecoilChange = true;
       // console.log(">>>Recoil change nextPageToolView = recoilPageToolView",recoilPageToolView)
       if (recoilPageToolView.back){
+        if (backPageToolView.current.page === "init"){
+          backPageToolView.current.page = 'home'; //Go home if started with the page
+        }
         setRecoilPageToolView(backPageToolView.current)
         return null;
       }
