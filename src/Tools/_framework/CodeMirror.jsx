@@ -78,6 +78,7 @@ export default function CodeMirror({editorRef,onBeforeChange,value}){
         });
        } else {
         view.current.dispatch({
+            //this will also need to change when more options are added, as this paves all of the added extensions.
             effects: StateEffect.reconfigure.of(doenetExtensions)
           }); 
        }
@@ -196,3 +197,8 @@ const doenetLanguage = LezerLanguage.define({
 const doenet = (conf) => new LanguageSupport(doenetLanguage, doenetLanguage.data.of({
     autocomplete: completeFromSchema(conf.elements || [], conf.attributes || [])
 }));
+
+export function codeMirrorFocusAndGoToEnd(){
+    view.current.focus();
+    view.current.dispatch(view.current.state.update({selection: {anchor: view.current.state.doc.length} }),  {scrollIntoView: true})
+}
