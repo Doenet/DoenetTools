@@ -84,6 +84,12 @@ export default function ActionButton(props) {
   if (props.alert) {
     actionButton.border = '2px solid #C1292E';
   }
+
+  if (props.disabled) {
+    actionButton.border = '2px solid #e2e2e2';
+    // actionButton.color = '#e2e2e2';
+    actionButton.cursor = 'not-allowed';
+  }
   function handleClick(e) {
     if (props.onClick) props.onClick(e)
   }
