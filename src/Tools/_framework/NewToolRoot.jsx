@@ -304,7 +304,8 @@ let navigationObj = {
       // currentMenus:["CreateCourse","CourseEnroll"],
       // menusTitles:["Create Course","Enroll"],
       menusInitOpen:[true,false],
-      toolHandler:"CourseToolHandler"
+      toolHandler:"CourseToolHandler",
+      onLeave:"CourseChooserLeave"
     },
     navigation:{
       pageName:"Course",
@@ -448,6 +449,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
   const LazyEnterLeaveObj = useRef({
     NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
+    CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
   }).current;
 
   
@@ -524,7 +526,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
       if (leaveComponentName.current){
         const key = `leave${leaveComponentName.current}`
         leaveComponent = <Suspense key={key} fallback={null}>
-        {React.createElement(LazyEnterLeaveObj[leaveComponentName.current],{key})}
+        {React.createElement(LazyEnterLeaveObj[leaveComponentName.current])}
         </Suspense>
       }
       leaveComponentName.current = null;
