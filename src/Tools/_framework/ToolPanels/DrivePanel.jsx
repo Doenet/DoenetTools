@@ -1,7 +1,7 @@
 import React from 'react';
 // import { useLocation } from 'react-router';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
-import { toolViewAtom, searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
