@@ -313,6 +313,8 @@ let navigationObj = {
       currentMenus:["AddDriveItems","EnrollStudents"],
       menusTitles:["Add Items","Enrollment"],
       menusInitOpen:[true,false],
+      headerControls: ["BreadCrumb"],
+      headerControlsPositions: ["Left"],
       toolHandler:"CourseToolHandler",
       onLeave:"NavigationLeave",
     },

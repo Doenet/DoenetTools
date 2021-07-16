@@ -66,6 +66,12 @@ const sockets = atomFamily({
   dangerouslyAllowMutability: true,
 });
 
+const itemType = Object.freeze({
+  FOLDER: 'Folder',
+  DOENETML: 'DoenetML',
+  URL: 'Url',
+});
+
 /**
  * Hook to access realtime functions, supports drive and chat namespaces
  * @param {string} nsp - namespace to connect to
@@ -86,15 +92,15 @@ export default function useSockets(nsp) {
    * @property {Object} driveIdFolderId - object containing the target drive and folder Ids
    * @property {string} driveIdFolderId.driveId
    * @property {string} driveIdFolderId.folderId
-   * @property {string} label - display name of the new item
    * @property {string} type - type of item being added, one of DoenetML, Folder, or Url
+   * @property {string} [label=Untitled] - display name of the new item
    * @property {string} [selectedItemId=null] the item to insert the new item after in the sort order
    * @property {string} [url=null] hyperlink for url type items
    */
 
   /**
    * create and add a new folder or doenetML
-   * @param {addOptions} itemOptions - configuration {@link itemOptions} for new Item
+   * @param {addOptions} addOptions - configuration {@link itemOptions} for new Item
    */
   const addItem = useRecoilCallback(({ snapshot }) =>
     /**
@@ -800,6 +806,7 @@ export default function useSockets(nsp) {
     moveItems,
     renameItem,
     copyItems,
+    itemType,
   };
 }
 

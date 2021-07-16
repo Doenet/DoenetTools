@@ -273,14 +273,13 @@ export default function Drive(props){
 
   if (driveObj.driveId) {
     let columnTypes = props.columnTypes ?? [] //Protect against not being defined
-    // const drivePath = useRecoilValue(drivePathSyncFamily(props.drivePathSyncKey))
 
     let hideUnpublished = false; //Default to showing unpublished
     if (props.hideUnpublished){ hideUnpublished = props.hideUnpublished}
 
     if (driveInstanceId.current === ""){
       driveInstanceId.current = nanoid();
-      setDriveInstanceId((old)=>{let newArr = [...old]; newArr.push(driveInstanceId.current); return newArr;});
+      setDriveInstanceId((old)=>([...old, driveInstanceId.current]));
     }
 
     //Use Route to determine path variables
@@ -323,7 +322,6 @@ export default function Drive(props){
           doubleClickCallback={props.doubleClickCallback}
           numColumns={numColumns}
           columnTypes={columnTypes}
-          drivePathSyncKey={props.drivePathSyncKey}
         />
         <WithDropTarget
           key={DropTargetsConstant.INVALID_DROP_AREA_ID}
@@ -823,11 +821,6 @@ function Folder(props){
   let itemId = props?.folderId;
   if (!itemId){ itemId = props.driveId}
 
-  let drivePathSyncKey = props.drivePathSyncKey;
-  if (!drivePathSyncKey) {drivePathSyncKey = "_"}
-
-  const setDrivePath = useSetRecoilState(drivePathSyncFamily(drivePathSyncKey));
-
   const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderInfoSelector({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.folderId}))
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:props.folderId}))
 
@@ -1054,19 +1047,17 @@ function Folder(props){
       e.preventDefault();
       e.stopPropagation();
       if (e.key === 'Enter') {
-        setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
+        props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
       }
     }}
     onClick={(e)=>{
       e.preventDefault(); // Folder
       e.stopPropagation();
       if (props.isNav){
-        clearSelections();
         //Only select one item
-        setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
-      }else{
-        e.preventDefault();
-        e.stopPropagation();
+        clearSelections();
+        props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
+      } else {
         if (!e.shiftKey && !e.metaKey){
           setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
         }else if (e.shiftKey && !e.metaKey){
@@ -1082,7 +1073,6 @@ function Folder(props){
       e.stopPropagation();
       props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
       // toggleOpen();
-      // setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
     }}
     onBlur={(e) => {
       //Don't clear on navigation changes
@@ -1125,6 +1115,7 @@ function Folder(props){
     label = props.driveObj.label;
     folder = <>
     <div
+      role="button"
       data-doenet-driveinstanceid={props.driveInstanceId}
       data-cy="navDriveHeader"
       tabIndex={0}
@@ -1139,13 +1130,23 @@ function Folder(props){
         fontSize: "24px",
         borderLeft: borderSide
       }}
+      onKeyDown={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        if (props.isNav && e.key === 'Enter'){
+          clearSelections();
+          //Only select one item
+          props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Drive"})
+        }
+        setSelectedDrive(props.driveId);
+      }}
       onClick={(e)=>{
         e.preventDefault();
         e.stopPropagation();
         if (props.isNav){
           clearSelections();
           //Only select one item
-          setDrivePath({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Drive"})
+          props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Drive"})
         }
         setSelectedDrive(props.driveId);
       }
@@ -1255,7 +1256,6 @@ function Folder(props){
             parentFolderId={props.folderId}
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
-            drivePathSyncKey={props.drivePathSyncKey}
             />)
         }
       }else{
@@ -1279,7 +1279,6 @@ function Folder(props){
             doubleClickCallback={props.doubleClickCallback}
             numColumns={props.numColumns}
             columnTypes={props.columnTypes}
-            drivePathSyncKey={props.drivePathSyncKey}
             />)
           break;
           case "DoenetML":
@@ -1296,7 +1295,6 @@ function Folder(props){
               deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
               columnTypes={props.columnTypes}
-              setDrivePath={setDrivePath}
             />)
           break;
           case "DragShadow":
@@ -1555,7 +1553,7 @@ function columnJSX(columnType,item){
   return <span></span>;
 }
 
-const DoenetML = React.memo((props)=>{
+const DoenetML = React.memo(function DoenetML(props) {
   // console.log(`=== 📜 DoenetML`)
 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId}));
@@ -1673,7 +1671,7 @@ const DoenetML = React.memo((props)=>{
         e.stopPropagation();
         if (props.isNav){
           //Only select one item
-          props.setDrivePath({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"DoenetML"})
+          props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"DoenetML"})
 
         }else{
           e.preventDefault();

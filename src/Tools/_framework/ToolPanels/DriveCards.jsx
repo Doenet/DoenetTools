@@ -96,12 +96,9 @@ const DriveCardWrapper = (props) => {
 
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
-      setParamObj({
+      setPageToolView({
         tool:'navigation',
-        driveId:item.driveId,
-        parentFolderId:item.driveId,
-        itemId:item.driveId,
-        path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`
+        params: {path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive` }
       });
 
     }
@@ -247,7 +244,7 @@ const DriveCardWrapper = (props) => {
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setDrivecardSelection([]);
+                  setDrivecardSelection([]); //TODO: on leave instead
                   setPageToolView({page:'course',tool:'navigation',view:'',params:{path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`}})
                 }}
               >

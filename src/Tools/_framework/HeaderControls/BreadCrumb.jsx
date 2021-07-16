@@ -11,7 +11,7 @@ import {
   selectorFamily,
   useSetRecoilState,
 } from 'recoil';
-import { paramObjAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 
 const breadcrumbItemAtomFamily = atomFamily({
   key: 'breadcrumbItemAtomFamily',
@@ -54,7 +54,7 @@ const breadcrumbItemAtomFamily = atomFamily({
 export default function BreadCrumb() {
   const path = useRecoilValue(searchParamAtomFamily('path'));
   const [driveId, parentFolderId] = path.split(':');
-  const setParamObj = useSetRecoilState(paramObjAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const items = useRecoilValue(
     breadcrumbItemAtomFamily({
@@ -62,7 +62,6 @@ export default function BreadCrumb() {
       folderId: parentFolderId,
     }),
   );
-  console.log(items);
 
   //Don't show up if not in a drive
   if (driveId === '') {
@@ -75,11 +74,11 @@ export default function BreadCrumb() {
       tabIndex="0"
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
-          setParamObj({ tool: 'courseChooser' });
+          setPageToolView({ tool: 'courseChooser' });
         }
       }}
       onClick={() => {
-        setParamObj({ tool: 'courseChooser' });
+        setPageToolView({ tool: 'courseChooser' });
       }}
     >
       <FontAwesomeIcon icon={faTh} />
@@ -97,16 +96,20 @@ export default function BreadCrumb() {
         tabIndex="0"
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            setParamObj((was) => ({
+            setPageToolView((was) => ({
               ...was,
-              path: `${driveId}:${item.folderId}:${item.folderId}:Folder`,
+              params: {
+                path: `${driveId}:${item.folderId}:${item.folderId}:Folder`,
+              },
             }));
           }
         }}
         onClick={() => {
-          setParamObj((was) => ({
+          setPageToolView((was) => ({
             ...was,
-            path: `${driveId}:${item.folderId}:${item.folderId}:Folder`,
+            params: {
+              path: `${driveId}:${item.folderId}:${item.folderId}:Folder`,
+            },
           }));
         }}
       >

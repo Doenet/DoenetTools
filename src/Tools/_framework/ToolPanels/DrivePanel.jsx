@@ -1,10 +1,11 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useCallback } from 'react';
 // import { useLocation } from 'react-router';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   toolViewAtom,
   searchParamAtomFamily,
   paramObjAtom,
+  pageToolViewAtom,
 } from '../NewToolRoot';
 import Drive, {
   clearDriveAndItemSelections,
@@ -21,31 +22,34 @@ import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 
 export default function DrivePanel() {
-  // const path = useRecoilValue(searchParamAtomFamily('path'));
-  const clearSelections = useRecoilCallback(
-    ({ snapshot, set }) =>
-      () => {
-        const globalItemsSelected = snapshot
-          .getLoadable(globalSelectedNodesAtom)
-          .getValue();
-        for (let itemObj of globalItemsSelected) {
-          const { parentFolderId, ...atomFormat } = itemObj; //Without parentFolder
-          set(selectedDriveItemsAtom(atomFormat), false);
-        }
-        if (globalItemsSelected.length > 0) {
-          set(globalSelectedNodesAtom, []);
-        }
-        const globalDrivesSelected = snapshot
-          .getLoadable(drivecardSelectedNodesAtom)
-          .getValue();
-        if (globalDrivesSelected.length > 0) {
-          set(drivecardSelectedNodesAtom, []);
-        }
-      },
-    [],
-  );
-  const setParamObj = useSetRecoilState(paramObjAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
+
+  const filter = useCallback(() => {}, []);
+
+  const doubleClickCallback = useCallback(
+    (info) => {
+      switch (info.type) {
+        case 'Folder':
+          setPageToolView((was) => ({
+            ...was,
+            params: {
+              path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
+            },
+          }));
+          break;
+        case 'DoenetML':
+          setPageToolView({
+            tool: 'editor',
+            params: { doenetId: info.item.doenetId },
+          });
+          break;
+        default:
+          throw new Error('DrivePanel doubleClick info type not defined');
+      }
+    },
+    [setPageToolView],
+  );
 
   return (
     <BreadcrumbProvider>
@@ -54,21 +58,11 @@ export default function DrivePanel() {
           <Container>
             <Drive
               path={path}
-              // types={['content', 'course']}
+              filter={() => {}}
               columnTypes={['Released', 'Public']}
               drivePathSyncKey="main"
               urlClickBehavior="select"
-              doubleClickCallback={(info) => {
-                clearSelections();
-                if (info.type === 'Folder') {
-                  setParamObj((was) => ({
-                    ...was,
-                    path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
-                  }));
-                } else if (info.type === 'DoenetML') {
-                  setParamObj({ tool: 'editor', doenetId: info.item.doenetId });
-                }
-              }}
+              doubleClickCallback={doubleClickCallback}
             />
           </Container>
         </Suspense>
@@ -116,27 +110,16 @@ function Container(props) {
 //   return <div style={props.style}><h1>drive</h1>
 //   <p>put drive here</p>
 //   <div>path: {path}</div>
-//   <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f1'; return newObj; })}}>path to f1</button></div>
-//   <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f2'; return newObj; })}}>path to f2</button></div>
-//   <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f3'; return newObj; })}}>path to f3</button></div>
+//   <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f1'}}))}}>path to f1</button></div>
+//   <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f2'}}))}}>path to f2</button></div>
+//   <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f3'}}))}}>path to f3</button></div>
 //   <hr />
 //   {/* set(selectedMenuPanelAtom,"SelectedDoenetId"); //replace selection */}
 
-  
-  return <div style={props.style}><h1>drive</h1>
-  <p>put drive here</p>
-  <div>path: {path}</div>
-  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f1'}}))}}>path to f1</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f2'}}))}}>path to f2</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f3'}}))}}>path to f3</button></div>
-  <hr />
-  {/* set(selectedMenuPanelAtom,"SelectedDoenetId"); //replace selection */}
+//   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
+//   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
+//   <hr />
+//   <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>{ let newObj = {...was};newObj['tool'] = 'editor'; newObj['params']={doenetId:'JRP26MJwT93KkydNtBQpO'}; return newObj; })}}>Edit c1</button></div>
 
-  <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
-  <hr />
-  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>{ let newObj = {...was};newObj['tool'] = 'editor'; newObj['params']={doenetId:'JRP26MJwT93KkydNtBQpO'}; return newObj; })}}>Edit c1</button></div>
-
-
-  </div>
-}
+//   </div>
+// }
