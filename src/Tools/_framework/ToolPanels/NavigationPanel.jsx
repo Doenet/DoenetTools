@@ -30,7 +30,9 @@ export default function NavigationPanel() {
           break;
         case 'DoenetML':
           setPageToolView({
+            page: 'course',
             tool: 'editor',
+            view: '',
             params: { doenetId: info.item.doenetId },
           });
           break;

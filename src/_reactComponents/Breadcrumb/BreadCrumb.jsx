@@ -83,11 +83,11 @@ export default function BreadCrumb({ path }) {
       tabIndex="0"
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
-          setPageToolView({ tool: 'courseChooser' });
+          setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
         }
       }}
       onClick={() => {
-        setPageToolView({ tool: 'courseChooser' });
+        setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
       }}
     >
       <FontAwesomeIcon icon={faTh} />

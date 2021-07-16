@@ -1754,7 +1754,7 @@ function useDnDCallbacks() {
       copyMode: optionKeyPressed
     }));
     optionKeyPressedRef.current = optionKeyPressed;
-  }, [optionKeyPressed]);
+  }, [optionKeyPressed, setDragState]);
 
   const onDragStart = ({ ev=null, nodeId, driveId, onDragStartCallback }) => {
     let draggedItemsId = new Set();
