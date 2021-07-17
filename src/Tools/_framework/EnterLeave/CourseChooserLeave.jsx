@@ -8,7 +8,7 @@ export default function CourseChooserLeave(){
   console.log(">>>===CourseChooserLeave")
   const setSelections = useRecoilCallback(({set})=>()=>{
     set(selectedMenuPanelAtom,"");
-    set(globalSelectedNodesAtom,[]);
+    set(globalSelectedNodesAtom,[]);  //TODO: Does this need to be reset? Isn't globalSelectedNodesAtom for drive?
     set(drivecardSelectedNodesAtom,[]);
   })
   setSelections()
