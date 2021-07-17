@@ -2,9 +2,11 @@ import React, { useState, lazy, Suspense, useRef } from 'react';
 import {
   atom,
   selector,
+  useRecoilValue,
   atomFamily,
   useRecoilCallback,
   useRecoilState,
+  useSetRecoilState,
 } from 'recoil';
 import styled from 'styled-components';
 import Toast from './Toast';
@@ -239,6 +241,7 @@ export default function ToolRoot(){
    
     {/* <RootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/> */}
     <MemoizedRootController key='root_controller' setToolRootMenusAndPanels={setToolRootMenusAndPanels}/>
+    <MemoizedOnLeave key='MemoizedOnLeave' />
   </>
 } 
 
@@ -282,6 +285,7 @@ let navigationObj = {
       // currentMenus:["CreateCourse","CourseEnroll"],
       // menusTitles:["Create Course","Enroll"],
       menusInitOpen:[true,false],
+      onLeave:"CourseChooserLeave",
     },
     navigation:{
       pageName:"Course",
@@ -394,10 +398,44 @@ let encodeParams = p => Object.entries(p).map(kv =>
     key:"pageToolViewAtom",
     default:{page:"init",tool:"",view:""}
   })
+
+  const onLeaveComponentStr = atom({
+    key:"onLeaveComponentStr",
+    default:{str:null,updateNum:0}
+  })
+
+  export const finishedOnLeave = atom({
+    key:"finishedOnLeave",
+    default:null
+  })
+
+  const MemoizedOnLeave = React.memo(OnLeave)
+  function OnLeave(){
+    const leaveComponentObj = useRecoilValue(onLeaveComponentStr)
+    const leaveComponentStr = leaveComponentObj.str;
+    //TODO: make a queue of onLeaveStrings.  Remove from queue after component has finished.
+    let leaveComponent = null;
+
+    const LazyEnterLeaveObj = useRef({
+      NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
+      CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
+    }).current;
+
+    if (leaveComponentStr){
+      const key = `leave${leaveComponentStr}`
+      leaveComponent = <Suspense key={key} fallback={null}>
+      {/* {React.createElement(LazyEnterLeaveObj[leaveComponentName.current],{key})} */}
+      {React.createElement(LazyEnterLeaveObj[leaveComponentStr])}
+      </Suspense>
+    }
+
+    return <>{leaveComponent}</>;
+  }
   
   const MemoizedRootController = React.memo(RootController)
   function RootController(props){
     const [recoilPageToolView,setRecoilPageToolView ] = useRecoilState(pageToolViewAtom);
+    const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
     let lastPageToolView = useRef({page:"init",tool:"",view:""});
     let backPageToolView = useRef({page:"init",tool:"",view:""});
     let lastLocationStr = useRef("");
@@ -422,15 +460,9 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }
   })
 
-  const LazyEnterLeaveObj = useRef({
-    NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
-    CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
-  }).current;
-
-  
-    let enterComponent = null; //Lazy loaded entering component
-    let leaveComponent = null; //Lazy loaded leaving component
-    let leaveComponentName = useRef(null); //Name of the component to load if we leave
+ 
+    // let enterComponent = null; //Lazy loaded entering component
+    let leaveComponentName = useRef(null)
     let locationStr = `${location.pathname}${location.search}`;
     let nextPageToolView = {page:"",tool:"",view:""};
     let nextMenusAndPanels = null;
@@ -462,6 +494,9 @@ let encodeParams = p => Object.entries(p).map(kv =>
       isRecoilChange = true;
       // console.log(">>>Recoil change nextPageToolView = recoilPageToolView",recoilPageToolView)
       if (recoilPageToolView.back){
+        if (backPageToolView.current.page === "init"){
+          backPageToolView.current.page = 'home'; //Go home if started with the page
+        }
         setRecoilPageToolView(backPageToolView.current)
         return null;
       }
@@ -512,14 +547,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
       isViewChange = true;
     }
 
- //Load and Update Navigation Leave
+    //Update Navigation Leave
     if (isPageChange || isToolChange || isViewChange){
       if (leaveComponentName.current){
-        const key = `leave${leaveComponentName.current}`
-        leaveComponent = <Suspense key={key} fallback={null}>
-        {/* {React.createElement(LazyEnterLeaveObj[leaveComponentName.current],{key})} */}
-        {React.createElement(LazyEnterLeaveObj[leaveComponentName.current])}
-        </Suspense>
+        setOnLeaveStr((was)=>({str:leaveComponentName.current,updateNum:was.updateNum+1})) 
       }
       leaveComponentName.current = null;
       if (nextMenusAndPanels.onLeave){
@@ -542,10 +573,9 @@ let encodeParams = p => Object.entries(p).map(kv =>
     // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
     //Only update ToolRoot if nextMenusAndPanels was indicated as a change
     if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) ){
-      // console.log(">>>UPDATE TOOL ROOT!")
       backPageToolView.current = lastPageToolView.current;  //Set back for back button
+        props.setToolRootMenusAndPanels(nextMenusAndPanels)
       
-      props.setToolRootMenusAndPanels(nextMenusAndPanels)
     }
 
 
@@ -582,10 +612,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     lastSearchObj.current = searchObj;
     lastLocationStr.current = locationStr;
     lastPageToolView.current = nextPageToolView;
-    return <>
-    {leaveComponent}
-    {enterComponent}
-    </>;
+    return null; 
   }
 
 
