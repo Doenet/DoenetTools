@@ -401,7 +401,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
   const onLeaveComponentStr = atom({
     key:"onLeaveComponentStr",
-    default:null
+    default:{str:null,updateNum:0}
   })
 
   export const finishedOnLeave = atom({
@@ -411,11 +411,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
   const MemoizedOnLeave = React.memo(OnLeave)
   function OnLeave(){
-    console.log(">>>===OnLeave")
-    const leaveComponentStr = useRecoilValue(onLeaveComponentStr)
+    const leaveComponentObj = useRecoilValue(onLeaveComponentStr)
+    const leaveComponentStr = leaveComponentObj.str;
     //TODO: make a queue of onLeaveStrings.  Remove from queue after component has finished.
     let leaveComponent = null;
-    console.log(">>>OnLeave leaveComponentStr------->",leaveComponentStr)
 
     const LazyEnterLeaveObj = useRef({
       NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
@@ -423,7 +422,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }).current;
 
     if (leaveComponentStr){
-      console.log(">>>Make component with",leaveComponentStr)
       const key = `leave${leaveComponentStr}`
       leaveComponent = <Suspense key={key} fallback={null}>
       {/* {React.createElement(LazyEnterLeaveObj[leaveComponentName.current],{key})} */}
@@ -552,8 +550,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     //Update Navigation Leave
     if (isPageChange || isToolChange || isViewChange){
       if (leaveComponentName.current){
-        console.log(">>>call setOnLeaveStr with:",leaveComponentName.current)
-        setOnLeaveStr(leaveComponentName.current)
+        setOnLeaveStr((was)=>({str:leaveComponentName.current,updateNum:was.updateNum+1})) 
       }
       leaveComponentName.current = null;
       if (nextMenusAndPanels.onLeave){
