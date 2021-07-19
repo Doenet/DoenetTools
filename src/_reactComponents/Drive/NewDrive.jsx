@@ -311,6 +311,7 @@ export default function Drive(props){
           pathItemId={pathItemId}
           hideUnpublished={hideUnpublished}
           foldersOnly={props.foldersOnly}
+          clickCallback={props.clickCallback}
           doubleClickCallback={props.doubleClickCallback}
           numColumns={numColumns}
           columnTypes={columnTypes}
@@ -1045,20 +1046,13 @@ function Folder(props){
     onClick={(e)=>{
       e.preventDefault(); // Folder
       e.stopPropagation();
-      if (props.isNav){
-        //Only select one item
-        clearSelections();
-        props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
-      } else {
-        if (!e.shiftKey && !e.metaKey){
-          setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
-        }else if (e.shiftKey && !e.metaKey){
-          setSelected({instructionType:"range to item",parentFolderId:props.parentFolderId})
-        }else if (!e.shiftKey && e.metaKey){
-          setSelected({instructionType:"add item",parentFolderId:props.parentFolderId})
-        }
-      }
-      setSelectedDrive(props.driveId);
+      props?.clickCallback?.({
+        driveId:props.driveId,
+        parentFolderId:itemId,
+        itemId,
+        driveInstanceId:props.driveInstanceId,
+        type:"Folder",
+        instructionType:"one item"})
       }}
     onDoubleClick={(e)=>{
       e.preventDefault();
@@ -1268,6 +1262,7 @@ function Folder(props){
             parentFolderId={props.folderId}
             hideUnpublished={props.hideUnpublished}
             foldersOnly={props.foldersOnly}
+            clickCallback={props.clickCallback}
             doubleClickCallback={props.doubleClickCallback}
             numColumns={props.numColumns}
             columnTypes={props.columnTypes}
@@ -1283,6 +1278,7 @@ function Folder(props){
               route={props.route}
               isNav={props.isNav}
               pathItemId={props.pathItemId}
+              clickCallback={props.clickCallback}
               doubleClickCallback={props.doubleClickCallback}
               deleteItem={deleteItemCallback}
               numColumns={props.numColumns}
@@ -1646,8 +1642,7 @@ const DoenetML = React.memo(function DoenetML(props) {
       onDoubleClick={(e)=>{
         e.preventDefault();
         e.stopPropagation();
-        if (props.doubleClickCallback){
-          props.doubleClickCallback({
+        props?.doubleClickCallback?.({
             driveId:props.driveId,
             item:props.item,
             driveInstanceId:props.driveInstanceId,
@@ -1656,27 +1651,27 @@ const DoenetML = React.memo(function DoenetML(props) {
             pathItemId:props.pathItemId,
             type: 'DoenetML'
           })
-        }
       }}
       onClick={(e)=>{
         e.preventDefault();
         e.stopPropagation();
-        if (props.isNav){
-          //Only select one item
-          props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"DoenetML"})
+        props?.clickCallback?.({type: 'DoenetML'})
+        // if (props.isNav){
+        //   //Only select one item
+        //   props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"DoenetML"})
 
-        }else{
-          e.preventDefault();
-          e.stopPropagation();
-          if (!e.shiftKey && !e.metaKey){
-            setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
-          }else if (e.shiftKey && !e.metaKey){
-            setSelected({instructionType:"range to item",parentFolderId:props.item.parentFolderId})
-          }else if (!e.shiftKey && e.metaKey){
-            setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
-          }
-        }
-        setSelectedDrive(props.driveId);
+        // }else{
+        //   e.preventDefault();
+        //   e.stopPropagation();
+        //   if (!e.shiftKey && !e.metaKey){
+        //     setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
+        //   }else if (e.shiftKey && !e.metaKey){
+        //     setSelected({instructionType:"range to item",parentFolderId:props.item.parentFolderId})
+        //   }else if (!e.shiftKey && e.metaKey){
+        //     setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
+        //   }
+        // }
+        // setSelectedDrive(props.driveId);
       }}
 
       ><div

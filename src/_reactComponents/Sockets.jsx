@@ -24,7 +24,7 @@ import {
   globalSelectedNodesAtom,
   selectedDriveItemsAtom,
   sortOptions,
-} from './Drive/Drive';
+} from './Drive/NewDrive';
 
 /**
  * a stored manger to allow for multiplexed socket connections.

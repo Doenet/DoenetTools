@@ -1,30 +1,96 @@
 /**
  * External dependencies
  */
-import React, { Suspense, useCallback, useEffect } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { Suspense, useCallback /* useEffect */ } from 'react';
+import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 /**
  * Internal dependencies
  */
 import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-import Drive from '../../../_reactComponents/Drive/NewDrive';
+import Drive, {
+  selectedDriveAtom,
+  selectedDriveItemsAtom,
+} from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
-import { useToast, toastType } from '../Toast';
+import { useMenuPanelController } from '../Panels/MenuPanel';
+import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+// import { useToast, toastType } from '../Toast';
 
-export default function NavigationPanel() {
+export default function NavigationPanel(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
-  const toast = useToast();
+  const setOpenMenuPanel = useMenuPanelController();
+  // const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId}));
 
-  useEffect(() => {
-    if (path === '') {
-      toast('Missing drive path data, please select a course', toastType.ERROR);
-      setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
-    }
-  }, [path, toast, setPageToolView]);
+  // const toast = useToast();
+
+  // useEffect(() => {
+  //   if (path === '') {
+  //     toast('Missing drive path data, please select a course', toastType.ERROR);
+  //     setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
+  //   }
+  // }, [path, toast, setPageToolView]);
 
   const filter = useCallback((item) => item.released === '1', []);
+
+  // if (props.isNav){
+  //   //Only select one item
+  //   clearSelections();
+  //   props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
+  // } else {
+  //   if (!e.shiftKey && !e.metaKey){
+  //     props?.clickCallback?.({instructionType:"one item",parentFolderId:props.parentFolderId, type:"DoenetML"})
+  //     setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
+  //   }else if (e.shiftKey && !e.metaKey){
+  //     setSelected({instructionType:"range to item",parentFolderId:props.parentFolderId})
+  //   }else if (!e.shiftKey && e.metaKey){
+  //     setSelected({instructionType:"add item",parentFolderId:props.parentFolderId})
+  //   }
+  // }
+  // setSelectedDrive(props.driveId);
+
+  const clickCallback = useRecoilCallback(
+    ({ set }) =>
+      (info) => {
+        switch (info.type) {
+          case 'Folder':
+            set(selectedMenuPanelAtom, 'SelectedDoenetId'); //TODO folder
+            set(
+              selectedDriveItemsAtom({
+                driveId: info.driveId,
+                driveInstanceId: info.driveInstanceId,
+                itemId: info.itemId,
+              }),
+              {
+                instructionType: info.instructionType,
+                parentFolderId: info.parentFolderId,
+              },
+            );
+            set(selectedDriveAtom, info.driveId);
+            break;
+          case 'DoenetML':
+            console.log('found!');
+            set(selectedMenuPanelAtom, 'SelectedDoenetId');
+            set(
+              selectedDriveItemsAtom({
+                driveId: info.driveId,
+                driveInstanceId: info.driveInstanceId,
+                itemId: info.itemId,
+              }),
+              {
+                instructionType: info.instructionType,
+                parentFolderId: info.parentFolderId,
+              },
+            );
+            set(selectedDriveAtom, info.driveId);
+            break;
+          default:
+            throw new Error('NavivationPanel click info type not defined');
+        }
+      },
+    [],
+  );
 
   const doubleClickCallback = useCallback(
     (info) => {
@@ -42,15 +108,22 @@ export default function NavigationPanel() {
             page: 'course',
             tool: 'editor',
             view: '',
-            params: { doenetId: info.item.doenetId },
+            params: {
+              doenetId: info.item.doenetId,
+              path: `${info.driveId}:${info.item.parentFolderId}:${info.item.doenetId}:DoenetML`,
+            },
           });
           break;
         default:
-          throw new Error('DrivePanel doubleClick info type not defined');
+          throw new Error('NavigationPanel doubleClick info type not defined');
       }
     },
     [setPageToolView],
   );
+
+  if (props.style?.display === 'none') {
+    return <div style={props.style}></div>;
+  }
 
   return (
     <BreadcrumbProvider>
@@ -62,6 +135,7 @@ export default function NavigationPanel() {
               filter={filter}
               columnTypes={['Released', 'Public']}
               urlClickBehavior="select"
+              clickCallback={clickCallback}
               doubleClickCallback={doubleClickCallback}
             />
           </Container>
