@@ -309,14 +309,13 @@ let navigationObj = {
     },
     enrollment:{
       pageName:"Enrollment",
-      currentMenus:[],
-      menusTitles:[],
-      menusInitOpen:[],
+      currentMenus:["LoadEnrollment","ManualEnrollment"],
+      menusTitles:["Load","Manual"],
+      menusInitOpen:[false,false],
       currentMainPanel:"Enrollment",
       supportPanelOptions:[],
       supportPanelTitles:[],
       supportPanelIndex:0,
-      hasNoMenuPanel: true,
       headerControls: ["BackButton"],
       headerControlsPositions: ["Right"]
     }
