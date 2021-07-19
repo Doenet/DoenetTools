@@ -37,7 +37,7 @@ import '../../_utils/util.css';
 import Tool from '../_framework/Tool';
 import Switch from '../_framework/Switch';
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
-import { useToast } from '../_framework/Toast';
+import { useToast, toastType } from '../_framework/Toast';
 import { URLPathSync } from '../library/Library';
 import Enrollment from './Enrollment';
 import { useAssignment } from '../course/CourseActions';
@@ -151,7 +151,6 @@ function AutoSelect(props) {
 
 export default function Course(props) {
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
-  const [toast, toastType] = useToast();
   let routePathDriveId = '';
   let routePathFolderId = '';
   let pathItemId = '';
@@ -437,7 +436,7 @@ const DoenetMLInfoPanel = (props) => {
 
   let assignmentForm = null;
 
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const [oldValue,setoldValue] = useState();
   const handleChange = (event) => {
     event.preventDefault();
@@ -503,7 +502,7 @@ const DoenetMLInfoPanel = (props) => {
         result
           .then((resp) => {
             if (resp.data.success) {
-              addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
+              addToast(`Updated '${name}' to '${value}'`, toastType.SUCCESS);
             } else {
               onAssignmentError({ errorMessage: resp.data.message });
             }
@@ -766,7 +765,7 @@ const VersionHistoryInfoPanel = (props) => {
   } = useAssignment();
   const { makeAssignment, convertAssignmentToContent } =
     useAssignmentCallbacks();
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const [checkIsAssigned, setIsAssigned] = useState(false);
   const [selectVersion, setSelectVersion] = useState(false);
 
@@ -876,7 +875,7 @@ const VersionHistoryInfoPanel = (props) => {
                   if (result.success) {
                     addToast(
                       `Add new assignment`,
-                      ToastType.SUCCESS,
+                      toastType.SUCCESS,
                     );
                   } else {
                     onAssignmentError({ errorMessage: result.message });
@@ -930,7 +929,7 @@ const VersionHistoryInfoPanel = (props) => {
                     if (resp.data.success) {
                       addToast(
                         `'UnAssigned ${itemInfo.label}''`, 
-                        ToastType.SUCCESS,
+                        toastType.SUCCESS,
                       );
                     } else {
                       onAssignmentError({ errorMessage: resp.data.message });
@@ -1006,7 +1005,7 @@ const VersionHistoryInfoPanel = (props) => {
                   if (result.success) {
                     addToast(
                       `Switch  assignment`,
-                      ToastType.SUCCESS,
+                      toastType.SUCCESS,
                     );
                   } else {
                     onAssignmentError({ errorMessage: result.message });

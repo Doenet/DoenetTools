@@ -114,7 +114,7 @@ export default function ToolRoot(){
     DriveCards:lazy(() => import('./ToolPanels/DriveCards')),
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
     SignOut:lazy(() => import('./ToolPanels/SignOut')),
-    DrivePanel:lazy(() => import('./ToolPanels/DrivePanel')),
+    NavigationPanel:lazy(() => import('./ToolPanels/NavigationPanel')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
@@ -123,6 +123,7 @@ export default function ToolRoot(){
   const LazyControlObj = useRef({
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
+    NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
   }).current;
  
 
@@ -157,9 +158,11 @@ export default function ToolRoot(){
       if (controlObj){
         const key = `headerControls${MainPanelKey}`;
         headerControlsPositions.push(toolRootMenusAndPanels.headerControlsPositions[i])
-        headerControls.push(<Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-        {React.createElement(controlObj,{key:{key}})}
-        </Suspense>)
+        headerControls.push(
+          <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+            {React.createElement(controlObj,{key:{key}})}
+          </Suspense>
+        )
       }
     }
   }
@@ -289,10 +292,12 @@ let navigationObj = {
     },
     navigation:{
       pageName:"Course",
-      currentMainPanel:"DrivePanel",
+      currentMainPanel:"NavigationPanel",
       currentMenus:["AddDriveItems","EnrollStudents"],
       menusTitles:["Add Items","Enrollment"],
       menusInitOpen:[true,false],
+      headerControls: ["NavigationBreadCrumb"],
+      headerControlsPositions: ["Left"],
       onLeave:"NavigationLeave",
     },
     editor:{
@@ -620,8 +625,8 @@ const LoadingFallback = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 2em;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 `;
 
 

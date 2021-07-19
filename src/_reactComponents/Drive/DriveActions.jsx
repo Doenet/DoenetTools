@@ -18,7 +18,7 @@ import {
   folderOpenAtom,
   folderSortOrderAtom,
 } from './Drive';
-import { useToast } from '../../Tools/_framework/Toast';
+import { useToast, toastType } from '../../Tools/_framework/Toast';
 
 const dragShadowId = 'dragShadow';
 
@@ -341,7 +341,7 @@ export const useDragShadowCallbacks = () => {
 };
 
 export const useSortFolder = () => {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const sortFolder = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ driveIdInstanceIdFolderId, sortKey }) => {
@@ -391,14 +391,14 @@ export const useSortFolder = () => {
   );
 
   const onSortFolderError = ({ errorMessage = null }) => {
-    addToast(`Sort items error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Sort items error: ${errorMessage}`, toastType.ERROR);
   };
 
   return { sortFolder, invalidateSortCache, onSortFolderError };
 };
 
 export const useAssignmentCallbacks = () => {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   const makeAssignment = useRecoilCallback(
     ({ set }) =>
@@ -414,7 +414,7 @@ export const useAssignmentCallbacks = () => {
   );
 
   const onmakeAssignmentError = ({ errorMessage = null }) => {
-    addToast(`make assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`make assignment error: ${errorMessage}`, toastType.ERROR);
   };
   const publishAssignment = useRecoilCallback(
     ({ set }) =>
@@ -430,7 +430,7 @@ export const useAssignmentCallbacks = () => {
   );
 
   const onPublishAssignmentError = ({ errorMessage = null }) => {
-    addToast(`Publish assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Publish assignment error: ${errorMessage}`, toastType.ERROR);
   };
 
   const publishContent = useRecoilCallback(
@@ -446,7 +446,7 @@ export const useAssignmentCallbacks = () => {
   );
 
   const onPublishContentError = () => {
-    addToast(`Publish content error`, ToastType.ERROR);
+    addToast(`Publish content error`, toastType.ERROR);
   };
 
   const updateAssignmentTitle = useRecoilCallback(
@@ -470,7 +470,7 @@ export const useAssignmentCallbacks = () => {
   );
 
   const onUpdateAssignmentTitleError = ({ errorMessage = null }) => {
-    addToast(`Rename assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Rename assignment error: ${errorMessage}`, toastType.ERROR);
   };
 
   const convertAssignmentToContent = useRecoilCallback(
@@ -486,7 +486,7 @@ export const useAssignmentCallbacks = () => {
   );
 
   const onConvertAssignmentToContentError = ({ errorMessage = null }) => {
-    addToast(`Convert assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Convert assignment error: ${errorMessage}`, toastType.ERROR);
   };
 
   return {
