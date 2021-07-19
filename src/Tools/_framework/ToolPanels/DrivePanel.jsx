@@ -52,7 +52,7 @@ const setPageToolView = useSetRecoilState(pageToolViewAtom);
   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
   <hr />
-  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>{ let newObj = {...was};newObj['tool'] = 'editor'; newObj['params']={doenetId:'JRP26MJwT93KkydNtBQpO'}; return newObj; })}}>Edit c1</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>{ let newObj = {...was};newObj['tool'] = 'editor'; newObj['params']={doenetId:'OGw1WA5sHzYCtvDJafKYC',path:"BWTSvmsNp-l6zH6kyG8_k%3ABWTSvmsNp-l6zH6kyG8_k%3ABWTSvmsNp-l6zH6kyG8_k%3ADrive"}; return newObj; })}}>Edit c1</button></div>
 
 
   </div>

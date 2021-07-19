@@ -94,7 +94,7 @@ export default function EditorViewer(props){
 
 
   function variantCallback(generatedVariantInfo, allPossibleVariants){
-    console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
+    // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo))
     cleanGeneratedVariant.lastUpdatedIndexOrName = null 
     setVariantPanel({
