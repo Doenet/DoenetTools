@@ -298,9 +298,9 @@ let navigationObj = {
     editor:{
       pageName:"Course",
       currentMainPanel:"EditorViewer",
-      currentMenus:["DoenetMLSettings","VersionHistory","Variant"], 
-      menusTitles:["Settings","Version History","Variant"],
-      menusInitOpen:[false,false,false],
+      currentMenus:["DoenetMLSettings","VersionHistory","Variant","AutoSaves"], 
+      menusTitles:["Settings","Version History","Variant","Autosave"],
+      menusInitOpen:[false,false,false,false],
       supportPanelOptions:["DoenetMLEditor"],
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
