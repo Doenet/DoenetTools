@@ -2271,5 +2271,88 @@ describe('Collect Tag Tests', function () {
 
   })
 
+  it('overwrite attributes using collect', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>Collected points are fixed: <booleaninput name="fixed" /></p>
+
+    <graph name="g1">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+    </graph>
+    
+    <graph name="g2">
+      <collect componentTypes="point" tname="g1" fixed="$fixed" assignNames="A2 B2" />
+    </graph>
+    
+    <copy tname="g2" assignNames="g3" />
+
+    <aslist name="al"><collect componentTypes="point" prop="x" tname="g1" fixed="$fixed" assignNames="Ax Bx" /></aslist>
+
+    <copy tname="al" assignNames="al2" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let A3 = components["/g3"].activeChildren[0];
+      let B3 = components["/g3"].activeChildren[1];
+
+      let Ax2 = components["/al2"].activeChildren[0];
+      let Bx2 = components["/al2"].activeChildren[1];
+
+      expect(components['/A'].stateValues.fixed).eq(false);
+      expect(components['/B'].stateValues.fixed).eq(false);
+      expect(components['/A2'].stateValues.fixed).eq(false);
+      expect(components['/B2'].stateValues.fixed).eq(false);
+      expect(A3.stateValues.fixed).eq(false);
+      expect(B3.stateValues.fixed).eq(false);
+      expect(components['/Ax'].stateValues.fixed).eq(false);
+      expect(components['/Bx'].stateValues.fixed).eq(false);
+      expect(Ax2.stateValues.fixed).eq(false);
+      expect(Bx2.stateValues.fixed).eq(false);
+
+      cy.get('#\\/fixed_input').click().then(() => {
+
+        expect(components['/A'].stateValues.fixed).eq(false);
+        expect(components['/B'].stateValues.fixed).eq(false);
+        expect(components['/A2'].stateValues.fixed).eq(true);
+        expect(components['/B2'].stateValues.fixed).eq(true);
+        expect(A3.stateValues.fixed).eq(true);
+        expect(B3.stateValues.fixed).eq(true);
+        expect(components['/Ax'].stateValues.fixed).eq(true);
+        expect(components['/Bx'].stateValues.fixed).eq(true);
+        expect(Ax2.stateValues.fixed).eq(true);
+        expect(Bx2.stateValues.fixed).eq(true);
+      });
+
+
+      cy.get('#\\/fixed_input').click().then(() => {
+
+        expect(components['/A'].stateValues.fixed).eq(false);
+        expect(components['/B'].stateValues.fixed).eq(false);
+        expect(components['/A2'].stateValues.fixed).eq(false);
+        expect(components['/B2'].stateValues.fixed).eq(false);
+        expect(A3.stateValues.fixed).eq(false);
+        expect(B3.stateValues.fixed).eq(false);
+        expect(components['/Ax'].stateValues.fixed).eq(false);
+        expect(components['/Bx'].stateValues.fixed).eq(false);
+        expect(Ax2.stateValues.fixed).eq(false);
+        expect(Bx2.stateValues.fixed).eq(false);
+      });
+
+
+    });
+    
+
+  })
+
 
 });

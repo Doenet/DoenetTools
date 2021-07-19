@@ -1,4 +1,4 @@
-import React, {useState} from "../_snowpack/pkg/react.js";
+import React, {useState, useEffect} from "../_snowpack/pkg/react.js";
 import "./Switch.css.proxy.js";
 function randomAlphaString(len) {
   let c = "abcdefghijklmnopqrstuvwxyz";
@@ -20,6 +20,11 @@ export default function Switch(props) {
     propsChecked = true;
   }
   let [checked, setChecked] = useState(propsChecked || false);
+  useEffect(() => {
+    if (props.checked === true || props.checked === "true" || props.checked === "1" || props.checked === 1) {
+      setChecked(true);
+    }
+  }, [props.checked]);
   return /* @__PURE__ */ React.createElement("div", {
     className: (props.className || "") + " switch",
     key: id + "container"

@@ -29,10 +29,11 @@ ButtonStyling.defaultProps = {
 const Label = styled.p`
   font-size: 12px;
   display: ${props => props.labelVisible};
-  margin-right: 5px
+  margin-right: 5px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
 `
 const Container = styled.div`
-  display: flex;
+  display: ${props => props.align};
   width: auto;
   align-items: center;
 `
@@ -40,7 +41,7 @@ const Container = styled.div`
 export default function Button(props) {
   //Assume small
   var container = {};
-
+  var align = 'flex';
   var button = {
     value: 'Button',
   };
@@ -70,6 +71,9 @@ export default function Button(props) {
   var label = '';
   if (props.label) {
     label = props.label;
+    if (props.vertical) {
+      align = 'static';
+    }
   }
   var icon = '';
   if (props.value || props.icon){
@@ -85,6 +89,16 @@ export default function Button(props) {
         button.value = ''
     }
 }
+
+if (props.alert) {
+  button.backgroundColor = '#C1292E'
+}
+
+if (props.disabled) {
+  button.backgroundColor = '#e2e2e2';
+  button.color = 'black';
+  button.cursor = 'not-allowed';
+}
   // if (props.value) {
   //     button.value = props.value;
   // };
@@ -93,8 +107,8 @@ export default function Button(props) {
   }
     return (
         <>
-            <Container style={container}>
-              <Label labelVisible={labelVisible}>{label}</Label>
+            <Container style={container} align={align}>
+              <Label labelVisible={labelVisible} align={align}>{label}</Label>
               <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>
         </>

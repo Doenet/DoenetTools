@@ -4,7 +4,7 @@ import "./theme.css";
 
 const Textfield = styled.input`
   border-radius: 5px;
-  border: 2px solid black;
+  border: ${props => props.alert};
   z-index: 0;
   height: 24px;
   width: 48px;
@@ -12,6 +12,7 @@ const Textfield = styled.input`
   padding: 0px 36px 0px 2px;
   text-align: center;
   resize: none;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'default'}
 `;
 
 const Label = styled.p`
@@ -27,23 +28,26 @@ const Label = styled.p`
 `;
 
 const Container = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
 `;
 
+const LabelContainer = styled.div`
+    display: ${props => props.align};
+`;
+
 const Units = styled.button`
-  background-color: #1a5a99;
+  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
   border-radius: 0px 3px 3px 0px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: white;
+  color: ${props => props.disabled ? 'black' : 'white'};
   font-size: 12px;
   right: 36px;
   :hover {
-    cursor: pointer;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   }
 `;
 
@@ -56,7 +60,7 @@ const Unit = styled.div`
   border: 2px black;
   border-radius: 5px;
   ${Units}:hover & {
-    display: block;
+    display: ${props => props.disabled ? 'none' : 'block'};
   }
 `;
 
@@ -92,6 +96,10 @@ export default function UnitMenu(props) {
     const [currentValue, setCurrentValue] = useState('');
     const [moveCursor, setMoveCursor] = useState(false);
     let initialClickLabelPosition = useRef(null);
+    var align = 'flex';
+    if (props.vertical) {
+      align = 'static';
+    }
 
     const updateValueDuringDrag = (e) => {
       // setCurrentValue(findNewValueDuringDrag(e, initialClickLabelPosition));
@@ -199,38 +207,52 @@ export default function UnitMenu(props) {
         </Unitoption>
       );
     }
+
+    var alert = '2px solid black';
+    if (props.alert) {
+      alert = '2px solid #C1292E';
+    }
+
+    var disabled = false;
+  if (props.disabled) {
+    disabled = true;
+  }
   
     return (
       <>
-        <Container>
-        <Label
-          visible={labelVisible}
-          onMouseDown={(e) => {
-            initialClickLabelPosition.current = [e.clientX, e.clientY]
-            start()
-          }}
-          className='noselect'
-        >
-          {labelvalue}
-        </Label>
-        <Textfield
-          id="text"
-          type="text"
-          value={currentValue}
-          onBlur={() => {
-            updateUnit();
-          }}
-          onKeyPress={() => {
-            enterKey(event, this);
-          }}
-          onChange={() => {changeValue(event)}}
-        ></Textfield>
-          <Units>
-            {currentUnit}
-            <Unit id="unit">{unitComponents}</Unit>
-          </Units>
-          
-        </Container>
+        <LabelContainer align={align}>
+          <Label
+            visible={labelVisible}
+            onMouseDown={(e) => {
+              initialClickLabelPosition.current = [e.clientX, e.clientY]
+              start()
+            }}
+            className='noselect'
+          >
+            {labelvalue}
+          </Label>
+          <Container>
+            <Textfield
+              disabled={disabled}
+              id="text"
+              type="text"
+              value={currentValue}
+              alert={alert}
+              onBlur={() => {
+                updateUnit();
+              }}
+              onKeyPress={() => {
+                enterKey(event, this);
+              }}
+              onChange={() => {changeValue(event)}}
+            ></Textfield>
+              <Units disabled={disabled}>
+                {currentUnit}
+                <Unit id="unit" disabled={disabled}>{unitComponents}</Unit>
+              </Units>
+            
+          </Container>
+        </LabelContainer>
       </>
     );
   }

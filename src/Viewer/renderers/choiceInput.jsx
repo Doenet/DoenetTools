@@ -31,8 +31,29 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
 
     let newSelectedIndices = [];
 
-    if (e.target.value) {
-      newSelectedIndices = [Number(e.target.value)];
+    if (this.doenetSvData.inline) {
+      if (e.target.value) {
+        newSelectedIndices = Array.from(e.target.selectedOptions, option => Number(option.value))
+      }
+    } else {
+      if (this.doenetSvData.selectMultiple) {
+        newSelectedIndices = [...this.doenetSvData.selectedIndices];
+        let index = Number(e.target.value);
+        if (e.target.checked) {
+          if (!newSelectedIndices.includes(index)) {
+            newSelectedIndices.push(index);
+            newSelectedIndices.sort((a, b) => a - b);
+          }
+        } else {
+          let i = newSelectedIndices.indexOf(index);
+          if (i !== -1) {
+            newSelectedIndices.splice(i, 1);
+          }
+
+        }
+      } else {
+        newSelectedIndices = [Number(e.target.value)];
+      }
     }
 
     if (this.doenetSvData.selectedIndices.length !== newSelectedIndices.length ||
@@ -131,14 +152,23 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
         }
       }
 
+      let svData = this.doenetSvData;
       let optionsList = this.doenetSvData.choiceTexts.map(function (s, i) {
-        return <option key={i + 1} value={i + 1}>{s}</option>
+        if (svData.choicesHidden[i]) {
+          return null;
+        }
+        return <option key={i + 1} value={i + 1} disabled={svData.choicesDisabled[i]} >{s}</option>
       });
 
 
-      let value = this.doenetSvData.selectedIndices[0];
+      let value = this.doenetSvData.selectedIndices;
       if (value === undefined) {
         value = "";
+      } else if (!this.doenetSvData.selectMultiple) {
+        value = value[0];
+        if (value === undefined) {
+          value = "";
+        }
       }
 
       return <React.Fragment>
@@ -148,8 +178,9 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
           onChange={this.onChangeHandler}
           value={value}
           disabled={this.doenetSvData.disabled}
+          multiple={this.doenetSvData.selectMultiple}
         >
-          <option></option>
+          <option hidden={true} value="">{this.doenetSvData.placeHolder}</option>
           {optionsList}
         </select>
         {checkWorkButton}
@@ -252,18 +283,28 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       let disabled = this.doenetSvData.disabled;
       let keyBeginning = inputKey + '_choice';
       let children = this.children;
+      let inputType = 'radio';
+      if (this.doenetSvData.selectMultiple) {
+        inputType = 'checkbox';
+      }
+
+      let svData = this.doenetSvData;
+
       let choiceDoenetTags = this.doenetSvData.choiceOrder
         .map(v => children[v - 1])
         .map(function (child, i) {
+          if (svData.choicesHidden[i]) {
+            return null;
+          }
           return <li key={inputKey + '_choice' + (i + 1)}>
             <input
-              type="radio"
+              type={inputType}
               id={keyBeginning + (i + 1) + "_input"}
               name={inputKey}
               value={i + 1}
               checked={selectedIndices.includes(i + 1)}
               onChange={onChangeHandler}
-              disabled={disabled}
+              disabled={disabled || svData.choicesDisabled[i]}
             />
             <label htmlFor={keyBeginning + (i + 1) + "_input"}>
               {child}

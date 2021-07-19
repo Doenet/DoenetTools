@@ -69,12 +69,141 @@ export default class FunctionIterates extends InlineComponent {
     }
 
 
+
+    stateVariableDefinitions.allIterates = {
+      public: true,
+      componentType: "mathList",
+      returnDependencies: () => ({
+        functionAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "function",
+          variableNames: ["symbolicfs", "numericalfs", "symbolic"],
+        },
+        forceSymbolic: {
+          dependencyType: "stateVariable",
+          variableName: "forceSymbolic"
+        },
+        forceNumeric: {
+          dependencyType: "stateVariable",
+          variableName: "forceNumeric"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        },
+        initialValue: {
+          dependencyType: "stateVariable",
+          variableName: "initialValue",
+        },
+        nIterates: {
+          dependencyType: "stateVariable",
+          variableName: "nIterates",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let allIterates = [];
+        let functionComp = dependencyValues.functionAttr;
+        let initialValue = dependencyValues.initialValue;
+        let symbolic = !dependencyValues.forceNumeric &&
+          (functionComp.stateValues.symbolic || dependencyValues.forceSymbolic);
+        let nIterates = dependencyValues.nIterates;
+
+
+        if (
+          !functionComp || dependencyValues.nDimensions === 0 ||
+          !(dependencyValues.nDimensions === 1 ||
+            Array.isArray(initialValue.tree)
+            && ["vector", "tuple"].includes(initialValue.tree[0])
+            && initialValue.tree.length === dependencyValues.nDimensions + 1
+          )
+        ) {
+          allIterates = Array(nIterates).fill(me.fromAst('\uff3f'));
+          return { newValues: { allIterates } };
+        }
+
+        if (symbolic) {
+
+          if (dependencyValues.nDimensions === 1) {
+            let symbolicf = functionComp.stateValues.symbolicfs[0];
+            let value = initialValue;
+            for (let ind = 0; ind < nIterates; ind++) {
+              value = symbolicf(value);
+              allIterates.push(value);
+            }
+          } else {
+            let symbolicfs = functionComp.stateValues.symbolicfs;
+            let value = initialValue.tree.slice(1);
+            for (let ind = 0; ind < nIterates; ind++) {
+              let iterComps = [];
+              for (let i = 0; i < dependencyValues.nDimensions; i++) {
+                iterComps.push(symbolicfs[i](...value).tree)
+              }
+              allIterates.push(me.fromAst(["vector", ...iterComps]));
+              value = iterComps;
+            }
+          }
+        } else {
+          if (dependencyValues.nDimensions === 1) {
+            let numericalf = functionComp.stateValues.numericalfs[0];
+            let value = initialValue.evaluate_to_constant();
+            if (value === null) {
+              allIterates = Array(nIterates).fill(me.fromAst('\uff3f'));
+            } else {
+              for (let ind = 0; ind < nIterates; ind++) {
+                value = numericalf(value);
+                allIterates.push(me.fromAst(value));
+              }
+            }
+          } else {
+            let numericalfs = functionComp.stateValues.numericalfs;
+            let value = initialValue.tree.slice(1).map(x => me.fromAst(x).evaluate_to_constant())
+              .map(x => x == null ? NaN : x);
+            for (let ind = 0; ind < nIterates; ind++) {
+              let iterComps = [];
+              for (let i = 0; i < dependencyValues.nDimensions; i++) {
+                iterComps.push(numericalfs[i](...value))
+              }
+              allIterates.push(me.fromAst(["vector", ...iterComps]));
+              value = iterComps;
+            }
+          }
+        }
+
+        return { newValues: { allIterates } };
+
+      }
+    }
+
+    stateVariableDefinitions.allIteratesWithInitial = {
+      public: true,
+      componentType: "mathList",
+      returnDependencies: () => ({
+        initialValue: {
+          dependencyType: "stateVariable",
+          variableName: "initialValue",
+        },
+        allIterates: {
+          dependencyType: "stateVariable",
+          variableName: "allIterates",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            allIteratesWithInitial: [
+              dependencyValues.initialValue, ...dependencyValues.allIterates
+            ]
+          }
+        }
+
+      }
+    }
+
     stateVariableDefinitions.iterates = {
       isArray: true,
       public: true,
       componentType: "math",
       entryPrefixes: ["iterate"],
-      basedOnArrayKeyStateVariables: true,
       returnArraySizeDependencies: () => ({
         nIterates: {
           dependencyType: "stateVariable",
@@ -84,123 +213,26 @@ export default class FunctionIterates extends InlineComponent {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.nIterates];
       },
-      returnArrayDependenciesByKey({ arrayKeys }) {
+      returnArrayDependenciesByKey() {
 
         let globalDependencies = {
-          functionAttr: {
-            dependencyType: "attributeComponent",
-            attributeName: "function",
-            variableNames: ["symbolicfs", "numericalfs", "symbolic"],
-          },
-          forceSymbolic: {
+          allIterates: {
             dependencyType: "stateVariable",
-            variableName: "forceSymbolic"
+            variableName: "allIterates"
           },
-          forceNumeric: {
-            dependencyType: "stateVariable",
-            variableName: "forceNumeric"
-          },
-          nDimensions: {
-            dependencyType: "stateVariable",
-            variableName: "nDimensions"
-          }
         }
 
-
-        let dependenciesByKey = {};
-        for (let arrayKey of arrayKeys) {
-          if (arrayKey === '0') {
-            dependenciesByKey[arrayKey] = {
-              prevValue: {
-                dependencyType: "stateVariable",
-                variableName: "initialValue",
-              }
-            }
-          } else {
-            dependenciesByKey[arrayKey] = {
-              prevValue: {
-                dependencyType: "stateVariable",
-                variableName: "iterate" + arrayKey
-              }
-            }
-          }
-        }
-
-        return { globalDependencies, dependenciesByKey }
+        return { globalDependencies }
       },
-      arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ globalDependencyValues, arraySize }) {
+
         let iterates = {};
-        let functionComp = globalDependencyValues.functionAttr;
 
-
-        for (let arrayKey of arrayKeys) {
-          if (!functionComp || globalDependencyValues.nDimensions === 0) {
-            iterates[arrayKey] = me.fromAst('\uff3f')
-          } else {
-
-            let prevValue = dependencyValuesByKey[arrayKey].prevValue;
-
-            if (!globalDependencyValues.forceNumeric &&
-              (functionComp.stateValues.symbolic || globalDependencyValues.forceSymbolic)
-            ) {
-              let symbolicfs = functionComp.stateValues.symbolicfs;
-              if (globalDependencyValues.nDimensions === 1) {
-                iterates[arrayKey] = symbolicfs[0](prevValue);
-              } else {
-                if (Array.isArray(prevValue.tree)
-                  && ["vector", "tuple"].includes(prevValue.tree[0])
-                  && prevValue.tree.length === globalDependencyValues.nDimensions + 1
-                ) {
-                  let iterComps = [];
-                  let inputs = prevValue.tree.slice(1);
-
-                  for (let i = 0; i < globalDependencyValues.nDimensions; i++) {
-                    iterComps.push(symbolicfs[i](...inputs))
-                  }
-                  iterates[arrayKey] = me.fromAst(["vector", ...iterComps])
-                } else {
-                  iterates[arrayKey] = me.fromAst('\uff3f')
-                }
-              }
-            } else {
-              let numericalfs = functionComp.stateValues.numericalfs;
-
-              if (globalDependencyValues.nDimensions === 1) {
-
-                let numericInput = prevValue.evaluate_to_constant();
-                if (numericInput === null) {
-                  numericInput = NaN;
-                }
-                iterates[arrayKey] = me.fromAst(numericalfs[0](numericInput))
-              } else {
-                if (Array.isArray(prevValue.tree)
-                  && ["vector", "tuple"].includes(prevValue.tree[0])
-                  && prevValue.tree.length === globalDependencyValues.nDimensions + 1
-                ) {
-                  let iterComps = [];
-                  let inputs = prevValue.tree.slice(1).map(x => me.fromAst(x).evaluate_to_constant())
-                    .map(x => x == null ? NaN : x)
-
-                  for (let i = 0; i < globalDependencyValues.nDimensions; i++) {
-                    iterComps.push(numericalfs[i](...inputs))
-                  }
-                  iterates[arrayKey] = me.fromAst(["vector", ...iterComps])
-                } else {
-                  iterates[arrayKey] = me.fromAst('\uff3f')
-                }
-              }
-            }
-
-
-          }
+        for (let ind = 0; ind < arraySize[0]; ind++) {
+          iterates[ind] = globalDependencyValues.allIterates[ind];
         }
 
-        // console.log("iterates")
-        // console.log(iterates)
-
-        return {
-          newValues: { iterates }
-        }
+        return { newValues: { iterates } }
       }
 
     }

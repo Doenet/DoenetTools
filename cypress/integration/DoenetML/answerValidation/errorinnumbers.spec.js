@@ -19,7 +19,7 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify>log(32x+c)</math> 
+    <p><math>log(32x+c)</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.00001">
         <copy tname="_math1" />
@@ -130,7 +130,7 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify>log(32x+c)</math> 
+    <p><math>log(32x+c)</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.00001" allowederrorisabsolute="true">
         <copy tname="_math1" />
@@ -311,7 +311,7 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify>10x^2-4</math> 
+    <p><math>10x^2-4</math> 
     <answer size="30">
       <award allowederrorinnumbers="0.0001">
         <copy tname="_math1" />
@@ -404,15 +404,15 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify>log(32x+c)</math> 
+    <p><math>log(32x+c)</math> 
     <answer size="30">
-      <award symbolicequality="true" allowederrorinnumbers="0.00001">
+      <award symbolicequality="true" allowederrorinnumbers="0.00001" simplifyOnCompare>
         <copy tname="_math1" />
       </award>
-      <award credit="0.8" symbolicequality="true" allowederrorinnumbers="0.0001">
+      <award credit="0.8" symbolicequality="true" allowederrorinnumbers="0.0001" simplifyOnCompare>
         <copy tname="_math1" />
       </award>
-      <award credit="0.6" symbolicequality="true" allowederrorinnumbers="0.001">
+      <award credit="0.6" symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare>
         <copy tname="_math1" />
       </award>
     </answer>
@@ -515,17 +515,11 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify>log(32x+c)</math> 
-    <answer size="30">
-      <award symbolicequality="true" allowederrorinnumbers="0.00001" allowederrorisabsolute="true">
-        <copy tname="_math1" />
-      </award>
-      <award credit="0.8" symbolicequality="true" allowederrorinnumbers="0.0001" allowederrorisabsolute="true">
-        <copy tname="_math1" />
-      </award>
-      <award credit="0.6" symbolicequality="true" allowederrorinnumbers="0.001" allowederrorisabsolute="true">
-        <copy tname="_math1" />
-      </award>
+    <p><math>log(32x+c)</math> 
+    <answer size="30" symbolicequality allowederrorinnumbers="0.00001" allowederrorisabsolute simplifyOnCompare>
+      <award>$_math1</award>
+      <award credit="0.8" allowederrorinnumbers="0.0001">$_math1</award>
+      <award credit="0.6" allowederrorinnumbers="0.001">$_math1</award>
     </answer>
     </p>
     `}, "*");
@@ -626,15 +620,15 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
-    <answer size="40">
-      <award symbolicequality="true" allowederrorinnumbers="0.0000001">
+    <p><math>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
+    <answer size="40" symbolicequality simplifyOnCompare>
+      <award allowederrorinnumbers="0.0000001" >
         <copy tname="_math1" />
       </award>
-      <award symbolicequality="true" credit="0.8" allowederrorinnumbers="0.000001">
+      <award credit="0.8" allowederrorinnumbers="0.000001">
         <copy tname="_math1" />
       </award>
-      <award symbolicequality="true" credit="0.6" allowederrorinnumbers="0.00001">
+      <award credit="0.6" allowederrorinnumbers="0.00001">
         <copy tname="_math1" />
       </award>
     </answer>
@@ -727,13 +721,13 @@ describe('Allow error in numbers validation tests', function () {
     <p>a</p>
     <p><math simplify>10000 exp(7x^2/(0.00003-sqrt(y)))</math> 
     <answer size="40">
-      <award symbolicequality="true" allowederrorinnumbers="0.0000001" allowederrorisabsolute>
+      <award symbolicequality="true" allowederrorinnumbers="0.0000001" allowederrorisabsolute simplifyOnCompare>
         <copy tname="_math1" />
       </award>
-      <award symbolicequality="true" credit="0.8" allowederrorinnumbers="0.000001" allowederrorisabsolute>
+      <award symbolicequality="true" credit="0.8" allowederrorinnumbers="0.000001" allowederrorisabsolute simplifyOnCompare>
         <copy tname="_math1" />
       </award>
-      <award symbolicequality="true" credit="0.6" allowederrorinnumbers="0.00001" allowederrorisabsolute>
+      <award symbolicequality="true" credit="0.6" allowederrorinnumbers="0.00001" allowederrorisabsolute simplifyOnCompare>
         <copy tname="_math1" />
       </award>
     </answer>
@@ -825,7 +819,7 @@ describe('Allow error in numbers validation tests', function () {
     <p>a</p>
     <p><math simplify>10x^2-4</math> 
     <answer size="30">
-      <award symbolicequality="true" allowederrorinnumbers="0.0001">
+      <award symbolicequality="true" allowederrorinnumbers="0.0001" simplifyOnCompare>
         <copy tname="_math1" />
       </award>
     </answer>
@@ -833,7 +827,7 @@ describe('Allow error in numbers validation tests', function () {
 
     <p>Allow for error in exponents
     <answer size="30">
-      <award symbolicequality="true" allowederrorinnumbers="0.0001" includeerrorinnumberexponents>
+      <award symbolicequality="true" allowederrorinnumbers="0.0001" includeerrorinnumberexponents simplifyOnCompare>
         <copy tname="_math1" />
       </award>
     </answer>
@@ -1006,9 +1000,9 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify="numbersPreserveOrder">sin(2pi+1x+4x+pi+6)</math> 
+    <p><math>sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
-      <award symbolicequality="true" allowederrorinnumbers="0.001">
+      <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="numbersPreserveOrder">
         <copy tname="_math1" />
       </award>
     </answer>
@@ -1088,9 +1082,9 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify="numbers">sin(2pi+1x+4x+pi+6)</math> 
+    <p><math>sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
-      <award symbolicequality="true" allowederrorinnumbers="0.001">
+      <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="numbers">
         <copy tname="_math1" />
       </award>
     </answer>
@@ -1171,9 +1165,9 @@ describe('Allow error in numbers validation tests', function () {
       win.postMessage({
         doenetML: `
     <p>a</p>
-    <p><math simplify="full">sin(2pi+1x+4x+pi+6)</math> 
+    <p><math>sin(2pi+1x+4x+pi+6)</math> 
     <answer size="30">
-      <award symbolicequality="true" allowederrorinnumbers="0.001">
+      <award symbolicequality="true" allowederrorinnumbers="0.001" simplifyOnCompare="full">
         <copy tname="_math1" />
       </award>
     </answer>

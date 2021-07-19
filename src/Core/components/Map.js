@@ -19,6 +19,9 @@ export default class Map extends CompositeComponent {
       public: true,
       trim: true,
     };
+    attributes.isResponse = {
+      leaveRaw: true,
+    }
 
     return attributes;
   }

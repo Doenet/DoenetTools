@@ -6,9 +6,11 @@ export default class Parabola extends Curve {
   static componentType = "parabola";
   static rendererType = "curve";
 
-  static get stateVariablesShadowedForReference() { return [
-    "nThroughPoints", "throughPoints",
-  ] };
+  static get stateVariablesShadowedForReference() {
+    return [
+      "nThroughPoints", "throughPoints",
+    ]
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -38,6 +40,7 @@ export default class Parabola extends Curve {
     let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
 
     stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+    stateVariableDefinitions.graphXmin = curveStateVariableDefinitions.graphXmin;
 
     stateVariableDefinitions.curveType = {
       forRenderer: true,
@@ -50,7 +53,7 @@ export default class Parabola extends Curve {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parMax: NaN } })
+      definition: () => ({ newValues: { parMax: +Infinity } })
     }
 
     stateVariableDefinitions.parMin = {
@@ -58,7 +61,7 @@ export default class Parabola extends Curve {
       componentType: "number",
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { parMin: NaN } })
+      definition: () => ({ newValues: { parMin: -Infinity } })
     }
 
     // variable to store essential value of a
@@ -1082,23 +1085,68 @@ export default class Parabola extends Curve {
       }
     }
 
+    stateVariableDefinitions.f = {
+      isAlias: true,
+      targetVariableName: "f1"
+    };
+
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         f: {
           dependencyType: "stateVariable",
           variableName: "f"
-        }
+        },
+        a: {
+          dependencyType: "stateVariable",
+          variableName: "a"
+        },
+        b: {
+          dependencyType: "stateVariable",
+          variableName: "b"
+        },
+        c: {
+          dependencyType: "stateVariable",
+          variableName: "c"
+        },
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
           nearestPoint: function (variables) {
 
             let x1 = variables.x1.evaluate_to_constant();
-            let x2 = dependencyValues.f(x1);
+            let x2 = variables.x2.evaluate_to_constant();
+
+            let a0 = dependencyValues.a;
+            let b0 = dependencyValues.b;
+            let c0 = dependencyValues.c;
+
+            let a = 4*a0**2;
+            let b = (6*a0*b0)/a;
+            let c = (4*a0*c0 - 4*a0*x2 + 2*b0**2 + 2)/a;
+            let d = (2*b0*c0 - 2*b0*x2 - 2*x1)/a;
+
+
+            let resultCardano = cardano(b, c, d);
+
+            let x1AtMin = resultCardano[0];
+            let x2AtMin = dependencyValues.f(x1AtMin);
+            let d2AtMin = (x1-x1AtMin)**2 + (x2-x2AtMin)**2;
+
+            for(let r of resultCardano.slice(1)) {
+              let x = r;
+              let fx = dependencyValues.f(x);
+              let d2 = (x1-x)**2 + (x2-fx);
+              if(d2 < d2AtMin) {
+                x1AtMin = x;
+                x2AtMin = fx;
+                d2AtMin = d2;
+              }
+
+            }
 
             let result = {
-              x1, x2
+              x1: x1AtMin, x2: x2AtMin
             }
             if (variables.x3 !== undefined) {
               result.x3 = 0;
@@ -1149,4 +1197,72 @@ function getNumericalCoords(coords) {
     coordsNumeric,
   }
 
+}
+
+// function cardano is from linalg.js:
+
+/*
+ * Copyright (c) 2020 Joseph Rabinoff
+ * All rights reserved
+ *
+ * This file is part of linalg.js.
+ *
+ * linalg.js is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * linalg.js is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with linalg.js.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+
+function cardano(b, c, d, ε = 1e-10) {
+  // Change of variables x --> x-b/3
+  const [p, q] = [-1 / 3 * b * b + c, 2 / 27 * b * b * b - 1 / 3 * b * c + d];
+  // Now we're solving x^3 + px + q
+
+  // Handle roots at zero
+  if (Math.abs(q) <= ε) {
+    if (Math.abs(p) <= ε)
+      return [-b / 3, 3];  // Triple root
+    let s = Math.sqrt(Math.abs(p));
+    if (p < 0)
+      return [-s - b / 3, -b / 3, s - b / 3];
+    // Edit: return only real
+    return [-b / 3, 1];
+  }
+
+  // Discriminant
+  const Δ = -27 * q * q - 4 * p * p * p;
+  if (Math.abs(Δ) <= ε) {
+    // Simple root and double root
+    const cr = Math.cbrt(-q / 2);
+    return  [2 * cr - b / 3, -cr - b / 3]
+  }
+
+  if (Δ > 0) {
+    // Three distinct real roots: 2*Re(cube roots of -q/2 + i sqrt(Δ/108))
+    const D = Math.sqrt(Δ / 108);
+    const mod = Math.sqrt(Math.cbrt(q * q / 4 + Δ / 108)) * 2;
+    const arg = Math.atan2(D, -q / 2);
+    return [Math.cos(arg / 3), Math.cos(arg / 3 + 2 * Math.PI / 3), Math.cos(arg / 3 - 2 * Math.PI / 3)]
+      .sort((x, y) => x - y).map(x => mod * x - b / 3);
+  }
+
+  // Simple real root and conjugate complex roots
+  // Edit: just return real root
+  const D = Math.sqrt(-Δ / 108);
+  const α = Math.cbrt(-q / 2 + D), β = Math.cbrt(-q / 2 - D), r = α + β - b / 3;
+  return [r];
+  // let ret = [[C(α + β), 1]];
+  // const z = ζ.clone().scale(α).add(ζ.clone().conj().scale(β)).sub(b / 3);
+  // if (z.Im < 0) z.conj();
+  // return (r <= z.Re ? [r, z, z.clone().conj()] : [z, z.clone().conj(), r])
+  //   .map(x => [x, 1]);
 }

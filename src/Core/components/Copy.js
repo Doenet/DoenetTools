@@ -23,7 +23,7 @@ export default class Copy extends CompositeComponent {
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
-    delete attributes.disabled;
+    delete attributes.disable;
     delete attributes.modifyIndirectly;
     delete attributes.fixed;
     delete attributes.styleNumber;
@@ -64,6 +64,9 @@ export default class Copy extends CompositeComponent {
       createStateVariable: "targetAttributesToIgnore",
       defaultValue: ["hide"],
       public: true,
+    };
+    attributes.link = {
+      createPrimitiveOfType: "boolean",
     };
     return attributes;
   }
@@ -601,9 +604,25 @@ export default class Copy extends CompositeComponent {
     }
 
 
+    stateVariableDefinitions.link = {
+      returnDependencies: () => ({
+        linkAttr: {
+          dependencyType: "attribute",
+          attributeName: "link"
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.linkAttr === undefined) {
+          return { newValues: { link: true } }
+        } else {
+          return { newValues: { link: dependencyValues.linkAttr } }
+        }
+      }
+    }
+
     stateVariableDefinitions.readyToExpandWhenResolved = {
       stateVariablesDeterminingDependencies: [
-        "targetComponent", "propName", "obtainPropFromComposite"
+        "targetComponent", "propName", "obtainPropFromComposite", "link"
       ],
       returnDependencies({ stateValues, componentInfoObjects }) {
 
@@ -624,6 +643,10 @@ export default class Copy extends CompositeComponent {
             dependencyType: "stateVariable",
             variableName: "serializedComponentsForContentId",
           },
+          link: {
+            dependencyType: "stateVariable",
+            variableName: "link",
+          },
           // propName: {
           //   dependencyType: "stateVariable",
           //   variableName: "propName",
@@ -643,6 +666,16 @@ export default class Copy extends CompositeComponent {
           }
         }
 
+        // since will be creating complete replacement when expand,
+        // make sure all replacement sources are resolved
+        if (stateValues.link === false) {
+          dependencies.replacementSources = {
+            dependencyType: "stateVariable",
+            variableName: "replacementSources",
+          }
+        }
+
+
         return dependencies;
 
       },
@@ -656,9 +689,14 @@ export default class Copy extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "replacementSourceIdentities", "effectivePropNameBySource",
-        "propName", "obtainPropFromComposite"
+        "propName", "obtainPropFromComposite", "link"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
+
+        // if don't link, never update replacements
+        if (stateValues.link === false) {
+          return {};
+        }
 
         let dependencies = {
           targetComponent: {
@@ -1146,6 +1184,13 @@ export default class Copy extends CompositeComponent {
       return { serializedReplacements: [] }
     }
 
+
+    // if not linking, then replacementSources is resolved,
+    // which we need for state variable value
+    if (component.stateValues.link === false) {
+      replacementSource = component.stateValues.replacementSources[sourceNum];
+    }
+
     // if creating copy from a prop
     // manually create the serialized component
     if (component.stateValues.effectivePropNameBySource[sourceNum]) {
@@ -1183,12 +1228,12 @@ export default class Copy extends CompositeComponent {
     // create a serialized copy of the entire component
 
     let serializedReplacements = [
-      replacementSourceComponent.serialize({ forCopy: true })
+      replacementSourceComponent.serialize({ forLink: component.stateValues.link })
     ];
 
     // console.log("targetComponent");
     // console.log(component.state.targetComponent);
-    // console.log("serializedReplacements");
+    // console.log(`serializedReplacements for ${component.componentName}`);
     // console.log(JSON.parse(JSON.stringify(serializedReplacements)));
 
 
@@ -1196,6 +1241,8 @@ export default class Copy extends CompositeComponent {
       serializedComponents: serializedReplacements,
       componentName: component.componentName,
       uniqueIdentifiersUsed,
+      addShadowDependencies: !(component.stateValues.link === false),
+      addDontLinkToCopies: component.stateValues.link === false
     })
 
     for (let repl of serializedReplacements) {
@@ -1875,18 +1922,76 @@ export function replacementFromProp({ component, components,
               compositeCreatesNewNamespace: component.attributes.newNamespace
             });
 
-            serializedReplacements.push({
-              componentType: componentType,
-              attributes: attributesFromComposite,
-              downstreamDependencies: {
-                [replacementSource.componentName]: [{
-                  dependencyType: "referenceShadow",
-                  compositeName: component.componentName,
-                  propVariable
-                }]
-              },
-              uniqueIdentifier,
-            })
+            if (component.stateValues.link !== false) {
+              serializedReplacements.push({
+                componentType: componentType,
+                attributes: attributesFromComposite,
+                downstreamDependencies: {
+                  [replacementSource.componentName]: [{
+                    dependencyType: "referenceShadow",
+                    compositeName: component.componentName,
+                    propVariable
+                  }]
+                },
+                uniqueIdentifier,
+              })
+            } else {
+              let primaryStateVariableForDefinition = "value";
+              let componentClass = componentInfoObjects.allComponentClasses[componentType];
+              if (componentClass.primaryStateVariableForDefinition) {
+                primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+              }
+
+
+              let propStateVariableInTarget = target.state[propVariable];
+              let propStateValue;
+              if (propStateVariableInTarget) {
+                propStateValue = target.stateValues[propVariable]
+              } else {
+                propStateVariableInTarget = {};
+                let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
+                if (!Array.isArray(arrayIndex)) {
+                  arrayIndex = [arrayIndex]
+                }
+                propStateValue = arrayStateVarObj.value;
+
+                for (let ind of arrayIndex) {
+                  propStateValue = propStateValue[ind];
+                }
+
+
+              }
+
+              let serializedComponent = {
+                componentType: componentType,
+                attributes: attributesFromComposite,
+                state: {
+                  [primaryStateVariableForDefinition]: propStateValue
+                },
+                uniqueIdentifier,
+              }
+
+
+              if (propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
+                let additionalAttributes = {};
+                for (let attrName in propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
+                  let varName = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes[attrName]
+                  additionalAttributes[attrName] = target.stateValues[varName];
+                }
+
+                let attributesFromComponent = convertAttributesForComponentType({
+                  attributes: additionalAttributes,
+                  componentType,
+                  componentInfoObjects
+                });
+
+                Object.assign(serializedComponent.attributes, attributesFromComponent)
+
+              }
+
+              serializedReplacements.push(serializedComponent);
+
+            }
           }
         } else {
           // didn't match an array key, so just add an empty component of componentType
@@ -1980,18 +2085,74 @@ export function replacementFromProp({ component, components,
               }
 
 
+              if (component.stateValues.link !== false) {
+                pieces.push({
+                  componentType,
+                  downstreamDependencies: {
+                    [replacementSource.componentName]: [{
+                      dependencyType: "referenceShadow",
+                      compositeName: component.componentName,
+                      propVariable
+                    }]
+                  },
+                  uniqueIdentifier,
+                })
+              } else {
 
-              pieces.push({
-                componentType,
-                downstreamDependencies: {
-                  [replacementSource.componentName]: [{
-                    dependencyType: "referenceShadow",
-                    compositeName: component.componentName,
-                    propVariable
-                  }]
-                },
-                uniqueIdentifier,
-              })
+                let primaryStateVariableForDefinition = "value";
+                let componentClass = componentInfoObjects.allComponentClasses[componentType];
+                if (componentClass.primaryStateVariableForDefinition) {
+                  primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+                }
+
+                let propStateVariableInTarget = target.state[propVariable];
+                let propStateValue;
+                if (propStateVariableInTarget) {
+                  propStateValue = target.stateValues[propVariable]
+                } else {
+                  propStateVariableInTarget = {};
+                  let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
+                  if (!Array.isArray(arrayIndex)) {
+                    arrayIndex = [arrayIndex]
+                  }
+                  propStateValue = arrayStateVarObj.value;
+
+                  for (let ind of arrayIndex) {
+                    propStateValue = propStateValue[ind];
+                  }
+
+                }
+
+                let serializedComponent = {
+                  componentType: componentType,
+                  state: {
+                    [primaryStateVariableForDefinition]: propStateValue
+                  },
+                  uniqueIdentifier,
+                }
+
+
+                if (propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
+                  let additionalAttributes = {};
+                  for (let attrName in propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
+                    let varName = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes[attrName]
+                    additionalAttributes[attrName] = target.stateValues[varName];
+                  }
+
+                  let attributesFromComponent = convertAttributesForComponentType({
+                    attributes: additionalAttributes,
+                    componentType,
+                    componentInfoObjects
+                  });
+
+                  serializedComponent.attributes, attributesFromComponent;
+
+                }
+
+                pieces.push(serializedComponent);
+
+              }
+
             }
 
             propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
@@ -2066,13 +2227,15 @@ export function replacementFromProp({ component, components,
 
         Object.assign(replacement.attributes, attributesFromComposite)
 
-        replacement.downstreamDependencies = {
-          [replacementSource.componentName]: [{
-            dependencyType: "referenceShadow",
-            compositeName: component.componentName,
-            propVariable: varName,
-            ignorePrimaryStateVariable: true,
-          }]
+        if (component.stateValues.link !== false) {
+          replacement.downstreamDependencies = {
+            [replacementSource.componentName]: [{
+              dependencyType: "referenceShadow",
+              compositeName: component.componentName,
+              propVariable: varName,
+              ignorePrimaryStateVariable: true,
+            }]
+          }
         }
       }
 
@@ -2168,18 +2331,66 @@ export function replacementFromProp({ component, components,
       compositeCreatesNewNamespace: component.attributes.newNamespace
     });
 
-    serializedReplacements.push({
-      componentType: stateVarObj.componentType,
-      attributes: attributesFromComposite,
-      downstreamDependencies: {
-        [target.componentName]: [{
-          dependencyType: "referenceShadow",
-          compositeName: component.componentName,
-          propVariable: varName,
-        }]
-      },
-      uniqueIdentifier,
-    })
+    if (component.stateValues.link !== false) {
+      serializedReplacements.push({
+        componentType: stateVarObj.componentType,
+        attributes: attributesFromComposite,
+        downstreamDependencies: {
+          [target.componentName]: [{
+            dependencyType: "referenceShadow",
+            compositeName: component.componentName,
+            propVariable: varName,
+          }]
+        },
+        uniqueIdentifier,
+      })
+
+    } else {
+
+      let primaryStateVariableForDefinition = "value";
+      let componentClass = componentInfoObjects.allComponentClasses[stateVarObj.componentType];
+      if (componentClass.primaryStateVariableForDefinition) {
+        primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+      }
+
+      let propStateVariableInTarget = target.state[varName];
+
+      if (!propStateVariableInTarget) {
+        console.warn(`Could not find variable ${varName} in target ${replacementSource.componentName}.`)
+      } else {
+
+
+        let serializedComponent = {
+          componentType: stateVarObj.componentType,
+          attributes: attributesFromComposite,
+          state: {
+            [primaryStateVariableForDefinition]: target.stateValues[varName]
+          },
+          uniqueIdentifier,
+        }
+
+
+        if (propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
+          let additionalAttributes = {};
+          for (let attrName in propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
+            let varName = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes[attrName]
+            additionalAttributes[attrName] = target.stateValues[varName];
+          }
+
+          let attributesFromComponent = convertAttributesForComponentType({
+            attributes: additionalAttributes,
+            componentType: stateVarObj.componentType,
+            componentInfoObjects
+          });
+
+          Object.assign(serializedComponent.attributes, attributesFromComponent)
+
+        }
+
+        serializedReplacements.push(serializedComponent);
+      }
+
+    }
   }
 
 

@@ -8,7 +8,7 @@ import { createUniqueName, getNamespaceFromName } from './utils/naming';
 import * as serializeFunctions from './utils/serializedStateProcessing';
 import { deepCompare, deepClone } from './utils/deepFunctions';
 import createStateProxyHandler from './StateProxyHandler';
-import { postProcessCopy } from './utils/copy';
+import { convertAttributesForComponentType, postProcessCopy } from './utils/copy';
 import { flattenDeep, mapDeep } from './utils/array';
 import { DependencyHandler } from './Dependencies';
 import sha256 from 'crypto-js/sha256';
@@ -1748,7 +1748,7 @@ export default class Core {
 
     // we'll copy the replacements of the shadowed composite
     // and make those be the replacements of the shadowing composite
-    let serializedReplacements = shadowedComposite.replacements.map(x => x.serialize({ forCopy: true }));
+    let serializedReplacements = shadowedComposite.replacements.map(x => x.serialize({ forLink: true }));
 
     // Have three composites involved:
     // 1. the shadowing composite (component, the one we're trying to expand)
@@ -1763,6 +1763,23 @@ export default class Core {
       componentName: nameOfCompositeMediatingTheShadow,
       uniqueIdentifiersUsed
     });
+
+    let compositeAttributesObj = component.constructor.createAttributesObject({ flags: this.flags });
+
+    for (let repl of serializedReplacements) {
+      // add attributes
+      if (!repl.attributes) {
+        repl.attributes = {};
+      }
+      let attributesFromComposite = convertAttributesForComponentType({
+        attributes: component.attributes,
+        componentType: repl.componentType,
+        componentInfoObjects: this.componentInfoObjects, 
+        compositeAttributesObj,
+        compositeCreatesNewNamespace: component.attributes.newNamespace
+      });
+      Object.assign(repl.attributes, attributesFromComposite)
+    }
 
 
     // console.log(`name of composite mediating shadow: ${nameOfCompositeMediatingTheShadow}`)
@@ -6148,7 +6165,7 @@ export default class Core {
           continue;
         }
 
-        let shadowingSerializeChildren = newChildren.map(x => x.serialize({ forCopy: true }))
+        let shadowingSerializeChildren = newChildren.map(x => x.serialize({ forLink: true }))
         shadowingSerializeChildren = postProcessCopy({
           serializedComponents: shadowingSerializeChildren,
           componentName: shadowingParent.shadows.compositeName
@@ -7037,13 +7054,29 @@ export default class Core {
 
         // TODO: not using uniqueIdentifiers used here
         // is this a problem?
-        let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forCopy: true }))
+        let newSerializedReplacements = replacementsToShadow.map(x => x.serialize({ forLink: true }))
         newSerializedReplacements = postProcessCopy({
           serializedComponents: newSerializedReplacements,
           componentName: shadowingComponent.shadows.compositeName
         });
 
+        let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject({ flags: this.flags });
 
+        for (let repl of newSerializedReplacements) {
+          // add attributes
+          if (!repl.attributes) {
+            repl.attributes = {};
+          }
+          let attributesFromComposite = convertAttributesForComponentType({
+            attributes: shadowingComponent.attributes,
+            componentType: repl.componentType,
+            componentInfoObjects: this.componentInfoObjects, 
+            compositeAttributesObj,
+            compositeCreatesNewNamespace: shadowingComponent.attributes.newNamespace
+          });
+          Object.assign(repl.attributes, attributesFromComposite)
+        }
+    
         if (shadowingComponent.constructor.assignNamesToReplacements) {
 
           let originalNamesAreConsistent = shadowingComponent.constructor.originalNamesAreConsistent

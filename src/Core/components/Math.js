@@ -150,7 +150,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          valueShadow: { variablesToCheck: ["value", "valueShadow"] }
+          valueShadow: { variablesToCheck: ["value", "valueShadow", "unnormalizedValue"] }
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues }) {

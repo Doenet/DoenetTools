@@ -1,42 +1,87 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
-import {DateInput} from "../../_snowpack/pkg/@blueprintjs/datetime.js";
+import {TimePicker, DateInput, TimePrecision} from "../../_snowpack/pkg/@blueprintjs/datetime.js";
 import "../../_snowpack/pkg/@blueprintjs/datetime/lib/css/blueprint-datetime.css.proxy.js";
 import "../../_snowpack/pkg/@blueprintjs/core/lib/css/blueprint.css.proxy.js";
-import "./dateTime.css.proxy.js";
 export default function DateTime(props) {
-  const [dateState, setDateState] = useState(new Date(Date.now()));
-  const timeProps = {
-    showArrowButtons: true,
-    useAmPm: true
+  const [dateObjectState, setDateObjectState] = useState(null);
+  const dateTimeToText = (date) => {
+    return date.toLocaleString([], {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
   };
-  const renderDate = (date) => {
-    const dayMonthYear = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-    const hours = date.getHours() % 12 === 0 ? 12 : date.getHours() % 12;
-    const minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes().toString();
-    const time = hours + ":" + minutes;
-    const amOrPm = date.getHours() < 12 ? "am" : "pm";
-    return dayMonthYear + "  " + time + " " + amOrPm;
+  const dateSecondTimeToText = (date) => {
+    return date.toLocaleString([], {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
   };
+  const dateToText = (date) => {
+    return date.toLocaleString([], {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric"
+    });
+  };
+  const textToDate = (s) => {
+    try {
+      return new Date(s);
+    } catch {
+      return dateObjectState;
+    }
+  };
+  const handleDateChange = (selectedDate, isUserChange) => {
+    setDateObjectState(selectedDate);
+    if (props.callBack) {
+      props.callBack(selectedDate);
+    }
+  };
+  const handleTimeChange = (newTime) => {
+    setDateObjectState(newTime);
+    if (props.callBack) {
+      props.callBack(newTime);
+    }
+  };
+  if (props.time && props.time !== true && props.time !== false) {
+    console.log("time attribute can only take boolean values");
+    return /* @__PURE__ */ React.createElement("input", null);
+  }
+  if (props.date && props.date !== true && props.date !== false) {
+    console.log("date attribute can only take boolean values");
+    return /* @__PURE__ */ React.createElement("input", null);
+  }
+  if (props.time === false && props.date === false) {
+    console.log("Both time and date can't be false");
+    return /* @__PURE__ */ React.createElement("input", null);
+  }
+  if (props.date === false) {
+    return /* @__PURE__ */ React.createElement(TimePicker, {
+      disabled: props.disabled === void 0 || props.disabled === null ? false : props.disabled,
+      showArrowButtons: props.showArrowButtons === null || props.showArrowButtons === void 0 ? false : props.showArrowButtons,
+      precision: props.precision === "second" ? TimePrecision.SECOND : TimePrecision.MINUTE,
+      onChange: handleTimeChange,
+      value: dateObjectState
+    });
+  }
   return /* @__PURE__ */ React.createElement(DateInput, {
     disabled: props.disabled === void 0 || props.disabled === null ? false : props.disabled,
-    placeholder: "D/M/YYYY H:MM",
     highlightCurrentDay: true,
-    closeOnSelection: false,
-    formatDate: renderDate,
-    parseDate: (str) => {
-      try {
-        return new Date(Date.parse(str));
-      } catch {
-        return dateState;
-      }
+    onChange: handleDateChange,
+    placeholder: props.time === false ? "M/D/YYYY" : props.precision === "second" ? "M/D/YYYY, H:MM:SS" : "M/D/YYYY, H:MM",
+    timePickerProps: props.time === false ? void 0 : {
+      showArrowButtons: props.showArrowButtons === null || props.showArrowButtons === void 0 ? false : props.showArrowButtons,
+      precision: props.precision === "second" ? TimePrecision.SECOND : TimePrecision.MINUTE
     },
-    timePickerProps: timeProps,
-    maxDate: new Date(Date.now() + 60 * 60 * 24 * 365.25 * 1e4),
-    defaultValue: new Date(Date.now()),
-    value: dateState,
-    onChange: (date) => {
-      props.onDateChange(date);
-      setDateState(date);
-    }
+    closeOnSelection: false,
+    formatDate: props.time === false ? dateToText : props.precision === "second" ? dateSecondTimeToText : dateTimeToText,
+    parseDate: textToDate,
+    value: dateObjectState
   });
 }

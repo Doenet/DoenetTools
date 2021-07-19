@@ -1094,4 +1094,379 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('copy no link, base test', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Simplify of original: <textinput name="s1" prefill="full" /></p>
+    <p>Simplify of copies: <textinput name="s2" prefill="none" /></p>
+
+    <p>Original: <math name="m" simplify="$s1">x +x</math></p>
+    
+    <p>Unlinked copy: <copy link="false" tname="m" simplify="$s2" assignNames="m2" /></p>
+
+    <p>Linked copy: <copy tname="m" simplify="$s2" assignNames="m3" /></p>
+    
+    <p>Double value of original: <updateValue tname="m" newValue="2$m" name="doubleOriginal" label="double original" /></p>
+    <p>Double value of copy 1: <updateValue tname="m2" newValue="2$m2" name="doubleCopy1" label="double copy 1" /></p>
+    <p>Double value of copy 2: <updateValue tname="m3" newValue="2$m3" name="doubleCopy2" label="double copy 2" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2x')
+    })
+    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('x+x')
+    })
+    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('x+x')
+    })
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/_copy1"].stateValues.link).eq(false)
+      expect(components["/_copy2"].stateValues.link).eq(true)
+      expect(components["/m"].stateValues.value.tree).eqls(["*", 2, "x"])
+      expect(components["/m2"].stateValues.value.tree).eqls(["+", "x", "x"])
+      expect(components["/m3"].stateValues.value.tree).eqls(["+", "x", "x"])
+    });
+
+    cy.log('simplify copies')
+    cy.get('#\\/s2_input').clear().type("full{enter}");
+
+    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2x')
+    })
+    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2x')
+    })
+    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2x')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/m"].stateValues.value.tree).eqls(["*", 2, "x"])
+      expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, "x"])
+      expect(components["/m3"].stateValues.value.tree).eqls(["*", 2, "x"])
+    });
+
+
+    cy.log('stop simplifying original')
+    cy.get('#\\/s1_input').clear().type("none{enter}");
+
+    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('x+x')
+    })
+    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2x')
+    })
+    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2x')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/m"].stateValues.value.tree).eqls(["+", "x", "x"])
+      expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, "x"])
+      expect(components["/m3"].stateValues.value.tree).eqls(["*", 2, "x"])
+    });
+
+
+    cy.log('double original')
+    cy.get('#\\/doubleOriginal').click();
+
+    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2(x+x)')
+    })
+    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2x')
+    })
+    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('4x')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/m"].stateValues.value.tree).eqls(["*", 2, ["+", "x", "x"]])
+      expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, "x"])
+      expect(components["/m3"].stateValues.value.tree).eqls(["*", 4, "x"])
+    });
+
+
+    cy.log('double copy1')
+    cy.get('#\\/doubleCopy1').click();
+
+    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2(x+x)')
+    })
+    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('4x')
+    })
+    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('4x')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/m"].stateValues.value.tree).eqls(["*", 2, ["+", "x", "x"]])
+      expect(components["/m2"].stateValues.value.tree).eqls(["*", 4, "x"])
+      expect(components["/m3"].stateValues.value.tree).eqls(["*", 4, "x"])
+    });
+
+
+    cy.log('double copy2')
+    cy.get('#\\/doubleCopy2').click();
+
+    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
+    })
+    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('4x')
+    })
+    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('8x')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/m"].stateValues.value.tree).eqls(["*", 2, 4, "x"])
+      expect(components["/m2"].stateValues.value.tree).eqls(["*", 4, "x"])
+      expect(components["/m3"].stateValues.value.tree).eqls(["*", 8, "x"])
+    });
+
+
+    cy.log('stop simplifying copies')
+    cy.get('#\\/s2_input').clear().type("none{enter}");
+
+    cy.get(`#\\/m`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
+    })
+    cy.get(`#\\/m2`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2⋅2x')
+    })
+    cy.get(`#\\/m3`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('2⋅4x')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/m"].stateValues.value.tree).eqls(["*", 2, 4, "x"])
+      expect(components["/m2"].stateValues.value.tree).eqls(["*", 2, 2, "x"])
+      expect(components["/m3"].stateValues.value.tree).eqls(["*", 2, 4, "x"])
+    });
+
+  });
+
+  it('copy points and lines with no link', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph>
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+      <line through="$A $B" name="l" />
+    </graph>
+    
+    <graph>
+      <copy tname="A" link="false" name="Anolink" assignNames="A2" />
+      <copy tname="l" link="false" name="lnolink" assignNames="l2" />
+    </graph>
+    
+    <graph>
+      <copy tname="l" prop="point1" link="false" name="pnolink" assignNames="A3" />
+    </graph>
+    <graph>
+      <copy tname="l" prop="points" link="false" name="psnolink" assignNames="A4 B4"  />
+    </graph>
+    
+    <copy tname="A" prop="x" link="false" assignNames="Ax" name="pxnolink" />
+  
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(`#\\/Ax`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('1')
+    })
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/Anolink"].stateValues.link).eq(false)
+      expect(components["/lnolink"].stateValues.link).eq(false)
+      expect(components["/pnolink"].stateValues.link).eq(false)
+      expect(components["/psnolink"].stateValues.link).eq(false)
+      expect(components["/pxnolink"].stateValues.link).eq(false)
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([3, 4])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([3, 4])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+
+    cy.log('move A');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: -9, y: -3 })
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-9, -3])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-9, -3])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([3, 4])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([3, 4])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+    cy.log('move B');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/B"].movePoint({ x: -2, y: 6 })
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-9, -3])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([-2, 6])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-9, -3])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([-2, 6])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([3, 4])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+    cy.log('move l');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/l"].moveLine({
+        point1coords: [-7, -6],
+        point2coords: [8, 0]
+      });
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([8, 0])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([3, 4])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+    cy.log('move A2');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A2"].movePoint({ x: 5, y: 4 })
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([8, 0])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([5, 4])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([1, 2])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([3, 4])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+
+    cy.log('move l2');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/l2"].moveLine({
+        point1coords: [-5, 9],
+        point2coords: [-4, -1]
+      });
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([8, 0])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([5, 4])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([-5, 9])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([-4, -1])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+    cy.log('move A3');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A3"].movePoint({ x: 6, y: -3 })
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([8, 0])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([5, 4])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([-5, 9])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([-4, -1])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([6, -3])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+    cy.log('move A4');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A4"].movePoint({ x: -2, y: 7 })
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([8, 0])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([5, 4])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([-5, 9])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([-4, -1])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([6, -3])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([-2, 7])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+    cy.log('move B4');
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/B4"].movePoint({ x: -9, y: -8 })
+      expect(components["/A"].stateValues.xs.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/B"].stateValues.xs.map(x => x.tree)).eqls([8, 0])
+      expect(components["/l"].stateValues.point1.map(x => x.tree)).eqls([-7, -6])
+      expect(components["/l"].stateValues.point2.map(x => x.tree)).eqls([8, 0])
+      expect(components["/A2"].stateValues.xs.map(x => x.tree)).eqls([5, 4])
+      expect(components["/l2"].stateValues.point1.map(x => x.tree)).eqls([-5, 9])
+      expect(components["/l2"].stateValues.point2.map(x => x.tree)).eqls([-4, -1])
+      expect(components["/A3"].stateValues.xs.map(x => x.tree)).eqls([6, -3])
+      expect(components["/A4"].stateValues.xs.map(x => x.tree)).eqls([-2, 7])
+      expect(components["/B4"].stateValues.xs.map(x => x.tree)).eqls([-9, -8])
+      expect(components["/Ax"].stateValues.value.tree).eqls(1)
+    });
+
+
+  });
+
 });

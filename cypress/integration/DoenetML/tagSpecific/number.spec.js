@@ -307,4 +307,96 @@ describe('Number Tag Tests', function () {
 
   })
 
+  it('infinity and nan', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <number name="inf1">Infinity</number>
+      <number name="inf2">Infinity+Infinity</number>
+      <number name="inf3">1/0</number>
+      <number name="inf4">-2/-0</number>
+      <number name="inf5"><math>Infinity</math></number>
+      <number name="inf6"><math>Infinity</math>+<math>Infinity</math></number>
+      <number name="inf7"><math>5/0</math></number>
+      <number name="inf8"><math>-6</math>/<math>-0</math></number>
+
+      <number name="ninf1">-Infinity</number>
+      <number name="ninf2">-3/0</number>
+      <number name="ninf3">4/-0</number>
+      <number name="ninf4"><math>-Infinity</math></number>
+      <number name="ninf5"><math>-8/0</math></number>
+      <number name="ninf6"><math>7</math>/<math>-0</math></number>
+
+      <number name="nan1">Infinity-Infinity</number>
+      <number name="nan2">Infinity/Infinity</number>
+      <number name="nan3">0/0</number>
+      <number name="nan4">-0/0</number>
+      <number name="nan5"><math>-Infinity</math>+<math>Infinity</math></number>
+      <number name="nan6"><math>Infinity/Infinity</math></number>
+      <number name="nan7"><math>0/0</math></number>
+      <number name="nan8"><math>0</math>/<math>-0</math></number>
+
+
+    ` }, "*");
+    })
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/inf1').should('have.text', 'Infinity')
+    cy.get('#\\/inf2').should('have.text', 'Infinity')
+    cy.get('#\\/inf3').should('have.text', 'Infinity')
+    cy.get('#\\/inf4').should('have.text', 'Infinity')
+    cy.get('#\\/inf5').should('have.text', 'Infinity')
+    cy.get('#\\/inf6').should('have.text', 'Infinity')
+    cy.get('#\\/inf7').should('have.text', 'Infinity')
+    cy.get('#\\/inf8').should('have.text', 'Infinity')
+ 
+    cy.get('#\\/ninf1').should('have.text', '-Infinity')
+    cy.get('#\\/ninf2').should('have.text', '-Infinity')
+    cy.get('#\\/ninf3').should('have.text', '-Infinity')
+    cy.get('#\\/ninf4').should('have.text', '-Infinity')
+    cy.get('#\\/ninf5').should('have.text', '-Infinity')
+    cy.get('#\\/ninf6').should('have.text', '-Infinity')
+ 
+    cy.get('#\\/nan1').should('have.text', 'NaN')
+    cy.get('#\\/nan2').should('have.text', 'NaN')
+    cy.get('#\\/nan3').should('have.text', 'NaN')
+    cy.get('#\\/nan4').should('have.text', 'NaN')
+    cy.get('#\\/nan5').should('have.text', 'NaN')
+    cy.get('#\\/nan6').should('have.text', 'NaN')
+    cy.get('#\\/nan7').should('have.text', 'NaN')
+    cy.get('#\\/nan8').should('have.text', 'NaN')
+ 
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/inf1'].stateValues.value).eq(Infinity);
+      expect(components['/inf2'].stateValues.value).eq(Infinity);
+      expect(components['/inf3'].stateValues.value).eq(Infinity);
+      expect(components['/inf4'].stateValues.value).eq(Infinity);
+      expect(components['/inf5'].stateValues.value).eq(Infinity);
+      expect(components['/inf6'].stateValues.value).eq(Infinity);
+      expect(components['/inf7'].stateValues.value).eq(Infinity);
+      expect(components['/inf8'].stateValues.value).eq(Infinity);
+
+
+      expect(components['/ninf1'].stateValues.value).eq(-Infinity);
+      expect(components['/ninf2'].stateValues.value).eq(-Infinity);
+      expect(components['/ninf3'].stateValues.value).eq(-Infinity);
+      expect(components['/ninf4'].stateValues.value).eq(-Infinity);
+      expect(components['/ninf5'].stateValues.value).eq(-Infinity);
+      expect(components['/ninf6'].stateValues.value).eq(-Infinity);
+
+      expect(components['/nan1'].stateValues.value).eqls(NaN);
+      expect(components['/nan2'].stateValues.value).eqls(NaN);
+      expect(components['/nan3'].stateValues.value).eqls(NaN);
+      expect(components['/nan4'].stateValues.value).eqls(NaN);
+      expect(components['/nan5'].stateValues.value).eqls(NaN);
+      expect(components['/nan6'].stateValues.value).eqls(NaN);
+      expect(components['/nan7'].stateValues.value).eqls(NaN);
+      expect(components['/nan8'].stateValues.value).eqls(NaN);
+
+    })
+  })
+
 });

@@ -11,18 +11,21 @@ export default class Ref extends DoenetRenderer {
     }
     if (this.doenetSvData.contentId) {
       return /* @__PURE__ */ React.createElement("a", {
+        target: "_blank",
         id: this.componentName,
         name: this.componentName,
         href: `https://www.doenet.org/content/#/?contentId=${this.doenetSvData.contentId}`
       }, linkContent);
     } else if (this.doenetSvData.doenetId) {
       return /* @__PURE__ */ React.createElement("a", {
+        target: "_blank",
         id: this.componentName,
         name: this.componentName,
         href: `https://www.doenet.org/content/#/?doenetId=${this.doenetSvData.doenetId}`
       }, linkContent);
     } else if (this.doenetSvData.uri) {
       return /* @__PURE__ */ React.createElement("a", {
+        target: "_blank",
         id: this.componentName,
         name: this.componentName,
         href: this.doenetSvData.uri

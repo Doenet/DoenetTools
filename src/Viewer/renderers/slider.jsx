@@ -1,15 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
+import me from 'math-expressions';
 
 import styled from "styled-components";
-import {Spring} from '@react-spring/web';
+// import { Spring } from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup";
 import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
 
+
+let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
+
 const SliderContainer = styled.div`
     width: fit-content;
     height: ${props => (props.labeled && props.noTicked) ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px"};
+    &:focus {outline: 0;};
 `;
 
 const SubContainer2 = styled.div`
@@ -23,6 +28,7 @@ const StyledSlider = styled.div`
   background: #888888 ;
   height: 1px;
   width: ${props => props.width};
+  user-select: none;
 `;
 
 const StyledValueLabel = styled.p`
@@ -35,7 +41,7 @@ const StyledThumb = styled.div`
   height: 10px;
   border-radius: 5px;
   position: relative;
-  top: -3px;
+  top: -4px;
   opacity: 1;
   background: ${props => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`};
   cursor: pointer;
@@ -48,6 +54,7 @@ const Tick = styled.div`
     top:1px;
     z-Index:-2;
     left: ${props => props.x};
+    user-select: none;
 `;
 
 const Label = styled.p`
@@ -59,270 +66,313 @@ const Label = styled.p`
     user-select: none;
 `;
 
-function generateNumericLabels (points, div_width, point_start_val,SVs) {
-  let maxValueWidth = findMaxValueWidth(points);
-  let showAllItems = false;
- const length = Object.keys(points).length;
- if(SVs.width.size > maxValueWidth * length){
-    showAllItems = true;
-    return (
-      [points.map((point, index) => (
-          <Tick key = {point} x = {`${index * div_width}px`}/>
-          )
-      ),
-      points.map((point, index) => {
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point}</Label>
-      }   
-      )
-      ]
-  );
-  }  else if(SVs.width.size < maxValueWidth ){
-    showAllItems = false;
-    return (
-      [points.map((point, index) => {
-        if(index == 0){
-         return <Tick key = {point} x = {`${index * div_width}px`}/>
-        }else{
-          return ''
-        }
-      }
-      ),
-      points.map((point, index) => {
-        if(index == 0){
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point}</Label>
+function generateNumericLabels(points, div_width, point_start_val, SVs) {
 
-        }else if(index == 2){
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{"..."}</Label>
-
-        }
-      }   
-      )
-      ]
-  );
+  let maxValueWidth;
+  let maxAbs = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
+  let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
+  if (maxAbs === 0) {
+    magnitudeOfMaxAbs = 1;
   }
-  else if(SVs.width.size < maxValueWidth * length){
+  let roundDecimals = 5 - magnitudeOfMaxAbs;
 
-        showAllItems = false;
-    return (
-      [points.map((point, index) => {
-        let countToShow = Math.round((SVs.width.size * Math.round(div_width)) / length) + 2;
-        let displayPoints = [];
-        for(let i=1; i<countToShow;i++){
-          displayPoints.push(Math.round((length/countToShow) * i));
-  
-        } 
-        if(index == 0 ){
-        return <Tick key = {point} x = "0px"/>
-        }
-        // else if(point % (length/10) == 0){
-          else if(displayPoints.includes(point)){
-          return <Tick key = {point} x = {`${ (index * div_width)}px`}/>
-        }
-        else if(length === index + 1){
-          return <Tick key = {point} x = {`${index * div_width  }px`}/>
-        }
-      }
-          
-      ),
-      points.map((point, index) => {
-      let countToShow = Math.round((SVs.width.size * Math.round(div_width)) / length) + 2;
-      
-      let displayPoints = [];
-      // displayPoints = points.filter((item)=> item % Math.round(length /countToShow) == 0) 
-      // // displayPoints.pop();
-      for(let i=1; i<countToShow;i++){
-        displayPoints.push(Math.round((length/countToShow) * i));
-      } 
-        if(index == 0){
-          return  <Label key = {point} x = "0px">{point}</Label>
-        }
-        else if(displayPoints.includes(point)){
-           return  <Label key = {point} x = {`${(index * div_width)}px`}>{point}</Label>
-        }
-        else if(length  ==  index + 1 ){
-          return  <Label key = {point} x = {`${index * div_width }px`}>{point}</Label>
+  if (points.length === 0) {
 
-        }
-      }   
-      )
-      ]
-  );
+    let pointsToTest = [
+      round_to_decimals(SVs.firstItem, roundDecimals),
+      round_to_decimals(SVs.lastItem, roundDecimals)
+    ];
+    let numToTest = Math.min(SVs.nItems, 100);
+    let dInd = Math.floor(SVs.nItems / numToTest);
+    for (let i = 1; i < numToTest; i++) {
+      pointsToTest.push(round_to_decimals(SVs.from + SVs.step * i * dInd, roundDecimals));
+    }
+    maxValueWidth = findMaxValueWidth(pointsToTest);
+  } else {
+    let pointsToTest = points.map(x => round_to_decimals(x, roundDecimals))
+    maxValueWidth = findMaxValueWidth(pointsToTest);
   }
-  else{
+  const nItems = SVs.nItems;
+  if (SVs.width.size > maxValueWidth * nItems) {
+    if (points.length === 0) {
+      let ticks = [];
+      let labels = [];
+      let maxAbs = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
+      let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
+      if (maxAbs === 0) {
+        magnitudeOfMaxAbs = 1;
+      }
+      let roundDecimals = 5 - magnitudeOfMaxAbs;
+      for (let index = 0; index < SVs.nItems; index++) {
+        let point = round_to_decimals(SVs.from + SVs.step * index, roundDecimals);
+        ticks.push(
+          <Tick key={point} x={`${index * div_width}px`} />
+        )
+        labels.push(
+          <Label key={point} x={`${(index * div_width) - 3}px`}>{point}</Label>
+        )
+      }
+      return [ticks, labels];
+    } else {
+      return (
+        [
+          points.map((point, index) =>
+            <Tick key={point} x={`${index * div_width}px`} />
+          ),
+          points.map((point, index) =>
+            <Label key={point} x={`${(index * div_width) - 3}px`}>{point}</Label>
+          )
+        ]
+      );
+    }
+  } else if (SVs.width.size < maxValueWidth) {
+    let pointsCopy = [...points];
+    if (points.length === 0) {
+      for (let index = 0; index < Math.min(3, SVs.nItems); index++) {
+        pointsCopy.push(SVs.from + SVs.step * index);
+      }
+    }
     return (
-      [points.map(point => (
-          <Tick key = {point} x = {`${(point - point_start_val) * div_width}px`}/>
-          )
-      ),
-      points.map(point => (
-              <Label key = {point} x = {`${((point - point_start_val) * div_width) - 3}px`}>{point}</Label>
-          )
-      )
+      [
+        pointsCopy.map((point, index) => {
+          if (index == 0) {
+            return <Tick key={point} x={`${index * div_width}px`} />
+          } else {
+            return ''
+          }
+        }),
+        pointsCopy.map((point, index) => {
+          if (index == 0) {
+            return <Label key={point} x={`${(index * div_width) - 3}px`}>{point}</Label>
+
+          } else if (index == 2) {
+            return <Label key={point} x={`${(index * div_width) - 3}px`}>{"..."}</Label>
+
+          }
+        })
       ]
-  );
+    );
+  }
+  else if (SVs.width.size < maxValueWidth * nItems) {
+
+    let tickIndices, tickValues;
+    if (points.length === 0) {
+      let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
+      let tickSpan = SVs.lastItem - SVs.firstItem;
+      let desiredDTick = tickSpan / (desiredNumberOfTicks + 1);
+      let maxAbs = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
+      let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
+      let roundDecimalsForTickSpacing = 1 - magnitudeOfMaxAbs;
+      let dTick = round_to_decimals(desiredDTick, roundDecimalsForTickSpacing)
+      let numberOfTicks = Math.floor(tickSpan / dTick) + 1;
+
+      let roundDecimals = 5 - magnitudeOfMaxAbs;
+
+      tickValues = [...Array(numberOfTicks).keys()].map(i => SVs.from + dTick * i);
+
+      tickIndices = tickValues.map(x => Math.round((x - SVs.from) / SVs.step));
+      tickValues = tickValues.map(x => round_to_decimals(x, roundDecimals));
+
+    } else {
+
+      let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
+      let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1E-10);
+      let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1E-10) + 1;
+
+      tickIndices = [...Array(numberOfTicks).keys()].map(i => Math.round(dIndex * i));
+
+      let maxAbs = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
+      let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
+      let roundDecimals = 2 - magnitudeOfMaxAbs;
+      tickValues = tickIndices.map(x => round_to_decimals(points[x], roundDecimals))
+
+    }
+
+    return (
+      [
+        tickIndices.map((x, i) =>
+          <Tick key={tickValues[i]} x={`${(x * div_width)}px`} />
+        ),
+        tickIndices.map((x, i) =>
+          <Label key={tickValues[i]} x={`${(x * div_width)}px`}>{tickValues[i]}</Label>
+        )
+      ]
+    );
+  }
+  else {
+    return (
+      [
+        points.map(point =>
+          <Tick key={point} x={`${(point - point_start_val) * div_width}px`} />
+        ),
+        points.map(point =>
+          <Label key={point} x={`${((point - point_start_val) * div_width) - 3}px`}>{point}</Label>
+        )
+      ]
+    );
   }
 
 }
 
-function findMaxValueWidth(points){
-  let currWidth = points.reduce(function(a,b){
-    return a.length > b.length ? a : b;
+function findMaxValueWidth(points) {
+  let currWidth = points.reduce(function (a, b) {
+    return a > b.toString().length ? a : b.toString().length;
   });
-return currWidth.toString().length * 12;
+  return currWidth * 12;
 }
 
-function generateTextLabels (points, div_width,SVs) {
+function generateTextLabels(points, div_width, SVs) {
   let maxValueWidth = findMaxValueWidth(points);
   const length = Object.keys(points).length;
 
   let showAllItems = false;
-  if(SVs.width.size > maxValueWidth * length){
+  if (SVs.width.size > maxValueWidth * length) {
     showAllItems = true;
     return (
       [points.map((point, index) => (
-          <Tick key = {point} x = {`${index * div_width}px`}/>
-          )
+        <Tick key={point} x={`${index * div_width}px`} />
+      )
       ),
       points.map((point, index) => {
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point}</Label>
-      }   
+        return <Label key={point} x={`${(index * div_width) - 3}px`}>{point}</Label>
+      }
       )
       ]
-  );
-  }  else if(SVs.width.size < maxValueWidth ){
+    );
+  } else if (SVs.width.size < maxValueWidth) {
     showAllItems = false;
     return (
       [points.map((point, index) => {
-        if(index == 0){
-         return <Tick key = {point} x = {`${index * div_width}px`}/>
-        }else{
+        if (index == 0) {
+          return <Tick key={point} x={`${index * div_width}px`} />
+        } else {
           return ''
         }
       }
       ),
       points.map((point, index) => {
-        if(index == 0){
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point}</Label>
+        if (index == 0) {
+          return <Label key={point} x={`${(index * div_width) - 3}px`}>{point}</Label>
 
-        }else if(index == 2){
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{"..."}</Label>
+        } else if (index == 2) {
+          return <Label key={point} x={`${(index * div_width) - 3}px`}>{"..."}</Label>
 
         }
-      }   
+      }
       )
       ]
-  );
+    );
   }
-  else if(SVs.width.size < maxValueWidth * length){
+  else if (SVs.width.size < maxValueWidth * length) {
     showAllItems = false;
     return (
       [points.map((point, index) => (
-          <Tick key = {point} x = {`${index * div_width}px`}/>
-          )
+        <Tick key={point} x={`${index * div_width}px`} />
+      )
       ),
       points.map((point, index) => {
-        if(index == 0 || length === index + 1){
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point}</Label>
+        if (index == 0 || length === index + 1) {
+          return <Label key={point} x={`${(index * div_width) - 3}px`}>{point}</Label>
 
-        }else{
-          return  <Label key = {point} x = {`${(index * div_width) - 3}px`}>{point.length < 3 ? point : point.substr(0,3) + "..." }</Label>
+        } else {
+          return <Label key={point} x={`${(index * div_width) - 3}px`}>{point.length < 3 ? point : point.substr(0, 3) + "..."}</Label>
 
         }
-      }   
+      }
       )
       ]
-  );
+    );
   }
 
 
 }
 
-function xPositionToValue(ref, div_width, start_val){ 
-  return (start_val + (ref/div_width));
+function xPositionToValue(ref, div_width, start_val) {
+  return (start_val + (ref / div_width));
 }
 
-function nearestValue(refval, points){
-  let [min, val, index] = [Infinity, null, 0];
-  let i = 0;
-  for (let point of points) {
+function nearestValue(refval, points, SVs) {
 
-      let diff = Math.abs(point - refval);
-      if (diff < min) {
-      min = diff;
-      val = point;
-      index = i;
-      }
+  let index = Math.max(0, Math.min(SVs.nItems - 1, Math.round(refval - SVs.firstItem)));
 
-      i = i + 1;
+  let val;
+
+  if (points.length === 0) {
+    // values specified by from, to, step
+    val = SVs.from + SVs.step * index;
+  } else {
+    val = points[index];
   }
-  return [val, index];
+
+  return [val, index]
+
 }
 
 export default function Slider(props) {
   let [name, SVs, actions] = useDoenetRender(props);
-//   console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
-// console.log(SVs)
+  //   console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+  // console.log(SVs)
 
   const containerRef = useRef(null);
-// console.log("SVs",SVs);
+  // console.log("SVs",SVs);
   // let sorted_points = [...SVs.items].sort((p1, p2) => p1 - p2);
 
   const [thumbXPos, setThumbXPos] = useState(0);
-  const [thumbValue, setThumbValue] = useState((SVs.sliderType === "text") ? SVs.items[0] :  Math.min(...SVs.items));
+  const [thumbValue, setThumbValue] = useState(SVs.firstItem);
   const [isMouseDown, setIsMouseDown] = useState(0);
   const [offsetLeft, setOffsetLeft] = useState(0);
-  const startValue = (SVs.sliderType === "text") ? 0 : Math.min(...SVs.items);
-  const endValue = (SVs.sliderType === "text") ? 0 : Math.max(...SVs.items);
-  let divisionWidth = SVs.sliderType === "text" ? SVs.width.size/(SVs.items.length - 1) : SVs.width.size/(SVs.items.length);
+  const startValue = (SVs.type === "text") ? 0 : SVs.firstItem;
+  // const endValue = (SVs.type === "text") ? 0 : SVs.lastItem;
+  let divisionWidth = SVs.width.size / (SVs.nItems - 1);
 
   const [index, setIndex] = useState(0);
-   const width = (SVs.width.size);
+  const width = (SVs.width.size);
   useEffect(() => {
-      if(containerRef.current){
-          const rect = containerRef.current.getBoundingClientRect();
-          setOffsetLeft(rect.left);
-      }
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setOffsetLeft(rect.left);
+    }
   }, []);
 
   useEffect(() => {
-      //console.log("ran");
-      if(!isMouseDown){
-        setThumbValue(SVs.value);
-        setIndex(SVs.index);
-        if(!(SVs.sliderType === "text")){
+    //console.log("ran");
+    if (!isMouseDown) {
+      setThumbValue(SVs.value);
+      setIndex(SVs.index);
+      if (!(SVs.type === "text")) {
 
-            setThumbXPos((SVs.index/(SVs.items.length -1))*SVs.width.size);
-            // setThumbXPos((SVs.value - startValue)*divisionWidth);
-        }else{
-            setThumbXPos((SVs.index)*divisionWidth);
-        }
+        setThumbXPos((SVs.index / (SVs.nItems - 1)) * SVs.width.size);
+        // setThumbXPos((SVs.value - startValue)*divisionWidth);
+      } else {
+        setThumbXPos((SVs.index) * divisionWidth);
       }
+    }
   }, [SVs.index]);
 
-  if(SVs.hidden){
+  if (SVs.hidden) {
     return null;
   }
 
-  if(SVs.disabled) {
+  if (SVs.disabled) {
     let controls = '';
-    if(SVs.showControls){
+    if (SVs.showControls) {
       controls = <ButtonGroup>
-                <Button value="Prev"  onClick = {(e)=>handlePrevious(e)} disabled />
-                <Button value="Next" onClick = {(e)=>handleNext(e)} disabled />
-                </ButtonGroup>
-    }else{
+        <Button value="Prev" onClick={(e) => handlePrevious(e)} disabled />
+        <Button value="Next" onClick={(e) => handleNext(e)} disabled />
+      </ButtonGroup>
+    } else {
       controls = null;
     }
     let labels = '';
-    if(SVs.sliderType === 'text'){
+    if (SVs.type === 'text') {
       labels = generateTextLabels(SVs.items, divisionWidth, SVs)
-    }else{
+    } else {
       labels = generateNumericLabels(SVs.items, divisionWidth, startValue, SVs)
     }
-    let ticksAndLabels = '' ;
-    if(SVs.showTicks === false){
+    let ticksAndLabels = '';
+    if (SVs.showTicks === false) {
       ticksAndLabels = null
-    }else{
+    } else {
       ticksAndLabels = labels;
     }
     return (
@@ -337,171 +387,200 @@ export default function Slider(props) {
         </div>
         <SubContainer2>
           <StyledSlider width={`${SVs.width.size}px`}>
-            <StyledThumb disabled style={{ left: `${-3}px` }} />
+            <StyledThumb disabled style={{ left: `${thumbXPos - 4}px` }} />
             {ticksAndLabels}
           </StyledSlider>
         </SubContainer2>
       </SliderContainer>
     );
+  }
+
+  function handleDragEnter(e) {
+    setIsMouseDown(true);
+
+    setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+
+    if (!(SVs.type === "text")) {
+      let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+
+      let valindexpair = nearestValue(refval, SVs.items, SVs);
+
+      setThumbValue(valindexpair[0]);
+      setIndex(valindexpair[1]);
+
+
+
+      // actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true });
+      actions.changeValue({ value: valindexpair[0], transient: true });
+    } else {
+      let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      setIndex(i);
+      setThumbValue(SVs.items[i]);
+
+      actions.changeValue({ value: SVs.items[i], transient: true });
+    }
+  }
+
+  function handleDragExit(e) {
+    if (!isMouseDown) {
+      return;
     }
 
-    function handleDragEnter(e) {
-        setIsMouseDown(true);
+    setIsMouseDown(false);
 
-        setThumbXPos(e.nativeEvent.clientX - offsetLeft);
+    if (!(SVs.type === "text")) {
+      //Find the new index based on clientX and total width
+      // const ratio = (e.nativeEvent.clientX - offsetLeft) / SVs.width.size;
+      // const selectedIndex = Math.min(Math.max(Math.round(ratio * SVs.nItems), 0), SVs.nItems - 1)
 
-        if(!(SVs.sliderType === "text")){
-            let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
-            let valindexpair = nearestValue(refval, SVs.items);
-            
-            setThumbValue(valindexpair[0]);
-            setIndex(valindexpair[1]);
+      let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
 
-            actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
-        }else{
-            let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
-            setIndex(i);
-            setThumbValue(SVs.items[i]);
+      function xPositionToValue(ref, div_width, start_val) {
+        return (start_val + (ref / div_width));
+      }
 
-            actions.changeValue({ value: SVs.items[i], transient: true});
-        }
-    }
+      let valindexpair = nearestValue(refval, SVs.items, SVs);
 
-    function handleDragExit(e) {
-        if(!isMouseDown){
-            return;
-        }
+      setThumbValue(valindexpair[0]);
+      setIndex(valindexpair[1]);
 
-        setIsMouseDown(false);
+      setThumbXPos(valindexpair[1] * divisionWidth);
 
-        if (!(SVs.sliderType === "text")){
-            //Find the new index based on clientX and total width
-            const ratio = (e.nativeEvent.clientX - offsetLeft)/SVs.width.size;
-            const selectedIndex = Math.min(Math.max(Math.round(ratio*SVs.items.length), 0), SVs.items.length - 1)
+      actions.changeValue({ value: valindexpair[0] });
+    } else {
+      let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      i = Math.max(0, Math.min(SVs.nItems - 1, i));
 
-            setThumbValue(SVs.items[selectedIndex]);
-            setThumbXPos(selectedIndex*divisionWidth);
-            setIndex(selectedIndex);
+      setIndex(i);
+      setThumbValue(SVs.items[i]);
 
-            actions.changeValue({ value: SVs.items[selectedIndex]});
-        }else{
-            let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
-            setIndex(i);
-            setThumbValue(SVs.items[i]);
+      setThumbXPos(i * divisionWidth);
 
-            setThumbXPos(i*divisionWidth);
-
-            actions.changeValue({ value: SVs.items[i]});
-
-        }
-    }
-
-    function handleDragThrough(e) {
-        if(isMouseDown){
-
-            setThumbXPos(e.nativeEvent.clientX - offsetLeft);
-            if(!(SVs.sliderType === "text")){
-                let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
-                let valindexpair = nearestValue(refval, SVs.items);
-                setThumbValue(valindexpair[0]);
-                setIndex(valindexpair[1]);
-
-                actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true});
-            }else{
-                let i = Math.round((e.nativeEvent.clientX - offsetLeft)/divisionWidth);
-                setIndex(i);
-                setThumbValue(SVs.items[i]);
-
-                actions.changeValue({ value: SVs.items[i], transient: true});
-            }
-        }
-    }
-
-    function handleNext(e) {
-        if(index === SVs.items.length - 1){
-            return;
-        }
-
-        if(!(SVs.sliderType === "text")){
-
-            setThumbXPos((SVs.items[index+1] - startValue) * divisionWidth);
-        }else{
-            setThumbXPos((index+1)*divisionWidth);
-        }
-
-        
-        actions.changeValue({ value: SVs.items[index+1]});
-        setThumbValue(SVs.items[index+1]);
-        setIndex(index + 1);
+      actions.changeValue({ value: SVs.items[i] });
 
     }
+  }
 
-    function handlePrevious(e) {
-        if(index === 0){
-            return;
-        }
+  function handleDragThrough(e) {
+    if (isMouseDown) {
 
-        if(!(SVs.sliderType === "text")){
+      setThumbXPos(Math.max(0, Math.min(SVs.width.size, e.nativeEvent.clientX - offsetLeft)));
+      if (!(SVs.type === "text")) {
+        let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
 
-            setThumbXPos((SVs.items[index-1] - startValue) * divisionWidth);
-        }else{
-            setThumbXPos((index-1)*divisionWidth);
-        }
+        let valindexpair = nearestValue(refval, SVs.items, SVs);
+        setThumbValue(valindexpair[0]);
+        setIndex(valindexpair[1]);
 
-        actions.changeValue({ value: SVs.items[index-1]});
+        actions.changeValue({ value: valindexpair[0], transient: true });
+        // actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true });
+      } else {
+        let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+        setIndex(i);
+        setThumbValue(SVs.items[i]);
 
-        setThumbValue(SVs.items[index-1]);
-        setIndex(index - 1);
+        actions.changeValue({ value: SVs.items[i], transient: true });
+      }
     }
+  }
+
+  function handleNext(e) {
+    if (index === SVs.nItems - 1) {
+      return;
+    }
+
+    let val;
+
+    if (SVs.items.length === 0) {
+      val = SVs.from + SVs.step * (index + 1);
+    } else {
+      val = SVs.items[index + 1];
+    }
+
+    actions.changeValue({ value: val });
+    setThumbValue(val);
+    setIndex(index + 1);
+
+  }
+
+  function handlePrevious(e) {
+    if (index === 0) {
+      return;
+    }
+
+    let val;
+
+    if (SVs.items.length === 0) {
+      val = SVs.from + SVs.step * (index - 1);
+    } else {
+      val = SVs.items[index - 1];
+    }
+
+    actions.changeValue({ value: val });
+
+    setThumbValue(val);
+    setIndex(index - 1);
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === "ArrowLeft") {
+      return handlePrevious(e);
+    } else if (e.key === "ArrowRight") {
+      return handleNext(e);
+    }
+  }
 
   let labels = '';
-  if(SVs.sliderType === 'text'){
+  if (SVs.type === 'text') {
     labels = generateTextLabels(SVs.items, divisionWidth, SVs)
-  }else{
+  } else {
     labels = generateNumericLabels(SVs.items, divisionWidth, startValue, SVs)
   }
-  let ticksAndLabels = '' ;
-  if(SVs.showTicks === false){
+  let ticksAndLabels = '';
+  if (SVs.showTicks === false) {
     ticksAndLabels = null
-  }else{
+  } else {
     ticksAndLabels = labels;
   }
   let controls = '';
-  if(SVs.showControls){
-    controls =  <ButtonGroup>
-    <Button
-      value="Prev"
-      onClick={(e) => handlePrevious(e)}
-      data-cy="prevbutton"
-    ></Button>
-    <Button
-      value="Next"
-      onClick={(e) => handleNext(e)}
-      data-cy="nextbutton"
-    ></Button>
-  </ButtonGroup>
-  }else{
+  if (SVs.showControls) {
+    controls = <ButtonGroup>
+      <Button
+        value="Prev"
+        onClick={(e) => handlePrevious(e)}
+        data-cy="prevbutton"
+      ></Button>
+      <Button
+        value="Next"
+        onClick={(e) => handleNext(e)}
+        data-cy="nextbutton"
+      ></Button>
+    </ButtonGroup>
+  } else {
     null
   }
+
+  let valueDisplay = null;
+  if (SVs.showValue) {
+    valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
+  }
+
   return (
-    <SliderContainer  ref = {containerRef} labeled = {(SVs.showControls||SVs.label)} noTicked = {SVs.showTicks === false} >
-      <div style = {{height: (SVs.showControls||SVs.label) ? "20px": "0px"}}>
-            {SVs.label? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
-            {/* TODO */}
+    <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
+      <div style={{ height: (SVs.showControls || SVs.label) ? "20px" : "0px" }}>
+        {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
+        {/* TODO */}
         {controls}
-        </div>
-        <SubContainer2 onMouseDown = {handleDragEnter} onMouseUp = {handleDragExit} onMouseMove = {handleDragThrough} onMouseLeave = {handleDragExit} >
-            <StyledSlider width = {(`${SVs.width.size}px`)} data-cy="slider1">
-            <Spring
-                to={{ x: thumbXPos }}>              
-                {(styles) => { return <StyledThumb style={{left: `${thumbXPos - 3}px`}}
-                data-cy="slider1-handle"/>
-            }}
-            </Spring>
-            {ticksAndLabels}
-            </StyledSlider>
-        </SubContainer2>
+      </div>
+      <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
+        <StyledSlider width={(`${SVs.width.size}px`)} data-cy="slider1">
+          {valueDisplay}
+          <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
+            data-cy="slider1-handle" />
+          {ticksAndLabels}
+        </StyledSlider>
+      </SubContainer2>
     </SliderContainer>
   );
-  
+
 }

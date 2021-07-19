@@ -1,6 +1,8 @@
+/* Hand-written tokenizer for XML tag matching. */
+
 import {ExternalTokenizer, ContextTracker} from "../_snowpack/pkg/lezer.js"
-import {startTag as _startTag, startCloseTag, mismatchedStartCloseTag, incompleteStartCloseTag, Element, OpenTag,
-        commentContent as _commentContent, cdataContent as _cdataContent} from "./doenet.terms.js"
+import {StartTag, StartCloseTag, mismatchedStartCloseTag, incompleteStartCloseTag, Element, OpenTag,
+        commentContent as _commentContent} from "./doenet.terms.js"
 
 function nameChar(ch) {
   return ch == 45 || ch == 46 || ch == 58 || ch >= 65 && ch <= 90 || ch == 95 || ch >= 97 && ch <= 122 || ch >= 161
@@ -32,14 +34,14 @@ function ElementContext(name, parent) {
 export const elementContext = new ContextTracker({
   start: null,
   shift(context, term, input, stack) {
-    return term == _startTag ? new ElementContext(tagNameAfter(input, stack.pos) || "", context) : context
+    return term == StartTag ? new ElementContext(tagNameAfter(input, stack.pos) || "", context) : context
   },
   reduce(context, term) {
     return term == Element && context ? context.parent : context
   },
   reuse(context, node, input, stack) {
     let type = node.type.id
-    return type == _startTag || type == OpenTag
+    return type == StartTag || type == OpenTag
       ? new ElementContext(tagNameAfter(input, stack.pos - node.length + 1) || "", context) : context
   },
   hash(context) { return context ? context.hash : 0 },
@@ -54,11 +56,11 @@ export const startTag = new ExternalTokenizer((input, token, stack) => {
     pos++
     let name = tagNameAfter(input, pos)
     if (!name) return token.accept(incompleteStartCloseTag, pos)
-    if (stack.context && name == stack.context.name) return token.accept(startCloseTag, pos)
+    if (stack.context && name == stack.context.name) return token.accept(StartCloseTag, pos)
     for (let cx = stack.context; cx; cx = cx.parent) if (cx.name == name) return
     token.accept(mismatchedStartCloseTag, pos)
   } else if (next != 33 /* '!' */ && next != 63 /* '?' */) {
-    return token.accept(_startTag, pos)
+    return token.accept(StartTag, pos)
   }
 })
 
@@ -81,4 +83,3 @@ function scanTo(type, end) {
 }
 
 export const commentContent = scanTo(_commentContent, "-->")
-export const cdataContent = scanTo(_cdataContent, "?>")

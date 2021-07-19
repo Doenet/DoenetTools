@@ -250,13 +250,11 @@ export default class BaseComponent {
         defaultValue: false,
         public: true,
       },
-      disabled: {
+      disable: {
         createComponentOfType: "boolean",
-        createStateVariable: "disabled",
+        createStateVariable: "disable",
         defaultValue: flags.readOnly ? true : false,
         public: true,
-        forRenderer: true,
-        propagateToDescendants: true
       },
       modifyIndirectly: {
         createComponentOfType: "boolean",
@@ -333,7 +331,7 @@ export default class BaseComponent {
           variableName: "hidden"
         },
         adapterSourceHidden: {
-          dependencyType: "adapterSource",
+          dependencyType: "adapterSourceStateVariable",
           variableName: "hidden"
         },
       }),
@@ -344,6 +342,40 @@ export default class BaseComponent {
             || dependencyValues.sourceCompositeHidden === true
             || dependencyValues.adapterSourceHidden === true
             || (dependencyValues.hide === true && !dependencyValues.parentOverrideChildHide)
+        }
+      })
+    }
+
+    stateVariableDefinitions.disabled = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      returnDependencies: () => ({
+        disable: {
+          dependencyType: "stateVariable",
+          variableName: "disable",
+          variablesOptional: true,
+        },
+        parentDisabled: {
+          dependencyType: "parentStateVariable",
+          variableName: "disabled"
+        },
+        sourceCompositeDisabled: {
+          dependencyType: "sourceCompositeStateVariable",
+          variableName: "disabled"
+        },
+        adapterSourceDisabled: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "disabled"
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: {
+          disabled:  // check === true so null gives false
+            dependencyValues.parentDisabled === true
+            || dependencyValues.sourceCompositeDisabled === true
+            || dependencyValues.adapterSourceDisabled === true
+            || dependencyValues.disable === true
         }
       })
     }
@@ -555,29 +587,29 @@ export default class BaseComponent {
 
   static get stateVariablesShadowedForReference() { return [] };
 
-  returnSerializeInstructions() {
-    return {};
-  }
+  // returnSerializeInstructions() {
+  //   return {};
+  // }
 
   serialize(parameters = {}) {
     // TODO: this function is converted only for the case with the parameter
-    // forCopy set
+    // forLink set
 
-    // TODO: not serializing attribute children (as don't need them with forCopy)
+    // TODO: not serializing attribute children (as don't need them with forLink)
 
     let includeDefiningChildren = true;
-    let stateVariablesToInclude = [];
+    // let stateVariablesToInclude = [];
 
-    if (parameters.forCopy) {
+    if (parameters.forLink) {
       includeDefiningChildren = true;//this.constructor.useChildrenForReference;
     } else {
-      let instructions = this.returnSerializeInstructions();
-      if (instructions.skipChildren) {
-        includeDefiningChildren = false;
-      }
-      if (instructions.stateVariables) {
-        stateVariablesToInclude = instructions.stateVariables;
-      }
+      // let instructions = this.returnSerializeInstructions();
+      // if (instructions.skipChildren) {
+      //   includeDefiningChildren = false;
+      // }
+      // if (instructions.stateVariables) {
+      //   stateVariablesToInclude = instructions.stateVariables;
+      // }
 
     }
 
@@ -616,8 +648,9 @@ export default class BaseComponent {
       let attrVal = this.attributes[attr];
       if (attrVal.componentType) {
         // only copy attribute components if attributes object specifies
+        // or if not linked
         let attrInfo = attributesObject[attr];
-        if (attrInfo.copyComponentOnReference) {
+        if (attrInfo.copyComponentOnReference || !parameters.forLink) {
           serializedComponent.attributes[attr] = attrVal.serialize(parameters);
         }
       } else {
@@ -627,23 +660,19 @@ export default class BaseComponent {
     }
 
 
-    if (parameters.forCopy) {
+    if (parameters.forLink) {
       serializedComponent.originalName = this.componentName;
       serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
       serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
-      for (let attr in this.attributes) {
-
-      }
       serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
 
       delete serializedComponent.doenetAttributes.prescribedName;
       delete serializedComponent.doenetAttributes.assignNames;
 
     } else {
-      console.warn('serializing a component without forCopy set is not yet converted!!!!')
       let additionalState = {};
-      for (let item in this._state) {
-        if (this.state[item].essential || stateVariablesToInclude.includes(item)) {
+      for (let item in this.state) {
+        if (this.state[item].essential) {// || stateVariablesToInclude.includes(item)) {
 
           // evaluate state variable first so that usedDefault attribute is populated
           let value = this.state[item].value;
@@ -658,10 +687,14 @@ export default class BaseComponent {
         serializedComponent.state = additionalState;
       }
 
-      let doenetAttributes = Object.assign({}, this.doenetAttributes);
-      if (Object.keys(doenetAttributes).length > 0) {
-        serializedComponent.doenetAttributes = doenetAttributes;
-      }
+      serializedComponent.originalName = this.componentName;
+      serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
+      serializedComponent.doenetAttributes = deepClone(this.doenetAttributes);
+      serializedComponent.originalAttributes = deepClone(serializedComponent.attributes);
+
+      delete serializedComponent.doenetAttributes.prescribedName;
+      delete serializedComponent.doenetAttributes.assignNames;
+
     }
 
     return serializedComponent;
@@ -689,7 +722,7 @@ export default class BaseComponent {
       doenetAttributes: {},
     }
 
-    if (//parameters.forCopy !== true &&
+    if (//parameters.forLink !== true &&
       serializedComponent.doenetAttributes !== undefined) {
       serializedCopy.originalDoenetAttributes = deepClone(serializedComponent.doenetAttributes);
       serializedCopy.doenetAttributes = deepClone(serializedComponent.doenetAttributes);

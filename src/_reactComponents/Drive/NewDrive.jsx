@@ -53,16 +53,14 @@ import { BreadcrumbContext } from '../Breadcrumb';
 import { drivecardSelectedNodesAtom } from '../../Tools/library/Library';
 import '../../_utils/util.css';
 import { 
-  useDeleteItem,
-  useMoveItems,
   useDragShadowCallbacks,
   useSortFolder,
-  useCopyItems
 } from './DriveActions';
 import { IsNavContext } from '../../Tools/_framework/Panels/NavPanel'
 import { useToast } from '../../Tools/_framework/Toast';
 import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import {loadAssignmentSelector} from '../../Tools/course/Course';
+import useSockets from '../Sockets';
 
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
@@ -856,21 +854,12 @@ function Folder(props){
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom); 
   const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId})); 
-  const { deleteItem, onDeleteItemError } = useDeleteItem();
+  const { deleteItem } = useSockets('drive');
   const deleteItemCallback = (itemId) => {
-    const result = deleteItem({
+    deleteItem({
       driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
       driveInstanceId: props.driveInstanceId,
       itemId
-    })
-    result.then((resp)=>{
-      if (resp.data.success){
-        addToast(`Deleted item '${props.item?.label}'`, ToastType.SUCCESS);
-      }else{
-        onDeleteItemError({errorMessage: resp.data.message});
-      }
-    }).catch((e)=>{
-      onDeleteItemError({errorMessage: e.message});
     })
   };
   
@@ -1766,8 +1755,7 @@ function useDnDCallbacks() {
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom); 
   const [addToast, ToastType] = useToast();
   const {replaceDragShadow, removeDragShadow, cleanUpDragShadow} = useDragShadowCallbacks();
-  const {moveItems, onMoveItemsError} = useMoveItems();
-  const {copyItems, onCopyItemsError} = useCopyItems();
+  const {moveItems, copyItems } = useSockets('drive');
   const numItems = useRecoilValue(globalSelectedNodesAtom).length;
   const optionKeyPressed = useKeyPressedListener("Alt");  // Listen for option key events
   const optionKeyPressedRef = useRef(optionKeyPressed);
@@ -1839,28 +1827,9 @@ function useDnDCallbacks() {
       const copyMode = dragState.copyMode || draggingAcrossDrives;
 
       if (copyMode) {
-      const result = copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
-        
-        result.then(([resp])=>{
-          if (resp.value?.data?.success){
-            addToast(`Copied ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
-          }else{
-            onCopyItemsError({errorMessage: resp?.reason});
-          }
-        }).catch( e => {
-          onCopyItemsError({errorMessage: e.message});
-        })
+        copyItems({items: globalSelectedNodes, targetDriveId, targetFolderId, index});
       } else {
-        const result = moveItems(replaceDragShadowResp);
-        result.then((resp)=>{
-          if (resp.data.success){
-            addToast(`Moved ${replaceDragShadowResp?.numItems} item(s)`, ToastType.SUCCESS);
-          }else{
-            onMoveItemsError({errorMessage: resp.data.message});
-          }
-        }).catch( e => {
-          onMoveItemsError({errorMessage: e.message});
-        })  
+        moveItems(replaceDragShadowResp);
       }
     });
 
@@ -1972,7 +1941,7 @@ function useUpdateBreadcrumb(props) {
   }
   const [nodesOnPath, _] = useRecoilState(nodePathSelector({driveId: routePathDriveId, folderId: routePathFolderId}));
   const driveLabel = props.driveLabel ?? "/";
-  const { moveItems } = useMoveItems();
+  const { moveItems } = useSockets('drive');
 
   useEffect(() => {
     updateBreadcrumb({routePathDriveId, routePathFolderId});

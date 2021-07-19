@@ -1,7 +1,6 @@
 import React,{useState} from 'react';
 import { useRecoilValue,useSetRecoilState,useRecoilStateLoadable } from 'recoil';
-import {fetchDriveUsers} from '../../../_reactComponents/Drive/NewDrive';
-import {fetchDrivesSelector} from '../ToolHandlers/CourseToolHandler';
+import {fetchDrivesSelector,fetchDriveUsers} from '../../../_reactComponents/Drive/NewDrive';
 import { 
   faChalkboard,
   faCode,
@@ -19,8 +18,8 @@ export default function SelectedCourse(props){
 
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
-
-  if(selection.length === 1 && selection[0].role[0] === "Owner" ){
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
+  if(selection.length === 1 && selection[0]?.role[0] === "Owner" ){
 
     return <>
 
@@ -32,7 +31,7 @@ export default function SelectedCourse(props){
           driveId={selection[0].driveId} 
           />
       </>
-  }else if(selection[0].role[0] === "Student"){
+  }else if(selection[0]?.role[0] === "Student"){
     let dIcon = <FontAwesomeIcon icon={faChalkboard}/>
 
     return (
@@ -65,6 +64,7 @@ export default function SelectedCourse(props){
         newDriveId:selectionArr,
         type:"delete drive"
       })
+      setDrivecardSelection([]);
     // }
     
   }}/>
@@ -83,6 +83,7 @@ const DriveInfoPanel = function(props){
   const driveId = props.driveId;
   const [driveUsers,setDriveUsers] = useRecoilStateLoadable(fetchDriveUsers(driveId));
   const [selectedUserId,setSelectedUserId] = useState("");
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
 
   if (driveUsers.state === "loading"){ return null;}
     if (driveUsers.state === "hasError"){ 
@@ -253,9 +254,10 @@ const DriveInfoPanel = function(props){
       color:props.color,
       label:driveLabel,
       image:props.image,
-      newDriveId:props.driveId,
+      newDriveId:[props.driveId],
       type:"delete drive"
     })
+    setDrivecardSelection([]);
   }} />
     </>
   }
