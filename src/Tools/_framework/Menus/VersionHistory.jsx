@@ -9,9 +9,16 @@ import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
 import { editorDoenetIdInitAtom } from '../ToolPanels/EditorViewer';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { textEditorDoenetMLAtom } from '../ToolPanels/EditorViewer';
-import { buildTimestamp, getSHAofContent, ClipboardLinkButtons, RenameVersionControl } from '../ToolHandlers/CourseToolHandler';
+import { 
+  buildTimestamp, 
+  getSHAofContent, 
+  ClipboardLinkButtons, 
+  RenameVersionControl,
+  fileByContentId } from '../ToolHandlers/CourseToolHandler';
 import { nanoid } from 'nanoid';
 import axios from "axios";
+import { useToast } from '@Toast';
+
 
 export default function VersionHistory(props){
 
@@ -19,6 +26,8 @@ export default function VersionHistory(props){
   const path = useRecoilValue(searchParamAtomFamily('path'));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
   const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const [toast, toastType] = useToast();
+
  
 //   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
 //   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
@@ -133,12 +142,6 @@ export default function VersionHistory(props){
     const contentId = getSHAofContent(doenetML);
     const versionId = nanoid();
 
-    // console.log(">>>saveVersion",doenetId)
-    // console.log(">>>doenetML",doenetML)
-    // console.log(">>>timestamp",timestamp)
-    // console.log(">>>contentId",contentId)
-    // console.log(">>>versionId",versionId)
-
     let newVersion = {
       title:"Named",
       versionId,
@@ -156,24 +159,37 @@ export default function VersionHistory(props){
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
     newVersions.named = [newVersion,...oldVersions.named];
-    // console.log(">>>newVersion",newVersion)
-    console.log(">>>newVersions",newVersions)
 
     set(itemHistoryAtom(doenetId),newVersions)
     set(fileByContentId(contentId),doenetML);
     
+    //TODO: Errors don't seem to fire when offline
     axios.post("/api/saveNewVersion.php",newDBVersion)
-       .then((resp)=>{console.log(">>>resp saveVersion",resp.data)})
+       .then((resp)=>{
+         console.log(">>>resp saveVersion",resp.data)
+          if (resp?.data?.success){
+            toast('New Version Saved!', toastType.SUCCESS)
+          }else{
+            toast('Version NOT Saved!', toastType.ERROR);
+          }
+        })
+        .catch((err)=>{
+          console.log(">>>err",err)
+          toast('Version NOT Saved!', toastType.ERROR);
+
+        })
     
     
   })
   
   const [selectedVersionId,setSelectedVersionId] = useState(null)
+
 //make sure we are ready
 if (initializedDoenetId !== doenetId){
   return <div style={props.style}></div>
 }
-// console.log(">>>!!!!!!!!!!!!!!!!!!!!!!")
+
+
 // console.log(">>>versionHistory",versionHistory)
 // console.log(">>>initializedDoenetId",initializedDoenetId)
 // console.log(">>>path",path)
@@ -182,10 +198,15 @@ if (initializedDoenetId !== doenetId){
     let options = [];
     let versionsObj = {}
 
+  let inUseVersionId = selectedVersionId;
+  if (selectedVersionId === null && versionHistory.contents?.named?.length > 0){
+      inUseVersionId = versionHistory.contents.named[0].versionId;
+  }
+
   for (let version of versionHistory.contents.named){
     versionsObj[version.versionId] = version;
     let selected = false;
-    if (version.versionId === selectedVersionId){
+    if (version.versionId === inUseVersionId){
       selected = true;
     }
     let released = '';
@@ -196,12 +217,14 @@ if (initializedDoenetId !== doenetId){
   }
     let selector = <select 
     size='8' 
+    style={{width:'230px'}}
     onChange={(e)=>{setSelectedVersionId(e.target.value)}}>
     {options}
   </select>
 
-if (selectedVersionId){
-  const version = versionsObj[selectedVersionId];
+let selectorControls = null;
+if (inUseVersionId){
+  const version = versionsObj[inUseVersionId];
   let releaseButtonText = "Release";
   if (version.isReleased === '1'){
     releaseButtonText = "Retract"
@@ -217,13 +240,17 @@ if (selectedVersionId){
        <div><button onClick={()=>setAsCurrent(doenetId,version)} >Set As Current</button></div> 
         {releaseButton}
   </>
-}
-     
-  return <div style={props.style}>
-    <Button value="Save Version" onClick={()=>saveVersion(doenetId)} />
+  selectorControls = <>
   <div>Versions</div>
   {selector}
   {controls}
+  </>
+}
+
+     
+  return <div style={props.style}>
+    <Button value="Save Version" onClick={()=>saveVersion(doenetId)} />
+  {selectorControls}
   </div>
   
   // return <div style={props.style}>
