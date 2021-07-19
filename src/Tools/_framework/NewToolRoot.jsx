@@ -306,10 +306,8 @@ let navigationObj = {
       supportPanelIndex:0,
       headerControls: ["ViewerUpdateButton","BackButton"],
       headerControlsPositions: ["Left","Right"],
-    }
-  },
-  enrollment:{
-    default:{
+    },
+    enrollment:{
       pageName:"Enrollment",
       currentMenus:[],
       menusTitles:[],
