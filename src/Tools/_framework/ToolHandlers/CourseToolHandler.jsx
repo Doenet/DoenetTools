@@ -1,18 +1,9 @@
-import  { useRef } from 'react';
 import { 
   atom, 
-  useRecoilValue,
   selector, 
-  useRecoilCallback, 
-  // useRecoilState, 
-  useSetRecoilState,
   atomFamily,
   selectorFamily
  } from 'recoil'
-import { searchParamAtomFamily, toolViewAtom, paramObjAtom } from '../NewToolRoot';
-import { mainPanelClickAtom } from '../Panels/NewMainPanel';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { folderDictionary, globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import axios from "axios";
 import { nanoid } from 'nanoid';
 
@@ -215,101 +206,103 @@ export const fetchDrivesSelector = selector({
   }
 })
 
-export default function CourseToolHandler(props){
-  console.log(">>>===CourseToolHandler")
+// export default function CourseToolHandler(props){
+//   console.log(">>>===CourseToolHandler")
   
-  let lastAtomTool = useRef("");
+  // let lastAtomTool = useRef("");
 
-  const setTool = useRecoilCallback(({set})=> (tool,lastAtomTool)=>{
-    //Set starting tool
-    // if (tool === ""){
-    //   tool = 'courseChooser';
-    //   window.history.replaceState('','','/new#/course?tool=courseChooser')
-    // }
-    // if (tool === lastAtomTool){ return; }
-    switch(tool) {
-      case 'courseChooser':
-        set(toolViewAtom,{
-          pageName:"Course",
-          currentMainPanel:"DriveCards",
-          currentMenus:["CreateCourse"],
-          menusTitles:["Create Course"],
-          // currentMenus:["CreateCourse","CourseEnroll"],
-          // menusTitles:["Create Course","Enroll"],
-          menusInitOpen:[true,false],
-          toolHandler:"CourseToolHandler"
-        })
-        set(selectedMenuPanelAtom,""); //clear selection
-        set(mainPanelClickAtom,[{atom:drivecardSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
-        break;
-      case 'navigation':
-        // if (role === "Student"){
-          //TODO
-        // }else if (role === "Owner" || role === "Admin"){
-          set(toolViewAtom,{
-            pageName:"Course",
-            toolHandler:"CourseToolHandler",
-            currentMainPanel: "DrivePanel",
-            headerControls: ["BreadCrumb"],
-            headerControlsPositions: ["Left"],
-            currentMenus: ["AddDriveItems","EnrollStudents"],
-            menusTitles: ["Add Items","Enrollment"],
-            menusInitOpen: [true,false],
-          });
-        // }
-        set(selectedMenuPanelAtom,""); //clear selection
-        set(mainPanelClickAtom,[{atom:globalSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
-        break;
-      case 'editor':
-        set(toolViewAtom,{
-          pageName:"Course",
-          currentMainPanel:"EditorViewer",
-          currentMenus:["DoenetMLSettings","VersionHistory","Variant"], 
-          menusTitles:["Settings","Version History","Variant"],
-          menusInitOpen:[false,false,false],
-          supportPanelOptions:["DoenetMLEditor"],
-          supportPanelTitles:["DoenetML Editor"],
-          supportPanelIndex:0,
-          headerControls: ["ViewerUpdateButton"],
-          headerControlsPositions: ["Left"],
-          toolHandler:"CourseToolHandler"
-        })
-        set(selectedMenuPanelAtom,""); //clear selection
-        set(mainPanelClickAtom,[])  //clear main panel click
-        break;
-      case 'enrollment':
-        set(toolViewAtom,{
-          pageName:"Course",
-          currentMainPanel:"Enrollment",
-          currentMenus:[], 
-          menusTitles:[],
-          menusInitOpen:[],
-          supportPanelOptions:[],
-          supportPanelTitles:[],
-          supportPanelIndex:0,
-          headerControls: ["CloseProfileButton"],
-          headerControlsPositions: ["Right"],
-          toolHandler:"CourseToolHandler"
-        })
-        set(selectedMenuPanelAtom,""); //clear selection
-        set(mainPanelClickAtom,[])  //clear main panel click
-        break;
-      default:
-        console.error(">>>Course Tool Handler: didn't match!")
-    }
-  })
-  const atomTool = useRecoilValue(searchParamAtomFamily('tool')) 
-  const setParamObj = useSetRecoilState(paramObjAtom);
-  // console.log(`>>>atomTool >${atomTool}< lastAtomTool.current >${lastAtomTool.current}<`)
+  // const setTool = useRecoilCallback(({set})=> (tool,lastAtomTool)=>{
+  //   //Set starting tool
+  //   // if (tool === ""){
+  //   //   tool = 'courseChooser';
+  //   //   window.history.replaceState('','','/new#/course?tool=courseChooser')
+  //   // }
+  //   // if (tool === lastAtomTool){ return; }
+
+  //     if (tool === 'courseChooser'){
+
+  //       set(toolViewAtom,{
+  //         pageName:"Course",
+  //         currentMainPanel:"DriveCards",
+  //         currentMenus:["CreateCourse"],
+  //         menusTitles:["Create Course"],
+  //         // currentMenus:["CreateCourse","CourseEnroll"],
+  //         // menusTitles:["Create Course","Enroll"],
+  //         menusInitOpen:[true,false],
+  //         toolHandler:"CourseToolHandler"
+  //       })
+  //       set(selectedMenuPanelAtom,""); //clear selection
+  //       set(mainPanelClickAtom,[{atom:drivecardSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
+     
+  //     }else if (tool === 'navigation'){
+  //       // if (role === "Student"){
+  //         //TODO
+  //       // }else if (role === "Owner" || role === "Admin"){
+
+  //           set(toolViewAtom,{
+  //             pageName:"Course",
+  //             currentMainPanel:"DrivePanel",
+  //             currentMenus:["AddDriveItems","EnrollStudents"],
+  //             menusTitles:["Add Items","Enrollment"],
+  //             menusInitOpen:[true,false],
+  //             toolHandler:"CourseToolHandler"
+  //           })
+
+  //       // }
+  //       set(selectedMenuPanelAtom,""); //clear selection
+  //       set(mainPanelClickAtom,[{atom:globalSelectedNodesAtom,value:[]},{atom:selectedMenuPanelAtom,value:""}])
+  //     }else if (tool === 'editor'){
+
+  //       set(toolViewAtom,{
+  //         pageName:"Course",
+  //         currentMainPanel:"EditorViewer",
+  //         currentMenus:["DoenetMLSettings","VersionHistory","Variant"], 
+  //         menusTitles:["Settings","Version History","Variant"],
+  //         menusInitOpen:[false,false,false],
+  //         supportPanelOptions:["DoenetMLEditor"],
+  //         supportPanelTitles:["DoenetML Editor"],
+  //         supportPanelIndex:0,
+  //         headerControls: ["ViewerUpdateButton"],
+  //         headerControlsPositions: ["Left"],
+  //         toolHandler:"CourseToolHandler"
+  //       })
+  //       set(selectedMenuPanelAtom,""); //clear selection
+  //       set(mainPanelClickAtom,[])  //clear main panel click
+
+  //     }else if (tool === 'enrollment'){
+
+  //       set(toolViewAtom,{
+  //         pageName:"Course",
+  //         currentMainPanel:"Enrollment",
+  //         currentMenus:[], 
+  //         menusTitles:[],
+  //         menusInitOpen:[],
+  //         supportPanelOptions:[],
+  //         supportPanelTitles:[],
+  //         supportPanelIndex:0,
+  //         headerControls: ["BackButton"],
+  //         headerControlsPositions: ["Right"],
+  //         toolHandler:"CourseToolHandler"
+  //       })
+  //       set(selectedMenuPanelAtom,""); //clear selection
+  //       set(mainPanelClickAtom,[])  //clear main panel click
+
+  //     }else{
+  //       console.log(`>>>Course Tool Handler: tool '${tool}' didn't match!`)
+  //     }
+  // })
+  // const atomTool = useRecoilValue(searchParamAtomFamily('tool')) 
+  // const setParamObj = useSetRecoilState(paramObjAtom);
+  // // console.log(`>>>atomTool >${atomTool}< lastAtomTool.current >${lastAtomTool.current}<`)
 
 
-  //Update panels when tool changes
-  if (atomTool !== lastAtomTool.current){
-    setTool(atomTool,lastAtomTool.current)
-    lastAtomTool.current = atomTool;
-  }else if (atomTool === '' && lastAtomTool.current === ''){
-    setParamObj({tool:'courseChooser'})
-  }
-  return null;
+  // //Update panels when tool changes
+  // if (atomTool !== lastAtomTool.current){
+  //   setTool(atomTool,lastAtomTool.current)
+  //   lastAtomTool.current = atomTool;
+  // }else if (atomTool === '' && lastAtomTool.current === ''){
+  //   setParamObj({tool:'courseChooser'})
+  // }
+//   return null;
 
-}
+// }

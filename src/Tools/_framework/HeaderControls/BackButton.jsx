@@ -7,5 +7,5 @@ import { pageToolViewAtom } from '../NewToolRoot';
 export default function BackButton(){
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   
-  return <button onClick={()=>setPageToolView({back:true})}>Close</button>
+  return <button onClick={()=>setPageToolView({back:true})}>Back</button>
 }
