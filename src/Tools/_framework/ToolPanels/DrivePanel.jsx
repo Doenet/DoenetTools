@@ -1,7 +1,7 @@
 import React from 'react';
 // import { useLocation } from 'react-router';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
-import { toolViewAtom, searchParamAtomFamily, paramObjAtom } from '../NewToolRoot';
+import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import { globalSelectedNodesAtom } from '../../../_reactComponents/Drive/NewDrive';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
@@ -11,7 +11,8 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 export default function DrivePanel(props){
   console.log(">>>===DrivePanel")
   const path = useRecoilValue(searchParamAtomFamily('path'))
-  const setParamObj = useSetRecoilState(paramObjAtom);
+const setPageToolView = useSetRecoilState(pageToolViewAtom);
+
 
   // let location = useLocation();
 
@@ -42,17 +43,17 @@ export default function DrivePanel(props){
   return <div style={props.style}><h1>drive</h1>
   <p>put drive here</p>
   <div>path: {path}</div>
-  <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f1'; return newObj; })}}>path to f1</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f2'; return newObj; })}}>path to f2</button></div>
-  <div><button onClick={(e)=>{e.stopPropagation();setParamObj((was)=>{ let newObj = {...was}; newObj['path']='f3'; return newObj; })}}>path to f3</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f1'}}))}}>path to f1</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f2'}}))}}>path to f2</button></div>
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>({...was,params:{path:'f3'}}))}}>path to f3</button></div>
   <hr />
   {/* set(selectedMenuPanelAtom,"SelectedDoenetId"); //replace selection */}
 
   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1'])}}>select f1</button></div>
   <div><button onClick={(e)=>{e.stopPropagation();setSelections(['f1','f2'])}}>select f1 and f2</button></div>
   <hr />
+  <div><button onClick={(e)=>{e.stopPropagation();setPageToolView((was)=>{ let newObj = {...was};newObj['tool'] = 'editor'; newObj['params']={doenetId:'JRP26MJwT93KkydNtBQpO'}; return newObj; })}}>Edit c1</button></div>
 
-  <div><button onClick={(e)=>{e.stopPropagation();setParamObj({tool:'editor',doenetId:'JRP26MJwT93KkydNtBQpO'})}}>Edit c1</button></div>
 
   </div>
 }

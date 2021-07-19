@@ -1413,7 +1413,7 @@ describe('Function Tag Tests', function () {
       let x = p.stateValues.xs[0].evaluate_to_constant();
       let y = p.stateValues.xs[1].evaluate_to_constant();
 
-      expect(x).greaterThan(0.1);
+      expect(x).eq(0.1);
       expect(Math.log(2 * x)).closeTo(y, 1E-5);
 
       p.movePoint({ x: 4, y: 6 });
