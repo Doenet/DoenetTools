@@ -23,66 +23,68 @@ import { useToast } from '@Toast';
 export default function VersionHistory(props){
 
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const path = useRecoilValue(searchParamAtomFamily('path'));
+  const path = decodeURIComponent(useRecoilValue(searchParamAtomFamily('path')));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
   const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [toast, toastType] = useToast();
+  const [driveId,folderId, itemId] = path.split(':');
 
- 
 //   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
 //   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
 
-  const toggleReleaseNamed = useRecoilCallback(({set})=> async (doenetId,versionId,driveId,folderId)=>{
-//     let doenetIsReleased = false;
-    
-//     set(itemHistoryAtom(doenetId),(was)=>{
-//       let newHistory = {...was}
-//       newHistory.named = [...was.named];
-//       let newVersion;
-//       for (const [i,version] of newHistory.named.entries()){
-//         if (versionId === version.versionId){
-//           newVersion = {...version}
+  const toggleReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
+    console.log(">>>itemId",itemId)
+    let doenetIsReleased = false;
+    let history = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    console.log(">>>history",history)
+    let newHistory = {...history}
+    newHistory.named = [...history.named];
+    let newVersion;
+    for (const [i,version] of newHistory.named.entries()){
+      if (versionId === version.versionId){
+        newVersion = {...version}
 
-//           if (version.isReleased === '0'){
-//             //release
-//             newVersion.isReleased = '1';
-//             newHistory.named.splice(i,1,newVersion)
-//           break;
-//           }else{
-//             //retract
-//             newVersion.isReleased = '0';
-//             newHistory.named.splice(i,1,newVersion)
-//           break;
-//           }
-//         }
-//       }
-//       for (let named of newHistory.named){
-//         if (named.isReleased === '1'){
-//           doenetIsReleased = true;
-//           break;
-//         }
-//       }
-//       let newDBVersion = {...newVersion,
-//         isNewToggleRelease:'1',
-//         doenetId
-//       }
-//       // console.log(">>>newDBVersion",newDBVersion);
-//          axios.post("/api/saveNewVersion.php",newDBVersion)
-//           // .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
-//       return newHistory;
-//     })
-//     set(folderDictionary({driveId,folderId}),(was)=>{
-//       let newFolderInfo = {...was};
-//       newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
-//       newFolderInfo.contentsDictionary[props.itemId] = {...was.contentsDictionary[props.itemId]};
-//       let newIsReleased = '0';
-//       if (doenetIsReleased){
-//         newIsReleased = '1';
-//       }
-//       newFolderInfo.contentsDictionary[props.itemId].isReleased = newIsReleased;
-//       return newFolderInfo;
-//     })
+        if (version.isReleased === '0'){
+          //release
+          newVersion.isReleased = '1';
+          doenetIsReleased = true;
+
+          newHistory.named.splice(i,1,newVersion)
+        break;
+        }else{
+          //retract
+          newVersion.isReleased = '0';
+
+          newHistory.named.splice(i,1,newVersion)
+        break;
+        }
+      }
+    }
+    set(itemHistoryAtom(doenetId),newHistory);
+    
+    const doenetML = await snapshot.getPromise(fileByContentId(newVersion.contentId));
+
+    let newDBVersion = {...newVersion,
+      isNewToggleRelease:'1',
+      doenetId,
+      doenetML
+    }
+    // console.log(">>>newDBVersion",newDBVersion);
+    axios.post("/api/saveNewVersion.php",newDBVersion)
+    // .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
+
+    set(folderDictionary({driveId,folderId}),(was)=>{
+      let newFolderInfo = {...was};
+      newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+      newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+      let newIsReleased = '0';
+      if (doenetIsReleased){
+        newIsReleased = '1';
+      }
+      newFolderInfo.contentsDictionary[itemId].isReleased = newIsReleased;
+      return newFolderInfo;
+    })
 })
 
   const versionHistoryActive = useRecoilCallback(({snapshot,set})=> async (version)=>{
@@ -230,7 +232,7 @@ if (inUseVersionId){
     releaseButtonText = "Retract"
   }
 
-    const releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(doenetId,version.versionId,props.driveId,props.folderId)} >{releaseButtonText}</button></div>
+    const releaseButton = <div><button onClick={(e)=>toggleReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} >{releaseButtonText}</button></div>
 
   controls = <>
   <div>Name: {version.title}</div>
