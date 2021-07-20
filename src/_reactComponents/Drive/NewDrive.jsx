@@ -128,22 +128,26 @@ export const fetchDriveUsers = selectorFamily({
           let newDriveUsers = {...was}
         if (instructions.userRole === "owner"){
           let newOwners = [...was.owners];
+          for(let x=0; x<instructions.userId.length;x++){
           for (let [i,owner] of newOwners.entries()){
-            if (owner.userId === instructions.userId){
+            if (owner.userId === instructions.userId[x].userId){
               newOwners.splice(i,1);
               break;
             }
           }
+        }
           newDriveUsers['owners'] = newOwners;
         }
         if (instructions.userRole === "admin"){
           let newAdmins = [...was.admins];
+          for(let x=0; x<instructions.userId.length;x++){
           for (let [i,admin] of newAdmins.entries()){
-            if (admin.userId === instructions.userId){
+            if (admin.userId === instructions.userId[x].userId){
               newAdmins.splice(i,1);
               break;
             }
           }
+        }
             newDriveUsers['admins'] = newAdmins;
         }
           return newDriveUsers;
@@ -156,19 +160,22 @@ export const fetchDriveUsers = selectorFamily({
       case "To Owner":
         set(fetchDriveUsersQuery(driveId),(was)=>{
           let newDriveUsers = {...was}
-          let userEntry = {};
+          let userEntry = [];
           let newAdmins = [...was.admins];
-          for (let [i,admin] of newAdmins.entries()){
-            if (admin.userId === instructions.userId){
-              userEntry = admin;
-              newAdmins.splice(i,1);
-              break;
+          for(let x=0; x<instructions.userId.length;x++){
+            for (let [i,admin] of newAdmins.entries()){
+              if (admin.userId === instructions.userId[x].userId){
+                userEntry.push(admin);
+                newAdmins.splice(i,1);
+                break;
+              }
             }
           }
+         
             newDriveUsers['admins'] = newAdmins;
-
-          let newOwners = [...was.owners];
-          newOwners.push(userEntry);
+        
+          let newOwners = [...was.owners,...userEntry];
+          // newOwners.push(userEntry);
           newDriveUsers['owners'] = newOwners;
 
           return newDriveUsers;
@@ -181,23 +188,26 @@ export const fetchDriveUsers = selectorFamily({
       case "To Admin":
         set(fetchDriveUsersQuery(driveId),(was)=>{
           let newDriveUsers = {...was}
-          let userEntry = {};
+          let userEntry = [];
 
           let newOwners = [...was.owners];
-          for (let [i,owner] of newOwners.entries()){
-            if (owner.userId === instructions.userId){
-              if (owner.isUser){
-                newDriveUsers.usersRole = "admin";
+          for(let x=0; x<instructions.userId.length;x++){
+            for (let [i,owner] of newOwners.entries()){
+              if (owner.userId === instructions.userId[x].userId){
+                if (owner.isUser){
+                  newDriveUsers.usersRole = "admin";
+                }
+                userEntry.push(owner);
+                newOwners.splice(i,1);
+                break;
               }
-              userEntry = owner;
-              newOwners.splice(i,1);
-              break;
             }
           }
+        
           newDriveUsers['owners'] = newOwners;
-
-          let newAdmins = [...was.admins];
-          newAdmins.push(userEntry);
+    
+          let newAdmins = [...was.admins,...userEntry];
+          // newAdmins.push(userEntry);
           newDriveUsers['admins'] = newAdmins;
 
           return newDriveUsers;
