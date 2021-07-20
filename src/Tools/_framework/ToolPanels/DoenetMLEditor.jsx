@@ -117,8 +117,10 @@ export default function DoenetMLEditor(props){
     return <div style={props.style}></div>
   }
   
+  // console.log(`>>>Show CodeMirror with value -${editorDoenetML}-`)
   return <div style={props.style}>
     <CodeMirror
+    key = "codemirror"
       editorRef = {editorRef}
       value={editorDoenetML} 
       onBeforeChange={(value) => {

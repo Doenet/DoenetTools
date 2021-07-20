@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { 
+  atom,
   useRecoilValue,
+  useRecoilState,
   useRecoilValueLoadable,
   useRecoilCallback,
  } from 'recoil';
@@ -19,14 +21,26 @@ import { nanoid } from 'nanoid';
 import axios from "axios";
 import { useToast, toastType } from '@Toast';
 
+const currentDraftSelectedAtom = atom({
+  key:"currentDraftSelectedAtom",
+  default:true
+})
+
+const selectedVersionIdAtom = atom({
+  key:"selectedVersionIdAtom",
+  default:null
+})
+
 export default function VersionHistory(props){
 
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const path = decodeURIComponent(useRecoilValue(searchParamAtomFamily('path')));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
   const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const selectedVersionId = useRecoilValue(selectedVersionIdAtom);
   const addToast = useToast();
   const [driveId, folderId, itemId] = path.split(':');
+  const [currentDraftSelected,setCurrentDraftSelected] = useRecoilState(currentDraftSelectedAtom)
 
 //   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
 //   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
@@ -137,9 +151,13 @@ export default function VersionHistory(props){
     const timestamp = buildTimestamp();
     const contentId = getSHAofContent(doenetML);
     const versionId = nanoid();
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    let newVersions = {...oldVersions};
+
+    const title = `Save ${oldVersions.named.length+1}`
 
     let newVersion = {
-      title:"Named",
+      title,
       versionId,
       timestamp,
       isReleased:'0',
@@ -152,8 +170,7 @@ export default function VersionHistory(props){
       doenetId
     }
 
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let newVersions = {...oldVersions};
+    
     newVersions.named = [newVersion,...oldVersions.named];
 
     set(itemHistoryAtom(doenetId),newVersions)
@@ -177,9 +194,13 @@ export default function VersionHistory(props){
     
     
   })
-  
-  const [selectedVersionId,setSelectedVersionId] = useState(null)
 
+  const setSelectedVersionId = useRecoilCallback(({snapshot,set})=> async (versionId,isCurrentDraft)=>{
+    set(selectedVersionIdAtom,versionId);
+    set(currentDraftSelectedAtom,isCurrentDraft);
+    console.log(">>>set versionId to ",versionId)
+  })
+  
 //make sure we are ready
 if (initializedDoenetId !== doenetId){
   return <div style={props.style}></div>
@@ -190,16 +211,15 @@ if (initializedDoenetId !== doenetId){
 // console.log(">>>initializedDoenetId",initializedDoenetId)
 // console.log(">>>path",path)
 
-    let controls = null;
     let options = [];
     let versionsObj = {}
 
-  let inUseVersionId = selectedVersionId;
-  if (selectedVersionId === null && versionHistory.contents?.named?.length > 0){
-      inUseVersionId = versionHistory.contents.named[0].versionId;
-  }
+  // if (versionHistory.contents?.named?.length > 0){
+     let inUseVersionId = selectedVersionId; //Only select history save if current isn't selected
+  
 
   for (let version of versionHistory.contents.named){
+    // console.log(">>>version",version)
     versionsObj[version.versionId] = version;
     let selected = false;
     if (version.versionId === inUseVersionId){
@@ -211,42 +231,43 @@ if (initializedDoenetId !== doenetId){
     }
     options.push(<option value={version.versionId} selected={selected}>{released} {version.title}</option>,)
   }
-    let selector = <select 
-    size='8' 
-    style={{width:'230px'}}
-    onChange={(e)=>{setSelectedVersionId(e.target.value)}}>
-    {options}
-  </select>
 
-let selectorControls = null;
-if (inUseVersionId){
+
   const version = versionsObj[inUseVersionId];
   let releaseButtonText = "Release";
-  if (version.isReleased === '1'){
+  if (version?.isReleased === '1'){
     releaseButtonText = "Retract"
   }
 
-    const releaseButton = <div><button onClick={(e)=>toggleReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} >{releaseButtonText}</button></div>
-
-  controls = <>
-  <div>Name: {version.title}</div>
-  <ClipboardLinkButtons contentId={version.contentId} />
-        <div><RenameVersionControl key={version.versionId} doenetId={doenetId} title={version.title} versionId={version.versionId} /></div>
-       <div><button onClick={()=>versionHistoryActive(version)} >View</button></div> 
-       <div><button onClick={()=>setAsCurrent({doenetId,version})} >Set As Current</button></div> 
-        {releaseButton}
-  </>
-  selectorControls = <>
-  <div>Versions</div>
-  {selector}
-  {controls}
-  </>
-}
-
      
   return <div style={props.style}>
-    <Button value="Save Version" onClick={()=>saveVersion(doenetId)} />
-  {selectorControls}
+    <div style={{margin:"6px 0px 6px 0px"}}>
+    <Button width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
+    </div>
+    <select 
+    size='2' 
+    style={{width:'230px'}}
+    onChange={(e)=>{setSelectedVersionId(e.target.value,true)}}>
+    {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
+    <option value={'version.versionId'} selected={currentDraftSelected}>Current Draft</option>
+  </select>
+
+    <div style={{margin:"6px 0px 6px 0px"}}>
+    <Button value="Release Current (soon)" disabled onClick={()=>console.log(">>>release current")} />
+    </div>
+    <div>History</div>
+  <select 
+    size='8' 
+    style={{width:'230px'}}
+    onChange={(e)=>{setSelectedVersionId(e.target.value,false)}}>
+    {options}
+  </select>
+  <div>Name: {version?.title}</div>
+  <ClipboardLinkButtons contentId={version?.contentId} />
+        <div><RenameVersionControl key={version?.versionId} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
+       {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
+       <div><button onClick={()=>setAsCurrent({doenetId,version})} >Set As Current</button></div> 
+       <div><button onClick={(e)=>toggleReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} >{releaseButtonText}</button></div>
   </div>
   
   // return <div style={props.style}>
