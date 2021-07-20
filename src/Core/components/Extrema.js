@@ -46,8 +46,10 @@ export class Extremum extends BaseComponent {
           success: true,
           newAttributes: {
             value: {
-              componentType: "math",
-              children: matchedChildren
+              component: {
+                componentType: "math",
+                children: matchedChildren
+              }
             }
           }
         }
@@ -59,7 +61,9 @@ export class Extremum extends BaseComponent {
           return {
             success: true,
             newAttributes: {
-              value: result.newChildren[0]
+              value: {
+                component: result.newChildren[0]
+              }
             }
           }
         } else if (result.newChildren.length === 2) {
@@ -69,8 +73,12 @@ export class Extremum extends BaseComponent {
           let valueComponent = result.newChildren[1];
 
           let newAttributes = {
-            location: locationComponent,
-            value: valueComponent
+            location: {
+              component: locationComponent
+            },
+            value: {
+              component: valueComponent
+            }
           }
 
           // remove components that are empty

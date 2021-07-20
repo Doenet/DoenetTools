@@ -67,8 +67,10 @@ export default class Angle extends GraphicalComponent {
         success: true,
         newAttributes: {
           radians: {
-            componentType: "math",
-            children: matchedChildren
+            component: {
+              componentType: "math",
+              children: matchedChildren
+            }
           }
         },
       })

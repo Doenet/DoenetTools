@@ -165,7 +165,7 @@ export default class Slider extends BaseComponent {
       forRenderer: true,
       returnDependencies: () => ({
         type: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "type",
         },
       }),

@@ -5,6 +5,7 @@ import {
   selectorFamily
  } from 'recoil'
 import axios from "axios";
+import { nanoid } from 'nanoid';
 
 export const itemHistoryAtom = atomFamily({
   key:"itemHistoryAtom",

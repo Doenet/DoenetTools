@@ -64,7 +64,7 @@ export default class Template extends CompositeComponent {
     stateVariableDefinitions.newNamespace = {
       returnDependencies: () => ({
         newNamespace: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "newNamespace"
         }
       }),
@@ -97,6 +97,8 @@ export default class Template extends CompositeComponent {
 
       let replacements = deepClone(component.state.serializedChildren.value);
 
+      let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
       for (let repl of replacements) {
         // pass isResponse to replacements
         let attributesFromComposite = {};
@@ -106,7 +108,7 @@ export default class Template extends CompositeComponent {
             attributes: { isResponse: component.attributes.isResponse },
             componentType: repl.componentType,
             componentInfoObjects,
-            compositeCreatesNewNamespace: component.attributes.newNamespace
+            compositeCreatesNewNamespace: newNamespace
           })
         }
 
@@ -118,13 +120,30 @@ export default class Template extends CompositeComponent {
 
       }
 
+
+      // TODO: usual procedure is that original names are consistent
+      // if have new namespace
+      // In addition, we make them consistent if don't assignNames
+      // so that a template (actually group, usually)
+      // gets expanded with the original names.
+      
+      // However, at some point, got duplicate names if copying without link,
+      // but can't reproduce that error now
+      // Adding condition for not being replacement fixed the duplicate name
+      // error but broke above requirements
+      // Find a solution when can reproduce that duplicate name error
+
+
       let processResult = processAssignNames({
         assignNames: component.doenetAttributes.assignNames,
         serializedComponents: replacements,
         parentName: component.componentName,
-        parentCreatesNewNamespace: component.attributes.newNamespace,
+        parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
-        originalNamesAreConsistent: component.attributes.newNamespace || !component.doenetAttributes.assignNames,
+        originalNamesAreConsistent: newNamespace 
+        || (!component.doenetAttributes.assignNames
+          //  && !component.replacementOf
+           ),
       });
 
       return { replacements: processResult.serializedComponents };

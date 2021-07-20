@@ -693,7 +693,7 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polygonVs = components["/_polygon1"].attributes.vertices.activeChildren;
+      let polygonVs = components["/_polygon1"].attributes.vertices.component.activeChildren;
       let v1 = components["/v1"].replacements[0];
       let v2 = components["/v2"].replacements[0];
       let v3 = components["/v3"].replacements[0];
@@ -773,8 +773,8 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polygon1Vs = components["/_polygon1"].attributes.vertices.activeChildren;
-      let polygon2Vs = components["/_polygon2"].attributes.vertices.activeChildren;
+      let polygon1Vs = components["/_polygon1"].attributes.vertices.component.activeChildren;
+      let polygon2Vs = components["/_polygon2"].attributes.vertices.component.activeChildren;
       let pointnames = [
         [polygon1Vs[0].componentName, polygon2Vs[0].componentName],
         [polygon1Vs[1].componentName, polygon2Vs[1].componentName],
@@ -909,7 +909,7 @@ describe('Polygon Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polygon1Vs = components["/_polygon1"].attributes.vertices.activeChildren;
+      let polygon1Vs = components["/_polygon1"].attributes.vertices.component.activeChildren;
       let vs = components["/vs"].replacements;
       let pointnames = [
         [polygon1Vs[0].componentName, vs[0].componentName],
@@ -918,7 +918,7 @@ describe('Polygon Tag Tests', function () {
         [polygon1Vs[3].componentName, vs[3].componentName]
       ];
 
-      let polygon2Vs = components["/_polygon2"].attributes.vertices.activeChildren;
+      let polygon2Vs = components["/_polygon2"].attributes.vertices.component.activeChildren;
       let pointnamestrans = [
         polygon2Vs[0].componentName,
         polygon2Vs[1].componentName,

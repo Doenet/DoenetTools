@@ -138,11 +138,11 @@ export default class CallAction extends InlineComponent {
     stateVariableDefinitions.triggerWithTname = {
       returnDependencies: () => ({
         triggerWithTname: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "triggerWithTname"
         },
         triggerWhen: {
-          dependencyType: "attribute",
+          dependencyType: "attributeComponent",
           attributeName: "triggerWhen"
         },
         insideTriggerSet: {
@@ -227,10 +227,10 @@ export default class CallAction extends InlineComponent {
         args.serializedComponents = deepClone(this.serializedChildren);
       }
       if (this.attributes.number) {
-        args.number = this.attributes.number.stateValues.value;
+        args.number = this.attributes.number.component.stateValues.value;
       }
       if (this.attributes.numbers) {
-        args.numbers = this.attributes.numbers.stateValues.numbers;
+        args.numbers = this.attributes.numbers.component.stateValues.numbers;
       }
 
       this.coreFunctions.requestAction({

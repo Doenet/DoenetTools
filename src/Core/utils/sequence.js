@@ -50,7 +50,7 @@ export function returnStandardSequenceStateVariableDefinitions() {
   stateVariableDefinitions.type = {
     returnDependencies: () => ({
       type: {
-        dependencyType: "attribute",
+        dependencyType: "attributePrimitive",
         attributeName: "type",
       },
     }),

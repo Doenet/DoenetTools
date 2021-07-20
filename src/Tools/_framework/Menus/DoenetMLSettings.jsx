@@ -1,6 +1,6 @@
 import React from 'react';
 import { editorDoenetIdInitAtom } from '../ToolPanels/EditorViewer'
-import { useToast } from '@Toast';
+import { useToast, toastType } from '@Toast';
 import { 
   useRecoilValue, 
 } from 'recoil';
@@ -18,7 +18,7 @@ import {
 export default function DoenetMLSettings(props){
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const link = `http://${window.location.host}/content/#/?doenetId=${initilizedDoenetId}`
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
 
   if (paramDoenetId !== initilizedDoenetId){
@@ -32,7 +32,7 @@ export default function DoenetMLSettings(props){
     <div>Most recent release </div>
     <div>
   
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   <button onClick={()=>{
     
   }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 

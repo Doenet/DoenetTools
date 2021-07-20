@@ -644,18 +644,18 @@ export default class BaseComponent {
 
     serializedComponent.attributes = {};
 
-    for (let attr in this.attributes) {
-      let attrVal = this.attributes[attr];
-      if (attrVal.componentType) {
+    for (let attrName in this.attributes) {
+      let attribute = this.attributes[attrName];
+      if (attribute.component) {
         // only copy attribute components if attributes object specifies
         // or if not linked
-        let attrInfo = attributesObject[attr];
+        let attrInfo = attributesObject[attrName];
         if (attrInfo.copyComponentOnReference || !parameters.forLink) {
-          serializedComponent.attributes[attr] = attrVal.serialize(parameters);
+          serializedComponent.attributes[attrName] = { component: attribute.component.serialize(parameters) };
         }
       } else {
-        // always copy primitives
-        serializedComponent.attributes[attr] = attrVal;
+        // always copy others
+        serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
       }
     }
 
@@ -672,11 +672,11 @@ export default class BaseComponent {
     } else {
       let additionalState = {};
       for (let item in this.state) {
-        if (this.state[item].essential) {// || stateVariablesToInclude.includes(item)) {
+        // evaluate state variable first so that 
+        // essential and usedDefault attribute are populated
+        let value = this.state[item].value;
 
-          // evaluate state variable first so that usedDefault attribute is populated
-          let value = this.state[item].value;
-
+        if (this.state[item].essential || this.state[item].alwaysShadow) {// || stateVariablesToInclude.includes(item)) {
           if (!this.state[item].usedDefault) {
             additionalState[item] = value;
           }

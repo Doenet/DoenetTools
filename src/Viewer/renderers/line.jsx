@@ -46,8 +46,6 @@ export default class Line extends DoenetRenderer {
       [...this.doenetSvData.numericalPoints[1]]
     ];
 
-    console.log(through);
-
     this.lineJXG = this.props.board.create('line', through, jsxLineAttributes);
 
     this.lineJXG.on('drag', function (e) {

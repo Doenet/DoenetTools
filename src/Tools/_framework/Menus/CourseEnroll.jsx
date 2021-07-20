@@ -1,10 +1,10 @@
 import React from 'react';
-import { useToast } from '@Toast';
+import { useToast, toastType } from '@Toast';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 
 export default function CourseEnroll(props){
-  const [toast, toastType] = useToast();
+  const toast = useToast();
 
   
   return <div style={props.style}>

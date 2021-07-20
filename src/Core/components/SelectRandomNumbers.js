@@ -180,6 +180,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let attributesToConvert = {};
     for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
       if (attr in component.attributes) {
@@ -198,7 +200,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
           attributes: attributesToConvert,
           componentType: "number",
           componentInfoObjects,
-          compositeCreatesNewNamespace: component.attributes.newNamespace
+          compositeCreatesNewNamespace: newNamespace
         })
       }
 
@@ -213,7 +215,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

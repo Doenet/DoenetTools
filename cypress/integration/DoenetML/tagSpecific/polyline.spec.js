@@ -694,7 +694,7 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polylineVs = components["/_polyline1"].attributes.vertices.activeChildren;
+      let polylineVs = components["/_polyline1"].attributes.vertices.component.activeChildren;
       let v1 = components["/v1"].replacements[0];
       let v2 = components["/v2"].replacements[0];
       let v3 = components["/v3"].replacements[0];
@@ -774,8 +774,8 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polyline1Vs = components["/_polyline1"].attributes.vertices.activeChildren;
-      let polyline2Vs = components["/_polyline2"].attributes.vertices.activeChildren;
+      let polyline1Vs = components["/_polyline1"].attributes.vertices.component.activeChildren;
+      let polyline2Vs = components["/_polyline2"].attributes.vertices.component.activeChildren;
       let pointnames = [
         [polyline1Vs[0].componentName, polyline2Vs[0].componentName],
         [polyline1Vs[1].componentName, polyline2Vs[1].componentName],
