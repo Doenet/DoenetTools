@@ -39,6 +39,7 @@ function buildTimestamp(){
 export default function DoenetMLEditor(props){
   console.log(">>>===DoenetMLEditor")
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
+  console.log(">>>editorDoenetML",editorDoenetML)
 
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);

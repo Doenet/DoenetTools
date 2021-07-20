@@ -8,7 +8,7 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
 import { editorDoenetIdInitAtom } from '../ToolPanels/EditorViewer';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { textEditorDoenetMLAtom } from '../ToolPanels/EditorViewer';
+import { textEditorDoenetMLAtom, viewerDoenetMLAtom } from '../ToolPanels/EditorViewer';
 import { 
   buildTimestamp, 
   getSHAofContent, 
@@ -27,17 +27,15 @@ export default function VersionHistory(props){
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
   const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [toast, toastType] = useToast();
-  const [driveId,folderId, itemId] = path.split(':');
+  const [driveId, folderId, itemId] = path.split(':');
 
 //   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
 //   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
 
   const toggleReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
-    console.log(">>>itemId",itemId)
     let doenetIsReleased = false;
     let history = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    console.log(">>>history",history)
     let newHistory = {...history}
     newHistory.named = [...history.named];
     let newVersion;
@@ -99,41 +97,38 @@ export default function VersionHistory(props){
 //       return newObj});
   })
 
-  const setAsCurrent = useRecoilCallback(({snapshot,set})=> async (doenetId,version)=>{
-//     // console.log(">>>sac",doenetId,version)
-//     //current to autosave
-//     const newDraftVersionId = nanoid();
-//     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-//     let newVersions = {...oldVersions};
-//     let autoSaveWasDraft = {...oldVersions.draft}
-//     autoSaveWasDraft.isDraft = "0";
-//     autoSaveWasDraft.title = "Autosave (was draft)";
-//     autoSaveWasDraft.timestamp = buildTimestamp();
-//     newVersions.autoSaves = [autoSaveWasDraft,...oldVersions.autoSaves]
-//     //copy (or move?) named version to current
-//     let newDraft = {...version};
-//     newDraft.isDraft = "1";
-//     newDraft.versionId = newDraftVersionId;
-//     newVersions.draft = newDraft;
-//     set(itemHistoryAtom(doenetId),newVersions)
-//     //set viewer's and text editor's doenetML
-//     let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
-//     set(editorDoenetMLAtom,doenetML);
-//     set(viewerDoenetMLAtom,(was)=>{
-//       let newObj = {...was}
-//       newObj.doenetML = doenetML;
-//       newObj.updateNumber = was.updateNumber+1;
-//       return newObj});
+  const setAsCurrent = useRecoilCallback(({snapshot,set})=> async ({doenetId,version})=>{
+    //current to autosave
+    // const newDraftVersionId = nanoid();
+    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    // let newVersions = {...oldVersions};
+    // let autoSaveWasDraft = {...oldVersions.draft}
+    // autoSaveWasDraft.isDraft = "0";
+    // autoSaveWasDraft.title = "Autosave (was draft)";
+    // autoSaveWasDraft.timestamp = buildTimestamp();
+    // newVersions.autoSaves = [autoSaveWasDraft,...oldVersions.autoSaves]
+    // //copy (or move?) named version to current
+    // let newDraft = {...version};
+    // newDraft.isDraft = "1";
+    // newDraft.versionId = newDraftVersionId;
+    // newVersions.draft = newDraft;
+    // // set(itemHistoryAtom(doenetId),newVersions)
+    // //set viewer's and text editor's doenetML
+    // let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
+    // console.log(">>>set current draft as doenetML:",doenetML)
+    // // set(textEditorDoenetMLAtom,doenetML);
+    set(textEditorDoenetMLAtom,"test");
+    // set(viewerDoenetMLAtom,donetML);
 
-//       let newDBVersion = {...newDraft,
-//         isSetAsCurrent:'1',
-//         newDraftVersionId,
-//         newDraftContentId:newDraft.contentId,
-//         doenetId
-//       }
-//       // console.log(">>>newDBVersion",newDBVersion)
-//       axios.post("/api/saveNewVersion.php",newDBVersion)
-//       // .then(resp=>console.log(">>>resp",resp.data))
+    //   let newDBVersion = {...newDraft,
+    //     isSetAsCurrent:'1',
+    //     newDraftVersionId,
+    //     newDraftContentId:newDraft.contentId,
+    //     doenetId
+    //   }
+    //   console.log(">>>newDBVersion",newDBVersion)
+    //   axios.post("/api/saveNewVersion.php",newDBVersion)
+    //   .then(resp=>console.log(">>>resp",resp.data))
 
   });
 
@@ -239,7 +234,7 @@ if (inUseVersionId){
   <ClipboardLinkButtons contentId={version.contentId} />
         <div><RenameVersionControl key={version.versionId} doenetId={doenetId} title={version.title} versionId={version.versionId} /></div>
        <div><button onClick={()=>versionHistoryActive(version)} >View</button></div> 
-       <div><button onClick={()=>setAsCurrent(doenetId,version)} >Set As Current</button></div> 
+       <div><button onClick={()=>setAsCurrent({doenetId,version})} >Set As Current</button></div> 
         {releaseButton}
   </>
   selectorControls = <>
