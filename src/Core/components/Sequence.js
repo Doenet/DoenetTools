@@ -103,6 +103,8 @@ export default class Sequence extends CompositeComponent {
       exclude: component.stateValues.exclude,
     }
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let replacements = [];
 
     let sequenceValues = returnSequenceValues({
@@ -130,7 +132,7 @@ export default class Sequence extends CompositeComponent {
           attributes: { fixed: component.attributes.fixed },
           componentType,
           componentInfoObjects,
-          compositeCreatesNewNamespace: component.attributes.newNamespace
+          compositeCreatesNewNamespace: newNamespace
         })
       }
 
@@ -149,7 +151,7 @@ export default class Sequence extends CompositeComponent {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 
@@ -304,6 +306,7 @@ export default class Sequence extends CompositeComponent {
         // Need to add more replacement components
 
         let newSerializedReplacements = [];
+        let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
         for (let ind = prevlength; ind < component.stateValues.length; ind++) {
           let componentValue = returnSequenceValueForIndex({
@@ -329,7 +332,7 @@ export default class Sequence extends CompositeComponent {
               attributes: { fixed: component.attributes.fixed },
               componentType,
               componentInfoObjects,
-              compositeCreatesNewNamespace: component.attributes.newNamespace
+              compositeCreatesNewNamespace: newNamespace
             })
           }
 
@@ -346,7 +349,7 @@ export default class Sequence extends CompositeComponent {
           assignNames: component.doenetAttributes.assignNames,
           serializedComponents: newSerializedReplacements,
           parentName: component.componentName,
-          parentCreatesNewNamespace: component.attributes.newNamespace,
+          parentCreatesNewNamespace: newNamespace,
           componentInfoObjects,
           indOffset: prevlength,
         });

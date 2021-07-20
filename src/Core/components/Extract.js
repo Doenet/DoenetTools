@@ -74,7 +74,7 @@ export default class Extract extends CompositeComponent {
     stateVariableDefinitions.propName = {
       returnDependencies: () => ({
         propName: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "prop"
         },
       }),
@@ -217,12 +217,14 @@ export default class Extract extends CompositeComponent {
     let serializedReplacements = results.serializedReplacements;
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       indOffset: numReplacementsSoFar,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

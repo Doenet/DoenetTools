@@ -58,12 +58,12 @@ export default class Select extends CompositeComponent {
 
       // break any string by white space and wrap pieces with option and type
 
-      let convertState = function(s) {
-        if(type==="math") {
+      let convertState = function (s) {
+        if (type === "math") {
           return me.fromAst(textToAst.convert(s));
-        } else if (type==="number") {
+        } else if (type === "number") {
           return Number(s);
-        } else if(type==="boolean") {
+        } else if (type === "boolean") {
           return s.toLowerCase() === "true";
         } else {
           return s;
@@ -497,7 +497,7 @@ export default class Select extends CompositeComponent {
       }
 
       if (selectedChild.attributes.newNamespace) {
-        serializedChild.attributes = { newNamespace: true }
+        serializedChild.attributes = { newNamespace: { primitive: true } }
       }
 
 
@@ -526,11 +526,13 @@ export default class Select extends CompositeComponent {
       }
     }
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

@@ -250,17 +250,19 @@ export default class SelectByCondition extends CompositeComponent {
       }
 
       if (components[selectedChildName].attributes.newNamespace) {
-        serializedChild.attributes = { newNamespace: true }
+        serializedChild.attributes = { newNamespace: { primitive: true } }
       }
 
       replacements.push(serializedChild);
     }
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

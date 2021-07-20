@@ -130,6 +130,10 @@ import UpdateValue from './components/UpdateValue';
 import CallAction from './components/CallAction';
 import TriggerSet from './components/TriggerSet';
 import FunctionIterates from './components/FunctionIterates';
+import Module from './components/Module';
+import ModuleAttribute from './components/ModuleAttribute';
+import ModuleAttributeDefinitions from './components/ModuleAttributeDefinitions';
+import Setup from './components/Setup';
 
 
 //Extended
@@ -260,6 +264,10 @@ const componentTypeArray = [
   CallAction,
   TriggerSet,
   FunctionIterates,
+  Module,
+  ModuleAttribute,
+  ModuleAttributeDefinitions,
+  Setup,
 
   BaseComponent,
   InlineComponent,

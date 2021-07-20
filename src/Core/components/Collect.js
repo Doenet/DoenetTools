@@ -129,7 +129,7 @@ export default class Collect extends CompositeComponent {
     stateVariableDefinitions.propName = {
       returnDependencies: () => ({
         propName: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "prop"
         },
       }),
@@ -370,6 +370,8 @@ export default class Collect extends CompositeComponent {
       return { serializedReplacements, propVariablesCopiedByReplacement };
     }
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     if (component.stateValues.propName) {
 
       let results = replacementFromProp({
@@ -406,7 +408,7 @@ export default class Collect extends CompositeComponent {
           attributes: component.attributes,
           componentType: repl.componentType,
           componentInfoObjects, compositeAttributesObj,
-          compositeCreatesNewNamespace: component.attributes.newNamespace
+          compositeCreatesNewNamespace: newNamespace
         });
         Object.assign(repl.attributes, attributesFromComposite)
       }
@@ -418,7 +420,7 @@ export default class Collect extends CompositeComponent {
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       indOffset: numReplacementsSoFar,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

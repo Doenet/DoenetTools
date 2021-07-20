@@ -369,7 +369,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         success: true,
         newChildren: results.pieces.map(x => ({
           componentType: "_componentListWithSelectableType",
-          attributes: { type },
+          attributes: { type: { primitive: type } },
           children: x,
         }))
       }
