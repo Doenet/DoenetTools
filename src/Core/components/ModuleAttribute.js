@@ -157,6 +157,10 @@ export default class ModuleAttribute extends CompositeComponent {
       }
     }
 
+    serializeFunctions.applySugar({
+      serializedComponents: [serializedComponent], isAttributeComponent: true, componentInfoObjects
+    })
+
     serializeFunctions.setTNamesToAbsolute([serializedComponent]);
 
 

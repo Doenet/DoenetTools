@@ -19,7 +19,6 @@ import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 export default function SelectedCourse(props) {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
@@ -51,40 +50,31 @@ export default function SelectedCourse(props) {
     return (
       <>
         <h2> {selection.length} Courses Selected</h2>
-        <Button
-          width="menu"
-          value="Make Copy(Soon)"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('>> made copy of courses');
-          }}
-        />
-        <br />
-        <Button
-          width="menu"
-          value="Delete Course"
-          alert
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // alert("Delete Drive")
-            let selectionArr = [];
-            for (let x = 0; x < selection.length; x++) {
-              selectionArr.push(selection[x].driveId);
-            }
-
-            setDrivesInfo({
-              color: 'abc',
-              label: 'abcd',
-              image: 'ancds',
-              newDriveId: selectionArr,
-              type: 'delete drive',
-            });
-            setDrivecardSelection([]);
-            // }
-          }}
-        />
+        <Button width="menu" value="Make Copy(Soon)" onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          console.log(">> made copy of courses")
+        }}/><br />
+          <Button width="menu" value="Delete Course" alert onClick={(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+    // alert("Delete Drive")
+   let selectionArr = [];
+    for(let x=0;x< selection.length;x++){
+      selectionArr.push(selection[x].driveId);
+    }
+      
+      setDrivesInfo({
+        color:'',
+        label:'',
+        image:'',
+        newDriveId:selectionArr,
+        type:"delete drive"
+      })
+      setDrivecardSelection([]);
+    // }
+    
+  }}/>
       </>
     );
   } else {
