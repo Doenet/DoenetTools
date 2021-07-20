@@ -10,7 +10,8 @@ import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { useToast } from '../../_framework/Toast';
+import { useToast, toastType } from '@Toast';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faExternalLinkAlt
@@ -253,7 +254,8 @@ export const getSHAofContent = (doenetML)=>{
 }
 
 export function ClipboardLinkButtons(props){
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
+
 
   if (!props.contentId){
     console.error("Component only handles contentId at this point")
@@ -263,7 +265,7 @@ export function ClipboardLinkButtons(props){
 
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div> 
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
   </CopyToClipboard>
 

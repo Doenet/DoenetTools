@@ -17,8 +17,7 @@ import {
   fileByContentId } from '../ToolHandlers/CourseToolHandler';
 import { nanoid } from 'nanoid';
 import axios from "axios";
-import { useToast } from '@Toast';
-
+import { useToast, toastType } from '@Toast';
 
 export default function VersionHistory(props){
 
@@ -26,7 +25,7 @@ export default function VersionHistory(props){
   const path = decodeURIComponent(useRecoilValue(searchParamAtomFamily('path')));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
   const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
-  const [toast, toastType] = useToast();
+  const addToast = useToast();
   const [driveId, folderId, itemId] = path.split(':');
 
 //   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
@@ -165,14 +164,14 @@ export default function VersionHistory(props){
        .then((resp)=>{
          console.log(">>>resp saveVersion",resp.data)
           if (resp?.data?.success){
-            toast('New Version Saved!', toastType.SUCCESS)
+            addToast('New Version Saved!', toastType.SUCCESS)
           }else{
-            toast('Version NOT Saved!', toastType.ERROR);
+            addToast('Version NOT Saved!', toastType.ERROR);
           }
         })
         .catch((err)=>{
           console.log(">>>err",err)
-          toast('Version NOT Saved!', toastType.ERROR);
+          addToast('Version NOT Saved!', toastType.ERROR);
 
         })
     
