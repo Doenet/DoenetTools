@@ -59,7 +59,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughComponent = components["/_line1"].attributes.through;
+      let throughComponent = components["/_line1"].attributes.through.component;
       let point1 = throughComponent.activeChildren[0];
       let point2 = throughComponent.activeChildren[1];
 
@@ -97,7 +97,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughComponent = components["/_line1"].attributes.through;
+      let throughComponent = components["/_line1"].attributes.through.component;
       let point1 = throughComponent.activeChildren[0];
       let point2 = throughComponent.activeChildren[1];
 
@@ -523,7 +523,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughComponent = components["/_line1"].attributes.through;
+      let throughComponent = components["/_line1"].attributes.through.component;
       let point1 = throughComponent.activeChildren[0];
       let point2 = throughComponent.activeChildren[1];
       let line2 = components['/_copy1'].replacements[0];
@@ -737,7 +737,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].attributes.through;
+      let through1 = components['/_line1'].attributes.through.component;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -916,7 +916,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].attributes.through;
+      let through1 = components['/_line1'].attributes.through.component;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       let point3 = components['/_copy1'].replacements[0];
@@ -1158,7 +1158,7 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let through1 = components['/_line1'].attributes.through;
+      let through1 = components['/_line1'].attributes.through.component;
       let point1 = through1.activeChildren[0];
       let point2 = through1.activeChildren[1];
       point1.movePoint({ x: 4, y: 4 });
@@ -1297,13 +1297,13 @@ describe('Line Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let throughComponent1 = components["/_line1"].attributes.through;
+      let throughComponent1 = components["/_line1"].attributes.through.component;
       let point1 = throughComponent1.activeChildren[0];
       let point2 = throughComponent1.activeChildren[1];
-      let throughComponent2 = components["/_line2"].attributes.through;
+      let throughComponent2 = components["/_line2"].attributes.through.component;
       let point3 = throughComponent2.activeChildren[0];
       let point4 = throughComponent2.activeChildren[1];
-      let throughComponent3 = components["/_line3"].attributes.through;
+      let throughComponent3 = components["/_line3"].attributes.through.component;
       let point5 = throughComponent3.activeChildren[0];
       let point6 = throughComponent3.activeChildren[1];
 
@@ -4949,7 +4949,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughComponent = components["/_line1"].attributes.through;
+      let throughComponent = components["/_line1"].attributes.through.component;
       let point1 = throughComponent.activeChildren[0];
       let point2 = throughComponent.activeChildren[1];
 
@@ -5125,7 +5125,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].attributes.through;
+      let throughChild = components["/_line1"].attributes.through.component;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
@@ -5304,7 +5304,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
       let P2a = components['/P2a'].replacements[0];
 
-      let throughChild = components["/_line1"].attributes.through;
+      let throughChild = components["/_line1"].attributes.through.component;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 
@@ -5513,7 +5513,7 @@ describe('Line Tag Tests', function () {
       let P1a = components['/P1a'].replacements[0];
 
       let P2a = components['/P2a'].replacements[0];
-      let throughChild = components["/_line1"].attributes.through;
+      let throughChild = components["/_line1"].attributes.through.component;
       let point1 = throughChild.activeChildren[0];
       let point2 = throughChild.activeChildren[1];
 

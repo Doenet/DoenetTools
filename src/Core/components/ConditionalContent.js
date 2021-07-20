@@ -24,7 +24,7 @@ export default class ConditionalContent extends CompositeComponent {
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {
       if (!["case", "else"].includes(child.componentType)) {
-        if (!(child.attributes && ["case", "else"].includes(child.attributes.componentType))) {
+        if (!(child.attributes && child.attributes.componentType && ["case", "else"].includes(child.attributes.componentType.primitive))) {
           keepSerializedInds.push(ind)
         }
       }
@@ -271,18 +271,20 @@ export default class ConditionalContent extends CompositeComponent {
         }
 
         if (components[selectedChildName].attributes.newNamespace) {
-          serializedChild.attributes = { newNamespace: true }
+          serializedChild.attributes = { newNamespace: { primitive: true } }
         }
 
         replacements.push(serializedChild);
       }
     }
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

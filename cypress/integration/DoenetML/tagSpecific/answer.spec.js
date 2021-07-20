@@ -9479,5 +9479,58 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('answer with choiceinput inside invalid child logic', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <problem>
+    <sideBySide>
+    
+      <choiceInput inline name='choice1'>
+        <choice>1</choice>
+        <choice>2</choice>
+        <choice>3</choice>
+        <choice>4</choice>
+        <choice>5</choice>
+      </choiceInput>
+    
+    </sideBySide>
+    <copy prop='selectedValue' tname='choice1' />
+    
+    <answer>
+      <award><when><copy prop='selectedValue' tname='choice1' /> = 4</when></award>
+    </answer>
+  
+  </problem>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.log("Select correct answer")
+    cy.get('#\\/choice1').select(`4`);
+    cy.get('#\\/_answer1_submit').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('check work')
+    })
+    cy.get('#\\/_answer1_correct').should('not.exist');
+    cy.get('#\\/_answer1_incorrect').should('not.exist');
+    cy.get('#\\/_answer1_partial').should('not.exist');
+
+    cy.log("Submit answer")
+    cy.get('#\\/_answer1_submit').click();
+    cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('correct')
+    })
+
+    cy.log("Select incorrect answer and submit")
+    cy.get('#\\/choice1').select(`3`);
+    cy.get('#\\/_answer1_submit').click();
+    cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('incorrect')
+    })
+  });
 
 })

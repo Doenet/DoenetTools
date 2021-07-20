@@ -184,8 +184,8 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
 
       cy.log('Test location')
       cy.window().then((win) => {
@@ -326,8 +326,8 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
 
       cy.log('move point1 via segment to (-2,-3)')
       cy.window().then((win) => {
@@ -417,8 +417,8 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
 
       cy.log('move point 10 to (0,-3)')
       cy.window().then((win) => {
@@ -1157,8 +1157,8 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
       let point3 = components["/point3"].replacements[0]
       let point4 = components["/point4"].replacements[0]
       let point5 = components["/points56"].replacements[0]
@@ -1335,10 +1335,10 @@ describe('LineSegment Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
-      let point3 = components["/_linesegment2"].attributes["endpoints"].activeChildren[0];
-      let point4 = components["/_linesegment2"].attributes["endpoints"].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
+      let point3 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[0];
+      let point4 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[1];
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -1577,12 +1577,12 @@ describe('LineSegment Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let point1 = components["/_linesegment1"].attributes["endpoints"].activeChildren[0];
-      let point2 = components["/_linesegment1"].attributes["endpoints"].activeChildren[1];
-      let point3 = components["/_linesegment2"].attributes["endpoints"].activeChildren[0];
-      let point4 = components["/_linesegment2"].attributes["endpoints"].activeChildren[1];
-      let point5 = components["/_linesegment3"].attributes["endpoints"].activeChildren[0];
-      let point6 = components["/_linesegment3"].attributes["endpoints"].activeChildren[1];
+      let point1 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[0];
+      let point2 = components["/_linesegment1"].attributes["endpoints"].component.activeChildren[1];
+      let point3 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[0];
+      let point4 = components["/_linesegment2"].attributes["endpoints"].component.activeChildren[1];
+      let point5 = components["/_linesegment3"].attributes["endpoints"].component.activeChildren[0];
+      let point6 = components["/_linesegment3"].attributes["endpoints"].component.activeChildren[1];
 
       let x1 = 1, y1 = 0;
       let x2 = 3, y2 = 2;

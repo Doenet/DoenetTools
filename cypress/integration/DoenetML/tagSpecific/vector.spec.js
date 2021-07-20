@@ -8121,7 +8121,7 @@ describe('Vector Tag Tests', function () {
 
       x2 = 7;
       y2 = -3;
-      let head1=components["/_vector1"].attributes.head;
+      let head1=components["/_vector1"].attributes.head.component;
       head1.movePoint({ x: x2, y: y2 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -8138,7 +8138,7 @@ describe('Vector Tag Tests', function () {
 
       x1 = -1;
       y1 = -4;
-      let tail1=components["/_vector1"].attributes.tail;
+      let tail1=components["/_vector1"].attributes.tail.component;
       tail1.movePoint({ x: x1, y: y1 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -8155,7 +8155,7 @@ describe('Vector Tag Tests', function () {
 
       x3 = 9;
       y3 = -8;
-      let tail2=components["/_vector2"].attributes.tail;
+      let tail2=components["/_vector2"].attributes.tail.component;
       tail2.movePoint({ x: x3, y: y3 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -8172,7 +8172,7 @@ describe('Vector Tag Tests', function () {
 
       x2 = 3;
       y2 = 2;
-      let head2=components["/_vector2"].attributes.head;
+      let head2=components["/_vector2"].attributes.head.component;
       head2.movePoint({ x: x2, y: y2 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -8189,7 +8189,7 @@ describe('Vector Tag Tests', function () {
 
       x1 = -5;
       y1 = 8;
-      let head3=components["/_vector3"].attributes.head;
+      let head3=components["/_vector3"].attributes.head.component;
       head3.movePoint({ x: x1, y: y1 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);
@@ -8206,7 +8206,7 @@ describe('Vector Tag Tests', function () {
 
       x3 = 0;
       y3 = -5;
-      let tail3=components["/_vector3"].attributes.tail;
+      let tail3=components["/_vector3"].attributes.tail.component;
       tail3.movePoint({ x: x3, y: y3 });
       expect(components['/_vector1'].stateValues.tail.map(x => x.tree)).eqls([x1, y1]);
       expect(components['/_vector1'].stateValues.head.map(x => x.tree)).eqls([x2, y2]);

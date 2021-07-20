@@ -256,9 +256,11 @@ export function removeBlankStringChildren(serializedComponents, componentInfoObj
 
     }
 
-    for (let attr in component.attributes) {
-      let comp = component.attributes[attr];
-      if (comp.children) {
+    // TODO: do we also need to remove blank string components
+    // from childrenForComponent of an attribute that is not yet a component?
+    for (let attrName in component.attributes) {
+      let comp = component.attributes[attrName].component;
+      if (comp && comp.children) {
         removeBlankStringChildren([comp], componentInfoObjects)
       }
     }
@@ -271,8 +273,8 @@ export function findContentCopies({ serializedComponents }) {
   let contentIdComponents = {};
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "copy") {
-      if (serializedComponent.attributes) {
-        let uriComponent = serializedComponent.attributes.uri;
+      if (serializedComponent.attributes && serializedComponent.attributes.uri) {
+        let uriComponent = serializedComponent.attributes.uri.component;
         if (uriComponent && uriComponent.componentType) {
           let uri;
           if (uriComponent.state !== undefined) {
@@ -383,8 +385,11 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
         } else if (!["name", "assignnames", "tname"].includes(prop.toLowerCase())) {
 
           if (componentClass.acceptAnyAttribute) {
-            attributes[prop] = component.props[prop],
-              delete component.props[prop];
+            attributes[prop] = componentFromAttribute({
+              value: component.props[prop],
+              componentInfoObjects,
+              flags
+            });
           } else {
             throw Error(`Invalid attribute for component of type ${component.componentType}: ${prop}`);
           }
@@ -397,13 +402,13 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
     // if there are any primitive attributes that define a default value
     // but were not specified via props, add them with their default value
 
-    for (let attr in classAttributes) {
-      let attrObj = classAttributes[attr];
+    for (let attrName in classAttributes) {
+      let attrObj = classAttributes[attrName];
 
-      if (attrObj.createPrimitiveOfType && ("defaultValue" in attrObj) && !(attr in attributes)) {
-        attributes[attr] = componentFromAttribute({
+      if (attrObj.createPrimitiveOfType && ("defaultValue" in attrObj) && !(attrName in attributes)) {
+        attributes[attrName] = componentFromAttribute({
           attrObj,
-          value: attrObj.defaultValue,
+          value: attrObj.defaultValue.toString(),
           componentInfoObjects,
           flags
         });
@@ -420,19 +425,24 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
 }
 
 export function componentFromAttribute({ attrObj, value, componentInfoObjects, flags }) {
-  if (attrObj.createComponentOfType) {
+  if (typeof value !== "object") {
+    // typically this would mean value is a string.
+    // However, if had an attribute with no value, would get true.
+    // Also, when get stateVariablesPrescribingAdditionalAttributes,
+    // it is possible their values are not strings
+    value = { rawString: value.toString() }
+  }
+
+  if (attrObj && attrObj.createComponentOfType) {
     let newComponent;
+    let valueTrimLower = value.rawString.trim().toLowerCase();
 
-    // set to string, as if had an attribute with no value, would get true
-    value = String(value);
-    let valueLower = value.toLowerCase();
-
-    if (valueLower === "true" && attrObj.valueForTrue !== undefined) {
+    if (valueTrimLower === "true" && attrObj.valueForTrue !== undefined) {
       newComponent = {
         componentType: attrObj.createComponentOfType,
         state: { value: attrObj.valueForTrue }
       };
-    } else if (valueLower === "false" && attrObj.valueForFalse !== undefined) {
+    } else if (valueTrimLower === "false" && attrObj.valueForFalse !== undefined) {
       newComponent = {
         componentType: attrObj.createComponentOfType,
         state: { value: attrObj.valueForFalse }
@@ -440,17 +450,23 @@ export function componentFromAttribute({ attrObj, value, componentInfoObjects, f
     } else if (componentInfoObjects.isInheritedComponentType({
       inheritedComponentType: attrObj.createComponentOfType,
       baseComponentType: "boolean",
-    }) && ["true", "false"].includes(valueLower)) {
+    }) && ["true", "false"].includes(valueTrimLower)) {
       newComponent = {
         componentType: attrObj.createComponentOfType,
-        state: { value: valueLower === "true" }
+        state: { value: valueTrimLower === "true" }
       };
     } else {
+      let children = value.childrenForComponent;
+      if (children) {
+        children = JSON.parse(JSON.stringify(children));
+      } else {
+        children = [
+          { componentType: "string", state: { value: value.rawString } }
+        ]
+      }
       newComponent = {
         componentType: attrObj.createComponentOfType,
-        children: [
-          { componentType: "string", state: { value } }
-        ]
+        children
       };
     }
 
@@ -459,30 +475,29 @@ export function componentFromAttribute({ attrObj, value, componentInfoObjects, f
       createAttributesFromProps([newComponent], componentInfoObjects, flags)
     }
 
-    return newComponent;
-  } else if (attrObj.createPrimitiveOfType) {
+    return { component: newComponent };
+  } else if (attrObj && attrObj.createPrimitiveOfType) {
     let newPrimitive;
     if (attrObj.createPrimitiveOfType === "boolean") {
-      newPrimitive = value === true ||
-        (typeof value === "string" && value.trim().toLowerCase() === "true");
+      let valueTrimLower = value.rawString.trim().toLowerCase();
+      newPrimitive = valueTrimLower === "true";
     } else if (attrObj.createPrimitiveOfType === "number") {
-      if (value === true) {
-        // can't use Number(), as Number(true) returns 1
-        newPrimitive = NaN;
-      } else {
-        newPrimitive = Number(value);
-      }
+      newPrimitive = Number(value.rawString);
     } else {
       // else assume string
-      // use String() just in case have a boolean true (i.e., had prop with no value)
-      newPrimitive = String(value);
+      newPrimitive = value.rawString;
     }
 
     if (attrObj.validationFunction) {
       newPrimitive = attrObj.validationFunction(newPrimitive);
     }
-    return newPrimitive;
-  } else if (attrObj.leaveRaw) {
+    return { primitive: newPrimitive };
+  } else {
+    if (!value.childrenForComponent) {
+      value.childrenForComponent = [
+        { componentType: "string", state: { value: value.rawString } }
+      ]
+    }
     return value;
   }
 }
@@ -508,29 +523,34 @@ function findPreSugarIndsAndMarkFromSugar(components) {
 }
 
 
-export function applyMacros(serializedComponents, componentInfoObjects) {
+export function applyMacros(serializedComponents, componentInfoObjects, flags) {
 
   for (let component of serializedComponents) {
     if (component.children) {
-      component.children = applyMacros(component.children, componentInfoObjects);
+      component.children = applyMacros(component.children, componentInfoObjects, flags);
     }
     if (component.attributes) {
-      for (let attr in component.attributes) {
-        let comp = component.attributes[attr];
-        if (comp.children) {
-          comp.children = applyMacros(comp.children, componentInfoObjects);
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
+        if (attribute.component) {
+          let comp = attribute.component;
+          if (comp.children) {
+            comp.children = applyMacros(comp.children, componentInfoObjects, flags);
+          }
+        } else if (attribute.childrenForComponent) {
+          attribute.childrenForComponent = applyMacros(attribute.childrenForComponent, componentInfoObjects, flags);
         }
       }
     }
   }
 
-  serializedComponents = substituteMacros(serializedComponents, componentInfoObjects);
+  serializedComponents = substituteMacros(serializedComponents, componentInfoObjects, flags);
 
   return serializedComponents;
 
 }
 
-function substituteMacros(serializedComponents, componentInfoObjects) {
+function substituteMacros(serializedComponents, componentInfoObjects, flags) {
 
   for (let componentInd = 0; componentInd < serializedComponents.length; componentInd++) {
     let component = serializedComponents[componentInd];
@@ -557,10 +577,10 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           let newDoenetML = `<copy tname="${result.targetName}" ${result.additionalAttributes} />`;
 
           let newComponents = doenetMLToSerializedComponents(newDoenetML);
-          createAttributesFromProps(newComponents, componentInfoObjects);
+          createAttributesFromProps(newComponents, componentInfoObjects, flags);
           markCreatedFromMacro(newComponents);
 
-          // recurse in cases there were more macros in the additionalAttributes
+          // recurse in case there were more macros in the additionalAttributes
           newComponents = applyMacros(newComponents, componentInfoObjects)
 
           componentsFromMacro = newComponents;
@@ -685,7 +705,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
     if (component.componentType === "award" && component.children) {
       let targetsAreResponses = component.attributes.targetsAreResponses;
       if (targetsAreResponses) {
-        let targetNames = targetsAreResponses.split(/\s+/).filter(s => s);
+        let targetNames = targetsAreResponses.primitive.split(/\s+/).filter(s => s);
         for (let tName of targetNames) {
           addResponsesToDescendantsWithTname(component.children, tName);
         }
@@ -935,14 +955,18 @@ function createEvaluateIfFindMatchedClosingParens({
     doenetAttributes: { createdFromMacro: true },
     attributes: {
       function: {
-        componentType: "function",
-        doenetAttributes: { createdFromMacro: true },
-        children: componentsFromMacro
+        component: {
+          componentType: "function",
+          doenetAttributes: { createdFromMacro: true },
+          children: componentsFromMacro
+        }
       },
       input: {
-        componentType: "mathList",
-        doenetAttributes: { createdFromMacro: true },
-        children: inputArray
+        component: {
+          componentType: "mathList",
+          doenetAttributes: { createdFromMacro: true },
+          children: inputArray
+        }
       }
     }
   }
@@ -1034,10 +1058,10 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
     let componentAttributes = {};
     // add primitive attributes to componentAttributes
-    for (let attr in component.attributes) {
-      let attrVal = component.attributes[attr];
-      if (!attrVal.componentType) {
-        componentAttributes[attr] = attrVal;
+    for (let attrName in component.attributes) {
+      let attribute = component.attributes[attrName];
+      if (attribute.primitive !== undefined) {
+        componentAttributes[attrName] = attribute.primitive;
       }
     }
 
@@ -1124,8 +1148,11 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
               let preSugarIndsFound = [];
 
-              for (let attr in newAttributes) {
-                preSugarIndsFound.push(...findPreSugarIndsAndMarkFromSugar(newAttributes[attr].children));
+              for (let attrName in newAttributes) {
+                let comp = newAttributes[attrName].component;
+                if (comp) {
+                  preSugarIndsFound.push(...findPreSugarIndsAndMarkFromSugar(comp.children));
+                }
               }
 
               if (preSugarIndsFound.length !== nNonStrings ||
@@ -1165,13 +1192,13 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
     }
 
     if (component.attributes) {
-      for (let attr in component.attributes) {
-        let comp = component.attributes[attr];
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
 
-        if (comp.componentType) {
+        if (attribute.component) {
 
           applySugar({
-            serializedComponents: [comp],
+            serializedComponents: [attribute.component],
             parentAttributes: componentAttributes,
             componentInfoObjects,
             parentUniqueId: uniqueId,
@@ -1311,7 +1338,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
 
     let newNamespace;
-    if (attributes.newNamespace ||
+    if (attributes.newNamespace && attributes.newNamespace.primitive ||
       (useOriginalNames && serializedComponent.originalAttributes
         && serializedComponent.originalAttributes.newNamespace)
     ) {
@@ -1426,7 +1453,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     if (newNamespace) {
       // newNamespace was specified
       // put in attributes as boolean
-      attributes.newNamespace = newNamespace;
+      attributes.newNamespace = { primitive: newNamespace };
     }
 
 
@@ -1489,6 +1516,12 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
     if (serializedComponent.doenetAttributes.createUniqueAssignNames &&
       serializedComponent.originalName
     ) {
+
+      let originalAssignNames = serializedComponent.doenetAttributes.assignNames;
+      if (!originalAssignNames) {
+        originalAssignNames = serializedComponent.doenetAttributes.originalAssignNames;
+      }
+
       let assignNames = serializedComponent.doenetAttributes.assignNames = [];
       let longNameIdBase = componentName + "|createUniqueName|assignNames|";
 
@@ -1506,7 +1539,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       }
 
 
-      for (let [ind, originalName] of serializedComponent.doenetAttributes.originalAssignNames.entries()) {
+      for (let [ind, originalName] of originalAssignNames.entries()) {
         let longNameId = longNameIdBase + ind;
         let newName = createUniqueName("fromAssignNames", longNameId);
         assignNames.push(newName);
@@ -1516,7 +1549,8 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           originalName: oldNamespace + originalName
         }
 
-        renameMatchingTNames(infoForRenaming, doenetAttributesByFullTName);
+        renameMatchingTNames(infoForRenaming, doenetAttributesByFullTName, true);
+
 
       }
 
@@ -1587,11 +1621,13 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
       // recurse on attributes that are components
 
-      for (let attr in serializedComponent.attributes) {
+      for (let attrName in serializedComponent.attributes) {
 
-        let comp = serializedComponent.attributes[attr];
+        let attribute = serializedComponent.attributes[attrName];
 
-        if (comp.componentType) {
+        if (attribute.component) {
+
+          let comp = attribute.component;
 
           if (!comp.doenetAttributes) {
             comp.doenetAttributes = {};
@@ -1607,9 +1643,24 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             parentName: componentName,
             useOriginalNames,
             doenetAttributesByFullTName,
-            createNameContext: attr
+            createNameContext: attrName
           });
 
+        } else if (attribute.childrenForComponent) {
+
+          // TODO: what to do about parentName/parentDoenetAttributes
+          // since parent of these isn't created
+          // Note: the main (only?) to recurse here is to rename tNames
+          createComponentNames({
+            serializedComponents: attribute.childrenForComponent,
+            namespaceStack,
+            componentInfoObjects,
+            parentDoenetAttributes: doenetAttributes,
+            parentName: componentName,
+            useOriginalNames,
+            doenetAttributesByFullTName,
+            createNameContext: attrName
+          });
         }
 
       }
@@ -1663,7 +1714,7 @@ export function convertComponentTarget({
     if (lastLevel < 0) {
       // the target cannot possibly be valid
       // if there were more ../s than namespace levels
-      throw Error("Target " + tName + " not found");
+      lastLevel = 0;
     }
 
     fullTName = '';
@@ -2077,7 +2128,9 @@ export function createComponentNamesFromParentName({
 
 
   let useOriginalNames;
-  if (component.attributes.newNamespace || originalNamesAreConsistent) {
+  if (component.attributes.newNamespace && component.attributes.newNamespace.primitive
+    || originalNamesAreConsistent
+  ) {
     useOriginalNames = true;
   } else {
     useOriginalNames = false;
@@ -2088,10 +2141,12 @@ export function createComponentNamesFromParentName({
   }
 
   // always mark component attributes to create unique names
-  for (let attr in component.attributes) {
-    let comp = component.attributes[attr];
-    if (comp.componentType) {
-      markToCreateAllUniqueNames([comp]);
+  for (let attrName in component.attributes) {
+    let attribute = component.attributes[attrName];
+    if (attribute.component) {
+      markToCreateAllUniqueNames([attribute.component]);
+    } else if (attribute.childrenForComponent) {
+      markToCreateAllUniqueNames(attribute.childrenForComponent);
     }
   }
 
@@ -2138,29 +2193,46 @@ function setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, 
       setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: component.children, doenetAttributesByFullTName })
     }
     if (component.attributes) {
-      for (let attr in component.attributes) {
-        let comp = component.attributes[attr];
-        if (comp.componentType) {
-          setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: [comp], doenetAttributesByFullTName })
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
+        if (attribute.component) {
+          setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: [attribute.component], doenetAttributesByFullTName })
+        } else if (attribute.childrenForComponent) {
+          setTNamesOutsideNamespaceToAbsoluteAndRecordAllFullTNames({ namespace, components: attribute.childrenForComponent, doenetAttributesByFullTName })
         }
       }
     }
   }
 }
 
-function renameMatchingTNames(component, doenetAttributesByFullTName) {
+function renameMatchingTNames(component, doenetAttributesByFullTName, renameMatchingNamespaces = false) {
 
   if (component.originalName &&
     doenetAttributesByFullTName
-    && doenetAttributesByFullTName[component.originalName]
+
     && component.componentName !== component.originalName) {
     // we have a component who has been named and there are other components
     // whose fullTName refers to this component
     // Modify the tName and fullTName of the other components to refer to the new name
     // (Must modify fullTName as we don't know if this component has been processed yet)
-    for (let dAttributes of doenetAttributesByFullTName[component.originalName]) {
-      dAttributes.tName = component.componentName;
-      dAttributes.fullTName = component.componentName;
+    if (doenetAttributesByFullTName[component.originalName]) {
+      for (let dAttributes of doenetAttributesByFullTName[component.originalName]) {
+        dAttributes.tName = component.componentName;
+        dAttributes.fullTName = component.componentName;
+      }
+    }
+    if (renameMatchingNamespaces) {
+      let originalNamespace = component.originalName + "/";
+      let nSpaceLen = originalNamespace.length;
+      for (let originalFullTName in doenetAttributesByFullTName) {
+        if (originalFullTName.substring(0, nSpaceLen) === originalNamespace) {
+          let originalEnding = originalFullTName.substring(nSpaceLen);
+          for (let dAttributes of doenetAttributesByFullTName[originalFullTName]) {
+            dAttributes.tName = component.componentName + "/" + originalEnding;
+            dAttributes.fullTName = component.componentName + "/" + originalEnding;
+          }
+        }
+      }
     }
   }
 }
@@ -2176,10 +2248,12 @@ function moveComponentNamesToOriginalNames(components) {
       moveComponentNamesToOriginalNames(component.children);
     }
     if (component.attributes) {
-      for (let attr in component.attributes) {
-        let comp = component.attributes[attr];
-        if (comp.componentType) {
-          moveComponentNamesToOriginalNames([comp]);
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
+        if (attribute.component) {
+          moveComponentNamesToOriginalNames([attribute.component]);
+        } else if (attribute.childrenForComponent) {
+          moveComponentNamesToOriginalNames(attribute.childrenForComponent);
         }
       }
     }
@@ -2196,16 +2270,109 @@ function markToCreateAllUniqueNames(components) {
       component.doenetAttributes.createUniqueAssignNames = true;
       component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
       delete component.doenetAttributes.assignNames;
+    } else if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
+      component.doenetAttributes.createUniqueAssignNames = true;
+      component.doenetAttributes.originalAssignNames = component.originalDoenetAttributes.assignNames;
     }
     delete component.doenetAttributes.prescribedName;
     if (component.children) {
       markToCreateAllUniqueNames(component.children);
     }
     if (component.attributes) {
-      for (let attr in component.attributes) {
-        let comp = component.attributes[attr];
-        if (comp.componentType) {
-          markToCreateAllUniqueNames([comp]);
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
+        if (attribute.component) {
+          markToCreateAllUniqueNames([attribute.component]);
+        } else if (attribute.childrenForComponent) {
+          markToCreateAllUniqueNames(attribute.childrenForComponent);
+        }
+      }
+    }
+  }
+}
+
+export function setTNamesToAbsolute(components) {
+
+  for (let component of components) {
+    if (component.doenetAttributes && component.doenetAttributes.tName) {
+      let fullTName = component.doenetAttributes.fullTName;
+      if (fullTName !== undefined) {
+        component.doenetAttributes.tName = fullTName;
+      }
+    }
+
+    if (component.children) {
+      setTNamesToAbsolute(component.children)
+    }
+    if (component.attributes) {
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
+        if (attribute.component) {
+          setTNamesToAbsolute([attribute.component])
+        } else if (attribute.childrenForComponent) {
+          setTNamesToAbsolute(attribute.childrenForComponent)
+        }
+      }
+    }
+  }
+}
+
+
+export function restrictTNamesToNamespace(components, namespace, parentNamespace) {
+  if (parentNamespace === undefined) {
+    parentNamespace = namespace;
+  }
+
+  let nSpace = namespace.length;
+
+  for (let component of components) {
+
+    if (component.doenetAttributes && component.doenetAttributes.tName) {
+      let tName = component.doenetAttributes.tName;
+
+      if (tName[0] === "/") {
+        if (tName.substring(0, nSpace) !== namespace) {
+          let fullTName = namespace + tName.substring(1);
+          component.doenetAttributes.tName = fullTName;
+          component.doenetAttributes.fullTName = fullTName;
+        }
+      } else if (tName.substring(0, 3) === "../") {
+        let tNamePart = tName;
+        let namespacePart = parentNamespace;
+        while (tNamePart.substring(0, 3) === "../") {
+          tNamePart = tNamePart.substring(3);
+          let lastSlash = namespacePart.substring(0, namespacePart.length - 1).lastIndexOf("/");
+          namespacePart = namespacePart.substring(0, lastSlash + 1);
+          if (namespacePart.substring(0, nSpace) !== namespace) {
+            while (tNamePart.substring(0, 3) === "../") {
+              tNamePart = tNamePart.substring(3);
+            }
+
+            let fullTName = namespace + tNamePart;
+            component.doenetAttributes.tName = fullTName;
+            component.doenetAttributes.fullTName = fullTName;
+            break;
+          }
+        }
+
+
+      }
+    }
+
+    if (component.children) {
+      let namespaceForChildren = parentNamespace;
+      if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+        namespaceForChildren = component.componentName;
+      }
+      restrictTNamesToNamespace(component.children, namespace, namespaceForChildren)
+    }
+    if (component.attributes) {
+      for (let attrName in component.attributes) {
+        let attribute = component.attributes[attrName];
+        if (attribute.component) {
+          restrictTNamesToNamespace([attribute.component], namespace, parentNamespace)
+        } else if (attribute.childrenForComponent) {
+          restrictTNamesToNamespace(attribute.childrenForComponent, namespace, parentNamespace)
         }
       }
     }
