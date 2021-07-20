@@ -45,7 +45,7 @@ import {
 import Draggable from '../Draggable';
 import getSortOrder from '../../_utils/sort/LexicographicalRankingSort';
 import { BreadcrumbContext } from '../Breadcrumb';
-import { drivecardSelectedNodesAtom } from '../../Tools/library/Library';
+import { drivecardSelectedNodesAtom } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 import '../../_utils/util.css';
 import {
   useDragShadowCallbacks,
@@ -750,12 +750,17 @@ export const fetchDrivesSelector = selector({
 
     }else if (labelTypeDriveIdColorImage.type === "delete drive"){
       //Find matching drive and update label
-      for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
-        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId ){
-          newDriveData.driveIdsAndLabels.splice(i,1);
-          break;
+      //delete drive
+      let driveIdsAndLabelsLength = newDriveData.driveIdsAndLabels;
+      for(let i = 0; i< driveIdsAndLabelsLength.length; i++){
+        for(let x=0; x<labelTypeDriveIdColorImage.newDriveId.length ;x++){
+          if (driveIdsAndLabelsLength[i].driveId === labelTypeDriveIdColorImage.newDriveId[x] ){
+            newDriveData.driveIdsAndLabels.splice(i,1);
+            i = (i==0) ? i : i-1;
+          }
         }
       }
+ 
       //Set drive
       set(fetchDrivesQuery,newDriveData)
         //Save to db

@@ -8,11 +8,10 @@ import {
   faUserCircle
  } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler'
+import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from "../../../_reactComponents/Drive/DoenetDriveCardMenu";
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 export default function SelectedCourse(props){
 
@@ -58,9 +57,9 @@ export default function SelectedCourse(props){
     }
       
       setDrivesInfo({
-        color:'abc',
-        label:'abcd',
-        image:'ancds',
+        color:'',
+        label:'',
+        image:'',
         newDriveId:selectionArr,
         type:"delete drive"
       })
