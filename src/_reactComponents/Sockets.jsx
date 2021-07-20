@@ -16,7 +16,7 @@ import { Manager } from 'socket.io-client';
 /**
  * Internal deps
  */
-import { useToast } from '../Tools/_framework/Toast';
+import { useToast, toastType } from '../Tools/_framework/Toast';
 import {
   folderCacheDirtyAtom,
   folderDictionary,
@@ -24,7 +24,7 @@ import {
   globalSelectedNodesAtom,
   selectedDriveItemsAtom,
   sortOptions,
-} from './Drive/Drive';
+} from './Drive/NewDrive';
 
 /**
  * a stored manger to allow for multiplexed socket connections.
@@ -66,13 +66,19 @@ const sockets = atomFamily({
   dangerouslyAllowMutability: true,
 });
 
+export const itemType = Object.freeze({
+  FOLDER: 'Folder',
+  DOENETML: 'DoenetML',
+  URL: 'Url',
+});
+
 /**
  * Hook to access realtime functions, supports drive and chat namespaces
  * @param {string} nsp - namespace to connect to
  * @returns {Object} {@link addItem}, {@link deleteItem}, {@link moveItems}, {@link renameItem}, and {@link copyItems} item functions
  */
 export default function useSockets(nsp) {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   // realtime upgrade
   // const [namespace] = useState(nsp);
@@ -86,29 +92,29 @@ export default function useSockets(nsp) {
    * @property {Object} driveIdFolderId - object containing the target drive and folder Ids
    * @property {string} driveIdFolderId.driveId
    * @property {string} driveIdFolderId.folderId
-   * @property {string} label - display name of the new item
    * @property {string} type - type of item being added, one of DoenetML, Folder, or Url
+   * @property {string} [label=Untitled] - display name of the new item
    * @property {string} [selectedItemId=null] the item to insert the new item after in the sort order
    * @property {string} [url=null] hyperlink for url type items
    */
 
   /**
    * create and add a new folder or doenetML
-   * @param {addOptions} itemOptions - configuration {@link itemOptions} for new Item
+   * @param {addOptions} addOptions - configuration {@link itemOptions} for new Item
    */
   const addItem = useRecoilCallback(({ snapshot }) =>
     /**
      * Create a new item
      * @param {addOptions} param0 configuration for new Item
      */
-    async ({ driveIdFolderId, label, type, selectedItemId = null, url = null }) => {
+    async ({ driveIdFolderId, type, label = 'Untitled', selectedItemId = null, url = null }) => {
       // Item creation
       const dt = new Date();
       const creationDate = formatDate(dt); //TODO: get from sever
       const itemId = nanoid(); //TODO: remove
       const doenetId = nanoid(); //Id per file
       const versionId = nanoid(); //Id per named version / data collection site
-
+      console.log(driveIdFolderId);
       //generate sort order
       const fInfo = await snapshot.getPromise(
         folderDictionary(driveIdFolderId),
@@ -141,7 +147,7 @@ export default function useSockets(nsp) {
       if (resp.data.success) {
         acceptAddItem(payload);
       } else {
-        addToast(`Add item error: ${resp.data.message}`, ToastType.ERROR);
+        addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
       }
 
       // realtime upgrade
@@ -176,7 +182,7 @@ export default function useSockets(nsp) {
         if (resp.data.success) {
           acceptDeleteItem(payload);
         } else {
-          addToast(`Delete item error: ${resp.data.message}`, ToastType.ERROR);
+          addToast(`Delete item error: ${resp.data.message}`, toastType.ERROR);
         }
 
         // realtime upgrade
@@ -411,7 +417,7 @@ export default function useSockets(nsp) {
       if (resp.data.success) {
         acceptMoveItems(payload, newDestinationFolderObj, editedCache);
       } else {
-        addToast(`Move item(s) error: ${resp.data.message}`, ToastType.ERROR);
+        addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
       }
 
       // realtime upgrade
@@ -424,7 +430,7 @@ export default function useSockets(nsp) {
       //     if (respData.success) {
       //       acceptMove(payload, newDestinationFolderObj, editedCache);
       //     } else {
-      //       addToast(`Move item(s) error: ${respData.message}`, ToastType.ERROR);
+      //       addToast(`Move item(s) error: ${respData.message}`, toastType.ERROR);
       //     }
       //   },
       // );
@@ -450,7 +456,7 @@ export default function useSockets(nsp) {
         if (resp.data.success) {
           acceptRenameItem(payload);
         } else {
-          addToast(`Rename item error: ${resp.data.message}`, ToastType.ERROR);
+          addToast(`Rename item error: ${resp.data.message}`, toastType.ERROR);
         }
 
         // realtime upgrade
@@ -458,7 +464,7 @@ export default function useSockets(nsp) {
         //   if (respData.success) {
         //     acceptRenameItem(payload, newFInfo);
         //   } else {
-        //     addToast(`Rename item error: ${respData.message}`, ToastType.ERROR);
+        //     addToast(`Rename item error: ${respData.message}`, toastType.ERROR);
         //   }
         // });
       },
@@ -737,7 +743,7 @@ export default function useSockets(nsp) {
   //     if (resp.value?.data?.success) {
   //       addToast(
   //         `Copied ${replaceDragShadowResp?.numItems} item(s)`,
-  //         ToastType.SUCCESS,
+  //         toastType.SUCCESS,
   //       );
   //     } else {
   //       onCopyItemsError({ errorMessage: resp?.reason });
@@ -804,7 +810,7 @@ export default function useSockets(nsp) {
 }
 
 function useAcceptBindings() {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   /**
    * execute local changes after a successful local or remote item addtion
@@ -878,9 +884,9 @@ function useAcceptBindings() {
           );
         }
 
-        addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
+        addToast(`Add new item 'Untitled'`, toastType.SUCCESS);
       },
-    [addToast, ToastType.SUCCESS],
+    [addToast],
   );
 
   /**
@@ -937,7 +943,7 @@ function useAcceptBindings() {
           }),
           newFInfo,
         );
-        addToast(`Deleted item '${label}'`, ToastType.SUCCESS);
+        addToast(`Deleted item '${label}'`, toastType.SUCCESS);
       },
   );
 
@@ -1026,7 +1032,7 @@ function useAcceptBindings() {
             },
           );
         }
-        addToast(`Renamed item to '${label}'`, ToastType.SUCCESS);
+        addToast(`Renamed item to '${label}'`, toastType.SUCCESS);
       },
   );
 

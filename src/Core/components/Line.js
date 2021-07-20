@@ -16,12 +16,14 @@ export default class Line extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return [
-    "points", "variables",
-    "nDimensions", "nPointsPrescribed",
-    "basedOnSlope",
-    "equation", "equationIdentity", "coeff0", "coeffvar1", "coeffvar2"
-  ] };
+  static get stateVariablesShadowedForReference() {
+    return [
+      "points", "variables",
+      "nDimensions", "nPointsPrescribed",
+      "basedOnSlope",
+      "equation", "equationIdentity", "coeff0", "coeffvar1", "coeffvar2"
+    ]
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -60,8 +62,10 @@ export default class Line extends GraphicalComponent {
         success: true,
         newAttributes: {
           equation: {
-            componentType: "math",
-            children: matchedChildren
+            component: {
+              componentType: "math",
+              children: matchedChildren
+            }
           }
         }
       })
@@ -209,20 +213,20 @@ export default class Line extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.dxForSlope = {
+    stateVariableDefinitions.dForSlope = {
       defaultValue: 1,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          dxForSlope: { variablesToCheck: ["dxForSlope"] }
+          dForSlope: { variablesToCheck: ["dForSlope"] }
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "dxForSlope",
-            value: desiredStateVariableValues.dxForSlope
+            setStateVariable: "dForSlope",
+            value: desiredStateVariableValues.dForSlope
           }]
         }
       }
@@ -416,9 +420,9 @@ export default class Line extends GraphicalComponent {
                 }
               }
               if (stateValues.basedOnSlope) {
-                dependenciesByKey[arrayKey].dxForSlope = {
+                dependenciesByKey[arrayKey].dForSlope = {
                   dependencyType: "stateVariable",
-                  variableName: "dxForSlope"
+                  variableName: "dForSlope"
                 }
                 dependenciesByKey[arrayKey].slopeAttr = {
                   dependencyType: "attributeComponent",
@@ -538,6 +542,7 @@ export default class Line extends GraphicalComponent {
                   let slope = dependencyValuesByKey[arrayKey].slopeAttr.stateValues.value;
 
                   if (slope === Infinity || slope === -Infinity) {
+
                     if (dim === "0") {
                       points[arrayKey] = me.fromAst(point1coord);
                     } else {
@@ -545,23 +550,27 @@ export default class Line extends GraphicalComponent {
                         me.fromAst([
                           "+",
                           point1coord,
-                          dependencyValuesByKey[arrayKey].dxForSlope
+                          dependencyValuesByKey[arrayKey].dForSlope * Math.sign(slope)
                         ])
+
                     }
+
                   } else if (Number.isFinite(slope)) {
+
+                    let theta = Math.atan(slope);
                     if (dim === "0") {
                       points[arrayKey] =
                         me.fromAst([
                           "+",
                           point1coord,
-                          dependencyValuesByKey[arrayKey].dxForSlope
+                          dependencyValuesByKey[arrayKey].dForSlope * Math.cos(theta)
                         ])
                     } else {
                       points[arrayKey] =
                         me.fromAst([
                           "+",
                           point1coord,
-                          dependencyValuesByKey[arrayKey].dxForSlope * slope
+                          dependencyValuesByKey[arrayKey].dForSlope * Math.sin(theta)
                         ])
 
                     }
@@ -800,27 +809,22 @@ export default class Line extends GraphicalComponent {
                   if (Number.isFinite(xOther) && Number.isFinite(yOther)) {
                     let dx = workspace.desiredPoint1[0] - xOther;
                     let dy = workspace.desiredPoint1[1] - yOther;
-                    if (dx === 0) {
-                      instructions.push({
-                        setDependency: dependencyNamesByKey[arrayKey].dxForSlope,
-                        desiredValue: dy,
-                      })
-                      instructions.push({
-                        setDependency: dependencyNamesByKey[arrayKey].slopeAttr,
-                        desiredValue: Infinity,
-                        variableIndex: 0,
-                      })
-                    } else {
-                      instructions.push({
-                        setDependency: dependencyNamesByKey[arrayKey].dxForSlope,
-                        desiredValue: dx,
-                      })
-                      instructions.push({
-                        setDependency: dependencyNamesByKey[arrayKey].slopeAttr,
-                        desiredValue: dy / dx,
-                        variableIndex: 0,
-                      })
+                    let dForSlope = Math.sqrt(dx * dx + dy * dy);
+                    if (dx !== 0) {
+                      dForSlope *= Math.sign(dx)
+                    // } else if (dy !== 0) {
+                    //   dForSlope *= Math.sign(dy)
                     }
+
+                    instructions.push({
+                      setDependency: dependencyNamesByKey[arrayKey].dForSlope,
+                      desiredValue: dForSlope,
+                    })
+                    instructions.push({
+                      setDependency: dependencyNamesByKey[arrayKey].slopeAttr,
+                      desiredValue: dy / dx,
+                      variableIndex: 0,
+                    })
                   }
                 }
 

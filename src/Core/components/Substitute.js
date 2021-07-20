@@ -118,7 +118,7 @@ export default class Substitute extends CompositeComponent {
     stateVariableDefinitions.type = {
       returnDependencies: () => ({
         type: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "type",
         },
       }),
@@ -270,7 +270,7 @@ export default class Substitute extends CompositeComponent {
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
 
-
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
     let serializedReplacement = {
       componentType: component.stateValues.type,
@@ -296,7 +296,7 @@ export default class Substitute extends CompositeComponent {
           attributes,
           componentType: "math",
           componentInfoObjects,
-          compositeCreatesNewNamespace: component.attributes.newNamespace
+          compositeCreatesNewNamespace: newNamespace
         })
 
 
@@ -307,7 +307,7 @@ export default class Substitute extends CompositeComponent {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: [serializedReplacement],
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

@@ -10,7 +10,8 @@ describe('Graph Reference Test 2', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <panel columns="4">
+    <sbsgroup>
+    <sideBySide>
     <graph width="150px" height="150px" name="graph1">
     <vector head="(-4,2)" tail="(3,5)" />
     </graph>
@@ -21,7 +22,7 @@ describe('Graph Reference Test 2', function () {
     <copy prop="displacement" name="d1" tname="_vector1" />
     <copy name="rv1" tname="_vector1" />
     </graph>
-  
+
     <graph width="150px" height="150px" name="graph3">
     <copy prop="tail" tname="d1" />
     <copy prop="head" tname="d1" />
@@ -35,19 +36,24 @@ describe('Graph Reference Test 2', function () {
     <copy prop="displacement" tname="rv1" />
     <copy name="rv2" tname="rv1" />
     </graph>
-  
+    </sidebyside>
+
+    <sidebyside>
     <copy width="150px" height="150px" name="graph5" tname="graph1" />
     <copy width="150px" height="150px" name="graph6" tname="graph2" />
     <copy width="150px" height="150px" name="graph7" tname="graph3" />
     <copy width="150px" height="150px" name="graph8" tname="graph4" />
-    
+    </sidebyside>
+
+    <sidebyside>
     <copy width="150px" height="150px" name="graph9" tname="graph5" />
     <copy width="150px" height="150px" name="graph10" tname="graph6" />
     <copy width="150px" height="150px" name="graph11" tname="graph7" />
     <copy width="150px" height="150px" name="graph12" tname="graph8" />
-    </panel>
-  
-    <copy name="panel2" tname="_panel1" />
+    </sideBySide>
+    </sbsgroup>
+
+    <copy name="sbsgroup2" tname="_sbsgroup1" />
   
     `}, "*");
     });
@@ -82,18 +88,18 @@ describe('Graph Reference Test 2', function () {
       let graph11 = components['/graph11'].replacements[0];
       let graph12 = components['/graph12'].replacements[0];
 
-      let graph1A = components['/panel2'].replacements[0].activeChildren[0];
-      let graph2A = components['/panel2'].replacements[0].activeChildren[1];
-      let graph3A = components['/panel2'].replacements[0].activeChildren[2];
-      let graph4A = components['/panel2'].replacements[0].activeChildren[3];
-      let graph5A = components['/panel2'].replacements[0].activeChildren[4];
-      let graph6A = components['/panel2'].replacements[0].activeChildren[5];
-      let graph7A = components['/panel2'].replacements[0].activeChildren[6];
-      let graph8A = components['/panel2'].replacements[0].activeChildren[7];
-      let graph9A = components['/panel2'].replacements[0].activeChildren[8];
-      let graph10A = components['/panel2'].replacements[0].activeChildren[9];
-      let graph11A = components['/panel2'].replacements[0].activeChildren[10];
-      let graph12A = components['/panel2'].replacements[0].activeChildren[11];
+      let graph1A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[0];
+      let graph2A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[1];
+      let graph3A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[2];
+      let graph4A = components['/sbsgroup2'].replacements[0].activeChildren[0].activeChildren[3];
+      let graph5A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[0];
+      let graph6A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[1];
+      let graph7A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[2];
+      let graph8A = components['/sbsgroup2'].replacements[0].activeChildren[1].activeChildren[3];
+      let graph9A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[0];
+      let graph10A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[1];
+      let graph11A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[2];
+      let graph12A = components['/sbsgroup2'].replacements[0].activeChildren[2].activeChildren[3];
 
       let vectors = [
         graph1.activeChildren[0],

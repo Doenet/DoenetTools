@@ -173,6 +173,7 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
     DoenetMLSettings:lazy(() => import('../Menus/DoenetMLSettings')),
     VersionHistory:lazy(() => import('../Menus/VersionHistory')),
     Variant:lazy(() => import('../Menus/Variant')),
+    AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
   }).current;
