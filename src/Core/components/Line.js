@@ -16,12 +16,14 @@ export default class Line extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return [
-    "points", "variables",
-    "nDimensions", "nPointsPrescribed",
-    "basedOnSlope",
-    "equation", "equationIdentity", "coeff0", "coeffvar1", "coeffvar2"
-  ] };
+  static get stateVariablesShadowedForReference() {
+    return [
+      "points", "variables",
+      "nDimensions", "nPointsPrescribed",
+      "basedOnSlope",
+      "equation", "equationIdentity", "coeff0", "coeffvar1", "coeffvar2"
+    ]
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -60,8 +62,10 @@ export default class Line extends GraphicalComponent {
         success: true,
         newAttributes: {
           equation: {
-            componentType: "math",
-            children: matchedChildren
+            component: {
+              componentType: "math",
+              children: matchedChildren
+            }
           }
         }
       })

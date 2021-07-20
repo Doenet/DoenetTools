@@ -20,6 +20,7 @@ import {
   faClipboard
  } from '@fortawesome/free-regular-svg-icons';
 
+import { nanoid } from 'nanoid';
 
 export const itemHistoryAtom = atomFamily({
   key:"itemHistoryAtom",

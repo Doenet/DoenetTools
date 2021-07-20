@@ -174,6 +174,8 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
     VersionHistory:lazy(() => import('../Menus/VersionHistory')),
     Variant:lazy(() => import('../Menus/Variant')),
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
+    LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
+    ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
   }).current;
 
   let selectionPanel = null;

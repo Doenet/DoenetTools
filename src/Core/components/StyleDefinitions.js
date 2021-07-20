@@ -42,7 +42,7 @@ export class StyleDefinition extends BaseComponent {
 
         let dependencies = {
           styleNumber: {
-            dependencyType: "attribute",
+            dependencyType: "attributePrimitive",
             attributeName: "styleNumber",
           },
         };

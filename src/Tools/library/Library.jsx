@@ -52,7 +52,7 @@ import '../../_utils/util.css';
 import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import Tool from '../_framework/Tool';
 import { useToolControlHelper, ProfileContext } from '../_framework/ToolRoot';
-import { useToast } from '../_framework/Toast';
+import { useToast, toastType } from '../_framework/Toast';
 import useSockets from '../../_reactComponents/Sockets';
 
 function Container(props) {
@@ -741,7 +741,7 @@ const ItemInfo = function () {
 };
 
 function AddCourseDriveButton() {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   // const setDrivePath = useSetRecoilState(drivePathSyncFamily("main"))
 
   const createNewDrive = useRecoilCallback(
@@ -806,7 +806,7 @@ function AddCourseDriveButton() {
   // });
 
   function onError({ errorMessage }) {
-    addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
+    addToast(`Course not created. ${errorMessage}`, toastType.ERROR);
   }
 
   return (
@@ -831,7 +831,7 @@ function AddCourseDriveButton() {
             if (resp.data.success) {
               addToast(
                 `Created a new course named '${label}'`,
-                ToastType.SUCCESS,
+                toastType.SUCCESS,
               );
             } else {
               onError({ errorMessage: resp.data.message });
@@ -1152,6 +1152,7 @@ export default function Library(props) {
           </div>
 
           <div
+            role='button'
             onClick={cleardrivecardSelection}
             data-cy="mainPanel"
             tabIndex={0}
