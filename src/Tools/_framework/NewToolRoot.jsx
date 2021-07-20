@@ -40,7 +40,6 @@ const ToolContainer = styled(animated.div)`
   box-sizing: border-box;
 `;
 
-
 export const profileAtom = atom({
   key: "profileAtom",
   default: selector({
@@ -295,6 +294,8 @@ let navigationObj = {
       currentMainPanel:"NavigationPanel",
       currentMenus:["AddDriveItems","EnrollStudents"],
       menusTitles:["Add Items","Enrollment"],
+      // currentMenus:["AddDriveItems","EnrollStudents","gradebook"],
+      // menusTitles:["Add Items","Enrollment","gradebook"],
       menusInitOpen:[true,false],
       headerControls: ["NavigationBreadCrumb"],
       headerControlsPositions: ["Left"],
@@ -303,14 +304,14 @@ let navigationObj = {
     editor:{
       pageName:"Course",
       currentMainPanel:"EditorViewer",
-      currentMenus:["DoenetMLSettings","VersionHistory","Variant"], 
-      menusTitles:["Settings","Version History","Variant"],
-      menusInitOpen:[false,false,false],
+      currentMenus:["VersionHistory","DoenetMLSettings","Variant"], 
+      menusTitles:["Version History","Document Settings","Variant"],
+      menusInitOpen:[true,false,false],
       supportPanelOptions:["DoenetMLEditor"],
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
-      headerControls: ["ViewerUpdateButton","BackButton"],
-      headerControlsPositions: ["Left","Right"],
+      headerControls: ["BackButton","ViewerUpdateButton",],
+      headerControlsPositions: ["Left","Left"],
     },
     enrollment:{
       pageName:"Enrollment",
