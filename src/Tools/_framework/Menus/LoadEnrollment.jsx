@@ -7,7 +7,6 @@ import {
 } from 'recoil';
 import {processAtom,headersAtom,entriesAtom, enrollmentTableDataAtom} from '../ToolPanels/Enrollment';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import axios from 'axios';
 import { nanoid } from 'nanoid';
 
 export default function LoadEnrollment(props){
@@ -185,52 +184,6 @@ export default function LoadEnrollment(props){
         }
         importRows.push(<tr key={`rowdata${i}`}>{rowcells}</tr>);
       }
-
-let cancelButton =  <Button
-key="cancel"
-onClick={() => setProcess('Display Enrollment')}
-value="Cancel"
-></Button>
-let mergeButton = <>
-<Button
-             value="Merge"
-             key="merge"
-             onClick={() => {
-               const payload = {
-                 driveId,
-                 mergeHeads,
-                 mergeId,
-                 mergeFirstName,
-                 mergeLastName,
-                 mergeEmail,
-                 mergeSection,
-                 mergeDropped,
-                 userIds,
-               };
-               axios
-                 .post('/api/mergeEnrollmentData.php', payload)
-                 .then((resp) => {
-                   const enrollmentArray = resp.data.enrollmentArray;
-                   if (enrollmentArray) {
-                     setEnrollmentTableDataAtom(enrollmentArray);
-                   }
-                   setProcess('Display Enrollment');
-                 });
-             }}
-           ></Button>
-</>
-      return (
-        <>
-          <>
-           {cancelButton}
-           {mergeButton}
-           
-
-           
-          </>
-
-        </>
-      );
     }
   }
 
@@ -244,6 +197,5 @@ let mergeButton = <>
           <Button value="Enroll Learners"></Button>
         )}
       </div>
-      {/* {mergeButton} */}
   </div>
 }

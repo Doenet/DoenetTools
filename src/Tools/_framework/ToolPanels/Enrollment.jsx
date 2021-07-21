@@ -4,6 +4,7 @@ import axios from 'axios';
 import parse from 'csv-parse';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import {
   atom,
@@ -312,10 +313,43 @@ function EnrollmentNew(params) {
         }
         importRows.push(<tr key={`rowdata${i}`}>{rowcells}</tr>);
       }
-
+      let cancelButton =  <Button
+      key="cancel"
+      onClick={() => setProcess('Display Enrollment')}
+      value="Cancel"
+      ></Button>
+      let mergeButton = <>
+      <Button
+                 value="Merge"
+                 key="merge"
+                 onClick={() => {
+                   const payload = {
+                     driveId,
+                     mergeHeads,
+                     mergeId,
+                     mergeFirstName,
+                     mergeLastName,
+                     mergeEmail,
+                     mergeSection,
+                     mergeDropped,
+                     userIds,
+                   };
+                   axios
+                     .post('/api/mergeEnrollmentData.php', payload)
+                     .then((resp) => {
+                       const enrollmentArray = resp.data.enrollmentArray;
+                       if (enrollmentArray) {
+                         setEnrollmentTableDataAtom(enrollmentArray);
+                       }
+                       setProcess('Display Enrollment');
+                     });
+                 }}
+               ></Button>
+      </>
+          
+         
       return (
         <>
-          
           <div style={{ flexDirection: 'row', display: 'flex' }}>
             {/* <p>Choose Columns to Merge</p> */}
             <table>
@@ -325,6 +359,10 @@ function EnrollmentNew(params) {
               <tbody>{importRows}</tbody>
             </table>
           </div>
+          <ButtonGroup>
+            {mergeButton}
+            {cancelButton}
+          </ButtonGroup>
         </>
       );
     }
@@ -392,7 +430,197 @@ let manualEnroll = (
     <Button value="Enroll" onClick={(e) => enrollManual(e)} />
   </div>
 );
+if (process === 'Choose Columns') {
+  let foundId = true;
+  let columnToIndex = {
+    email: null,
+    empId: null,
+    firstName: null,
+    lastName: null,
+    section: null,
+    dropped: null,
+  };
+  for (let [i, head] of headers.entries()) {
+    const colHead = head.toLowerCase().replace(/\s/g, '').replace(/"/g, '');
+    if (
+      colHead === 'emplid' ||
+      colHead === 'id' ||
+      colHead === 'studentid' ||
+      colHead === 'employeeid'
+    ) {
+      columnToIndex.empId = i;
+    }
+    if (colHead === 'emailaddress' || colHead === 'email') {
+      columnToIndex.email = i;
+    }
+    if (colHead === 'firstname') {
+      columnToIndex.firstName = i;
+    }
+    if (colHead === 'lastname') {
+      columnToIndex.lastName = i;
+    }
+    if (colHead === 'section') {
+      columnToIndex.section = i;
+    }
+    if (colHead === 'mainsectionstatus') {
+      columnToIndex.dropped = i;
+    }
+  }
+  // console.log("columnToIndex",columnToIndex)
+  if (columnToIndex.empId == null && columnToIndex.email == null) {
+    foundId = false;
+  }
 
+  if (!foundId) {
+    return (
+      <>
+        <div style={{ flexDirection: 'row', display: 'flex' }}>
+          <p>Data Needs to have a heading marked "id"</p>
+          <p>No Data Imported</p>
+          <Button
+            onClick={() => setProcess('Display Enrollment')}
+            value="OK"
+          />
+        </div>
+      </>
+    );
+  } else {
+    let importHeads = [];
+    let mergeHeads = [];
+    if (columnToIndex.empId != null) {
+      importHeads.push(<th key="empId">ID</th>);
+      mergeHeads.push('id');
+    }
+    if (columnToIndex.firstName != null) {
+      importHeads.push(<th key="firstName">First Name</th>);
+      mergeHeads.push('firstName');
+    }
+    if (columnToIndex.lastName != null) {
+      importHeads.push(<th key="lastName">Last Name</th>);
+      mergeHeads.push('lastName');
+    }
+    if (columnToIndex.email != null) {
+      importHeads.push(<th key="email">Email</th>);
+      mergeHeads.push('email');
+    }
+    if (columnToIndex.section != null) {
+      importHeads.push(<th key="section">Section</th>);
+      mergeHeads.push('section');
+    }
+    if (columnToIndex.dropped != null) {
+      importHeads.push(<th key="dropped">Dropped</th>);
+      mergeHeads.push('dropped');
+    }
+    let importRows = [];
+    let mergeId = [];
+    let mergeFirstName = [];
+    let mergeLastName = [];
+    let mergeEmail = [];
+    let mergeSection = [];
+    let mergeDropped = [];
+    let userIds = [];
+    for (let [i, rowdata] of entries.entries()) {
+      let rowcells = [];
+      let userId = nanoid();
+      userIds.push(userId);
+
+      if (
+        columnToIndex.empId != null &&
+        typeof rowdata[columnToIndex.empId] == 'string'
+      ) {
+        let empId = rowdata[columnToIndex.empId].replace(/"/g, '');
+        rowcells.push(<td key="empId">{empId}</td>);
+        mergeId.push(empId);
+      }
+      if (
+        columnToIndex.firstName != null &&
+        typeof rowdata[columnToIndex.firstName] == 'string'
+      ) {
+        let firstName = rowdata[columnToIndex.firstName].replace(/"/g, '');
+        rowcells.push(<td key="firstName">{firstName}</td>);
+        mergeFirstName.push(firstName);
+      }
+      if (
+        columnToIndex.lastName != null &&
+        typeof rowdata[columnToIndex.lastName] == 'string'
+      ) {
+        let lastName = rowdata[columnToIndex.lastName].replace(/"/g, '');
+        rowcells.push(<td key="lastName">{lastName}</td>);
+        mergeLastName.push(lastName);
+      }
+      if (
+        columnToIndex.email != null &&
+        typeof rowdata[columnToIndex.email] == 'string'
+      ) {
+        let email = rowdata[columnToIndex.email].replace(/"/g, '');
+        rowcells.push(<td key="email">{email}</td>);
+        mergeEmail.push(email);
+      }
+      if (
+        columnToIndex.section != null &&
+        typeof rowdata[columnToIndex.section] == 'string'
+      ) {
+        let section = rowdata[columnToIndex.section].replace(/"/g, '');
+        rowcells.push(<td key="section">{section}</td>);
+        mergeSection.push(section);
+      }
+      if (
+        columnToIndex.dropped != null &&
+        typeof rowdata[columnToIndex.dropped] == 'string'
+      ) {
+        let dropped = rowdata[columnToIndex.dropped].replace(/"/g, '');
+        rowcells.push(<td key="dropped">{dropped}</td>);
+        mergeDropped.push(dropped);
+      }
+      importRows.push(<tr key={`rowdata${i}`}>{rowcells}</tr>);
+    }
+
+let cancelButton =  <Button
+key="cancel"
+onClick={() => setProcess('Display Enrollment')}
+value="Cancel"
+></Button>
+let mergeButton = <>
+<Button
+           value="Merge"
+           key="merge"
+           onClick={() => {
+             const payload = {
+               driveId,
+               mergeHeads,
+               mergeId,
+               mergeFirstName,
+               mergeLastName,
+               mergeEmail,
+               mergeSection,
+               mergeDropped,
+               userIds,
+             };
+             axios
+               .post('/api/mergeEnrollmentData.php', payload)
+               .then((resp) => {
+                 const enrollmentArray = resp.data.enrollmentArray;
+                 if (enrollmentArray) {
+                   setEnrollmentTableDataAtom(enrollmentArray);
+                 }
+                 setProcess('Display Enrollment');
+               });
+           }}
+         ></Button>
+</>
+    
+    
+    return (
+      <>
+          <ButtonGroup>
+            {/* {mergeButton}
+            {cancelButton} */}
+          </ButtonGroup>
+        
+      </>
+    );
+  }
+}
   return (
     <>
       {/* <div key="drop" {...getRootProps()}>
@@ -404,10 +632,13 @@ let manualEnroll = (
         )}
       </div> */}
       {/* {<Button value = "Enroll Learners enter" onClick={()=>enrollLearners()} ></Button>} */}
-      {enrollmentTableData.length > 0 ? enrollmentTable : '<-Enroll using Menu' }
+      {enrollmentTable}
+      {enrollmentTableData.length === 0 ? (
+        <p>No Students are currently enrolled in the course</p>
+      ) : (
+        ''
+      )}
       {/* {manualEnroll} */}
-     
-
     </>
   );
 }
