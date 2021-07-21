@@ -14,6 +14,7 @@ import {
   variantInfoAtom, 
   variantPanelAtom,
  } from '../ToolHandlers/CourseToolHandler';
+ import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 
 export const viewerDoenetMLAtom = atom({
   key:"viewerDoenetMLAtom",
@@ -35,13 +36,13 @@ export default function EditorViewer(props){
   console.log(">>>===EditorViewer")
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
+  const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    console.log(">>>initDoenetML doenetId",doenetId)
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     const contentId = versionHistory.draft.contentId;
     
@@ -57,7 +58,6 @@ export default function EditorViewer(props){
   },[])
 
   useEffect(() => {
-    console.log(">>>paramDoenetId updated!",paramDoenetId)
     initDoenetML(paramDoenetId)
     return () => {
       // setEditorInit(false);
@@ -66,7 +66,6 @@ export default function EditorViewer(props){
 
  
   if (paramDoenetId !== initilizedDoenetId){
-    console.log(">>>CHANGING DoenetId!")
     //DoenetML is changing to another DoenetID
     return <div style={props.style}></div>
   }
@@ -109,6 +108,8 @@ export default function EditorViewer(props){
     });
   }
   
+  console.log(`>>>Show DoenetViewer with value -${viewerDoenetML}-`)
+  console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
   return <div style={props.style}>
     <DoenetViewer
     key={"doenetviewer"}

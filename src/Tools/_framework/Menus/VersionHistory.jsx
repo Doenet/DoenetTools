@@ -21,7 +21,7 @@ import { nanoid } from 'nanoid';
 import axios from "axios";
 import { useToast, toastType } from '@Toast';
 
-const currentDraftSelectedAtom = atom({
+export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
   default:true
 })
@@ -195,10 +195,24 @@ export default function VersionHistory(props){
     
   })
 
-  const setSelectedVersionId = useRecoilCallback(({snapshot,set})=> async (versionId,isCurrentDraft)=>{
+  const setSelectedVersionId = useRecoilCallback(({snapshot,set})=> async ({doenetId,versionId,isCurrentDraft})=>{
+    //Update menus
     set(selectedVersionIdAtom,versionId);
-    set(currentDraftSelectedAtom,isCurrentDraft);
-    console.log(">>>set versionId to ",versionId)
+    set(currentDraftSelectedAtom,isCurrentDraft); //Use to determine to make read only or not
+    //Get DoenetML
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    let contentId = oldVersions.draft.contentId;
+    if (!isCurrentDraft){
+      for (let version of oldVersions.named){
+        if (version.versionId === versionId){
+          contentId = version.contentId;
+        }
+      }
+    }
+    const doenetML = await snapshot.getPromise(fileByContentId(contentId));
+    //Set to doenetML
+    set(viewerDoenetMLAtom,doenetML)
+    set(textEditorDoenetMLAtom,doenetML)
   })
   
 //make sure we are ready
@@ -247,9 +261,9 @@ if (initializedDoenetId !== doenetId){
     <select 
     size='2' 
     style={{width:'230px'}}
-    onChange={(e)=>{setSelectedVersionId(e.target.value,true)}}>
+    onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:true})}}>
     {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
-    <option value={'version.versionId'} selected={currentDraftSelected}>Current Draft</option>
+    <option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option>
   </select>
 
     <div style={{margin:"6px 0px 6px 0px"}}>
@@ -259,7 +273,7 @@ if (initializedDoenetId !== doenetId){
   <select 
     size='8' 
     style={{width:'230px'}}
-    onChange={(e)=>{setSelectedVersionId(e.target.value,false)}}>
+    onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:false})}}>
     {options}
   </select>
   <div>Name: {version?.title}</div>

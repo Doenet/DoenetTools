@@ -7,6 +7,8 @@ import {
   useRecoilCallback,
 } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
+
 import CodeMirror from '../CodeMirror';
 import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
 import sha256 from 'crypto-js/sha256';
@@ -39,10 +41,10 @@ function buildTimestamp(){
 export default function DoenetMLEditor(props){
   console.log(">>>===DoenetMLEditor")
   const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
-  console.log(">>>editorDoenetML",editorDoenetML)
 
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
   let editorRef = useRef(null);
   let timeout = useRef(null);
   let autosavetimeout = useRef(null);
@@ -117,7 +119,9 @@ export default function DoenetMLEditor(props){
     return <div style={props.style}></div>
   }
   
-  // console.log(`>>>Show CodeMirror with value -${editorDoenetML}-`)
+  console.log(`>>>Show CodeMirror with value -${editorDoenetML}-`)
+  console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
+
   return <div style={props.style}>
     <CodeMirror
     key = "codemirror"

@@ -589,7 +589,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
         params = recoilPageToolView.params;
       }
 
-        backParams.current = currentParams.current; //Set params for back button
+        backParams.current = currentParams.current; //Set params for back button to the previous page's params
         currentParams.current = params; 
 
         props.setToolRootMenusAndPanels(nextMenusAndPanels)
