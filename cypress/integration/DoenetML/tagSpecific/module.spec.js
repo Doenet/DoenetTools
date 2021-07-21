@@ -73,10 +73,10 @@ describe('Module Tag Tests', function () {
 
     <p name="p2">Hello $(m/item)!</p>
 
-    <copy tname="m" link="false" item="plant" assignNames="m2" />
+    <copy tname="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
-    <copy tname="m" link="false" item="$item" assignNames="m3" />
-    <copy tname="m" link="false" assignNames="m4" />
+    <copy tname="m" item="$item" assignNames="m3" />
+    <copy tname="m" assignNames="m4" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -111,10 +111,10 @@ describe('Module Tag Tests', function () {
 
     <p name="p2">Hello $(m/mads/item)!</p>
 
-    <copy tname="m" link="false" item="plant" assignNames="m2" />
+    <copy tname="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
-    <copy tname="m" link="false" item="$item" assignNames="m3" />
-    <copy tname="m" link="false" assignNames="m4" />
+    <copy tname="m" item="$item" assignNames="m3" />
+    <copy tname="m" assignNames="m4" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -149,10 +149,10 @@ describe('Module Tag Tests', function () {
 
     <p name="p2">Hello $(m/mads/ma/item)!</p>
 
-    <copy tname="m" link="false" item="plant" assignNames="m2" />
+    <copy tname="m" item="plant" assignNames="m2" />
     <p><textinput name="item" prefill="animal" /></p>
-    <copy tname="m" link="false" item="$item" assignNames="m3" />
-    <copy tname="m" link="false" assignNames="m4" />
+    <copy tname="m" item="$item" assignNames="m3" />
+    <copy tname="m" assignNames="m4" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -197,7 +197,7 @@ describe('Module Tag Tests', function () {
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
     <p>Graph size: <mathinput name="w" prefill="200" /> <mathinput name="h" prefill="100" /></p>
     
-    <copy tname="m" link="false" x="$x" y="$y" width="$w" height="$h" assignNames="m2" />
+    <copy tname="m" x="$x" y="$y" width="$w" height="$h" assignNames="m2" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -307,12 +307,12 @@ describe('Module Tag Tests', function () {
         <point name="p" x="$u" y="$v" />
       </graph>
       <math name="vfixed" modifyIndirectly="false" hide>$v</math>
-      <copy tname="../m" x="$u+$vfixed" y="9" assignNames="m" link="false" />
+      <copy tname="../m" x="$u+$vfixed" y="9" assignNames="m" />
       
     </module>
 
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
-    <copy tname="n" link="false" u="$x" v="$y" assignNames="n2" />
+    <copy tname="n" u="$x" v="$y" assignNames="n2" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -839,6 +839,54 @@ describe('Module Tag Tests', function () {
         expect(g2extProblem.stateValues.creditAchieved).eq(1);
         expect(g3extProblem.stateValues.creditAchieved).eq(1);
       })
+    })
+
+
+  })
+
+  it('apply sugar in module attributes', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <module name="m" newNamespace>
+      <moduleAttributeDefinitions>
+        <moduleAttribute componentType="point" attribute="P" defaultValue="(1,2)" assignNames="P" />
+      </moduleAttributeDefinitions>
+      <p>Point: $P</p>
+    </module>
+    
+    <copy tname="m" P="(3,4)" assignNames="m2" />
+
+    <graph>
+      <point name="Q">(5,6)</point>
+    </graph>
+    <copy tname="m" P="$Q" assignNames="m3" />
+    
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/m/_p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("(1,2)")
+    })
+    cy.get(cesc('#/m2/_p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("(3,4)")
+    })
+    cy.get(cesc('#/m3/_p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("(5,6)")
+    })
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/Q"].movePoint({ x: 7, y: 8 });
+    });
+
+    cy.get(cesc('#/m3/_p1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("(7,8)")
     })
 
 
