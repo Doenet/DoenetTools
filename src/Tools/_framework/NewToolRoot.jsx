@@ -441,6 +441,8 @@ let encodeParams = p => Object.entries(p).map(kv =>
     const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
     let lastPageToolView = useRef({page:"init",tool:"",view:""});
     let backPageToolView = useRef({page:"init",tool:"",view:""});
+    let backParams = useRef({})
+    let currentParams = useRef({})
     let lastLocationStr = useRef("");
     let location = useLocation();
     let history = useHistory();
@@ -500,7 +502,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
         if (backPageToolView.current.page === "init"){
           backPageToolView.current.page = 'home'; //Go home if started with the page
         }
-        setRecoilPageToolView(backPageToolView.current)
+        // console.log(">>>User hit back button backParams.current",backParams.current)
+        let pageToolViewParams = {...backPageToolView.current,params:backParams.current}
+
+        setRecoilPageToolView(pageToolViewParams)
         return null;
       }
       nextPageToolView = {...recoilPageToolView}
@@ -576,7 +581,17 @@ let encodeParams = p => Object.entries(p).map(kv =>
     // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
     //Only update ToolRoot if nextMenusAndPanels was indicated as a change
     if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) ){
-      backPageToolView.current = lastPageToolView.current;  //Set back for back button
+      backPageToolView.current = lastPageToolView.current;  //Set PageToolView for back button
+      let params = {};
+      if (isURLChange){
+        params = searchObj;
+      }else if (isRecoilChange){
+        params = recoilPageToolView.params;
+      }
+
+        backParams.current = currentParams.current; //Set params for back button
+        currentParams.current = params; 
+
         props.setToolRootMenusAndPanels(nextMenusAndPanels)
       
     }
