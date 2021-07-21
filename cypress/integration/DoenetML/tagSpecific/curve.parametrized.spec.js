@@ -502,4 +502,59 @@ describe('Parameterized Curve Tag Tests', function () {
 
   });
 
+  it('constrain to parametrize curve, different scales from graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <function variables="t" formula="100 cos(t)" name="f" />
+      <function variables="t" formula="0.1 sin(t)" name="g" />
+    </setup>
+
+    <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
+      <curve name="c">
+        <copy tname="f" />
+        <copy tname="g" />
+      </curve>
+      <point x="1" y="0.001" name="P">
+        <constraints>
+          <constrainTo><copy tname="c" /></constrainTo>
+        </constraints>
+      </point>
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let x = components['/P'].stateValues.xs[0].tree;
+      let y = components['/P'].stateValues.xs[1].tree;
+      expect(x).closeTo(100 / Math.sqrt(2), 1E-4);
+      expect(y).closeTo(0.1 / Math.sqrt(2), 1E-4);
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -200, y: 0.8 })
+      let x = components['/P'].stateValues.xs[0].tree;
+      let y = components['/P'].stateValues.xs[1].tree;
+      expect(x).closeTo(-100 / Math.sqrt(17), 1E-4);
+      expect(y).closeTo(0.1 * 4 / Math.sqrt(17), 1E-4);
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -2, y: -0.001 })
+      let x = components['/P'].stateValues.xs[0].tree;
+      let y = components['/P'].stateValues.xs[1].tree;
+      expect(x).closeTo(-100 * 2 / Math.sqrt(5), 1E-4);
+      expect(y).closeTo(-0.1 / Math.sqrt(5), 1E-4);
+    })
+
+  });
+
 });

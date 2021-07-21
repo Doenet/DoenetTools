@@ -1,5 +1,5 @@
 <module>
-  <moduleAttributeDefinitions>
+  <moduleSetup>
     <moduleAttribute componentType="text" attribute="title" defaultValue="Find point" assignNames="title" />
     <moduleAttribute componentType="math" attribute="initialx" defaultValue="0" assignNames="initialx" />
     <moduleAttribute componentType="math" attribute="initialy" defaultValue="0" assignNames="initialy" />
@@ -7,7 +7,7 @@
     <moduleAttribute componentType="math" attribute="goaly" defaultValue="4" assignNames="goaly" />
     <moduleAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
     <moduleAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
-  </moduleAttributeDefinitions>
+  </moduleSetup>
 
   <problem name="prob"><title>$title</title>
 
