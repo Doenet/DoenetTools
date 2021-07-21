@@ -4,7 +4,6 @@ import Tool from "../Tool";
 import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import  VisibilitySensor from 'react-visibility-sensor';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 import { nanoid } from 'nanoid';

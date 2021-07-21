@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import {basicSetup} from "@codemirror/basic-setup";
 import {EditorState, Transaction, StateEffect} from "@codemirror/state";
 import {EditorView, keymap} from "@codemirror/view";
@@ -14,7 +14,7 @@ const matchTagState = atom({
     default: false,
 });
 
-export default function CodeMirror({initialValue,setInternalValue,onBeforeChange}){
+export default function CodeMirror({setInternalValue,onBeforeChange}){
     let [matchTagEnabled, setMatchTagEnabled] = useRecoilState(matchTagState);
     let view = useRef(null);
     let parent = useRef(null);
