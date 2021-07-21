@@ -313,14 +313,14 @@ function EnrollmentNew(params) {
         }
         importRows.push(<tr key={`rowdata${i}`}>{rowcells}</tr>);
       }
-      let cancelButton =  <Button
+      let cancelButton =  <Button alert
       key="cancel"
       onClick={() => setProcess('Display Enrollment')}
-      value="Cancel"
+      value="Stop Enrolling These Learners"
       ></Button>
       let mergeButton = <>
       <Button
-                 value="Merge"
+                 value="Enroll these learners"
                  key="merge"
                  onClick={() => {
                    const payload = {
