@@ -274,7 +274,7 @@ export default class Core {
 
       serializeFunctions.createAttributesFromProps(serializedComponents, this.componentInfoObjects, this.flags);
 
-      serializedComponents = serializeFunctions.applyMacros(serializedComponents, this.componentInfoObjects);
+      serializedComponents = serializeFunctions.applyMacros(serializedComponents, this.componentInfoObjects, this.flags);
 
       // remove blank string children after applying macros,
       // as applying macros could create additional blank string children
@@ -316,7 +316,7 @@ export default class Core {
             originalCopyWithUri.children.push({
               componentType: "externalContent",
               children: JSON.parse(JSON.stringify(serializedComponentsForContentId)),
-              attributes: { newNamespace: true },
+              attributes: { newNamespace: { primitive: true } },
               doenetAttributes: { createUniqueName: true }
             });
           }
@@ -840,9 +840,9 @@ export default class Core {
       }
     }
 
-    for (let attr in component.attributes) {
-      let attrComp = component.attributes[attr];
-      if (attrComp.componentType) {
+    for (let attrName in component.attributes) {
+      let attrComp = component.attributes[attrName].component;
+      if (attrComp) {
         let additionalParentsWithNotReady = this.expandCompositesOfDescendants(attrComp, forceExpandComposites);
         parentsWithCompositesNotReady.push(...additionalParentsWithNotReady);
       }
@@ -887,7 +887,7 @@ export default class Core {
     if (ancestors.length > 0) {
       let parentName = ancestors[0].componentName;
       let parent = this.components[parentName];
-      if (parent.attributes.newNamespace) {
+      if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
         namespaceForUnamed = parent.componentName + "/";
       } else {
         namespaceForUnamed = getNamespaceFromName(parent.componentName);
@@ -1206,24 +1206,22 @@ export default class Core {
 
     if (serializedComponent.attributes) {
 
-      let attributesObj = componentClass.createAttributesObject({ flags: this.flags });
+      for (let attrName in serializedComponent.attributes) {
+        let attribute = serializedComponent.attributes[attrName];
 
-      for (let attr in serializedComponent.attributes) {
-        let attributeSpecification = attributesObj[attr];
-
-        if (attributeSpecification && attributeSpecification.createComponentOfType) {
+        if (attribute.component) {
 
           let attrResult = this.createIsolatedComponentsSub({
-            serializedComponents: [serializedComponent.attributes[attr]],
+            serializedComponents: [serializedComponent.attributes[attrName].component],
             ancestors: ancestorsForChildren,
             applyAdapters, shadow,
             namespaceForUnamed,
-            createNameContext: `attribute|${attr}`
+            createNameContext: `attribute|${attrName}`
           });
 
-          attributes[attr] = attrResult.components[0];
+          attributes[attrName] = { component: attrResult.components[0] };
         } else {
-          attributes[attr] = serializedComponent.attributes[attr];
+          attributes[attrName] = serializedComponent.attributes[attrName];
         }
       }
     }
@@ -1764,6 +1762,8 @@ export default class Core {
       uniqueIdentifiersUsed
     });
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let compositeAttributesObj = component.constructor.createAttributesObject({ flags: this.flags });
 
     for (let repl of serializedReplacements) {
@@ -1774,9 +1774,9 @@ export default class Core {
       let attributesFromComposite = convertAttributesForComponentType({
         attributes: component.attributes,
         componentType: repl.componentType,
-        componentInfoObjects: this.componentInfoObjects, 
+        componentInfoObjects: this.componentInfoObjects,
         compositeAttributesObj,
-        compositeCreatesNewNamespace: component.attributes.newNamespace
+        compositeCreatesNewNamespace: newNamespace
       });
       Object.assign(repl.attributes, attributesFromComposite)
     }
@@ -1786,13 +1786,13 @@ export default class Core {
     if (component.constructor.assignNamesToReplacements) {
 
       let originalNamesAreConsistent = component.constructor.originalNamesAreConsistent
-        && component.attributes.newNamespace;
+        && newNamespace;
 
       let processResult = serializeFunctions.processAssignNames({
         assignNames: component.doenetAttributes.assignNames,
         serializedComponents: serializedReplacements,
         parentName: component.componentName,
-        parentCreatesNewNamespace: component.attributes.newNamespace,
+        parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
       });
@@ -1803,13 +1803,13 @@ export default class Core {
       // console.log(deepClone(serializedReplacements))
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
-      let originalNamesAreConsistent = component.attributes.newNamespace;
+      let originalNamesAreConsistent = newNamespace;
 
       let processResult = serializeFunctions.processAssignNames({
         // assignNames: component.doenetAttributes.assignNames,
         serializedComponents: serializedReplacements,
         parentName: component.componentName,
-        parentCreatesNewNamespace: component.attributes.newNamespace,
+        parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
       });
@@ -1843,7 +1843,7 @@ export default class Core {
     this.parameterStack.push(component.sharedParameters, false);
 
     let namespaceForUnamed;
-    if (component.attributes.newNamespace) {
+    if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
       namespaceForUnamed = component.componentName + "/";
     } else {
       namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -1893,7 +1893,7 @@ export default class Core {
 
         // expand composite if it isn't already
         if (!child.isExpanded) {
-          if (child.attributes.componentType) {
+          if (child.attributes.componentType && child.attributes.componentType.primitive) {
             replaceWithPlaceholders = true;
           } else {
             continue;
@@ -1904,12 +1904,16 @@ export default class Core {
 
         if (replaceWithPlaceholders) {
 
-          let nComponents = child.attributes.nComponents;
-          if (nComponents === undefined) {
+          let nComponents;
+
+          if (child.attributes.nComponents) {
+            nComponents = child.attributes.nComponents.primitive;
+          } else {
             nComponents = 1;
           }
 
-          let componentType = this.componentInfoObjects.componentTypeLowerCaseMapping[child.attributes.componentType];
+          let componentType = this.componentInfoObjects.
+            componentTypeLowerCaseMapping[child.attributes.componentType.primitive.toLowerCase()];
           replacements = [];
 
           for (let i = 0; i < nComponents; i++) {
@@ -2041,7 +2045,7 @@ export default class Core {
       if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
         if (originalChild.componentName) {
           let namespaceForUnamed;
-          if (component.attributes.newNamespace) {
+          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
             namespaceForUnamed = component.componentName + "/";
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -2185,8 +2189,8 @@ export default class Core {
 
     let attributes = componentClass.createAttributesObject({ flags: this.flags });
 
-    for (let attribute in attributes) {
-      let attributeSpecification = attributes[attribute];
+    for (let attrName in attributes) {
+      let attributeSpecification = attributes[attrName];
       if (!attributeSpecification.createStateVariable) {
         continue;
       }
@@ -2208,7 +2212,7 @@ export default class Core {
 
       let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
       if (!attributeClass) {
-        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attribute} of componentType ${componentClass.componentType}.`)
+        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
       }
 
       let stateVariableForAttributeValue = attributeSpecification.componentStateVariableForAttributeValue;
@@ -2219,17 +2223,17 @@ export default class Core {
         }
       }
 
-      if (attribute in ancestorProps) {
+      if (attrName in ancestorProps) {
         stateVarDef.returnDependencies = () => ({
           attributeComponent: {
             dependencyType: "attributeComponent",
-            attributeName: attribute,
+            attributeName: attrName,
             variableNames: [stateVariableForAttributeValue],
           },
           ancestorProp: {
             dependencyType: "stateVariable",
-            componentName: ancestorProps[attribute].componentName,
-            variableName: attribute,
+            componentName: ancestorProps[attrName].componentName,
+            variableName: attrName,
           }
         });
 
@@ -2255,7 +2259,7 @@ export default class Core {
 
           let attributeVariable = validateAttributeValue({
             value: attributeComponent.stateValues[stateVariableForAttributeValue],
-            attributeSpecification, attribute
+            attributeSpecification, attrName
           })
 
           // if mergeArrays specified and both ancetor prop and child value
@@ -2321,7 +2325,7 @@ export default class Core {
         stateVarDef.returnDependencies = () => ({
           attributeComponent: {
             dependencyType: "attributeComponent",
-            attributeName: attribute,
+            attributeName: attrName,
             variableNames: [stateVariableForAttributeValue],
           },
         });
@@ -2339,7 +2343,7 @@ export default class Core {
 
           let childVariable = validateAttributeValue({
             value: attributeComponent.stateValues[stateVariableForAttributeValue],
-            attributeSpecification, attribute
+            attributeSpecification, attrName
           })
 
           if (attributeSpecification.mergeArrayWithDefault && Array.isArray(childVariable)) {
@@ -2394,10 +2398,10 @@ export default class Core {
         "triggerActionOnChange",
       ]
 
-      for (let attribute of attributesToCopy) {
-        if (attribute in attributeSpecification) {
-          stateVarDef[attribute]
-            = attributeSpecification[attribute];
+      for (let attrName2 of attributesToCopy) {
+        if (attrName2 in attributeSpecification) {
+          stateVarDef[attrName2]
+            = attributeSpecification[attrName2];
         }
       }
 
@@ -2411,8 +2415,8 @@ export default class Core {
 
     let attributes = componentClass.createAttributesObject({ flags: this.flags });
 
-    for (let attribute in attributes) {
-      let attributeSpecification = attributes[attribute];
+    for (let attrName in attributes) {
+      let attributeSpecification = attributes[attrName];
       if (!attributeSpecification.createStateVariable) {
         continue;
       }
@@ -2431,14 +2435,14 @@ export default class Core {
 
       let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
       if (!attributeClass) {
-        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attribute} of componentType ${componentClass.componentType}.`)
+        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
       }
 
 
       stateVarDef.returnDependencies = () => ({
         attributeComponent: {
           dependencyType: "attributeComponent",
-          attributeName: attribute,
+          attributeName: attrName,
           variableNames: [stateVariableForAttributeValue],
         },
       });
@@ -2497,10 +2501,10 @@ export default class Core {
         "propagateToProps",
       ]
 
-      for (let attribute of attributesToCopy) {
-        if (attribute in attributeSpecification) {
-          stateVarDef[attribute]
-            = attributeSpecification[attribute];
+      for (let attrName2 of attributesToCopy) {
+        if (attrName2 in attributeSpecification) {
+          stateVarDef[attrName2]
+            = attributeSpecification[attrName2];
         }
       }
 
@@ -2570,8 +2574,8 @@ export default class Core {
 
     let attributes = componentClass.createAttributesObject({ flags: this.flags });
 
-    for (let attribute in attributes) {
-      let attributeSpecification = attributes[attribute];
+    for (let attrName in attributes) {
+      let attributeSpecification = attributes[attrName];
       if (!attributeSpecification.createStateVariable) {
         continue;
       }
@@ -2589,7 +2593,7 @@ export default class Core {
 
       let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
       if (!attributeClass) {
-        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attribute} of componentType ${componentClass.componentType}.`)
+        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
       }
 
       let stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
@@ -2600,18 +2604,18 @@ export default class Core {
       let thisDependencies = {
         attributeComponent: {
           dependencyType: "attributeComponent",
-          attributeName: attribute,
+          attributeName: attrName,
           variableNames: [stateVariableForAttributeValue],
         },
       };
 
       if ((!redefineDependencies.propVariable || attributeSpecification.propagateToProps)
-        && (attribute in targetComponent.state)
+        && (attrName in targetComponent.state)
       ) {
         thisDependencies.targetVariable = {
           dependencyType: "stateVariable",
           componentName: targetComponent.componentName,
-          variableName: attribute,
+          variableName: attrName,
         };
         if ("targetAttributesToIgnore" in compositeComponent.state &&
           redefineDependencies.firstLevelReplacement
@@ -2629,25 +2633,25 @@ export default class Core {
       // onto attribute of replacement
       // (rather than state variable attribute from the target
       // even if it were to exist)
-      if (additionalAttributesFromStateVariables[attribute]) {
+      if (additionalAttributesFromStateVariables[attrName]) {
         thisDependencies.targetVariable = {
           dependencyType: "stateVariable",
           componentName: targetComponent.componentName,
-          variableName: additionalAttributesFromStateVariables[attribute]
+          variableName: additionalAttributesFromStateVariables[attrName]
         }
       }
 
-      if (attribute in ancestorProps) {
+      if (attrName in ancestorProps) {
         thisDependencies.ancestorProp = {
           dependencyType: "stateVariable",
-          componentName: ancestorProps[attribute].componentName,
-          variableName: attribute,
+          componentName: ancestorProps[attrName].componentName,
+          variableName: attrName,
         }
       }
 
       stateVarDef.returnDependencies = () => thisDependencies;
 
-      if (attribute in ancestorProps) {
+      if (attrName in ancestorProps) {
 
         stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
 
@@ -2656,17 +2660,17 @@ export default class Core {
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attribute))
+                dependencyValues.targetAttributesToIgnore.includes(attrName))
               && !usedDefault.targetVariable) {
               // if don't have attribute component 
               // and target has attribute, use that value
-              return { newValues: { [attribute]: dependencyValues.targetVariable } };
+              return { newValues: { [attrName]: dependencyValues.targetVariable } };
             } else if (!usedDefault.ancestorProp) {
               // need to validate it, since ancestor
               // may not have had the validation logic
               let ancestorAttributeValue = validateAttributeValue({
                 value: dependencyValues.ancestorProp,
-                attributeSpecification, attribute
+                attributeSpecification, attribute: attrName
               })
               return { newValues: { [varName]: ancestorAttributeValue } }
             } else {
@@ -2685,7 +2689,7 @@ export default class Core {
 
           let attributeVariable = validateAttributeValue({
             value: attributeComponent.stateValues[stateVariableForAttributeValue],
-            attributeSpecification, attribute
+            attributeSpecification, attribute: attrName
           })
 
           // if mergeArrays specified and both ancetor prop and child value
@@ -2707,7 +2711,7 @@ export default class Core {
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attribute))
+                dependencyValues.targetAttributesToIgnore.includes(attrName))
               && !usedDefault.targetVariable) {
               //  if target has attribute, set that value
               return {
@@ -2766,7 +2770,7 @@ export default class Core {
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attribute))
+                dependencyValues.targetAttributesToIgnore.includes(attrName))
               && !usedDefault.targetVariable) {
               // if don't have attribute component 
               // and target has attribute, use that value
@@ -2782,7 +2786,7 @@ export default class Core {
 
           let childVariable = validateAttributeValue({
             value: attributeComponent.stateValues[stateVariableForAttributeValue],
-            attributeSpecification, attribute
+            attributeSpecification, attribute: attrName
           })
 
           if (attributeSpecification.mergeArrayWithDefault && Array.isArray(childVariable)) {
@@ -2804,7 +2808,7 @@ export default class Core {
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
-                dependencyValues.targetAttributesToIgnore.includes(attribute))
+                dependencyValues.targetAttributesToIgnore.includes(attrName))
             ) {
               //  if target has attribute, set that value
               return {
@@ -2854,10 +2858,10 @@ export default class Core {
         "propagateToProps",
       ]
 
-      for (let attribute of attributesToCopy) {
-        if (attribute in attributeSpecification) {
-          stateVarDef[attribute]
-            = attributeSpecification[attribute];
+      for (let attrName2 of attributesToCopy) {
+        if (attrName2 in attributeSpecification) {
+          stateVarDef[attrName2]
+            = attributeSpecification[attrName2];
         }
       }
     }
@@ -6133,9 +6137,9 @@ export default class Core {
       this.setAncestors(unproxiedChild, ancestorsForChildren);
     }
 
-    for (let attr in component.attributes) {
-      let comp = component.attributes[attr];
-      if (comp.componentType) {
+    for (let attrName in component.attributes) {
+      let comp = component.attributes[attrName].component;
+      if (comp) {
         this.setAncestors(comp, ancestorsForChildren)
       }
     }
@@ -6171,14 +6175,15 @@ export default class Core {
           componentName: shadowingParent.shadows.compositeName
         });
 
+        let shadowingNewNamespace = shadowingParent.attributes.newNamespace && shadowingParent.attributes.newNamespace.primitive;
         // we can use original only if we created a new namespace
-        let originalNamesAreConsistent = shadowingParent.attributes.newNamespace;
+        let originalNamesAreConsistent = shadowingNewNamespace;
 
         let processResult = serializeFunctions.processAssignNames({
           indOffset: assignNamesOffset,
           serializedComponents: shadowingSerializeChildren,
           parentName: shadowingParent.componentName,
-          parentCreatesNewNamespace: shadowingParent.attributes.newNamespace,
+          parentCreatesNewNamespace: shadowingNewNamespace,
           componentInfoObjects: this.componentInfoObjects,
           originalNamesAreConsistent,
         });
@@ -6190,7 +6195,7 @@ export default class Core {
         this.parameterStack.push(unproxiedShadowingParent.sharedParameters, false);
 
         let namespaceForUnamed;
-        if (shadowingParent.attributes.newNamespace) {
+        if (shadowingNewNamespace) {
           namespaceForUnamed = shadowingParent.componentName + "/";
         } else {
           namespaceForUnamed = getNamespaceFromName(shadowingParent.componentName);
@@ -6483,9 +6488,9 @@ export default class Core {
       // recurse on allChildren and attributes
       let componentsToRecurse = Object.values(component.allChildren).map(x => x.component);
 
-      for (let attr in component.attributes) {
-        let comp = component.attributes[attr];
-        if (comp.componentType) {
+      for (let attrName in component.attributes) {
+        let comp = component.attributes[attrName].component;
+        if (comp) {
           componentsToRecurse.push(comp)
         }
       }
@@ -6628,7 +6633,7 @@ export default class Core {
           let serializedReplacements = change.serializedReplacements;
 
           let namespaceForUnamed;
-          if (component.attributes.newNamespace) {
+          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
             namespaceForUnamed = component.componentName + "/";
           } else {
             namespaceForUnamed = getNamespaceFromName(component.componentName);
@@ -7060,6 +7065,8 @@ export default class Core {
           componentName: shadowingComponent.shadows.compositeName
         });
 
+        let shadowingNewNamespace = shadowingComponent.attributes.newNamespace && shadowingComponnet.attributes.newNamespace.primitive;
+
         let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject({ flags: this.flags });
 
         for (let repl of newSerializedReplacements) {
@@ -7070,24 +7077,24 @@ export default class Core {
           let attributesFromComposite = convertAttributesForComponentType({
             attributes: shadowingComponent.attributes,
             componentType: repl.componentType,
-            componentInfoObjects: this.componentInfoObjects, 
+            componentInfoObjects: this.componentInfoObjects,
             compositeAttributesObj,
-            compositeCreatesNewNamespace: shadowingComponent.attributes.newNamespace
+            compositeCreatesNewNamespace: shadowingNewNamespace
           });
           Object.assign(repl.attributes, attributesFromComposite)
         }
-    
+
         if (shadowingComponent.constructor.assignNamesToReplacements) {
 
           let originalNamesAreConsistent = shadowingComponent.constructor.originalNamesAreConsistent
-            && shadowingComponent.attributes.newNamespace;
+            && shadowingNewNamespace;
 
           let processResult = serializeFunctions.processAssignNames({
             assignNames: shadowingComponent.doenetAttributes.assignNames,
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName: shadowingComponent.componentName,
-            parentCreatesNewNamespace: shadowingComponent.attributes.newNamespace,
+            parentCreatesNewNamespace: shadowingNewNamespace,
             componentInfoObjects: this.componentInfoObjects,
             originalNamesAreConsistent,
           });
@@ -7099,14 +7106,14 @@ export default class Core {
 
           // since original names came from the targetComponent
           // we can use them only if we created a new namespace
-          let originalNamesAreConsistent = shadowingComponent.attributes.newNamespace;
+          let originalNamesAreConsistent = shadowingNewNamespace;
 
           let processResult = serializeFunctions.processAssignNames({
             // assignNames: shadowingComponent.doenetAttributes.assignNames,
             indOffset: assignNamesOffset,
             serializedComponents: newSerializedReplacements,
             parentName: shadowingComponent.componentName,
-            parentCreatesNewNamespace: shadowingComponent.attributes.newNamespace,
+            parentCreatesNewNamespace: shadowingNewNamespace,
             componentInfoObjects: this.componentInfoObjects,
             originalNamesAreConsistent,
           });
@@ -7124,7 +7131,7 @@ export default class Core {
         this.parameterStack.push(unproxiedShadowingComponent.sharedParameters, false);
 
         let namespaceForUnamed;
-        if (shadowingComponent.attributes.newNamespace) {
+        if (shadowingNewNamespace) {
           namespaceForUnamed = shadowingComponent.componentName + "/";
         } else {
           namespaceForUnamed = getNamespaceFromName(shadowingComponent.componentName);
@@ -7672,6 +7679,12 @@ export default class Core {
 
     }
 
+    // calculate any replacement changes on composites touched again
+    this.replacementChangesFromCompositesToUpdate();
+
+    // TODO: do we need to check again if update composites to expand again?
+    // If so, how would we end the loop?
+
     // if preliminary, we don't update renderer instructions or display information
     if (preliminary) {
       return executeResult;
@@ -7745,7 +7758,7 @@ export default class Core {
 
     let nPasses = 0;
 
-    let updatedComposites = compositesToUpdateReplacements.length > 0;
+    let updatedComposites = false;
 
     let componentChanges = []; // TODO: what to do with componentChanges?
     while (compositesToUpdateReplacements.length > 0) {
@@ -7762,6 +7775,7 @@ export default class Core {
             });
 
             for (let componentName in result.addedComponents) {
+              updatedComposites = true;
               this.changedStateVariables[componentName] = {};
               for (let varName in this._components[componentName].state) {
                 let stateVarObj = this._components[componentName].state[varName];
@@ -7772,6 +7786,9 @@ export default class Core {
                   this.changedStateVariables[componentName][varName] = true;
                 }
               }
+            }
+            if(Object.keys(result.deletedComponents).length > 0) {
+              updatedComposites = true;
             }
           } else {
             compositesNotReady.push(cName)

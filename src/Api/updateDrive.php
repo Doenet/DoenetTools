@@ -48,6 +48,18 @@ if ($type == "delete drive"){
   }
  
 }
+//   for($k = 0; $k < count($driveId); $k++){
+
+//     $driveData = $driveId[$k];
+//     $sql = "
+//     UPDATE drive
+//     SET isDeleted='1'
+//     WHERE driveId = '$driveData'
+//     ";
+//     $result = $conn->query($sql);
+//   }
+ 
+// }
 
 $response_arr = array(
   "success"=>$success

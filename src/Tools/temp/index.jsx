@@ -1,16 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
+//import DateTime from '../../_reactComponents/PanelHeaderComponents/DateTime'
+import DropdownMenu from '../_framework/DropdownMenu'
+
+
 
 
 ReactDOM.render(
-  <DateTime
-    showArrowButtons={false}
-    precision="second"
-    time = {false}
-    callBack={(date) => console.log(date)}
-  />
-  ,
+  <DropdownMenu width = "200px" title = "test" items = {[[1, "one"], [2, "two"]]} callBack = { ({ value }) => console.log(">>>", value)}/>,
   document.getElementById('root'),
 );
 

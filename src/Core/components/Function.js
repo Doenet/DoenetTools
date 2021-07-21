@@ -139,8 +139,10 @@ export default class Function extends InlineComponent {
         success: true,
         newAttributes: {
           formula: {
-            componentType: "math",
-            children: matchedChildren
+            component: {
+              componentType: "math",
+              children: matchedChildren
+            }
           }
         }
       })

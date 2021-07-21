@@ -127,7 +127,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.convertBoolean = {
       returnDependencies: () => ({
         convertBooleanAttr: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "convertBoolean"
         }
       }),

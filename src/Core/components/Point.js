@@ -84,8 +84,10 @@ export default class Point extends GraphicalComponent {
           success: true,
           newAttributes: {
             x: {
-              componentType: "math",
-              children: matchedChildren
+              component: {
+                componentType: "math",
+                children: matchedChildren
+              }
             }
           }
         }
@@ -96,9 +98,11 @@ export default class Point extends GraphicalComponent {
         // wrap xs around the x children
         result.newAttributes = {
           xs: {
-            componentType: "mathList",
-            children: result.newChildren,
-            skipSugar: true,
+            component: {
+              componentType: "mathList",
+              children: result.newChildren,
+              skipSugar: true,
+            }
           }
         },
           delete result.newChildren;

@@ -84,11 +84,11 @@ export default class triggerSet extends InlineComponent {
     stateVariableDefinitions.triggerWithTname = {
       returnDependencies: () => ({
         triggerWithTname: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "triggerWithTname"
         },
         triggerWhen: {
-          dependencyType: "attribute",
+          dependencyType: "attributeComponent",
           attributeName: "triggerWhen"
         }
       }),

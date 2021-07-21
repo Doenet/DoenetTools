@@ -475,16 +475,29 @@ class DoenetViewerChild extends Component {
 
     }
 
+    function ErrorFromWithinCallback(originalError) {
+      this.name = 'ErrorFromWithinCallback';
+      this.originalError = originalError;
+    }
+
     Promise.all(promises).then((resps) => {
       // contentIds.forEach((x, i) => newDoenetMLs[x] = resps[i].data)
       newDoenetMLs = resps.map(x => x.data);
 
-      callBack({
-        newDoenetMLs,
-        newContentIds,
-        success: true
-      })
+      try {
+        callBack({
+          newDoenetMLs,
+          newContentIds,
+          success: true
+        })
+      } catch (e) {
+        throw new ErrorFromWithinCallback(e);
+      }
     }).catch(err => {
+
+      if (err.name === 'ErrorFromWithinCallback') {
+        throw err.originalError;
+      }
 
       let message;
       if (newContentIds.length === 1) {
