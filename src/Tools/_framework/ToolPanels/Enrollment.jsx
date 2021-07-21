@@ -4,23 +4,87 @@ import axios from 'axios';
 import parse from 'csv-parse';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import { searchParamAtomFamily } from '../NewToolRoot';
+import {
+  atom,
+  useSetRecoilState,
+  useRecoilValue,
+  useRecoilState,
+  selectorFamily,
+  useRecoilValueLoadable,
+  useRecoilCallback,
+  atomFamily,
+} from 'recoil';
+export const enrollmentTableDataAtom = atom({
+  key: 'enrollmentTableDataAtom',
+  default: [],
+});
+export const processAtom = atom({
+  key: 'processAtom',
+  default: 'Loading',
+});
+export const headersAtom = atom({
+  key: 'headersAtom',
+  default: [],
+});
 
+export const entriesAtom = atom({
+  key: 'entriesAtom',
+  default: [],
+});
+export const enrolllearnerAtom = atom({
+  key: 'enrolllearnerAtom',
+  default: '',
+});
 export default function Enrollment(props){
   console.log(">>>===Enrollment")
+  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom); 
+  const setProcess = useSetRecoilState(processAtom);
+  const driveId = useRecoilValue(searchParamAtomFamily('driveId'))
 
+  useEffect(() => {
+    if (driveId !== '') {
+      const payload = { params: { driveId } };
+      axios
+        .get('/api/getEnrollment.php', payload)
+        .then((resp) => {
+          //TODO: Make sure we don't overwrite existing data
+          let enrollmentArray = resp.data.enrollmentArray;
+          setEnrollmentTableDataAtom(enrollmentArray);
+          setProcess('Display Enrollment');
+        })
+        .catch((error) => {
+          console.warn(error);
+        });
+    }
+  }, [driveId]);
   return <div style={props.style}>
-    <h1>Enrollment</h1>
     <EnrollmentNew selectedCourse={'gr8KsFTPzHoI8l0eY74tu'}/>
   </div>
 }
 
 
 function EnrollmentNew(params) {
-  const [process, setProcess] = useState('Loading'); //array containing column names
+  // const [process, setProcess] = useState('Loading'); //array containing column names
+  const process = useRecoilValue(processAtom);
+  const setProcess = useSetRecoilState(processAtom);
   // console.log("process",process);
-  const [headers, setHeaders] = useState([]); //array containing column names
-  const [entries, setEntries] = useState([[]]); //2d array with each row representing a data point
-  const [enrolllearner, setEnrolllearner] = useState();
+  // const [headers, setHeaders] = useState([]); //array containing column names
+  const headers = useRecoilValue(headersAtom);
+  const setHeaders = useSetRecoilState(headersAtom);
+  // const [entries, setEntries] = useState([[]]); //2d array with each row representing a data point
+  const entries = useRecoilValue(entriesAtom);
+  const setEntries = useSetRecoilState(entriesAtom);
+  // const [enrolllearner, setEnrolllearner] = useState();
+  const enrolllearner = useRecoilValue(enrolllearnerAtom);
+  const setEnrolllearner = useSetRecoilState(enrolllearnerAtom);
+
+  const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
+  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom); 
+  // const [driveId, setDriveId] = useState('');
+  const driveId = useRecoilValue(searchParamAtomFamily('driveId'))
+
+  
 
   const onDrop = useCallback((file) => {
     const reader = new FileReader();
@@ -37,12 +101,11 @@ function EnrollmentNew(params) {
     };
     reader.readAsText(file[0]);
   }, []);
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const [driveId, setDriveId] = useState('');
-  const [enrollmentTableData, setEnrollmentTableData] = useState([]);
 
+
+  // const [enrollmentTableData, setEnrollmentTableData] = useState([]);
   //Load Enrollment Data When CourseId changes
   useEffect(() => {
     if (driveId !== '') {
@@ -52,7 +115,7 @@ function EnrollmentNew(params) {
         .then((resp) => {
           //TODO: Make sure we don't overwrite existing data
           let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableData(enrollmentArray);
+          setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
         })
         .catch((error) => {
@@ -67,11 +130,12 @@ function EnrollmentNew(params) {
         <p>Loading...</p>{' '}
       </>,
     );
-  } else {
-    if (driveId === '') {
-      setDriveId(params.selectedCourse.driveId);
-    }
-  }
+  } 
+  // else {
+  //   if (driveId === '') {
+  //     setDriveId(params.selectedCourse.driveId);
+  //   }
+  // }
 
   let enrollmentRows = [];
   for (let [i, rowData] of enrollmentTableData.entries()) {
@@ -251,41 +315,7 @@ function EnrollmentNew(params) {
 
       return (
         <>
-          <>
-            <Button
-              value="Merge"
-              key="merge"
-              onClick={() => {
-                const payload = {
-                  driveId,
-                  mergeHeads,
-                  mergeId,
-                  mergeFirstName,
-                  mergeLastName,
-                  mergeEmail,
-                  mergeSection,
-                  mergeDropped,
-                  userIds,
-                };
-                axios
-                  .post('/api/mergeEnrollmentData.php', payload)
-                  .then((resp) => {
-                    const enrollmentArray = resp.data.enrollmentArray;
-                    if (enrollmentArray) {
-                      setEnrollmentTableData(enrollmentArray);
-                    }
-                    setProcess('Display Enrollment');
-                  });
-              }}
-            ></Button>
-
-            <Button
-              key="cancel"
-              onClick={() => setProcess('Display Enrollment')}
-              value="Cancel"
-            ></Button>
-          </>
-
+          
           <div style={{ flexDirection: 'row', display: 'flex' }}>
             {/* <p>Choose Columns to Merge</p> */}
             <table>
@@ -314,7 +344,7 @@ function EnrollmentNew(params) {
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
           let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableData(enrollmentArray);
+          setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
           setEnrolllearner('');
         })
@@ -336,7 +366,7 @@ function EnrollmentNew(params) {
         .get('/api/getEnrollment.php', payload)
         .then((resp) => {
           let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableData(enrollmentArray);
+          setEnrollmentTableDataAtom(enrollmentArray);
           setProcess('Display Enrollment');
         })
         .catch((error) => {
@@ -365,17 +395,17 @@ let manualEnroll = (
 
   return (
     <>
-      <div key="drop" {...getRootProps()}>
+      {/* <div key="drop" {...getRootProps()}>
         <input {...getInputProps()} />
         {isDragActive ? (
           <p>Drop the files here</p>
         ) : (
           <Button value="Enroll Learners"></Button>
         )}
-      </div>
+      </div> */}
       {/* {<Button value = "Enroll Learners enter" onClick={()=>enrollLearners()} ></Button>} */}
-      {enrollmentTable}
-      {manualEnroll}
+      {enrollmentTableData.length > 0 ? enrollmentTable : '<-Enroll using Menu' }
+      {/* {manualEnroll} */}
      
 
     </>

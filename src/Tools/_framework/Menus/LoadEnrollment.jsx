@@ -1,30 +1,27 @@
-import React, { useCallback } from 'react';
+import React, {useState,useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import parse from 'csv-parse';
-import { useSetRecoilState, useRecoilValue } from 'recoil';
 import {
-  processAtom,
-  headersAtom,
-  entriesAtom,
-  enrollmentTableDataAtom,
-} from '../ToolPanels/Enrollment';
+  useSetRecoilState,useRecoilValue
+} from 'recoil';
+import {processAtom,headersAtom,entriesAtom, enrollmentTableDataAtom} from '../ToolPanels/Enrollment';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
-export default function LoadEnrollment(props) {
-  //array containing column names
+export default function LoadEnrollment(props){
+  // const [process, setProcess] = useState('Loading'); //array containing column names
   const process = useRecoilValue(processAtom);
   const setProcess = useSetRecoilState(processAtom);
-  //array containing column names
+  // console.log("process",process);
+  // const [headers, setHeaders] = useState([]); //array containing column names
   const headers = useRecoilValue(headersAtom);
   const setHeaders = useSetRecoilState(headersAtom);
-  //2d array with each row representing a data point
+  // const [entries, setEntries] = useState([[]]); //2d array with each row representing a data point
   const entries = useRecoilValue(entriesAtom);
   const setEntries = useSetRecoilState(entriesAtom);
-  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
+  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom); 
 
   const onDrop = useCallback((file) => {
     const reader = new FileReader();
@@ -42,8 +39,8 @@ export default function LoadEnrollment(props) {
     reader.readAsText(file[0]);
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
-
+  const driveId = useRecoilValue(searchParamAtomFamily('driveId'))
+ 
   if (process === 'Choose Columns') {
     let foundId = true;
     let columnToIndex = {
@@ -189,58 +186,57 @@ export default function LoadEnrollment(props) {
         importRows.push(<tr key={`rowdata${i}`}>{rowcells}</tr>);
       }
 
-      let cancelButton = (
-        <Button
-          key="cancel"
-          onClick={() => setProcess('Display Enrollment')}
-          value="Cancel"
-        ></Button>
-      );
-      let mergeButton = (
-        <>
-          <Button
-            value="Merge"
-            key="merge"
-            onClick={() => {
-              const payload = {
-                driveId,
-                mergeHeads,
-                mergeId,
-                mergeFirstName,
-                mergeLastName,
-                mergeEmail,
-                mergeSection,
-                mergeDropped,
-                userIds,
-              };
-              axios
-                .post('/api/mergeEnrollmentData.php', payload)
-                .then((resp) => {
-                  const enrollmentArray = resp.data.enrollmentArray;
-                  if (enrollmentArray) {
-                    setEnrollmentTableDataAtom(enrollmentArray);
-                  }
-                  setProcess('Display Enrollment');
-                });
-            }}
-          ></Button>
-        </>
-      );
+let cancelButton =  <Button
+key="cancel"
+onClick={() => setProcess('Display Enrollment')}
+value="Cancel"
+></Button>
+let mergeButton = <>
+<Button
+             value="Merge"
+             key="merge"
+             onClick={() => {
+               const payload = {
+                 driveId,
+                 mergeHeads,
+                 mergeId,
+                 mergeFirstName,
+                 mergeLastName,
+                 mergeEmail,
+                 mergeSection,
+                 mergeDropped,
+                 userIds,
+               };
+               axios
+                 .post('/api/mergeEnrollmentData.php', payload)
+                 .then((resp) => {
+                   const enrollmentArray = resp.data.enrollmentArray;
+                   if (enrollmentArray) {
+                     setEnrollmentTableDataAtom(enrollmentArray);
+                   }
+                   setProcess('Display Enrollment');
+                 });
+             }}
+           ></Button>
+</>
       return (
         <>
-          <ButtonGroup>
-            {mergeButton}
-            {cancelButton}
-          </ButtonGroup>
+          <>
+           {cancelButton}
+           {mergeButton}
+           
+
+           
+          </>
+
         </>
       );
     }
   }
 
-  return (
-    <div style={props.style}>
-      <div>Load Enrollment</div>
-      <div key="drop" {...getRootProps()}>
+  return <div style={props.style}>
+    <div>Load Enrollment</div>
+    <div key="drop" {...getRootProps()}>
         <input {...getInputProps()} />
         {isDragActive ? (
           <p>Drop the files here</p>
@@ -248,6 +244,6 @@ export default function LoadEnrollment(props) {
           <Button value="Enroll Learners"></Button>
         )}
       </div>
-    </div>
-  );
+      {/* {mergeButton} */}
+  </div>
 }

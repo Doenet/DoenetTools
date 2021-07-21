@@ -129,7 +129,22 @@ if (($id != "0" && in_array($id,$db_empids,FALSE)) || in_array($email,$db_emails
 	('$userId','$driveId','1','0','0','0','0','0','0','0','0','0','0','Student')
 	";
 	$result = $conn->query($sql);
-
+	$sql = "
+	INSERT INTO user
+	(userId,
+	screenName,
+	email, 
+	studentId, 
+	lastName,
+	firstName,
+	profilePicture,
+	trackingConsent,
+	roleStudent,
+	roleInstructor)
+	VALUES
+	('$userId','NULL','$email','NULL','$lastName','$firstName','quokka','1','1','0')
+	";
+	$result = $conn->query($sql);
 }
 }
 
