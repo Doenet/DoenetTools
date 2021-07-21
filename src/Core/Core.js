@@ -5131,48 +5131,53 @@ export default class Core {
 
           } else {
             let variablesToCheck = useEssentialInfo[arrayKey].variablesToCheck;
-            if (!Array.isArray(variablesToCheck)) {
+            if (variablesToCheck && !Array.isArray(variablesToCheck)) {
               variablesToCheck = [variablesToCheck];
             }
-            let { foundEssential, value } = this.findPotentialEssentialValue({
-              variablesToCheck,
-              potentialEssentialState: component.potentialEssentialState
-            });
 
-            if (foundEssential) {
-              component.state[varName].setArrayValue({
-                value,
-                arrayKey,
-                arraySize
+            if (variablesToCheck) {
+              let { foundEssential, value } = this.findPotentialEssentialValue({
+                variablesToCheck,
+                potentialEssentialState: component.potentialEssentialState
               });
-              component.state[varName].essentialByArrayKey[arrayKey] = true;
-              haveEssentialValue[arrayKey] = true;
+
+              if (foundEssential) {
+                component.state[varName].setArrayValue({
+                  value,
+                  arrayKey,
+                  arraySize
+                });
+                component.state[varName].essentialByArrayKey[arrayKey] = true;
+                haveEssentialValue[arrayKey] = true;
+              }
             }
           }
         }
       }
       else {
         let variablesToCheck = useEssentialInfo.variablesToCheck;
-        if (!Array.isArray(variablesToCheck)) {
+        if (variablesToCheck && !Array.isArray(variablesToCheck)) {
           variablesToCheck = [variablesToCheck];
         }
 
-        let { foundEssential, value } = this.findPotentialEssentialValue({
-          variablesToCheck,
-          potentialEssentialState: component.potentialEssentialState
-        });
+        if (variablesToCheck) {
+          let { foundEssential, value } = this.findPotentialEssentialValue({
+            variablesToCheck,
+            potentialEssentialState: component.potentialEssentialState
+          });
 
-        if (foundEssential) {
+          if (foundEssential) {
 
-          if (component.state[varName].isArray) {
-            component.state[varName].arrayValues = value;
-          } else {
-            // delete before assigning value to remove any getter for the property
-            delete component.state[varName].value;
-            component.state[varName].value = value;
+            if (component.state[varName].isArray) {
+              component.state[varName].arrayValues = value;
+            } else {
+              // delete before assigning value to remove any getter for the property
+              delete component.state[varName].value;
+              component.state[varName].value = value;
+            }
+            component.state[varName].essential = true;
+            haveEssentialValue = true;
           }
-          component.state[varName].essential = true;
-          haveEssentialValue = true;
         }
       }
     } else if (byArrayEntries) {
@@ -7787,7 +7792,7 @@ export default class Core {
                 }
               }
             }
-            if(Object.keys(result.deletedComponents).length > 0) {
+            if (Object.keys(result.deletedComponents).length > 0) {
               updatedComposites = true;
             }
           } else {
