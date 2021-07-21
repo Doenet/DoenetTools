@@ -4,7 +4,6 @@ import Tool from "../Tool";
 import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import  VisibilitySensor from 'react-visibility-sensor';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 import { nanoid } from 'nanoid';
@@ -430,9 +429,9 @@ function TextEditor(props){
   });
 
   const timeout = useRef(null);
-  let editorRef = useRef(null);
   const autosavetimeout = useRef(null);
-  let textValue = editorDoenetML;
+  //If this isn't a ref, it will update and force a refresh of Codemirror each time editorDoenetML changes
+  let textValue = useRef(editorDoenetML);
 
   function clearSaveTimeouts(){
     if (timeout.current !== null){
@@ -519,36 +518,9 @@ function TextEditor(props){
 
   return <>
 
-  {/* <button onClick={()=>{
-    console.log(">>>editorRef.current",editorRef.current)
-    // editorRef.current.options.readOnly = true;
-    // editorRef.current.doc.undo();
-    editorRef.current.doc.markText({line:1,ch:1},{line:2,ch:3});
-    // let tm = editorRef.current.doc.markText({line:1,ch:1},{line:2,ch:3},{css:"background:olive"});
-    // tm.css("background:olive")
-    //cm.getTokenAt
-    let cm = editorRef.current.doc.getEditor();
-    // let token = cm.getTokenAt({line:1,ch:1},true);
-    // console.log(">>>token",token)
-    let tokens = cm.getLineTokens(1);
-    console.log(">>>tokens",tokens)
-
-  }}>Mark</button>
-  <button onClick={()=>{
-    console.log(">>>editorRef.current",editorRef.current)
-    // editorRef.current.options.readOnly = false;
-    // editorRef.current.doc.redo();
-  }}>Redo</button> */}
-
-  {/* <VisibilitySensor onChange={(visible)=>{
-    if (visible){
-      editorRef.current.refresh();
-    }  
-    }}> */}
     
 <CodeMirror
-  editorRef = {editorRef}
-  value={textValue} 
+  setInternalValue={textValue.current} 
   onBeforeChange={(value) => {
     if (activeVersionId === "") { //No timers when active version history
       setEditorDoenetML(value);
@@ -568,16 +540,6 @@ function TextEditor(props){
   }}
 
   />
-{/* <CodeMirror
-  className="CodeMirror"
-  editorDidMount={editor => { editorRef.current = editor;  }}
-  value={textValue}
-  options={options}
-  // onChange={(editor, data, value) => {
-  // }}
-/> */}
-
-  {/* </VisibilitySensor> */}
   </>
 }
 
