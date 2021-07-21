@@ -1067,7 +1067,8 @@ function Folder(props){
         itemId,
         driveInstanceId:props.driveInstanceId,
         type:"Folder",
-        instructionType:"one item"})
+        instructionType:"one item"
+        })
       }}
     onDoubleClick={(e)=>{
       e.preventDefault();
@@ -1391,7 +1392,7 @@ const driveInstanceParentFolderIdAtom = atomFamily({
   })
 })
 
-const selectedDriveItems = selectorFamily({
+export const selectedDriveItems = selectorFamily({
   key:"selectedDriveItems",
   // get:(driveIdDriveInstanceIdItemId) =>({get})=>{
   //   return get(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId));
@@ -1419,7 +1420,6 @@ const selectedDriveItems = selectorFamily({
       }
       return [itemIdArr,parentFolderIdArr];
     }
-
     switch (instruction.instructionType) {
       case "one item":
         if (!isSelected){
@@ -1640,6 +1640,7 @@ const DoenetML = React.memo(function DoenetML(props) {
   }
 
   let doenetMLJSX = <div
+      role='button'
       data-doenet-driveinstanceid={props.driveInstanceId}
       data-cy="driveItem"
       tabIndex={0}
@@ -1654,23 +1655,18 @@ const DoenetML = React.memo(function DoenetML(props) {
         // boxShadow: borderSide,
         marginLeft: marginSize
       }}
-      onDoubleClick={(e)=>{
-        e.preventDefault();
-        e.stopPropagation();
-        props?.doubleClickCallback?.({
-            driveId:props.driveId,
-            item:props.item,
-            driveInstanceId:props.driveInstanceId,
-            route:props.route,
-            isNav:props.isNav,
-            pathItemId:props.pathItemId,
-            type: 'DoenetML'
-          })
-      }}
+      onKeyDown={(e)=>{}}
       onClick={(e)=>{
         e.preventDefault();
         e.stopPropagation();
-        props?.clickCallback?.({type: 'DoenetML'})
+        props?.clickCallback?.({
+        driveId:props.driveId,
+        parentFolderId:props.item.parentFolderId,
+        itemId: props.item.itemId,
+        driveInstanceId:props.driveInstanceId,
+        type:"DoenetML",
+        instructionType:"one item"
+        })
         // if (props.isNav){
         //   //Only select one item
         //   props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"DoenetML"})
@@ -1687,6 +1683,19 @@ const DoenetML = React.memo(function DoenetML(props) {
         //   }
         // }
         // setSelectedDrive(props.driveId);
+      }}
+      onDoubleClick={(e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        props?.doubleClickCallback?.({
+            driveId:props.driveId,
+            item:props.item,
+            driveInstanceId:props.driveInstanceId,
+            route:props.route,
+            isNav:props.isNav,
+            pathItemId:props.pathItemId,
+            type: 'DoenetML'
+          })
       }}
 
       ><div

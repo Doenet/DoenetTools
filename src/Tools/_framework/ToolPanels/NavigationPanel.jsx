@@ -9,7 +9,7 @@ import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import Drive, {
   selectedDriveAtom,
-  selectedDriveItemsAtom,
+  selectedDriveItems,
 } from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
@@ -57,7 +57,7 @@ export default function NavigationPanel(props) {
           case 'Folder':
             set(selectedMenuPanelAtom, 'SelectedDoenetId'); //TODO folder
             set(
-              selectedDriveItemsAtom({
+              selectedDriveItems({
                 driveId: info.driveId,
                 driveInstanceId: info.driveInstanceId,
                 itemId: info.itemId,
@@ -70,10 +70,9 @@ export default function NavigationPanel(props) {
             set(selectedDriveAtom, info.driveId);
             break;
           case 'DoenetML':
-            console.log('found!');
             set(selectedMenuPanelAtom, 'SelectedDoenetId');
             set(
-              selectedDriveItemsAtom({
+              selectedDriveItems({
                 driveId: info.driveId,
                 driveInstanceId: info.driveInstanceId,
                 itemId: info.itemId,
