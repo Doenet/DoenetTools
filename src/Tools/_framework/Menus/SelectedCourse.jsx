@@ -19,6 +19,7 @@ import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
+import { useToast } from '../../_framework/Toast';
 
 export default function SelectedCourse(props) {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
@@ -358,6 +359,7 @@ const DriveInfoPanel = function (props) {
 
 function NewUser(props) {
   const [email, setEmail] = useState('');
+  const addToast = useToast();
 
   function addUser() {
     if (validateEmail(email)) {
@@ -370,7 +372,7 @@ function NewUser(props) {
       setEmail('');
     } else {
       //Toast invalid email
-      console.log(`Not Added: Invalid email ${email}`);
+      addToast(`Not Added: Invalid email ${email}`);
     }
 
     //TODO: when set async available replace this.
@@ -384,7 +386,7 @@ function NewUser(props) {
           userId: resp.userId,
         });
       } else {
-        console.log('>>>Toast ', resp.message);
+        addToast(resp.message);
       }
     }
   }
