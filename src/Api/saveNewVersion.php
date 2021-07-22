@@ -145,32 +145,32 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
         ";
         $result = $conn->query($sql);
 }elseif($isNewToggleRelease == '1'){
-  $sql = "
-  UPDATE content
-  SET isReleased='$isReleased'
-  WHERE doenetId='$doenetId'
-  AND versionId='$versionId'
-  ";
-  $result = $conn->query($sql);
-  //TODO: update drive_content isReleased if necessary
-  $sql = "
-  SELECT isReleased
-  FROM content
-  WHERE doenetId='$doenetId'
-  AND isNamed='1'
-  AND isReleased='1'
-  ";
-  $result = $conn->query($sql);
-  $doenetIsReleased = '0';
-  if ($result->num_rows > 0){
-    $doenetIsReleased = '1';
-  }
-  $sql = "
-  UPDATE drive_content
-  SET isReleased='$doenetIsReleased'
-  WHERE doenetId='$doenetId'
-  ";
-  $result = $conn->query($sql);
+  // $sql = "
+  // UPDATE content
+  // SET isReleased='$isReleased'
+  // WHERE doenetId='$doenetId'
+  // AND versionId='$versionId'
+  // ";
+  // $result = $conn->query($sql);
+  // //TODO: update drive_content isReleased if necessary
+  // $sql = "
+  // SELECT isReleased
+  // FROM content
+  // WHERE doenetId='$doenetId'
+  // AND isNamed='1'
+  // AND isReleased='1'
+  // ";
+  // $result = $conn->query($sql);
+  // $doenetIsReleased = '0';
+  // if ($result->num_rows > 0){
+  //   $doenetIsReleased = '1';
+  // }
+  // $sql = "
+  // UPDATE drive_content
+  // SET isReleased='$doenetIsReleased'
+  // WHERE doenetId='$doenetId'
+  // ";
+  // $result = $conn->query($sql);
 
 }else{
 

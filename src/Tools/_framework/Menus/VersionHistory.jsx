@@ -46,12 +46,15 @@ export default function VersionHistory(props){
 //   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
 
-  const toggleReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
+  const setReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
     let doenetIsReleased = false;
     let history = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    console.log(">>>history",history)
     let newHistory = {...history}
     newHistory.named = [...history.named];
     let newVersion;
+    //Establish if we are releasing or retracting "doenetIsReleased"
+    //Toggle released
     for (const [i,version] of newHistory.named.entries()){
       if (versionId === version.versionId){
         newVersion = {...version}
@@ -60,18 +63,30 @@ export default function VersionHistory(props){
           //release
           newVersion.isReleased = '1';
           doenetIsReleased = true;
-
           newHistory.named.splice(i,1,newVersion)
-        break;
+          break;
         }else{
           //retract
           newVersion.isReleased = '0';
-
           newHistory.named.splice(i,1,newVersion)
-        break;
+          break;
         }
       }
     }
+    //If releasing then retract other named versions
+    if (doenetIsReleased){
+      for (const [i,version] of newHistory.named.entries()){
+        if (versionId !== version.versionId && version.isReleased === '1'){
+          let newVersion = {...version}
+            //retract
+            newVersion.isReleased = '0';
+            newHistory.named.splice(i,1,newVersion)
+            break; //Only one other should ever be released
+          }
+        }
+      }
+    
+
     set(itemHistoryAtom(doenetId),newHistory);
     
     const doenetML = await snapshot.getPromise(fileByContentId(newVersion.contentId));
@@ -81,21 +96,21 @@ export default function VersionHistory(props){
       doenetId,
       doenetML
     }
-    // console.log(">>>newDBVersion",newDBVersion);
+    console.log(">>>newDBVersion",newDBVersion);
     axios.post("/api/saveNewVersion.php",newDBVersion)
-    // .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
+    .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
 
-    set(folderDictionary({driveId,folderId}),(was)=>{
-      let newFolderInfo = {...was};
-      newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
-      newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
-      let newIsReleased = '0';
-      if (doenetIsReleased){
-        newIsReleased = '1';
-      }
-      newFolderInfo.contentsDictionary[itemId].isReleased = newIsReleased;
-      return newFolderInfo;
-    })
+    // set(folderDictionary({driveId,folderId}),(was)=>{
+    //   let newFolderInfo = {...was};
+    //   newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+    //   newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+    //   let newIsReleased = '0';
+    //   if (doenetIsReleased){
+    //     newIsReleased = '1';
+    //   }
+    //   newFolderInfo.contentsDictionary[itemId].isReleased = newIsReleased;
+    //   return newFolderInfo;
+    // })
 })
 
   const versionHistoryActive = useRecoilCallback(({snapshot,set})=> async (version)=>{
@@ -281,7 +296,7 @@ if (initializedDoenetId !== doenetId){
         <div><RenameVersionControl key={version?.versionId} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
        {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
        <div><button onClick={()=>setAsCurrent({doenetId,version})} >Set As Current</button></div> 
-       <div><button onClick={(e)=>toggleReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} >{releaseButtonText}</button></div>
+       <div><button onClick={(e)=>setReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} >{releaseButtonText}</button></div>
   </div>
   
   // return <div style={props.style}>
@@ -295,7 +310,7 @@ if (initializedDoenetId !== doenetId){
 //   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
 //   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
 
-//   const toggleReleaseNamed = useRecoilCallback(({set})=> async (doenetId,versionId,driveId,folderId)=>{
+//   const setReleaseNamed = useRecoilCallback(({set})=> async (doenetId,versionId,driveId,folderId)=>{
 //     let doenetIsReleased = false;
     
 //     set(itemHistoryAtom(doenetId),(was)=>{
@@ -433,7 +448,7 @@ if (initializedDoenetId !== doenetId){
 //     releaseButtonText = "Retract"
 //   }
 
-//     const releaseButton = <div><button onClick={(e)=>toggleReleaseNamed(doenetId,version.versionId,props.driveId,props.folderId)} >{releaseButtonText}</button></div>
+//     const releaseButton = <div><button onClick={(e)=>setReleaseNamed(doenetId,version.versionId,props.driveId,props.folderId)} >{releaseButtonText}</button></div>
 
 //   controls = <>
 //   <div>Name: {version.title}</div>
