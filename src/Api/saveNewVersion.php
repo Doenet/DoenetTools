@@ -145,6 +145,50 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
         ";
         $result = $conn->query($sql);
 }elseif($isNewToggleRelease == '1'){
+  //Use Database as source of truth
+  $sql = "
+  SELECT isReleased
+  FROM content
+  WHERE doenetId='$doenetId'
+  AND versionId='$versionId'
+  ";
+  $result = $conn->query($sql);
+  $row = $result->fetch_assoc();
+  echo "Row is ".$row['isReleased'];
+  $db_version_isReleased = $row['isReleased'];
+  //Unrelease All
+  $sql = "
+  UPDATE content
+  SET isReleased='0'
+  WHERE doenetId='$doenetId'
+  ";
+  $result = $conn->query($sql);
+  if ($db_version_isReleased == "0"){
+    //Release the version
+    $sql = "
+    UPDATE content
+    SET isReleased='1'
+    WHERE doenetId='$doenetId'
+    AND versionId='$versionId'
+    ";
+  $result = $conn->query($sql);
+
+    //Update drive status to release (even if it was)
+    $sql = "
+    UPDATE drive_content
+    SET isReleased='1'
+    WHERE doenetId='$doenetId'
+    ";
+    $result = $conn->query($sql);
+  }else{
+    //Update drive status to not released 
+    $sql = "
+    UPDATE drive_content
+    SET isReleased='0'
+    WHERE doenetId='$doenetId'
+    ";
+    $result = $conn->query($sql);
+  }
   // $sql = "
   // UPDATE content
   // SET isReleased='$isReleased'
