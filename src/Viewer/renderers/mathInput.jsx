@@ -511,6 +511,9 @@ function substituteUnicodeInLatexString(latexString) {
     ['\u2212', '-'], // minus sign
     ['\u22C5', ' \\cdot '], // dot operator
     ['\u00B7', ' \\cdot '], // middle dot
+    ['\u222A', ' \\cup '], // ∪
+    ['\u2229', ' \\cap '], // ∩
+
   ]
 
   for (let sub of substitutions) {

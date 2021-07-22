@@ -2507,6 +2507,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.log(`unicode α U+03B1`)
     cy.get('#\\/a textarea').type('α{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2526,6 +2527,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
+    cy.log(`latex \\alpha`)
     cy.get('#\\/a textarea').type('{end}{backspace}\\alpha{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2545,6 +2547,8 @@ describe('MathInput Tag Tests', function () {
     });
 
 
+    cy.log(`unicode − U+2212 is subtraction`)
+
     cy.get('#\\/a textarea').type('{end}{backspace}y\u2212z{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2563,6 +2567,7 @@ describe('MathInput Tag Tests', function () {
       expect(components['/a3'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
     });
 
+    cy.log(`normal minus`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y-z{enter}', { force: true });
 
@@ -2582,6 +2587,7 @@ describe('MathInput Tag Tests', function () {
       expect(components['/a3'].stateValues.value.tree).eqls(["+", "y", ["-", "z"]]);
     });
 
+    cy.log(`unicode ⋅ U+22C5 is multiplication`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u22C5z{enter}', { force: true });
 
@@ -2601,6 +2607,8 @@ describe('MathInput Tag Tests', function () {
       expect(components['/a3'].stateValues.value.tree).eqls(["*", "y", "z"]);
     });
 
+    cy.log(`normal *`)
+
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y*z{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2619,6 +2627,7 @@ describe('MathInput Tag Tests', function () {
       expect(components['/a3'].stateValues.value.tree).eqls(["*", "y", "z"]);
     });
 
+    cy.log(`unicode · U+00B7 becomes multiplication`)
 
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00B7z{enter}', { force: true });
 
@@ -2639,6 +2648,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
+    cy.log(`unicode × U+00D7 becomes multiplication`)
     
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00D7z{enter}', { force: true });
 
@@ -2656,6 +2666,47 @@ describe('MathInput Tag Tests', function () {
       expect(components['/a'].stateValues.value.tree).eqls(["*", "y", "z"]);
       expect(components['/a2'].stateValues.value.tree).eqls(["*", "y", "z"]);
       expect(components['/a3'].stateValues.value.tree).eqls(["*", "y", "z"]);
+    });
+
+    cy.log(`unicode ∪ U+222A becomes union`)
+    
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u222AB{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A\u222AB')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A\u222AB')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A\u222AB')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["union", "A", "B"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["union", "A", "B"]);
+    });
+
+
+    cy.log(`unicode ∩ U+2229 becomes intersect`)
+    
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u2229B{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('A\u2229B')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A\u2229B')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A\u2229B')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(["intersect", "A", "B"]);
+      expect(components['/a2'].stateValues.value.tree).eqls(["intersect", "A", "B"]);
+      expect(components['/a3'].stateValues.value.tree).eqls(["intersect", "A", "B"]);
     });
 
 
