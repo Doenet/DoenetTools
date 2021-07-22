@@ -9,11 +9,11 @@ include "db_connection.php";
 
 //TODO: Check if the user is the instructor in the course
 
-if (!isset($_REQUEST["courseId"])) {
+if (!isset($_REQUEST["driveId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No course specified!";
 } else {
-    $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
+    $courseId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 
 
         $sql = "

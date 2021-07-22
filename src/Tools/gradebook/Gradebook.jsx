@@ -95,8 +95,8 @@ export const Styles = styled.div`
   }
 `
 
-const courseId = atom({
-    key: "courseId",
+const driveId = atom({
+    key: "driveId",
     default: ""
 })
 
@@ -130,12 +130,12 @@ const assignmentDataQuerry = atom({
         key:"assignmentDataQuerry/Default",
         get: async ({get}) => {
             try{
-                const courseIdPayload = {params: { courseId:get(courseId)}}
-                const { data } = await axios.get('/api/loadAssignments.php', courseIdPayload)
+                const driveIdPayload = {params: { driveId:get(driveId)}}
+                const { data } = await axios.get('/api/loadAssignments.php', driveIdPayload)
                 
                 return data
             }catch(error){
-                console.log("No assignments associated with course ID: ", get(courseId));
+                console.log("No assignments associated with drive ID: ", get(driveId));
                 return {};
             }
         }
@@ -149,8 +149,8 @@ const assignmentData = selector({
         let data = get(assignmentDataQuerry)
         
         for(let row of data){
-            let [assignmentId, assignmentName] = row;
-            assignmentArray[assignmentId] = assignmentName;
+            let [branchId, contentId, assignmentName] = row;
+            assignmentArray[contentId] = assignmentName;
         }
         return assignmentArray
     },
@@ -164,12 +164,12 @@ const studentDataQuerry = atom({
     default: selector({
         key: "studentDataQuerry/Default",
         get: async ({get}) => {
-            const courseIdPayload = {params: { courseId:get(courseId)}}
+            const driveIdPayload = {params: { driveId:get(driveId)}}
             try{
-                const { data } = await axios.get('/api/loadGradebookEnrollment.php', courseIdPayload)
+                const { data } = await axios.get('/api/loadGradebookEnrollment.php', driveIdPayload)
                 return data;
             }catch(error){
-                console.log("No students associated with course ID: ", get(courseId), error);
+                console.log("No students associated with course ID: ", get(driveId), error);
                 return {};
             }
         }

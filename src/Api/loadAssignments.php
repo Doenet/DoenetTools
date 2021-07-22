@@ -7,17 +7,17 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-if (!isset($_GET["courseId"])) {
+if (!isset($_GET["driveId"])) {
     http_response_code(400);
-    echo "Database Retrieval Error: No course specified!";
+    echo "Database Retrieval Error: No drive specified!";
 } else {
-    $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
-
+    $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+    echo($driveId);
     $sql = "
-        SELECT a.assignmentId, a.title
-        FROM assignment AS a
-        WHERE a.courseId = '$courseId'
-        ORDER BY a.dueDate
+    SELECT a.branchId, a.contentId, a.title
+    FROM assignment AS a
+    WHERE a.driveId = '$driveId'
+    ORDER BY a.dueDate
     ";
 
     $result = $conn->query($sql); 
@@ -28,7 +28,8 @@ if (!isset($_GET["courseId"])) {
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr,
                 array(
-                    $row['assignmentId'],
+                    $row['branchId'],
+                    $row['contentId'],
                     $row['title']
                 )
             );
@@ -41,7 +42,7 @@ if (!isset($_GET["courseId"])) {
         echo json_encode($response_arr);
     } else {
         http_response_code(404);
-        echo "Database Retrieval Error: No such course: '$courseId'";
+        echo "Database Retrieval Error: No such course: '$driveId'";
     }
 }
 

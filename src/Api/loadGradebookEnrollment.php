@@ -7,17 +7,17 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-if (!isset($_GET["courseId"])) {
+if (!isset($_GET["driveId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No course specified!";
 } else {
-	$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
+	$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 
 	$sql = "
-        SELECT ce.userId, ce.firstName, ce.lastName, ce.courseCredit, ce.courseGrade, ce.overrideCourseGrade
-        FROM course_enrollment AS ce
-        WHERE ce.courseId = '$courseId'
-        ORDER BY ce.lastName
+		SELECT e.userId, e.firstName, e.lastName, e.courseCredit, e.courseGrade, e.overrideCourseGrade
+		FROM enrollment AS e
+		WHERE e.driveId = '$driveId'
+		ORDER BY e.lastName
 	";
 
 	$result = $conn->query($sql); 
@@ -29,7 +29,7 @@ if (!isset($_GET["courseId"])) {
 			array_push($response_arr,
 				array(
 					$row['userId'],
-          $row['firstName'],
+          			$row['firstName'],
 					$row['lastName'],
 					$row['courseCredit'],
 					$row['courseGrade'],
