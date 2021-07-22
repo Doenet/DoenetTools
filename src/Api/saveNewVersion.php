@@ -154,7 +154,6 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
   ";
   $result = $conn->query($sql);
   $row = $result->fetch_assoc();
-  echo "Row is ".$row['isReleased'];
   $db_version_isReleased = $row['isReleased'];
   //Unrelease All
   $sql = "

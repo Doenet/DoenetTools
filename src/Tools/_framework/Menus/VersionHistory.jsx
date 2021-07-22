@@ -24,6 +24,7 @@ import {
 import { nanoid } from 'nanoid';
 import axios from "axios";
 import { useToast, toastType } from '@Toast';
+import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -53,7 +54,7 @@ export default function VersionHistory(props){
   const setReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
     let doenetIsReleased = false;
     let history = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    console.log(">>>history",history)
+
     let newHistory = {...history}
     newHistory.named = [...history.named];
     let newVersion;
@@ -100,21 +101,47 @@ export default function VersionHistory(props){
       doenetId,
       doenetML
     }
-    console.log(">>>newDBVersion",newDBVersion);
     axios.post("/api/saveNewVersion.php",newDBVersion)
-    .then((resp)=>{console.log(">>>resp toggleRelease",resp.data)})
+    .then((resp)=>{
 
-    // set(folderDictionary({driveId,folderId}),(was)=>{
-    //   let newFolderInfo = {...was};
-    //   newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
-    //   newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
-    //   let newIsReleased = '0';
-    //   if (doenetIsReleased){
-    //     newIsReleased = '1';
-    //   }
-    //   newFolderInfo.contentsDictionary[itemId].isReleased = newIsReleased;
-    //   return newFolderInfo;
-    // })
+      if (resp.data.success){
+        let message = `'${newVersion.title}' Released`
+        if (newVersion.isReleased === '0'){
+           message = `'${newVersion.title}' Retracted`
+        }
+        addToast(message, toastType.SUCCESS)
+
+      }else{
+        let message = `Error occured releasing '${newVersion.title}'`
+        if (newVersion.isReleased === '0'){
+           message = `Error occured retracting '${newVersion.title}'`
+        }
+        addToast(message, toastType.ERROR)
+
+      }
+
+    })
+
+    set(folderDictionary({driveId,folderId}),(was)=>{
+      let newFolderInfo = {...was};
+      //TODO: once path has itemId fixed delete this code
+      for (let testItemId of newFolderInfo.contentIds.defaultOrder){
+        if (newFolderInfo.contentsDictionary[testItemId].doenetId === doenetId){
+          itemId = testItemId;
+          break;
+        }
+      }
+
+
+      newFolderInfo.contentsDictionary =  {...was.contentsDictionary}
+      newFolderInfo.contentsDictionary[itemId] = {...was.contentsDictionary[itemId]};
+      let newIsReleased = '0';
+      if (doenetIsReleased){
+        newIsReleased = '1';
+      }
+      newFolderInfo.contentsDictionary[itemId].isReleased = newIsReleased;
+      return newFolderInfo;
+    })
 })
 
   const versionHistoryActive = useRecoilCallback(({snapshot,set})=> async (version)=>{
