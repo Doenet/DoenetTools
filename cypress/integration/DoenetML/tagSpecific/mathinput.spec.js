@@ -2710,6 +2710,68 @@ describe('MathInput Tag Tests', function () {
     });
 
 
+    cy.log(`unicode ∞ U+221E becomes infinity`)
+    
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u221E{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('\u221E')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\u221E')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\u221E')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eq(Infinity);
+      expect(components['/a2'].stateValues.value.tree).eq(Infinity);
+      expect(components['/a3'].stateValues.value.tree).eq(Infinity);
+    });
+
+
+    cy.log(`unicode µ U+u00B5 becomes mu`)
+    
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u00B5{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('\u00B5')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\u03BC')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\u03BC')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eq("mu");
+      expect(components['/a2'].stateValues.value.tree).eq("mu");
+      expect(components['/a3'].stateValues.value.tree).eq("mu");
+    });
+
+
+    cy.log(`unicode μ U+u03BC becomes mu`)
+    
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u03BC{enter}', { force: true });
+
+    cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('\u03BC')
+    })
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\u03BC')
+    })
+    cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\u03BC')
+    })
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eq("mu");
+      expect(components['/a2'].stateValues.value.tree).eq("mu");
+      expect(components['/a3'].stateValues.value.tree).eq("mu");
+    });
+
   })
 
 

@@ -513,6 +513,7 @@ function substituteUnicodeInLatexString(latexString) {
     ['\u00B7', ' \\cdot '], // middle dot
     ['\u222A', ' \\cup '], // ∪
     ['\u2229', ' \\cap '], // ∩
+    ['\u221E', ' \\infty '], // ∞
 
   ]
 
