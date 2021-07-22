@@ -6661,4 +6661,49 @@ describe('Line Tag Tests', function () {
     })
   })
 
+  it('point constrained to line, different scales from graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
+    <line through="(0,0) (1,0.05)" name="l" />
+    <point x="100" y="0" name="P">
+      <constraints>
+        <constrainTo><copy tname="l" /></constrainTo>
+      </constraints>
+    </point>
+  </graph>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.log(`point on line, close to origin`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let x = components['/P'].stateValues.xs[0].tree;
+      let y = components['/P'].stateValues.xs[1].tree;
+
+      expect(y).greaterThan(0);
+      expect(y).lessThan(0.01);
+
+      expect(x).closeTo(20*y, 1E-10)
+    })
+
+    cy.log(`move point`);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/P'].movePoint({ x: -100, y: 0.05 });
+      let x = components['/P'].stateValues.xs[0].tree;
+      let y = components['/P'].stateValues.xs[1].tree;
+      expect(y).lessThan(0.05);
+      expect(y).greaterThan(0.04);
+      expect(x).closeTo(20*y, 1E-10)
+    })
+
+  });
+
+
 })
