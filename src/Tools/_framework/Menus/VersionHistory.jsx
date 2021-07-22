@@ -299,8 +299,9 @@ if (initializedDoenetId !== doenetId){
     releaseButtonText = "Retract"
   }
 
+  console.log(">>>currentDraftSelected",currentDraftSelected)
      
-  return <div style={props.style}>
+  return <div  style={props.style}>
     <div style={{margin:"6px 0px 6px 0px"}}>
     <Button width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
     </div>
@@ -323,11 +324,11 @@ if (initializedDoenetId !== doenetId){
     {options}
   </select>
   <div>Name: {version?.title}</div>
-  <ClipboardLinkButtons contentId={version?.contentId} />
-        <div><RenameVersionControl key={version?.versionId} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
+  <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} />
+        <div><RenameVersionControl key={version?.versionId} disabled={currentDraftSelected} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
        {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
-       <div><button onClick={()=>setAsCurrent({doenetId,version})} >Set As Current</button></div> 
-       <div><button onClick={(e)=>setReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} >{releaseButtonText}</button></div>
+       <div><Button disabled={currentDraftSelected} onClick={()=>setAsCurrent({doenetId,version})} value="Set As Current" /></div> 
+       <div><Button disabled={currentDraftSelected} onClick={()=>setReleaseNamed({doenetId,versionId:version.versionId,driveId,folderId,itemId})} value={releaseButtonText} /></div>
   </div>
   
   // return <div style={props.style}>
