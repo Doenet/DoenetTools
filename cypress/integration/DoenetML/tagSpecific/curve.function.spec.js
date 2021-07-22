@@ -353,6 +353,48 @@ describe('Function curve Tag Tests', function () {
 
   });
 
+  it('constrain to function, different scales from graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph ymax="120" ymin="-45" xmin="-1" xmax="5.5">
+      <curve name="c">
+        <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
+      </curve>
+      <point x="1.5" y="2" name="A">
+        <constraints>
+          <constrainTo>$c</constrainTo>
+        </constraints>
+      </point>
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    let f = t => (60*t - 106*t**2 + 59*t**3 - 13*t**4 + t**5)*4;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let x = components['/A'].stateValues.xs[0].tree;
+      let y = components['/A'].stateValues.xs[1].tree;
+      expect(x).closeTo(1.5, 1E-10);
+      expect(y).closeTo(f(1.5), 1E-10);
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/A'].movePoint({ x: 5, y: -60 })
+      let x = components['/A'].stateValues.xs[0].tree;
+      let y = components['/A'].stateValues.xs[1].tree;
+      expect(x).closeTo(5, 1E-10);
+      expect(y).closeTo(f(5), 1E-10);
+    })
+
+  });
+
   it('constrain to inverse function', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -414,6 +456,48 @@ describe('Function curve Tag Tests', function () {
     })
 
   });;
+
+  it('constrain to inverse function, different scales from graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph xmax="120" xmin="-45" ymin="-1" ymax="5.5">
+      <curve name="c" flipFunction>
+        <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
+      </curve>
+      <point y="1.5" x="2" name="A">
+        <constraints>
+          <constrainTo>$c</constrainTo>
+        </constraints>
+      </point>
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    let f = t => (60*t - 106*t**2 + 59*t**3 - 13*t**4 + t**5)*4;
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let x = components['/A'].stateValues.xs[0].tree;
+      let y = components['/A'].stateValues.xs[1].tree;
+      expect(y).closeTo(1.5, 1E-10);
+      expect(x).closeTo(f(1.5), 1E-10);
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/A'].movePoint({ x: -60, y: 5 })
+      let x = components['/A'].stateValues.xs[0].tree;
+      let y = components['/A'].stateValues.xs[1].tree;
+      expect(y).closeTo(5, 1E-10);
+      expect(x).closeTo(f(5), 1E-10);
+    })
+
+  });
 
 
 });

@@ -1,7 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 
-export default class ModuleAttributeDefinitions extends CompositeComponent {
-  static componentType = "moduleAttributeDefinitions";
+export default class ModuleSetup extends CompositeComponent {
+  static componentType = "moduleSetup";
 
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
