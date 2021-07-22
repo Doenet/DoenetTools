@@ -8,9 +8,13 @@ import {
  } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
-import { editorDoenetIdInitAtom } from '../ToolPanels/EditorViewer';
+import { 
+  editorDoenetIdInitAtom, 
+  updateTextEditorDoenetMLAtom,
+  textEditorDoenetMLAtom,
+  viewerDoenetMLAtom,
+} from '../ToolPanels/EditorViewer';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { textEditorDoenetMLAtom, viewerDoenetMLAtom } from '../ToolPanels/EditorViewer';
 import { 
   buildTimestamp, 
   getSHAofContent, 
@@ -227,7 +231,7 @@ export default function VersionHistory(props){
     const doenetML = await snapshot.getPromise(fileByContentId(contentId));
     //Set to doenetML
     set(viewerDoenetMLAtom,doenetML)
-    set(textEditorDoenetMLAtom,doenetML)
+    set(updateTextEditorDoenetMLAtom,doenetML)
   })
   
 //make sure we are ready

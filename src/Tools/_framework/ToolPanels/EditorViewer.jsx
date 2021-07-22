@@ -26,6 +26,11 @@ export const textEditorDoenetMLAtom = atom({
   default:""
 })
 
+export const updateTextEditorDoenetMLAtom = atom({
+  key:"updateTextEditorDoenetMLAtom",
+  default:""
+})
+
 //Boolean initialized editor tool start up
 export const editorDoenetIdInitAtom = atom({
   key:"editorDoenetIdInitAtom",
@@ -52,7 +57,7 @@ export default function EditorViewer(props){
     }
     const doenetML = response;
 
-    set(textEditorDoenetMLAtom,doenetML);
+    set(updateTextEditorDoenetMLAtom,doenetML);
     set(viewerDoenetMLAtom,doenetML)
     set(editorDoenetIdInitAtom,doenetId);
   },[])

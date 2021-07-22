@@ -1,8 +1,9 @@
 import React, { useRef } from 'react';
-import { editorDoenetIdInitAtom, textEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
+import { editorDoenetIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import { 
   useRecoilValue, 
-  useRecoilState,
+  // useRecoilState,
+  useSetRecoilState,
   // atom,
   useRecoilCallback,
 } from 'recoil';
@@ -40,10 +41,12 @@ function buildTimestamp(){
 
 export default function DoenetMLEditor(props){
   console.log(">>>===DoenetMLEditor")
-  const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
+  // const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
+  const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
 
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
   const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
   let editorRef = useRef(null);
   let timeout = useRef(null);
@@ -119,14 +122,15 @@ export default function DoenetMLEditor(props){
     return <div style={props.style}></div>
   }
   
-  console.log(`>>>Show CodeMirror with value -${editorDoenetML}-`)
+  console.log(`>>>Show CodeMirror with value -${updateInternalValue}-`)
   console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
 
   return <div style={props.style}>
     <CodeMirror
     key = "codemirror"
       editorRef = {editorRef}
-      value={editorDoenetML} 
+      setInternalValue = {updateInternalValue}
+      // value={editorDoenetML} 
       onBeforeChange={(value) => {
         // if (activeVersionId === "") { //No timers when active version history
           setEditorDoenetML(value);
