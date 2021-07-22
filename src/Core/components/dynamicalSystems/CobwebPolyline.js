@@ -37,7 +37,7 @@ export default class CobwebPolyline extends Polyline {
     attributes.nIterationsRequired = {
       createComponentOfType: "number",
       createStateVariable: "nIterationsRequired",
-      defaultValue: 1,
+      defaultValue: 0,
       public: true,
     }
 
@@ -604,6 +604,11 @@ export default class CobwebPolyline extends Polyline {
     stateVariableDefinitions.fractionCorrectVerticesAdjusted = {
       public: true,
       componentType: "number",
+      additionalStateVariablesDefined: [{
+        variableName: "nGradedVerticesAdjusted",
+        public: true,
+        componentType: "number"
+      }],
       returnDependencies: () => ({
         nCorrectVertices: {
           dependencyType: "stateVariable",
@@ -634,7 +639,7 @@ export default class CobwebPolyline extends Polyline {
           fractionCorrectVerticesAdjusted = dependencyValues.nCorrectVertices / nGradedVerticesAdjusted;
         }
 
-        return { newValues: { fractionCorrectVerticesAdjusted } }
+        return { newValues: { fractionCorrectVerticesAdjusted, nGradedVerticesAdjusted } }
       }
     }
 
