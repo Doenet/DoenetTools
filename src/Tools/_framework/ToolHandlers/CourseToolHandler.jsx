@@ -23,6 +23,7 @@ import {
 
 import { nanoid } from 'nanoid';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 
 export const itemHistoryAtom = atomFamily({
@@ -268,7 +269,7 @@ export function ClipboardLinkButtons(props){
 
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div> 
-    
+    <ButtonGroup>
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   {/* <button>copy link <FontAwesomeIcon icon={faClipboard}/></button>  */}
   <Button disabled={props.disabled} icon={<FontAwesomeIcon icon={faClipboard}/>} value="copy link" />
@@ -281,7 +282,7 @@ export function ClipboardLinkButtons(props){
   onClick={
     ()=>window.open(link, '_blank')
   } /> 
-
+</ButtonGroup>
   {/* <button onClick={
     ()=>window.open(link, '_blank')
   }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button> */}

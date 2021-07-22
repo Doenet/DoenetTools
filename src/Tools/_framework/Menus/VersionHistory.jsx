@@ -45,7 +45,7 @@ export default function VersionHistory(props){
   const selectedVersionId = useRecoilValue(selectedVersionIdAtom);
   const addToast = useToast();
   const [driveId, folderId, itemId] = path.split(':');
-  const [currentDraftSelected,setCurrentDraftSelected] = useRecoilState(currentDraftSelectedAtom)
+  const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom)
 
 //   // const activeVersionId  = useRecoilValue(versionHistoryActiveAtom);
 //   // const [editingVersionId,setEditingVersionId] = useRecoilState(EditingVersionIdAtom);
@@ -157,37 +157,45 @@ export default function VersionHistory(props){
   })
 
   const setAsCurrent = useRecoilCallback(({snapshot,set})=> async ({doenetId,version})=>{
-    //current to autosave
-    // const newDraftVersionId = nanoid();
-    // const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    // let newVersions = {...oldVersions};
-    // let autoSaveWasDraft = {...oldVersions.draft}
-    // autoSaveWasDraft.isDraft = "0";
-    // autoSaveWasDraft.title = "Autosave (was draft)";
-    // autoSaveWasDraft.timestamp = buildTimestamp();
-    // newVersions.autoSaves = [autoSaveWasDraft,...oldVersions.autoSaves]
-    // //copy (or move?) named version to current
-    // let newDraft = {...version};
-    // newDraft.isDraft = "1";
-    // newDraft.versionId = newDraftVersionId;
-    // newVersions.draft = newDraft;
-    // // set(itemHistoryAtom(doenetId),newVersions)
-    // //set viewer's and text editor's doenetML
-    // let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
-    // console.log(">>>set current draft as doenetML:",doenetML)
-    // // set(textEditorDoenetMLAtom,doenetML);
-    set(textEditorDoenetMLAtom,"test");
-    // set(viewerDoenetMLAtom,donetML);
+    //current to named save
+    const was = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    let newVersions = {...was};
+    let nameSaveWasDraft = {...was.draft}
+    nameSaveWasDraft.isDraft = "0";
+    const title = `Save (current) ${was.named.length+1}`
+    nameSaveWasDraft.title = title;
+    nameSaveWasDraft.timestamp = buildTimestamp();
+    newVersions.named = [nameSaveWasDraft,...was.named]
+    console.log(">>>nameSaveWasDraft",nameSaveWasDraft)
+    //copy named version to current
+    const newDraftVersionId = nanoid();
+    let newDraft = {...version};
+    newDraft.isDraft = "1";
+    newDraft.versionId = newDraftVersionId;
+    newVersions.draft = newDraft;
+    console.log(">>>newVersions",newVersions)
+    set(itemHistoryAtom(doenetId),newVersions)
 
-    //   let newDBVersion = {...newDraft,
-    //     isSetAsCurrent:'1',
-    //     newDraftVersionId,
-    //     newDraftContentId:newDraft.contentId,
-    //     doenetId
-    //   }
-    //   console.log(">>>newDBVersion",newDBVersion)
-    //   axios.post("/api/saveNewVersion.php",newDBVersion)
-    //   .then(resp=>console.log(">>>resp",resp.data))
+    //set viewer's and text editor's doenetML (Currently not needed)
+    // let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
+    // set(viewerDoenetMLAtom,doenetML)
+    // set(updateTextEditorDoenetMLAtom,doenetML)
+
+    //Select Current Draft
+    set(currentDraftSelectedAtom,true);
+    set(selectedVersionIdAtom,newDraftVersionId);
+
+
+      let newDBVersion = {...newDraft,
+        isSetAsCurrent:'1',
+        newDraftVersionId,
+        newDraftContentId:newDraft.contentId,
+        doenetId,
+        newTitle:title,
+      }
+      console.log(">>>newDBVersion",newDBVersion)
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+      .then(resp=>console.log(">>>resp",resp.data))
 
   });
 

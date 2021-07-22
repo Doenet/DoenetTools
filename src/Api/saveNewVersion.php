@@ -25,6 +25,7 @@ $isReleased = mysqli_real_escape_string($conn,$_POST["isReleased"]);
 $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
 $isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
 $isSetAsCurrent = mysqli_real_escape_string($conn,$_POST["isSetAsCurrent"]);
+$newTitle = mysqli_real_escape_string($conn,$_POST["newTitle"]);
 $isNewToggleRelease = mysqli_real_escape_string($conn,$_POST["isNewToggleRelease"]);
 $previousDoenetId = mysqli_real_escape_string($conn,$_POST["previousDoenetId"]);
 
@@ -95,7 +96,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
 
 }elseif($isSetAsCurrent == '1'){
 
-  //Add draft as autosave
+  //Add draft as named version
     $sql = "SELECT
     contentId,
     versionId
@@ -125,10 +126,10 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     SET doenetId='$doenetId',
     contentId='$oldDraftContentId', 
     versionId='$oldDraftVersionId', 
-    title='Autosave (was draft)',
+    title='$newTitle',
     timestamp=NOW(),
     isDraft='0',
-    isNamed='0',
+    isNamed='1',
     isReleased='0'
     ";
 
