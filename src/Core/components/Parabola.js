@@ -1117,27 +1117,52 @@ export default class Parabola extends Curve {
             let x1 = variables.x1.evaluate_to_constant();
             let x2 = variables.x2.evaluate_to_constant();
 
+            if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+              return {};
+            }
+
             let a0 = dependencyValues.a;
             let b0 = dependencyValues.b;
             let c0 = dependencyValues.c;
 
-            let a = 4*a0**2;
-            let b = (6*a0*b0)/a;
-            let c = (4*a0*c0 - 4*a0*x2 + 2*b0**2 + 2)/a;
-            let d = (2*b0*c0 - 2*b0*x2 - 2*x1)/a;
+            if (!(Number.isFinite(a0) && Number.isFinite(b0) && Number.isFinite(c0))) {
+              return {};
+            }
+
+            if (a0 === 0) {
+              // have line y = b0*x+c0
+
+              let denom = b0 * b0 + 1;
+
+              let result = {};
+              result.x1 = ((x1 + b0 * x2) - b0 * c0) / denom;
+              result.x2 = (b0 * (x1 + b0 * x2) + c0) / denom;
+
+              if (variables.x3 !== undefined) {
+                result.x3 = 0;
+              }
+
+              return result;
+
+            }
+
+            let a = 4 * a0 ** 2;
+            let b = (6 * a0 * b0) / a;
+            let c = (4 * a0 * c0 - 4 * a0 * x2 + 2 * b0 ** 2 + 2) / a;
+            let d = (2 * b0 * c0 - 2 * b0 * x2 - 2 * x1) / a;
 
 
             let resultCardano = cardano(b, c, d);
 
             let x1AtMin = resultCardano[0];
             let x2AtMin = dependencyValues.f(x1AtMin);
-            let d2AtMin = (x1-x1AtMin)**2 + (x2-x2AtMin)**2;
+            let d2AtMin = (x1 - x1AtMin) ** 2 + (x2 - x2AtMin) ** 2;
 
-            for(let r of resultCardano.slice(1)) {
+            for (let r of resultCardano.slice(1)) {
               let x = r;
               let fx = dependencyValues.f(x);
-              let d2 = (x1-x)**2 + (x2-fx);
-              if(d2 < d2AtMin) {
+              let d2 = (x1 - x) ** 2 + (x2 - fx);
+              if (d2 < d2AtMin) {
                 x1AtMin = x;
                 x2AtMin = fx;
                 d2AtMin = d2;
@@ -1243,7 +1268,7 @@ function cardano(b, c, d, ε = 1e-10) {
   if (Math.abs(Δ) <= ε) {
     // Simple root and double root
     const cr = Math.cbrt(-q / 2);
-    return  [2 * cr - b / 3, -cr - b / 3]
+    return [2 * cr - b / 3, -cr - b / 3]
   }
 
   if (Δ > 0) {

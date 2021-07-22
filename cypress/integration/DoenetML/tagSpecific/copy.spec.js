@@ -1924,6 +1924,27 @@ describe('Copy Tag Tests', function () {
     });
   });
 
+  it('copy group, no link, with function adapted to curve', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <group name='g'>
+      <graph>
+        <function formula='x' />
+      </graph>
+    </group>
+    
+    <copy tname='g' link="false" />
+    `}, "*");
+    });
+
+    // just testing that page loads, i.e., that bug is removed so that don't get error
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+  });
+
   it('external content cannot reach outside namespace', () => {
     cy.window().then((win) => {
       win.postMessage({

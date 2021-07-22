@@ -18,11 +18,34 @@ $enrollUserId = mysqli_real_escape_string($conn,$_POST["userId"]);
 
 
 
+
+
+
+$sql ="
+SELECT * FROM user WHERE email = '$email'
+";
+$result = $conn->query($sql);
+ $uniqueUser = mysqli_num_rows($result);
+ 
+ $userInfo = $result->fetch_assoc();
+ $firstName = $userInfo['firstName'];
+ $lastName = $userInfo['lastName'];
+$userId = $userInfo['userId'];
+if($uniqueUser == 0){
 	$sql = "
-	INSERT INTO enrollment
-	(driveId,userId,firstName,lastName,email,dateEnrolled,section)
+	INSERT INTO user
+	(userId,
+	screenName,
+	email, 
+	studentId, 
+	lastName,
+	firstName,
+	profilePicture,
+	trackingConsent,
+	roleStudent,
+	roleInstructor)
 	VALUES
-	('$driveId','$enrollUserId','NULL','NULL','$email',NOW(),'NULL')
+	('$enrollUserId','NULL','$email','NULL','NULL','NULL','quokka','1','1','0')
 	";
 	$result = $conn->query($sql);
 	$sql = "
@@ -45,23 +68,36 @@ $enrollUserId = mysqli_real_escape_string($conn,$_POST["userId"]);
 	('$enrollUserId','$driveId','1','0','0','0','0','0','0','0','0','0','0','Student')
 	";
 	$result = $conn->query($sql);
-
+}else{
 	$sql = "
-	INSERT INTO user
-	(userId,
-	screenName,
-	email, 
-	studentId, 
-	lastName,
-	firstName,
-	profilePicture,
-	trackingConsent,
-	roleStudent,
-	roleInstructor)
+	INSERT INTO enrollment
+	(driveId,userId,firstName,lastName,email,dateEnrolled,section)
 	VALUES
-	('$enrollUserId','NULL','$email','NULL','NULL','NULL','quokka','1','1','0')
+	('$driveId','$userId','$firstName','$lastName','$email',NOW(),'NULL')
 	";
 	$result = $conn->query($sql);
+	$sql = "
+	INSERT INTO drive_user
+	(userId,
+	driveId,
+	canViewDrive, 
+	canDeleteDrive, 
+	canShareDrive,
+	canAddItemsAndFolders,
+	canDeleteItemsAndFolders,
+	canMoveItemsAndFolders,
+	canRenameItemsAndFolders,
+	canPublishItemsAndFolders,
+	canViewUnreleasedItemsAndFolders,
+	canViewUnassignedItemsAndFolders,
+  canChangeAllDriveSettings,
+  role)
+	VALUES
+	('$userId','$driveId','1','0','0','0','0','0','0','0','0','0','0','Student')
+	";
+	$result = $conn->query($sql);
+}
+
   
 
 

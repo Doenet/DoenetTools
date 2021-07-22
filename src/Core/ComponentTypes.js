@@ -132,7 +132,7 @@ import TriggerSet from './components/TriggerSet';
 import FunctionIterates from './components/FunctionIterates';
 import Module from './components/Module';
 import ModuleAttribute from './components/ModuleAttribute';
-import ModuleAttributeDefinitions from './components/ModuleAttributeDefinitions';
+import ModuleSetup from './components/ModuleSetup';
 import Setup from './components/Setup';
 
 
@@ -266,7 +266,7 @@ const componentTypeArray = [
   FunctionIterates,
   Module,
   ModuleAttribute,
-  ModuleAttributeDefinitions,
+  ModuleSetup,
   Setup,
 
   BaseComponent,
