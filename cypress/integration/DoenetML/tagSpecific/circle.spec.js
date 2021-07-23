@@ -194,7 +194,7 @@ describe('Circle Tag Tests', function () {
       let radiusNumber = components["/radiusNumber"].replacements[0]
       let circle2 = components["/circle2"].replacements[0];
       let circle3 = components["/graph4"].replacements[0].activeChildren[0];
-      let center1 = components["/_circle1"].attributes["center"];
+      let center1 = components["/_circle1"].attributes["center"].component;
 
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
@@ -4126,7 +4126,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
 
-      let definingCenter = components["/_circle1"].attributes["center"]
+      let definingCenter = components["/_circle1"].attributes["center"].component
       let centerPoint = components["/centerPoint"].replacements[0]
       let radiusNumber = components["/radiusNumber"].replacements[0]
       let circle2 = components["/circle2"].replacements[0];
@@ -5772,7 +5772,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughComponent = components["/_circle1"].attributes["through"].component;
       let throughPoint1 = throughComponent.activeChildren[0];
       let throughPoint2 = throughComponent.activeChildren[1];
 
@@ -5962,7 +5962,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughComponent = components["/_circle1"].attributes["through"].component;
       let throughPoint1 = throughComponent.activeChildren[0];
       let throughPoint2 = throughComponent.activeChildren[1];
 
@@ -6152,7 +6152,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughComponent = components["/_circle1"].attributes["through"].component;
       let throughPoint1 = throughComponent.activeChildren[0];
       let throughPoint2 = throughComponent.activeChildren[1];
 
@@ -6337,7 +6337,7 @@ describe('Circle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       let centerPoint = components["/centerPoint"].replacements[0];
-      let throughComponent = components["/_circle1"].attributes["through"];
+      let throughComponent = components["/_circle1"].attributes["through"].component;
       let throughPoint1 = throughComponent.activeChildren[0];
       let throughPoint2 = throughComponent.activeChildren[1];
       let throughPoint3 = throughComponent.activeChildren[2];

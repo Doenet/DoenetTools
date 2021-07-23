@@ -20,6 +20,7 @@ module.exports = {
     'src/Tools/signout': '/signout',
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
+    'src/Tools/chat': '/chat',
     'src/Tools/new': '/new',
     'src/Tools/cypressTest': '/cypressTest',
     'src/Tools/uiDocs': '/uiDocs',

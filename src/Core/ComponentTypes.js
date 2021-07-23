@@ -18,6 +18,7 @@ import * as ComponentWithSelectableType from './components/abstract/ComponentWit
 import * as SideBySide from './components/SideBySide';
 import * as Indexing from './components/Indexing';
 import * as Divisions from './components/Divisions';
+import * as Verbatim from './components/Verbatim';
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -37,6 +38,7 @@ import Point from './components/Point';
 import Coords from './components/Coords';
 import Line from './components/Line';
 import LineSegment from './components/LineSegment';
+import Ray from './components/Ray';
 import Polyline from './components/Polyline';
 import Polygon from './components/Polygon';
 import Triangle from './components/Triangle';
@@ -87,6 +89,8 @@ import AttractToAngles from './components/AttractToAngles';
 import ConditionalContent from './components/ConditionalContent';
 import AsList from './components/AsList';
 import Spreadsheet from './components/Spreadsheet';
+import DiscreteSimulationResultList from './components/DiscreteSimulationResultList';
+import DiscreteSimulationResultPolyline from './components/DiscreteSimulationResultPolyline';
 import Cell from './components/Cell';
 import Row from './components/Row';
 import Column from './components/Column';
@@ -126,6 +130,10 @@ import UpdateValue from './components/UpdateValue';
 import CallAction from './components/CallAction';
 import TriggerSet from './components/TriggerSet';
 import FunctionIterates from './components/FunctionIterates';
+import Module from './components/Module';
+import ModuleAttribute from './components/ModuleAttribute';
+import ModuleSetup from './components/ModuleSetup';
+import Setup from './components/Setup';
 
 
 //Extended
@@ -169,6 +177,7 @@ const componentTypeArray = [
   ...Object.values(ComponentWithSelectableType),
   ...Object.values(Indexing),
   ...Object.values(Divisions),
+  ...Object.values(Verbatim),
   Document,
   StringComponent,
   Text, TextList,
@@ -182,7 +191,7 @@ const componentTypeArray = [
   Collect,
   Ref,
   Point, Coords,
-  Line, LineSegment, Polyline,
+  Line, LineSegment, Ray, Polyline,
   Polygon,
   Triangle,
   Rectangle,
@@ -204,6 +213,8 @@ const componentTypeArray = [
   Sequence,
   Slider,
   Spreadsheet,
+  DiscreteSimulationResultList,
+  DiscreteSimulationResultPolyline,
   Cell,
   Row,
   Column,
@@ -253,6 +264,10 @@ const componentTypeArray = [
   CallAction,
   TriggerSet,
   FunctionIterates,
+  Module,
+  ModuleAttribute,
+  ModuleSetup,
+  Setup,
 
   BaseComponent,
   InlineComponent,

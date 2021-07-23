@@ -1,41 +1,87 @@
-import React, {useCallback, useEffect, useMemo, useRef} from "react";
-import {basicSetup} from "@codemirror/basic-setup";
-import {EditorState, Transaction, StateEffect} from "@codemirror/state";
-import {selectLine,deleteLine} from "@codemirror/commands"
-import {EditorView, keymap} from "@codemirror/view";
-import {styleTags, tags as t} from "@codemirror/highlight"
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { basicSetup } from '@codemirror/basic-setup';
+import { EditorState, Transaction, StateEffect } from '@codemirror/state';
+import { selectLine, deleteLine } from '@codemirror/commands';
+import { EditorView, keymap } from '@codemirror/view';
+import {styleTags, defaultHighlightStyle, tags as t} from "@codemirror/highlight";
+import {lineNumbers} from "@codemirror/gutter";
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
 import {completeFromSchema} from '@codemirror/lang-xml';
 import {parser} from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
 
-const editorConfigState = atom({
-    key: 'editorConfigState',
+const editorConfigStateAtom = atom({
+    key: 'editorConfigStateAtom',
     default: {
         matchTag: false
     },
 });
 
 let view;
-
-export default function CodeMirror({editorRef,onBeforeChange,value}){
-    let editorConfig  = useRecoilValue(editorConfigState);
-    view = editorRef;
+export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
+    let editorConfig= useRecoilValue(editorConfigStateAtom);
+    view = useRef(null);
     let parent = useRef(null);
+
+    const changeFunc = useCallback((tr) => {
+        if(tr.docChanged){
+            let strOfDoc = tr.state.sliceDoc();
+            onBeforeChange(strOfDoc);
+            return true;
+        }
+    },[onBeforeChange]);
+
+    const doenetExtensions = useMemo(() => [
+        basicSetup,
+        doenet(doenetSchema),
+        EditorView.lineWrapping,
+        tabExtension,
+        cutExtension,
+        EditorState.changeFilter.of(changeFunc)
+    ],[changeFunc]); 
+
+    const state = EditorState.create({
+        doc : setInternalValue,
+        extensions: doenetExtensions
+    });
+
+    useEffect(() => {
+        if(view.current !== null && parent.current !== null){
+            // console.log(">>> setInternalValue is",setInternalValue)
+            let tr = view.current.state.update({changes: {from : 0, to: view.current.state.doc.length, insert: setInternalValue}});
+            view.current.dispatch(tr);
+        }
+    },[setInternalValue])
+
 
     useEffect(() => {
         if(view.current === null && parent.current !== null){
             view.current = new EditorView({state, parent: parent.current});
         }
     });
-
-    const changeFunc = useCallback((tr) => {
-        if(tr.docChanged){
-            let value = tr.state.sliceDoc();
-            onBeforeChange(value);
-            return true;
+    
+    useEffect(() => {
+        if(view.current !== null && parent.current !== null){
+            if(readOnly && view.current.state.facet(EditorView.editable)){
+                const disabledExtensions = [
+                    EditorView.editable.of(false),
+                    lineNumbers(),
+                    doenet(),
+                    defaultHighlightStyle.extension
+                ]
+                let tr = view.current.state.update({changes: {from : 0, to: view.current.state.doc.length, insert: setInternalValue}});
+                view.current.dispatch(tr);
+                view.current.dispatch({
+                    effects: StateEffect.reconfigure.of(disabledExtensions)
+                });
+            } else if(!readOnly && !view.current.state.facet(EditorView.editable)) {
+                view.current.dispatch({
+                    effects: StateEffect.reconfigure.of(doenetExtensions.push(EditorState.transactionFilter.of(matchTag)))
+                });
+            }
         }
-    },[onBeforeChange]);
+    })
+
 
     const matchTag = useCallback((tr) => {
         const cursorPos = tr.newSelection.main.from;
@@ -60,15 +106,6 @@ export default function CodeMirror({editorRef,onBeforeChange,value}){
         }
     },[changeFunc]);
 
-    const doenetExtensions = useMemo(() => [
-        basicSetup,
-        doenet(doenetSchema),
-        EditorView.lineWrapping,
-        tabExtension,
-        cutExtension,
-        EditorState.changeFilter.of(changeFunc)
-    ],[changeFunc]); 
-
     //TODO any updates would force an update of each part of the config.
     //Doesn't matter since there's only one toggle at the moment, but could cause unneccesary work later
     useEffect(() => {
@@ -84,11 +121,6 @@ export default function CodeMirror({editorRef,onBeforeChange,value}){
        }
     },[editorConfig,matchTag,doenetExtensions])
 
-    const state = EditorState.create({
-        doc : value,
-        extensions: doenetExtensions
-        
-    });
 
     //should rewrite using compartments once a more formal config component is established
     return (
@@ -194,11 +226,10 @@ const doenetLanguage = LezerLanguage.define({
     }
 });
 
-const doenet = (conf) => new LanguageSupport(doenetLanguage, doenetLanguage.data.of({
-    autocomplete: completeFromSchema(conf.elements || [], conf.attributes || [])
-}));
-
 export function codeMirrorFocusAndGoToEnd(){
     view.current.focus();
     view.current.dispatch(view.current.state.update({selection: {anchor: view.current.state.doc.length} }),  {scrollIntoView: true})
 }
+const doenet = (conf = {}) => new LanguageSupport(doenetLanguage, doenetLanguage.data.of({
+    autocomplete: completeFromSchema(conf.elements || [], conf.attributes || [])
+}));

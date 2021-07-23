@@ -139,8 +139,10 @@ export default class Function extends InlineComponent {
         success: true,
         newAttributes: {
           formula: {
-            componentType: "math",
-            children: matchedChildren
+            component: {
+              componentType: "math",
+              children: matchedChildren
+            }
           }
         }
       })
@@ -474,7 +476,7 @@ export default class Function extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          numericalfShadow: {}
+          numericalfShadow: { variablesToCheck: ["numericalfShadow"] }
         }
       }),
     }
@@ -484,7 +486,7 @@ export default class Function extends InlineComponent {
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          symbolicfShadow: {}
+          symbolicfShadow: { variablesToCheck: ["symbolicfShadow"] }
         }
       }),
     }

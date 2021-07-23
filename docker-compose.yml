@@ -45,6 +45,19 @@ services:
       - dev_net
     restart: always
 
+  rtnode:
+    image: node:lts-alpine3.13
+    user: 'node'
+    working_dir: /home/node/app
+    volumes:
+      - ./:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    command: 'npm run realtime'
+    ports:
+      - '81:81'
+    networks:
+      - dev_net
+
 volumes:
   node_modules:
   vendor:

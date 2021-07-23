@@ -61,6 +61,8 @@ const List = styled.ul`
 
 export default function attempt() {
   const font = () => {};
+  const vertical = () => {};
+  const disabled = () => {};
 
 //=== DATA STRUCTURE SECTION ===
   let dataStructure = [
@@ -93,6 +95,10 @@ export default function attempt() {
           propPreview: '<ActionButton label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to button'},
+          {name: 'Vertical Label',
+          propPreview: '<ActionButton label="What: vertical"/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to componenet on top'},
           {name: 'Alert',
           propPreview: '<ActionButton alert/>',
           propCode: {alert},
@@ -101,6 +107,10 @@ export default function attempt() {
           propPreview: '<ActionButton onClick={() => console.log("clicked")} />',
           propCode: {onClick: () => console.log("clicked")},
           description: 'Function called when button is clicked'},
+          {name: 'Disabled',
+          propPreview: '<ActionButton disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -151,6 +161,10 @@ export default function attempt() {
           propPreview: '<Button label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to button'},
+          {name: 'Vertical Label',
+          propPreview: '<Button label="What: " vertical/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to component on top'},
           {name: 'Alert',
           propPreview: '<Button alert/>',
           propCode: {alert},
@@ -159,6 +173,10 @@ export default function attempt() {
           propPreview: '<Button onClick={() => console.log("clicked")} />',
           propCode: {onClick: () => console.log("clicked")},
           description: 'Function called when button is clicked'},
+          {name: 'Disabled',
+          propPreview: '<Button disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -205,10 +223,22 @@ export default function attempt() {
           propPreview: '<Increment label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to componenet'},
+          {name: 'Vertical Label',
+          propPreview: '<Increment label="What: " vertical/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to component on top'},
+          {name: 'Alert',
+        propPreview: '<Increment alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (main coloring is red)'},
         {name: 'onChange',
         propPreview: '<Increment onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data)},
         description: 'Function called when data changes'},
+        {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -228,6 +258,10 @@ export default function attempt() {
         //   propPreview: '<Increment label="What: "/>',
         //   propCode: {label: 'What: ', width: 'menu'},
         //   description: 'Adds label to componenet'},
+        {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -248,9 +282,13 @@ export default function attempt() {
       propCode: {value: 'Enter cat names'},
       description: 'Changes the text'},
       {name: 'Label',
-          propPreview: '<Increment label="What: "/>',
+          propPreview: '<Textfield label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to componenet'},
+          {name: 'Vertical Label',
+          propPreview: '<Textfield label="What: " vertical/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to component on top'},
       {name: 'Alert',
       propPreview: '<Textfield alert/>',
       propCode: {alert},
@@ -259,6 +297,10 @@ export default function attempt() {
       propPreview: '<Textfield onChange={(data) => console.log(data)} />',
       propCode: {onChange: (data) => console.log(data)},
       description: 'Function called when data changes'},
+      {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -290,6 +332,10 @@ export default function attempt() {
         propPreview: '<ToggleButton label="What: "/>',
         propCode: {label: 'What: '},
         description: 'Adds label to button'},
+        {name: 'Vertical Label',
+          propPreview: '<Textfield label="What: " vertical/>',
+          propCode: {label: 'What: ', vertical},
+          description: 'Adds label to component on top'},
         {name: 'Icon',
         propPreview: '<ToggleButton icon={<FontAwesomeIcon icon={faCode}}/>',
         propCode: {icon: <FontAwesomeIcon icon={faCode}/>},
@@ -306,6 +352,10 @@ export default function attempt() {
         propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
         propCode: {onClick: (data) => console.log(data)},
         description: 'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)'},
+        {name: 'Disabled',
+          propPreview: '<Increment disabled />',
+          propCode: {disabled},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
@@ -330,10 +380,24 @@ export default function attempt() {
         propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: '},
         description: 'Adds label in front of the component. Dragging on the label will increment the value.'
         },
+        {name: 'Vertical Label',
+        propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} label="Label: " vertical>',
+        propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], label: 'Label: ', vertical},
+        description: 'Adds label on top of the component. Dragging on the label will increment the value.'
+        },
+        {name: 'Alert',
+        propPreview: '<UnitMenu units={["EM", "PT", "PX"]} defaults={["None", "Auto"]} alert>',
+        propCode: {units: ['EM', 'PT', 'PX'], defaults: ['None', 'Auto'], alert},
+        description: 'Changes color to red'
+        },
         {name: 'onChange',
         propPreview: '<UnitMenu onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data), units: ['EM', 'PT', 'PX']},
         description: 'Function called when data changes'},
+        {name: 'Disabled',
+          propPreview: '<UnitMenu disabled />',
+          propCode: {disabled, units: ['EM', 'PT', 'PX']},
+          description: 'Makes button not able to be used.'},
         ]
       },
     {

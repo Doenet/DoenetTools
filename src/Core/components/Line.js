@@ -16,7 +16,14 @@ export default class Line extends GraphicalComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["points", "variables"] };
+  static get stateVariablesShadowedForReference() {
+    return [
+      "points", "variables",
+      "nDimensions", "nPointsPrescribed",
+      "basedOnSlope",
+      "equation", "equationIdentity", "coeff0", "coeffvar1", "coeffvar2"
+    ]
+  };
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -35,6 +42,9 @@ export default class Line extends GraphicalComponent {
     attributes.through = {
       createComponentOfType: "_pointListComponent",
     };
+    attributes.slope = {
+      createComponentOfType: "number",
+    };
     attributes.variables = {
       createComponentOfType: "variables",
     };
@@ -52,8 +62,10 @@ export default class Line extends GraphicalComponent {
         success: true,
         newAttributes: {
           equation: {
-            componentType: "math",
-            children: matchedChildren
+            component: {
+              componentType: "math",
+              children: matchedChildren
+            }
           }
         }
       })
@@ -150,6 +162,110 @@ export default class Line extends GraphicalComponent {
             return { newValues: { nDimensions: 2 } }
           }
 
+        }
+      }
+    }
+
+    stateVariableDefinitions.nPointsPrescribed = {
+      returnDependencies: () => ({
+        throughAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
+          variableNames: ["nPoints"],
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        if (dependencyValues.throughAttr === null) {
+          return { newValues: { nPointsPrescribed: 0 } }
+        } else {
+          return {
+            newValues: {
+              nPointsPrescribed: dependencyValues.throughAttr.stateValues.nPoints
+            }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.basedOnSlope = {
+      returnDependencies: () => ({
+        slopeAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "slope",
+        },
+        nPointsPrescribed: {
+          dependencyType: "stateVariable",
+          variableName: "nPointsPrescribed"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            basedOnSlope: dependencyValues.nPointsPrescribed < 2 &&
+              dependencyValues.slopeAttr !== null &&
+              dependencyValues.nDimensions === 2
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.dForSlope = {
+      defaultValue: 1,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          dForSlope: { variablesToCheck: ["dForSlope"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "dForSlope",
+            value: desiredStateVariableValues.dForSlope
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.essentialPoint1x = {
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          essentialPoint1x: { variablesToCheck: ["essentialPoint1x"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "essentialPoint1x",
+            value: desiredStateVariableValues.essentialPoint1x
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.essentialPoint1y = {
+      defaultValue: 0,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          essentialPoint1y: { variablesToCheck: ["essentialPoint1y"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "essentialPoint1y",
+            value: desiredStateVariableValues.essentialPoint1y
+          }]
         }
       }
     }
@@ -269,7 +385,9 @@ export default class Line extends GraphicalComponent {
         }
 
       },
-      stateVariablesDeterminingDependencies: ["equationIdentity"],
+      stateVariablesDeterminingDependencies: [
+        "equationIdentity", "nPointsPrescribed", "basedOnSlope"
+      ],
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
@@ -293,8 +411,56 @@ export default class Line extends GraphicalComponent {
                 variableNames: ["pointX" + varEnding]
               }
             }
+            if (pointInd === "1") {
+              if (stateValues.nPointsPrescribed === 1) {
+                dependenciesByKey[arrayKey].point1 = {
+                  dependencyType: "attributeComponent",
+                  attributeName: "through",
+                  variableNames: ["point1"]
+                }
+              }
+              if (stateValues.basedOnSlope) {
+                dependenciesByKey[arrayKey].dForSlope = {
+                  dependencyType: "stateVariable",
+                  variableName: "dForSlope"
+                }
+                dependenciesByKey[arrayKey].slopeAttr = {
+                  dependencyType: "attributeComponent",
+                  attributeName: "slope",
+                  variableNames: ["value"]
+                }
+
+              }
+            }
+            if (stateValues.nPointsPrescribed === 0 && stateValues.basedOnSlope) {
+              if (dim === "0") {
+                dependenciesByKey[arrayKey].essentialPoint1coord = {
+                  dependencyType: "stateVariable",
+                  variableName: "essentialPoint1x"
+                }
+              } else {
+                dependenciesByKey[arrayKey].essentialPoint1coord = {
+                  dependencyType: "stateVariable",
+                  variableName: "essentialPoint1y"
+                }
+              }
+            }
           }
-          return { dependenciesByKey }
+          let globalDependencies = {
+            nPointsPrescribed: {
+              dependencyType: "stateVariable",
+              variableName: "nPointsPrescribed"
+            },
+            nDimensions: {
+              dependencyType: "stateVariable",
+              variableName: "nDimensions"
+            },
+            basedOnSlope: {
+              dependencyType: "stateVariable",
+              variableName: "basedOnSlope"
+            }
+          }
+          return { dependenciesByKey, globalDependencies }
         } else {
           let globalDependencies = {
             coeff0: {
@@ -358,10 +524,83 @@ export default class Line extends GraphicalComponent {
             ) {
               points[arrayKey] = dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding];
             } else {
-              if (arrayKey === "0,0") {
-                essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
+              if (globalDependencyValues.basedOnSlope) {
+                let point1coord;
+                if (globalDependencyValues.nPointsPrescribed === 1) {
+                  point1coord = dependencyValuesByKey[arrayKey].point1.stateValues.point1[dim].tree
+                } else {
+                  point1coord = dependencyValuesByKey[arrayKey].essentialPoint1coord;
+
+                }
+
+                if (pointInd === "0") {
+                  // will get here only if nPointsPrescribed === 0
+                  points[arrayKey] = me.fromAst(point1coord);
+                } else {
+
+                  // one points prescribed, slope prescribed, and on second point, in 2D
+                  let slope = dependencyValuesByKey[arrayKey].slopeAttr.stateValues.value;
+
+                  if (slope === Infinity || slope === -Infinity) {
+
+                    if (dim === "0") {
+                      points[arrayKey] = me.fromAst(point1coord);
+                    } else {
+                      points[arrayKey] =
+                        me.fromAst([
+                          "+",
+                          point1coord,
+                          dependencyValuesByKey[arrayKey].dForSlope * Math.sign(slope)
+                        ])
+
+                    }
+
+                  } else if (Number.isFinite(slope)) {
+
+                    let theta = Math.atan(slope);
+                    if (dim === "0") {
+                      points[arrayKey] =
+                        me.fromAst([
+                          "+",
+                          point1coord,
+                          dependencyValuesByKey[arrayKey].dForSlope * Math.cos(theta)
+                        ])
+                    } else {
+                      points[arrayKey] =
+                        me.fromAst([
+                          "+",
+                          point1coord,
+                          dependencyValuesByKey[arrayKey].dForSlope * Math.sin(theta)
+                        ])
+
+                    }
+
+                  } else {
+                    points[arrayKey] = me.fromAst('\uff3f')
+
+                  }
+                }
               } else {
-                essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
+                if (arrayKey === "0,0") {
+                  essentialPoints[arrayKey] = { defaultValue: me.fromAst(1) }
+                } else if (globalDependencyValues.nPointsPrescribed === 1 && arrayKey === "1,0") {
+                  essentialPoints[arrayKey] = {
+                    get defaultValue() {
+                      // if point 1 == (0,0), set x-component of point 2 = 1
+                      // so that the points aren't both (0,0)
+                      if (dependencyValuesByKey[arrayKey].point1.stateValues.point1[0].tree === 0
+                        && dependencyValuesByKey[arrayKey].point1.stateValues.point1[1].tree === 0
+                      ) {
+                        return me.fromAst(1);
+                      } else {
+                        return me.fromAst(0);
+                      }
+                    }
+                  }
+                } else {
+                  essentialPoints[arrayKey] = { defaultValue: me.fromAst(0) }
+
+                }
               }
             }
           }
@@ -524,8 +763,71 @@ export default class Line extends GraphicalComponent {
                 variableIndex: 0,
               })
 
-            } else {
+            } else if (globalDependencyValues.basedOnSlope) {
 
+              let val = desiredStateVariableValues.points[arrayKey];
+              if (val instanceof me.class) {
+                val = val.evaluate_to_constant();
+                if (val === null) {
+                  val = NaN;
+                }
+              }
+
+              if (pointInd === "0") {
+                instructions.push({
+                  setDependency: dependencyNamesByKey[arrayKey].essentialPoint1coord,
+                  desiredValue: val,
+                  variableIndex: 0,
+                })
+              } else {
+
+
+                if (!workspace.desiredPoint1) {
+                  workspace.desiredPoint1 = [];
+                }
+
+                workspace.desiredPoint1[dim] = val;
+
+                let oDim = dim === "0" ? "1" : "0";
+                if (workspace.desiredPoint1[oDim] === undefined) {
+                  let oVal = stateValues.points[1][oDim].evaluate_to_constant();
+                  if (oVal === null) {
+                    oVal = NaN;
+                  }
+                  workspace.desiredPoint1[oDim] = oVal;
+                }
+
+                if (workspace.desiredPoint1.every(Number.isFinite)) {
+                  let xOther, yOther;
+                  if (globalDependencyValues.nPointsPrescribed === 1) {
+                    xOther = dependencyValuesByKey[arrayKey].point1.stateValues.point1[0].evaluate_to_constant();
+                    yOther = dependencyValuesByKey[arrayKey].point1.stateValues.point1[1].evaluate_to_constant();
+                  } else {
+                    xOther = stateValues.essentialPoint1x;
+                    yOther = stateValues.essentialPoint1y;
+                  }
+                  if (Number.isFinite(xOther) && Number.isFinite(yOther)) {
+                    let dx = workspace.desiredPoint1[0] - xOther;
+                    let dy = workspace.desiredPoint1[1] - yOther;
+                    let dForSlope = Math.sqrt(dx * dx + dy * dy);
+                    if (dx !== 0) {
+                      dForSlope *= Math.sign(dx)
+                    }
+
+                    instructions.push({
+                      setDependency: dependencyNamesByKey[arrayKey].dForSlope,
+                      desiredValue: dForSlope,
+                    })
+                    instructions.push({
+                      setDependency: dependencyNamesByKey[arrayKey].slopeAttr,
+                      desiredValue: dy / dx,
+                      variableIndex: 0,
+                    })
+                  }
+                }
+
+              }
+            } else {
               instructions.push({
                 setStateVariable: "points",
                 value: { [arrayKey]: convertValueToMathExpression(desiredStateVariableValues.points[arrayKey]) }
@@ -815,7 +1117,7 @@ export default class Line extends GraphicalComponent {
           let point = dependencyValuesByKey[arrayKey].point;
           // if we are in 1 dimensions,
           // point isn't an array, so make it an array
-          if(!Array.isArray(point)) {
+          if (!Array.isArray(point)) {
             point = [point];
           }
           let numericalP = [];
@@ -966,6 +1268,46 @@ export default class Line extends GraphicalComponent {
       })
     }
 
+    stateVariableDefinitions.graphXmin = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "graphXmax",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmin",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmax",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.graphAncestor) {
+          return {
+            newValues: {
+              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
+              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
+              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
+              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              graphXmin: null, graphXmax: null,
+              graphYmin: null, graphYmax: null
+            }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -983,52 +1325,85 @@ export default class Line extends GraphicalComponent {
         numericalCoeffvar2: {
           dependencyType: "stateVariable",
           variableName: "numericalCoeffvar2"
+        },
+        graphXmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmin"
+        },
+        graphXmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmax"
+        },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          nearestPoint: function (variables) {
+      definition({ dependencyValues }) {
 
-            // only implemented in 2D for now
-            if (dependencyValues.nDimensions !== 2) {
-              return {};
+        let xscale = 1, yscale = 1;
+        if (dependencyValues.graphXmin !== null &&
+          dependencyValues.graphXmax !== null &&
+          dependencyValues.graphYmin !== null &&
+          dependencyValues.graphYmax !== null
+        ) {
+          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+        }
+
+        let a = dependencyValues.numericalCoeffvar1 * xscale;
+        let b = dependencyValues.numericalCoeffvar2 * yscale;
+        let c = dependencyValues.numericalCoeff0;
+        let constantCoeffs = Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(c);
+
+        let denom = a * a + b * b;
+
+        // only implement for 
+        // - 2D
+        // - constant coefficients and 
+        // - non-degenerate parameters
+        let skip = dependencyValues.nDimensions !== 2
+          || !constantCoeffs
+          || denom === 0;
+
+        return {
+          newValues: {
+            nearestPoint: function (variables) {
+
+              if (skip) {
+                return {};
+              }
+
+              let x1 = variables.x1.evaluate_to_constant();
+              let x2 = variables.x2.evaluate_to_constant();
+
+
+              if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+                return {};
+              }
+
+              let x1Effective = x1 / xscale;
+              let x2Effective = x2 / yscale;
+
+
+              let result = {};
+              result.x1 = (b * (b * x1Effective - a * x2Effective) - a * c) * xscale / denom;
+              result.x2 = (a * (-b * x1Effective + a * x2Effective) - b * c) * yscale / denom;
+
+              if (variables.x3 !== undefined) {
+                result.x3 = 0;
+              }
+
+              return result;
+
             }
-
-            // only implement for constant coefficients
-            let a = dependencyValues.numericalCoeffvar1;
-            let b = dependencyValues.numericalCoeffvar2;
-            let c = dependencyValues.numericalCoeff0;
-
-            if (!(Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(c))) {
-              return {};
-            }
-
-            let denom = a * a + b * b;
-
-            if (denom === 0) {
-              return {};
-            }
-
-            let x1 = variables.x1.evaluate_to_constant();
-            let x2 = variables.x2.evaluate_to_constant();
-
-            if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-              return {};
-            }
-
-            let result = {};
-            result.x1 = (b * (b * x1 - a * x2) - a * c) / denom;
-            result.x2 = (a * (-b * x1 + a * x2) - b * c) / denom;
-
-            if (variables.x3 !== undefined) {
-              result.x3 = 0;
-            }
-
-            return result;
-
           }
         }
-      })
+      }
     }
 
 
@@ -1044,8 +1419,10 @@ export default class Line extends GraphicalComponent {
     let desiredPoints = {
       "0,0": me.fromAst(point1coords[0]),
       "0,1": me.fromAst(point1coords[1]),
-      "1,0": me.fromAst(point2coords[0]),
-      "1,1": me.fromAst(point2coords[1]),
+    }
+    if (!this.stateValues.basedOnSlope) {
+      desiredPoints["1,0"] = me.fromAst(point2coords[0]);
+      desiredPoints["1,1"] = me.fromAst(point2coords[1]);
     }
 
     if (transient) {

@@ -97,7 +97,7 @@ export default class Award extends BaseComponent {
       propagateToDescendants: true,
     };
     attributes.targetsAreResponses = {
-      leaveRaw: true
+      createPrimitiveOfType: "string"
     }
 
     return attributes;

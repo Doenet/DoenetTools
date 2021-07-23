@@ -59,7 +59,7 @@ export default class Sources extends BaseComponent {
     stateVariableDefinitions.alias = {
       returnDependencies: () => ({
         alias: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "alias"
         }
       }),
@@ -71,7 +71,7 @@ export default class Sources extends BaseComponent {
     stateVariableDefinitions.indexAlias = {
       returnDependencies: () => ({
         indexAlias: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "indexAlias"
         }
       }),

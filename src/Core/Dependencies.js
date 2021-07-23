@@ -2271,7 +2271,7 @@ export class DependencyHandler {
             inheritedComponentType: component.componentType,
             baseComponentType: "_composite"
           })
-          if (isComposite && !component.attributes.componentType) {
+          if (isComposite && !(component.attributes.componentType && component.attributes.componentType.primitive)) {
             if (stateVariable === "readyToExpandWhenResolved") {
               compositesWithReadyToExpandWhenResolved.push(componentName)
             } else if (stateVariable === component.constructor.stateVariableToEvaluateAfterReplacements) {
@@ -3874,14 +3874,15 @@ class AttributeComponentDependency extends Dependency {
       }
     }
 
-    let attrComp = parent.attributes[this.attributeName];
 
-    if (attrComp && attrComp.componentType) {
+    let attribute = parent.attributes[this.attributeName];
+
+    if (attribute && attribute.component) {
       // have an attribute that is a component
       return {
         success: true,
-        downstreamComponentNames: [attrComp.componentName],
-        downstreamComponentTypes: [attrComp.componentType],
+        downstreamComponentNames: [attribute.component.componentName],
+        downstreamComponentTypes: [attribute.component.componentType],
       }
     } else {
       return {
@@ -4122,8 +4123,8 @@ class ChildDependency extends Dependency {
                 continue;
               }
             }
-
-            if (this.dependencyHandler._components[compositeNotReady].attributes.componentType) {
+            let compositeComp = this.dependencyHandler._components[compositeNotReady];
+            if (compositeComp.attributes.componentType && compositeComp.attributes.componentType.primitive) {
               compositesBlockingWithComponentType.push(compositeNotReady);
             } else {
               compositesBlockingWithoutComponentType.push(compositeNotReady)
@@ -4375,16 +4376,22 @@ class DescendantDependency extends Dependency {
             dependencyBlocked: this.dependencyName
           });
 
-          for (let compositeNotReady of result.unexpandedCompositesNotReadyByParentName[parentName]) {
-            this.dependencyHandler.addBlocker({
-              blockerComponentName: compositeNotReady,
-              blockerType: "stateVariable",
-              blockerStateVariable: "readyToExpandWhenResolved",
-              componentNameBlocked: this.upstreamComponentName,
-              typeBlocked: "childLogic",
-              stateVariableBlocked: varName,
-            });
-          }
+          // TODO: when we have the composites block child logic,
+          // we can get circular dependencies.
+          // The solution of just removing these blockers seems to work,
+          // but not sure if it is the most efficient solution.
+          // Does this lead to unnecessary recalculations?
+
+          // for (let compositeNotReady of result.unexpandedCompositesNotReadyByParentName[parentName]) {
+          //   this.dependencyHandler.addBlocker({
+          //     blockerComponentName: compositeNotReady,
+          //     blockerType: "stateVariable",
+          //     blockerStateVariable: "readyToExpandWhenResolved",
+          //     componentNameBlocked: this.upstreamComponentName,
+          //     typeBlocked: "childLogic",
+          //     stateVariableBlocked: varName,
+          //   });
+          // }
         }
       }
 
@@ -4497,21 +4504,29 @@ class DescendantDependency extends Dependency {
     let adjustedUnexpanded = [];
     for (let compositeName of unexpandedComposites) {
       let composite = this.dependencyHandler._components[compositeName];
-      let placeholderType = composite.attributes.componentType;
+      if (composite.attributes.componentType) {
+        let placeholderType = composite.attributes.componentType.primitive;
+        let matches = this.componentTypes.some(ct =>
+          this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: placeholderType,
+            baseComponentType: ct
+          })
+        );
 
-      let matches = this.componentTypes.some(ct =>
-        this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: placeholderType,
-          baseComponentType: ct
-        })
-      );
+        if (matches) {
+          if (!placeholdersOKForMatchedDescendants) {
+            adjustedUnexpanded.push(compositeName);
+          }
+        } else {
+          // Composite is a placeholder that is not matched by componentTypes.
+          // Could that placeholder later have a descendant that is matched by componentTypes?
 
-      if (matches) {
-        if (!placeholdersOKForMatchedDescendants) {
           adjustedUnexpanded.push(compositeName);
+
         }
       } else {
-        adjustedUnexpanded.push(compositeName)
+        // no componentType specified
+        adjustedUnexpanded.push(compositeName);
       }
 
     }
@@ -4738,6 +4753,188 @@ class ParentDependency extends Dependency {
 }
 
 dependencyTypeArray.push(ParentDependency);
+
+class ParentIdentityDependency extends Dependency {
+  static dependencyType = "parentIdentity";
+
+  setUpParameters() {
+
+    if (this.definition.childName) {
+      this.childName = this.definition.childName;
+      this.specifiedComponentName = this.childName;
+    } else {
+      this.childName = this.upstreamComponentName;
+    }
+
+    if (this.definition.parentComponentType) {
+      this.parentComponentType = this.definition.parentComponentType;
+    }
+
+    this.returnSingleComponent = true;
+
+  }
+
+
+  determineDownstreamComponents() {
+
+    let child = this.dependencyHandler._components[this.childName];
+
+    if (!child) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.childName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.childName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        this.dependencyHandler.addBlocker({
+          blockerComponentName: this.childName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    if (!child.parentName) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    this.parentName = child.parentName;
+
+    let parent = this.dependencyHandler._components[this.parentName];
+
+    if (!parent) {
+      // Note: since parent is created after children,
+      // will typically hit this condition first time through
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.parentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.parentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        this.dependencyHandler.addBlocker({
+          blockerComponentName: this.parentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    if (this.parentComponentType &&
+      !this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: parent.componentType,
+        baseComponentType: this.parentComponentType
+      })
+    ) {
+      // parent didn't match specified componentType
+      // so don't include parent
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    let parentDependencies = this.dependencyHandler.updateTriggers.parentDependenciesByParent[this.parentName];
+    if (!parentDependencies) {
+      parentDependencies = this.dependencyHandler.updateTriggers.parentDependenciesByParent[this.parentName] = [];
+    }
+    if (!parentDependencies.includes(this)) {
+      parentDependencies.push(this);
+    }
+
+    return {
+      success: true,
+      downstreamComponentNames: [this.parentName],
+      downstreamComponentTypes: [parent.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+    let parentDeps = this.dependencyHandler.updateTriggers.parentDependenciesByParent[this.parentName];
+    if (parentDeps) {
+      let ind = parentDeps.indexOf(this);
+      if (ind !== -1) {
+        parentDeps.splice(ind, 1);
+      }
+    }
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+    let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.parentName];
+    if (dependenciesMissingComponent) {
+      let ind = dependenciesMissingComponent.indexOf(this);
+      if (ind !== -1) {
+        dependenciesMissingComponent.splice(ind, 1);
+      }
+    }
+
+
+  }
+
+}
+
+dependencyTypeArray.push(ParentIdentityDependency);
 
 
 class AncestorDependency extends Dependency {
@@ -5362,9 +5559,103 @@ class SourceCompositeDependency extends Dependency {
 
 dependencyTypeArray.push(SourceCompositeDependency);
 
+class SourceCompositeIdentityDependency extends Dependency {
+  static dependencyType = "sourceCompositeIdentity";
+
+  setUpParameters() {
+
+    if (this.definition.replacementName) {
+      this.replacementName = this.definition.replacementName
+      this.specifiedComponentName = this.replacementName;
+    } else {
+      this.replacementName = this.upstreamComponentName;
+    }
+
+    this.returnSingleComponent = true;
+
+  }
+
+
+  determineDownstreamComponents() {
+
+    let replacement = this.dependencyHandler._components[this.replacementName];
+
+    if (!replacement) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.replacementName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.replacementName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        this.dependencyHandler.addBlocker({
+          blockerComponentName: this.replacementName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!replacement.replacementOf) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let sourceComposite = replacement.replacementOf;
+
+    return {
+      success: true,
+      downstreamComponentNames: [sourceComposite.componentName],
+      downstreamComponentTypes: [sourceComposite.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(SourceCompositeIdentityDependency);
+
 
 class AdapterSourceDependency extends Dependency {
-  static dependencyType = "adapterSource";
+  static dependencyType = "adapterSourceStateVariable";
 
   setUpParameters() {
 
@@ -5682,10 +5973,13 @@ class CountAmongSiblingsDependency extends Dependency {
 
     // TODO: do we need this to actually depend on siblings?
     // Or is the update trigger enough to handle all needed updates?
+    // Removed dependence on siblings so works even if they are placeholders
     return {
       success: true,
-      downstreamComponentNames: parent.activeChildren.map(x => x.componentName),
-      downstreamComponentTypes: parent.activeChildren.map(x => x.componentType),
+      // downstreamComponentNames: parent.activeChildren.map(x => x.componentName),
+      // downstreamComponentTypes: parent.activeChildren.map(x => x.componentType),
+      downstreamComponentNames: [],
+      downstreamComponentTypes: [],
     }
 
 
@@ -5840,7 +6134,7 @@ class ExpandTargetNameDependency extends Dependency {
   getValue() {
 
     let parent = this.dependencyHandler._components[this.parentName];
-    let parentCreatesNewNamespace = parent.attributes.newNamespace;
+    let parentCreatesNewNamespace = parent.attributes.newNamespace && parent.attributes.newNamespace.primitive;
 
     let namespaceStack = this.parentName.split('/').map(x => ({ namespace: x }))
 
@@ -5948,8 +6242,8 @@ class DoenetAttributeDependency extends StateVariableDependency {
 dependencyTypeArray.push(DoenetAttributeDependency);
 
 
-class AttributeDependency extends StateVariableDependency {
-  static dependencyType = "attribute";
+class AttributePrimitiveDependency extends StateVariableDependency {
+  static dependencyType = "attributePrimitive";
 
   setUpParameters() {
 
@@ -5978,6 +6272,9 @@ class AttributeDependency extends StateVariableDependency {
       let depComponent = this.dependencyHandler.components[this.downstreamComponentNames[0]];
 
       value = depComponent.attributes[this.attributeName];
+      if (value) {
+        value = value.primitive;
+      }
 
     }
 
@@ -5990,7 +6287,7 @@ class AttributeDependency extends StateVariableDependency {
 
 }
 
-dependencyTypeArray.push(AttributeDependency);
+dependencyTypeArray.push(AttributePrimitiveDependency);
 
 
 class SerializedChildrenDependency extends Dependency {

@@ -168,7 +168,7 @@ describe('MathList Tag Tests', function () {
       cy.log('Test internal values are set to the correct values')
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
-        let xs1 = components["/_point1"].attributes.xs;
+        let xs1 = components["/_point1"].attributes.xs.component;
 
         expect(xs1.activeChildren.length).eq(11);
         expect(xs1.activeChildren[0].stateValues.value.tree).eq('x');

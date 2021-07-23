@@ -20,7 +20,7 @@ export default class Extract extends CompositeComponent {
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
-    delete attributes.disabled;
+    delete attributes.disable;
     delete attributes.modifyIndirectly;
     delete attributes.fixed;
     delete attributes.styleNumber;
@@ -74,7 +74,7 @@ export default class Extract extends CompositeComponent {
     stateVariableDefinitions.propName = {
       returnDependencies: () => ({
         propName: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "prop"
         },
       }),
@@ -217,12 +217,14 @@ export default class Extract extends CompositeComponent {
     let serializedReplacements = results.serializedReplacements;
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       indOffset: numReplacementsSoFar,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

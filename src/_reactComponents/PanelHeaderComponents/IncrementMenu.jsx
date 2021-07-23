@@ -19,14 +19,14 @@ For given values:
 
 const Container = styled.div`
   position: relative;
-  display: flex;
+  display: ${props => props.align};
   align-items: center;
   width: auto;
 `;
 
 const Textfield = styled.input`
   border-radius: 5px;
-  border: 2px solid black;
+  border: ${props => props.alert ? '2px solid #C1292E' : '2px solid black'};
   z-index: 0;
   height: 24px;
   width: 46px;
@@ -34,35 +34,36 @@ const Textfield = styled.input`
   padding: 0px 36px 0px 36px;
   text-align: center;
   resize: none;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'default'}
 `;
 
 const IncreaseButton = styled.button`
-  background-color: #1a5a99;
+  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
   border-radius: 0px 3px 3px 0px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: white;
+  color: ${props => props.disabled ? 'black' : 'white'};
   font-size: 18px;
   right: 70px;
   :hover {
-    cursor: pointer;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   }
 `;
 
 const DecreaseButton = styled.button`
-  background-color: #1a5a99;
+  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
   border-radius: 3px 0px 0px 3px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: white;
+  color: ${props => props.disabled ? 'black' : 'white'};
   font-size: 18px;
   left: -120px;
   :hover {
-    cursor: pointer;
+    cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   }
 `;
 
@@ -92,7 +93,8 @@ const MenuOptions = styled.button`
 const Label = styled.p`
   font-size: 12px;
   display: ${props => props.labelVisible};
-  margin-right: 5px
+  margin-right: 5px;
+  margin-bottom: ${props => props.align == 'flex' ? 'none' : '0px'};
 `
 
 
@@ -101,7 +103,7 @@ export default function Increment(props) {
   var sizes;
   var menuComponents = [];
   const [currentValue, setCurrentValue] = useState("");
-
+  var align = 'flex';
   //Button icons
   var decreaseIcon = "-";
   var increaseIcon = "+";
@@ -250,13 +252,26 @@ export default function Increment(props) {
   var label = '';
   if (props.label) {
     label = props.label;
+    if (props.vertical) {
+      align = 'static';
+    }
+  }
+  var alert = false; 
+  if (props.alert) {
+    alert = true;
+  }
+  var disabled = false;
+  if (props.disabled) {
+    disabled = true;
   }
 
   return (
     <>
-      <Container>
-      <Label labelVisible={labelVisible}>{label}</Label>
+      <Container align={align}>
+        <Label labelVisible={labelVisible} align={align}>{label}</Label>
         <Textfield
+          alert={alert}
+          disabled={disabled}
           value={currentValue}
           onClick={() => {
             displayMenu();
@@ -268,6 +283,7 @@ export default function Increment(props) {
         ></Textfield>
 
         <DecreaseButton
+          disabled={disabled}
           onClick={() => {
             decrement();
           }}
@@ -276,6 +292,7 @@ export default function Increment(props) {
         </DecreaseButton>
 
         <IncreaseButton
+          disabled={disabled}
           onClick={() => {
             increment();
           }}

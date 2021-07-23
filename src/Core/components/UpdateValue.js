@@ -78,7 +78,7 @@ export default class UpdateValue extends InlineComponent {
     stateVariableDefinitions.type = {
       returnDependencies: () => ({
         type: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "type",
         },
       }),
@@ -131,7 +131,7 @@ export default class UpdateValue extends InlineComponent {
     stateVariableDefinitions.propName = {
       returnDependencies: () => ({
         propName: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "prop"
         },
       }),
@@ -308,11 +308,11 @@ export default class UpdateValue extends InlineComponent {
     stateVariableDefinitions.triggerWithTname = {
       returnDependencies: () => ({
         triggerWithTname: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "triggerWithTname"
         },
         triggerWhen: {
-          dependencyType: "attribute",
+          dependencyType: "attributeComponent",
           attributeName: "triggerWhen"
         },
         insideTriggerSet: {

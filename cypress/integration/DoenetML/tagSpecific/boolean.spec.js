@@ -91,7 +91,7 @@ describe('Boolean Tag Tests', function () {
 
     cy.get('#\\/_text1').should('contain.text', 'a')
 
-    
+
     let nTrues = 36, nFalses = 30;
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
@@ -210,6 +210,58 @@ describe('Boolean Tag Tests', function () {
 
   })
 
+  it('boolean with number strings for text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput name="c">
+      <choice>1</choice>
+      <choice>2</choice>
+      <choice>three</choice>
+      <choice>four</choice>
+    </choiceinput>
+
+    <boolean name="one">$c = 1</boolean>
+    <boolean name="two">$c = <text>2</text></boolean>
+    <boolean name="three">$c = three</boolean>
+    <boolean name="four">$c = <text>four</text></boolean>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/one').should('have.text', "false")
+    cy.get('#\\/two').should('have.text', "false")
+    cy.get('#\\/three').should('have.text', "false")
+    cy.get('#\\/four').should('have.text', "false")
+
+    cy.get(`#\\/c_choice1_input`).click();
+    cy.get('#\\/one').should('have.text', "true")
+    cy.get('#\\/two').should('have.text', "false")
+    cy.get('#\\/three').should('have.text', "false")
+    cy.get('#\\/four').should('have.text', "false")
+
+    cy.get(`#\\/c_choice2_input`).click();
+    cy.get('#\\/one').should('have.text', "false")
+    cy.get('#\\/two').should('have.text', "true")
+    cy.get('#\\/three').should('have.text', "false")
+    cy.get('#\\/four').should('have.text', "false")
+
+    cy.get(`#\\/c_choice3_input`).click();
+    cy.get('#\\/one').should('have.text', "false")
+    cy.get('#\\/two').should('have.text', "false")
+    cy.get('#\\/three').should('have.text', "true")
+    cy.get('#\\/four').should('have.text', "false")
+
+    cy.get(`#\\/c_choice4_input`).click();
+    cy.get('#\\/one').should('have.text', "false")
+    cy.get('#\\/two').should('have.text', "false")
+    cy.get('#\\/three').should('have.text', "false")
+    cy.get('#\\/four').should('have.text', "true")
+
+
+  })
 
 })
 

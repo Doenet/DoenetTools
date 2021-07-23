@@ -170,6 +170,12 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
     AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
     EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
+    DoenetMLSettings:lazy(() => import('../Menus/DoenetMLSettings')),
+    VersionHistory:lazy(() => import('../Menus/VersionHistory')),
+    Variant:lazy(() => import('../Menus/Variant')),
+    AutoSaves:lazy(() => import('../Menus/AutoSaves')),
+    LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
+    ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
   }).current;
 
   let selectionPanel = null;

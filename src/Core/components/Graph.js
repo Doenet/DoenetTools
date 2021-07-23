@@ -49,6 +49,13 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+    attributes.identicalAxisScales = {
+      createComponentOfType: "boolean",
+      createStateVariable: "identicalAxisScales",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
     attributes.displayXAxis = {
       createComponentOfType: "boolean",
       createStateVariable: "displayXAxis",
@@ -225,7 +232,7 @@ export default class Graph extends BlockComponent {
       let processResult = processAssignNames({
         serializedComponents,
         parentName: this.componentName,
-        parentCreatesNewNamespace: this.attributes.newNamespace,
+        parentCreatesNewNamespace: this.attributes.newNamespace && this.attributes.newNamespace.primitive,
         componentInfoObjects: this.componentInfoObjects,
         indOffset: this.stateValues.nChildrenAdded
       });

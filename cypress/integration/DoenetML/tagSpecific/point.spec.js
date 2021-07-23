@@ -1100,7 +1100,6 @@ describe('Point Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(-1);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", -1, 0]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1115,7 +1114,6 @@ describe('Point Tag Tests', function () {
       components['/_point1'].movePoint({ x: 8.5, y: -6.2 });
       expect(components['/_point1'].stateValues.xs[0].tree).eq(9);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(0);
-      expect(components['/_point1'].stateValues.coords.tree).eqls(["vector", 9, 0]);
       expect(components['/_point1'].stateValues.constraintUsed).eq(true);
     })
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1828,7 +1826,7 @@ describe('Point Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/A'].movePoint({ x: 9.1, y: -6.8 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).eq(2);
+        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).closeTo(2, 1E-14);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -1837,7 +1835,7 @@ describe('Point Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/_point1'].movePoint({ x: 3, y: 1 });
-        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).eq(2);
+        expect(components['/A'].stateValues.xs[0].tree + components['/A'].stateValues.xs[1].tree).closeTo(2, 1E-14);
         expect(components['/A'].stateValues.constraintUsed).eq(false)
       })
       cy.get(constraintUsed1Anchor).should('have.text', "false")
@@ -1846,7 +1844,7 @@ describe('Point Tag Tests', function () {
       cy.window().then((win) => {
         let components = Object.assign({}, win.state.components);
         components['/A'].movePoint({ x: -5.1, y: -6.8 });
-        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).eq(2);
+        expect(components['/A'].stateValues.xs[0].tree - components['/A'].stateValues.xs[1].tree).closeTo(2, 1E-14);
         expect(components['/A'].stateValues.constraintUsed).eq(true);
       })
       cy.get(constraintUsed1Anchor).should('have.text', "true")
@@ -2753,7 +2751,7 @@ describe('Point Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let x1 = components['/_point1'].attributes.xs.activeChildren[0];
+      let x1 = components['/_point1'].attributes.xs.component.activeChildren[0];
       let math1 = x1.definingChildren[0];
       let math1Name = math1.componentName;
       let math2 = x1.definingChildren[2];

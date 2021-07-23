@@ -5,7 +5,7 @@ import Button from '../temp/Button'
 import { useRecoilCallback,selector, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom , fetchDrivesSelector, fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler'
-import { toolViewAtom, searchParamAtomFamily, paramObjAtom } from '../NewToolRoot';
+import { searchParamAtomFamily, paramObjAtom, pageToolViewAtom } from '../NewToolRoot';
 import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { useMenuPanelController } from '../Panels/MenuPanel';
@@ -21,12 +21,13 @@ export default function DriveCardsNew(props){
     driveIdsAndLabelsInfo = driveInfo.contents.driveIdsAndLabels;
   }
   // console.log(">>>===DriveCards");
-  const driveId = useRecoilValue(drivecardSelectedNodesAtom);
+  const selectedDrivesList = useRecoilValue(drivecardSelectedNodesAtom);
+  
   const setSelectedCourse = useRecoilCallback(({set})=>(driveIds)=>{
     set(drivecardSelectedNodesAtom,driveIds)
     set(selectedMenuPanelAtom,"SelectedCourse");
   },[])
-  const setParamObj = useSetRecoilState(paramObjAtom);
+
   // const goToNav = useRecoilCallback(({set})=>()=>{
     // window.history.pushState('','','/new#/course?tool=navigation')
     // set(searchParamAtomFamily('tool'), "navigation")
@@ -34,40 +35,27 @@ export default function DriveCardsNew(props){
   // },[])
 
 
-    const tempChangeMenus = useRecoilCallback(({set})=>(newMenus,menusTitles,initOpen)=>{
-    set(toolViewAtom,(was)=>{
-      let newObj = {...was};
-      newObj.currentMenus = newMenus;
-      newObj.menusTitles = menusTitles;
-      newObj.menusInitOpen = initOpen;
-      return newObj
-    })
-  })
-
-
   // const [count,setCount] = useState(0)
   // let history = useHistory();
   return <div style={props.style}>
 
   { driveIdsAndLabelsInfo && <DriveCardWrapper 
-      driveInfo={driveIdsAndLabelsInfo} driveDoubleClickCallback={()=>console.log(">>>double clicked")} drivePathSyncKey="main"
+      driveInfo={driveIdsAndLabelsInfo}
+      drivePathSyncKey="main"
        types={['course']} isOneDriveSelect={false} />}
-  
-  <div><button onClick={(e)=>{e.stopPropagation();setParamObj({tool:'navigation'});}}>Go To navigation</button></div>
-
-
   </div>
 }
 
 
 const DriveCardWrapper = (props) => {
-  const { driveDoubleClickCallback , isOneDriveSelect ,driveInfo, drivePathSyncKey, types} = props;
+  const { isOneDriveSelect ,driveInfo, drivePathSyncKey, types} = props;
  
   const [drivecardSelectedValue,setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom)
   const setOpenMenuPanel = useMenuPanelController();
-  const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
+  // const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
   const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
   // console.log(" columnJSX drivesInfo",drivecardInfo)
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
 
 
@@ -88,20 +76,7 @@ const DriveCardWrapper = (props) => {
   if(types[0] === 'course'){
     showCards = driveInfo;
 
-  // if(subTypes.length > 1)
-  // {
-  //   showCards = driveInfo;
-  // }
-  // else
-  // {
-  //   for(let i = 0;i< driveInfo.length;i++)
-  //   {
-  //       if(driveInfo[i].subType === subTypes[0])
-  //       {
-  //         showCards.push(driveInfo[i]);
-  //       }
-  //   }            
-  // } 
+
   }
          
   driveCardItems = showCards.map((child, i) => {
@@ -110,31 +85,22 @@ const DriveCardWrapper = (props) => {
     return { ...child, xy, width: (width / columns), height: 250};
   });
 
+  const setSelectedCourseMenu = useRecoilCallback(({set})=> ()=>{
+    set(selectedMenuPanelAtom,"SelectedCourse");
+    });
 
-  if(driveCardPath.driveId !== ""){
-    return null;
-  }
- 
-  function setRecoilDrivePath(driveId){
-    setDrivecardPath({
-      driveId,
-      parentFolderId:driveId,
-      itemId:driveId,
-      type:"Drive"
-    })
-  }
 
- 
+  // if(driveCardPath.driveId !== ""){
+  //   return null;
+  // }
 
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
-      setDrivecardPath({
-        driveId:item.driveId,
-        parentFolderId:item.driveId,
-        itemId:item.driveId,
-        type:"Drive"
-      })
-      // setRecoilDrivePath(item.driveId)
+      setPageToolView({
+        tool:'navigation',
+        params: {path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive` }
+      });
+
     }
   };
 
@@ -144,15 +110,7 @@ const DriveCardWrapper = (props) => {
     }
   };
 
-  const setSelectedCourseMenu = useRecoilCallback(({set})=> ()=>{
-    set(selectedMenuPanelAtom,"SelectedCourse");
-    });
 
-  const clearSelectedCourse = useRecoilCallback(({set})=>()=>{
-    console.log(">>>clearSelectedCourse");
-    set(drivecardSelectedNodesAtom,[])
-    set(selectedMenuPanelAtom,"");
-  },[])
 
   // Drive selection 
   const drivecardselection = (e,item) =>{
@@ -273,6 +231,7 @@ const DriveCardWrapper = (props) => {
               }}
             >
               <div
+                role="button"
                 style={{ height: "100%" ,outline:"none"}}
                 tabIndex={index + 1}
                 onClick={(e) => {
@@ -282,15 +241,11 @@ const DriveCardWrapper = (props) => {
                 }}
                 onKeyDown={(e) => handleKeyDown(e, item)}
                 onKeyUp={(e) => handleKeyUp(e, item)}
-                // onBlur={(e)=> handleKeyBlur(e,item)}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setDrivecardSelection([]);
-                  setRecoilDrivePath(item.driveId)
-                  // if (driveDoubleClickCallback) {
-                  //   driveDoubleClickCallback({ item });
-                  // }
+                  setDrivecardSelection([]); //TODO: on leave instead
+                  setPageToolView({page:'course',tool:'navigation',view:'',params:{path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`}})
                 }}
               >
                   <DriveCard

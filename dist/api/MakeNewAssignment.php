@@ -13,6 +13,7 @@ $_POST = json_decode(file_get_contents("php://input"),true);
 $driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
+$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 
 //make assignment 
 $dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
@@ -93,6 +94,7 @@ if ($success){
       INSERT INTO assignment
       (
       doenetId,
+      contentId,
       driveId,
       assignedDate,
       dueDate,
@@ -111,6 +113,7 @@ if ($success){
       VALUES
       (
         '$doenetId',
+        '$contentId',
       '$driveId',
       '$assignedDate',
       '$dueDate',

@@ -694,7 +694,7 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polylineVs = components["/_polyline1"].attributes.vertices.activeChildren;
+      let polylineVs = components["/_polyline1"].attributes.vertices.component.activeChildren;
       let v1 = components["/v1"].replacements[0];
       let v2 = components["/v2"].replacements[0];
       let v3 = components["/v3"].replacements[0];
@@ -774,8 +774,8 @@ describe('Polyline Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      let polyline1Vs = components["/_polyline1"].attributes.vertices.activeChildren;
-      let polyline2Vs = components["/_polyline2"].attributes.vertices.activeChildren;
+      let polyline1Vs = components["/_polyline1"].attributes.vertices.component.activeChildren;
+      let polyline2Vs = components["/_polyline2"].attributes.vertices.component.activeChildren;
       let pointnames = [
         [polyline1Vs[0].componentName, polyline2Vs[0].componentName],
         [polyline1Vs[1].componentName, polyline2Vs[1].componentName],
@@ -2170,4 +2170,66 @@ describe('Polyline Tag Tests', function () {
     })
   })
 
+  it('constrain to polyline, different scales from graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
+    <polyline vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
+    <point x="0" y="0.01" name="A">
+      <constraints>
+        <constrainTo><copy tname="p" /></constrainTo>
+      </constraints>
+    </point>
+  </graph>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    let x1 = -50, x2 = -40, x3 = 70, x4 = 10;
+    let y1 = -0.02, y2 = 0.07, y3 = 0.06, y4 = -0.01;
+
+    cy.log('point originally on segment 3')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mseg3 = (y4 - y3) / (x4 - x3);
+
+      let px = components['/A'].stateValues.xs[0].tree;
+      let py = components['/A'].stateValues.xs[1].tree;
+
+      expect(py).closeTo(mseg3 * (px - x3) + y3, 1E-6)
+
+    })
+
+    cy.log('move point near segment 1')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mseg1 = (y2 - y1) / (x2 - x1);
+      components['/A'].movePoint({ x: -20, y: 0.02 });
+      let px = components['/A'].stateValues.xs[0].tree;
+      let py = components['/A'].stateValues.xs[1].tree;
+
+      expect(py).closeTo(mseg1 * (px - x1) + y1, 1E-6)
+
+    })
+
+
+    cy.log('move point near segment 2')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mseg2 = (y2 - y3) / (x2 - x3);
+      components['/A'].movePoint({ x: 0, y: 0.04 });
+      let px = components['/A'].stateValues.xs[0].tree;
+      let py = components['/A'].stateValues.xs[1].tree;
+
+      expect(py).closeTo(mseg2 * (px - x2) + y2, 1E-6)
+
+    })
+
+  })
 });

@@ -19,6 +19,9 @@ export default class Map extends CompositeComponent {
       public: true,
       trim: true,
     };
+    attributes.isResponse = {
+      leaveRaw: true,
+    }
 
     return attributes;
   }
@@ -124,7 +127,7 @@ export default class Map extends CompositeComponent {
           originalName: templateChild.componentName,
         }
         if (templateChild.stateValues.newNamespace) {
-          template.attributes = { newNamespace: true }
+          template.attributes = { newNamespace: { primitive: true } }
         }
         return {
           newValues: {
@@ -246,12 +249,13 @@ export default class Map extends CompositeComponent {
   static parallelReplacement({ component, iter, componentInfoObjects }) {
 
     let replacements = [deepClone(component.stateValues.template)];
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
       indOffset: iter,
     });
@@ -269,6 +273,7 @@ export default class Map extends CompositeComponent {
     childnumberArray = [], iterateNumber, componentInfoObjects }) {
     let replacements = [];
     let newChildnumberArray = [...childnumberArray, 0];
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
     for (let iter = 0; iter < component.stateValues.nIterates[sourcesNumber]; iter++) {
       newChildnumberArray[sourcesNumber] = iter;
@@ -281,7 +286,7 @@ export default class Map extends CompositeComponent {
           assignNames: component.doenetAttributes.assignNames,
           serializedComponents,
           parentName: component.componentName,
-          parentCreatesNewNamespace: component.attributes.newNamespace,
+          parentCreatesNewNamespace: newNamespace,
           componentInfoObjects,
           indOffset: iterateNumber,
         });

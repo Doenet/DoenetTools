@@ -1,5 +1,5 @@
 import CompositeComponent from './abstract/CompositeComponent';
-import { postProcessCopy } from '../utils/copy';
+import { convertAttributesForComponentType, postProcessCopy } from '../utils/copy';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { replacementFromProp } from './Copy';
 import { deepClone } from '../utils/deepFunctions';
@@ -11,6 +11,7 @@ export default class Collect extends CompositeComponent {
   static assignNamesToReplacements = true;
 
   static acceptTname = true;
+  static acceptAnyAttribute = true;
 
   static get stateVariablesShadowedForReference() { return ["targetComponent", "propName", "componentTypesToCollect"] };
 
@@ -18,6 +19,14 @@ export default class Collect extends CompositeComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+
+    // delete off attributes from base component that should apply to replacements instead
+    // (using acceptAnyAttribute)
+    delete attributes.disable;
+    delete attributes.modifyIndirectly;
+    delete attributes.fixed;
+    delete attributes.styleNumber;
+    delete attributes.isResponse;
 
     attributes.prop = {
       createPrimitiveOfType: "string",
@@ -120,7 +129,7 @@ export default class Collect extends CompositeComponent {
     stateVariableDefinitions.propName = {
       returnDependencies: () => ({
         propName: {
-          dependencyType: "attribute",
+          dependencyType: "attributePrimitive",
           attributeName: "prop"
         },
       }),
@@ -361,6 +370,8 @@ export default class Collect extends CompositeComponent {
       return { serializedReplacements, propVariablesCopiedByReplacement };
     }
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     if (component.stateValues.propName) {
 
       let results = replacementFromProp({
@@ -380,7 +391,7 @@ export default class Collect extends CompositeComponent {
 
     } else {
 
-      let serializedCopy = [collectedComponent.serialize({ forCopy: true })];
+      let serializedCopy = [collectedComponent.serialize({ forLink: true })];
 
       serializedReplacements = postProcessCopy({
         serializedComponents: serializedCopy,
@@ -388,6 +399,20 @@ export default class Collect extends CompositeComponent {
         uniqueIdentifiersUsed, identifierPrefix: collectedNum + "|"
       });
 
+      for (let repl of serializedReplacements) {
+        // add attributes
+        if (!repl.attributes) {
+          repl.attributes = {};
+        }
+        let attributesFromComposite = convertAttributesForComponentType({
+          attributes: component.attributes,
+          componentType: repl.componentType,
+          componentInfoObjects, compositeAttributesObj,
+          compositeCreatesNewNamespace: newNamespace
+        });
+        Object.assign(repl.attributes, attributesFromComposite)
+      }
+  
     }
 
     let processResult = processAssignNames({
@@ -395,7 +420,7 @@ export default class Collect extends CompositeComponent {
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       indOffset: numReplacementsSoFar,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
     });
 

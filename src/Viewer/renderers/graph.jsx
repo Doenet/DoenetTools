@@ -30,7 +30,8 @@ export default class Graph extends DoenetRenderer {
         boundingbox,
         axis: false,
         showCopyright: false,
-        showNavigation: this.doenetSvData.showNavigation
+        showNavigation: this.doenetSvData.showNavigation,
+        keepAspectRatio: this.doenetSvData.identicalAxisScales,
       });
 
     if (this.doenetSvData.displayXAxis) {
@@ -48,7 +49,7 @@ export default class Graph extends DoenetRenderer {
         label: {
           offset: [-5, -15]
         },
-        minorTicks: 5,
+        minorTicks: 4,
         precision: 4,
       }
 

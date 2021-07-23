@@ -169,7 +169,9 @@ export function gatherDescendants({ ancestor, descendantTypes,
       });
     }
 
-    if (!matchedChild || recurseToMatchedChildren) {
+    if ((!matchedChild || recurseToMatchedChildren)
+      && child.componentName.slice(0, 13) !== "__placeholder"
+    ) {
       // recurse
       let additionalDescendants = gatherDescendants({
         ancestor: child,

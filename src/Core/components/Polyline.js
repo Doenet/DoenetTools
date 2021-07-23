@@ -353,94 +353,193 @@ export default class Polyline extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.graphXmin = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "graphXmax",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmin",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmax",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.graphAncestor) {
+          return {
+            newValues: {
+              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
+              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
+              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
+              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              graphXmin: null, graphXmax: null,
+              graphYmin: null, graphYmax: null
+            }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
           variableName: "nDimensions"
         },
-        vertices: {
+        numericalVertices: {
           dependencyType: "stateVariable",
-          variableName: "vertices"
+          variableName: "numericalVertices"
         },
         nVertices: {
           dependencyType: "stateVariable",
           variableName: "nVertices"
         },
+        graphXmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmin"
+        },
+        graphXmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmax"
+        },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
+        },
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          nearestPoint: function (variables) {
+      definition({ dependencyValues }) {
+        let nDimensions = dependencyValues.nDimensions;
+        let nVertices = dependencyValues.nVertices;
+        let numericalVertices = dependencyValues.numericalVertices;
 
-            // only implemented in 2D for now
-            if (dependencyValues.nDimensions !== 2 || dependencyValues.nVertices === 0) {
-              return {};
+        let xscale = 1, yscale = 1;
+        if (dependencyValues.graphXmin !== null &&
+          dependencyValues.graphXmax !== null &&
+          dependencyValues.graphYmin !== null &&
+          dependencyValues.graphYmax !== null
+        ) {
+          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+        }
+
+
+        let vals = [];
+        let prPtx, prPty;
+        let nxPtx = numericalVertices[0][0];
+        let nxPty = numericalVertices[0][1];
+
+        for (let i = 1; i < nVertices; i++) {
+          prPtx = nxPtx;
+          prPty = nxPty;
+
+          nxPtx = numericalVertices[i][0];
+          nxPty = numericalVertices[i][1];
+
+          // only implement for constants
+          if (!(Number.isFinite(prPtx) && Number.isFinite(prPty) &&
+            Number.isFinite(nxPtx) && Number.isFinite(nxPty))) {
+            vals.push(null);
+          } else {
+
+            let BA1 = (nxPtx - prPtx) / xscale;
+            let BA2 = (nxPty - prPty) / yscale;
+            let denom = (BA1 * BA1 + BA2 * BA2);
+
+            if (denom === 0) {
+              vals.push(null);
+            } else {
+              vals.push([BA1, BA2, denom]);
             }
-
-            let closestDistance2 = Infinity;
-            let closestResult = {};
-
-            let x1 = variables.x1.evaluate_to_constant();
-            let x2 = variables.x2.evaluate_to_constant();
-
-            let prevPtx, prevPty;
-            let nextPtx = dependencyValues.vertices[0][0].evaluate_to_constant();
-            let nextPty = dependencyValues.vertices[0][1].evaluate_to_constant();
-
-            for (let i = 1; i < dependencyValues.nVertices; i++) {
-              prevPtx = nextPtx;
-              prevPty = nextPty;
-
-              nextPtx = dependencyValues.vertices[i][0].evaluate_to_constant();
-              nextPty = dependencyValues.vertices[i][1].evaluate_to_constant();
-
-              // only implement for constants
-              if (!(Number.isFinite(prevPtx) && Number.isFinite(prevPty) &&
-                Number.isFinite(nextPtx) && Number.isFinite(nextPty))) {
-                continue;
-              }
-
-              let BA1 = nextPtx - prevPtx;
-              let BA2 = nextPty - prevPty;
-              let denom = (BA1 * BA1 + BA2 * BA2);
-
-              if (denom === 0) {
-                continue;
-              }
-
-              let t = ((x1 - prevPtx) * BA1 + (x2 - prevPty) * BA2) / denom;
-
-              let result;
-
-              if (t <= 0) {
-                result = { x1: prevPtx, x2: prevPty };
-              } else if (t >= 1) {
-                result = { x1: nextPtx, x2: nextPty };
-              } else {
-                result = {
-                  x1: prevPtx + t * BA1,
-                  x2: prevPty + t * BA2,
-                };
-              }
-
-              let distance2 = Math.pow(x1 - result.x1, 2) + Math.pow(x2 - result.x2, 2);
-
-              if (distance2 < closestDistance2) {
-                closestDistance2 = distance2;
-                closestResult = result;
-              }
-
-            }
-
-            if (variables.x3 !== undefined && Object.keys(closestResult).length > 0) {
-              closestResult.x3 = 0;
-            }
-
-            return closestResult;
-
           }
         }
-      })
+
+
+        return {
+          newValues: {
+            nearestPoint: function (variables) {
+
+              // only implemented in 2D for now
+              if (nDimensions !== 2 || nVertices === 0) {
+                return {};
+              }
+
+              let closestDistance2 = Infinity;
+              let closestResult = {};
+
+              let x1 = variables.x1.evaluate_to_constant();
+              let x2 = variables.x2.evaluate_to_constant();
+
+              let prevPtx, prevPty;
+              let nextPtx = numericalVertices[0][0];
+              let nextPty = numericalVertices[0][1];
+
+              for (let i = 1; i < nVertices; i++) {
+                prevPtx = nextPtx;
+                prevPty = nextPty;
+
+                nextPtx = numericalVertices[i][0];
+                nextPty = numericalVertices[i][1];
+
+                let val = vals[i - 1];
+                if (val === null) {
+                  continue;
+                }
+
+                let [BA1, BA2, denom] = val;
+
+
+                let t = ((x1 - prevPtx) / xscale * BA1 + (x2 - prevPty) / yscale * BA2) / denom;
+
+                let result;
+
+                if (t <= 0) {
+                  result = { x1: prevPtx, x2: prevPty };
+                } else if (t >= 1) {
+                  result = { x1: nextPtx, x2: nextPty };
+                } else {
+                  result = {
+                    x1: prevPtx + t * BA1 * xscale,
+                    x2: prevPty + t * BA2 * yscale,
+                  };
+                }
+
+                let distance2 = Math.pow((x1 - result.x1) / xscale, 2)
+                  + Math.pow((x2 - result.x2) / yscale, 2);
+
+                if (distance2 < closestDistance2) {
+                  closestDistance2 = distance2;
+                  closestResult = result;
+                }
+
+              }
+
+              if (variables.x3 !== undefined && Object.keys(closestResult).length > 0) {
+                closestResult.x3 = 0;
+              }
+
+              return closestResult;
+
+            }
+          }
+        }
+      }
     }
 
     return stateVariableDefinitions;
@@ -500,7 +599,7 @@ export default class Polyline extends GraphicalComponent {
     this.actions.movePolyline(
       this.stateValues.numericalVertices,
       false
-     );
+    );
   }
 
 

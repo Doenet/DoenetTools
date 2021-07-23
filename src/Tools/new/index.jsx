@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { HashRouter as Router, Switch, Route } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import ToolRoot from '../_framework/NewToolRoot';
@@ -9,14 +9,7 @@ import ToolRoot from '../_framework/NewToolRoot';
 ReactDOM.render(
   <RecoilRoot>
     <Router>
-      <Switch>
-        <Route
-          path="/"
-          render={(routeprops) => (
-            <ToolRoot route={{ ...routeprops }}/>
-          )}
-        />
-      </Switch>
+      <ToolRoot />
     </Router>
   </RecoilRoot>,
   document.getElementById('root'),

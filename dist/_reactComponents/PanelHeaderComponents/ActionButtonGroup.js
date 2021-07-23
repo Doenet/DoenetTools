@@ -10,8 +10,10 @@ const ActionButtonGroup = (props) => {
   if (elem.length > 1) {
     elem = [React.cloneElement(elem[0], {num: "first"})].concat(elem.slice(1, -1)).concat(React.cloneElement(elem[elem.length - 1], {num: "last"}));
   }
-  return /* @__PURE__ */ React.createElement(ThemeProvider, {
+  return /* @__PURE__ */ React.createElement("div", {
+    style: {display: "flex"}
+  }, /* @__PURE__ */ React.createElement(ThemeProvider, {
     theme: actionGroup
-  }, elem);
+  }, elem));
 };
 export default ActionButtonGroup;

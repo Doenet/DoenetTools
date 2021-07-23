@@ -1,6 +1,7 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { createUniqueName } from '../utils/naming';
 
 export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalContent";
@@ -8,6 +9,7 @@ export default class ConditionalContent extends CompositeComponent {
   static includeBlankStringChildren = true;
 
   static assignNamesToReplacements = true;
+  static originalNamesAreConsistent = true;
 
   static get stateVariablesShadowedForReference() {
     return ["baseConditionSatisfied"]
@@ -24,7 +26,7 @@ export default class ConditionalContent extends CompositeComponent {
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {
       if (!["case", "else"].includes(child.componentType)) {
-        if (!(child.attributes && ["case", "else"].includes(child.attributes.componentType))) {
+        if (!(child.attributes && child.attributes.componentType && ["case", "else"].includes(child.attributes.componentType.primitive))) {
           keepSerializedInds.push(ind)
         }
       }
@@ -249,13 +251,15 @@ export default class ConditionalContent extends CompositeComponent {
 
       for (let selectedIndex of component.stateValues.selectedIndices) {
 
-        let selectedChildName, childComponentType;
+        let selectedChildName, childComponentType, newNameForSelectedChild;
         if (selectedIndex < component.stateValues.nCases) {
           selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
+          newNameForSelectedChild = createUniqueName("case", `${component.componentName}|replacement|${selectedIndex}` )
           childComponentType = "case";
 
         } else {
           selectedChildName = component.stateValues.elseChild.componentName;
+          newNameForSelectedChild = createUniqueName("else", `${component.componentName}|replacement|${selectedIndex}` )
           childComponentType = "else";
         }
         // use state, not stateValues, as read only proxy messes up internal
@@ -267,23 +271,27 @@ export default class ConditionalContent extends CompositeComponent {
           state: { rendered: true },
           doenetAttributes: Object.assign({}, components[selectedChildName].doenetAttributes),
           children: serializedGrandchildren,
-          originalName: selectedChildName,
+          originalName: newNameForSelectedChild,
         }
 
         if (components[selectedChildName].attributes.newNamespace) {
-          serializedChild.attributes = { newNamespace: true }
+          serializedChild.attributes = { newNamespace: { primitive: true } }
         }
 
         replacements.push(serializedChild);
       }
     }
 
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.attributes.newNamespace,
+      parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
+      originalNamesAreConsistent: newNamespace
+        || !component.doenetAttributes.assignNames,
     });
 
 

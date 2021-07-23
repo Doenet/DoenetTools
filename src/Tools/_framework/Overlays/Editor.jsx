@@ -4,7 +4,6 @@ import Tool from "../Tool";
 import axios from "axios";
 import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
-import  VisibilitySensor from 'react-visibility-sensor';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
 import { nanoid } from 'nanoid';
@@ -35,7 +34,7 @@ import {
   faClipboard
  } from '@fortawesome/free-regular-svg-icons';
 
-import { useToast } from '../../_framework/Toast';
+import { useToast, toastType } from '../../_framework/Toast';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { folderDictionary } from '../../../_reactComponents/Drive/Drive';
 
@@ -92,7 +91,7 @@ function ReturnToEditingButton(props){
 }
 
 function EditorInfoPanel(props){
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   const link = `http://${window.location.host}/content/#/?doenetId=${props.doenetId}`
 
@@ -101,7 +100,7 @@ function EditorInfoPanel(props){
   <div>Load time (soon) </div>
   <div>Most recent release 
   
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   <button onClick={()=>{
     
   }}>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
@@ -171,7 +170,7 @@ function RenameVersionControl(props){
 }
 
 function ClipboardLinkButtons(props){
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
 
   if (!props.contentId){
     console.error("Component only handles contentId at this point")
@@ -181,7 +180,7 @@ function ClipboardLinkButtons(props){
 
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div> 
-  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', ToastType.SUCCESS)} text={link}>
+  <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
   <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
   </CopyToClipboard>
 
@@ -430,9 +429,9 @@ function TextEditor(props){
   });
 
   const timeout = useRef(null);
-  let editorRef = useRef(null);
   const autosavetimeout = useRef(null);
-  let textValue = editorDoenetML;
+  //If this isn't a ref, it will update and force a refresh of Codemirror each time editorDoenetML changes
+  let textValue = useRef(editorDoenetML);
 
   function clearSaveTimeouts(){
     if (timeout.current !== null){
@@ -463,81 +462,73 @@ function TextEditor(props){
   if (!editorInit){return null;}
 
   return <>
-
-  {/* <button onClick={()=>{
-    console.log(">>>editorRef.current",editorRef.current)
-    // editorRef.current.options.readOnly = true;
-    // editorRef.current.doc.undo();
-    editorRef.current.doc.markText({line:1,ch:1},{line:2,ch:3});
-    // let tm = editorRef.current.doc.markText({line:1,ch:1},{line:2,ch:3},{css:"background:olive"});
-    // tm.css("background:olive")
-    //cm.getTokenAt
-    let cm = editorRef.current.doc.getEditor();
-    // let token = cm.getTokenAt({line:1,ch:1},true);
-    // console.log(">>>token",token)
-    let tokens = cm.getLineTokens(1);
-    console.log(">>>tokens",tokens)
-
-  }}>Mark</button>
-  <button onClick={()=>{
-    console.log(">>>editorRef.current",editorRef.current)
-    // editorRef.current.options.readOnly = false;
-    // editorRef.current.doc.redo();
-  }}>Redo</button> */}
-
-  {/* <VisibilitySensor onChange={(visible)=>{
-    if (visible){
-      editorRef.current.refresh();
-    }  
-    }}> */}
-    
-<CodeMirror
-  editorRef = {editorRef}
-  value={textValue} 
-  onBeforeChange={(value) => {
-    if (activeVersionId === "") { //No timers when active version history
-      setEditorDoenetML(value);
-      if (timeout.current === null){
-        timeout.current = setTimeout(function(){
-          saveDraft(props.doenetId);
-          timeout.current = null;
-        },3000)
-      }
-      if (autosavetimeout.current === null){
-        autosavetimeout.current = setTimeout(function(){
-          autoSave();
-          autosavetimeout.current = null;
-      },60000) //1 minute
-      }
-    }
-  }}
-
-  />
-{/* <CodeMirror
-  className="CodeMirror"
-  editorDidMount={editor => { editorRef.current = editor;  }}
-  value={textValue}
-  options={options}
-  // onChange={(editor, data, value) => {
-  // }}
-/> */}
-
-  {/* </VisibilitySensor> */}
+    <CodeMirror
+      setInternalValue={textValue.current} 
+      readOnly={true}
+      onBeforeChange={(value) => {
+        if (activeVersionId === "") { //No timers when active version history
+          setEditorDoenetML(value);
+          if (timeout.current === null){
+            timeout.current = setTimeout(function(){
+              saveDraft(props.doenetId);
+              timeout.current = null;
+            },3000)
+          }
+          if (autosavetimeout.current === null){
+            autosavetimeout.current = setTimeout(function(){
+              autoSave();
+              autosavetimeout.current = null;
+          },60000) //1 minute
+          }
+        }
+      }}
+    />
   </>
 }
 
-function DoenetViewerUpdateButton(){
-  const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
-  const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
+function DoenetViewerUpdateButton(props){
+  // const editorDoenetML = useRecoilValue(editorDoenetMLAtom);
+  // const setViewerDoenetML = useSetRecoilState(viewerDoenetMLAtom);
   const activeVersionId = useRecoilValue(versionHistoryActiveAtom);
+
+  const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+    const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
+    set(viewerDoenetMLAtom,(old)=>{
+      let newInfo = {...old};
+      newInfo.doenetML = doenetML;
+      newInfo.updateNumber = old.updateNumber+1;
+      return newInfo;
+    })
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(props.doenetId));
+
+    let newVersion = {...oldVersions.draft};
+  
+    const contentId = getSHAofContent(doenetML);
+
+    newVersion.contentId = contentId;
+    newVersion.timestamp = buildTimestamp();
+
+    let oldVersionsReplacement = {...oldVersions};
+    oldVersionsReplacement.draft = newVersion;
+    set(itemHistoryAtom(props.doenetId),oldVersionsReplacement)
+    set(fileByContentId(contentId),doenetML)
+    // set(fileByContentId(contentId),{data:doenetML})
+
+    //Save in localStorage
+    localStorage.setItem(contentId,doenetML)
+
+    let newDBVersion = {...newVersion,
+      doenetML,
+      doenetId:props.doenetId
+    }
+       axios.post("/api/saveNewVersion.php",newDBVersion)
+// .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})  
+  },[]);
+
   if (activeVersionId !== "") {return null;}
 
-  return <Button value="Update" onClick={()=>{setViewerDoenetML((old)=>{
-    let newInfo = {...old};
-    newInfo.doenetML = editorDoenetML;
-    newInfo.updateNumber = old.updateNumber+1;
-    return newInfo;
-  })}} />
+
+  return <Button value="Update" onClick={()=>{saveDraft(props.doenetId)}} />
 }
 
 function NameCurrentVersionControl(props){
@@ -764,7 +755,7 @@ export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
       </headerPanel>
 
       <mainPanel>
-        <div><DoenetViewerUpdateButton  /></div>
+        <div><DoenetViewerUpdateButton doenetId={doenetId} /></div>
         <div style={{overflowY:"scroll", height:"calc(100vh - 84px)" }}><DoenetViewerPanel /></div>
       </mainPanel>
 

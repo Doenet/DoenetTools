@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Tool from '@Tool';
 import { useToolControlHelper } from '@ToolRoot';
-import { useToast } from '@Toast';
+import { useToast, toastType } from '@Toast';
 // import CollapseSection from "../imports/CollapseSection";
 // import SectionDivider from "../imports/PanelHeaderComponents/SectionDivider";
 
@@ -12,7 +12,7 @@ export default function DoenetExampleTool() {
   // console.log("=== DoenetExampleTool");
   const [x, set] = useState(0);
   const { openOverlay, activateMenuPanel } = useToolControlHelper();
-  const [toast, toastType] = useToast();
+  const toast = useToast();
 
   useEffect(() => {
     activateMenuPanel(1);

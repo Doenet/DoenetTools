@@ -1,7 +1,5 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom'
-import { useRecoilCallback } from 'recoil';
-import { toolViewAtom } from '../NewToolRoot';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import logo from '../../../Media/Doenet_Logo_Frontpage.png';
 import styled from 'styled-components';

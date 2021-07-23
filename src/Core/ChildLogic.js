@@ -301,7 +301,7 @@ class ChildLogicLeaf extends ChildLogicBase {
           let nAdapters;
           if (child.componentName) {
             nAdapters = child.constructor.nAdapters;
-          }else {
+          } else {
             nAdapters = this.componentInfoObjects.allComponentClasses[child.componentType].nAdapters;
           }
           let maxAdapt = Math.min(maxAdapterNumber, nAdapters);

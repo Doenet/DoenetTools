@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { toolViewAtom } from '../NewToolRoot';
 import {
   useRecoilCallback,
 } from 'recoil';
@@ -30,11 +29,8 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
   // console.log(">>>===SupportPanel")
   
   const setSupportPanelIndex = useRecoilCallback(({set})=>(index)=>{
-    set(toolViewAtom,(was)=>{
-      let newObj = {...was}
-      newObj.supportPanelIndex = index
-      return newObj
-    })
+
+    console.log(">>>TODO: change SupportPanelIndex to ",index)
   })
 
   let panelSelector = null;
@@ -52,7 +48,8 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
 
   return (
     <>
-      <ControlsWrapper $hide={hide}>{panelSelector}</ControlsWrapper>
+      {/* <ControlsWrapper $hide={hide}>{panelSelector}</ControlsWrapper> */}
+      <ControlsWrapper $hide={hide}></ControlsWrapper>
       <SupportWrapper  $hide={hide}>{children}</SupportWrapper>
     </>
   );
