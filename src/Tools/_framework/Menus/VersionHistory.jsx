@@ -54,7 +54,6 @@ export default function VersionHistory(props){
   const setReleaseNamed = useRecoilCallback(({set,snapshot})=> async ({doenetId,versionId,driveId,folderId,itemId})=>{
     let doenetIsReleased = false;
     let history = await snapshot.getPromise(itemHistoryAtom(doenetId));
-
     let newHistory = {...history}
     newHistory.named = [...history.named];
     let newVersion;
@@ -121,7 +120,6 @@ export default function VersionHistory(props){
       }
 
     })
-
     set(folderDictionary({driveId,folderId}),(was)=>{
       let newFolderInfo = {...was};
       //TODO: once path has itemId fixed delete this code

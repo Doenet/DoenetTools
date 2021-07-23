@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { editorDoenetIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import { 
   useRecoilValue, 
@@ -112,6 +112,23 @@ export default function DoenetMLEditor(props){
   
   });
 
+  useEffect(()=>{
+    if (!isCurrentDraft){
+      console.log(">>>READ ONLY! STOP TIMERS!")
+  // console.log(`>>>updateInternalValue-${updateInternalValue}-`)
+      
+      if (timeout.current !== null){
+        clearTimeout(timeout.current)
+        timeout.current = null;
+      }
+      if (autosavetimeout.current !== null){
+        clearTimeout(autosavetimeout.current)
+      }
+      autosavetimeout.current = null;
+      timeout.current = null;
+    }
+  },[isCurrentDraft])
+
   if (props.style.display === 'none'){
     //TODO: handle unmount
     return <div style={props.style}></div>
@@ -132,7 +149,7 @@ export default function DoenetMLEditor(props){
       setInternalValue = {updateInternalValue}
       // value={editorDoenetML} 
       onBeforeChange={(value) => {
-        // if (activeVersionId === "") { //No timers when active version history
+        if (isCurrentDraft) { //No timers when active version history
           setEditorDoenetML(value);
           //Start just one timer
           if (timeout.current === null){
@@ -147,7 +164,7 @@ export default function DoenetMLEditor(props){
               autosavetimeout.current = null;
           },60000) //1 minute
           }
-        // }
+        }
       }}
     />
   </div>
