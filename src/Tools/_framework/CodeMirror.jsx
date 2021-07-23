@@ -2,7 +2,8 @@ import React, {useEffect, useRef} from "react";
 import {basicSetup} from "@codemirror/basic-setup";
 import {EditorState, Transaction, StateEffect} from "@codemirror/state";
 import {EditorView, keymap} from "@codemirror/view";
-import {styleTags, tags as t} from "@codemirror/highlight"
+import {styleTags, defaultHighlightStyle, tags as t} from "@codemirror/highlight";
+import {lineNumbers} from "@codemirror/gutter";
 import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
 import {completeFromSchema} from '@codemirror/lang-xml';
 import {parser} from "../../Parser/doenet";
@@ -14,7 +15,7 @@ const matchTagState = atom({
     default: false,
 });
 
-export default function CodeMirror({setInternalValue,onBeforeChange}){
+export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
     let [matchTagEnabled, setMatchTagEnabled] = useRecoilState(matchTagState);
     let view = useRef(null);
     let parent = useRef(null);
@@ -47,6 +48,28 @@ export default function CodeMirror({setInternalValue,onBeforeChange}){
             view.current = new EditorView({state, parent: parent.current});
         }
     });
+    
+    useEffect(() => {
+        if(view.current !== null && parent.current !== null){
+            if(readOnly && view.current.state.facet(EditorView.editable)){
+                const disabledExtensions = [
+                    EditorView.editable.of(false),
+                    lineNumbers(),
+                    doenet(),
+                    defaultHighlightStyle.extension
+                ]
+                let tr = view.current.state.update({changes: {from : 0, to: view.current.state.doc.length, insert: setInternalValue}});
+                view.current.dispatch(tr);
+                view.current.dispatch({
+                    effects: StateEffect.reconfigure.of(disabledExtensions)
+                });
+            } else if(!readOnly && !view.current.state.facet(EditorView.editable)) {
+                view.current.dispatch({
+                    effects: StateEffect.reconfigure.of(doenetExtensions.push(EditorState.transactionFilter.of(matchTag)))
+                });
+            }
+        }
+    })
 
     function changeFunc(tr) {
         if(tr.docChanged){
@@ -166,7 +189,7 @@ const doenetLanguage = LezerLanguage.define({
     }
 });
 
-const doenet = (conf) => new LanguageSupport(doenetLanguage, doenetLanguage.data.of({
+const doenet = (conf = {}) => new LanguageSupport(doenetLanguage, doenetLanguage.data.of({
     autocomplete: completeFromSchema(conf.elements || [], conf.attributes || [])
 }));
 
