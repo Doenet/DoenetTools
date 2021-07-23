@@ -14,9 +14,11 @@ if (!isset($_GET["driveId"])) {
 	$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 
 	$sql = "
-		SELECT e.userId, e.firstName, e.lastName, e.courseCredit, e.courseGrade, e.overrideCourseGrade
-		FROM enrollment AS e
-		WHERE e.driveId = '$driveId'
+		SELECT du.userId, e.firstName, e.lastName, e.courseCredit, e.courseGrade, e.overrideCourseGrade, du.role
+		FROM drive_user AS du
+		LEFT JOIN enrollment AS e
+		ON du.userId = e.userId
+		WHERE du.driveId = '$driveId'
 		ORDER BY e.lastName
 	";
 
@@ -34,6 +36,7 @@ if (!isset($_GET["driveId"])) {
 					$row['courseCredit'],
 					$row['courseGrade'],
 					$row['overrideCourseGrade'],
+					$row['role'],
 				)
 			);
         }

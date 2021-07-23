@@ -16,12 +16,12 @@ import {
 import Tool from "../Tool";
 
 export default function GradebookDoenetMLView(props){
-    let assignmentId = props.assignmentId;
+    let doenetId = props.doenetId;
     let userId = props.userId;
     let attemptNumber = props.attemptNumber;
-    //console.log(assignmentId, userId, attemptNumber);
+    //console.log(doenetId, userId, attemptNumber);
     
-    let specificAttempt = useRecoilValueLoadable(specificAttemptData({assignmentId, userId, attemptNumber}))
+    let specificAttempt = useRecoilValueLoadable(specificAttemptData({doenetId, userId, attemptNumber}))
     console.log(specificAttempt.state, specificAttempt.contents)
     specificAttempt.state
 

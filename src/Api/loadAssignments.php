@@ -12,10 +12,11 @@ if (!isset($_GET["driveId"])) {
     echo "Database Retrieval Error: No drive specified!";
 } else {
     $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
-    echo($driveId);
     $sql = "
-    SELECT a.branchId, a.contentId, a.title
+    SELECT a.doenetId, c.title
     FROM assignment AS a
+    LEFT JOIN content as c
+    ON a.doenetId = c.doenetId
     WHERE a.driveId = '$driveId'
     ORDER BY a.dueDate
     ";
@@ -28,8 +29,7 @@ if (!isset($_GET["driveId"])) {
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr,
                 array(
-                    $row['branchId'],
-                    $row['contentId'],
+                    $row['doenetId'],
                     $row['title']
                 )
             );

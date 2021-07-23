@@ -97,7 +97,7 @@ export const Styles = styled.div`
 
 const driveId = atom({
     key: "driveId",
-    default: ""
+    default: "8tpQGDhHNgj6rePCO6Qgz"
 })
 
 const coursesDataQuerry = atom({
@@ -149,8 +149,8 @@ const assignmentData = selector({
         let data = get(assignmentDataQuerry)
         
         for(let row of data){
-            let [branchId, contentId, assignmentName] = row;
-            assignmentArray[contentId] = assignmentName;
+            let [doenetId, assignmentName] = row;
+            assignmentArray[doenetId] = assignmentName;
         }
         return assignmentArray
     },
@@ -188,7 +188,8 @@ export const studentData = selector({
                 lastName,
                 courseCredit,
                 courseGrade,
-                overrideCourseGrade] = row
+                overrideCourseGrade,
+                role] = row
             students[userId] = {
                 firstName,
                 lastName,
@@ -220,11 +221,11 @@ const overViewDataQuerry = atom({
         key: "overViewDataQuerry/Default",
         get: async ({get}) =>{
             try{
-                const courseIdPayload = {params: { courseId:get(courseId)}}
-                let { data } = await axios.get('/api/loadGradebookOverview.php', courseIdPayload)
+                const driveIdPayload = {params: { driveId:get(driveId)}}
+                let { data } = await axios.get('/api/loadGradebookOverview.php', driveIdPayload)
                 return data
             }catch(error){
-                console.log("Error loading overview data for courdse ID: ", get(courseId), error.message);
+                console.log("Error loading overview data for courdse ID: ", get(driveId), error.message);
                 return {};
             }
         }
@@ -245,19 +246,18 @@ const overViewData = selector({
                 assignments: {},
             }
 
-            for(let assignmentId in assignments){
-                overView[userId].assignments[assignmentId] = null;
+            for(let doenetId in assignments){
+                overView[userId].assignments[doenetId] = null;
             }
         }
 
         let data = get(overViewDataQuerry)
 
         for(let userAssignment in data){
-            let [assignmentId,
-                assignmentName,
+            let [doenetId,
                 credit,
                 userId] = data[userAssignment]
-            overView[userId].assignments[assignmentId] = credit
+            overView[userId].assignments[doenetId] = credit
         }
 
         return overView
@@ -268,13 +268,13 @@ const attemptDataQuerry = atomFamily({
     key: "attemptDataQuerry",
     default: selectorFamily({
         key:"attemptDataQuerry/Default",
-        get: (assignmentId) => async () => {
+        get: (doenetId) => async () => {
             try {
-                let assignmentIdPayload = { params: { assignmentId: assignmentId } };
-                let { data } = await axios.get('/api/loadGradebookAssignmentAttempts.php', assignmentIdPayload)
+                let doenetIdPayload = { params: { doenetId } };
+                let { data } = await axios.get('/api/loadGradebookAssignmentAttempts.php', doenetIdPayload)
                 return data
             }catch(error){
-                console.log("Error loading attempts data for assignmentId: ", assignmentId, error.message);
+                console.log("Error loading attempts data for doenetId: ", doenetId, error.message);
                 return {}
             }
         }
@@ -283,7 +283,7 @@ const attemptDataQuerry = atomFamily({
 
 export const attemptData = selectorFamily({
     key: "attemptData",
-    get: (assignmentId) => ({get}) => {
+    get: (doenetId) => ({get}) => {
 
         let attempts = {}
 
@@ -296,15 +296,13 @@ export const attemptData = selectorFamily({
             }
         }
 
-        let data = get(attemptDataQuerry(assignmentId))
+        let data = get(attemptDataQuerry(doenetId))
 
         for(let row of data){
             let [userId,
                 attemptNumber,
                 assignmentCredit,
-                assignmentCreditOverride,
                 attemptCredit,
-                attemptCreditOverride
                 ] = row;
 
             attempts[userId].credit = assignmentCredit
@@ -340,21 +338,39 @@ export const specificAttemptData = selectorFamily({
     get: (params) => ({get}) => {
         let data = get(specificAttemptDataQuerry(params))
         //console.log("debug data: ", data.assignmentAttempted);
-
+        let doenetML = get(doenetMLQuerry(data.contentId))
         let specificAttempt = {
             assignmentAttempted: data.assignmentAttempted,
-            doenetML: data.doenetML,
             stateVariables: data.stateVariables,
             variant: data.variant,
+            interactionSource: data.interactionSource,
             assignmentCredit: data.assignmentCredit,
             assignmentCreditOverride: data.assignmentCreditOverride,
             attemptCredit: data.attemptCredit,
             attemptCreditOverride: data.attemptCreditOverride,
-            timestamp: data.timestamp
+            timestamp: data.timestamp,
+            doenetML: doenetML,
         }
 
         return specificAttempt;
     }
+})
+
+
+const doenetMLQuerry = atomFamily({
+    key: "doenetMLQuerry",
+    default: selectorFamily({
+        key:"doenetMLQuerry/Default",
+        get: (contentId) => async () => {
+            try {
+                const server = await axios.get(`/media/${contentId}.doenet`);
+                return server.data;
+              } catch (err) {
+                //TODO: Handle 404
+                return "File not found";
+            }
+        }
+    })
 })
 
 // Table Component
@@ -489,17 +505,17 @@ function GradebookOverview(props) {
     //let assignments = { contents: {}}
 
     if(assignments.state == 'hasValue'){
-        for(let assignmentId in assignments.contents){
+        for(let doenetId in assignments.contents){
             overviewTable.headers.push({
-                //`/assignment/?assignmentId=${assignmentId}`
+                //`/assignment/?doenetId=${doenetId}`
                 Header: <a onClick = {(e) =>{
                     e.stopPropagation()
                     //console.log("trying overlay");
-                    openOverlay({ type: "gradebookassignmentview", title: "Gradebook Assignment View", assignmentId: assignmentId })
+                    openOverlay({ type: "gradebookassignmentview", title: "Gradebook Assignment View", doenetId: doenetId })
                     //open("calendar", "fdsa", "f001");
                 }
-                }>{assignments.contents[assignmentId]}</a>,
-                accessor: assignmentId,
+                }>{assignments.contents[doenetId]}</a>,
+                accessor: doenetId,
                 disableFilters: true,
                 // <a onClick={() => {
                 //     open("calendar", "fdsa", "f001");
@@ -550,8 +566,8 @@ function GradebookOverview(props) {
             row["name"] = firstName + " " + lastName
             
             if(overView.state == 'hasValue' && assignments.state == 'hasValue'){
-                for (let assignmentId in assignments.contents) {
-                    row[assignmentId] = (overView.contents[userId].assignments[assignmentId]) * 100 + "%"
+                for (let doenetId in assignments.contents) {
+                    row[doenetId] = (overView.contents[userId].assignments[doenetId]) * 100 + "%"
                 }
             }
 
@@ -592,23 +608,34 @@ function CourseSelector(props){
 }
 
 export default function Gradebook(props){
+    
+    // let specificAttempt = useRecoilValueLoadable(specificAttemptData({doenetId: 'ass1', userId: 'temp1', attemptNumber: 1}))
 
-    let [courseIdVal, setCourseIdVal] = useRecoilState(courseId);
+    // if(specificAttempt.state === 'hasValue'){
+    //     console.log(">>> specificAttempt", specificAttempt.contents)
+    // }else{
+    //     console.log(">>> specificAttempt", specificAttempt.state)
+    // }
+
+    // return(
+    //     <p>Test</p>
+    // )
+
+    let [driveIdVal, setDriveIdVal] = useRecoilState(driveId);
     const history = useHistory();
     let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
 
-    useEffect(()=>{
-        if(urlParamsObj.courseId){
-            setCourseIdVal(urlParamsObj.courseId);
-        }else{
-            setCourseIdVal('');
-        }
-      },[urlParamsObj]);
-    
+    // useEffect(()=>{
+    //     if(urlParamsObj.driveId){
+    //         setDriveIdVal(urlParamsObj.driveId);
+    //     }else{
+    //         setDriveIdVal('');
+    //     }
+    //   },[urlParamsObj]);
     // let courseList = useRecoilValueLoadable(coursesData);
     // console.log(courseList.contents)
 
-    console.log("courseId", courseIdVal);
+    console.log(">>> driveId", driveIdVal);
     
     return (
       <Tool>
@@ -616,17 +643,18 @@ export default function Gradebook(props){
           </headerPanel>
           <mainPanel>
 
-            {/* {courseIdVal != '' ? <GradebookOverview /> : courseList.state == 'hasValue' ? <CourseSelector callback = {setCourseIdVal} courseList = {courseList.contents.courseInfo}/> : <p>Loading...</p>} */}
-            {courseIdVal != '' ? <><BackButton callback = {setCourseIdVal}/><GradebookOverview /></> :
+            {/* {driveIdVal != '' ? <GradebookOverview /> : courseList.state == 'hasValue' ? <CourseSelector callback = {setDriveIdVal} courseList = {courseList.contents.courseInfo}/> : <p>Loading...</p>} */}
+            {driveIdVal != '' ? <><BackButton /><GradebookOverview /></> :
                 <DriveCards
                 types={['course']}
                 subTypes={['Administrator']}
                 routePathDriveId={''}
                 driveDoubleClickCallback={({item})=>{
+                    console.log(">>> Here")
                     let newParams = {};
-                    newParams["courseId"] = `${item.courseId}`;
+                    newParams["driveId"] = `${item.driveId}`;
                     history.push("?" + encodeParams(newParams));
-                    setCourseIdVal(item.courseId)
+                    setDriveIdVal(item.driveId)
                 }}
                 />
             }
