@@ -1,56 +1,44 @@
-import { faCode } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
 import {
-  selector,
-  useRecoilValue,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-} from 'recoil';
+  faCode,
+  faFolder,
+  faObjectGroup,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
+import { selector, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 import {
   folderDictionaryFilterSelector,
   globalSelectedNodesAtom,
 } from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets from '../../../_reactComponents/Sockets';
+import { pageToolViewAtom } from '../NewToolRoot';
 
-export default function SelectedDoenetId() {
-  const infoLoad = useRecoilValueLoadable(selectedInformation);
-  const { numItems, itemInfo } = infoLoad.getValue();
+export default function SelectedDoenetML() {
+  const selection =
+    useRecoilValueLoadable(selectedInformation).getValue() ?? [];
+  console.log(selection);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
-
-  const setFolder = useSetRecoilState(
-    folderDictionaryFilterSelector({
-      driveId: itemInfo.driveId,
-      folderId: itemInfo.parentFolderId,
-    }),
-  );
-
-  const [label, setLabel] = useState(itemInfo.label);
-
-  useEffect(() => {
-    setLabel(itemInfo?.label);
-  }, [setLabel, itemInfo?.label]);
-  console.log(itemInfo, label);
-
-  let dIcon = <FontAwesomeIcon icon={faCode} />;
+  const item = selection[0];
+  const dIcon = <FontAwesomeIcon icon={faCode} />;
 
   const renameItemCallback = (newLabel) => {
     renameItem({
       driveIdFolderId: {
-        driveId: itemInfo.driveId,
-        folderId: itemInfo.parentFolderId,
+        driveId: item.driveId,
+        folderId: item.parentFolderId,
       },
-      itemId: itemInfo.itemId,
-      itemType: itemInfo.itemType,
+      itemId: item.itemId,
+      itemType: item.itemType,
       newLabel: newLabel,
     });
   };
-
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
-        {dIcon} {itemInfo.label}
+        {dIcon} {item.label}
       </h2>
 
       <label>
@@ -63,14 +51,14 @@ export default function SelectedDoenetId() {
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               //Only rename if label has changed
-              if (itemInfo.label !== label) {
+              if (item.label !== label) {
                 renameItemCallback(label);
               }
             }
           }}
           onBlur={() => {
             //Only rename if label has changed
-            if (itemInfo.label !== label) {
+            if (item.label !== label) {
               renameItemCallback(label);
             }
           }}
@@ -81,10 +69,17 @@ export default function SelectedDoenetId() {
       <Button
         value="Edit DoenetML"
         onClick={() => {
-          //TODO: toolview?
+          setPageToolView({
+            page: 'course',
+            tool: 'editor',
+            view: '',
+            params: {
+              doenetId: item.doenetId,
+              path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
+            },
+          });
         }}
       />
-      <br />
       <br />
       <Button
         data-cy="deleteDoenetMLButton"
@@ -92,12 +87,12 @@ export default function SelectedDoenetId() {
         onClick={() => {
           deleteItem({
             driveIdFolderId: {
-              driveId: itemInfo.driveId,
-              folderId: itemInfo.parentFolderId,
+              driveId: item.driveId,
+              folderId: item.parentFolderId,
             },
-            itemId: itemInfo.itemId,
-            driveInstanceId: itemInfo.driveInstanceId,
-            label: itemInfo.label,
+            itemId: item.itemId,
+            driveInstanceId: item.driveInstanceId,
+            label: item.label,
           });
         }}
       />
@@ -110,7 +105,7 @@ export const selectedInformation = selector({
   get: ({ get }) => {
     const globalSelected = get(globalSelectedNodesAtom);
     if (globalSelected.length !== 1) {
-      return { number: globalSelected.length, itemObjs: globalSelected };
+      return globalSelected;
     }
     //Find information if only one item selected
     const driveId = globalSelected[0].driveId;
@@ -118,12 +113,15 @@ export const selectedInformation = selector({
     const driveInstanceId = globalSelected[0].driveInstanceId;
     // let folderInfo = get(folderDictionary({driveId,folderId}));
     let folderInfo = get(folderDictionaryFilterSelector({ driveId, folderId }));
-
     const itemId = globalSelected[0].itemId;
-    let itemInfo = { ...folderInfo.contentsDictionary[itemId] };
+    let itemInfo = {
+      ...(folderInfo.contentsDictionary[itemId] ?? {
+        ...folderInfo.folderInfo,
+      }),
+    };
     itemInfo['driveId'] = driveId;
     itemInfo['driveInstanceId'] = driveInstanceId;
 
-    return { number: globalSelected.length, itemInfo };
+    return [itemInfo];
   },
 });

@@ -10,17 +10,17 @@ import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import Drive, {
   selectedDriveAtom,
   selectedDriveItems,
+  itemType,
 } from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
-import { useMenuPanelController } from '../Panels/MenuPanel';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 // import { useToast, toastType } from '../Toast';
 
 export default function NavigationPanel(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
-  const setOpenMenuPanel = useMenuPanelController();
+  // const setOpenMenuPanel = useMenuPanelController();
   // const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId}));
 
   // const toast = useToast();
@@ -34,59 +34,35 @@ export default function NavigationPanel(props) {
 
   const filter = useCallback((item) => item.released === '1', []);
 
-  // if (props.isNav){
-  //   //Only select one item
-  //   clearSelections();
-  //   props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
-  // } else {
-  //   if (!e.shiftKey && !e.metaKey){
-  //     props?.clickCallback?.({instructionType:"one item",parentFolderId:props.parentFolderId, type:"DoenetML"})
-  //     setSelected({instructionType:"one item",parentFolderId:props.parentFolderId})
-  //   }else if (e.shiftKey && !e.metaKey){
-  //     setSelected({instructionType:"range to item",parentFolderId:props.parentFolderId})
-  //   }else if (!e.shiftKey && e.metaKey){
-  //     setSelected({instructionType:"add item",parentFolderId:props.parentFolderId})
-  //   }
-  // }
-  // setSelectedDrive(props.driveId);
-
   const clickCallback = useRecoilCallback(
     ({ set }) =>
       (info) => {
-        switch (info.type) {
-          case 'Folder':
-            set(selectedMenuPanelAtom, 'SelectedDoenetId'); //TODO folder
-            set(
-              selectedDriveItems({
-                driveId: info.driveId,
-                driveInstanceId: info.driveInstanceId,
-                itemId: info.itemId,
-              }),
-              {
-                instructionType: info.instructionType,
-                parentFolderId: info.parentFolderId,
-              },
-            );
-            set(selectedDriveAtom, info.driveId);
+        switch (info.instructionType) {
+          case 'one item':
+            set(selectedMenuPanelAtom, `Selected${info.type}`);
             break;
-          case 'DoenetML':
-            set(selectedMenuPanelAtom, 'SelectedDoenetId');
-            set(
-              selectedDriveItems({
-                driveId: info.driveId,
-                driveInstanceId: info.driveInstanceId,
-                itemId: info.itemId,
-              }),
-              {
-                instructionType: info.instructionType,
-                parentFolderId: info.parentFolderId,
-              },
-            );
-            set(selectedDriveAtom, info.driveId);
+          case 'range to item':
+          case 'add item':
+            set(selectedMenuPanelAtom, `SelectedMulti`);
+            break;
+          case 'clear all':
+            set(selectedMenuPanelAtom, null);
             break;
           default:
-            throw new Error('NavivationPanel click info type not defined');
+            throw new Error('NavigationPanel found invalid select instruction');
         }
+        set(
+          selectedDriveItems({
+            driveId: info.driveId,
+            driveInstanceId: info.driveInstanceId,
+            itemId: info.itemId,
+          }),
+          {
+            instructionType: info.instructionType,
+            parentFolderId: info.parentFolderId,
+          },
+        );
+        set(selectedDriveAtom, info.driveId);
       },
     [],
   );
@@ -94,7 +70,7 @@ export default function NavigationPanel(props) {
   const doubleClickCallback = useCallback(
     (info) => {
       switch (info.type) {
-        case 'Folder':
+        case itemType.FOLDER:
           setPageToolView((was) => ({
             ...was,
             params: {
@@ -102,16 +78,18 @@ export default function NavigationPanel(props) {
             },
           }));
           break;
-        case 'DoenetML':
+        case itemType.DOENETML:
           setPageToolView({
             page: 'course',
             tool: 'editor',
             view: '',
             params: {
               doenetId: info.item.doenetId,
-              path: `${info.driveId}:${info.item.parentFolderId}:${info.item.doenetId}:DoenetML`,
+              path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
             },
           });
+          break;
+        case itemType.COLLECTION:
           break;
         default:
           throw new Error('NavigationPanel doubleClick info type not defined');

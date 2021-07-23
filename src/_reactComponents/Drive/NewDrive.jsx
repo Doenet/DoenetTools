@@ -55,6 +55,12 @@ import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
 import {loadAssignmentSelector} from '../../Tools/course/Course';
 import useSockets from '../Sockets';
 
+export const itemType = Object.freeze({
+  DOENETML: 'DoenetML',
+  FOLDER: 'Folder',
+  COLLECTION: 'Collection'
+})
+
 const fetchDriveUsersQuery = atomFamily({
   key:"fetchDriveUsersQuery",
   default: selectorFamily({
@@ -840,7 +846,6 @@ function Folder(props){
   const parentFolderSortOrder = useRecoilValue(folderSortOrderAtom({driveId:props.driveId,instanceId:props.driveInstanceId, folderId:props.item?.parentFolderId}))
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder);  // for memoized DnD callbacks
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
-  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId}));
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId}));
   const { deleteItem } = useSockets('drive');
   const deleteItemCallback = (itemId) => {
@@ -1061,15 +1066,41 @@ function Folder(props){
     onClick={(e)=>{
       e.preventDefault(); // Folder
       e.stopPropagation();
-      props?.clickCallback?.({
-        driveId:props.driveId,
-        parentFolderId:itemId,
-        itemId,
-        driveInstanceId:props.driveInstanceId,
-        type:"Folder",
-        instructionType:"one item"
-        })
-      }}
+      if (props.isNav){
+        //Only select one item
+        clearSelections();
+        props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:itemId,itemId,type:"Folder"})
+      } else {
+        if (!e.shiftKey && !e.metaKey){
+          props?.clickCallback?.({
+            driveId:props.driveId,
+            itemId,
+            driveInstanceId:props.driveInstanceId,
+            type:"Folder",
+            instructionType:"one item",
+            parentFolderId:itemId,
+          })
+        }else if (e.shiftKey && !e.metaKey){
+          props?.clickCallback?.({
+            driveId:props.driveId,
+            driveInstanceId:props.driveInstanceId,
+            itemId,
+            type:"Folder",
+            instructionType:"range to item",
+            parentFolderId:itemId,
+          })
+        }else if (!e.shiftKey && e.metaKey){
+          props?.clickCallback?.({
+            driveId:props.driveId,
+            driveInstanceId:props.driveInstanceId,
+            itemId,
+            type:"Folder",
+            instructionType:"add item",
+            parentFolderId:itemId,
+          })
+        }
+      }
+    }}
     onDoubleClick={(e)=>{
       e.preventDefault();
       e.stopPropagation();
@@ -1179,8 +1210,8 @@ function Folder(props){
   if (!props.isNav) {
     const onDragStartCallback = () => {
       if (globalSelectedNodes.length === 0 || !isSelected) {
-        setSelected({instructionType:"clear all"});
-        setSelected({instructionType:"one item", parentFolderId: props.parentFolderId});
+        props?.clickCallback?.({instructionType:"clear all", type: itemType.FOLDER});
+        props?.clickCallback?.({instructionType:"one item", parentFolderId: props.parentFolderId, type: itemType.FOLDER});
       }
     }
     folder = <Draggable
@@ -1420,17 +1451,19 @@ export const selectedDriveItems = selectorFamily({
       }
       return [itemIdArr,parentFolderIdArr];
     }
+    let itemInfo = {...driveIdDriveInstanceIdItemId}
     switch (instruction.instructionType) {
       case "one item":
-        if (!isSelected){
+        // if (!isSelected){
           //Deselect all global selected
-          for (let itemObj of globalSelected){
-            let itemInfo = { ...itemObj };
-            delete itemInfo["parentFolderId"];
-            set(selectedDriveItemsAtom(itemInfo),false)
-          }
+          globalSelected.forEach((itemObj)=>{
+            if( driveIdDriveInstanceIdItemId.itemId !== itemObj.itemId ) {
+              let itemInfo = { ...itemObj };
+              delete itemInfo["parentFolderId"];
+              set(selectedDriveItemsAtom(itemInfo),false)
+            }
+          })
           set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
-          let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[itemInfo])
 
@@ -1441,7 +1474,7 @@ export const selectedDriveItems = selectorFamily({
           //   let isOpen = get(folderOpenAtom(driveIdDriveInstanceIdItemId));
           //   console.log(">>>isOpen",isOpen)
           // }
-        }
+        // }
         break;
       case "add item":
         if (isSelected){
@@ -1461,7 +1494,6 @@ export const selectedDriveItems = selectorFamily({
           set(globalSelectedNodesAtom,newGlobalSelected);
         }else{
           set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
-          let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[...globalSelected,itemInfo])
         }
@@ -1471,7 +1503,6 @@ export const selectedDriveItems = selectorFamily({
         if (globalSelected.length === 0 || lastSelectedItem?.driveInstanceId !== driveInstanceId){
           //No previous items selected so just select this one
           set(selectedDriveItemsAtom(driveIdDriveInstanceIdItemId),true)
-          let itemInfo = {...driveIdDriveInstanceIdItemId}
           itemInfo["parentFolderId"] = instruction.parentFolderId;
           set(globalSelectedNodesAtom,[itemInfo])
         }else{
@@ -1559,7 +1590,6 @@ function columnJSX(columnType,item){
 const DoenetML = React.memo(function DoenetML(props) {
   // console.log(`=== 📜 DoenetML`)
 
-  const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId}));
   const isSelected = useRecoilValue(selectedDriveItemsAtom({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId:props.item.itemId}));
   const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const [dragState] = useRecoilState(dragStateAtom);
@@ -1659,30 +1689,34 @@ const DoenetML = React.memo(function DoenetML(props) {
       onClick={(e)=>{
         e.preventDefault();
         e.stopPropagation();
-        props?.clickCallback?.({
-        driveId:props.driveId,
-        parentFolderId:props.item.parentFolderId,
-        itemId: props.item.itemId,
-        driveInstanceId:props.driveInstanceId,
-        type:"DoenetML",
-        instructionType:"one item"
-        })
-        // if (props.isNav){
-        //   //Only select one item
-        //   props?.doubleClickCallback?.({driveId:props.driveId,parentFolderId:props.item.parentFolderId,itemId:props.item.itemId,type:"DoenetML"})
-
-        // }else{
-        //   e.preventDefault();
-        //   e.stopPropagation();
-        //   if (!e.shiftKey && !e.metaKey){
-        //     setSelected({instructionType:"one item",parentFolderId:props.item.parentFolderId})
-        //   }else if (e.shiftKey && !e.metaKey){
-        //     setSelected({instructionType:"range to item",parentFolderId:props.item.parentFolderId})
-        //   }else if (!e.shiftKey && e.metaKey){
-        //     setSelected({instructionType:"add item",parentFolderId:props.item.parentFolderId})
-        //   }
-        // }
-        // setSelectedDrive(props.driveId);
+        if (!e.shiftKey && !e.metaKey){
+          props?.clickCallback?.({
+            driveId:props.driveId,
+            parentFolderId:props.item.parentFolderId,
+            itemId: props.item.itemId,
+            driveInstanceId:props.driveInstanceId,
+            type:"DoenetML",
+            instructionType:"one item"
+          })
+        }else if (e.shiftKey && !e.metaKey){
+          props?.clickCallback?.({
+            driveId:props.driveId,
+            parentFolderId:props.item.parentFolderId,
+            itemId: props.item.itemId,
+            driveInstanceId:props.driveInstanceId,
+            type:"DoenetML",
+            instructionType:"range to item"
+          })
+        }else if (!e.shiftKey && e.metaKey){
+          props?.clickCallback?.({
+            driveId:props.driveId,
+            parentFolderId:props.item.parentFolderId,
+            itemId: props.item.itemId,
+            driveInstanceId:props.driveInstanceId,
+            type:"DoenetML",
+            instructionType:"add item"
+          })
+        }
       }}
       onDoubleClick={(e)=>{
         e.preventDefault();
@@ -1719,8 +1753,8 @@ const DoenetML = React.memo(function DoenetML(props) {
     if (!props.isNav) {
       const onDragStartCallback = () => {
         if (globalSelectedNodes.length === 0 || !isSelected) {
-          setSelected({instructionType:"clear all"});
-          setSelected({instructionType:"one item", parentFolderId: props.item.parentFolderId});
+          props?.clickCallback?.({instructionType:"clear all", type: itemType.DOENETML});
+          props?.clickCallback?.({instructionType:"one item", parentFolderId: props.item.parentFolderId, type: itemType.DOENETML});
         }
       }
       // make DoenetML draggable
@@ -1732,7 +1766,6 @@ const DoenetML = React.memo(function DoenetML(props) {
         onDragStart={({ev}) => onDragStart({ ev, nodeId: props.item.itemId, driveId: props.driveId, onDragStartCallback })}
         onDrag={onDrag}
         onDragEnd={onDragEnd}
-        onDragEnd={onDragEndCb}
         ghostElement={renderDragGhost(props.item.itemId, doenetMLJSX)}
         >
         { doenetMLJSX }
