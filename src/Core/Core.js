@@ -1426,11 +1426,6 @@ export default class Core {
     parent.unexpandedCompositesReady = result.unexpandedCompositesReady;
     parent.unexpandedCompositesNotReady = result.unexpandedCompositesNotReady;
 
-    let previousActiveChildren;
-
-    if (parent.activeChildren) {
-      previousActiveChildren = parent.activeChildren.map(x => x.componentName);
-    }
 
     parent.activeChildren = parent.definingChildren.slice(); // shallow copy
 
@@ -3945,6 +3940,20 @@ export default class Core {
         args.arrayKeys = stateVarObj.getAllArrayKeys(args.arraySize);
       }
 
+      // link all dependencyNames of additionalStateVariablesDefined
+      // to the same object, as they will share the same freshnessinfo
+      // TODO: a better idea?  This seems like it could lead to confusion.
+      if (!stateVarObj.dependencyNames) {
+        stateVarObj.dependencyNames = {
+          namesByKey: {}, keysByName: {}, global: [],
+        };
+        if (stateVarObj.additionalStateVariablesDefined) {
+          for (let vName of stateVarObj.additionalStateVariablesDefined) {
+            component.state[vName].dependencyNames = stateVarObj.dependencyNames;
+          }
+        }
+      }
+
       let dependencies = {};
 
       if (stateVarObj.basedOnArrayKeyStateVariables && args.arrayKeys.length > 1) {
@@ -3957,20 +3966,6 @@ export default class Core {
       } else {
 
         let arrayDependencies = stateVarObj.returnArrayDependenciesByKey(args);
-
-        // link all dependencyNames of additionalStateVariablesDefined
-        // to the same object, as they will share the same freshnessinfo
-        // TODO: a better idea?  This seems like it could lead to confusion.
-        if (!stateVarObj.dependencyNames) {
-          stateVarObj.dependencyNames = {
-            namesByKey: {}, keysByName: {}, global: [],
-          };
-          if (stateVarObj.additionalStateVariablesDefined) {
-            for (let vName of stateVarObj.additionalStateVariablesDefined) {
-              component.state[vName].dependencyNames = stateVarObj.dependencyNames;
-            }
-          }
-        }
 
         if (arrayDependencies.globalDependencies) {
           stateVarObj.dependencyNames.global = Object.keys(arrayDependencies.globalDependencies);
