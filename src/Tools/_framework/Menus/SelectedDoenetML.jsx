@@ -17,7 +17,6 @@ import { pageToolViewAtom } from '../NewToolRoot';
 export default function SelectedDoenetML() {
   const selection =
     useRecoilValueLoadable(selectedInformation).getValue() ?? [];
-  console.log(selection);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
