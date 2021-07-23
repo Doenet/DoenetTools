@@ -69,7 +69,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           <GradebookAssignmentView
-            assignmentId={assignmentId}
+            doenetId={doenetId}
             key={`GBAssign${old.length + 1}`}
           />,
         ]);
@@ -78,7 +78,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           <GradebookAttemptView
-            assignmentId={assignmentId}
+            doenetId={doenetId}
             userId={userId}
             attemptNumber={attemptNumber}
             key={`GBView${old.length + 1}`}
