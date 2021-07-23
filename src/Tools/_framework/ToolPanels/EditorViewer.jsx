@@ -38,7 +38,7 @@ export const editorDoenetIdInitAtom = atom({
 })
 
 export default function EditorViewer(props){
-  console.log(">>>===EditorViewer")
+  // console.log(">>>===EditorViewer")
   // console.log("=== DoenetViewer Panel")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
@@ -58,6 +58,7 @@ export default function EditorViewer(props){
     const doenetML = response;
 
     set(updateTextEditorDoenetMLAtom,doenetML);
+    set(textEditorDoenetMLAtom,doenetML)
     set(viewerDoenetMLAtom,doenetML)
     set(editorDoenetIdInitAtom,doenetId);
   },[])
@@ -113,8 +114,8 @@ export default function EditorViewer(props){
     });
   }
   
-  console.log(`>>>Show DoenetViewer with value -${viewerDoenetML}-`)
-  console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
+  // console.log(`>>>Show DoenetViewer with value -${viewerDoenetML}-`)
+  // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
   return <div style={props.style}>
     <DoenetViewer
     key={"doenetviewer"}
