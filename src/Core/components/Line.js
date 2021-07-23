@@ -812,8 +812,6 @@ export default class Line extends GraphicalComponent {
                     let dForSlope = Math.sqrt(dx * dx + dy * dy);
                     if (dx !== 0) {
                       dForSlope *= Math.sign(dx)
-                    // } else if (dy !== 0) {
-                    //   dForSlope *= Math.sign(dy)
                     }
 
                     instructions.push({
@@ -1270,6 +1268,46 @@ export default class Line extends GraphicalComponent {
       })
     }
 
+    stateVariableDefinitions.graphXmin = {
+      forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "graphXmax",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmin",
+        forRenderer: true,
+      }, {
+        variableName: "graphYmax",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        graphAncestor: {
+          dependencyType: "ancestor",
+          componentType: "graph",
+          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.graphAncestor) {
+          return {
+            newValues: {
+              graphXmin: dependencyValues.graphAncestor.stateValues.xmin,
+              graphXmax: dependencyValues.graphAncestor.stateValues.xmax,
+              graphYmin: dependencyValues.graphAncestor.stateValues.ymin,
+              graphYmax: dependencyValues.graphAncestor.stateValues.ymax,
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              graphXmin: null, graphXmax: null,
+              graphYmin: null, graphYmax: null
+            }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -1287,52 +1325,85 @@ export default class Line extends GraphicalComponent {
         numericalCoeffvar2: {
           dependencyType: "stateVariable",
           variableName: "numericalCoeffvar2"
+        },
+        graphXmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmin"
+        },
+        graphXmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphXmax"
+        },
+        graphYmin: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmin"
+        },
+        graphYmax: {
+          dependencyType: "stateVariable",
+          variableName: "graphYmax"
         }
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          nearestPoint: function (variables) {
+      definition({ dependencyValues }) {
 
-            // only implemented in 2D for now
-            if (dependencyValues.nDimensions !== 2) {
-              return {};
+        let xscale = 1, yscale = 1;
+        if (dependencyValues.graphXmin !== null &&
+          dependencyValues.graphXmax !== null &&
+          dependencyValues.graphYmin !== null &&
+          dependencyValues.graphYmax !== null
+        ) {
+          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
+          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
+        }
+
+        let a = dependencyValues.numericalCoeffvar1 * xscale;
+        let b = dependencyValues.numericalCoeffvar2 * yscale;
+        let c = dependencyValues.numericalCoeff0;
+        let constantCoeffs = Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(c);
+
+        let denom = a * a + b * b;
+
+        // only implement for 
+        // - 2D
+        // - constant coefficients and 
+        // - non-degenerate parameters
+        let skip = dependencyValues.nDimensions !== 2
+          || !constantCoeffs
+          || denom === 0;
+
+        return {
+          newValues: {
+            nearestPoint: function (variables) {
+
+              if (skip) {
+                return {};
+              }
+
+              let x1 = variables.x1.evaluate_to_constant();
+              let x2 = variables.x2.evaluate_to_constant();
+
+
+              if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+                return {};
+              }
+
+              let x1Effective = x1 / xscale;
+              let x2Effective = x2 / yscale;
+
+
+              let result = {};
+              result.x1 = (b * (b * x1Effective - a * x2Effective) - a * c) * xscale / denom;
+              result.x2 = (a * (-b * x1Effective + a * x2Effective) - b * c) * yscale / denom;
+
+              if (variables.x3 !== undefined) {
+                result.x3 = 0;
+              }
+
+              return result;
+
             }
-
-            // only implement for constant coefficients
-            let a = dependencyValues.numericalCoeffvar1;
-            let b = dependencyValues.numericalCoeffvar2;
-            let c = dependencyValues.numericalCoeff0;
-
-            if (!(Number.isFinite(a) && Number.isFinite(b) && Number.isFinite(c))) {
-              return {};
-            }
-
-            let denom = a * a + b * b;
-
-            if (denom === 0) {
-              return {};
-            }
-
-            let x1 = variables.x1.evaluate_to_constant();
-            let x2 = variables.x2.evaluate_to_constant();
-
-            if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-              return {};
-            }
-
-            let result = {};
-            result.x1 = (b * (b * x1 - a * x2) - a * c) / denom;
-            result.x2 = (a * (-b * x1 + a * x2) - b * c) / denom;
-
-            if (variables.x3 !== undefined) {
-              result.x3 = 0;
-            }
-
-            return result;
-
           }
         }
-      })
+      }
     }
 
 

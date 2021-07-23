@@ -38,7 +38,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
@@ -71,7 +71,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -93,7 +93,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -134,7 +134,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
@@ -167,7 +167,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -189,7 +189,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -230,7 +230,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
@@ -263,7 +263,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -285,7 +285,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -326,7 +326,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
@@ -359,7 +359,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -381,7 +381,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -422,7 +422,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
       })
@@ -455,7 +455,7 @@ describe('Triangle Tag Tests', function () {
         let pys = [v1y, v2y, v3y];
 
         for (let i = 0; i < vertices.length; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -477,7 +477,7 @@ describe('Triangle Tag Tests', function () {
         }
 
         for (let i = 0; i < 3; i++) {
-          expect(components['/_triangle1'].stateValues.vertices[i].map(x=>x.tree)).eqls([pxs[i], pys[i]]);
+          expect(components['/_triangle1'].stateValues.vertices[i].map(x => x.tree)).eqls([pxs[i], pys[i]]);
           expect(vertices[i].stateValues.coords.tree).eqls(['vector', pxs[i], pys[i]]);
         }
 
@@ -505,9 +505,9 @@ describe('Triangle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([6, 0]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 6]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([6, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 6]);
       expect(components['/_point1'].stateValues.xs[0].tree).eq(3);
       expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
 
@@ -550,24 +550,24 @@ describe('Triangle Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point1'].movePoint({ x: 8, y: 4 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(5);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(1);
+      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(5, 1E-14);
+      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(1, 1E-14);
     })
 
     cy.log("move point to middle")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point1'].movePoint({ x: 1.5, y: 3.5 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(2);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(4);
+      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(2, 1E-14);
+      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(4, 1E-14);
     })
 
     cy.log("move point a little left")
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_point1'].movePoint({ x: 1, y: 3 });
-      expect(components['/_point1'].stateValues.xs[0].tree).eq(0);
-      expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
+      expect(components['/_point1'].stateValues.xs[0].tree).closeTo(0, 1E-14);
+      expect(components['/_point1'].stateValues.xs[1].tree).closeTo(3, 1E-14);
     })
 
 
@@ -595,12 +595,12 @@ describe('Triangle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([1, 2]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([3, 4]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([-5, 6]);
-      expect(components['/_triangle2'].stateValues.vertices[0].map(x=>x.tree)).eqls([2, 1]);
-      expect(components['/_triangle2'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, 3]);
-      expect(components['/_triangle2'].stateValues.vertices[2].map(x=>x.tree)).eqls([6, -5]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([3, 4]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([-5, 6]);
+      expect(components['/_triangle2'].stateValues.vertices[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_triangle2'].stateValues.vertices[1].map(x => x.tree)).eqls([4, 3]);
+      expect(components['/_triangle2'].stateValues.vertices[2].map(x => x.tree)).eqls([6, -5]);
     })
 
     cy.log('move first triangle verticies')
@@ -619,12 +619,12 @@ describe('Triangle Tag Tests', function () {
 
       components['/_triangle1'].movePolygon(vertices);
 
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_triangle2'].stateValues.vertices[0].map(x=>x.tree)).eqls([y1, x1]);
-      expect(components['/_triangle2'].stateValues.vertices[1].map(x=>x.tree)).eqls([y2, x2]);
-      expect(components['/_triangle2'].stateValues.vertices[2].map(x=>x.tree)).eqls([y3, x3]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_triangle2'].stateValues.vertices[0].map(x => x.tree)).eqls([y1, x1]);
+      expect(components['/_triangle2'].stateValues.vertices[1].map(x => x.tree)).eqls([y2, x2]);
+      expect(components['/_triangle2'].stateValues.vertices[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
@@ -644,12 +644,12 @@ describe('Triangle Tag Tests', function () {
 
       components['/_triangle2'].movePolygon(vertices);
 
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_triangle2'].stateValues.vertices[0].map(x=>x.tree)).eqls([y1, x1]);
-      expect(components['/_triangle2'].stateValues.vertices[1].map(x=>x.tree)).eqls([y2, x2]);
-      expect(components['/_triangle2'].stateValues.vertices[2].map(x=>x.tree)).eqls([y3, x3]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_triangle2'].stateValues.vertices[0].map(x => x.tree)).eqls([y1, x1]);
+      expect(components['/_triangle2'].stateValues.vertices[1].map(x => x.tree)).eqls([y2, x2]);
+      expect(components['/_triangle2'].stateValues.vertices[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
@@ -677,12 +677,12 @@ describe('Triangle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([1, 2]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([1, 0]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 0]);
-      expect(components['/_triangle2'].stateValues.vertices[0].map(x=>x.tree)).eqls([2, 1]);
-      expect(components['/_triangle2'].stateValues.vertices[1].map(x=>x.tree)).eqls([0, 1]);
-      expect(components['/_triangle2'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([1, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([1, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 0]);
+      expect(components['/_triangle2'].stateValues.vertices[0].map(x => x.tree)).eqls([2, 1]);
+      expect(components['/_triangle2'].stateValues.vertices[1].map(x => x.tree)).eqls([0, 1]);
+      expect(components['/_triangle2'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move first triangle verticies')
@@ -701,12 +701,12 @@ describe('Triangle Tag Tests', function () {
 
       components['/_triangle1'].movePolygon(vertices);
 
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_triangle2'].stateValues.vertices[0].map(x=>x.tree)).eqls([y1, x1]);
-      expect(components['/_triangle2'].stateValues.vertices[1].map(x=>x.tree)).eqls([y2, x2]);
-      expect(components['/_triangle2'].stateValues.vertices[2].map(x=>x.tree)).eqls([y3, x3]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_triangle2'].stateValues.vertices[0].map(x => x.tree)).eqls([y1, x1]);
+      expect(components['/_triangle2'].stateValues.vertices[1].map(x => x.tree)).eqls([y2, x2]);
+      expect(components['/_triangle2'].stateValues.vertices[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
@@ -726,12 +726,12 @@ describe('Triangle Tag Tests', function () {
 
       components['/_triangle2'].movePolygon(vertices);
 
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([x1, y1]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([x2, y2]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([x3, y3]);
-      expect(components['/_triangle2'].stateValues.vertices[0].map(x=>x.tree)).eqls([y1, x1]);
-      expect(components['/_triangle2'].stateValues.vertices[1].map(x=>x.tree)).eqls([y2, x2]);
-      expect(components['/_triangle2'].stateValues.vertices[2].map(x=>x.tree)).eqls([y3, x3]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([x1, y1]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([x2, y2]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([x3, y3]);
+      expect(components['/_triangle2'].stateValues.vertices[0].map(x => x.tree)).eqls([y1, x1]);
+      expect(components['/_triangle2'].stateValues.vertices[1].map(x => x.tree)).eqls([y2, x2]);
+      expect(components['/_triangle2'].stateValues.vertices[2].map(x => x.tree)).eqls([y3, x3]);
 
     })
 
@@ -757,36 +757,36 @@ describe('Triangle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([5, 3]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([-5, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move first vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 0: [-1, 4] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-1, 4]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, -1]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([-5, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-1, 4]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([4, -1]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move second vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 1: [7, -8] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-8, 7]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([7, -8]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([-5, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-8, 7]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([7, -8]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move third vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 2: [0, 6] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-8, 7]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([7, -8]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 6]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-8, 7]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([7, -8]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 6]);
     })
 
   })
@@ -805,36 +805,36 @@ describe('Triangle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([5, 3]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([3, 5]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([-5, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([5, 3]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([3, 5]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move first vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 0: [-1, 4] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-1, 4]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, -1]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([-5, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-1, 4]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([4, -1]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move second vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 1: [7, -8] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-8, 7]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([7, -8]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([-5, 2]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-8, 7]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([7, -8]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([-5, 2]);
     })
 
     cy.log('move third vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 2: [0, 6] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-8, 7]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([7, -8]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 6]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-8, 7]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([7, -8]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 6]);
     })
 
   })
@@ -853,36 +853,36 @@ describe('Triangle Tag Tests', function () {
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([0, 1]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([1, 0]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([0, 1]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([1, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move first vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 0: [-1, 4] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-1, 4]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([4, -1]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-1, 4]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([4, -1]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move second vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 1: [7, -8] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-8, 7]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([7, -8]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 0]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-8, 7]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([7, -8]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 0]);
     })
 
     cy.log('move third vertex')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/_triangle1'].movePolygon({ 2: [0, 6] });
-      expect(components['/_triangle1'].stateValues.vertices[0].map(x=>x.tree)).eqls([-8, 7]);
-      expect(components['/_triangle1'].stateValues.vertices[1].map(x=>x.tree)).eqls([7, -8]);
-      expect(components['/_triangle1'].stateValues.vertices[2].map(x=>x.tree)).eqls([0, 6]);
+      expect(components['/_triangle1'].stateValues.vertices[0].map(x => x.tree)).eqls([-8, 7]);
+      expect(components['/_triangle1'].stateValues.vertices[1].map(x => x.tree)).eqls([7, -8]);
+      expect(components['/_triangle1'].stateValues.vertices[2].map(x => x.tree)).eqls([0, 6]);
     })
 
   })

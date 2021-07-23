@@ -2044,40 +2044,46 @@ export default class Circle extends Curve {
           variableName: "numericalRadius"
         },
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          nearestPoint: function (variables) {
+      definition({ dependencyValues }) {
 
-            let x1 = variables.x1.evaluate_to_constant();
-            let x2 = variables.x2.evaluate_to_constant();
+        let radius = dependencyValues.numericalRadius;
+        let centerX = dependencyValues.numericalCenter[0];
+        let centerY = dependencyValues.numericalCenter[1];
+        return {
+          newValues: {
+            nearestPoint: function (variables) {
 
-            if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
-              return {};
+              let x1 = variables.x1.evaluate_to_constant();
+              let x2 = variables.x2.evaluate_to_constant();
+
+              if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+                return {};
+              }
+
+
+              if (!(Number.isFinite(centerX) &&
+                Number.isFinite(centerY) &&
+                Number.isFinite(radius))) {
+                return {};
+              }
+
+              let theta = Math.atan2(x2 - centerY, x1 - centerX)
+
+              let result = {
+                x1: centerX + radius * Math.cos(theta),
+                x2: centerY + radius * Math.sin(theta),
+              }
+
+              if (variables.x3 !== undefined) {
+                result.x3 = 0;
+              }
+
+              return result;
+
             }
-
-
-            if (!(Number.isFinite(dependencyValues.numericalCenter[0]) &&
-              Number.isFinite(dependencyValues.numericalCenter[1]) &&
-              Number.isFinite(dependencyValues.numericalRadius))) {
-              return {};
-            }
-
-            let theta = Math.atan2(x2 - dependencyValues.numericalCenter[1], x1 - dependencyValues.numericalCenter[0])
-
-            let result = {
-              x1: dependencyValues.numericalCenter[0] + dependencyValues.numericalRadius * Math.cos(theta),
-              x2: dependencyValues.numericalCenter[1] + dependencyValues.numericalRadius * Math.sin(theta),
-            }
-
-            if (variables.x3 !== undefined) {
-              result.x3 = 0;
-            }
-
-            return result;
-
           }
         }
-      })
+      }
     }
 
 
@@ -2110,10 +2116,10 @@ export default class Circle extends Curve {
 
       let numericalThroughPoints = [];
 
-      if(throughAngles === undefined) {
+      if (throughAngles === undefined) {
         throughAngles = this.stateValues.throughAngles
       }
-      if(radius === undefined) {
+      if (radius === undefined) {
         radius = this.stateValues.numericalRadius
       }
 
@@ -2163,10 +2169,10 @@ export default class Circle extends Curve {
     // trigger a moveCircle 
     // to send the final values with transient=false
     // so that the final position will be recorded
-    this.actions.moveCircle({ 
+    this.actions.moveCircle({
       center: this.stateValues.numericalCenter,
       transient: false
-     });
+    });
   }
 }
 

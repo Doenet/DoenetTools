@@ -2388,5 +2388,81 @@ describe('Polygon Tag Tests', function () {
 
     })
   })
+  
+  it('constrain to polygon, different scales from graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">
+    <polygon vertices="(-50,-0.02) (-40,0.07) (70,0.06) (10,-0.01)" name="p" />
+    <point x="0" y="0.01" name="A">
+      <constraints>
+        <constrainTo><copy tname="p" /></constrainTo>
+      </constraints>
+    </point>
+  </graph>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+
+    let x1 = -50, x2 = -40, x3 = 70, x4 = 10;
+    let y1 = -0.02, y2 = 0.07, y3 = 0.06, y4 = -0.01;
+
+    cy.log('point originally on segment 3')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mseg3 = (y4 - y3) / (x4 - x3);
+
+      let px = components['/A'].stateValues.xs[0].tree;
+      let py = components['/A'].stateValues.xs[1].tree;
+
+      expect(py).closeTo(mseg3 * (px - x3) + y3, 1E-6)
+
+    })
+
+    cy.log('move point near segment 1')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mseg1 = (y2 - y1) / (x2 - x1);
+      components['/A'].movePoint({ x: -20, y: 0.02 });
+      let px = components['/A'].stateValues.xs[0].tree;
+      let py = components['/A'].stateValues.xs[1].tree;
+
+      expect(py).closeTo(mseg1 * (px - x1) + y1, 1E-6)
+
+    })
+
+
+    cy.log('move point near segment 2')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mseg2 = (y2 - y3) / (x2 - x3);
+      components['/A'].movePoint({ x: 0, y: 0.04 });
+      let px = components['/A'].stateValues.xs[0].tree;
+      let py = components['/A'].stateValues.xs[1].tree;
+
+      expect(py).closeTo(mseg2 * (px - x2) + y2, 1E-6)
+
+    })
+
+
+    cy.log('move point near segment 4')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let mseg4 = (y4 - y1) / (x4 - x1);
+      components['/A'].movePoint({ x: -10, y: 0.02 });
+      let px = components['/A'].stateValues.xs[0].tree;
+      let py = components['/A'].stateValues.xs[1].tree;
+
+      expect(py).closeTo(mseg4 * (px - x4) + y4, 1E-6)
+
+    })
+
+  })
 });

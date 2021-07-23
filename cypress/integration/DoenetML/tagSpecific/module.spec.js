@@ -24,9 +24,9 @@ describe('Module Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p name="p1"><module name="m">
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="text" attribute="item" defaultValue="who?" assignNames="item" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       Hello $item!
     </module>
     </p>
@@ -65,9 +65,9 @@ describe('Module Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <module name="m" newNamespace>
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="text" attribute="item" defaultValue="who?" assignNames="item" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       <p>Hello $item!</p>
     </module>
 
@@ -103,9 +103,9 @@ describe('Module Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <module name="m" newNamespace>
-      <moduleAttributeDefinitions newNamespace name="mads">
+      <moduleSetup newNamespace name="mads">
         <moduleAttribute componentType="text" attribute="item" defaultValue="who?" assignNames="item" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       <p>Hello $(mads/item)!</p>
     </module>
 
@@ -141,9 +141,9 @@ describe('Module Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <module name="m" newNamespace>
-      <moduleAttributeDefinitions newNamespace name="mads">
+      <moduleSetup newNamespace name="mads">
         <moduleAttribute componentType="text" attribute="item" defaultValue="who?" assignNames="item" newNamespace name="ma" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       <p>Hello $(mads/ma/item)!</p>
     </module>
 
@@ -179,12 +179,12 @@ describe('Module Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <module name="m" newNamespace>
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="math" attribute="x" defaultValue="3" assignNames="pointX" />
         <moduleAttribute componentType="math" attribute="y" defaultValue="5" assignNames="pointY" />
         <moduleAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="graphWidth" />
         <moduleAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="graphHeight" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       <graph width="$graphWidth" height="$graphHeight" name="g">
         <point name="p" x="$pointX" y="$pointY" />
       </graph>
@@ -289,20 +289,20 @@ describe('Module Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <module name="m" newNamespace>
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="math" attribute="x" defaultValue="3" assignNames="pointX" />
         <moduleAttribute componentType="math" attribute="y" defaultValue="5" assignNames="pointY" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       <graph>
         <point name="p" x="$pointX" y="$pointY" />
       </graph>
     </module>
 
     <module name="n" newNamespace>
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="math" attribute="u" defaultValue="1" assignNames="u" />
         <moduleAttribute componentType="math" attribute="v" defaultValue="-2" assignNames="v" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       <graph>
         <point name="p" x="$u" y="$v" />
       </graph>
@@ -398,7 +398,7 @@ describe('Module Tag Tests', function () {
     <text>a</text>
 
     <section><title>First one</title>
-    <copy uri='doenet:contentId=63b0f317aa9623d1e35daa179da39759b37573b975a0cfd859bdcc7474918b3a' assignNames="m1" />
+    <copy uri='doenet:contentId=06429281c962f456a8b07d8d904f441da5c354ca8206fd145a217938d981b99d' assignNames="m1" />
 
     <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" tname="m1/ans" /></math></p>
     <p>Credit for problem 1: <copy prop="creditAchieved" tname="m1/prob" assignNames="ca1" /></p>
@@ -408,7 +408,7 @@ describe('Module Tag Tests', function () {
 
     <p>Now, let's use initial point <m name="coordsa">(<math name="xa">-3</math>, <math name="ya">3</math>)</m> and the goal point <m name="coordsb">(<math name="xb">7</math>, <math name="yb">-5</math>)</m> </p>
 
-    <copy uri='doenet:contentId=63b0f317aa9623d1e35daa179da39759b37573b975a0cfd859bdcc7474918b3a' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" height="200px" assignNames="m2" />
+    <copy uri='doenet:contentId=06429281c962f456a8b07d8d904f441da5c354ca8206fd145a217938d981b99d' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" height="200px" assignNames="m2" />
 
     <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" tname="m2/ans" /></math></p>
     <p>Credit for problem 2: <copy prop="creditAchieved" tname="m2/prob" assignNames="ca2" /></p>
@@ -505,17 +505,17 @@ describe('Module Tag Tests', function () {
     <text>a</text>
 
     <module name="g" newNamespace>
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="math" attribute="a" defaultValue="1" assignNames="a" />
         <moduleAttribute componentType="math" attribute="b" defaultValue="2" assignNames="b" />
         <moduleAttribute componentType="math" attribute="c" defaultValue="3" assignNames="c" />
         <moduleAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
         <moduleAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy width="$width" height="$height" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:contentId=63b0f317aa9623d1e35daa179da39759b37573b975a0cfd859bdcc7474918b3a" assignNames="extMod" />
+      <copy width="$width" height="$height" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:contentId=06429281c962f456a8b07d8d904f441da5c354ca8206fd145a217938d981b99d" assignNames="extMod" />
     
       <p>Submitted response for problem: <math name="sr"><copy prop="submittedResponse" tname="extMod/ans" /></math></p>
       <p>Credit for problem: <copy prop="creditAchieved" tname="extMod/prob" assignNames="ca" /></p>
@@ -694,17 +694,17 @@ describe('Module Tag Tests', function () {
     <text>a</text>
 
     <module name="g">
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="math" attribute="a" defaultValue="1" assignNames="a" />
         <moduleAttribute componentType="math" attribute="b" defaultValue="2" assignNames="b" />
         <moduleAttribute componentType="math" attribute="c" defaultValue="3" assignNames="c" />
         <moduleAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
         <moduleAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy width="$width" height="$height" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:contentId=63b0f317aa9623d1e35daa179da39759b37573b975a0cfd859bdcc7474918b3a" assignNames="extMod" />
+      <copy width="$width" height="$height" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:contentId=06429281c962f456a8b07d8d904f441da5c354ca8206fd145a217938d981b99d" assignNames="extMod" />
 
     </module>
     
@@ -851,9 +851,9 @@ describe('Module Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <module name="m" newNamespace>
-      <moduleAttributeDefinitions>
+      <moduleSetup>
         <moduleAttribute componentType="point" attribute="P" defaultValue="(1,2)" assignNames="P" />
-      </moduleAttributeDefinitions>
+      </moduleSetup>
       <p>Point: $P</p>
     </module>
     
