@@ -362,20 +362,20 @@ function NewUser(props) {
   const addToast = useToast();
 
   function addUser() {
-    if (validateEmail(email)) {
-      props.setDriveUsers({
-        driveId: props.driveId,
-        type: props.type,
-        email,
-        callback,
-      });
-      setEmail('');
-    } else {
-      //Toast invalid email
-      addToast(`Not Added: Invalid email ${email}`);
-    }
+    if(email){
+      if (validateEmail(email)) {
+        props.setDriveUsers({
+          driveId: props.driveId,
+          type: props.type,
+          email,
+          callback,
+        });
+        setEmail('');
+        addToast(`Added: email ${email}`);
+      } else {
+        addToast(`Not Added: Invalid email ${email}`);
+      }
 
-    //TODO: when set async available replace this.
     function callback(resp) {
       if (resp.success) {
         props.setDriveUsers({
@@ -389,6 +389,9 @@ function NewUser(props) {
         addToast(resp.message);
       }
     }
+    }
+   
+
   }
 
   return (
