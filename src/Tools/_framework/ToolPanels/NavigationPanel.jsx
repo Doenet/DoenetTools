@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { Suspense, useCallback /* useEffect */ } from 'react';
+import React, { Suspense, useCallback, useEffect } from 'react';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
 /**
  * Internal dependencies
@@ -11,15 +11,33 @@ import Drive, {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
+  clearDriveAndItemSelections,
 } from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 // import { useToast, toastType } from '../Toast';
 
 export default function NavigationPanel(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
+
+  useEffect(() => {
+    setMainPanelClear((was) => [
+      ...was,
+      { atom: clearDriveAndItemSelections, value: null },
+      { atom: selectedMenuPanelAtom, value: null },
+    ]);
+    return setMainPanelClear((was) =>
+      was.filter(
+        (obj) =>
+          obj.atom !== clearDriveAndItemSelections ||
+          obj.atom !== selectedMenuPanelAtom,
+      ),
+    );
+  }, [setMainPanelClear]);
   // const setOpenMenuPanel = useMenuPanelController();
   // const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId}));
 
