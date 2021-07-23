@@ -49,6 +49,13 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+    attributes.identicalAxisScales = {
+      createComponentOfType: "boolean",
+      createStateVariable: "identicalAxisScales",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
     attributes.displayXAxis = {
       createComponentOfType: "boolean",
       createStateVariable: "displayXAxis",

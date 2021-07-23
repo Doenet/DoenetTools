@@ -1,0 +1,59 @@
+<module name="cobwebApplet">
+  <moduleSetup>
+    <moduleAttribute componentType="function" attribute="function" defaultValue="x(4-x)" assignNames="f" />
+    <moduleAttribute componentType="number" attribute="x0" defaultValue="1" assignNames="x0" />
+    <moduleAttribute componentType="number" attribute="initialInitialValue" defaultValue="0" assignNames="initialInitialValue" />
+    <moduleAttribute componentType="number" attribute="initialValueDx" defaultValue="0.5" assignNames="initialValueDx" />
+    <moduleAttribute componentType="number" attribute="initialValueOffset" defaultValue="0" assignNames="initialValueOffset" />
+    <moduleAttribute componentType="number" attribute="nIterationsRequired" defaultValue="0" assignNames="nIterationsRequired" />
+    <moduleAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
+    <moduleAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
+    <moduleAttribute componentType="number" attribute="xmin" defaultValue="-10" assignNames="xmin" />
+    <moduleAttribute componentType="number" attribute="xmax" defaultValue="10" assignNames="xmax" />
+    <moduleAttribute componentType="number" attribute="ymin" defaultValue="-10" assignNames="ymin" />
+    <moduleAttribute componentType="number" attribute="ymax" defaultValue="10" assignNames="ymax" />
+    <moduleAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
+    <moduleAttribute componentType="number" attribute="attractThreshold" defaultValue="0.5" assignNames="attractThreshold" />
+    <moduleAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
+    <moduleAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
+  </moduleSetup>
+
+  <setup>
+    <number name="nPoints">1</number>
+    <number name="zeroFixed" fixed>0</number>
+    <point x="$(initialInitialValue{link='false'})" y="$zeroFixed" name="initialPoint" hide>
+      <constraints>
+        <constrainToGrid dx="$initialValueDx" xoffset="$initialValueOffset" />
+      </constraints>
+    </point>
+
+    <boolean name="initialCorrect">$initialPoint = ($x0,0)</boolean>
+    <copy prop="fractionCorrectVerticesAdjusted" tname="cobwebPolyline" assignNames="fractionCorrectCobweb" />
+  </setup>
+
+  <updateValue label="Add line" name="addLine" tname="nPoints" newValue="$nPoints+1" type="number" />
+  <updateValue label="Delete line" name="deleteLine" tname="nPoints" newValue="$nPoints-1" type="number" disable="$nPoints <= 1" />
+
+  <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_n" ylabel="$(variable)_{n+1}" showNavigation="$showNavigation" identicalAxisScales >
+    <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" nIterationsRequired="$nIterationsRequired" attractThreshold="$attractThreshold" variable="$variable" />
+  </graph>
+
+  <aside hide="not $showCalculatedValues" name="calculatedValue">
+    <title>Calculated values</title>
+
+    <md>
+    <map>
+      <template>
+        <mrow>
+          $(variable)_{<number>$i-1</number>} \amp = $(x{displayDigits="5"})
+        </mrow>
+      </template>
+      <sources alias="x" indexAlias="i">
+        <copy prop="iterateValues" tname="cobwebPolyline" />
+      </sources>
+    </map>
+    </md>
+
+  </aside>
+
+</module>
