@@ -71,13 +71,25 @@ export class Aside extends SectioningComponent {
   static componentType = "aside";
   static rendererType = "section";
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.collapsible = {
+      createComponentOfType: "boolean",
+      createStateVariable: "collapsible",
+      defaultValue: true,
+      public: true,
+      forRenderer: true,
+    }
+
+    return attributes;
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.collapsible.definition = () => ({
-      newValues: { collapsible: true }
-    });
+    delete stateVariableDefinitions.collapsible;
 
     stateVariableDefinitions.open.defaultValue = false;
 
