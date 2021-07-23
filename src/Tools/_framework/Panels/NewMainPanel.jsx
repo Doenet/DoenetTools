@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import Profile from '../Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { atom, useRecoilCallback } from 'recoil';
+import { atom, useRecoilCallback,useSetRecoilState } from 'recoil';
 import { selectedMenuPanelAtom } from './NewMenuPanel';
+import {drivecardSelectedNodesAtom} from '../ToolHandlers/CourseToolHandler';
 
 export const mainPanelClickAtom = atom({
   key:"mainPanelClickAtom",
@@ -42,8 +43,10 @@ display: inline-block;
 export default function MainPanel({ headerControls, headerControlsPositions, children, setMenusOpen, displayProfile }) {
   console.log(">>>===main panel")
   // clear course selection 
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom)
   const setClearSelectedCourseMenu = useRecoilCallback(({set})=> ()=>{
     set(selectedMenuPanelAtom,"");
+    setDrivecardSelection([]);
     });
   const mpOnClick = useRecoilCallback(({set,snapshot})=> async ()=>{
     const atomArray = await snapshot.getPromise(mainPanelClickAtom)
