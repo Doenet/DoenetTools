@@ -132,7 +132,7 @@ export default class MathInput extends DoenetRenderer {
   updateValidationState() {
 
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -223,6 +223,8 @@ export default class MathInput extends DoenetRenderer {
     }
 
     this.updateValidationState();
+
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
 
     // const inputKey = this.componentName + '_input';
 
@@ -326,6 +328,24 @@ export default class MathInput extends DoenetRenderer {
 
         }
       }
+
+      if(this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
+      } else if(this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+
+        checkWorkButton = <>
+          {checkWorkButton}
+          <span>
+            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
+          </span>
+        </>
+      }
+
     }
 
     // TODO: remove inf and sup from the autoOperatorNames so that
@@ -344,7 +364,7 @@ export default class MathInput extends DoenetRenderer {
         id={inputKey}
         ref = {this.inputRef}
         value={this.textValue}
-        disabled={this.doenetSvData.disabled}
+        disabled={disabled}
         onChange={this.onChangeHandler}
         onKeyPress={this.handleKeyPress}
         onKeyDown={this.handleKeyDown}
