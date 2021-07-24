@@ -20,9 +20,6 @@
     <number name="nPoints">0</number>
     <number name="nVlines">0</number>
     <number name="nHlines">0</number>
-    <boolean name="enableAddPoint">false</boolean>
-    <boolean name="enableAddVline">false</boolean>
-    <boolean name="enableAddHline">false</boolean>
 
     <math name="x1" displayDecimals="2">$$f($x0)</math>
     <math name="x2" displayDecimals="2">$$f($x1)</math>
@@ -48,13 +45,6 @@
     <boolean name="P4Placed">$nPoints >= 4 and $P4 = (0,$x2)</boolean>
     <boolean name="previewShortcut">false</boolean>
 
-    <updateValue triggerWithTname="addPoint" tName="enableAddPoint" newValue="false" type="boolean" />
-    <updateValue triggerWithTname="addVline" tName="enableAddVline" newValue="false" type="boolean" />
-    <updateValue triggerWithTname="addHline" tName="enableAddHline" newValue="false" type="boolean" />
-
-
-    <updateValue triggerWhen="$step = 1" tname="enableAddPoint" newvalue="true" type="boolean" />
-
     <triggerSet triggerWhen="$P1Placed">
       <updateValue tname="stepCompleted" newvalue="1" />
       <updateValue tname="P1StyleNum" newvalue="2" />
@@ -65,8 +55,6 @@
       <updateValue tname="P1StyleNum" newvalue="1" />
     </triggerSet>
 
-    <updateValue triggerWhen="$step = 2" tname="enableAddVline" newvalue="true" type="boolean" />
-
     <triggerSet triggerWhen="$v1Placed">
       <updateValue tname="stepCompleted" newvalue="2" />
       <updateValue tname="v1StyleNum" newvalue="2" />
@@ -76,16 +64,8 @@
       <updateValue tname="v1StyleNum" newvalue="1" />
     </triggerSet>
 
-    <updateValue triggerWhen="$step = 3" tname="enableAddHline" newvalue="true" type="boolean" />
-
-    <triggerSet triggerWhen="$h1Placed">
-      <updateValue tname="h1StyleNum" newvalue="2" />
-      <updateValue tname="enableAddPoint" newvalue="true" type="boolean" />
-    </triggerSet>
-    <triggerSet triggerWhen="not $h1Placed">
-      <updateValue tname="h1StyleNum" newvalue="1" />
-      <updateValue tname="enableAddPoint" newvalue="false" type="boolean" />
-    </triggerSet>
+    <updateValue triggerWhen="$h1Placed" tname="h1StyleNum" newvalue="2" />
+    <updateValue triggerWhen="not $h1Placed" tname="h1StyleNum" newvalue="1" />
 
     <triggerSet triggerWhen="$P2Placed">
       <updateValue tname="stepCompleted" newvalue="3" />
@@ -96,8 +76,6 @@
       <updateValue tname="P2StyleNum" newvalue="1" />
     </triggerSet>
 
-    <updateValue triggerWhen="$step = 4" tname="enableAddPoint" newvalue="true" type="boolean" />
-
     <triggerSet triggerWhen="$P3Placed">
       <updateValue tname="stepCompleted" newvalue="4" />
       <updateValue tname="P3StyleNum" newvalue="2" />
@@ -106,8 +84,6 @@
       <updateValue tname="stepCompleted" newvalue="3" />
       <updateValue tname="P3StyleNum" newvalue="1" />
     </triggerSet>
-
-    <updateValue triggerWhen="$step = 5" tname="enableAddVline" newvalue="true" type="boolean" />
 
     <triggerSet triggerWhen="$v2Placed">
       <updateValue tname="stepCompleted" newvalue="5" />
@@ -118,16 +94,8 @@
       <updateValue tname="v2StyleNum" newvalue="1" />
     </triggerSet>
 
-    <updateValue triggerWhen="$step = 6" tname="enableAddHline" newvalue="true" type="boolean" />
-
-    <triggerSet triggerWhen="$h2Placed">
-      <updateValue tname="h2StyleNum" newvalue="2" />
-      <updateValue tname="enableAddPoint" newvalue="true" type="boolean" />
-    </triggerSet>
-    <triggerSet triggerWhen="not $h2Placed">
-      <updateValue tname="h2StyleNum" newvalue="1" />
-      <updateValue tname="enableAddPoint" newvalue="false" type="boolean" />
-    </triggerSet>
+    <updateValue triggerWhen="$h2Placed" tname="h2StyleNum" newvalue="2" />
+    <updateValue triggerWhen="not $h2Placed" tname="h2StyleNum" newvalue="1" />
 
     <triggerSet triggerWhen="$P4Placed">
       <updateValue tname="P4StyleNum" newvalue="2" />
@@ -196,16 +164,13 @@
     <copy tname="ph21" prop="coords" assignNames="ph21coords" />
     <copy tname="ph22" prop="coords" assignNames="ph22coords" />
 
+    <number name="pflash">1</number>
+    <boolean name="flashShortcut">false</boolean>
+    <animateFromSequence name="animatePflash" animationMode='increase once' animationOn='$flashShortcut' tName='pflash' animationInterval='500' from="1" to="5" />
 
   </setup>
 
   <sideBySide widths="75% 25%">
-
-  <stack>
-
-  <updateValue label="Add point" name="addPoint" disable="not $enableAddPoint" tName="nPoints" newValue="$nPoints+1" />
-  <updateValue label="Add vertical line" name="addVline" disable="not $enableAddVline" tName="nVlines" newValue="$nVlines+1" />
-  <updateValue label="Add horizontal line" name="addHline" disable="not $enableAddHline" tName="nHlines" newValue="$nHlines+1" />
 
   <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_n" ylabel="$(variable)_{n+1}" showNavigation="$showNavigation" identicalAxisScales >
 
@@ -244,10 +209,9 @@
       </constraints>
     </point>
 
-    <polyline styleNumber="1" vertices="($x0,0) ($x0, $x1) ($x1, $x1) ($x1, $x2)" hide="not $previewShortcut" />
+    <polyline styleNumber="1" vertices="($x0,0) ($x0, $x1) ($x1, $x1) ($x1, $x2)" hide="mod($pflash, 2) = 0 or not $previewShortcut" fixed />
 
   </graph>
-  </stack>
 
   <subsection>
     <title>Results</title>
@@ -269,7 +233,7 @@
 
   <sideBySide>
   <aside boxed collapsible="false">
-    <title>Description of step</title>
+    <title>Goal</title>
 
     <conditionalContent>
       <case condition="$step = 0">
@@ -327,7 +291,9 @@
       <case condition="$step = 1">
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nPoints = 0">
-            <p>Click "Add point" to create a point for the initial condition</p>
+            <p>Click 
+              <updateValue label="add point" name="addPoint1"  tName="nPoints" newValue="1" />
+              to create a point for the initial condition.</p>
           </case>
           <case condition="not $P1Placed">
             <p>Now move the point to the <m>x</m>-axis and the location of the initial condition <m>$(variable)_0=$x0</m>.</p>
@@ -342,7 +308,9 @@
       <case condition="$step = 2">
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nVlines = 0" >
-            <p>Click "Add vertical line" to create the line.</p>
+            <p>Click
+            <updateValue label="add vertical line" name="addVline1" tName="nVlines" newValue="1" />
+            to create the line.</p>
           </case>
           <case condition="not $v1Placed" >
             <p>Move the line to <m>$variable=$x0</m>. </p>
@@ -356,7 +324,9 @@
       <case condition="$step = 3">
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nHlines = 0" >
-            <p>Click "Add horizontal line" to create the line.</p>
+            <p>Click 
+              <updateValue label="add horizontal line" name="addHline1" tName="nHlines" newValue="1" />
+            to create the line.</p>
           </case>
 
           <case condition="not $h1Placed">
@@ -364,7 +334,9 @@
           </case>
 
           <case condition="$nPoints < 2">
-            <p>The horizontal line is in place. Click "Add point" to create a point.</p>
+            <p>The horizontal line is in place. Click
+              <updateValue label="add point" name="addPoint2"  tName="nPoints" newValue="2" />
+             to create a point.</p>
           </case>
 
           <case condition="not $P2Placed">
@@ -382,7 +354,9 @@
       <case condition="$step = 4">
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nPoints = 2" >
-            <p>Create a point (click "Add point").</p>
+            <p>Click
+              <updateValue label="add point" name="addPoint3" tName="nPoints" newValue="3" />
+            to create a point.</p>
           </case>
           <case condition="not $P3Placed">
             <p>Move the point to the location <m>($x1,0)</m>, which is on the <m>x</m>-axis.</p>
@@ -397,7 +371,9 @@
       <case condition="$step=5">
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nVlines = 1" >
-            <p>Create a vertical line (click "Add vertical line").</p>
+            <p>Click
+              <updateValue label="add vertical line" name="addVline2" tName="nVlines" newValue="2" />
+            to create a vertical line.</p>
           </case>
           <case condition="not $v2Placed">
             <p>Move the line so it goes through the point <m>($x1,0)</m>.</p>
@@ -411,13 +387,16 @@
       <case condition="$step=6">
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nHlines = 1" >
-            <p>Click the button to create a horizontal line.</p>
+            <p>Click 
+              <updateValue label="add horizontal line" name="addHline2" tName="nHlines" newValue="2" />
+              to create a horizontal line.</p>
           </case>
           <case condition="not $h2Placed">
             <p>Move the line to the point where the vertical line through <m>($x1,0)</m> intersects the function.</p>
           </case>
           <case condition="$nPoints = 3">
-            <p>The line is where we want it.  Now, create a point by clicking the button.</p>
+            <p>The line is where we want it.  Now, create a point by clicking
+              <updateValue label="add point" name="addPoint4" tName="nPoints" newValue="4" />.</p>
           </case>
           <case condition="not $P4Placed">
             <p>Move the point to where that horizontal line crosses the <m>y</m>-axis.</p>
@@ -432,7 +411,12 @@
       <case condition="$step=7">
         <conditionalContent maximumNumberToShow="1">
           <case condition="not $previewShortcut" >
-            <p>Click this <updateValue label="preview shortcut" tname="previewShortcut" newValue="true" type="boolean" disable="$previewShortcut" /> to reveal shortcut on the graph.</p>
+            <p>Click this 
+              <triggerSet label="preview shortcut" name="shortcutButton">
+                <updateValue tName="flashShortcut" newValue="true" type="boolean" />
+                <updateValue tname="previewShortcut" newValue="true" type="boolean" /> 
+              </triggerSet>
+              button to reveal the shortcut on the graph.</p>
           </case>
           <else>
             <p>Congratulations, you've finished this introductory tutorial on cobwebbing!</p>
@@ -445,7 +429,6 @@
 
     <triggerSet label="Reset tutorial" name="resetTutorial" disable="$step = 0">
       <updateValue tname="step" newValue="0" />
-      <updateValue tname="stepCompleted" newValue="0" />
       <updateValue tname="nPoints" newValue="0" />
       <updateValue tname="nHlines" newValue="0" />
       <updateValue tname="nVlines" newValue="0" />
@@ -469,10 +452,8 @@
       <updateValue tname="v2StyleNum" newValue="1" />
       <updateValue tname="h1StyleNum" newValue="1" />
       <updateValue tname="h2StyleNum" newValue="1" />
-      <updateValue tName="enableAddPoint" newValue="false" type="boolean" />
-      <updateValue tName="enableAddVline" newValue="false" type="boolean" />
-      <updateValue tName="enableAddHline" newValue="false" type="boolean" />
       <updateValue tName="previewShortcut" newValue="false" type="boolean" />
+      <updateValue tname="stepCompleted" newValue="0" />
     </triggerSet>
     <callAction triggerWithTName="resetTutorial" tName="ans" actionName="submitAnswer" />
     
@@ -486,9 +467,6 @@
 
   </aside>
 
-
-
   </sideBySide>
-
 
 </module>
