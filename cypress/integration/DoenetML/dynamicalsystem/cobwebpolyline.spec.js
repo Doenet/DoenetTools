@@ -613,7 +613,7 @@ describe('CobwebPolyline Tag Tests', function () {
     <function formula="2x-x^2/3" name="f" />
   </setup>
   
-  <copy uri="doenet:contentId=53c92488b79c60d8bfef45e43f47e5a0e98f09208495a3bd0ae4fbbd747b5dd9" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:contentId=3abd95002f47588fa0296ac352eb016b958986ad25f2f909cac71844bc187df8" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   `}, "*");
     });

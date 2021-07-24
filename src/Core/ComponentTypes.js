@@ -131,8 +131,7 @@ import CallAction from './components/CallAction';
 import TriggerSet from './components/TriggerSet';
 import FunctionIterates from './components/FunctionIterates';
 import Module from './components/Module';
-import ModuleAttribute from './components/ModuleAttribute';
-import ModuleSetup from './components/ModuleSetup';
+import CustomAttribute from './components/CustomAttribute';
 import Setup from './components/Setup';
 
 
@@ -265,8 +264,7 @@ const componentTypeArray = [
   TriggerSet,
   FunctionIterates,
   Module,
-  ModuleAttribute,
-  ModuleSetup,
+  CustomAttribute,
   Setup,
 
   BaseComponent,
