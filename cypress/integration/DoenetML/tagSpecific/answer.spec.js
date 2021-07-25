@@ -9800,4 +9800,37 @@ describe('Answer Tag Tests', function () {
 
     })
   });
+
+  it('award based on choice text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer>
+    <choiceinput inline>
+      <choice name="ca">cat</choice>
+      <choice credit="1">dog</choice>
+      <choice>monkey</choice>
+    </choiceinput>
+    <award><when>$_choiceinput1 = <copy prop="text" tname="ca" /></when></award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_choiceinput1').select(`cat`);
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_correct').should('be.visible');
+
+    cy.get('#\\/_choiceinput1').select(`dog`);
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+
+    cy.get('#\\/_choiceinput1').select(`monkey`);
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+
+  });
+
 })
