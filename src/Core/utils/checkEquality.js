@@ -112,6 +112,10 @@ export default function checkEquality({
           expr_b = JSON.parse(JSON.stringify(expr_b), me.reviver);
 
           let equalityFunction = function (aa, bb) {
+            // temporary fix until equalsViaSyntax returns false for \uff3f
+            if (aa.variables().includes('\uFF3F') || bb.variables().includes('\uFF3F')) {
+              return false;
+            }
             aa = normalize(aa); // only have to normalize aa as that is the one that gets modified
             return aa.equalsViaSyntax(bb, {
               allowed_error_in_numbers: allowedErrorInNumbers,
@@ -126,6 +130,10 @@ export default function checkEquality({
           return { fraction_equal: equality ? 1 : 0 };
 
         } else {
+          // temporary fix until equalsViaSyntax returns false for \uff3f
+          if (expr_a.variables().includes('\uFF3F') || expr_b.variables().includes('\uFF3F')) {
+            return { fraction_equal: 0 };
+          }
           let equality = expr_a.equalsViaSyntax(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
