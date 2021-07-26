@@ -279,7 +279,7 @@ let navigationObj = {
     default:{
       defaultTool:'courseChooser'
     },
-    courseChooser:{
+    courseChooser:{ //allCourses
       pageName:"Course",
       currentMainPanel:"DriveCards",
       currentMenus:["CreateCourse"],
@@ -289,7 +289,7 @@ let navigationObj = {
       menusInitOpen:[true,false],
       onLeave:"CourseChooserLeave",
     },
-    navigation:{
+    navigation:{ //allFilesInCourse
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
       currentMenus:["AddDriveItems","EnrollStudents"],
@@ -300,8 +300,17 @@ let navigationObj = {
       headerControls: ["NavigationBreadCrumb"],
       headerControlsPositions: ["Left"],
       onLeave:"NavigationLeave",
+      // views:{
+        // instructor:{
+        //   currentMenus:['',''], //Override for view
+
+        // },
+        // student:{
+
+        // }
+      // }
     },
-    editor:{
+    editor:{ //singleFile
       pageName:"Course",
       currentMainPanel:"EditorViewer",
       currentMenus:["VersionHistory","DoenetMLSettings","Variant"], 
@@ -313,7 +322,7 @@ let navigationObj = {
       headerControls: ["BackButton","ViewerUpdateButton",],
       headerControlsPositions: ["Left","Left"],
     },
-    enrollment:{
+    enrollment:{ //allStudentsInCourse
       pageName:"Enrollment",
       currentMenus:["LoadEnrollment","ManualEnrollment"],
       menusTitles:["Load","Manual"],
