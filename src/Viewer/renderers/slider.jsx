@@ -356,9 +356,14 @@ export default function Slider(props) {
   if (SVs.disabled) {
     let controls = '';
     if (SVs.showControls) {
-      controls = <ButtonGroup>
-        <Button value="Prev" onClick={(e) => handlePrevious(e)} disabled />
-        <Button value="Next" onClick={(e) => handleNext(e)} disabled />
+      controls = <ButtonGroup 
+      >
+        <Button 
+        style={{marginTop: '-20px'}} 
+        value="Prev" onClick={(e) => handlePrevious(e)} disabled />
+        <Button 
+        style={{marginTop: '-20px'}} 
+        value="Next" onClick={(e) => handleNext(e)} disabled />
       </ButtonGroup>
     } else {
       controls = null;
@@ -381,9 +386,8 @@ export default function Slider(props) {
         noTicked={SVs.showTicks === false}
         ref={containerRef}
       >
-        <div style={{ height: SVs.showControls || SVs.label ? '20px' : '0px' }}>
+        <div style={{ height: SVs.label ? '20px' : '0px' }}>
           {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
-          {controls}
         </div>
         <SubContainer2>
           <StyledSlider width={`${SVs.width.size}px`}>
@@ -391,6 +395,9 @@ export default function Slider(props) {
             {ticksAndLabels}
           </StyledSlider>
         </SubContainer2>
+        <div style={{ height: SVs.showControls ? '20px' : '0px' }}>
+          {controls}
+        </div>
       </SliderContainer>
     );
   }
@@ -544,13 +551,15 @@ export default function Slider(props) {
   }
   let controls = '';
   if (SVs.showControls) {
-    controls = <ButtonGroup>
+    controls = <ButtonGroup >
       <Button
+        style={{marginTop: '-20px'}} 
         value="Prev"
         onClick={(e) => handlePrevious(e)}
         data-cy="prevbutton"
       ></Button>
       <Button
+        style={{marginTop: '-20px'}} 
         value="Next"
         onClick={(e) => handleNext(e)}
         data-cy="nextbutton"
@@ -560,26 +569,28 @@ export default function Slider(props) {
     null
   }
 
-  let valueDisplay = null;
-  if (SVs.showValue) {
-    valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
-  }
+  // let valueDisplay = null;
+  // if (SVs.showValue) {
+  //   valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
+  // }
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
-      <div style={{ height: (SVs.showControls || SVs.label) ? "20px" : "0px" }}>
-        {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
-        {/* TODO */}
-        {controls}
+      <div style={{ height: (SVs.label) ? "20px" : "0px" }}>
+        {SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : null}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
         <StyledSlider width={(`${SVs.width.size}px`)} data-cy="slider1">
-          {valueDisplay}
+          {/* {valueDisplay} */}
           <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
             data-cy="slider1-handle" />
           {ticksAndLabels}
         </StyledSlider>
       </SubContainer2>
+      <div style={{ height: (SVs.showControls) ? "20px" : "0px" }}>
+        {/* TODO */}
+        {controls}
+      </div>
     </SliderContainer>
   );
 

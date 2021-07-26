@@ -2533,6 +2533,105 @@ describe('Conditional Content Tag Tests', function () {
   })
 
 
+  
+  it('use original names if no assignNames', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="n" />
+
+  <conditionalContent condition="$n > 0">
+    <p>We have a <text name="winner1">first winner</text>!</p>
+  </conditionalContent>
+  
+  <conditionalContent>
+    <case condition="$n > 0">
+      <p>Just emphasizing that we have that <text name="winner1b">first winner</text>!</p>
+    </case>
+    <case condition="$n > 1">
+      <p>We have a <text name="winner2">second winner</text>!</p>
+    </case>
+    <case condition="$n > 2">
+      <p>We have a <text name="winner3">third winner</text>!</p>
+    </case>
+    <else>
+      <p>We have <text name="winner0">no winner</text>.</p>
+    </else>
+  </conditionalContent>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.get('#\\/winner1').should('not.exist');
+    cy.get('#\\/_p1').should('not.exist');
+    cy.get('#\\/winner1b').should('not.exist');
+    cy.get('#\\/_p2').should('not.exist');
+    cy.get('#\\/winner2').should('not.exist');
+    cy.get('#\\/_p3').should('not.exist');
+    cy.get('#\\/winner3').should('not.exist');
+    cy.get('#\\/_p4').should('not.exist');
+    cy.get('#\\/winner0').should('have.text', "no winner");
+    cy.get('#\\/_p5').should('have.text', "We have no winner.");
+
+
+    cy.get('#\\/n textarea').type("1", { force: true }).blur();
+
+    cy.get('#\\/winner1').should('have.text', "first winner");
+    cy.get('#\\/_p1').should('have.text', "We have a first winner!");
+    cy.get('#\\/winner1b').should('have.text', "first winner");
+    cy.get('#\\/_p2').should('have.text', "Just emphasizing that we have that first winner!");
+    cy.get('#\\/winner2').should('not.exist');
+    cy.get('#\\/_p3').should('not.exist');
+    cy.get('#\\/winner3').should('not.exist');
+    cy.get('#\\/_p4').should('not.exist');
+    cy.get('#\\/winner0').should('not.exist');
+    cy.get('#\\/_p5').should('not.exist');
+
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2", { force: true }).blur();
+
+    cy.get('#\\/winner1').should('have.text', "first winner");
+    cy.get('#\\/_p1').should('have.text', "We have a first winner!");
+    cy.get('#\\/winner1b').should('have.text', "first winner");
+    cy.get('#\\/_p2').should('have.text', "Just emphasizing that we have that first winner!");
+    cy.get('#\\/winner2').should('have.text', "second winner");
+    cy.get('#\\/_p3').should('have.text', "We have a second winner!");
+    cy.get('#\\/winner3').should('not.exist');
+    cy.get('#\\/_p4').should('not.exist');
+    cy.get('#\\/winner0').should('not.exist');
+    cy.get('#\\/_p5').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3", { force: true }).blur();
+
+    cy.get('#\\/winner1').should('have.text', "first winner");
+    cy.get('#\\/_p1').should('have.text', "We have a first winner!");
+    cy.get('#\\/winner1b').should('have.text', "first winner");
+    cy.get('#\\/_p2').should('have.text', "Just emphasizing that we have that first winner!");
+    cy.get('#\\/winner2').should('have.text', "second winner");
+    cy.get('#\\/_p3').should('have.text', "We have a second winner!");
+    cy.get('#\\/winner3').should('have.text', "third winner");
+    cy.get('#\\/_p4').should('have.text', "We have a third winner!");
+    cy.get('#\\/winner0').should('not.exist');
+    cy.get('#\\/_p5').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}x", { force: true }).blur();
+
+    cy.get('#\\/winner1').should('not.exist');
+    cy.get('#\\/_p1').should('not.exist');
+    cy.get('#\\/winner1b').should('not.exist');
+    cy.get('#\\/_p2').should('not.exist');
+    cy.get('#\\/winner2').should('not.exist');
+    cy.get('#\\/_p3').should('not.exist');
+    cy.get('#\\/winner3').should('not.exist');
+    cy.get('#\\/_p4').should('not.exist');
+    cy.get('#\\/winner0').should('have.text', "no winner");
+    cy.get('#\\/_p5').should('have.text', "We have no winner.");
+
+  })
+
+
 })
 
 

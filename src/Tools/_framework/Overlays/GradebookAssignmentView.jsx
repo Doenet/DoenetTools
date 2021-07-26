@@ -29,9 +29,9 @@ const getUserId = (students, name) => {
 } 
 export default function GradebookAssignmentView(props){
     const { openOverlay, activateMenuPanel } = useToolControlHelper();
-    let assignmentId = props.assignmentId
+    let doenetId = props.doenetId
     let assignmentsTable = {}
-    let attempts = useRecoilValueLoadable(attemptData(assignmentId))
+    let attempts = useRecoilValueLoadable(attemptData(doenetId))
     let students = useRecoilValueLoadable(studentData)
 
     let maxAttempts = 0;
@@ -64,7 +64,7 @@ export default function GradebookAssignmentView(props){
                 
                 //e.stopPropagation()
                 console.log("trying overlay");
-                openOverlay({ type: "gradebookattemptview", title: "Gradebook Attempt View", assignmentId, attemptNumber: i, userId});
+                openOverlay({ type: "gradebookattemptview", title: "Gradebook Attempt View", doenetId, attemptNumber: i, userId});
                 //open("calendar", "fdsa", "f001");
             }}> {row.value} </a>
         })
@@ -93,7 +93,7 @@ export default function GradebookAssignmentView(props){
         
                     row[("a"+i)] = attemptCredit ? attemptCredit * 100 + "%" : ""
                     
-                    // <Link to={`/attempt/?assignmentId=${assignmentId}&userId=${userId}&attemptNumber=${i}`}>
+                    // <Link to={`/attempt/?doenetId=${doenetId}&userId=${userId}&attemptNumber=${i}`}>
                     // {
                     //     attemptCredit ? attemptCredit * 100 + "%" : "" // if attemptCredit is `undefined`, we still want a table cell so that the footer column still shows up right.
                     // }

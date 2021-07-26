@@ -19,6 +19,7 @@ import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
+import { useToast } from '../../_framework/Toast';
 
 export default function SelectedCourse(props) {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
@@ -358,22 +359,23 @@ const DriveInfoPanel = function (props) {
 
 function NewUser(props) {
   const [email, setEmail] = useState('');
+  const addToast = useToast();
 
   function addUser() {
-    if (validateEmail(email)) {
-      props.setDriveUsers({
-        driveId: props.driveId,
-        type: props.type,
-        email,
-        callback,
-      });
-      setEmail('');
-    } else {
-      //Toast invalid email
-      console.log(`Not Added: Invalid email ${email}`);
-    }
+    if(email){
+      if (validateEmail(email)) {
+        props.setDriveUsers({
+          driveId: props.driveId,
+          type: props.type,
+          email,
+          callback,
+        });
+        setEmail('');
+        addToast(`Added: email ${email}`);
+      } else {
+        addToast(`Not Added: Invalid email ${email}`);
+      }
 
-    //TODO: when set async available replace this.
     function callback(resp) {
       if (resp.success) {
         props.setDriveUsers({
@@ -384,9 +386,12 @@ function NewUser(props) {
           userId: resp.userId,
         });
       } else {
-        console.log('>>>Toast ', resp.message);
+        addToast(resp.message);
       }
     }
+    }
+   
+
   }
 
   return (

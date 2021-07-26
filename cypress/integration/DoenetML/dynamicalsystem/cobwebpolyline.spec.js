@@ -1,3 +1,13 @@
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 describe('CobwebPolyline Tag Tests', function () {
 
   beforeEach(() => {
@@ -187,7 +197,7 @@ describe('CobwebPolyline Tag Tests', function () {
       cy.get('#\\/psr').find('.mjx-mrow').eq(2).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1.6667)')
       })
-      let xCenter = (-2+5)/2, yCenter = (-2.2+4.5)/2;
+      let xCenter = (-2 + 5) / 2, yCenter = (-2.2 + 4.5) / 2;
       cy.get('#\\/psr').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
         expect(text.trim()).equal(`(${xCenter},${yCenter})`)
       })
@@ -594,4 +604,523 @@ describe('CobwebPolyline Tag Tests', function () {
 
   });
 
+  it('cobweb graded applet', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <setup>
+    <function formula="2x-x^2/3" name="f" />
+  </setup>
+  
+  <copy uri="doenet:contentId=3abd95002f47588fa0296ac352eb016b958986ad25f2f909cac71844bc187df8" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+ 
+  `}, "*");
+    });
+
+    let f = x => 2 * x - x ** 2 / 3;
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get(cesc('#/gradedApplet/initialCorrect_submit')).click();
+    cy.get(cesc('#/gradedApplet/initialCorrect_incorrect')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 0: [1, 0] })
+    });
+
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/initialCorrect_submit')).click();
+    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('span').eq(0).click();
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).should('not.exist');
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+
+    let x1 = f(1);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 1: [1, x1] })
+    });
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('20% correct')
+    })
+    cy.get(cesc('#/gradedApplet/insufficientFeedback')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/deleteLine')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_incorrect')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/startFeedback')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).should('not.exist');
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/initialCorrect_correct')).should('be.visible')
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('20% correct')
+    })
+    cy.get(cesc('#/gradedApplet/insufficientFeedback')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('20% correct')
+    })
+    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 2: [x1, x1] })
+    });
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('40% correct')
+    })
+    cy.get(cesc('#/gradedApplet/insufficientFeedback')).should('be.visible')
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).should('not.exist');
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    let x2 = f(x1);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 3: [x1, x2] })
+    });
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).should('not.exist');
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 4: [x2, x2] })
+    });
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).should('not.exist');
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    let x3 = f(x2);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 5: [x2, x3] })
+    });
+
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x3=${Math.round(x3 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).should('not.exist');
+
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('83% correct')
+    })
+    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 6: [x3, x3] })
+    });
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x3=${Math.round(x3 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).should('not.exist');
+
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/addLine')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_partial')).invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('86% correct')
+    })
+    cy.get(cesc('#/gradedApplet/incorrectFeedback')).should('be.visible')
+
+    let x4 = f(x3);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/gradedApplet/cobwebApplet/cobwebPolyline"].movePolyline({ 7: [x3, x4] })
+    });
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_submit')).click();
+    cy.get(cesc('#/gradedApplet/correctCobwebbing_correct')).should('be.visible')
+
+
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal("x0=1")
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(1).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x1=${Math.round(x1 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(2).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x2=${Math.round(x2 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(3).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x3=${Math.round(x3 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(4).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal(`x4=${Math.round(x4 * 10000) / 10000}`)
+    })
+    cy.get(cesc('#/gradedApplet/cobwebApplet/calculatedValue')).find('.mjx-mtr').eq(5).should('not.exist');
+
+
+  });
+
+  it('cobweb intro tutorial', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <setup>
+    <function formula="2x-x^2/3" name="f" />
+  </setup>
+  
+  <copy uri="doenet:contentId=ed3474bfb7c65c39448bc73e93a9d299bbd2ea4dac7eb9731ba71f771d6b5e38" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+ 
+  <p>Credit achieved: <copy tname="_document1" prop="creditAchieved" assignNames="ca" /></p>
+  `}, "*");
+    });
+
+    let f = x => 2 * x - x ** 2 / 3;
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/cobwebTutorial/addPoint1')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P1"].movePoint({ x: 0.9, y: -0.1 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.get((cesc('#/cobwebTutorial/addVline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v1"].moveLine({ 
+        point1coords: [1.2, 1], 
+        point2coords: [1.2, 2]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get((cesc('#/cobwebTutorial/addHline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h1"].moveLine({ 
+        point1coords: [2, 1.5], 
+        point2coords: [3, 1.5]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P2"].movePoint({ x: -0.1, y: 1.7 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get((cesc('#/cobwebTutorial/addPoint3'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P3"].movePoint({ x: 1.8, y: 0 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+    cy.get((cesc('#/cobwebTutorial/addVline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v2"].moveLine({ 
+        point1coords: [1.5, 3], 
+        point2coords: [1.5, 4]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+
+    cy.get((cesc('#/cobwebTutorial/addHline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h2"].moveLine({ 
+        point1coords: [4, 2.3], 
+        point2coords: [5, 2.3]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint4'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P4"].movePoint({ x: 0.1, y: 2.5 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+    cy.get(cesc('#/cobwebTutorial/shortcutButton')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+    cy.get(cesc('#/cobwebTutorial/resetTutorial')).click();
+  
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/cobwebTutorial/addPoint1')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P1"].movePoint({ x: 0.9, y: -0.1 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.get((cesc('#/cobwebTutorial/addVline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v1"].moveLine({ 
+        point1coords: [1.2, 1], 
+        point2coords: [1.2, 2]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get((cesc('#/cobwebTutorial/addHline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h1"].moveLine({ 
+        point1coords: [2, 1.5], 
+        point2coords: [3, 1.5]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P2"].movePoint({ x: -0.1, y: 1.7 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get((cesc('#/cobwebTutorial/addPoint3'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P3"].movePoint({ x: 1.8, y: 0 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+    cy.get((cesc('#/cobwebTutorial/addVline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v2"].moveLine({ 
+        point1coords: [1.5, 3], 
+        point2coords: [1.5, 4]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+
+    cy.get((cesc('#/cobwebTutorial/addHline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h2"].moveLine({ 
+        point1coords: [4, 2.3], 
+        point2coords: [5, 2.3]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint4'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P4"].movePoint({ x: 0.1, y: 2.5 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+    cy.get(cesc('#/cobwebTutorial/shortcutButton')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+  
+  });
+
+  
 });

@@ -37,6 +37,7 @@ export default class Input extends InlineComponent {
             "justSubmitted",
             "creditAchieved",
             "showCorrectness",
+            "numberOfAttemptsLeft"
           ]
         }
       }),
@@ -154,6 +155,25 @@ export default class Input extends InlineComponent {
           showCorrectness = dependencyValues.showCorrectnessFlag !== false;
         }
         return { newValues: { showCorrectness } }
+      }
+    }
+
+    stateVariableDefinitions.numberOfAttemptsLeft = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        answerAncestor: {
+          dependencyType: "stateVariable",
+          variableName: "answerAncestor"
+        },
+      }),
+      definition({ dependencyValues }) {
+        let numberOfAttemptsLeft;
+        if (dependencyValues.answerAncestor) {
+          numberOfAttemptsLeft = dependencyValues.answerAncestor.stateValues.numberOfAttemptsLeft;
+        } else {
+          numberOfAttemptsLeft = Infinity;
+        }
+        return { newValues: { numberOfAttemptsLeft } }
       }
     }
 

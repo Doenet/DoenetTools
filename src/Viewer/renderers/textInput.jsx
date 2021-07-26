@@ -26,7 +26,7 @@ export default class TextInput extends DoenetRenderer {
   updateValidationState() {
 
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -89,6 +89,8 @@ export default class TextInput extends DoenetRenderer {
     }
 
     this.updateValidationState();
+
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
 
     const inputKey = this.componentName + '_input';
 
@@ -182,6 +184,24 @@ export default class TextInput extends DoenetRenderer {
 
         }
       }
+
+      if(this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
+      } else if(this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+
+        checkWorkButton = <>
+          {checkWorkButton}
+          <span>
+            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
+          </span>
+        </>
+      }
+
     }
 
     let input;
@@ -190,7 +210,7 @@ export default class TextInput extends DoenetRenderer {
         key={inputKey}
         id={inputKey}
         value={this.currentValue}
-        disabled={this.doenetSvData.disabled}
+        disabled={disabled}
         onChange={this.onChangeHandler}
         onKeyPress={this.handleKeyPress}
         onKeyDown={this.handleKeyDown}
@@ -210,7 +230,7 @@ export default class TextInput extends DoenetRenderer {
         key={inputKey}
         id={inputKey}
         value={this.currentValue}
-        disabled={this.doenetSvData.disabled}
+        disabled={disabled}
         onChange={this.onChangeHandler}
         onKeyPress={this.handleKeyPress}
         onKeyDown={this.handleKeyDown}

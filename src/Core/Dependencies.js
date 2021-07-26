@@ -4376,16 +4376,22 @@ class DescendantDependency extends Dependency {
             dependencyBlocked: this.dependencyName
           });
 
-          for (let compositeNotReady of result.unexpandedCompositesNotReadyByParentName[parentName]) {
-            this.dependencyHandler.addBlocker({
-              blockerComponentName: compositeNotReady,
-              blockerType: "stateVariable",
-              blockerStateVariable: "readyToExpandWhenResolved",
-              componentNameBlocked: this.upstreamComponentName,
-              typeBlocked: "childLogic",
-              stateVariableBlocked: varName,
-            });
-          }
+          // TODO: when we have the composites block child logic,
+          // we can get circular dependencies.
+          // The solution of just removing these blockers seems to work,
+          // but not sure if it is the most efficient solution.
+          // Does this lead to unnecessary recalculations?
+
+          // for (let compositeNotReady of result.unexpandedCompositesNotReadyByParentName[parentName]) {
+          //   this.dependencyHandler.addBlocker({
+          //     blockerComponentName: compositeNotReady,
+          //     blockerType: "stateVariable",
+          //     blockerStateVariable: "readyToExpandWhenResolved",
+          //     componentNameBlocked: this.upstreamComponentName,
+          //     typeBlocked: "childLogic",
+          //     stateVariableBlocked: varName,
+          //   });
+          // }
         }
       }
 
@@ -4498,25 +4504,29 @@ class DescendantDependency extends Dependency {
     let adjustedUnexpanded = [];
     for (let compositeName of unexpandedComposites) {
       let composite = this.dependencyHandler._components[compositeName];
-      let placeholderType;
       if (composite.attributes.componentType) {
-        placeholderType = composite.attributes.componentType.primitive;
+        let placeholderType = composite.attributes.componentType.primitive;
+        let matches = this.componentTypes.some(ct =>
+          this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: placeholderType,
+            baseComponentType: ct
+          })
+        );
 
-      }
+        if (matches) {
+          if (!placeholdersOKForMatchedDescendants) {
+            adjustedUnexpanded.push(compositeName);
+          }
+        } else {
+          // Composite is a placeholder that is not matched by componentTypes.
+          // Could that placeholder later have a descendant that is matched by componentTypes?
 
-      let matches = this.componentTypes.some(ct =>
-        this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: placeholderType,
-          baseComponentType: ct
-        })
-      );
-
-      if (matches) {
-        if (!placeholdersOKForMatchedDescendants) {
           adjustedUnexpanded.push(compositeName);
+
         }
       } else {
-        adjustedUnexpanded.push(compositeName)
+        // no componentType specified
+        adjustedUnexpanded.push(compositeName);
       }
 
     }
@@ -5963,10 +5973,13 @@ class CountAmongSiblingsDependency extends Dependency {
 
     // TODO: do we need this to actually depend on siblings?
     // Or is the update trigger enough to handle all needed updates?
+    // Removed dependence on siblings so works even if they are placeholders
     return {
       success: true,
-      downstreamComponentNames: parent.activeChildren.map(x => x.componentName),
-      downstreamComponentTypes: parent.activeChildren.map(x => x.componentType),
+      // downstreamComponentNames: parent.activeChildren.map(x => x.componentName),
+      // downstreamComponentTypes: parent.activeChildren.map(x => x.componentType),
+      downstreamComponentNames: [],
+      downstreamComponentTypes: [],
     }
 
 
@@ -6259,7 +6272,7 @@ class AttributePrimitiveDependency extends StateVariableDependency {
       let depComponent = this.dependencyHandler.components[this.downstreamComponentNames[0]];
 
       value = depComponent.attributes[this.attributeName];
-      if(value) {
+      if (value) {
         value = value.primitive;
       }
 
