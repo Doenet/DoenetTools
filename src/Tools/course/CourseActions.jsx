@@ -14,7 +14,7 @@ import { assignmentDictionary } from '../course/Course';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { 
   itemHistoryAtom, 
-} from '../../_sharedRecoil/content';
+} from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 
 const formatDate = (dt) => {
   const formattedDate = `${
@@ -214,14 +214,14 @@ export const useAssignment = () => {
         for (const [i,version] of newHistory.named.entries()){
           if (versionId === version.versionId){
             newVersion = {...version}
-            newVersion.isAssigned = 1;
+            newVersion.isAssigned = '1';
             newHistory.named.splice(i,1,newVersion)
           }
         }
         
         return newHistory;
       })
-  
+  return versionId;
     });
     const updatePrevVersionHistory = useRecoilCallback(({snapshot,set})=> async (doenetId,versionId)=>{
       // console.log(">>>",{doenetId,versionId,newTitle})
