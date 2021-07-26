@@ -900,22 +900,22 @@ describe('Module Tag Tests', function () {
     <text>a</text>
     <module name='m' newNamespace>
       <setup>
-        <customAttribute componentType="boolean" attribute="disable" defaultValue="true" assignNames="disable" />
+        <customAttribute componentType="boolean" attribute="disabled" defaultValue="true" assignNames="disabled" />
       </setup>
-      <p>Disable? $disable</p>
+      <p>Disabled? $disabled</p>
     </module>
     
     <copy tname="m" assignNames="m1" />
-    <copy tname="m" disable="true" assignNames="m2" />
-    <copy tname="m" disable="false" assignNames="m3" />
+    <copy tname="m" disabled="true" assignNames="m2" />
+    <copy tname="m" disabled="false" assignNames="m3" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
-    cy.get(cesc('#/m/_p1')).should('have.text', "Disable? ");
-    cy.get(cesc('#/m1/_p1')).should('have.text', "Disable? ");
-    cy.get(cesc('#/m2/_p1')).should('have.text', "Disable? ");
-    cy.get(cesc('#/m3/_p1')).should('have.text', "Disable? ");
+    cy.get(cesc('#/m/_p1')).should('have.text', "Disabled? ");
+    cy.get(cesc('#/m1/_p1')).should('have.text', "Disabled? ");
+    cy.get(cesc('#/m2/_p1')).should('have.text', "Disabled? ");
+    cy.get(cesc('#/m3/_p1')).should('have.text', "Disabled? ");
 
   })
 

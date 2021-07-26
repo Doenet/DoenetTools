@@ -16,7 +16,7 @@ export default class Document extends BaseComponent {
     let attributes = super.createAttributesObject(args);
 
     delete attributes.hide;
-    delete attributes.disable;
+    delete attributes.disabled;
     delete attributes.modifyIndirectly;
     delete attributes.fixed;
     delete attributes.styleNumber;

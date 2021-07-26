@@ -1067,7 +1067,7 @@ describe('ChoiceInput Tag Tests', function () {
     <choiceinput inline placeholder="Choose animal">
       <choice>cat</choice>
       <choice>dog</choice>
-      <choice disable>monkey</choice>
+      <choice disabled>monkey</choice>
       <choice>mouse</choice>
     </choiceinput>
 
@@ -1245,7 +1245,7 @@ describe('ChoiceInput Tag Tests', function () {
     <choiceinput>
       <choice>cat</choice>
       <choice>dog</choice>
-      <choice disable>monkey</choice>
+      <choice disabled>monkey</choice>
       <choice>mouse</choice>
     </choiceinput>
 

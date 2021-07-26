@@ -250,11 +250,11 @@ export default class BaseComponent {
         defaultValue: false,
         public: true,
       },
-      disable: {
+      disabled: {
         createComponentOfType: "boolean",
-        createStateVariable: "disable",
-        defaultValue: flags.readOnly ? true : false,
-        public: true,
+        // createStateVariable: "disable",
+        // defaultValue: flags.readOnly ? true : false,
+        // public: true,
       },
       modifyIndirectly: {
         createComponentOfType: "boolean",
@@ -265,10 +265,10 @@ export default class BaseComponent {
       },
       fixed: {
         createComponentOfType: "boolean",
-        createStateVariable: "fixed",
-        defaultValue: false,
-        public: true,
-        forRenderer: true,
+        // createStateVariable: "fixed",
+        // defaultValue: false,
+        // public: true,
+        // forRenderer: true,
       },
       styleNumber: {
         createComponentOfType: "number",
@@ -322,10 +322,6 @@ export default class BaseComponent {
           dependencyType: "parentStateVariable",
           variableName: "hidden"
         },
-        parentOverrideChildHide: {
-          dependencyType: "parentStateVariable",
-          variableName: "overrideChildHide"
-        },
         sourceCompositeHidden: {
           dependencyType: "sourceCompositeStateVariable",
           variableName: "hidden"
@@ -341,7 +337,7 @@ export default class BaseComponent {
             dependencyValues.parentHidden === true
             || dependencyValues.sourceCompositeHidden === true
             || dependencyValues.adapterSourceHidden === true
-            || (dependencyValues.hide === true && !dependencyValues.parentOverrideChildHide)
+            || dependencyValues.hide === true
         }
       })
     }
@@ -351,10 +347,14 @@ export default class BaseComponent {
       componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({
-        disable: {
-          dependencyType: "stateVariable",
-          variableName: "disable",
-          variablesOptional: true,
+        disabledAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "disabled",
+          variableNames: ["value"],
+        },
+        readOnly: {
+          dependencyType: "flag",
+          flagName: "readOnly"
         },
         parentDisabled: {
           dependencyType: "parentStateVariable",
@@ -369,15 +369,69 @@ export default class BaseComponent {
           variableName: "disabled"
         },
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          disabled:  // check === true so null gives false
-            dependencyValues.parentDisabled === true
-            || dependencyValues.sourceCompositeDisabled === true
-            || dependencyValues.adapterSourceDisabled === true
-            || dependencyValues.disable === true
+      definition({ dependencyValues }) {
+        if (dependencyValues.disabledAttr !== null) {
+          return {
+            newValues: {
+              disabled: dependencyValues.disabledAttr.stateValues.value
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              disabled:  // check === true so null gives false
+                dependencyValues.readOnly === true
+                || dependencyValues.parentDisabled === true
+                || dependencyValues.sourceCompositeDisabled === true
+                || dependencyValues.adapterSourceDisabled === true
+            }
+          }
         }
-      })
+      },
+    }
+
+    stateVariableDefinitions.fixed = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        fixedAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "fixed",
+          variableNames: ["value"],
+        },
+        parentFixed: {
+          dependencyType: "parentStateVariable",
+          variableName: "fixed"
+        },
+        sourceCompositeFixed: {
+          dependencyType: "sourceCompositeStateVariable",
+          variableName: "fixed"
+        },
+        adapterSourceFixed: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "fixed"
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.fixedAttr !== null) {
+          return {
+            newValues: {
+              fixed: dependencyValues.fixedAttr.stateValues.value
+            }
+          }
+        } else {
+          return {
+            newValues: {
+              fixed:  // check === true so null gives false
+                dependencyValues.parentFixed === true
+                || dependencyValues.sourceCompositeFixed === true
+                || dependencyValues.adapterSourceFixed === true
+            }
+          }
+        }
+      }
     }
 
     stateVariableDefinitions.isInactiveCompositeReplacement = {
