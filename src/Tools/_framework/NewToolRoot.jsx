@@ -123,6 +123,7 @@ export default function ToolRoot(){
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
  
 
@@ -297,8 +298,8 @@ let navigationObj = {
       // currentMenus:["AddDriveItems","EnrollStudents","gradebook"],
       // menusTitles:["Add Items","Enrollment","gradebook"],
       menusInitOpen:[true,false],
-      headerControls: ["NavigationBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      headerControls: ["NavigationBreadCrumb","RoleDropdown"],
+      headerControlsPositions: ["Left","Right"],
       onLeave:"NavigationLeave",
       // views:{
         // instructor:{
