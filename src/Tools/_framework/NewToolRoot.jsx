@@ -563,8 +563,12 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }else if (lastPageToolView.current.view !== nextPageToolView.view){
       //View changed!
       isViewChange = true;
-    }
+      nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
 
+    }
+    // console.log(">>>isURLChange",isURLChange,"isRecoilChange",isRecoilChange)
+    // console.log(">>>page,tool,view",isPageChange,isToolChange,isViewChange)
+    // console.log(">>>nextPageToolView",nextPageToolView)
     //Update Navigation Leave
     if (isPageChange || isToolChange || isViewChange){
       if (leaveComponentName.current){
@@ -581,9 +585,13 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
     //Update recoil isURLChange
     if (isURLChange){
-      setRecoilPageToolView(nextPageToolView);
       searchObj = Object.fromEntries(new URLSearchParams(location.search))
       setSearchParamAtom(searchObj)
+      nextPageToolView['params'] = {...searchObj};
+      delete nextPageToolView['params'].tool;
+      // console.log(">>>isURLChange nextPageToolView",nextPageToolView) //Changed this to keep params
+
+      setRecoilPageToolView(nextPageToolView);
     }
 
    
