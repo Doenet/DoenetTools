@@ -16,6 +16,7 @@ import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { itemHistoryAtom,assignmentDictionarySelector } from '../ToolHandlers/CourseToolHandler';
 import { useAssignment } from '../../../Tools/course/CourseActions';
+import {useAssignmentCallbacks} from '../../../_reactComponents/Drive/DriveActions';
 import { useToast } from '../Toast';
 import axios from 'axios';
 import Switch from '../../_framework/Switch';
@@ -37,6 +38,7 @@ export default function SelectedDoenetML() {
   const dIcon = <FontAwesomeIcon icon={faCode} />;
   let makeAssignmentforReleasedButton = null;
   const {addContentAssignment,changeSettings,updateVersionHistory,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError} = useAssignment();
+  const {makeAssignment, convertAssignmentToContent} = useAssignmentCallbacks();
   const [checkIsAssigned, setIsAssigned] = useState(false);
   const addToast = useToast();
 
@@ -73,7 +75,8 @@ export default function SelectedDoenetML() {
         <>
           {item.isReleased == 1 ? (
             <label key={i} value={item.versionId}>
-              {item.isAssigned == '1' ? '(Assigned)' : ''}
+              {/* {item.isAssigned == '1' ? '(Assigned)' : ''} */}
+              {/* TODO  */}
               {item.title}
             </label>
           ) : (
@@ -109,7 +112,7 @@ export default function SelectedDoenetML() {
             versionId: selection[0].versionId,
           });
           let payload = {
-            ...aInfo,
+            // ...aInfo,
             itemId: selection[0].itemId,
             isAssigned: '1',
             doenetId: selection[0].doenetId,
@@ -118,24 +121,25 @@ export default function SelectedDoenetML() {
             versionId: selection[0].versionId,
           };
           //TODO update drive actions
-          // makeAssignment({        
-          //   driveIdFolderId: {
-          //     driveId: selection[0].driveId,
-          //     folderId: selection[0].parentFolderId,
-          //   },
-          //   itemId: selection[0].itemId,
-          //   payload: payload,
-          // });
-          try {
-            if (result.success && versionResult) {
-              addToast(
-                `Add new assignment`);
-            } else {
-              onAssignmentError({ errorMessage: result.message });
-            }
-          } catch (e) {
-            onAssignmentError({ errorMessage: e });
-          }
+          makeAssignment({        
+            driveIdFolderId: {
+              driveId: selection[0].driveId,
+              folderId: selection[0].parentFolderId,
+            },
+            itemId: selection[0].itemId,
+            payload: payload,
+          });
+          // TODO
+          // try {
+          //   if (result.success && versionResult) {
+          //     addToast(
+          //       `Add new assignment`);
+          //   } else {
+          //     onAssignmentError({ errorMessage: result.message });
+          //   }
+          // } catch (e) {
+          //   onAssignmentError({ errorMessage: e });
+          // }
         }}
       />
       
@@ -165,16 +169,16 @@ unAssignButton = (
         });
           //TODO update drive actions
 
-        // convertAssignmentToContent({ 
-        //   driveIdFolderId: {
-        //     driveId: selection[0].driveId,
-        //       folderId: selection[0].parentFolderId,
-        //   },
-        //      itemId: selection[0].itemId,
-        //       doenetId: selection[0].doenetId,
-        //       contentId: selection[0].contentId,
-        //       versionId: selection[0].versionId
-        // });
+        convertAssignmentToContent({ 
+          driveIdFolderId: {
+            driveId: selection[0].driveId,
+              folderId: selection[0].parentFolderId,
+          },
+             itemId: selection[0].itemId,
+              doenetId: selection[0].doenetId,
+              contentId: selection[0].contentId,
+              versionId: selection[0].versionId
+        });
 
         const result = axios.post(`/api/handleMakeContent.php`, {
           itemId: selection[0].itemId,
@@ -268,7 +272,7 @@ unAssignButton = (
       <br />
       {selection[0].isAssigned == '1' && selection[0].isReleased === '1'  &&  unAssignButton }
     <br />
-      {(checkIsAssigned || selection[0].isAssigned == '1') && selection[0].isReleased === '1' &&  <AssignmentForm selection={selection} versionId={versionId} contentId={contentId}/>}
+      {( selection[0].isAssigned == '1') && selection[0].isReleased === '1' &&  <AssignmentForm selection={selection} versionId={versionId} contentId={contentId}/>}
     </>
   );
 }
@@ -300,7 +304,12 @@ export const selectedInformation = selector({
 });
 
 const AssignmentForm = (props) =>{
+  const {changeSettings,saveSettings,onAssignmentError} = useAssignment();
+  const {updateAssignmentTitle} = useAssignmentCallbacks();
+
 // console.log(">>> props in form", props.selection, props.versionId, props.contentId);
+const [oldValue,setoldValue] = useState();
+
     const assignmentInfoSettings = useRecoilValueLoadable(
     assignmentDictionarySelector({
        driveId: props.selection[0]?.driveId,
@@ -319,6 +328,78 @@ const AssignmentForm = (props) =>{
     // console.log(">>>> aInfo", aInfo);
 
   } 
+  // form update functions
+  const handleOnBlur = (e) => {
+    e.preventDefault();
+    let name = e.target.name;
+    let value = e.target.value;
+    if(value !== oldValue ){
+    const result = saveSettings({
+      [name]: value,
+      driveIditemIddoenetIdparentFolderId: {
+        driveId: props.selection[0]?.driveId,
+        folderId: props.selection[0]?.parentFolderId,
+        itemId: props.selection[0]?.itemId,
+        doenetId: props.selection[0]?.doenetId,
+        versionId:props.versionId,
+        contentId: props.contentId,
+      },
+    });
+    let payload = {
+      ...aInfo,
+      itemId: props.selection[0]?.itemId,
+      isAssigned: '1',
+      [name]: value,
+      doenetId: props.selection[0]?.doenetId,
+      contentId: props.contentId,
+    };
+    updateAssignmentTitle({
+      driveIdFolderId: {
+        driveId: props.selection[0]?.driveId,
+        folderId: props.selection[0]?.parentFolderId,
+      },
+      itemId: props.selection[0]?.itemId,
+      payloadAssignment: payload,
+      doenetId: props.selection[0]?.doenetId,
+      contentId: props.contentId,
+    });
+
+        result
+          .then((resp) => {
+            if (resp.data.success) {
+              addToast(`Updated '${name}' to '${value}'`, toastType.SUCCESS);
+            } else {
+              onAssignmentError({ errorMessage: resp.data.message });
+            }
+          })
+          .catch((e) => {
+            onAssignmentError({ errorMessage: e.message });
+          });
+  }
+  };
+
+  const handleChange = (event) => {
+    event.preventDefault();
+    let name = event.target.name;
+    let value = event.target.value;
+    const result = changeSettings({
+      [name]: value,
+      driveIditemIddoenetIdparentFolderId: {
+        driveId: props.selection[0]?.driveId,
+        folderId: props.selection[0]?.parentFolderId,
+        itemId: props.selection[0]?.itemId,
+        doenetId: props.selection[0]?.doenetId,
+        versionId:props.versionId,
+        contentId: props.contentId,
+      },
+    });
+  };
+  const handleOnfocus = (event) => {
+    event.preventDefault();
+    let name = event.target.name;
+    let value = event.target.value;
+    setoldValue(event.target.value)
+  };
   // Assignment Info
   let assignmentForm = (
     <>
