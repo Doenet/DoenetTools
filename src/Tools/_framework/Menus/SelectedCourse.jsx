@@ -78,7 +78,20 @@ export default function SelectedCourse(props) {
   }}/>
       </>
     );
-  } else {
+  } else if(selection.length === 1 && selection[0]?.role[0] === 'Administrator'){
+    return (
+      <>
+        {/* <DriveInfoPanel
+          key={`DriveInfoPanel${selection[0].driveId}`}
+          label={selection[0].label}
+          color={selection[0].color}
+          image={selection[0].image}
+          driveId={selection[0].driveId}
+        /> */}
+      </>
+    );
+  }
+  else {
     return '';
   }
 }
