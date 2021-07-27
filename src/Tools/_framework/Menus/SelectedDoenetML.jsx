@@ -22,7 +22,9 @@ export default function SelectedDoenetML() {
   const { deleteItem, renameItem } = useSockets('drive');
   const item = selection[0];
   const dIcon = <FontAwesomeIcon icon={faCode} />;
-
+  useEffect(() => {
+    setLabel(selection[0]?.label);
+  }, [selection]);
   const renameItemCallback = (newLabel) => {
     renameItem({
       driveIdFolderId: {
