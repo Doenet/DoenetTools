@@ -12,6 +12,72 @@ export default class BooleanComponent extends InlineComponent {
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
 
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.symbolicEquality = {
+      createComponentOfType: "boolean",
+      createStateVariable: "symbolicEquality",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.expandOnCompare = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expandOnCompare",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.simplifyOnCompare = {
+      createComponentOfType: "text",
+      createStateVariable: "simplifyOnCompare",
+      defaultValue: "none",
+      toLowerCase: true,
+      valueTransformations: { "": "full", "true": "full" },
+      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.unorderedCompare = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unorderedCompare",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.allowedErrorInNumbers = {
+      createComponentOfType: "number",
+      createStateVariable: "allowedErrorInNumbers",
+      defaultValue: 0,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.includeErrorInNumberExponents = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeErrorInNumberExponents",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.allowedErrorIsAbsolute = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowedErrorIsAbsolute",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.nSignErrorsMatched = {
+      createComponentOfType: "number",
+      createStateVariable: "nSignErrorsMatched",
+      defaultValue: 0,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    return attributes;
+  }
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -116,7 +182,7 @@ export default class BooleanComponent extends InlineComponent {
         stringMathTextBooleanChildren: {
           dependencyType: "child",
           childLogicName: "stringsMathsTextsAndBooleans",
-          variableNames: ["value", "texts", "maths", "booleans"],
+          variableNames: ["value", "texts", "maths", "booleans", "fractionSatisfied", "unordered"],
           variablesOptional: true,
         },
         codePre: {
@@ -193,6 +259,38 @@ export default class BooleanComponent extends InlineComponent {
       defaultValue: false,
       set: Boolean,
       returnDependencies: () => ({
+        symbolicEquality: {
+          dependencyType: "stateVariable",
+          variableName: "symbolicEquality",
+        },
+        expandOnCompare: {
+          dependencyType: "stateVariable",
+          variableName: "expandOnCompare",
+        },
+        simplifyOnCompare: {
+          dependencyType: "stateVariable",
+          variableName: "simplifyOnCompare",
+        },
+        unorderedCompare: {
+          dependencyType: "stateVariable",
+          variableName: "unorderedCompare",
+        },
+        allowedErrorInNumbers: {
+          dependencyType: "stateVariable",
+          variableName: "allowedErrorInNumbers",
+        },
+        includeErrorInNumberExponents: {
+          dependencyType: "stateVariable",
+          variableName: "includeErrorInNumberExponents",
+        },
+        allowedErrorIsAbsolute: {
+          dependencyType: "stateVariable",
+          variableName: "allowedErrorIsAbsolute",
+        },
+        nSignErrorsMatched: {
+          dependencyType: "stateVariable",
+          variableName: "nSignErrorsMatched",
+        },
         parsedExpression: {
           dependencyType: "stateVariable",
           variableName: "parsedExpression",
@@ -200,7 +298,7 @@ export default class BooleanComponent extends InlineComponent {
         stringMathTextBooleanChildren: {
           dependencyType: "child",
           childLogicName: "stringsMathsTextsAndBooleans",
-          variableNames: ["value", "texts", "maths", "unordered"],
+          variableNames: ["value"],
           variablesOptional: true,
         },
         booleanChildrenByCode: {
@@ -228,7 +326,7 @@ export default class BooleanComponent extends InlineComponent {
           variableName: "mathListChildrenByCode",
         },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, usedDefault }) {
 
         if (dependencyValues.stringMathTextBooleanChildren.length === 0) {
           return {
@@ -247,24 +345,11 @@ export default class BooleanComponent extends InlineComponent {
 
         // evaluate logic in parsedExpression
 
-        let unorderedCompare = false;
-
-        // if compare attributes haven't been explicitly prescribed by <if>
-        // or one of its ancestors
-        // then any of the attributes can be turned on if there is a
-        // child with the comparable property
-
-        // check all children for an unordered property
-        for (let child of dependencyValues.stringMathTextBooleanChildren) {
-          if (child.stateValues.unordered) {
-            unorderedCompare = true;
-          }
-        }
-
+        let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
 
         let fractionSatisfied = evaluateLogic({
           logicTree: dependencyValues.parsedExpression.tree,
-          unorderedCompare: unorderedCompare,
+          canOverrideUnorderedCompare,
           dependencyValues,
         });
 
