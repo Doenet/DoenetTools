@@ -457,22 +457,12 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   Object.assign(dependenciesForEvaluateLogic, dependencyValues);
 
-  let unorderedCompare = dependencyValues.unorderedCompare;
-  let simplifyOnCompare = dependencyValues.simplifyOnCompare;
-  let expandOnCompare = dependencyValues.expandOnCompare;
-
   let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
 
   if (dependencyValues.textChild.length === 1) {
     dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
   } else if (dependencyValues.mathChild.length === 1) {
-    let child = dependencyValues.mathChild[0];
-
-    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = child;
-    if (canOverrideUnorderedCompare && child.stateValues.unordered) {
-      unorderedCompare = true;
-    }
-
+    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = dependencyValues.mathChild[0];
   } else if (dependencyValues.booleanChild.length === 1) {
     dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 = dependencyValues.booleanChild[0];
   }
@@ -496,9 +486,7 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   return evaluateLogic({
     logicTree: dependencyValues.parsedExpression.tree,
-    unorderedCompare: unorderedCompare,
-    simplifyOnCompare: simplifyOnCompare,
-    expandOnCompare: expandOnCompare,
+    canOverrideUnorderedCompare,
     dependencyValues: dependenciesForEvaluateLogic,
   });
 

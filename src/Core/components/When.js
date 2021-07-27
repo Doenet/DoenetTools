@@ -1,6 +1,5 @@
 import BooleanComponent from './Boolean';
 
-import me from 'math-expressions';
 import { evaluateLogic } from '../utils/booleanLogic';
 
 
@@ -17,61 +16,19 @@ export default class When extends BooleanComponent {
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
+      propagateToDescendants: true, 
     };
-    attributes.symbolicEquality = {
-      createComponentOfType: "boolean",
-      createStateVariable: "symbolicEquality",
-      defaultValue: false,
-      public: true,
-    };
-    attributes.expandOnCompare = {
-      createComponentOfType: "boolean",
-      createStateVariable: "expandOnCompare",
-      defaultValue: false,
-      public: true,
-      propagateToDescendants: true,
-    };
-    attributes.simplifyOnCompare = {
-      createComponentOfType: "text",
-      createStateVariable: "simplifyOnCompare",
-      defaultValue: "none",
-      toLowerCase: true,
-      valueTransformations: { "": "full", "true": "full" },
-      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
-      public: true,
-      propagateToDescendants: true,
-    };
-    attributes.unorderedCompare = {
-      createComponentOfType: "boolean",
-      createStateVariable: "unorderedCompare",
-      defaultValue: false,
-      public: true,
-      propagateToDescendants: true,
-    };
-    attributes.allowedErrorInNumbers = {
-      createComponentOfType: "number",
-      createStateVariable: "allowedErrorInNumbers",
-      defaultValue: 0,
-      public: true,
-    };
-    attributes.includeErrorInNumberExponents = {
-      createComponentOfType: "boolean",
-      createStateVariable: "includeErrorInNumberExponents",
-      defaultValue: false,
-      public: true,
-    };
-    attributes.allowedErrorIsAbsolute = {
-      createComponentOfType: "boolean",
-      createStateVariable: "allowedErrorIsAbsolute",
-      defaultValue: false,
-      public: true,
-    };
-    attributes.nSignErrorsMatched = {
-      createComponentOfType: "number",
-      createStateVariable: "nSignErrorsMatched",
-      defaultValue: 0,
-      public: true,
-    };
+
+    for (let attrName of ["symbolicEquality", "expandOnCompare",
+      "simplifyOnCompare", "unorderedCompare",
+      "allowedErrorInNumbers", "includeErrorInNumberExponents",
+      "allowedErrorIsAbsolute",
+      "nSignErrorsMatched"
+    ]) {
+      delete attributes[attrName].ignorePropagationFromAncestors;
+      attributes[attrName].propagateToDescendants = true;
+    }
+
     return attributes;
   }
 
@@ -126,17 +83,6 @@ export default class When extends BooleanComponent {
           dependencyType: "stateVariable",
           variableName: "parsedExpression",
         },
-        stringMathTextBooleanChildren: {
-          dependencyType: "child",
-          childLogicName: "stringsMathsTextsAndBooleans",
-          variableNames: ["value", "texts", "maths", "unordered"],
-          variablesOptional: true,
-        },
-        mathChildren: {
-          dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
-          variableNames: ["value"]
-        },
         booleanChildrenByCode: {
           dependencyType: "stateVariable",
           variableName: "booleanChildrenByCode",
@@ -179,30 +125,11 @@ export default class When extends BooleanComponent {
           }
         }
 
-
-        let unorderedCompare = dependencyValues.unorderedCompare;
-        let simplifyOnCompare = dependencyValues.simplifyOnCompare;
-        let expandOnCompare = dependencyValues.expandOnCompare;
-
         let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
-
-        // if compare attributes haven't been explicitly prescribed by <when>
-        // or one of its ancestors
-        // then any of the attributes can be turned on if there is a
-        // child with the comparable property
-
-        // check all children for an unordered property
-        for (let child of dependencyValues.stringMathTextBooleanChildren) {
-          if (canOverrideUnorderedCompare && child.stateValues.unordered) {
-            unorderedCompare = true;
-          }
-        }
 
         let fractionSatisfied = evaluateLogic({
           logicTree: dependencyValues.parsedExpression.tree,
-          unorderedCompare: unorderedCompare,
-          simplifyOnCompare: simplifyOnCompare,
-          expandOnCompare: expandOnCompare,
+          canOverrideUnorderedCompare,
           dependencyValues,
         });
 

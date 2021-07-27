@@ -2998,4 +2998,773 @@ describe('Match partial validation tests', function () {
 
   });
 
+  it('match partial with combined ordered/unordered tuples', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>a</p>
+
+  <mathinput name="m1"/>
+  <mathinput name="m2"/>
+
+  <p>Match partial: <answer name="partial">
+    <award matchPartial>
+      <when>
+        $m1 = (1,2)
+        and
+        $m2 = <math unordered>(3,4)</math>
+      </when>
+    </award>
+  </answer></p>
+
+  <p>Strict equality: <answer name="strict">
+    <award>
+      <when>
+        $m1 = (1,2)
+        and
+        $m2 = <math unordered>(3,4)</math>
+      </when>
+    </award>
+  </answer></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("scalar in first tuple")
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+
+    cy.log("scalar in second tuple")
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+    cy.log('permute order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('permute order also in second tuple')
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('correct order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible')
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible')
+
+
+  });
+
+  it('match partial with combined ordered/unordered tuples via whens', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>a</p>
+
+  <mathinput name="m1"/>
+  <mathinput name="m2"/>
+
+  <p>Match partial: <answer name="partial">
+    <award matchPartial>
+      <when>
+        $m1 = (1,2)
+        and
+        <when unorderedCompare>$m2 = (3,4)</when>
+      </when>
+    </award>
+  </answer></p>
+
+  <p>Strict equality: <answer name="strict">
+    <award>
+      <when>
+        $m1 = (1,2)
+        and
+        <when unorderedCompare>$m2 = (3,4)</when>
+      </when>
+    </award>
+  </answer></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("scalar in first tuple")
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+
+    cy.log("scalar in second tuple")
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+    cy.log('permute order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('permute order also in second tuple')
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('correct order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible')
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible')
+
+
+  });
+
+  it('match partial with combined ordered/unordered tuples via booleans', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>a</p>
+
+  <mathinput name="m1"/>
+  <mathinput name="m2"/>
+  <p>Match partial: <answer name="partial">
+    <award matchPartial>
+      <when>
+        $m1 = (1,2)
+        and
+        <boolean unorderedCompare>$m2 = (3,4)</boolean>
+      </when>
+    </award>
+  </answer></p>
+
+  <p>Strict equality: <answer name="strict">
+    <award>
+      <when>
+        $m1 = (1,2)
+        and
+        <boolean unorderedCompare>$m2 = (3,4)</boolean>
+      </when>
+    </award>
+  </answer></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("scalar in first tuple")
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+
+    cy.log("scalar in second tuple")
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('25% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+    cy.log('permute order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('permute order also in second tuple')
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('correct order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible')
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible')
+
+
+  });
+
+  it('mixed match partial and ordered/unordered tuples via whens', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>a</p>
+
+  <mathinput name="m1"/>
+  <mathinput name="m2"/>
+
+  <p>Match partial: <answer name="partial">
+
+    <award matchPartial>
+      <when>
+        $m1 = (1,2)
+        and
+        <when unorderedCompare matchPartial="false">$m2 = (3,4)</when>
+      </when>
+    </award>
+  </answer></p>
+
+  <p>No net effect of inner matchPartial: <answer name="strict">
+    <award>
+      <when>
+        $m1 = (1,2)
+        and
+        <when unorderedCompare matchPartial>$m2 = (3,4)</when>
+      </when>
+    </award>
+  </answer></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("scalar in first tuple")
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+
+    cy.log("scalar in second tuple")
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('25% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+    cy.log('permute order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('permute order also in second tuple')
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('correct order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible')
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible')
+
+
+  });
+
+  it('match partial with combined ordered/unordered tuples, force ordered compare', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>a</p>
+
+  <mathinput name="m1"/>
+  <mathinput name="m2"/>
+
+  <p>Match partial: <answer name="partial">
+    <award matchPartial>
+      <when unorderedCompare="false">
+        $m1 = (1,2)
+        and
+        $m2 = <math unordered>(3,4)</math>
+      </when>
+    </award>
+  </answer></p>
+
+  <p>Strict equality: <answer name="strict">
+    <award>
+      <when unorderedCompare="false">
+        $m1 = (1,2)
+        and
+        $m2 = <math unordered>(3,4)</math>
+      </when>
+    </award>
+  </answer></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("scalar in first tuple")
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+
+    cy.log("scalar in second tuple")
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+    cy.log('permute order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('permute order also in second tuple')
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('correct order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+  });
+
+  it('match partial with combined ordered/unordered tuples via whens, no effect of force ordered compare', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p>a</p>
+
+  <mathinput name="m1"/>
+  <mathinput name="m2"/>
+
+  <p>Match partial: <answer name="partial">
+    <award matchPartial>
+      <when unorderedCompare="false">
+        $m1 = (1,2)
+        and
+        <when unorderedCompare>$m2 = (3,4)</when>
+      </when>
+    </award>
+  </answer></p>
+
+  <p>Strict equality: <answer name="strict">
+    <award>
+      <when unorderedCompare="false">
+        $m1 = (1,2)
+        and
+        <when unorderedCompare>$m2 = (3,4)</when>
+      </when>
+    </award>
+  </answer></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get("#\\/m1 textarea").type('(1,2){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("scalar in first tuple")
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}2{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+
+    cy.log("scalar in second tuple")
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+    
+    cy.log('permute order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('permute order also in second tuple')
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(4,3){enter}', { force: true });
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_incorrect').should('be.visible')
+
+
+    cy.log('correct order in first tuple')
+    cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(1,2){enter}', { force: true });
+    cy.get("#\\/partial_submit").click();
+    cy.get('#\\/partial_correct').should('be.visible')
+    cy.get("#\\/strict_submit").click();
+    cy.get('#\\/strict_correct').should('be.visible')
+
+
+  });
+
+  it('match partial with combined ordered/unordered text inputs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+
+  <p><textinput name="u"/></p>
+  <p><textinput name="v"/></p>
+  <p><textinput name="x"/></p>
+  <p><textinput name="y"/></p>
+
+  <p>Match partial:
+  <answer name="partial">
+    <award>
+      <when matchpartial>
+        <textlist>$u $v</textlist>
+        =
+        <textlist>u v</textlist>
+        and 
+        <textlist>$x $y</textlist>
+        =
+        <textlist unordered>x y</textlist>
+      </when>
+    </award>
+  </answer>
+  </p>
+
+  <p>Strict:
+  <answer name="strict">
+    <award>
+      <when>
+        <textlist>$u $v</textlist>
+        =
+        <textlist>u v</textlist>
+        and 
+        <textlist>$x $y</textlist>
+        =
+        <textlist unordered>x y</textlist>
+      </when>
+    </award>
+  </answer>
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get('#\\/u_input').clear().type('u');
+    cy.get('#\\/v_input').clear().type('v');
+    cy.get('#\\/x_input').clear().type('x');
+    cy.get('#\\/y_input').clear().type('y');
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("Omit one component in first")
+    cy.get('#\\/u_input').clear().type('v');
+    cy.get('#\\/v_input').clear();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+
+    cy.log("Omit one component in second")
+    cy.get('#\\/x_input').clear().type('y');
+    cy.get('#\\/y_input').clear();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+
+    cy.log("permute order in first")
+    cy.get('#\\/v_input').type('u');
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+    cy.log("permute order in second")
+    cy.get('#\\/y_input').type('x');
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+    cy.log("correct order in first")
+    cy.get('#\\/u_input').clear().type('u');
+    cy.get('#\\/v_input').clear().type('v');
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_correct').should('be.visible')
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+
+  });
+
+  it('match partial with combined ordered/unordered boolean inputs', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+
+  <p><booleaninput name="u"/></p>
+  <p><booleaninput name="v"/></p>
+  <p><booleaninput name="x"/></p>
+  <p><booleaninput name="y"/></p>
+
+  <p>Match partial:
+  <answer name="partial">
+    <award>
+      <when matchpartial>
+        <booleanlist>$u $v</booleanlist>
+        =
+        <booleanlist>true false</booleanlist>
+        and 
+        <booleanlist>$x $y</booleanlist>
+        =
+        <booleanlist unordered>true false</booleanlist>
+      </when>
+    </award>
+  </answer>
+  </p>
+
+  <p>Strict:
+  <answer name="strict">
+    <award>
+      <when>
+        <booleanlist>$u $v</booleanlist>
+        =
+        <booleanlist>true false</booleanlist>
+        and 
+        <booleanlist>$x $y</booleanlist>
+        =
+        <booleanlist unordered>true false</booleanlist>
+      </when>
+    </award>
+  </answer>
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit correct answers")
+    cy.get('#\\/u_input').click();
+    cy.get('#\\/x_input').click();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_correct').should('be.visible');
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+    cy.log("One incorrect in first")
+    cy.get('#\\/v_input').click();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+
+    cy.log("One incorrect in second")
+    cy.get('#\\/y_input').click();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+
+    cy.log("permute order in first")
+    cy.get('#\\/u_input').click();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+    cy.log("permute order in second")
+    cy.get('#\\/x_input').click();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('75% correct')
+    })
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_incorrect').should('be.visible');
+
+    cy.log("correct order in first")
+    cy.get('#\\/u_input').click();
+    cy.get('#\\/v_input').click();
+    cy.get('#\\/partial_submit').click();
+    cy.get('#\\/partial_correct').should('be.visible')
+    cy.get('#\\/strict_submit').click();
+    cy.get('#\\/strict_correct').should('be.visible');
+
+
+  });
+
+
 });
