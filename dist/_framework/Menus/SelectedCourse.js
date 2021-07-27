@@ -1,6 +1,13 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
-import {useRecoilValue, useSetRecoilState, useRecoilStateLoadable} from "../../_snowpack/pkg/recoil.js";
-import {fetchDrivesSelector, fetchDriveUsers} from "../../_reactComponents/Drive/Drive.js";
+import {
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilStateLoadable
+} from "../../_snowpack/pkg/recoil.js";
+import {
+  fetchDrivesSelector,
+  fetchDriveUsers
+} from "../../_reactComponents/Drive/NewDrive.js";
 import {
   faChalkboard,
   faCode,
@@ -12,11 +19,12 @@ import {drivecardSelectedNodesAtom} from "../ToolHandlers/CourseToolHandler.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import DoenetDriveCardMenu from "../../_reactComponents/Drive/DoenetDriveCardMenu.js";
 import {driveColors, driveImages} from "../../_reactComponents/Drive/util.js";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+import {useToast} from "../Toast.js";
 export default function SelectedCourse(props) {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
-  if (selection.length === 1 && selection[0].role[0] === "Owner") {
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
+  if (selection.length === 1 && selection[0]?.role[0] === "Owner") {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(DriveInfoPanel, {
       key: `DriveInfoPanel${selection[0].driveId}`,
       label: selection[0].label,
@@ -24,7 +32,7 @@ export default function SelectedCourse(props) {
       image: selection[0].image,
       driveId: selection[0].driveId
     }));
-  } else if (selection[0].role[0] === "Student") {
+  } else if (selection[0]?.role[0] === "Student") {
     let dIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faChalkboard
     });
@@ -40,11 +48,23 @@ export default function SelectedCourse(props) {
       }
     }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
-      value: "Delete Course(Soon)",
+      value: "Delete Course",
+      alert: true,
       onClick: (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log(">> Deleted selected courses");
+        let selectionArr = [];
+        for (let x = 0; x < selection.length; x++) {
+          selectionArr.push(selection[x].driveId);
+        }
+        setDrivesInfo({
+          color: "",
+          label: "",
+          image: "",
+          newDriveId: selectionArr,
+          type: "delete drive"
+        });
+        setDrivecardSelection([]);
       }
     }));
   } else {
@@ -58,6 +78,7 @@ const DriveInfoPanel = function(props) {
   const driveId = props.driveId;
   const [driveUsers, setDriveUsers] = useRecoilStateLoadable(fetchDriveUsers(driveId));
   const [selectedUserId, setSelectedUserId] = useState("");
+  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
   if (driveUsers.state === "loading") {
     return null;
   }
@@ -87,82 +108,8 @@ const DriveInfoPanel = function(props) {
     type: "Add Admin",
     setDriveUsers
   });
-  let selectedOwner = "";
-  let selectedAdmin = "";
-  if (isOwner && selectedAdmin) {
-    buttons.push(/* @__PURE__ */ React.createElement("div", {
-      key: `promote${selectedAdmin.userId}`
-    }, /* @__PURE__ */ React.createElement(Button, {
-      width: "menu",
-      "data-doenet-removebutton": selectedAdmin.userId,
-      value: "Promote to Owner",
-      onClick: (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDriveUsers({
-          driveId,
-          type: "To Owner",
-          userId: selectedAdmin.userId,
-          userRole: "admin"
-        });
-      }
-    })));
-    buttons.push(/* @__PURE__ */ React.createElement("div", {
-      key: `remove${selectedAdmin.userId}`
-    }, /* @__PURE__ */ React.createElement(Button, {
-      width: "menu",
-      "data-doenet-removeButton": selectedAdmin.userId,
-      value: "Remove",
-      onClick: (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDriveUsers({
-          driveId,
-          type: "Remove User",
-          userId: selectedAdmin.userId,
-          userRole: "admin"
-        });
-      }
-    }), /* @__PURE__ */ React.createElement("br", null)));
-  }
-  if (isOwner && selectedOwner) {
-    if (!(selectedOwner && driveUsers.contents.owners.length < 2)) {
-      buttons.push(/* @__PURE__ */ React.createElement("div", {
-        key: `demote${selectedOwner.userId}`
-      }, /* @__PURE__ */ React.createElement(Button, {
-        width: "menu",
-        "data-doenet-removebutton": selectedOwner.userId,
-        value: "Demote to Admin",
-        onClick: (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDriveUsers({
-            driveId,
-            type: "To Admin",
-            userId: selectedOwner.userId,
-            userRole: "owner"
-          });
-        }
-      })));
-      buttons.push(/* @__PURE__ */ React.createElement("div", {
-        key: `remove${selectedOwner.userId}`
-      }, /* @__PURE__ */ React.createElement(Button, {
-        width: "menu",
-        "data-doenet-removeButton": selectedOwner.userId,
-        value: "Remove",
-        onClick: (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setDriveUsers({
-            driveId,
-            type: "Remove User",
-            userId: selectedOwner.userId,
-            userRole: "owner"
-          });
-        }
-      })));
-    }
-  }
+  let selectedOwner = [];
+  let selectedAdmin = [];
   let deleteCourseButton = null;
   if (isOwner) {
     deleteCourseButton = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
@@ -174,23 +121,30 @@ const DriveInfoPanel = function(props) {
           color: props.color,
           label: driveLabel,
           image: props.image,
-          newDriveId: props.driveId,
+          newDriveId: [props.driveId],
           type: "delete drive"
         });
+        setDrivecardSelection([]);
       }
     }));
   }
-  const selectedOwnerFn = (userId) => {
-    for (let owner of driveUsers?.contents?.owners) {
-      if (owner.userId === userId) {
-        selectedOwner = owner;
+  const selectedOwnerFn = (userId, e) => {
+    selectedOwner = [];
+    for (let selectedOwnerObj of e.target.selectedOptions) {
+      for (let owner of driveUsers?.contents?.owners) {
+        if (owner.userId === selectedOwnerObj.value) {
+          selectedOwner.push(owner);
+        }
       }
     }
   };
-  const selectedAdminFn = (userId) => {
-    for (let admin of driveUsers?.contents?.admins) {
-      if (admin.userId === userId) {
-        selectedAdmin = admin;
+  const selectedAdminFn = (userId, e) => {
+    selectedAdmin = [];
+    for (let selectedAdminObj of e.target.selectedOptions) {
+      for (let admin of driveUsers?.contents?.admins) {
+        if (admin.userId === selectedAdminObj.value) {
+          selectedAdmin.push(admin);
+        }
       }
     }
   };
@@ -203,7 +157,7 @@ const DriveInfoPanel = function(props) {
   let ownersList = driveUsers?.contents?.owners.length > 0 ? /* @__PURE__ */ React.createElement("select", {
     multiple: true,
     onChange: (e) => {
-      selectedOwnerFn(e.target.value);
+      selectedOwnerFn(e.target.value, e);
     }
   }, driveUsers?.contents?.owners.map((item, i) => {
     return /* @__PURE__ */ React.createElement(UserOption, {
@@ -214,7 +168,7 @@ const DriveInfoPanel = function(props) {
   })) : "";
   let ownerPerms = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removebutton": selectedOwner.userId,
+    "data-doenet-removebutton": selectedOwner,
     value: "Demote to Admin",
     onClick: (e) => {
       e.preventDefault();
@@ -222,13 +176,13 @@ const DriveInfoPanel = function(props) {
       setDriveUsers({
         driveId,
         type: "To Admin",
-        userId: selectedOwner.userId,
+        userId: selectedOwner,
         userRole: "owner"
       });
     }
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removeButton": selectedOwner.userId,
+    "data-doenet-removeButton": selectedOwner,
     value: "Remove",
     onClick: (e) => {
       e.preventDefault();
@@ -236,7 +190,7 @@ const DriveInfoPanel = function(props) {
       setDriveUsers({
         driveId,
         type: "Remove User",
-        userId: selectedOwner.userId,
+        userId: selectedOwner,
         userRole: "owner"
       });
     }
@@ -244,7 +198,7 @@ const DriveInfoPanel = function(props) {
   let adminsList = driveUsers?.contents?.admins.length > 0 ? /* @__PURE__ */ React.createElement("select", {
     multiple: true,
     onChange: (e) => {
-      selectedAdminFn(e.target.value);
+      selectedAdminFn(e.target.value, e);
     }
   }, driveUsers?.contents?.admins.map((item, i) => {
     return /* @__PURE__ */ React.createElement("option", {
@@ -253,7 +207,7 @@ const DriveInfoPanel = function(props) {
   })) : "";
   let adminPerms = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removebutton": selectedAdmin.userId,
+    "data-doenet-removebutton": selectedAdmin,
     value: "Promote to Owner",
     onClick: (e) => {
       e.preventDefault();
@@ -261,13 +215,13 @@ const DriveInfoPanel = function(props) {
       setDriveUsers({
         driveId,
         type: "To Owner",
-        userId: selectedAdmin.userId,
+        userId: selectedAdmin,
         userRole: "admin"
       });
     }
   }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removeButton": selectedAdmin.userId,
+    "data-doenet-removeButton": selectedAdmin,
     value: "Remove",
     onClick: (e) => {
       e.preventDefault();
@@ -275,7 +229,7 @@ const DriveInfoPanel = function(props) {
       setDriveUsers({
         driveId,
         type: "Remove User",
-        userId: selectedAdmin.userId,
+        userId: selectedAdmin,
         userRole: "admin"
       });
     }
@@ -323,71 +277,35 @@ const DriveInfoPanel = function(props) {
     }
   })), /* @__PURE__ */ React.createElement("br", null), addOwners, ownersList, /* @__PURE__ */ React.createElement("br", null), ownerPerms, /* @__PURE__ */ React.createElement("br", null), addAdmins, /* @__PURE__ */ React.createElement("br", null), adminsList, adminPerms, /* @__PURE__ */ React.createElement("br", null), deleteCourseButton);
 };
-function User(props) {
-  let onClick = props.onClick;
-  if (!onClick) {
-    onClick = () => {
-    };
-  }
-  let emailAddress = null;
-  let emailStyle = {};
-  let buttons = [];
-  let star = null;
-  let screenName = props.screenName;
-  if (screenName === "" || screenName === null) {
-    screenName = "Unknown";
-  }
-  if (props.isUser) {
-    star = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faUserCircle
-    });
-  }
-  emailAddress = /* @__PURE__ */ React.createElement("span", {
-    style: emailStyle
-  }, props.email);
-  let containerStyle = {};
-  if (props.isSelected) {
-    containerStyle = {backgroundColor: "#B8D2EA"};
-    emailStyle = {border: "solid 1px black"};
-  }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    tabIndex: 0,
-    className: "noselect nooutline",
-    onClick: () => onClick(props.userId),
-    onBlur: (e) => {
-      if (e.relatedTarget?.dataset?.doenetRemovebutton !== props.userId) {
-        onClick("");
-      }
-    }
-  }, /* @__PURE__ */ React.createElement("div", {
-    style: containerStyle
-  }, /* @__PURE__ */ React.createElement("div", null, star, screenName), /* @__PURE__ */ React.createElement("div", null, emailAddress)), buttons));
-}
 function NewUser(props) {
   const [email, setEmail] = useState("");
+  const addToast = useToast();
   function addUser() {
-    if (validateEmail(email)) {
-      props.setDriveUsers({
-        driveId: props.driveId,
-        type: props.type,
-        email,
-        callback
-      });
-      setEmail("");
-    } else {
-      console.log(`Not Added: Invalid email ${email}`);
-    }
-    function callback(resp) {
-      if (resp.success) {
+    if (email) {
+      let callback = function(resp) {
+        if (resp.success) {
+          props.setDriveUsers({
+            driveId: props.driveId,
+            type: `${props.type} step 2`,
+            email,
+            screenName: resp.screenName,
+            userId: resp.userId
+          });
+        } else {
+          addToast(resp.message);
+        }
+      };
+      if (validateEmail(email)) {
         props.setDriveUsers({
           driveId: props.driveId,
-          type: `${props.type} step 2`,
+          type: props.type,
           email,
-          screenName: resp.screenName,
-          userId: resp.userId
+          callback
         });
+        setEmail("");
+        addToast(`Added: email ${email}`);
       } else {
-        console.log(">>>Toast ", resp.message);
+        addToast(`Not Added: Invalid email ${email}`);
       }
     }
   }

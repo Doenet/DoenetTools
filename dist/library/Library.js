@@ -44,7 +44,7 @@ import "../_utils/util.css.proxy.js";
 import {driveColors, driveImages} from "../_reactComponents/Drive/util.js";
 import Tool from "../_framework/Tool.js";
 import {useToolControlHelper, ProfileContext} from "../_framework/ToolRoot.js";
-import {useToast} from "../_framework/Toast.js";
+import {useToast, toastType} from "../_framework/Toast.js";
 import useSockets from "../_reactComponents/Sockets.js";
 function Container(props) {
   return /* @__PURE__ */ React.createElement("div", {
@@ -567,7 +567,7 @@ const ItemInfo = function() {
   }
 };
 function AddCourseDriveButton() {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const createNewDrive = useRecoilCallback(({set}) => async ({label, newDriveId, image, color}) => {
     let newDrive = {
       driveId: newDriveId,
@@ -605,7 +605,7 @@ function AddCourseDriveButton() {
     return result;
   });
   function onError({errorMessage}) {
-    addToast(`Course not created. ${errorMessage}`, ToastType.ERROR);
+    addToast(`Course not created. ${errorMessage}`, toastType.ERROR);
   }
   return /* @__PURE__ */ React.createElement(Button, {
     value: "Create a New Course",
@@ -625,7 +625,7 @@ function AddCourseDriveButton() {
       });
       result.then((resp) => {
         if (resp.data.success) {
-          addToast(`Created a new course named '${label}'`, ToastType.SUCCESS);
+          addToast(`Created a new course named '${label}'`, toastType.SUCCESS);
         } else {
           onError({errorMessage: resp.data.message});
         }
@@ -813,6 +813,7 @@ export default function Library(props) {
       });
     }
   }))), /* @__PURE__ */ React.createElement("div", {
+    role: "button",
     onClick: cleardrivecardSelection,
     "data-cy": "mainPanel",
     tabIndex: 0,

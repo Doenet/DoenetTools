@@ -1,13 +1,13 @@
 import React from "../../_snowpack/pkg/react.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
-import {useToast} from "../Toast.js";
+import {useToast, toastType} from "../Toast.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-import {fetchDrivesQuery} from "../ToolHandlers/CourseToolHandler.js";
 import {useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
 import {driveColors, driveImages} from "../../_reactComponents/Drive/util.js";
+import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 const CreateCourse = (props) => {
-  const [toast, toastType] = useToast();
+  const toast = useToast();
   const onError = ({errorMessage}) => {
     toast(`Course not created. ${errorMessage}`, toastType.ERROR);
   };

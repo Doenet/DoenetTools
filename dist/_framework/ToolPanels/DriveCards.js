@@ -3,13 +3,13 @@ import axios from "../../_snowpack/pkg/axios.js";
 import Button from "../temp/Button.js";
 import {useRecoilCallback, selector, useRecoilValue, useSetRecoilState, useRecoilState, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
-import {drivecardSelectedNodesAtom, fetchDrivesSelector, fetchDrivesQuery} from "../ToolHandlers/CourseToolHandler.js";
-import {toolViewAtom, searchParamAtomFamily, paramObjAtom} from "../NewToolRoot.js";
-import DriveCards from "../../_reactComponents/Drive/DriveCards.js";
+import {drivecardSelectedNodesAtom} from "../ToolHandlers/CourseToolHandler.js";
+import {pageToolViewAtom} from "../NewToolRoot.js";
 import DriveCard from "../../_reactComponents/Drive/DoenetDriveCard.js";
 import {useMenuPanelController} from "../Panels/MenuPanel.js";
-import {drivePathSyncFamily, loadDriveInfoQuery} from "../../_reactComponents/Drive/Drive.js";
+import {drivePathSyncFamily, loadDriveInfoQuery, fetchDrivesSelector, fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 import Measure from "../../_snowpack/pkg/react-measure.js";
+import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 export default function DriveCardsNew(props) {
   console.log(">>>===DriveCards");
   const driveInfo = useRecoilValueLoadable(fetchDrivesQuery);
@@ -22,7 +22,14 @@ export default function DriveCardsNew(props) {
     set(drivecardSelectedNodesAtom, driveIds);
     set(selectedMenuPanelAtom, "SelectedCourse");
   }, []);
-  const setParamObj = useSetRecoilState(paramObjAtom);
+  const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
+  useEffect(() => {
+    setMainPanelClear((was) => [
+      ...was,
+      {atom: selectedMenuPanelAtom, value: null}
+    ]);
+    return setMainPanelClear((was) => was.filter((obj) => obj.atom !== selectedMenuPanelAtom));
+  }, [setMainPanelClear]);
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
   }, driveIdsAndLabelsInfo && /* @__PURE__ */ React.createElement(DriveCardWrapper, {
@@ -36,9 +43,8 @@ const DriveCardWrapper = (props) => {
   const {isOneDriveSelect, driveInfo, drivePathSyncKey, types} = props;
   const [drivecardSelectedValue, setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom);
   const setOpenMenuPanel = useMenuPanelController();
-  const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey));
   const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId));
-  const setParamObj = useSetRecoilState(paramObjAtom);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let driveCardItems = [];
   let heights = [];
   const [width, setWidth] = useState(0);
@@ -68,16 +74,14 @@ const DriveCardWrapper = (props) => {
     const xy = [width / columns * column, (heights[column] += 250) - 250];
     return {...child, xy, width: width / columns, height: 250};
   });
-  if (driveCardPath.driveId !== "") {
-    return null;
-  }
+  const setSelectedCourseMenu = useRecoilCallback(({set}) => () => {
+    set(selectedMenuPanelAtom, "SelectedCourse");
+  });
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
-      setDrivecardPath({
-        driveId: item.driveId,
-        parentFolderId: item.driveId,
-        itemId: item.driveId,
-        type: "Drive"
+      setPageToolView({
+        tool: "navigation",
+        params: {path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`}
       });
     }
   };
@@ -86,9 +90,6 @@ const DriveCardWrapper = (props) => {
       setDrivecardSelection([item]);
     }
   };
-  const setSelectedCourseMenu = useRecoilCallback(({set}) => () => {
-    set(selectedMenuPanelAtom, "SelectedCourse");
-  });
   const drivecardselection = (e, item) => {
     e.preventDefault();
     e.stopPropagation();
@@ -181,6 +182,7 @@ const DriveCardWrapper = (props) => {
         padding: 15
       }
     }, /* @__PURE__ */ React.createElement("div", {
+      role: "button",
       style: {height: "100%", outline: "none"},
       tabIndex: index + 1,
       onClick: (e) => {
@@ -193,7 +195,8 @@ const DriveCardWrapper = (props) => {
       onDoubleClick: (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setParamObj({tool: "navigation", path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`});
+        setDrivecardSelection([]);
+        setPageToolView({page: "course", tool: "navigation", view: "", params: {path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`}});
       }
     }, /* @__PURE__ */ React.createElement(DriveCard, {
       image: item.image,

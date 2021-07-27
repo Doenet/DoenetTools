@@ -3,7 +3,6 @@ import Tool from "../Tool.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import sha256 from "../../_snowpack/pkg/crypto-js/sha256.js";
 import CryptoJS from "../../_snowpack/pkg/crypto-js.js";
-import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import {
@@ -28,7 +27,7 @@ import {
 import {
   faClipboard
 } from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
-import {useToast} from "../Toast.js";
+import {useToast, toastType} from "../Toast.js";
 import {CopyToClipboard} from "../../_snowpack/pkg/react-copy-to-clipboard.js";
 import {folderDictionary} from "../../_reactComponents/Drive/Drive.js";
 const editorDoenetMLAtom = atom({
@@ -68,6 +67,7 @@ function ReturnToEditingButton(props) {
       newObj.updateNumber = was.updateNumber + 1;
       return newObj;
     });
+    set(textEditorInternalValueAtom, doenetML);
   });
   if (activeVersionId === "") {
     return null;
@@ -78,12 +78,12 @@ function ReturnToEditingButton(props) {
   });
 }
 function EditorInfoPanel(props) {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const link = `http://${window.location.host}/content/#/?doenetId=${props.doenetId}`;
   return /* @__PURE__ */ React.createElement("div", {
     style: {margin: "6px"}
   }, /* @__PURE__ */ React.createElement("div", null, "DonetML Name (soon)"), /* @__PURE__ */ React.createElement("div", null, "Load time (soon) "), /* @__PURE__ */ React.createElement("div", null, "Most recent release", /* @__PURE__ */ React.createElement(CopyToClipboard, {
-    onCopy: () => addToast("Link copied to clipboard!", ToastType.SUCCESS),
+    onCopy: () => addToast("Link copied to clipboard!", toastType.SUCCESS),
     text: link
   }, /* @__PURE__ */ React.createElement("button", {
     onClick: () => {
@@ -149,14 +149,14 @@ function RenameVersionControl(props) {
   });
 }
 function ClipboardLinkButtons(props) {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   if (!props.contentId) {
     console.error("Component only handles contentId at this point");
     return null;
   }
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`;
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(CopyToClipboard, {
-    onCopy: () => addToast("Link copied to clipboard!", ToastType.SUCCESS),
+    onCopy: () => addToast("Link copied to clipboard!", toastType.SUCCESS),
     text: link
   }, /* @__PURE__ */ React.createElement("button", null, "copy link ", /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faClipboard
@@ -224,6 +224,7 @@ function VersionHistoryPanel(props) {
       newObj.updateNumber = was.updateNumber + 1;
       return newObj;
     });
+    set(textEditorInternalValueAtom, doenetML);
   });
   const setAsCurrent = useRecoilCallback(({snapshot, set}) => async (doenetId, version) => {
     const newDraftVersionId = nanoid();
@@ -316,8 +317,13 @@ function buildTimestamp() {
   const dt = new Date();
   return `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
 }
+const textEditorInternalValueAtom = atom({
+  key: "textEditorInternalValueAtom",
+  default: null
+});
 function TextEditor(props) {
-  const [editorDoenetML, setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+  const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
+  const internalValue = useRecoilValue(textEditorInternalValueAtom);
   const [activeVersionId, setactiveVersionId] = useRecoilState(versionHistoryActiveAtom);
   const saveDraft = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
     const doenetML = await snapshot.getPromise(editorDoenetMLAtom);
@@ -365,9 +371,7 @@ function TextEditor(props) {
     axios.post("/api/saveNewVersion.php", newDBVersion);
   });
   const timeout = useRef(null);
-  let editorRef = useRef(null);
   const autosavetimeout = useRef(null);
-  let textValue = editorDoenetML;
   function clearSaveTimeouts() {
     if (timeout.current !== null) {
       clearTimeout(timeout.current);
@@ -391,47 +395,9 @@ function TextEditor(props) {
   if (!editorInit) {
     return null;
   }
-  const options = {
-    mode: "xml",
-    autoRefresh: true,
-    theme: "xq-light",
-    lineNumbers: true,
-    indentUnit: 2,
-    matchTags: true,
-    matchBrackets: true,
-    lineWrapping: true,
-    extraKeys: {
-      Tab: (cm) => {
-        var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-        cm.replaceSelection(spaces);
-      },
-      Enter: (cm) => {
-        cm.replaceSelection("\n");
-        setTimeout(() => cm.execCommand("indentAuto"), 1);
-      },
-      "Ctrl-Space": "autocomplete",
-      "Cmd-/": (cm) => {
-        let selections = cm.getSelections();
-        if (selections[0] == "") {
-          let line = cm.getCursor().line;
-          let content = cm.getLine(line);
-          if (content.substring(0, 4) === "<!--") {
-            content = content.substring(5, content.length - 3) + "\n";
-          } else {
-            content = "<!-- " + content + " -->\n";
-          }
-          cm.replaceRange(content, {line, ch: 0}, {line: line + 1, ch: 0});
-          setTimeout(cm.setCursor(line, Math.max(content.length - 1, 0)), 1);
-          return;
-        }
-        selections = selections.map((s) => s.trim().substring(0, 4) !== "<!--" ? "<!-- " + s + " -->" : s.trim().substring(5, s.length - 3));
-        cm.replaceSelections(selections, "around");
-      }
-    }
-  };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CodeMirror, {
-    editorRef,
-    value: textValue,
+    setInternalValue: internalValue,
+    readOnly: true,
     onBeforeChange: (value) => {
       if (activeVersionId === "") {
         setEditorDoenetML(value);
@@ -675,6 +641,7 @@ export default function Editor({doenetId, title, driveId, folderId, itemId}) {
     const viewerObj = await snapshot.getPromise(viewerDoenetMLAtom);
     const updateNumber = viewerObj.updateNumber + 1;
     set(viewerDoenetMLAtom, {updateNumber, doenetML});
+    set(textEditorInternalValueAtom, doenetML);
     set(editorInitAtom, true);
   });
   const setEditorInit = useSetRecoilState(editorInitAtom);
