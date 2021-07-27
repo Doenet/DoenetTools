@@ -4,8 +4,8 @@ import {
   faObjectGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
-import { atom, selector, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import React, { useState,useEffect } from 'react';
+import {atom, selector, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 import {
   folderDictionaryFilterSelector,
   globalSelectedNodesAtom,
@@ -35,6 +35,9 @@ export default function SelectedDoenetML() {
   const { deleteItem, renameItem } = useSockets('drive');
   const item = selection[0];
   const dIcon = <FontAwesomeIcon icon={faCode} />;
+  useEffect(() => {
+    setLabel(selection[0]?.label);
+  }, [selection]);
   let makeAssignmentforReleasedButton = null;
   const {addContentAssignment,changeSettings,updateVersionHistory,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError} = useAssignment();
   const {makeAssignment, convertAssignmentToContent} = useAssignmentCallbacks();
