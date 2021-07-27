@@ -397,7 +397,6 @@ function TextEditor(props) {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CodeMirror, {
     setInternalValue: internalValue,
-    readOnly: true,
     onBeforeChange: (value) => {
       if (activeVersionId === "") {
         setEditorDoenetML(value);
