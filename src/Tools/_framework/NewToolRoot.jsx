@@ -82,6 +82,7 @@ export default function ToolRoot(){
 
   const [toolRootMenusAndPanels,setToolRootMenusAndPanels] = useState({
     pageName:"init",
+    menuPanelCap:"",
     currentMenus:[],
     menusTitles:[],
     menusInitOpen:[],
@@ -223,7 +224,15 @@ export default function ToolRoot(){
 
   let menus = <MenuPanel key='menuPanel' hide={true} />;
   if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel){
-    menus = <MenuPanel key='menuPanel' hide={false} setMenusOpen={setMenusOpen} menusOpen={menusOpen} menusTitles={toolRootMenusAndPanels.menusTitles} currentMenus={toolRootMenusAndPanels.currentMenus} initOpen={toolRootMenusAndPanels.menusInitOpen}/>
+    menus = <MenuPanel 
+    key='menuPanel' 
+    hide={false} 
+    setMenusOpen={setMenusOpen} 
+    menusOpen={menusOpen} 
+    menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
+    menusTitles={toolRootMenusAndPanels.menusTitles} 
+    currentMenus={toolRootMenusAndPanels.currentMenus} 
+    initOpen={toolRootMenusAndPanels.menusInitOpen}/>
   }
 
   let profileInMainPanel = !menusOpen;
@@ -293,6 +302,7 @@ let navigationObj = {
     navigation:{ //allFilesInCourse
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
+      menuPanelCap:"DriveInfoCap",
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
@@ -316,6 +326,7 @@ let navigationObj = {
     },
     editor:{ //singleFile
       pageName:"Course",
+      menuPanelCap:"EditorInfoCap",
       currentMainPanel:"EditorViewer",
       currentMenus:["VersionHistory","DoenetMLSettings","Variant"], 
       menusTitles:["Version History","Document Settings","Variant"],
