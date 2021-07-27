@@ -252,8 +252,8 @@ export default class BaseComponent {
       },
       disabled: {
         createComponentOfType: "boolean",
-        // createStateVariable: "disable",
-        // defaultValue: flags.readOnly ? true : false,
+        createStateVariable: "disabledPreliminary",
+        defaultValue: null,//flags.readOnly ? true : false,
         // public: true,
       },
       modifyIndirectly: {
@@ -265,8 +265,8 @@ export default class BaseComponent {
       },
       fixed: {
         createComponentOfType: "boolean",
-        // createStateVariable: "fixed",
-        // defaultValue: false,
+        createStateVariable: "fixedPreliminary",
+        defaultValue: null, //false,
         // public: true,
         // forRenderer: true,
       },
@@ -346,11 +346,16 @@ export default class BaseComponent {
       public: true,
       componentType: "boolean",
       forRenderer: true,
+      neverShadow: true,
       returnDependencies: () => ({
+        disabledPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "disabledPreliminary",
+          variablesOptional: true,
+        },
         disabledAttr: {
           dependencyType: "attributeComponent",
           attributeName: "disabled",
-          variableNames: ["value"],
         },
         readOnly: {
           dependencyType: "flag",
@@ -369,23 +374,52 @@ export default class BaseComponent {
           variableName: "disabled"
         },
       }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.disabledAttr !== null) {
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.disabledPreliminary !== null &&
+          dependencyValues.disabledAttr !== null
+        ) {
           return {
             newValues: {
-              disabled: dependencyValues.disabledAttr.stateValues.value
+              disabled: dependencyValues.disabledPreliminary
+            }
+          }
+        }
+
+        let disabled = false;
+        let useEssential = true;
+
+        if (dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
+          disabled = disabled || dependencyValues.parentDisabled;
+          useEssential = false;
+        }
+        if (dependencyValues.sourceCompositeDisabled !== null && !usedDefault.sourceCompositeDisabled) {
+          disabled = disabled || dependencyValues.sourceCompositeDisabled;
+          useEssential = false;
+        }
+        if (dependencyValues.adapterSourceDisabled !== null && !usedDefault.adapterSourceDisabled) {
+          disabled = disabled || dependencyValues.adapterSourceDisabled;
+          useEssential = false;
+        }
+
+        // disabled wasn't supplied by parent/sourceComposite/adapterSource,
+        // was specified as a non-default from disabledPreliminary,
+        // but wasn't specified via an attribute component
+        // It must have been specified from a target shadowing
+        // or from an essential state variable
+        if(useEssential && dependencyValues.disabledPreliminary !== null && !usedDefault.disabledPreliminary) {
+          useEssential = false;
+          disabled = dependencyValues.disabledPreliminary 
+        }
+
+        if (useEssential) {
+          return {
+            useEssentialOrDefaultValue: {
+              disabled: { defaultValue: dependencyValues.readOnly === true}
             }
           }
         } else {
-          return {
-            newValues: {
-              disabled:  // check === true so null gives false
-                dependencyValues.readOnly === true
-                || dependencyValues.parentDisabled === true
-                || dependencyValues.sourceCompositeDisabled === true
-                || dependencyValues.adapterSourceDisabled === true
-            }
-          }
+          return { newValues: { disabled } }
         }
       },
     }
@@ -395,11 +429,16 @@ export default class BaseComponent {
       componentType: "boolean",
       forRenderer: true,
       defaultValue: false,
+      neverShadow: true,
       returnDependencies: () => ({
+        fixedPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "fixedPreliminary",
+          variablesOptional: true,
+        },
         fixedAttr: {
           dependencyType: "attributeComponent",
           attributeName: "fixed",
-          variableNames: ["value"],
         },
         parentFixed: {
           dependencyType: "parentStateVariable",
@@ -414,22 +453,52 @@ export default class BaseComponent {
           variableName: "fixed"
         },
       }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.fixedAttr !== null) {
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.fixedPreliminary !== null &&
+          dependencyValues.fixedAttr !== null
+        ) {
           return {
             newValues: {
-              fixed: dependencyValues.fixedAttr.stateValues.value
+              fixed: dependencyValues.fixedPreliminary
             }
           }
-        } else {
+        }
+
+        let fixed = false;
+        let useEssential = true;
+
+        if (dependencyValues.parentFixed !== null && !usedDefault.parentFixed) {
+          fixed = fixed || dependencyValues.parentFixed;
+          useEssential = false;
+        }
+        if (dependencyValues.sourceCompositeFixed !== null && !usedDefault.sourceCompositeFixed) {
+          fixed = fixed || dependencyValues.sourceCompositeFixed;
+          useEssential = false;
+        }
+        if (dependencyValues.adapterSourceFixed !== null && !usedDefault.adapterSourceFixed) {
+          fixed = fixed || dependencyValues.adapterSourceFixed;
+          useEssential = false;
+        }
+
+        // fixed wasn't supplied by parent/sourceComposite/adapterSource,
+        // was specified as a non-default from fixedPreliminary,
+        // but wasn't specified via an attribute component
+        // It must have been specified from a target shadowing
+        // or from an essential state variable
+        if(useEssential && dependencyValues.fixedPreliminary !== null && !usedDefault.fixedPreliminary) {
+          useEssential = false;
+          fixed = dependencyValues.fixedPreliminary 
+        }
+
+        if (useEssential) {
           return {
-            newValues: {
-              fixed:  // check === true so null gives false
-                dependencyValues.parentFixed === true
-                || dependencyValues.sourceCompositeFixed === true
-                || dependencyValues.adapterSourceFixed === true
+            useEssentialOrDefaultValue: {
+              fixed: { variablesToCheck: [] }
             }
           }
+        }
+        else {
+          return { newValues: { fixed } }
         }
       }
     }

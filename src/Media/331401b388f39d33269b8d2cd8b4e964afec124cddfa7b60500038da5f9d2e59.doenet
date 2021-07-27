@@ -21,7 +21,7 @@
     <customAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
   </setup>
 
-  <copy uri="doenet:contentId=81d23b84b17f6e03879ba270d25d58b8094c2bd22f8e7af99398e497447bf9ed" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" showCalculatedValues="$showCalculatedValues" />
+  <copy uri="doenet:contentId=ae0c1fd4bcbd822740cdd5a28efed48c825d516aa1744ba5f2fbc15de9776bbd" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" showCalculatedValues="$showCalculatedValues" />
 
   <conditionalContent condition="$checkInitialCondition">
     <p>Initial condition:

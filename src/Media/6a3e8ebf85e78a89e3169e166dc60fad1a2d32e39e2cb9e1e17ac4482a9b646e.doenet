@@ -1,4 +1,4 @@
-<module>
+<module name="initialCobwebTutorial">
   <setup>
     <customAttribute componentType="function" attribute="function" defaultValue="x(4-x)" assignNames="f" />
     <customAttribute componentType="number" attribute="x0" defaultValue="0.5" assignNames="x0" />
@@ -427,7 +427,7 @@
 
     </conditionalContent>
 
-    <triggerSet label="Reset tutorial" name="resetTutorial" disable="$step = 0">
+    <triggerSet label="Reset tutorial" name="resetTutorial" disabled="$step = 0">
       <updateValue tname="step" newValue="0" />
       <updateValue tname="nPoints" newValue="0" />
       <updateValue tname="nHlines" newValue="0" />
@@ -457,7 +457,7 @@
     </triggerSet>
     <callAction triggerWithTName="resetTutorial" tName="ans" actionName="submitAnswer" />
     
-    <updateValue label="Next" name="next" disable="$stepCompleted < $step" tname="step" newValue="$step+1" />
+    <updateValue label="Next" name="next" disabled="$stepCompleted < $step" tname="step" newValue="$step+1" />
     <callAction triggerWithTName="next" tName="ans" actionName="submitAnswer" />
 
     <answer name="ans" hide weight="$answerWeight">

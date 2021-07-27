@@ -1369,16 +1369,30 @@ export default class Copy extends CompositeComponent {
         }
         replacementChanges.push(replacementInstruction);
       }
+
+      let previousZeroSourceNames = workspace.sourceNames.length === 0;
+
       workspace.sourceNames = [];
       workspace.numReplacementsBySource = [];
       workspace.numNonStringReplacementsBySource = [];
       workspace.propVariablesCopiedBySource = [];
+
 
       let verificationResult = this.verifyReplacementsMatchSpecifiedType({
         component,
         replacementChanges,
         workspace, componentInfoObjects, compositeAttributesObj
       });
+
+      // Note: this has to run after verify,
+      // as verify has side effects of setting workspace variables,
+      // such as numReplacementsBySource
+      if (previousZeroSourceNames) {
+        // didn't have sources before and still don't have sources.
+        // we're just getting filler components being recreated.
+        // Don't actually make those changes
+        return [];
+      }
 
       return verificationResult.replacementChanges;
 
@@ -1755,8 +1769,10 @@ export default class Copy extends CompositeComponent {
       workspace, componentInfoObjects, compositeAttributesObj
     });
 
-
-    if(previousZeroSourceNames && workspace.sourceNames.length === 0) {
+    // Note: this has to run after verify,
+    // as verify has side effects of setting workspace variables,
+    // such as numReplacementsBySource
+    if (previousZeroSourceNames && workspace.sourceNames.length === 0) {
       // didn't have sources before and still don't have sources.
       // we're just getting filler components being recreated.
       // Don't actually make those changes
