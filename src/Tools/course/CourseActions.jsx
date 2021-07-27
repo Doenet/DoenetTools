@@ -10,10 +10,9 @@ import { useRecoilCallback } from 'recoil';
  * Internal dependencies
  */
 
-import { assignmentDictionary } from '../course/Course';
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { 
-  itemHistoryAtom, 
+  itemHistoryAtom, assignmentDictionary
 } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 
 const formatDate = (dt) => {
@@ -205,7 +204,7 @@ export const useAssignment = () => {
     },
   );
 
-  const updateVersionHistory = useRecoilCallback(({snapshot,set})=> async (doenetId,versionId)=>{
+  const updateVersionHistory = useRecoilCallback(({snapshot,set})=> async (doenetId,versionId,isAssigned)=>{
     // console.log(">>>",{doenetId,versionId,newTitle})
       set(itemHistoryAtom(doenetId),(was)=>{
         let newHistory = {...was}
@@ -214,7 +213,7 @@ export const useAssignment = () => {
         for (const [i,version] of newHistory.named.entries()){
           if (versionId === version.versionId){
             newVersion = {...version}
-            newVersion.isAssigned = '1';
+            newVersion.isAssigned = isAssigned;
             newHistory.named.splice(i,1,newVersion)
           }
         }
