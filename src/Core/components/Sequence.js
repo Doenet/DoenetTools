@@ -169,7 +169,12 @@ export default class Sequence extends CompositeComponent {
     // if invalid, withhold any previous replacementsreplacements
     if (!component.stateValues.validSequence) {
 
-      if (component.replacements.length > 0) {
+      let currentReplacementsWithheld = component.replacementsToWithhold;
+      if (!currentReplacementsWithheld) {
+        currentReplacementsWithheld = 0;
+      }
+
+      if (component.replacements.length - currentReplacementsWithheld > 0) {
         let replacementsToWithhold = component.replacements.length;
         let replacementInstruction = {
           changeType: "changeReplacementsToWithhold",

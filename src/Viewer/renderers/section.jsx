@@ -219,6 +219,30 @@ export default class Section extends DoenetRenderer {
         </>
 
       }
+    } else if (this.doenetSvData.boxed) {
+      content = <>
+      <span style={{
+        display: "block",
+        margin: "4px 4px 0px 4px",
+        padding: "6px",
+        border: "1px solid #C9C9C9",
+        backgroundColor: "#ebebeb",
+      }}
+       >
+        <a name={this.componentName} />
+        {heading}
+      </span>
+      <span style={{
+        display: "block",
+        margin: "0px 4px 4px 4px",
+        padding: "6px",
+        border: "1px solid #C9C9C9",
+        backgroundColor: "white",
+      }}>
+        {childrenToRender}
+        {checkworkComponent}
+      </span>
+      </>
     } else {
       content = <>
         <a name={this.componentName} />

@@ -26,6 +26,8 @@
     "@blueprintjs/core": "^4.0.0-alpha.0",
     "@blueprintjs/datetime": "^4.0.0-alpha.0",
     "@codemirror/basic-setup": "^0.18.2",
+    "@codemirror/gutter": "^0.18.4",
+    "@codemirror/highlight": "^0.18.4",
     "@codemirror/lang-xml": "^0.18.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-regular-svg-icons": "^5.15.2",

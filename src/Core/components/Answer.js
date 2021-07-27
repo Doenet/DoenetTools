@@ -71,9 +71,15 @@ export default class Answer extends InlineComponent {
       propagateToDescendants: true,
     };
     attributes.nAwardsCredited = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "nAwardsCredited",
       defaultValue: 1,
+      public: true,
+    }
+    attributes.maximumNumberOfAttempts = {
+      createComponentOfType: "integer",
+      createStateVariable: "maximumNumberOfAttempts",
+      defaultValue: Infinity,
       public: true,
     }
     attributes.allowedErrorInNumbers = {
@@ -148,7 +154,7 @@ export default class Answer extends InlineComponent {
         type = "math";
       }
 
-      if (!["math", "text"].includes(type)) {
+      if (!["math", "text", "boolean"].includes(type)) {
         console.warn(`Invalid type ${type}`);
         type = "math";
       }
@@ -221,7 +227,19 @@ export default class Answer extends InlineComponent {
       // and haven't found an input or considerAsResponses child,
       // then add an input based on the type attribute
 
-      let inputType = componentAttributes.type === "text" ? "textInput" : "mathInput";
+      let type;
+      if (componentAttributes.type) {
+        type = componentAttributes.type
+      } else {
+        type = "math";
+      }
+
+      if (!["math", "text", "boolean"].includes(type)) {
+        console.warn(`Invalid type ${type}`);
+        type = "math";
+      }
+
+      let inputType = type + "Input";
 
       let newChildren = [{ componentType: inputType }, ...matchedChildren];
 
@@ -1126,7 +1144,7 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.nSubmissions = {
       public: true,
-      componentType: "number",
+      componentType: "integer",
       defaultValue: 0,
       returnDependencies: () => ({}),
       definition: () => ({
@@ -1143,6 +1161,30 @@ export default class Answer extends InlineComponent {
       })
     }
 
+    stateVariableDefinitions.numberOfAttemptsLeft = {
+      public: true,
+      componentType: "integer",
+      forRenderer: true,
+      returnDependencies: () => ({
+        nSubmissions: {
+          dependencyType: "stateVariable",
+          variableName: "nSubmissions"
+        },
+        maximumNumberOfAttempts: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumberOfAttempts"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            numberOfAttemptsLeft: dependencyValues.maximumNumberOfAttempts
+              - dependencyValues.nSubmissions
+          }
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -1153,6 +1195,11 @@ export default class Answer extends InlineComponent {
   };
 
   submitAnswer() {
+
+    if(this.stateValues.numberOfAttemptsLeft < 1) {
+      console.warn(`Cannot submit answer for ${this.componentName} as number of attempts left is ${this.stateValues.numberOfAttemptsLeft}`);
+      return;
+    }
 
     let creditAchieved = this.stateValues.creditAchievedIfSubmit;
     let awardsUsed = this.stateValues.awardsUsedIfSubmit;

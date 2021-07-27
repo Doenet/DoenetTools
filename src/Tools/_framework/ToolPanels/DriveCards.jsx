@@ -11,6 +11,7 @@ import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { useMenuPanelController } from '../Panels/MenuPanel';
 import { drivePathSyncFamily, loadDriveInfoQuery } from '../../../_reactComponents/Drive/Drive';
 import Measure from 'react-measure';
+import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 
 export default function DriveCardsNew(props){
   console.log(">>>===DriveCards");
@@ -27,6 +28,18 @@ export default function DriveCardsNew(props){
     set(drivecardSelectedNodesAtom,driveIds)
     set(selectedMenuPanelAtom,"SelectedCourse");
   },[])
+
+  const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
+
+  useEffect(() => {
+    setMainPanelClear((was) => [
+      ...was,
+      { atom: selectedMenuPanelAtom, value: null },
+    ]);
+    return setMainPanelClear((was) =>
+      was.filter((obj) => obj.atom !== selectedMenuPanelAtom),
+    );
+  }, [setMainPanelClear]);
 
   // const goToNav = useRecoilCallback(({set})=>()=>{
     // window.history.pushState('','','/new#/course?tool=navigation')
@@ -56,8 +69,6 @@ const DriveCardWrapper = (props) => {
   const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
   // console.log(" columnJSX drivesInfo",drivecardInfo)
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
-
 
   let driveCardItems =[];
   let heights = [];

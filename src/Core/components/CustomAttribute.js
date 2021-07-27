@@ -2,11 +2,10 @@ import CompositeComponent from './abstract/CompositeComponent';
 import * as serializeFunctions from '../utils/serializedStateProcessing';
 
 
-export default class ModuleAttribute extends CompositeComponent {
-  static componentType = "moduleAttribute";
+export default class CustomAttribute extends CompositeComponent {
+  static componentType = "customAttribute";
 
   static assignNamesToReplacements = true;
-  // static dontExpandAsShadow = true;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -33,15 +32,9 @@ export default class ModuleAttribute extends CompositeComponent {
           dependencyType: "parentStateVariable",
           variableName: "componentNameForAttributes"
         },
-        // parentIdentity: {
-        //   dependencyType: "parentIdentity",
-        // }
       }),
       definition({ dependencyValues }) {
         let componentNameForAttributes = dependencyValues.parentVariableContainingName;
-        // if (!componentNameForAttributes) {
-        //   componentNameForAttributes = dependencyValues.parentIdentity.componentName;
-        // }
         return { newValues: { componentNameForAttributes } }
       }
     }
@@ -120,14 +113,14 @@ export default class ModuleAttribute extends CompositeComponent {
       }
     }
 
-    // check if have attribute name is already defined for module
-    // in which case setting via module attributes won't work
-    // (use componentForAttribute rather than module in case change componentType)
-    let moduleClass = componentForAttribute.constructor;
-    let moduleAttrNames = Object.keys(moduleClass.createAttributesObject({ flags })).map(x => x.toLowerCase());
-    moduleAttrNames.push("name", "tname", "assignnames")
-    if (moduleAttrNames.includes(component.stateValues.attributeName.toLowerCase())) {
-      console.warn(`Cannot add attribute ${component.stateValues.attributeName} of a module as it already exists in module class`)
+    // check if have attribute name is already defined for componentForAttribute's class
+    // in which case setting via custom attributes won't work
+    let containerClass = componentForAttribute.constructor;
+    let containerAttrNames = Object.keys(containerClass.createAttributesObject({ flags })).map(x => x.toLowerCase());
+    containerAttrNames.push("name", "tname", "assignnames")
+    if (containerAttrNames.includes(component.stateValues.attributeName.toLowerCase())) {
+      console.warn(`Cannot add attribute ${component.stateValues.attributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`)
+      return { replacements: [] }
     }
 
 

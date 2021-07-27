@@ -83,6 +83,7 @@ function ReturnToEditingButton(props){
       newObj.doenetML = doenetML;
       newObj.updateNumber = was.updateNumber+1;
       return newObj});
+    set(textEditorInternalValueAtom,doenetML)
   })
 
   if (activeVersionId === ""){ return null; }
@@ -258,6 +259,7 @@ function VersionHistoryPanel(props){
       newObj.doenetML = doenetML;
       newObj.updateNumber = was.updateNumber+1;
       return newObj});
+    set(textEditorInternalValueAtom,doenetML)
   })
 
   const setAsCurrent = useRecoilCallback(({snapshot,set})=> async (doenetId,version)=>{
@@ -364,8 +366,14 @@ function buildTimestamp(){
     dt.getSeconds().toString().padStart(2, '0')}`
 }
 
+const textEditorInternalValueAtom = atom({
+  key:"textEditorInternalValueAtom",
+  default:null
+})
+
 function TextEditor(props){
-  const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+  const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
+  const internalValue = useRecoilValue(textEditorInternalValueAtom);
   const [activeVersionId,setactiveVersionId]  = useRecoilState(versionHistoryActiveAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
@@ -430,8 +438,6 @@ function TextEditor(props){
 
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
-  //If this isn't a ref, it will update and force a refresh of Codemirror each time editorDoenetML changes
-  let textValue = useRef(editorDoenetML);
 
   function clearSaveTimeouts(){
     if (timeout.current !== null){
@@ -461,85 +467,28 @@ function TextEditor(props){
   const editorInit = useRecoilValue(editorInitAtom);
   if (!editorInit){return null;}
 
-  const options = {
-      mode: 'xml',
-      autoRefresh:true,
-      // theme: 'neo',
-      // theme: 'base16-light',
-      theme: 'xq-light',
-      lineNumbers: true,
-      indentUnit : 2,
-      // smartIndent : true,
-      matchTags : true,
-      // autoCloseTags: true,
-      matchBrackets: true,
-      lineWrapping: true,
-      // autoCloseBrackets: true,
-      // hintOptions: {schemaInfo: tags},
-      extraKeys : {
-        Tab: (cm) => {
-          var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
-          cm.replaceSelection(spaces);
-        },
-        Enter : (cm) => {
-          cm.replaceSelection("\n")
-          setTimeout( () => cm.execCommand("indentAuto"), 1);
-        },
-        "Ctrl-Space" : "autocomplete",
-        "Cmd-/" : (cm) => {
-          let selections = cm.getSelections();
-          if(selections[0] == ""){
-            let line = cm.getCursor().line;
-            let content = cm.getLine(line) 
-            if(content.substring(0,4) === "<!--"){
-              content = content.substring(5,content.length-3) + "\n"
-            } else {
-              content = "<!-- "+ content + " -->\n";
-            }
-            cm.replaceRange(content,{line : line, ch: 0}, {line: line + 1, ch: 0});
-            // This set cursor doesn't seem to work...
-            setTimeout(cm.setCursor(line,Math.max(content.length-1,0)),1);
-            return;
-          }
-          // Might be non-obvious behavior. Should it comment/uncomment all of the selections?
-          // Shouldn't come up too often.
-          selections = selections.map((s) => s.trim().substring(0,4) !== "<!--" ? "<!-- " + s + " -->": s.trim().substring(5,s.length-3))
-          // let selectionsPos = cm.listSelections().map(({anchor,head}) => {return {anchor : anchor, head : {line : head.line, ch: head.ch + "<!--  -->".length}}}) ;
-          // console.log(">>pos",selectionsPos);
-          //the around option here is supposed to keep the replacing text selected, but it doesn't work.
-          //Not a huge issue,but needs to be fixed at some point
-          cm.replaceSelections(selections,"around");
-          //neither does setting it manaully... 
-          // cm.setSelection(selectionsPos[0].anchor,selectionsPos[0].head)
-
-        }
-      }
-  }
-
   return <>
-
-    
-<CodeMirror
-  setInternalValue={textValue.current} 
-  onBeforeChange={(value) => {
-    if (activeVersionId === "") { //No timers when active version history
-      setEditorDoenetML(value);
-      if (timeout.current === null){
-        timeout.current = setTimeout(function(){
-          saveDraft(props.doenetId);
-          timeout.current = null;
-        },3000)
-      }
-      if (autosavetimeout.current === null){
-        autosavetimeout.current = setTimeout(function(){
-          autoSave();
-          autosavetimeout.current = null;
-      },60000) //1 minute
-      }
-    }
-  }}
-
-  />
+    <CodeMirror
+      setInternalValue={internalValue} 
+      readOnly={true}
+      onBeforeChange={(value) => {
+        if (activeVersionId === "") { //No timers when active version history
+          setEditorDoenetML(value);
+          if (timeout.current === null){
+            timeout.current = setTimeout(function(){
+              saveDraft(props.doenetId);
+              timeout.current = null;
+            },3000)
+          }
+          if (autosavetimeout.current === null){
+            autosavetimeout.current = setTimeout(function(){
+              autoSave();
+              autosavetimeout.current = null;
+          },60000) //1 minute
+          }
+        }
+      }}
+    />
   </>
 }
 
@@ -792,6 +741,7 @@ export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
     const viewerObj = await snapshot.getPromise(viewerDoenetMLAtom);
     const updateNumber = viewerObj.updateNumber+1;
     set(viewerDoenetMLAtom,{updateNumber,doenetML})
+    set(textEditorInternalValueAtom,doenetML)
     set(editorInitAtom,true);
   })
 

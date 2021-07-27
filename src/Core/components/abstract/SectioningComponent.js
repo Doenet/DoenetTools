@@ -31,6 +31,13 @@ export default class SectioningComponent extends BlockComponent {
     };
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
+    attributes.boxed = {
+      createComponentOfType: "boolean",
+      createStateVariable: "boxed",
+      defaultValue: false,
+      public: true,
+      forRenderer: true,
+    };
     attributes.feedbackDefinitions = {
       createComponentOfType: "feedbackDefinitions",
       createStateVariable: "feedbackDefinitions",

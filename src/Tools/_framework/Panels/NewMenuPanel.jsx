@@ -165,7 +165,10 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
 
   const LazyObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
-    SelectedDoenetId:lazy(() => import('../Menus/SelectedDoenetId')),
+    SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
+    SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
+    SelectedCollection:lazy(() => import('../Menus/SelectedCollection')),
+    SelectedMulti:lazy(() => import('../Menus/SelectedMulti.jsx')),
     CreateCourse:lazy(() => import('../Menus/CreateCourse')),
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
     AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),

@@ -4,16 +4,18 @@ export default class BooleanOperator extends BooleanComponent {
   static componentType = "_booleanOperator";
   static rendererType = "boolean";
 
+  static descendantCompositesMustHaveAReplacement = false;
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
     childLogic.deleteAllLogic();
 
     childLogic.newLeaf({
-      name: "atLeastOneBoolean",
+      name: "atLeastZeroBooleans",
       componentType: 'boolean',
       comparison: 'atLeast',
-      number: 1,
+      number: 0,
       setAsBase: true,
     });
 
@@ -38,7 +40,7 @@ export default class BooleanOperator extends BooleanComponent {
       returnDependencies: () => ({
         booleanChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneBoolean",
+          childLogicName: "atLeastZeroBooleans",
           variableNames: ["value"]
         }
       }),

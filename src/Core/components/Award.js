@@ -125,10 +125,16 @@ export default class Award extends BaseComponent {
       number: 1
     });
 
+    let exactlyOneBoolean = childLogic.newLeaf({
+      name: "exactlyOneBoolean",
+      componentType: 'boolean',
+      number: 1
+    });
+
     childLogic.newOperator({
-      name: "whenXorStringXorMathXorText",
+      name: "whenXorStringXorMathXorTextXorBoolean",
       operator: 'xor',
-      propositions: [exactlyOneWhen, exactlyOneMath, exactlyOneText],
+      propositions: [exactlyOneWhen, exactlyOneMath, exactlyOneText, exactlyOneBoolean],
       setAsBase: true,
     });
 
@@ -151,6 +157,10 @@ export default class Award extends BaseComponent {
           dependencyType: "child",
           childLogicName: "exactlyOneText",
         },
+        booleanChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneBoolean",
+        },
       }),
       definition: function ({ dependencyValues }) {
 
@@ -158,7 +168,8 @@ export default class Award extends BaseComponent {
         let requireInputInAnswer = false;
 
         if (dependencyValues.mathChild.length === 1 ||
-          dependencyValues.textChild.length === 1
+          dependencyValues.textChild.length === 1 ||
+          dependencyValues.booleanChild.length === 1
         ) {
 
           requireInputInAnswer = true;
@@ -190,6 +201,11 @@ export default class Award extends BaseComponent {
         textChild: {
           dependencyType: "child",
           childLogicName: "exactlyOneText",
+          variableNames: ["value"]
+        },
+        booleanChild: {
+          dependencyType: "child",
+          childLogicName: "exactlyOneBoolean",
           variableNames: ["value"]
         },
         answerInput: {
@@ -441,22 +457,14 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   Object.assign(dependenciesForEvaluateLogic, dependencyValues);
 
-  let unorderedCompare = dependencyValues.unorderedCompare;
-  let simplifyOnCompare = dependencyValues.simplifyOnCompare;
-  let expandOnCompare = dependencyValues.expandOnCompare;
-
   let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
 
   if (dependencyValues.textChild.length === 1) {
     dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
   } else if (dependencyValues.mathChild.length === 1) {
-    let child = dependencyValues.mathChild[0];
-
-    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = child;
-    if (canOverrideUnorderedCompare && child.stateValues.unordered) {
-      unorderedCompare = true;
-    }
-
+    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = dependencyValues.mathChild[0];
+  } else if (dependencyValues.booleanChild.length === 1) {
+    dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 = dependencyValues.booleanChild[0];
   }
 
   let answerValue = dependencyValues.answerInput.stateValues.immediateValue;
@@ -470,15 +478,15 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   if (dependencyValues.answerInput.componentType === "textInput") {
     dependenciesForEvaluateLogic.textChildrenByCode.comp1 = answerChildForLogic;
+  } else if (dependencyValues.answerInput.componentType === "booleanInput") {
+    dependenciesForEvaluateLogic.booleanChildrenByCode.comp1 = answerChildForLogic;
   } else {
     dependenciesForEvaluateLogic.mathChildrenByCode.comp1 = answerChildForLogic;
   }
 
   return evaluateLogic({
     logicTree: dependencyValues.parsedExpression.tree,
-    unorderedCompare: unorderedCompare,
-    simplifyOnCompare: simplifyOnCompare,
-    expandOnCompare: expandOnCompare,
+    canOverrideUnorderedCompare,
     dependencyValues: dependenciesForEvaluateLogic,
   });
 

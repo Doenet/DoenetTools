@@ -1426,11 +1426,6 @@ export default class Core {
     parent.unexpandedCompositesReady = result.unexpandedCompositesReady;
     parent.unexpandedCompositesNotReady = result.unexpandedCompositesNotReady;
 
-    let previousActiveChildren;
-
-    if (parent.activeChildren) {
-      previousActiveChildren = parent.activeChildren.map(x => x.componentName);
-    }
 
     parent.activeChildren = parent.definingChildren.slice(); // shallow copy
 
@@ -2247,7 +2242,7 @@ export default class Core {
               return {
                 useEssentialOrDefaultValue: {
                   [varName]: {
-                    variablesToCheck: varName,
+                    variablesToCheck: [varName, attrName],
                     defaultValue: dependencyValues.ancestorProp,
                   }
                 }
@@ -2336,7 +2331,7 @@ export default class Core {
           if (!attributeComponent) {
             return {
               useEssentialOrDefaultValue: {
-                [varName]: { variablesToCheck: varName }
+                [varName]: { variablesToCheck: [varName, attrName] }
               }
             }
           }
@@ -2466,7 +2461,7 @@ export default class Core {
         ) {
           return {
             useEssentialOrDefaultValue: {
-              [varName]: { variablesToCheck: varName }
+              [varName]: { variablesToCheck: [varName, attrName] }
             }
           };
         }
@@ -2677,7 +2672,7 @@ export default class Core {
               return {
                 useEssentialOrDefaultValue: {
                   [varName]: {
-                    variablesToCheck: varName,
+                    variablesToCheck: [varName, attrName],
                     defaultValue: dependencyValues.ancestorProp,
                   }
                 }
@@ -2778,7 +2773,7 @@ export default class Core {
             } else {
               return {
                 useEssentialOrDefaultValue: {
-                  [varName]: { variablesToCheck: varName }
+                  [varName]: { variablesToCheck: [varName, attrName] }
                 }
               }
             }
@@ -3925,6 +3920,11 @@ export default class Core {
     stateVarObj.arrayEntryNames = [];
     stateVarObj.varNamesIncludingArrayKeys = {};
 
+    let allStateVariablesAffected = [stateVariable];
+    if (stateVarObj.additionalStateVariablesDefined) {
+      allStateVariablesAffected.push(...stateVarObj.additionalStateVariablesDefined);
+    }
+
     // create the definition, etc., functions for the array state variable
 
     // create returnDependencies function from returnArrayDependenciesByKey
@@ -3945,32 +3945,35 @@ export default class Core {
         args.arrayKeys = stateVarObj.getAllArrayKeys(args.arraySize);
       }
 
+      // link all dependencyNames of additionalStateVariablesDefined
+      // to the same object, as they will share the same freshnessinfo
+      // TODO: a better idea?  This seems like it could lead to confusion.
+      if (!stateVarObj.dependencyNames) {
+        stateVarObj.dependencyNames = {
+          namesByKey: {}, keysByName: {}, global: [],
+        };
+        if (stateVarObj.additionalStateVariablesDefined) {
+          for (let vName of stateVarObj.additionalStateVariablesDefined) {
+            component.state[vName].dependencyNames = stateVarObj.dependencyNames;
+          }
+        }
+      }
+
       let dependencies = {};
 
       if (stateVarObj.basedOnArrayKeyStateVariables && args.arrayKeys.length > 1) {
         for (let arrayKey of args.arrayKeys) {
-          dependencies[arrayKey] = {
-            dependencyType: "stateVariable",
-            variableName: stateVarObj.arrayVarNameFromArrayKey(arrayKey)
+          for (let vName of allStateVariablesAffected) {
+            let sObj = component.state[vName];
+            dependencies[vName + "_" + arrayKey] = {
+              dependencyType: "stateVariable",
+              variableName: sObj.arrayVarNameFromArrayKey(arrayKey)
+            }
           }
         }
       } else {
 
         let arrayDependencies = stateVarObj.returnArrayDependenciesByKey(args);
-
-        // link all dependencyNames of additionalStateVariablesDefined
-        // to the same object, as they will share the same freshnessinfo
-        // TODO: a better idea?  This seems like it could lead to confusion.
-        if (!stateVarObj.dependencyNames) {
-          stateVarObj.dependencyNames = {
-            namesByKey: {}, keysByName: {}, global: [],
-          };
-          if (stateVarObj.additionalStateVariablesDefined) {
-            for (let vName of stateVarObj.additionalStateVariablesDefined) {
-              component.state[vName].dependencyNames = stateVarObj.dependencyNames;
-            }
-          }
-        }
 
         if (arrayDependencies.globalDependencies) {
           stateVarObj.dependencyNames.global = Object.keys(arrayDependencies.globalDependencies);
@@ -4004,7 +4007,9 @@ export default class Core {
             if (!stateVarObj.dependencyNames.keysByName[extendedDepName]) {
               stateVarObj.dependencyNames.keysByName[extendedDepName] = [];
             }
-            stateVarObj.dependencyNames.keysByName[extendedDepName].push(arrayKey);
+            if (!stateVarObj.dependencyNames.keysByName[extendedDepName].includes(arrayKey)) {
+              stateVarObj.dependencyNames.keysByName[extendedDepName].push(arrayKey);
+            }
           }
         }
 
@@ -4303,15 +4308,19 @@ export default class Core {
       if (stateVarObj.basedOnArrayKeyStateVariables && args.arrayKeys.length > 1) {
         let instructions = [];
 
-        for (let key in args.desiredStateVariableValues[stateVariable]) {
-          if (key in args.dependencyValues) {
-            instructions.push({
-              setDependency: key,
-              desiredValue: args.desiredStateVariableValues[stateVariable][key],
-              treatAsInitialChange: args.initialChange
-            })
+        for (let vName of allStateVariablesAffected) {
+          for (let key in args.desiredStateVariableValues[vName]) {
+            let depName = vName + "_" + key;
+            if (depName in args.dependencyValues) {
+              instructions.push({
+                setDependency: depName,
+                desiredValue: args.desiredStateVariableValues[vName][key],
+                treatAsInitialChange: args.initialChange
+              })
+            }
           }
         }
+
         return {
           success: true,
           instructions

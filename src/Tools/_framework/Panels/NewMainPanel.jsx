@@ -4,7 +4,6 @@ import Profile from '../Profile';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { atom, useRecoilCallback } from 'recoil';
-import { selectedMenuPanelAtom } from './NewMenuPanel';
 
 export const mainPanelClickAtom = atom({
   key:"mainPanelClickAtom",
@@ -41,10 +40,7 @@ display: inline-block;
 
 export default function MainPanel({ headerControls, headerControlsPositions, children, setMenusOpen, displayProfile }) {
   console.log(">>>===main panel")
-  // clear course selection 
-  const setClearSelectedCourseMenu = useRecoilCallback(({set})=> ()=>{
-    set(selectedMenuPanelAtom,"");
-    });
+
   const mpOnClick = useRecoilCallback(({set,snapshot})=> async ()=>{
     const atomArray = await snapshot.getPromise(mainPanelClickAtom)
     // console.log(">>>mpOnClick",atomArray)
@@ -52,7 +48,6 @@ export default function MainPanel({ headerControls, headerControlsPositions, chi
       set(obj.atom,obj.value)
       // console.log(">>>obj",obj)
     }
-    setClearSelectedCourseMenu();
   })
   const controls = [];
   if (displayProfile){

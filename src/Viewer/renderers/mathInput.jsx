@@ -84,6 +84,10 @@ export default class MathInput extends DoenetRenderer {
 
     text = substituteUnicodeInLatexString(text);
 
+    // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
+    // unlike math-expression's latex parser
+    text = text.replace(/\^(\d)/g, '^{$1}' );
+
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
     });
@@ -132,7 +136,7 @@ export default class MathInput extends DoenetRenderer {
   updateValidationState() {
 
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -223,6 +227,8 @@ export default class MathInput extends DoenetRenderer {
     }
 
     this.updateValidationState();
+
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
 
     // const inputKey = this.componentName + '_input';
 
@@ -326,6 +332,24 @@ export default class MathInput extends DoenetRenderer {
 
         }
       }
+
+      if(this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
+      } else if(this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+
+        checkWorkButton = <>
+          {checkWorkButton}
+          <span>
+            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
+          </span>
+        </>
+      }
+
     }
 
     // TODO: remove inf and sup from the autoOperatorNames so that
@@ -344,7 +368,7 @@ export default class MathInput extends DoenetRenderer {
         id={inputKey}
         ref = {this.inputRef}
         value={this.textValue}
-        disabled={this.doenetSvData.disabled}
+        disabled={disabled}
         onChange={this.onChangeHandler}
         onKeyPress={this.handleKeyPress}
         onKeyDown={this.handleKeyDown}
@@ -511,6 +535,10 @@ function substituteUnicodeInLatexString(latexString) {
     ['\u2212', '-'], // minus sign
     ['\u22C5', ' \\cdot '], // dot operator
     ['\u00B7', ' \\cdot '], // middle dot
+    ['\u222A', ' \\cup '], // ∪
+    ['\u2229', ' \\cap '], // ∩
+    ['\u221E', ' \\infty '], // ∞
+
   ]
 
   for (let sub of substitutions) {

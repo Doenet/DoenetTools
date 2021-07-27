@@ -2055,7 +2055,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
       if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
         result = {
           x1: x1AsFunction,
-          x2: x2Asx1AsFunction
+          x2: x2AsFunction
         }
         if (variables.x3 !== undefined) {
           result.x3 = 0;
@@ -2112,10 +2112,14 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let tIntervalMin = minT;
     let tIntervalMax = minT + delta;
 
+    let fprev;
+
     for (let step = 1; step <= Nsteps; step++) {
       let tnew = minT + step * delta;
       let fnew = minfunc(tnew);
-      if (fnew < fAtMin || Number.isNaN(fAtMin)) {
+      if (Number.isFinite(fnew) && Number.isFinite(fprev) &&
+        (fnew < fAtMin || Number.isNaN(fAtMin))
+      ) {
         tAtMin = tnew;
         fAtMin = fnew;
         tIntervalMin = tnew - delta;
@@ -2126,6 +2130,14 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
         }
       }
 
+      fprev = fnew;
+
+    }
+
+    // haven't necessarily checked f at tIntermax
+    let fAtIntervalMax = minfunc(tIntervalMax);
+    if (!Number.isFinite(fAtIntervalMax)) {
+      tIntervalMax -= delta;
     }
 
 
@@ -2135,13 +2147,19 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1AtMin = -10 * Math.log(1 / tAtMin - 1);
     let x2AtMin = f(x1AtMin)
 
+    let currentD2;
 
-    if (flipFunction) {
-      [x1AtMin, x2AtMin] = [x2AtMin, x1AtMin]
+    if (!(result.success && Number.isFinite(x1AtMin) && Number.isFinite(x2AtMin))) {
+      currentD2 = Infinity
+    } else {
+
+      if (flipFunction) {
+        [x1AtMin, x2AtMin] = [x2AtMin, x1AtMin]
+      }
+
+      currentD2 = Math.pow((x1AtMin - x1) / xscale, 2)
+        + Math.pow((x2AtMin - x2) / yscale, 2);
     }
-
-    let currentD2 = Math.pow((x1AtMin - x1) / xscale, 2)
-      + Math.pow((x2AtMin - x2) / yscale, 2);
 
     // replace with endpoints if closer
 

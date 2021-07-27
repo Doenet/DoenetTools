@@ -97,7 +97,7 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
 }
 
 export function evaluateLogic({ logicTree,
-  unorderedCompare = false, simplifyOnCompare = false, expandOnCompare = false,
+  canOverrideUnorderedCompare = false,
   dependencyValues, valueOnInvalid = 0
 }) {
 
@@ -108,9 +108,8 @@ export function evaluateLogic({ logicTree,
 
   let evaluateSub = x => evaluateLogic({
     logicTree: x,
-    unorderedCompare, simplifyOnCompare,
-    expandOnCompare, dependencyValues, valueOnInvalid
-
+    canOverrideUnorderedCompare,
+    dependencyValues, valueOnInvalid
   });
 
   if (!Array.isArray(logicTree)) {
@@ -124,7 +123,11 @@ export function evaluateLogic({ logicTree,
     if (typeof logicTree === "string") {
       let booleanChild = dependencyValues.booleanChildrenByCode[logicTree];
       if (booleanChild) {
-        return booleanChild.stateValues.value ? 1 : 0;
+        if (dependencyValues.matchPartial && booleanChild.stateValues.fractionSatisfied !== undefined) {
+          return booleanChild.stateValues.fractionSatisfied
+        } else {
+          return booleanChild.stateValues.value ? 1 : 0;
+        }
       } else {
         let mathChild = dependencyValues.mathChildrenByCode[logicTree];
         if (mathChild) {
@@ -291,7 +294,8 @@ export function evaluateLogic({ logicTree,
     }
 
     let foundInvalidWhen = false;
-    // every operand must be a boolean, booleanstring, or a string that is true or false
+    let foundUnorderedList = false;
+    // every operand must be a boolean, booleanlist, or a string that is true or false
     operands = operands.map(function (x) {
       if (typeof x === "string") {
         let child = dependencyValues.booleanChildrenByCode[x];
@@ -300,6 +304,9 @@ export function evaluateLogic({ logicTree,
         }
         child = dependencyValues.booleanListChildrenByCode[x];
         if (child !== undefined) {
+          if (child.stateValues.unordered) {
+            foundUnorderedList = true;
+          }
           return child.stateValues.booleans;
         }
         x = x.toLowerCase().trim();
@@ -320,6 +327,13 @@ export function evaluateLogic({ logicTree,
 
     if (foundInvalidWhen) {
       return valueOnInvalid;
+    }
+
+    let unorderedCompare = dependencyValues.unorderedCompare;
+    if (canOverrideUnorderedCompare) {
+      if (foundUnorderedList) {
+        unorderedCompare = true;
+      }
     }
 
     if (operator === "=") {
@@ -373,6 +387,7 @@ export function evaluateLogic({ logicTree,
     }
 
     let foundInvalidWhen = false;
+    let foundUnorderedList = false;
 
     let extractText = function (tree, recurse = false) {
       if (typeof tree === "string") {
@@ -382,12 +397,15 @@ export function evaluateLogic({ logicTree,
         }
         child = dependencyValues.textListChildrenByCode[tree];
         if (child !== undefined) {
+          if (child.stateValues.unordered) {
+            foundUnorderedList = true;
+          }
           return child.stateValues.texts.map(x => x.trim());
         }
         return tree.trim();
       }
 
-      if(typeof tree === "number") {
+      if (typeof tree === "number") {
         return tree.toString();
       }
 
@@ -407,6 +425,13 @@ export function evaluateLogic({ logicTree,
 
     if (foundInvalidWhen) {
       return valueOnInvalid;
+    }
+
+    let unorderedCompare = dependencyValues.unorderedCompare;
+    if (canOverrideUnorderedCompare) {
+      if (foundUnorderedList) {
+        unorderedCompare = true;
+      }
     }
 
     if (operator === "=") {
@@ -464,9 +489,48 @@ export function evaluateLogic({ logicTree,
     operands = operands[0].slice(1);
   }
 
+  let foundUnordered = false;
+
+  let replaceMathAndFindUnordered = function (tree) {
+    if (typeof tree === "string") {
+      let child = dependencyValues.mathChildrenByCode[tree];
+      if (child !== undefined) {
+        if(child.stateValues.unordered) {
+          foundUnordered = true;
+        }
+        return child.stateValues.value.tree;
+      }
+      child = dependencyValues.mathListChildrenByCode[tree];
+      if (child !== undefined) {
+        if(child.stateValues.unordered) {
+          foundUnordered = true;
+        }
+        return ["list", ...child.stateValues.maths.map(x => x.tree)];
+      }
+      child = dependencyValues.numberChildrenByCode[tree];
+      if (child !== undefined) {
+        return child.stateValues.value;
+      }
+      return tree;
+    }
+    if (!Array.isArray(tree)) {
+      return tree;
+    }
+
+    return [tree[0], ...tree.slice(1).map(replaceMathAndFindUnordered)]
+
+  }
+
   let mathOperands = operands.map(function (x) {
-    return me.fromAst(replaceMath(x));
+    return me.fromAst(replaceMathAndFindUnordered(x));
   });
+
+  let unorderedCompare = dependencyValues.unorderedCompare;
+  if (canOverrideUnorderedCompare) {
+    if (foundUnordered) {
+      unorderedCompare = true;
+    }
+  }
 
   if (operator === "=") {
     let expr = mathOperands[0];
@@ -480,8 +544,8 @@ export function evaluateLogic({ logicTree,
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
         symbolicEquality: dependencyValues.symbolicEquality,
-        simplify: simplifyOnCompare,
-        expand: expandOnCompare,
+        simplify: dependencyValues.simplifyOnCompare,
+        expand: dependencyValues.expandOnCompare,
         allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
@@ -499,8 +563,8 @@ export function evaluateLogic({ logicTree,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
           symbolicEquality: dependencyValues.symbolicEquality,
-          simplify: simplifyOnCompare,
-          expand: expandOnCompare,
+          simplify: dependencyValues.simplifyOnCompare,
+          expand: dependencyValues.expandOnCompare,
           allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
           includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
@@ -518,8 +582,8 @@ export function evaluateLogic({ logicTree,
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
         symbolicEquality: dependencyValues.symbolicEquality,
-        simplify: simplifyOnCompare,
-        expand: expandOnCompare,
+        simplify: dependencyValues.simplifyOnCompare,
+        expand: dependencyValues.expandOnCompare,
         allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
@@ -547,8 +611,8 @@ export function evaluateLogic({ logicTree,
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
         symbolicEquality: dependencyValues.symbolicEquality,
-        simplify: simplifyOnCompare,
-        expand: expandOnCompare,
+        simplify: dependencyValues.simplifyOnCompare,
+        expand: dependencyValues.expandOnCompare,
         allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
@@ -570,8 +634,8 @@ export function evaluateLogic({ logicTree,
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
         symbolicEquality: dependencyValues.symbolicEquality,
-        simplify: simplifyOnCompare,
-        expand: expandOnCompare,
+        simplify: dependencyValues.simplifyOnCompare,
+        expand: dependencyValues.expandOnCompare,
         allowedErrorInNumbers: dependencyValues.allowedErrorInNumbers,
         includeErrorInNumberExponents: dependencyValues.includeErrorInNumberExponents,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,

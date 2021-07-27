@@ -22,6 +22,9 @@ import {
  } from '@fortawesome/free-regular-svg-icons';
 
 import { nanoid } from 'nanoid';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export const itemHistoryAtom = atomFamily({
   key:"itemHistoryAtom",
@@ -257,21 +260,32 @@ export function ClipboardLinkButtons(props){
   const addToast = useToast();
 
 
-  if (!props.contentId){
-    console.error("Component only handles contentId at this point")
-    return null;
-  }
+
+  // if (!props.contentId){
+  //   console.error("Component only handles contentId at this point")
+  //   return null;
+  // }
   
 
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div> 
+    <ButtonGroup>
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
-  <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
+  {/* <button>copy link <FontAwesomeIcon icon={faClipboard}/></button>  */}
+  <Button disabled={props.disabled} icon={<FontAwesomeIcon icon={faClipboard}/>} value="copy link" />
   </CopyToClipboard>
 
-  <button onClick={
+  <Button 
+  icon = {<FontAwesomeIcon icon={faExternalLinkAlt}/>}
+  value = "visit"
+  disabled={props.disabled} 
+  onClick={
     ()=>window.open(link, '_blank')
-  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button>
+  } /> 
+</ButtonGroup>
+  {/* <button onClick={
+    ()=>window.open(link, '_blank')
+  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button> */}
   </div>
 }
 
@@ -311,7 +325,7 @@ export function RenameVersionControl(props){
     }
 
     if (!textFieldFlag){
-      return <button onClick={()=>setTextFieldFlag(true)}>Rename</button>
+      return <Button disabled={props.disabled} onClick={()=>setTextFieldFlag(true)} value="Rename" />
     }
   return <input type='text' autoFocus value={currentTitle} 
   onChange={(e)=>{setCurrentTitle(e.target.value)}}
