@@ -2774,5 +2774,61 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('substitute numerical exponents', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>a: <mathinput name="a" /></p>
+    <p>a2: <copy prop="value" tname="a" assignNames="a2" /></p>
+    <p>a3: <copy prop="value" tname="a" simplify assignNames="a3" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a textarea').type('3^2{rightArrow}5{enter}', { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['*', ['^', 3, 2], 5]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['*', ['^', 3, 2], 5]);
+      expect(components['/a3'].stateValues.value.tree).eqls(45);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^25{enter}', { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['^', 3, 25]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['^', 3, 25]);
+      expect(components['/a3'].stateValues.value.tree).eqls(847288609443);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2x{enter}', { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['^', 3, ['*', 2, 'x']]);
+      expect(components['/a2'].stateValues.value.tree).eqls(['^', 3, ['*', 2, 'x']]);
+      expect(components['/a3'].stateValues.value.tree).eqls(['^', 3, ['*', 2, 'x']]);
+    });
+
+
+    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2{rightarrow}x{enter}', { force: true });
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/a'].stateValues.value.tree).eqls(['*', ['^', 3, 2], 'x']);
+      expect(components['/a2'].stateValues.value.tree).eqls(['*', ['^', 3, 2], 'x']);
+      expect(components['/a3'].stateValues.value.tree).eqls(['*', 9, 'x']);
+    });
+
+
+  })
+
+
 
 });
