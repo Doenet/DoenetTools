@@ -314,10 +314,12 @@ export default function Slider(props) {
     let controls2 = "";
     if (SVs.showControls) {
       controls2 = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
+        style: {marginTop: "-20px"},
         value: "Prev",
         onClick: (e) => handlePrevious(e),
         disabled: true
       }), /* @__PURE__ */ React.createElement(Button, {
+        style: {marginTop: "-20px"},
         value: "Next",
         onClick: (e) => handleNext(e),
         disabled: true
@@ -342,13 +344,15 @@ export default function Slider(props) {
       noTicked: SVs.showTicks === false,
       ref: containerRef
     }, /* @__PURE__ */ React.createElement("div", {
-      style: {height: SVs.showControls || SVs.label ? "20px" : "0px"}
-    }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null, controls2), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
+      style: {height: SVs.label ? "20px" : "0px"}
+    }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
       width: `${SVs.width.size}px`
     }, /* @__PURE__ */ React.createElement(StyledThumb, {
       disabled: true,
       style: {left: `${thumbXPos - 4}px`}
-    }), ticksAndLabels2)));
+    }), ticksAndLabels2)), /* @__PURE__ */ React.createElement("div", {
+      style: {height: SVs.showControls ? "20px" : "0px"}
+    }, controls2));
   }
   function handleDragEnter(e) {
     setIsMouseDown(true);
@@ -457,22 +461,18 @@ export default function Slider(props) {
   let controls = "";
   if (SVs.showControls) {
     controls = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
+      style: {marginTop: "-20px"},
       value: "Prev",
       onClick: (e) => handlePrevious(e),
       "data-cy": "prevbutton"
     }), /* @__PURE__ */ React.createElement(Button, {
+      style: {marginTop: "-20px"},
       value: "Next",
       onClick: (e) => handleNext(e),
       "data-cy": "nextbutton"
     }));
   } else {
     null;
-  }
-  let valueDisplay = null;
-  if (SVs.showValue) {
-    valueDisplay = /* @__PURE__ */ React.createElement("span", {
-      style: {left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none"}
-    }, SVs.valueForDisplay, " ");
   }
   return /* @__PURE__ */ React.createElement(SliderContainer, {
     ref: containerRef,
@@ -481,8 +481,8 @@ export default function Slider(props) {
     onKeyDown: handleKeyDown,
     tabIndex: "0"
   }, /* @__PURE__ */ React.createElement("div", {
-    style: {height: SVs.showControls || SVs.label ? "20px" : "0px"}
-  }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null, controls), /* @__PURE__ */ React.createElement(SubContainer2, {
+    style: {height: SVs.label ? "20px" : "0px"}
+  }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay) : null), /* @__PURE__ */ React.createElement(SubContainer2, {
     onMouseDown: handleDragEnter,
     onMouseUp: handleDragExit,
     onMouseMove: handleDragThrough,
@@ -490,8 +490,10 @@ export default function Slider(props) {
   }, /* @__PURE__ */ React.createElement(StyledSlider, {
     width: `${SVs.width.size}px`,
     "data-cy": "slider1"
-  }, valueDisplay, /* @__PURE__ */ React.createElement(StyledThumb, {
+  }, /* @__PURE__ */ React.createElement(StyledThumb, {
     style: {left: `${thumbXPos - 4}px`},
     "data-cy": "slider1-handle"
-  }), ticksAndLabels)));
+  }), ticksAndLabels)), /* @__PURE__ */ React.createElement("div", {
+    style: {height: SVs.showControls ? "20px" : "0px"}
+  }, controls));
 }

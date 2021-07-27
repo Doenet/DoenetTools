@@ -1,7 +1,7 @@
 import { N as NodeProp, b as NodeType } from './tree.es-a8ccfba9.js';
-import { E as EditorView, S as StyleModule, V as ViewPlugin, b as Decoration, c as RangeSetBuilder } from './index-3b638331.js';
+import { E as EditorView, S as StyleModule, V as ViewPlugin, D as Decoration, a as RangeSetBuilder } from './index-b521506f.js';
 import { F as Facet, P as Prec } from './index-b03e5d4e.js';
-import { s as syntaxTree } from './index-a4726552.js';
+import { s as syntaxTree } from './index-10710386.js';
 
 let nextTagID = 0;
 /**

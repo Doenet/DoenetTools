@@ -1,5 +1,6 @@
-export { u as useHistory } from './common/react-router-c6a03d4a.js';
-import './common/inheritsLoose-adbe5217.js';
+export { u as useHistory, a as useLocation } from './common/react-router-6dd27fb9.js';
+import './common/inheritsLoose-90c3012b.js';
+import './common/setPrototypeOf-ac807fbe.js';
 import './common/index-61a7c514.js';
 import './common/_commonjsHelpers-b3efd043.js';
 import './common/index-01840a39.js';

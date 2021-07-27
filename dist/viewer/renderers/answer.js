@@ -7,6 +7,7 @@ export default class Answer extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
     let submitAnswer = this.actions.submitAnswer;
     if (this.doenetSvData.submitAllAnswersAtAncestor) {
       submitAnswer = this.actions.submitAllAnswers;
@@ -18,7 +19,7 @@ export default class Answer extends DoenetRenderer {
     }
     if (!this.doenetSvData.delegateCheckWork) {
       let validationState = "unvalidated";
-      if (this.doenetSvData.justSubmitted) {
+      if (this.doenetSvData.justSubmitted || this.doenetSvData.numberOfAttemptsLeft < 1) {
         if (this.doenetSvData.creditAchieved === 1) {
           validationState = "correct";
         } else if (this.doenetSvData.creditAchieved === 0) {
@@ -35,7 +36,7 @@ export default class Answer extends DoenetRenderer {
         color: "white",
         fontWeight: "bold"
       };
-      if (this.doenetSvData.disabled) {
+      if (disabled) {
         checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       }
       let checkWorkText = "Check Work";
@@ -45,7 +46,7 @@ export default class Answer extends DoenetRenderer {
       let checkworkComponent = /* @__PURE__ */ React.createElement("button", {
         id: this.componentName + "_submit",
         tabIndex: "0",
-        disabled: this.doenetSvData.disabled,
+        disabled,
         style: checkWorkStyle,
         onClick: submitAnswer,
         onKeyPress: (e) => {
@@ -93,6 +94,11 @@ export default class Answer extends DoenetRenderer {
             icon: faCloud
           }), "  Response Saved");
         }
+      }
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+        checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
       }
       return /* @__PURE__ */ React.createElement("span", {
         id: this.componentName

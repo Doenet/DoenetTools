@@ -1,7 +1,7 @@
-import React, {useContext} from "../_snowpack/pkg/react.js";
-import {useRecoilCallback, atom} from "../_snowpack/pkg/recoil.js";
+import React from "../_snowpack/pkg/react.js";
+import {useRecoilCallback, atom, useRecoilValueLoadable, useSetRecoilState} from "../_snowpack/pkg/recoil.js";
 import styled from "../_snowpack/pkg/styled-components.js";
-import {ProfileContext, toolViewAtom} from "./NewToolRoot.js";
+import {profileAtom, pageToolViewAtom} from "./NewToolRoot.js";
 const ProfilePicture = styled.button`
 background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)),
   url('/media/profile_pictures/${(props) => props.pic}.jpg');
@@ -26,31 +26,19 @@ export const profileToolViewStashAtom = atom({
   default: {}
 });
 export default function Profile(props) {
-  const profile = useContext(ProfileContext);
-  const profilePicName = profile.profilePicture;
-  const displaySettings = useRecoilCallback(({set, snapshot}) => async () => {
-    const viewToolObj = await snapshot.getPromise(toolViewAtom);
-    let newViewToolObj = {...viewToolObj};
-    set(profileToolViewStashAtom, {toolViewAtom: newViewToolObj, href: location.href});
-    const url = location.origin + location.pathname + "#/settings";
-    window.history.pushState("", "", url);
-    set(toolViewAtom, (was) => {
-      let newObj = {...was};
-      newObj.currentMenus = [];
-      newObj.menusInitOpen = [];
-      newObj.menusTitles = [];
-      newObj.currentMainPanel = "AccountSettings";
-      newObj.supportPanelOptions = [];
-      newObj.supportPanelTitles = [];
-      newObj.hasNoMenuPanel = true;
-      newObj.headerControls = ["CloseProfileButton"];
-      newObj.headerControlsPositions = ["Right"];
-      return newObj;
-    });
-  });
+  const profile = useRecoilValueLoadable(profileAtom);
+  const profilePicName = profile.contents.profilePicture;
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  if (profile.state === "loading") {
+    return null;
+  }
+  if (profile.state === "hasError") {
+    console.error(profile.contents);
+    return null;
+  }
   return /* @__PURE__ */ React.createElement(ProfilePicture, {
     pic: profilePicName,
     margin: props.margin,
-    onClick: () => displaySettings()
+    onClick: () => setPageToolView({page: "settings", tool: "", view: ""})
   });
 }

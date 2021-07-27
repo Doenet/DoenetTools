@@ -18,7 +18,7 @@ export default class TextInput extends DoenetRenderer {
   static initializeChildrenOnConstruction = false;
   updateValidationState() {
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -72,6 +72,7 @@ export default class TextInput extends DoenetRenderer {
       return null;
     }
     this.updateValidationState();
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
     const inputKey = this.componentName + "_input";
     let surroundingBorderColor = "#efefef";
     if (this.focused) {
@@ -164,6 +165,11 @@ export default class TextInput extends DoenetRenderer {
           }));
         }
       }
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
+      }
     }
     let input;
     if (this.doenetSvData.expanded) {
@@ -171,7 +177,7 @@ export default class TextInput extends DoenetRenderer {
         key: inputKey,
         id: inputKey,
         value: this.currentValue,
-        disabled: this.doenetSvData.disabled,
+        disabled,
         onChange: this.onChangeHandler,
         onKeyPress: this.handleKeyPress,
         onKeyDown: this.handleKeyDown,
@@ -190,7 +196,7 @@ export default class TextInput extends DoenetRenderer {
         key: inputKey,
         id: inputKey,
         value: this.currentValue,
-        disabled: this.doenetSvData.disabled,
+        disabled,
         onChange: this.onChangeHandler,
         onKeyPress: this.handleKeyPress,
         onKeyDown: this.handleKeyDown,

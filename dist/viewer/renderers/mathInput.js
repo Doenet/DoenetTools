@@ -30,6 +30,7 @@ export default class MathInput extends DoenetRenderer {
   calculateMathExpressionFromLatex(text) {
     let expression;
     text = substituteUnicodeInLatexString(text);
+    text = text.replace(/\^(\d)/g, "^{$1}");
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols
     });
@@ -55,7 +56,7 @@ export default class MathInput extends DoenetRenderer {
   }
   updateValidationState() {
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -98,6 +99,7 @@ export default class MathInput extends DoenetRenderer {
       return null;
     }
     this.updateValidationState();
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
     let surroundingBorderColor = "#efefef";
     if (this.focused) {
       surroundingBorderColor = "#82a5ff";
@@ -195,6 +197,11 @@ export default class MathInput extends DoenetRenderer {
             icon: faCloud
           }));
         }
+      }
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
       }
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
@@ -333,7 +340,10 @@ function substituteUnicodeInLatexString(latexString) {
     ["ω", "\\omega "],
     ["−", "-"],
     ["⋅", " \\cdot "],
-    ["·", " \\cdot "]
+    ["·", " \\cdot "],
+    ["∪", " \\cup "],
+    ["∩", " \\cap "],
+    ["∞", " \\infty "]
   ];
   for (let sub of substitutions) {
     latexString = latexString.replaceAll(sub[0], sub[1]);

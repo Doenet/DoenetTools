@@ -9,7 +9,7 @@ import {
   nodePathSelector,
   folderOpenAtom,
   folderSortOrderAtom
-} from "./Drive.js";
+} from "./NewDrive.js";
 import {useToast} from "../../_framework/Toast.js";
 const dragShadowId = "dragShadow";
 export const useDragShadowCallbacks = () => {
@@ -226,7 +226,7 @@ export const useDragShadowCallbacks = () => {
   };
 };
 export const useSortFolder = () => {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const sortFolder = useRecoilCallback(({set, snapshot}) => async ({driveIdInstanceIdFolderId, sortKey}) => {
     const {driveId, folderId} = driveIdInstanceIdFolderId;
     const {contentIds} = await snapshot.getPromise(folderDictionaryFilterSelector({driveId, folderId}));
@@ -259,12 +259,12 @@ export const useSortFolder = () => {
     return;
   });
   const onSortFolderError = ({errorMessage = null}) => {
-    addToast(`Sort items error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Sort items error: ${errorMessage}`, toastType.ERROR);
   };
   return {sortFolder, invalidateSortCache, onSortFolderError};
 };
 export const useAssignmentCallbacks = () => {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const makeAssignment = useRecoilCallback(({set}) => ({driveIdFolderId, itemId, payload}) => {
     set(folderDictionary(driveIdFolderId), (old) => {
       let newObj = JSON.parse(JSON.stringify(old));
@@ -275,7 +275,7 @@ export const useAssignmentCallbacks = () => {
     });
   });
   const onmakeAssignmentError = ({errorMessage = null}) => {
-    addToast(`make assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`make assignment error: ${errorMessage}`, toastType.ERROR);
   };
   const publishAssignment = useRecoilCallback(({set}) => ({driveIdFolderId, itemId}) => {
     set(folderDictionary(driveIdFolderId), (old) => {
@@ -287,7 +287,7 @@ export const useAssignmentCallbacks = () => {
     });
   });
   const onPublishAssignmentError = ({errorMessage = null}) => {
-    addToast(`Publish assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Publish assignment error: ${errorMessage}`, toastType.ERROR);
   };
   const publishContent = useRecoilCallback(({set}) => ({driveIdFolderId, itemId}) => {
     set(folderDictionary(driveIdFolderId), (old) => {
@@ -298,7 +298,7 @@ export const useAssignmentCallbacks = () => {
     });
   });
   const onPublishContentError = () => {
-    addToast(`Publish content error`, ToastType.ERROR);
+    addToast(`Publish content error`, toastType.ERROR);
   };
   const updateAssignmentTitle = useRecoilCallback(({set}) => ({driveIdFolderId, itemId, payloadAssignment}) => {
     set(folderDictionary(driveIdFolderId), (old) => {
@@ -315,7 +315,7 @@ export const useAssignmentCallbacks = () => {
     });
   });
   const onUpdateAssignmentTitleError = ({errorMessage = null}) => {
-    addToast(`Rename assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Rename assignment error: ${errorMessage}`, toastType.ERROR);
   };
   const convertAssignmentToContent = useRecoilCallback(({set}) => ({driveIdFolderId, itemId}) => {
     set(folderDictionary(driveIdFolderId), (old) => {
@@ -326,7 +326,7 @@ export const useAssignmentCallbacks = () => {
     });
   });
   const onConvertAssignmentToContentError = ({errorMessage = null}) => {
-    addToast(`Convert assignment error: ${errorMessage}`, ToastType.ERROR);
+    addToast(`Convert assignment error: ${errorMessage}`, toastType.ERROR);
   };
   return {
     makeAssignment,

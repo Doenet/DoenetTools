@@ -1,6 +1,6 @@
 import { T as Tree, N as NodeProp, a as TreeFragment, b as NodeType } from './tree.es-a8ccfba9.js';
 import { F as Facet, S as StateField, l as EditorState, T as Transaction, e as Text, b as StateEffect, d as countColumn } from './index-b03e5d4e.js';
-import { V as ViewPlugin } from './index-3b638331.js';
+import { V as ViewPlugin } from './index-b521506f.js';
 
 /**
 Node prop stored in a grammar's top syntax node to provide the

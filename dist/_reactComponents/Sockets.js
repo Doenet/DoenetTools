@@ -10,7 +10,7 @@ import {
   useRecoilCallback
 } from "../_snowpack/pkg/recoil.js";
 import {Manager} from "../_snowpack/pkg/socket.io-client.js";
-import {useToast} from "../_framework/Toast.js";
+import {useToast, toastType} from "../_framework/Toast.js";
 import {
   folderCacheDirtyAtom,
   folderDictionary,
@@ -18,7 +18,7 @@ import {
   globalSelectedNodesAtom,
   selectedDriveItemsAtom,
   sortOptions
-} from "./Drive/Drive.js";
+} from "./Drive/NewDrive.js";
 const socketManger = atom({
   key: "socketManger",
   default: selector({
@@ -45,16 +45,22 @@ const sockets = atomFamily({
   }),
   dangerouslyAllowMutability: true
 });
+export const itemType = Object.freeze({
+  FOLDER: "Folder",
+  DOENETML: "DoenetML",
+  URL: "Url"
+});
 export default function useSockets(nsp) {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const dragShadowId = "dragShadow";
   const {acceptAddItem, acceptDeleteItem, acceptMoveItems, acceptRenameItem} = useAcceptBindings();
-  const addItem = useRecoilCallback(({snapshot}) => async ({driveIdFolderId, label, type, selectedItemId = null, url = null}) => {
+  const addItem = useRecoilCallback(({snapshot}) => async ({driveIdFolderId, type, label = "Untitled", selectedItemId = null, url = null}) => {
     const dt = new Date();
     const creationDate = formatDate(dt);
     const itemId = nanoid();
     const doenetId = nanoid();
     const versionId = nanoid();
+    console.log(driveIdFolderId);
     const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
     let newObj = JSON.parse(JSON.stringify(fInfo));
     let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
@@ -81,7 +87,7 @@ export default function useSockets(nsp) {
     if (resp.data.success) {
       acceptAddItem(payload);
     } else {
-      addToast(`Add item error: ${resp.data.message}`, ToastType.ERROR);
+      addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
     }
   });
   const deleteItem = useRecoilCallback(() => async ({driveIdFolderId, driveInstanceId = null, itemId, label}) => {
@@ -98,7 +104,7 @@ export default function useSockets(nsp) {
     if (resp.data.success) {
       acceptDeleteItem(payload);
     } else {
-      addToast(`Delete item error: ${resp.data.message}`, ToastType.ERROR);
+      addToast(`Delete item error: ${resp.data.message}`, toastType.ERROR);
     }
   });
   const moveItems = useRecoilCallback(({snapshot, set}) => async ({targetDriveId, targetFolderId, index}) => {
@@ -222,17 +228,17 @@ export default function useSockets(nsp) {
     if (resp.data.success) {
       acceptMoveItems(payload, newDestinationFolderObj, editedCache);
     } else {
-      addToast(`Move item(s) error: ${resp.data.message}`, ToastType.ERROR);
+      addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
     }
   });
-  const renameItem = useRecoilCallback(() => async ({driveIdFolderId, itemId, itemType, newLabel}) => {
+  const renameItem = useRecoilCallback(() => async ({driveIdFolderId, itemId, itemType: itemType2, newLabel}) => {
     const payload = {
       instruction: "rename",
       driveId: driveIdFolderId.driveId,
       folderId: driveIdFolderId.folderId,
       itemId,
       label: newLabel,
-      type: itemType
+      type: itemType2
     };
     const resp = await axios.get("/api/updateItem.php", {
       params: payload
@@ -240,7 +246,7 @@ export default function useSockets(nsp) {
     if (resp.data.success) {
       acceptRenameItem(payload);
     } else {
-      addToast(`Rename item error: ${resp.data.message}`, ToastType.ERROR);
+      addToast(`Rename item error: ${resp.data.message}`, toastType.ERROR);
     }
   });
   const copyItems = useRecoilCallback(({snapshot, set}) => async ({items = [], targetDriveId, targetFolderId, index}) => {
@@ -437,7 +443,7 @@ export default function useSockets(nsp) {
   };
 }
 function useAcceptBindings() {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const acceptAddItem = useRecoilCallback(({snapshot, set}) => async ({
     driveId,
     parentFolderId,
@@ -489,8 +495,8 @@ function useAcceptBindings() {
         contentIds: {[sortOptions.DEFAULT]: []}
       });
     }
-    addToast(`Add new item 'Untitled'`, ToastType.SUCCESS);
-  }, [addToast, ToastType.SUCCESS]);
+    addToast(`Add new item 'Untitled'`, toastType.SUCCESS);
+  }, [addToast]);
   const acceptDeleteItem = useRecoilCallback(({snapshot, set}) => async ({driveId, parentFolderId, itemId, driveInstanceId, label}) => {
     const fInfo = await snapshot.getPromise(folderDictionary({driveId, parentFolderId}));
     const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
@@ -524,7 +530,7 @@ function useAcceptBindings() {
       driveId,
       parentFolderId
     }), newFInfo);
-    addToast(`Deleted item '${label}'`, ToastType.SUCCESS);
+    addToast(`Deleted item '${label}'`, toastType.SUCCESS);
   });
   const acceptMoveItems = useRecoilCallback(({set}) => (payload, newDestinationFolderObj, editedCache) => {
     set(globalSelectedNodesAtom, []);
@@ -572,7 +578,7 @@ function useAcceptBindings() {
         return newFolderInfo;
       });
     }
-    addToast(`Renamed item to '${label}'`, ToastType.SUCCESS);
+    addToast(`Renamed item to '${label}'`, toastType.SUCCESS);
   });
   return {
     acceptAddItem,

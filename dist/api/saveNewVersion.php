@@ -25,6 +25,7 @@ $isReleased = mysqli_real_escape_string($conn,$_POST["isReleased"]);
 $isNewTitle = mysqli_real_escape_string($conn,$_POST["isNewTitle"]);
 $isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
 $isSetAsCurrent = mysqli_real_escape_string($conn,$_POST["isSetAsCurrent"]);
+$newTitle = mysqli_real_escape_string($conn,$_POST["newTitle"]);
 $isNewToggleRelease = mysqli_real_escape_string($conn,$_POST["isNewToggleRelease"]);
 $previousDoenetId = mysqli_real_escape_string($conn,$_POST["previousDoenetId"]);
 
@@ -95,7 +96,7 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
 
 }elseif($isSetAsCurrent == '1'){
 
-  //Add draft as autosave
+  //Add draft as named version
     $sql = "SELECT
     contentId,
     versionId
@@ -125,10 +126,10 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     SET doenetId='$doenetId',
     contentId='$oldDraftContentId', 
     versionId='$oldDraftVersionId', 
-    title='Autosave (was draft)',
+    title='$newTitle',
     timestamp=NOW(),
     isDraft='0',
-    isNamed='0',
+    isNamed='1',
     isReleased='0'
     ";
 
@@ -145,32 +146,50 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
         ";
         $result = $conn->query($sql);
 }elseif($isNewToggleRelease == '1'){
-  $sql = "
-  UPDATE content
-  SET isReleased='$isReleased'
-  WHERE doenetId='$doenetId'
-  AND versionId='$versionId'
-  ";
-  $result = $conn->query($sql);
-  //TODO: update drive_content isReleased if necessary
+  //Use Database as source of truth
   $sql = "
   SELECT isReleased
   FROM content
   WHERE doenetId='$doenetId'
-  AND isNamed='1'
-  AND isReleased='1'
+  AND versionId='$versionId'
   ";
   $result = $conn->query($sql);
-  $doenetIsReleased = '0';
-  if ($result->num_rows > 0){
-    $doenetIsReleased = '1';
-  }
+  $row = $result->fetch_assoc();
+  $db_version_isReleased = $row['isReleased'];
+  //Unrelease All
   $sql = "
-  UPDATE drive_content
-  SET isReleased='$doenetIsReleased'
+  UPDATE content
+  SET isReleased='0'
   WHERE doenetId='$doenetId'
   ";
   $result = $conn->query($sql);
+  if ($db_version_isReleased == "0"){
+    //Release the version
+    $sql = "
+    UPDATE content
+    SET isReleased='1'
+    WHERE doenetId='$doenetId'
+    AND versionId='$versionId'
+    ";
+  $result = $conn->query($sql);
+
+    //Update drive status to release (even if it was)
+    $sql = "
+    UPDATE drive_content
+    SET isReleased='1'
+    WHERE doenetId='$doenetId'
+    ";
+    $result = $conn->query($sql);
+  }else{
+    //Update drive status to not released 
+    $sql = "
+    UPDATE drive_content
+    SET isReleased='0'
+    WHERE doenetId='$doenetId'
+    ";
+    $result = $conn->query($sql);
+  }
+  
 
 }else{
 
