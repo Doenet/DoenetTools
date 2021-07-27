@@ -43,8 +43,8 @@ export default function RoleDropdown(){
     console.log(">>>newObj",newObj)
     return newObj
   })}>
-    <option value='Instructor'>Instructor</option>
-    <option value='Student'>Student</option>
+    <option value='instructor'>Instructor</option>
+    <option value='student'>Student</option>
   </select>
   // <Button onClick={()=>setPageToolView({back:true})} value='Back' />
 }
