@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import { 
   useSetRecoilState,
   useRecoilValue,
   useRecoilValueLoadable,
+  useRecoilCallback,
  } from 'recoil';
 import { pageToolViewAtom } from '../NewToolRoot';
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -14,6 +15,17 @@ export default function RoleDropdown(){
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const paramPath = useRecoilValue(searchParamAtomFamily('path')) 
   const driveInfo = useRecoilValueLoadable(fetchDrivesQuery);
+  const setViewIfBlank = useRecoilCallback(({set,snapshot})=> async (defaultRole)=>{
+    let pageToolView = await snapshot.getPromise(pageToolViewAtom);
+    if (pageToolView.view === ""){
+      set(pageToolViewAtom,(was)=>{
+        let newObj = {...was}
+        newObj.view = defaultRole
+        return newObj
+      })
+    }
+   
+  })
   if (driveInfo.state === 'loading') {
     return null;
   }else if (driveInfo.state === 'hasError') {
@@ -33,6 +45,15 @@ export default function RoleDropdown(){
       }
     }
   }
+
+  //Initialize view for tool
+  let defaultRole = 'student';
+  if (!isLearner){
+    defaultRole = 'instructor';
+  }
+  setViewIfBlank(defaultRole);
+
+
   if (isLearner){
     return null;
   }
@@ -40,7 +61,7 @@ export default function RoleDropdown(){
   return <select onChange={(e)=>setPageToolView((was)=>{
     let newObj = {...was}
     newObj.view = e.target.value
-    console.log(">>>newObj",newObj)
+    // console.log(">>>newObj",newObj)
     return newObj
   })}>
     <option value='instructor'>Instructor</option>
