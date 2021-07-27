@@ -2242,7 +2242,7 @@ export default class Core {
               return {
                 useEssentialOrDefaultValue: {
                   [varName]: {
-                    variablesToCheck: varName,
+                    variablesToCheck: [varName, attrName],
                     defaultValue: dependencyValues.ancestorProp,
                   }
                 }
@@ -2331,7 +2331,7 @@ export default class Core {
           if (!attributeComponent) {
             return {
               useEssentialOrDefaultValue: {
-                [varName]: { variablesToCheck: varName }
+                [varName]: { variablesToCheck: [varName, attrName] }
               }
             }
           }
@@ -2461,7 +2461,7 @@ export default class Core {
         ) {
           return {
             useEssentialOrDefaultValue: {
-              [varName]: { variablesToCheck: varName }
+              [varName]: { variablesToCheck: [varName, attrName] }
             }
           };
         }
@@ -2672,7 +2672,7 @@ export default class Core {
               return {
                 useEssentialOrDefaultValue: {
                   [varName]: {
-                    variablesToCheck: varName,
+                    variablesToCheck: [varName, attrName],
                     defaultValue: dependencyValues.ancestorProp,
                   }
                 }
@@ -2773,7 +2773,7 @@ export default class Core {
             } else {
               return {
                 useEssentialOrDefaultValue: {
-                  [varName]: { variablesToCheck: varName }
+                  [varName]: { variablesToCheck: [varName, attrName] }
                 }
               }
             }
@@ -3920,6 +3920,11 @@ export default class Core {
     stateVarObj.arrayEntryNames = [];
     stateVarObj.varNamesIncludingArrayKeys = {};
 
+    let allStateVariablesAffected = [stateVariable];
+    if (stateVarObj.additionalStateVariablesDefined) {
+      allStateVariablesAffected.push(...stateVarObj.additionalStateVariablesDefined);
+    }
+
     // create the definition, etc., functions for the array state variable
 
     // create returnDependencies function from returnArrayDependenciesByKey
@@ -3958,9 +3963,12 @@ export default class Core {
 
       if (stateVarObj.basedOnArrayKeyStateVariables && args.arrayKeys.length > 1) {
         for (let arrayKey of args.arrayKeys) {
-          dependencies[arrayKey] = {
-            dependencyType: "stateVariable",
-            variableName: stateVarObj.arrayVarNameFromArrayKey(arrayKey)
+          for (let vName of allStateVariablesAffected) {
+            let sObj = component.state[vName];
+            dependencies[vName + "_" + arrayKey] = {
+              dependencyType: "stateVariable",
+              variableName: sObj.arrayVarNameFromArrayKey(arrayKey)
+            }
           }
         }
       } else {
@@ -3999,7 +4007,9 @@ export default class Core {
             if (!stateVarObj.dependencyNames.keysByName[extendedDepName]) {
               stateVarObj.dependencyNames.keysByName[extendedDepName] = [];
             }
-            stateVarObj.dependencyNames.keysByName[extendedDepName].push(arrayKey);
+            if (!stateVarObj.dependencyNames.keysByName[extendedDepName].includes(arrayKey)) {
+              stateVarObj.dependencyNames.keysByName[extendedDepName].push(arrayKey);
+            }
           }
         }
 
@@ -4298,15 +4308,19 @@ export default class Core {
       if (stateVarObj.basedOnArrayKeyStateVariables && args.arrayKeys.length > 1) {
         let instructions = [];
 
-        for (let key in args.desiredStateVariableValues[stateVariable]) {
-          if (key in args.dependencyValues) {
-            instructions.push({
-              setDependency: key,
-              desiredValue: args.desiredStateVariableValues[stateVariable][key],
-              treatAsInitialChange: args.initialChange
-            })
+        for (let vName of allStateVariablesAffected) {
+          for (let key in args.desiredStateVariableValues[vName]) {
+            let depName = vName + "_" + key;
+            if (depName in args.dependencyValues) {
+              instructions.push({
+                setDependency: depName,
+                desiredValue: args.desiredStateVariableValues[vName][key],
+                treatAsInitialChange: args.initialChange
+              })
+            }
           }
         }
+
         return {
           success: true,
           instructions

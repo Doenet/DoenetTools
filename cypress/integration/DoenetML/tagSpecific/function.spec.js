@@ -1076,6 +1076,42 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('point constrained to function, symbolic initial x', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function name="f">x^2</function>
+    <point x="sqrt(2)" y="1" >
+      <constraints>
+        <constrainTo>
+          $f
+        </constrainTo>
+      </constraints>
+    </point>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let p = components['/_point1'];
+
+      expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(Math.sqrt(2), 1E-6)
+      expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(2, 1E-6)
+
+      p.movePoint({ x: -2, y: 2 });
+      expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(-2, 1E-6)
+      expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(4, 1E-6)
+      
+    })
+  });
+
   it('point constrained to function, restrict domain', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1130,6 +1166,68 @@ describe('Function Tag Tests', function () {
 
       expect(x).closeTo(7, 1E-12);
       expect(6 - (x - 5) * (x - 5) * (2 / 9)).closeTo(y, 1E-5);
+
+    })
+  });
+
+  it('point constrained to function with restricted domain, not explicit', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function name="f">sqrt(x)sqrt(5-x)</function>
+    <point x="1" y="2">
+      <constraints>
+        <constrainTo>
+          $f
+        </constrainTo>
+      </constraints>
+    </point>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+    let f = x => Math.sqrt(x)*Math.sqrt(5-x);
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let p = components['/_point1'];
+      expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(1, 1E-6)
+      expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(f(1), 1E-6)
+
+
+      p.movePoint({ x: -1, y: 8 });
+
+      let x = p.stateValues.xs[0].evaluate_to_constant();
+      let y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(y).closeTo(f(x), 1E-6)
+
+      p.movePoint({ x: 6, y: 8 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(y).closeTo(f(x), 1E-6)
+
+      p.movePoint({ x: 8, y: -4 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(y).closeTo(f(x), 1E-6)
+
+
+      p.movePoint({ x: -1, y: -6 });
+
+      x = p.stateValues.xs[0].evaluate_to_constant();
+      y = p.stateValues.xs[1].evaluate_to_constant();
+
+      expect(y).closeTo(f(x), 1E-6)
 
     })
   });

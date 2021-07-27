@@ -120,6 +120,7 @@ export default class CustomAttribute extends CompositeComponent {
     containerAttrNames.push("name", "tname", "assignnames")
     if (containerAttrNames.includes(component.stateValues.attributeName.toLowerCase())) {
       console.warn(`Cannot add attribute ${component.stateValues.attributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`)
+      return { replacements: [] }
     }
 
 
