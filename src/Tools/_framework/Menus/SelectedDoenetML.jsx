@@ -353,17 +353,16 @@ const [oldValue,setoldValue] = useState();
       doenetId: props.selection[0]?.doenetId,
       contentId: props.contentId,
     };
-    //TODO drive actions: drive need these
-    // updateAssignmentTitle({
-    //   driveIdFolderId: {
-    //     driveId: props.selection[0]?.driveId,
-    //     folderId: props.selection[0]?.parentFolderId,
-    //   },
-    //   itemId: props.selection[0]?.itemId,
-    //   payloadAssignment: payload,
-    //   doenetId: props.selection[0]?.doenetId,
-    //   contentId: props.contentId,
-    // });
+    updateAssignmentTitle({
+      driveIdFolderId: {
+        driveId: props.selection[0]?.driveId,
+        folderId: props.selection[0]?.parentFolderId,
+      },
+      itemId: props.selection[0]?.itemId,
+      payloadAssignment: payload,
+      doenetId: props.selection[0]?.doenetId,
+      contentId: props.contentId,
+    });
 
         result
           .then((resp) => {
