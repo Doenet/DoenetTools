@@ -83,6 +83,7 @@ function ReturnToEditingButton(props){
       newObj.doenetML = doenetML;
       newObj.updateNumber = was.updateNumber+1;
       return newObj});
+    set(textEditorInternalValueAtom,doenetML)
   })
 
   if (activeVersionId === ""){ return null; }
@@ -258,6 +259,7 @@ function VersionHistoryPanel(props){
       newObj.doenetML = doenetML;
       newObj.updateNumber = was.updateNumber+1;
       return newObj});
+    set(textEditorInternalValueAtom,doenetML)
   })
 
   const setAsCurrent = useRecoilCallback(({snapshot,set})=> async (doenetId,version)=>{
@@ -364,8 +366,14 @@ function buildTimestamp(){
     dt.getSeconds().toString().padStart(2, '0')}`
 }
 
+const textEditorInternalValueAtom = atom({
+  key:"textEditorInternalValueAtom",
+  default:null
+})
+
 function TextEditor(props){
-  const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+  const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
+  const internalValue = useRecoilValue(textEditorInternalValueAtom);
   const [activeVersionId,setactiveVersionId]  = useRecoilState(versionHistoryActiveAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
@@ -430,8 +438,6 @@ function TextEditor(props){
 
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
-  //If this isn't a ref, it will update and force a refresh of Codemirror each time editorDoenetML changes
-  let textValue = useRef(editorDoenetML);
 
   function clearSaveTimeouts(){
     if (timeout.current !== null){
@@ -463,7 +469,7 @@ function TextEditor(props){
 
   return <>
     <CodeMirror
-      setInternalValue={textValue.current} 
+      setInternalValue={internalValue} 
       readOnly={true}
       onBeforeChange={(value) => {
         if (activeVersionId === "") { //No timers when active version history
@@ -735,6 +741,7 @@ export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
     const viewerObj = await snapshot.getPromise(viewerDoenetMLAtom);
     const updateNumber = viewerObj.updateNumber+1;
     set(viewerDoenetMLAtom,{updateNumber,doenetML})
+    set(textEditorInternalValueAtom,doenetML)
     set(editorInitAtom,true);
   })
 

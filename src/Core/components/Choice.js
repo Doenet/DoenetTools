@@ -56,7 +56,7 @@ export default class Choice extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: this.componentType,
+      componentType: "text",
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",

@@ -892,5 +892,32 @@ describe('Module Tag Tests', function () {
 
   })
 
+  it('invalid attributes ignored in module', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <module name='m' newNamespace>
+      <setup>
+        <customAttribute componentType="boolean" attribute="disabled" defaultValue="true" assignNames="disabled" />
+      </setup>
+      <p>Disabled? $disabled</p>
+    </module>
+    
+    <copy tname="m" assignNames="m1" />
+    <copy tname="m" disabled="true" assignNames="m2" />
+    <copy tname="m" disabled="false" assignNames="m3" />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/m/_p1')).should('have.text', "Disabled? ");
+    cy.get(cesc('#/m1/_p1')).should('have.text', "Disabled? ");
+    cy.get(cesc('#/m2/_p1')).should('have.text', "Disabled? ");
+    cy.get(cesc('#/m3/_p1')).should('have.text', "Disabled? ");
+
+  })
+
 
 })
