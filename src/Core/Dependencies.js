@@ -6274,6 +6274,8 @@ class AttributePrimitiveDependency extends StateVariableDependency {
       value = depComponent.attributes[this.attributeName];
       if (value) {
         value = value.primitive;
+      } else {
+        value = null;
       }
 
     }

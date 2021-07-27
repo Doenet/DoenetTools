@@ -658,4 +658,146 @@ describe('Feedback Tag Tests', function () {
     })
   });
 
+  it('feedback updated with tname', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="mi" />
+  <answer name="ans">
+    <award>
+      <when>$mi = x</when>
+    </award>
+  </answer>
+  
+  <feedback condition="$mi=y" updateWithTname="ans" name="fback"><p>You typed y!</p></feedback>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/mi textarea').type("y{enter}", { force: true })
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback").should('have.text', 'You typed y!');
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}x{enter}", { force: true })
+    cy.get("#\\/fback").should('have.text', 'You typed y!');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get("#\\/fback").should('not.exist')
+
+  });
+
+  it('feedback based on booleans, updated with tname', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="m1" />
+  <mathinput name="m2" />
+  <boolean name="got1">$m1 = x</boolean>
+  <boolean name="got2">$m2 = y</boolean>
+  <answer name="ans">
+    <award>
+      <when>$got1 and $got2</when>
+    </award>
+    <considerAsResponses>$m1 $m2</considerAsResponses>
+  </answer>
+
+  <p>Submitted responses: <copy prop="submittedResponses" tname="ans" assignNames="r1 r2" /></p>
+  
+  <subsection>
+    <title>Desired feedback behavior</title>
+    <feedback condition="$got1 and not $got2" updateWithTname="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" updateWithTname="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
+  </subsection>
+  <subsection>
+    <title>Default feedback behavior</title>
+    <feedback condition="$got1 and not $got2" name="fback1b"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" name="fback2b"><p>You got the second; what about the first?</p></feedback>
+  </subsection>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1").should('not.exist')
+    cy.get("#\\/r2").should('not.exist')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get('#\\/m2 textarea').type("y{enter}", { force: true })
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/m1 textarea').type("x{enter}", { force: true })
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', 'x')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/m2 textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('have.text', 'You got the first; what about the second?');
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', 'x')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback1").should('have.text', 'You got the first; what about the second?');
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('have.text', 'You got the first; what about the second?');
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', 'x')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+  });
+
+
+
 });
