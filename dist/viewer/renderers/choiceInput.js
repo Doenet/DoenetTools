@@ -10,7 +10,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
   }
   updateValidationState() {
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -54,6 +54,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       return null;
     }
     this.updateValidationState();
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
     if (this.doenetSvData.inline) {
       let checkWorkStyle = {
         position: "relative",
@@ -138,6 +139,11 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
             }));
           }
         }
+        if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+          checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+        } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+          checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
+        }
       }
       let svData = this.doenetSvData;
       let optionsList = this.doenetSvData.choiceTexts.map(function(s, i) {
@@ -165,7 +171,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
         id: this.componentName,
         onChange: this.onChangeHandler,
         value,
-        disabled: this.doenetSvData.disabled,
+        disabled,
         multiple: this.doenetSvData.selectMultiple
       }, /* @__PURE__ */ React.createElement("option", {
         hidden: true,
@@ -245,7 +251,6 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       };
       let onChangeHandler = this.onChangeHandler;
       let selectedIndices = this.doenetSvData.selectedIndices;
-      let disabled = this.doenetSvData.disabled;
       let keyBeginning = inputKey + "_choice";
       let children = this.children;
       let inputType = "radio";

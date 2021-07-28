@@ -65,7 +65,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(GradebookAssignmentView, {
-            assignmentId,
+            doenetId,
             key: `GBAssign${old.length + 1}`
           })
         ]);
@@ -74,7 +74,7 @@ export const useToolControlHelper = () => {
         setLayers((old) => [
           ...old,
           /* @__PURE__ */ React.createElement(GradebookAttemptView, {
-            assignmentId,
+            doenetId,
             userId,
             attemptNumber,
             key: `GBView${old.length + 1}`

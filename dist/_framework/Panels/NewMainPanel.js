@@ -4,7 +4,6 @@ import Profile from "../Profile.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faChevronRight} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {atom, useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
-import {selectedMenuPanelAtom} from "./NewMenuPanel.js";
 export const mainPanelClickAtom = atom({
   key: "mainPanelClickAtom",
   default: []
@@ -36,15 +35,11 @@ display: inline-block;
 `;
 export default function MainPanel({headerControls, headerControlsPositions, children, setMenusOpen, displayProfile}) {
   console.log(">>>===main panel");
-  const setClearSelectedCourseMenu = useRecoilCallback(({set}) => () => {
-    set(selectedMenuPanelAtom, "");
-  });
   const mpOnClick = useRecoilCallback(({set, snapshot}) => async () => {
     const atomArray = await snapshot.getPromise(mainPanelClickAtom);
     for (let obj of atomArray) {
       set(obj.atom, obj.value);
     }
-    setClearSelectedCourseMenu();
   });
   const controls = [];
   if (displayProfile) {

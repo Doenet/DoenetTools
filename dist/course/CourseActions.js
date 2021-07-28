@@ -2,11 +2,11 @@ import React from "../_snowpack/pkg/react.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import axios from "../_snowpack/pkg/axios.js";
 import {useRecoilCallback} from "../_snowpack/pkg/recoil.js";
-import {assignmentDictionary} from "./Course.js";
-import Toast, {useToast} from "../_framework/Toast.js";
+import {useToast, toastType} from "../_framework/Toast.js";
 import {
-  itemHistoryAtom
-} from "../_sharedRecoil/content.js";
+  itemHistoryAtom,
+  assignmentDictionary
+} from "../_framework/ToolHandlers/CourseToolHandler.js";
 const formatDate = (dt) => {
   const formattedDate = `${dt.getFullYear().toString().padStart(2, "0")}-${(dt.getMonth() + 1).toString().padStart(2, "0")}-${dt.getDate().toString().padStart(2, "0")} ${dt.getHours().toString().padStart(2, "0")}:${dt.getMinutes().toString().padStart(2, "0")}:${dt.getSeconds().toString().padStart(2, "0")}`;
   return formattedDate;
@@ -16,7 +16,7 @@ const formatFutureDate = (dt) => {
   return formattedFutureDate;
 };
 export const useAssignment = () => {
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const addContentAssignment = useRecoilCallback(({snapshot, set}) => async (props) => {
     let {driveIditemIddoenetIdparentFolderId, contentId, versionId, doenetId} = props;
     const dt = new Date();
@@ -165,7 +165,7 @@ export const useAssignment = () => {
       return {message: e, success: false};
     }
   });
-  const updateVersionHistory = useRecoilCallback(({snapshot, set}) => async (doenetId, versionId) => {
+  const updateVersionHistory = useRecoilCallback(({snapshot, set}) => async (doenetId, versionId, isAssigned) => {
     set(itemHistoryAtom(doenetId), (was) => {
       let newHistory = {...was};
       newHistory.named = [...was.named];
@@ -173,12 +173,13 @@ export const useAssignment = () => {
       for (const [i, version] of newHistory.named.entries()) {
         if (versionId === version.versionId) {
           newVersion = {...version};
-          newVersion.isAssigned = 1;
+          newVersion.isAssigned = isAssigned;
           newHistory.named.splice(i, 1, newVersion);
         }
       }
       return newHistory;
     });
+    return versionId;
   });
   const updatePrevVersionHistory = useRecoilCallback(({snapshot, set}) => async (doenetId, versionId) => {
     set(itemHistoryAtom(doenetId), (was) => {
@@ -278,7 +279,7 @@ export const useAssignment = () => {
     set(assignmentDictionary(driveIditemIddoenetIdparentFolderId), payloadAssignment);
   });
   const onAssignmentError = ({errorMessage = null}) => {
-    addToast(`${errorMessage}`, ToastType.ERROR);
+    addToast(`${errorMessage}`, toastType.ERROR);
   };
   return {
     addContentAssignment,

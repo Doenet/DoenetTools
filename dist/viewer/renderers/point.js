@@ -88,6 +88,17 @@ export default class Point extends DoenetRenderer {
       this.pointJXG.visProp["visible"] = false;
       this.pointJXG.visPropCalc["visible"] = false;
     }
+    if (this.pointJXG.visProp.fillcolor !== this.doenetSvData.selectedStyle.markerColor) {
+      this.pointJXG.visProp.fillcolor = this.doenetSvData.selectedStyle.markerColor;
+      this.pointJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.markerColor;
+    }
+    let newFace = normalizeStyle(this.doenetSvData.selectedStyle.markerStyle);
+    if (this.pointJXG.visProp.face !== newFace) {
+      this.pointJXG.setAttribute({face: newFace});
+    }
+    if (this.pointJXG.visProp.size !== this.doenetSvData.selectedStyle.markerSize) {
+      this.pointJXG.visProp.size = this.doenetSvData.selectedStyle.markerSize;
+    }
     if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
       this.pointJXG.visProp.highlightfillcolor = "#EEEEEE";
       this.pointJXG.visProp.highlightstrokecolor = "#C3D9FF";

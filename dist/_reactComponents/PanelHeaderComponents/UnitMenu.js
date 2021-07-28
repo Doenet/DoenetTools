@@ -3,7 +3,7 @@ import styled, {css} from "../../_snowpack/pkg/styled-components.js";
 import "./theme.css.proxy.js";
 const Textfield = styled.input`
   border-radius: 5px;
-  border: 2px solid black;
+  border: ${(props) => props.alert};
   z-index: 0;
   height: 24px;
   width: 48px;
@@ -11,6 +11,7 @@ const Textfield = styled.input`
   padding: 0px 36px 0px 2px;
   text-align: center;
   resize: none;
+  cursor: ${(props) => props.disabled ? "not-allowed" : "default"}
 `;
 const Label = styled.p`
   font-size: 14px;
@@ -29,17 +30,17 @@ const LabelContainer = styled.div`
     display: ${(props) => props.align};
 `;
 const Units = styled.button`
-  background-color: #1a5a99;
+  background-color: ${(props) => props.disabled ? "#e2e2e2" : "#1a5a99"};
   border-radius: 0px 3px 3px 0px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: white;
+  color: ${(props) => props.disabled ? "black" : "white"};
   font-size: 12px;
   right: 36px;
   :hover {
-    cursor: pointer;
+    cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   }
 `;
 const Unit = styled.div`
@@ -51,7 +52,7 @@ const Unit = styled.div`
   border: 2px black;
   border-radius: 5px;
   ${Units}:hover & {
-    display: block;
+    display: ${(props) => props.disabled ? "none" : "block"};
   }
 `;
 const Unitoption = styled.button`
@@ -179,6 +180,14 @@ export default function UnitMenu(props) {
       selected: i === unitIndex ? "True" : "False"
     }, listOfOptions[i]));
   }
+  var alert = "2px solid black";
+  if (props.alert) {
+    alert = "2px solid #C1292E";
+  }
+  var disabled = false;
+  if (props.disabled) {
+    disabled = true;
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(LabelContainer, {
     align
   }, /* @__PURE__ */ React.createElement(Label, {
@@ -189,9 +198,11 @@ export default function UnitMenu(props) {
     },
     className: "noselect"
   }, labelvalue), /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Textfield, {
+    disabled,
     id: "text",
     type: "text",
     value: currentValue,
+    alert,
     onBlur: () => {
       updateUnit();
     },
@@ -201,7 +212,10 @@ export default function UnitMenu(props) {
     onChange: () => {
       changeValue(event);
     }
-  }), /* @__PURE__ */ React.createElement(Units, null, currentUnit, /* @__PURE__ */ React.createElement(Unit, {
-    id: "unit"
+  }), /* @__PURE__ */ React.createElement(Units, {
+    disabled
+  }, currentUnit, /* @__PURE__ */ React.createElement(Unit, {
+    id: "unit",
+    disabled
   }, unitComponents)))));
 }

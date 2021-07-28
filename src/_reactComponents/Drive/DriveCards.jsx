@@ -19,7 +19,7 @@ import {
 } from "recoil";
 import { 
   fetchDrivesSelector,drivePathSyncFamily,loadDriveInfoQuery
-} from "./Drive";
+} from "./NewDrive";
 
 
 const DriveCards = (props) => {

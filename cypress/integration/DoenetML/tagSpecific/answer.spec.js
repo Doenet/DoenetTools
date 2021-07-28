@@ -9800,4 +9800,83 @@ describe('Answer Tag Tests', function () {
 
     })
   });
+
+  it('award based on choice text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer>
+    <choiceinput inline>
+      <choice name="ca">cat</choice>
+      <choice credit="1">dog</choice>
+      <choice>monkey</choice>
+    </choiceinput>
+    <award><when>$_choiceinput1 = <copy prop="text" tname="ca" /></when></award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_choiceinput1').select(`cat`);
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_correct').should('be.visible');
+
+    cy.get('#\\/_choiceinput1').select(`dog`);
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+
+    cy.get('#\\/_choiceinput1').select(`monkey`);
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+
+  });
+
+  it('error expressions are not matched', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer>x^</answer>
+  <answer symbolicEquality>x^</answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinput1Name = components['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let mathinput1SubmitAnchor = cesc('#' + mathinput1Name + '_submit');
+      let mathinput1CorrectAnchor = cesc('#' + mathinput1Name + '_correct');
+      let mathinput1IncorrectAnchor = cesc('#' + mathinput1Name + '_incorrect');
+
+      let mathinput2Name = components['/_answer2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2SubmitAnchor = cesc('#' + mathinput2Name + '_submit');
+      let mathinput2CorrectAnchor = cesc('#' + mathinput2Name + '_correct');
+      let mathinput2IncorrectAnchor = cesc('#' + mathinput2Name + '_incorrect');
+
+      cy.get(mathinput1SubmitAnchor).click();
+      cy.get(mathinput1IncorrectAnchor).should('be.visible');
+      cy.get(mathinput2SubmitAnchor).click();
+      cy.get(mathinput2IncorrectAnchor).should('be.visible');
+
+      cy.get(mathinput1Anchor).type("x^{enter}", { force: true })
+      cy.get(mathinput1IncorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type("x^{enter}", { force: true })
+      cy.get(mathinput2IncorrectAnchor).should('be.visible');
+
+      cy.get(mathinput1Anchor).type("{end}{leftArrow}2{enter}", { force: true })
+      cy.get(mathinput1IncorrectAnchor).should('be.visible');
+      cy.get(mathinput2Anchor).type("{end}{leftArrow}2{enter}", { force: true })
+      cy.get(mathinput2IncorrectAnchor).should('be.visible');
+
+
+    })
+
+  });
+
 })

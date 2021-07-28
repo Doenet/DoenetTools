@@ -27,7 +27,7 @@ import "../_utils/util.css.proxy.js";
 import Tool from "../_framework/Tool.js";
 import Switch from "../_framework/Switch.js";
 import {useToolControlHelper, ProfileContext} from "../_framework/ToolRoot.js";
-import {useToast} from "../_framework/Toast.js";
+import {useToast, toastType} from "../_framework/Toast.js";
 import {URLPathSync} from "../library/Library.js";
 import Enrollment from "./Enrollment.js";
 import {useAssignment} from "./CourseActions.js";
@@ -119,7 +119,6 @@ function AutoSelect(props) {
 }
 export default function Course(props) {
   const {openOverlay, activateMenuPanel} = useToolControlHelper();
-  const [toast, toastType] = useToast();
   let routePathDriveId = "";
   let routePathFolderId = "";
   let pathItemId = "";
@@ -315,7 +314,7 @@ const DoenetMLInfoPanel = (props) => {
     }
   }
   let assignmentForm = null;
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const [oldValue, setoldValue] = useState();
   const handleChange = (event) => {
     event.preventDefault();
@@ -375,7 +374,7 @@ const DoenetMLInfoPanel = (props) => {
       });
       result.then((resp) => {
         if (resp.data.success) {
-          addToast(`Updated '${name}' to '${value}'`, ToastType.SUCCESS);
+          addToast(`Updated '${name}' to '${value}'`, toastType.SUCCESS);
         } else {
           onAssignmentError({errorMessage: resp.data.message});
         }
@@ -541,7 +540,7 @@ const VersionHistoryInfoPanel = (props) => {
     onAssignmentError
   } = useAssignment();
   const {makeAssignment, convertAssignmentToContent} = useAssignmentCallbacks();
-  const [addToast, ToastType] = useToast();
+  const addToast = useToast();
   const [checkIsAssigned, setIsAssigned] = useState(false);
   const [selectVersion, setSelectVersion] = useState(false);
   const versionHistorySelected = useRecoilCallback(({snapshot, set}) => async (version) => {
@@ -632,7 +631,7 @@ const VersionHistoryInfoPanel = (props) => {
             updateVersionHistory(itemInfo.doenetId, selectedVId);
             try {
               if (result.success) {
-                addToast(`Add new assignment`, ToastType.SUCCESS);
+                addToast(`Add new assignment`, toastType.SUCCESS);
               } else {
                 onAssignmentError({errorMessage: result.message});
               }
@@ -675,7 +674,7 @@ const VersionHistoryInfoPanel = (props) => {
             });
             result.then((resp) => {
               if (resp.data.success) {
-                addToast(`'UnAssigned ${itemInfo.label}''`, ToastType.SUCCESS);
+                addToast(`'UnAssigned ${itemInfo.label}''`, toastType.SUCCESS);
               } else {
                 onAssignmentError({errorMessage: resp.data.message});
               }
@@ -732,7 +731,7 @@ const VersionHistoryInfoPanel = (props) => {
             updatePrevVersionHistory(itemInfo.doenetId, prevAssignedVersionId());
             try {
               if (result.success) {
-                addToast(`Switch  assignment`, ToastType.SUCCESS);
+                addToast(`Switch  assignment`, toastType.SUCCESS);
               } else {
                 onAssignmentError({errorMessage: result.message});
               }

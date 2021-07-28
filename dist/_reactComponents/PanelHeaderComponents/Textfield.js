@@ -24,8 +24,15 @@ export default function Textfield(props) {
     width: "auto",
     alignItems: "flex-end"
   };
+  if (props.alert) {
+    textfield.border = "2px solid #C1292E";
+  }
   if (props.label) {
     label.value = props.label;
+  }
+  if (props.disabled) {
+    textfield.border = "2px solid #e2e2e2";
+    textfield.cursor = "not-allowed";
   }
   if (props.value) {
     textfield.value = props.value;

@@ -868,9 +868,9 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Enter too large an error in exponent")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2{rightarrow}.0004-4{enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2.0004{rightarrow}-4{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2{rightarrow}.0004-4{enter}', { force: true, delay: 0 });
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2.0004{rightarrow}-4{enter}', { force: true, delay: 0 });
       cy.get(mathinput2IncorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {
@@ -880,9 +880,9 @@ describe('Allow error in numbers validation tests', function () {
       });
 
       cy.log("Small error in exponent")
-      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2{rightarrow}.0001-4{enter}', { force: true, delay: 0 });
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2.0001{rightarrow}-4{enter}', { force: true, delay: 0 });
       cy.get(mathinputIncorrectAnchor).should('be.visible');
-      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2{rightarrow}.0001-4{enter}', { force: true, delay: 0 });
+      cy.get(mathinput2Anchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10x^2.0001{rightarrow}-4{enter}', { force: true, delay: 0 });
       cy.get(mathinput2CorrectAnchor).should('be.visible');
 
       cy.window().then((win) => {

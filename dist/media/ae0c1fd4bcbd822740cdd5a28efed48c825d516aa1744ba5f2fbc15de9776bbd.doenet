@@ -32,7 +32,7 @@
   </setup>
 
   <updateValue label="Add line" name="addLine" tname="nPoints" newValue="$nPoints+1" type="number" />
-  <updateValue label="Delete line" name="deleteLine" tname="nPoints" newValue="$nPoints-1" type="number" disable="$nPoints <= 1" />
+  <updateValue label="Delete line" name="deleteLine" tname="nPoints" newValue="$nPoints-1" type="number" disabled="$nPoints <= 1" />
 
   <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_n" ylabel="$(variable)_{n+1}" showNavigation="$showNavigation" identicalAxisScales >
     <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" nIterationsRequired="$nIterationsRequired" attractThreshold="$attractThreshold" variable="$variable" />

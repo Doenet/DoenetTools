@@ -1,6 +1,5 @@
 import React from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {toolViewAtom} from "../NewToolRoot.js";
 import {
   useRecoilCallback
 } from "../../_snowpack/pkg/recoil.js";
@@ -25,11 +24,7 @@ const ControlsWrapper = styled.div`
 `;
 export default function SupportPanel({hide, children, panelTitles = [], panelIndex}) {
   const setSupportPanelIndex = useRecoilCallback(({set}) => (index) => {
-    set(toolViewAtom, (was) => {
-      let newObj = {...was};
-      newObj.supportPanelIndex = index;
-      return newObj;
-    });
+    console.log(">>>TODO: change SupportPanelIndex to ", index);
   });
   let panelSelector = null;
   if (panelTitles.length > 0) {
@@ -49,7 +44,7 @@ export default function SupportPanel({hide, children, panelTitles = [], panelInd
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ControlsWrapper, {
     $hide: hide
-  }, panelSelector), /* @__PURE__ */ React.createElement(SupportWrapper, {
+  }), /* @__PURE__ */ React.createElement(SupportWrapper, {
     $hide: hide
   }, children));
 }

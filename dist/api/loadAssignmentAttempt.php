@@ -12,9 +12,9 @@ $instructorUserId = $jwtArray['userId'];
 
 //TODO: Check if $userId is an Instructor who has access
 
-if (!isset($_REQUEST["assignmentId"])) {
+if (!isset($_REQUEST["doenetId"])) {
     http_response_code(400);
-    echo "Database Retrieval Error: No assignmentId specified!";
+    echo "Database Retrieval Error: No doenetId specified!";
 } else if (!isset($_REQUEST["userId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No userId specified!";
@@ -24,7 +24,7 @@ if (!isset($_REQUEST["assignmentId"])) {
 } else {
 
 
-    $assignmentId = mysqli_real_escape_string($conn, $_REQUEST["assignmentId"]);
+    $doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
     $attemptNumber = mysqli_real_escape_string($conn, $_REQUEST["attemptNumber"]);
     $userId = mysqli_real_escape_string($conn, $_REQUEST["userId"]);
     $attemptTaken = false;
@@ -32,7 +32,7 @@ if (!isset($_REQUEST["assignmentId"])) {
     $sql = "SELECT *
     FROM user_assignment_attempt AS uaa
     WHERE uaa.userId = '$userId'
-    AND uaa.assignmentId = '$assignmentId'
+    AND uaa.doenetId = '$doenetId'
     AND uaa.attemptNumber = '$attemptNumber'
     ";
 
@@ -50,24 +50,21 @@ if (!isset($_REQUEST["assignmentId"])) {
 	ua.creditOverride as assignmentCreditOverride,
 	uaa.credit as attemptCredit,
 	uaa.creditOverride AS attemptCreditOverride,
+    uaa.contentId as contentId,
     ci.stateVariables AS stateVariables,
     ci.variant AS variant,
     ci.timestamp AS timestamp,
-    cb.doenetML AS doenetML
+    ci.interactionSource AS interactionSource
     FROM content_interactions AS ci
-    LEFT JOIN content AS c
-    ON c.contentId = ci.contentId
-    LEFT JOIN content_branch as cb
-    ON c.doenetId = cb.doenetId
-    LEFT JOIN user_assignment AS ua
-    ON ua.assignmentId = '$assignmentId'
+    JOIN user_assignment AS ua
+    ON ua.doenetId = '$doenetId'
     AND ua.userId = '$userId'
-    LEFT JOIN user_assignment_attempt AS uaa
+    JOIN user_assignment_attempt AS uaa
     ON uaa.attemptNumber = '$attemptNumber'
-    AND uaa.assignmentId = '$assignmentId'
+    AND uaa.doenetId = '$doenetId'
     AND uaa.userId = '$userId'
     WHERE ci.attemptNumber = '$attemptNumber'
-    AND ci.assignmentId = '$assignmentId'
+    AND ci.doenetId = '$doenetId'
     AND ci.userId = '$userId'
     ";
 
@@ -78,14 +75,15 @@ if (!isset($_REQUEST["assignmentId"])) {
         $row = $result->fetch_assoc();
         $response_arr = array(
             "assignmentAttempted" => $attemptTaken,
-            "doenetML"=>$row['doenetML'],
             "stateVariables"=>$row['stateVariables'],
             "variant"=>$row['variant'],
+            "interactionSource"=>$row['interactionSource'],
             "assignmentCredit"=>$row['assignmentCredit'],
             "assignmentCreditOverride"=>$row['assignmentCreditOverride'],
             "attemptCredit"=>$row['attemptCredit'],
             "attemptCreditOverride"=>$row['attemptCreditOverride'],
             "timestamp"=>$row['timestamp'],
+            "contentId"=>$row['contentId'],
         );
 
         // set response code - 200 OK
@@ -94,50 +92,52 @@ if (!isset($_REQUEST["assignmentId"])) {
         // make it json format
         echo json_encode($response_arr);
         
-    } else if ($result->num_rows == 0) {
+    } 
+    // else if ($result->num_rows == 0) {
 
-        $sql = "SELECT
-        c.doenetML,
-        ua.creditOverride
-        FROM user_assignment AS ua
-        LEFT JOIN assignment AS a
-        ON a.assignmentId = '$assignmentId'
-        LEFT JOIN content AS c
-        ON a.contentId = c.contentId
-        WHERE ua.userId = '$userId'
-        AND ua.assignmentId = '$assignmentId'; 
-        ";
+    //     $sql = "SELECT
+    //     c.doenetML,
+    //     ua.creditOverride
+    //     FROM user_assignment AS ua
+    //     LEFT JOIN assignment AS a
+    //     ON a.assignmentId = '$assignmentId'
+    //     LEFT JOIN content AS c
+    //     ON a.contentId = c.contentId
+    //     WHERE ua.userId = '$userId'
+    //     AND ua.assignmentId = '$assignmentId'; 
+    //     ";
 
-        $result = $conn->query($sql); 
-        if($result->num_rows == 0){
-            echo "no rows";
-        }
-        else{
-            $row = $result->fetch_assoc();
+    //     $result = $conn->query($sql); 
+    //     if($result->num_rows == 0){
+    //         echo "no rows";
+    //     }
+    //     else{
+    //         $row = $result->fetch_assoc();
 
-            $response_arr = array(
-                "assignmentAttempted" => $attemptTaken,
-                "doenetML"=>$row['doenetML'],
-                "stateVariables"=> array(),
-                "variant"=>array(),
-                "assignmentCredit"=>0,
-                "assignmentCreditOverride"=>$row['assignmentCreditOverride'],
-                "attemptCredit"=>0,
-                "attemptCreditOverride"=>0,
-                "timestamp"=> NULL, 
+    //         $response_arr = array(
+    //             "assignmentAttempted" => $attemptTaken,
+    //             "doenetML"=>$row['doenetML'],
+    //             "stateVariables"=> array(),
+    //             "variant"=>array(),
+    //             "assignmentCredit"=>0,
+    //             "assignmentCreditOverride"=>$row['assignmentCreditOverride'],
+    //             "attemptCredit"=>0,
+    //             "attemptCreditOverride"=>0,
+    //             "timestamp"=> NULL, 
 
-            );
+    //         );
 
-            // set response code - 200 OK
-            http_response_code(200);
+    //         // set response code - 200 OK
+    //         http_response_code(200);
 
-            // make it json format
-            echo json_encode($response_arr);
-        }
+    //         // make it json format
+    //         echo json_encode($response_arr);
+    //     }
         
-    } else {
+    // } 
+    else {
         http_response_code(500);
-        echo "Database Retrieval Error: Too Many Attempts Returned!";
+        echo "Database Retrieval Error: 0 or too Many Attempts Returned!";
     }
 
     
