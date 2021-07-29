@@ -896,7 +896,7 @@ function useAcceptBindings() {
     ({ snapshot, set }) =>
       async ({ driveId, parentFolderId, itemId, driveInstanceId, label }) => {
         const fInfo = await snapshot.getPromise(
-          folderDictionary({ driveId, parentFolderId }),
+          folderDictionary({ driveId, folderId: parentFolderId }),
         );
         const globalSelectedNodes = await snapshot.getPromise(
           globalSelectedNodesAtom,
@@ -939,7 +939,7 @@ function useAcceptBindings() {
         set(
           folderDictionary({
             driveId,
-            parentFolderId,
+            folderId: parentFolderId,
           }),
           newFInfo,
         );
