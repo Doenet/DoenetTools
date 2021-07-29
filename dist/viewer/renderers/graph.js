@@ -19,7 +19,8 @@ export default class Graph extends DoenetRenderer {
       boundingbox,
       axis: false,
       showCopyright: false,
-      showNavigation: this.doenetSvData.showNavigation
+      showNavigation: this.doenetSvData.showNavigation,
+      keepAspectRatio: this.doenetSvData.identicalAxisScales
     });
     if (this.doenetSvData.displayXAxis) {
       let xaxisOptions = {};

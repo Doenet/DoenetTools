@@ -10,7 +10,7 @@ const Container = styled.div`
 `;
 const Textfield = styled.input`
   border-radius: 5px;
-  border: 2px solid black;
+  border: ${(props) => props.alert ? "2px solid #C1292E" : "2px solid black"};
   z-index: 0;
   height: 24px;
   width: 46px;
@@ -18,33 +18,34 @@ const Textfield = styled.input`
   padding: 0px 36px 0px 36px;
   text-align: center;
   resize: none;
+  cursor: ${(props) => props.disabled ? "not-allowed" : "default"}
 `;
 const IncreaseButton = styled.button`
-  background-color: #1a5a99;
+  background-color: ${(props) => props.disabled ? "#e2e2e2" : "#1a5a99"};
   border-radius: 0px 3px 3px 0px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: white;
+  color: ${(props) => props.disabled ? "black" : "white"};
   font-size: 18px;
   right: 70px;
   :hover {
-    cursor: pointer;
+    cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   }
 `;
 const DecreaseButton = styled.button`
-  background-color: #1a5a99;
+  background-color: ${(props) => props.disabled ? "#e2e2e2" : "#1a5a99"};
   border-radius: 3px 0px 0px 3px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: white;
+  color: ${(props) => props.disabled ? "black" : "white"};
   font-size: 18px;
   left: -120px;
   :hover {
-    cursor: pointer;
+    cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   }
 `;
 const Menu = styled.div`
@@ -181,12 +182,22 @@ export default function Increment(props) {
       align = "static";
     }
   }
+  var alert = false;
+  if (props.alert) {
+    alert = true;
+  }
+  var disabled = false;
+  if (props.disabled) {
+    disabled = true;
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Container, {
     align
   }, /* @__PURE__ */ React.createElement(Label, {
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(Textfield, {
+    alert,
+    disabled,
     value: currentValue,
     onClick: () => {
       displayMenu();
@@ -195,10 +206,12 @@ export default function Increment(props) {
       changeValue(data);
     }
   }), /* @__PURE__ */ React.createElement(DecreaseButton, {
+    disabled,
     onClick: () => {
       decrement();
     }
   }, decreaseIcon), /* @__PURE__ */ React.createElement(IncreaseButton, {
+    disabled,
     onClick: () => {
       increment();
     }

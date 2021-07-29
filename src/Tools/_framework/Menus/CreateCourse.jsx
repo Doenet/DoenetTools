@@ -4,10 +4,10 @@ import axios from "axios";
 
 import { useToast, toastType } from '@Toast';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler';
 import { useRecoilCallback } from 'recoil';
 // import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
+import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 
 
 const CreateCourse = (props) =>{

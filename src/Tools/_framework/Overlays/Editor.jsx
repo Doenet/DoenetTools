@@ -470,7 +470,7 @@ function TextEditor(props){
   return <>
     <CodeMirror
       setInternalValue={internalValue} 
-      readOnly={true}
+      // readOnly={true}
       onBeforeChange={(value) => {
         if (activeVersionId === "") { //No timers when active version history
           setEditorDoenetML(value);

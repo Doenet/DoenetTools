@@ -1303,7 +1303,10 @@ export default class Answer extends InlineComponent {
           creditAchieved
         }
 
-      }
+      },
+      callBack: () => this.coreFunctions.triggerChainedActions({
+        componentName: this.componentName,
+      })
     })
 
     // let documentComponentName = this.ancestors[this.ancestors.length - 1].componentName;

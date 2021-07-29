@@ -22,6 +22,7 @@ import {
  } from '@fortawesome/free-regular-svg-icons';
 
 import { nanoid } from 'nanoid';
+import {folderDictionaryFilterSelector} from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
@@ -224,6 +225,56 @@ export const fetchDrivesSelector = selector({
     }
   }
 })
+export const loadAssignmentSelector = selectorFamily({
+  key: 'loadAssignmentSelector',
+  get:
+    (doenetId) =>
+    async ({ get, set }) => {
+      const { data } = await axios.get(
+        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
+      );
+      return data;
+    },
+});
+export const assignmentDictionary = atomFamily({
+  key: 'assignmentDictionary',
+  default: selectorFamily({
+    key: 'assignmentDictionary/Default',
+    get:
+      (driveIditemIddoenetIdparentFolderId) =>
+      async ({ get }, instructions) => {
+        let folderInfoQueryKey = {
+          driveId: driveIditemIddoenetIdparentFolderId.driveId,
+          folderId: driveIditemIddoenetIdparentFolderId.folderId,
+        };
+        let folderInfo = get(
+          folderDictionaryFilterSelector(folderInfoQueryKey),
+        );
+        const itemObj =
+          folderInfo?.contentsDictionary?.[
+            driveIditemIddoenetIdparentFolderId.itemId
+          ];
+        if (driveIditemIddoenetIdparentFolderId.doenetId) {
+          const aInfo = await get(
+            loadAssignmentSelector(
+              driveIditemIddoenetIdparentFolderId.doenetId,
+            ),
+          );
+          if (aInfo) {
+            return aInfo?.assignments[0];
+          } else return null;
+        } else return null;
+      },
+  }),
+});
+export let assignmentDictionarySelector = selectorFamily({
+  key: 'assignmentDictionarySelector',
+  get:
+    (driveIditemIddoenetIdparentFolderId) =>
+    ({ get }) => {
+      return get(assignmentDictionary(driveIditemIddoenetIdparentFolderId));
+    },
+});
 
 export const variantInfoAtom = atom({
   key:"variantInfoAtom",

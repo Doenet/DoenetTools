@@ -4,11 +4,15 @@ export default function ToggleButton(props) {
   const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
   const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
   const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  var color = props.alert ? "#C1292E" : `${doenetMainBlue}`;
+  if (props.disabled) {
+    color = "#e2e2e2";
+  }
   var toggleButton = {
     margin: "0px",
     height: "24px",
-    border: `2px solid ${doenetMainBlue}`,
-    color: `${doenetMainBlue}`,
+    border: `2px solid ${color}`,
+    color: `${color}`,
     backgroundColor: "#FFF",
     borderRadius: "5px",
     value: "Toggle Button",
@@ -18,6 +22,9 @@ export default function ToggleButton(props) {
     textAlign: "center",
     width: "auto"
   };
+  if (props.disabled) {
+    toggleButton.cursor = "not-allowed";
+  }
   var icon = "";
   var label = {
     value: "Label:",
@@ -43,7 +50,7 @@ export default function ToggleButton(props) {
     }
   }
   if (isSelected === true) {
-    toggleButton.backgroundColor = `${doenetMainBlue}`;
+    toggleButton.backgroundColor = `${color}`;
     toggleButton.color = "#FFF";
     toggleButton.border = "2px solid #FFF";
     if (props.switch_value)

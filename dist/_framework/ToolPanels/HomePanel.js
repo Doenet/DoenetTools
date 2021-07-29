@@ -1,7 +1,5 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useHistory} from "../../_snowpack/pkg/react-router-dom.js";
-import {useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
-import {toolViewAtom} from "../NewToolRoot.js";
 import Cookies from "../../_snowpack/pkg/js-cookie.js";
 import logo from "../../media/Doenet_Logo_Frontpage.png.proxy.js";
 import styled from "../../_snowpack/pkg/styled-components.js";

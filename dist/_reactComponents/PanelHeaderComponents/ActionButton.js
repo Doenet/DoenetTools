@@ -73,6 +73,13 @@ export default function ActionButton(props) {
   if (props.num === "last") {
     actionButton.borderRadius = "0px 5px 5px 0px";
   }
+  if (props.alert) {
+    actionButton.border = "2px solid #C1292E";
+  }
+  if (props.disabled) {
+    actionButton.border = "2px solid #e2e2e2";
+    actionButton.cursor = "not-allowed";
+  }
   function handleClick(e) {
     if (props.onClick)
       props.onClick(e);
