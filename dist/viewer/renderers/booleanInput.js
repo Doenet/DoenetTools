@@ -11,7 +11,7 @@ export default class BooleanInput extends DoenetRenderer {
   static initializeChildrenOnConstruction = false;
   updateValidationState() {
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -32,6 +32,7 @@ export default class BooleanInput extends DoenetRenderer {
       return null;
     }
     this.updateValidationState();
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
     const inputKey = this.componentName + "_input";
     let checkWorkStyle = {
       position: "relative",
@@ -116,6 +117,11 @@ export default class BooleanInput extends DoenetRenderer {
           }));
         }
       }
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
+      }
     }
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
       id: this.componentName
@@ -127,7 +133,7 @@ export default class BooleanInput extends DoenetRenderer {
       id: inputKey,
       checked: this.doenetSvData.value,
       onChange: this.onChangeHandler,
-      disabled: this.doenetSvData.disabled
+      disabled
     }), this.doenetSvData.label), checkWorkButton));
   }
 }

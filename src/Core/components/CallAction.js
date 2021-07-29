@@ -4,8 +4,6 @@ import InlineComponent from './abstract/InlineComponent';
 export default class CallAction extends InlineComponent {
   static componentType = "callAction";
 
-  static triggeringAction = "callAction";
-
   static acceptTname = true;
 
   static keepChildrenSerialized({ serializedComponent }) {

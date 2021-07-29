@@ -1,13 +1,12 @@
-import React, {useState, lazy, Suspense, useRef, useEffect} from "../_snowpack/pkg/react.js";
+import React, {useState, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
 import {
   atom,
   selector,
-  atomFamily,
   useRecoilValue,
+  atomFamily,
   useRecoilCallback,
-  useRecoilValueLoadable,
-  useSetRecoilState,
-  useRecoilState
+  useRecoilState,
+  useSetRecoilState
 } from "../_snowpack/pkg/recoil.js";
 import styled from "../_snowpack/pkg/styled-components.js";
 import Toast from "./Toast.js";
@@ -18,9 +17,7 @@ import SupportPanel from "./Panels/NewSupportPanel.js";
 import MenuPanel from "./Panels/NewMenuPanel.js";
 import FooterPanel from "./Panels/FooterPanel.js";
 import {animated} from "../_snowpack/pkg/@react-spring/web.js";
-import {selectedMenuPanelAtom} from "./Panels/NewMenuPanel.js";
-import {mainPanelClickAtom} from "./Panels/NewMainPanel.js";
-import {useHistory} from "../_snowpack/pkg/react-router.js";
+import {useHistory, useLocation} from "../_snowpack/pkg/react-router.js";
 const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
@@ -37,7 +34,6 @@ const ToolContainer = styled(animated.div)`
   gap: 0px;
   box-sizing: border-box;
 `;
-export const ProfileContext = React.createContext({});
 export const profileAtom = atom({
   key: "profileAtom",
   default: selector({
@@ -66,91 +62,22 @@ export const paramObjAtom = atom({
   key: "paramObjAtom",
   default: {}
 });
-const urlChangeSourceParamObjAtom = atom({
-  key: "urlChangeSourceParamObjAtom",
-  default: {}
-});
-export const toolViewAtom = atom({
-  key: "toolViewAtom",
-  default: {
-    pageName: "Init"
-  }
-});
-let toolsObj = {
-  content: {
-    pageName: "Content",
+export default function ToolRoot() {
+  console.log(">>>===ToolRoot ");
+  const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
+    pageName: "init",
+    menuPanelCap: "",
     currentMenus: [],
     menusTitles: [],
     menusInitOpen: [],
-    currentMainPanel: "Content",
+    currentMainPanel: "Empty",
     supportPanelOptions: [],
     supportPanelTitles: [],
     supportPanelIndex: 0,
-    hasNoMenuPanel: true
-  },
-  course: {
-    pageName: "Course",
-    toolHandler: "CourseToolHandler"
-  },
-  home: {
-    pageName: "Home",
-    currentMenus: [],
-    menusTitles: [],
-    menusInitOpen: [],
-    currentMainPanel: "HomePanel",
-    supportPanelOptions: [],
-    supportPanelTitles: [],
-    supportPanelIndex: 0,
-    hasNoMenuPanel: true
-  },
-  notfound: {
-    pageName: "Notfound",
-    currentMenus: [],
-    menusInitOpen: [],
-    currentMainPanel: "NotFound",
-    supportPanelOptions: [],
-    hasNoMenuPanel: true
-  },
-  settings: {
-    pageName: "Settings",
-    currentMenus: [],
-    menusTitles: [],
-    menusInitOpen: [],
-    currentMainPanel: "AccountSettings",
-    supportPanelOptions: [],
-    supportPanelTitles: [],
-    supportPanelIndex: 0,
-    hasNoMenuPanel: true,
-    headerControls: ["CloseProfileButton"],
-    headerControlsPositions: ["Right"]
-  },
-  signin: {
-    pageName: "SignIn",
-    currentMenus: [],
-    menusTitles: [],
-    menusInitOpen: [],
-    currentMainPanel: "SignIn",
-    supportPanelOptions: [],
-    supportPanelTitles: [],
-    supportPanelIndex: 0,
-    hasNoMenuPanel: true
-  },
-  signout: {
-    pageName: "SignOut",
-    currentMenus: [],
-    menusTitles: [],
-    menusInitOpen: [],
-    currentMainPanel: "SignOut",
-    supportPanelOptions: [],
-    supportPanelTitles: [],
-    supportPanelIndex: 0,
-    hasNoMenuPanel: true
-  }
-};
-let encodeParams = (p) => Object.entries(p).map((kv) => kv.map(encodeURIComponent).join("=")).join("&");
-export default function ToolRoot(props) {
-  const profile = useRecoilValueLoadable(profileAtom);
-  const toolViewInfo = useRecoilValue(toolViewAtom);
+    hasNoMenuPanel: false,
+    headerControls: [],
+    headerControlsPositions: []
+  });
   const mainPanelArray = useRef([]);
   const lastMainPanelKey = useRef(null);
   const mainPanelDictionary = useRef({});
@@ -158,23 +85,6 @@ export default function ToolRoot(props) {
   const lastSupportPanelKey = useRef(null);
   const supportPanelDictionary = useRef({});
   const [menusOpen, setMenusOpen] = useState(true);
-  const setPage = useRecoilCallback(({set}) => (tool, origPath) => {
-    if (tool === "") {
-      window.history.replaceState("", "", "/new#/home");
-    } else {
-      let newTool = toolsObj[tool];
-      if (!newTool) {
-        let newParams = {};
-        newParams["path"] = `${origPath}`;
-        const ePath = encodeParams(newParams);
-        location.href = `#/notfound?${ePath}`;
-      } else {
-        set(toolViewAtom, newTool);
-      }
-    }
-    set(selectedMenuPanelAtom, "");
-    set(mainPanelClickAtom, []);
-  });
   const LazyPanelObj = useRef({
     Empty: lazy(() => import("./ToolPanels/Empty.js")),
     NotFound: lazy(() => import("./ToolPanels/NotFound.js")),
@@ -184,33 +94,17 @@ export default function ToolRoot(props) {
     DriveCards: lazy(() => import("./ToolPanels/DriveCards.js")),
     SignIn: lazy(() => import("./ToolPanels/SignIn.js")),
     SignOut: lazy(() => import("./ToolPanels/SignOut.js")),
-    DrivePanel: lazy(() => import("./ToolPanels/DrivePanel.js")),
+    NavigationPanel: lazy(() => import("./ToolPanels/NavigationPanel.js")),
     EditorViewer: lazy(() => import("./ToolPanels/EditorViewer.js")),
-    DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js"))
+    DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
+    Enrollment: lazy(() => import("./ToolPanels/Enrollment.js"))
   }).current;
   const LazyControlObj = useRef({
-    CloseProfileButton: lazy(() => import("./HeaderControls/CloseProfileButton.js")),
-    ViewerUpdateButton: lazy(() => import("./HeaderControls/ViewerUpdateButton.js"))
+    BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
+    ViewerUpdateButton: lazy(() => import("./HeaderControls/ViewerUpdateButton.js")),
+    NavigationBreadCrumb: lazy(() => import("./HeaderControls/NavigationBreadCrumb.js")),
+    RoleDropdown: lazy(() => import("./HeaderControls/RoleDropdown.js"))
   }).current;
-  const LazyToolHandlerObj = useRef({
-    CourseToolHandler: lazy(() => import("./ToolHandlers/CourseToolHandler.js"))
-  }).current;
-  const lastURL = useRef("");
-  let setUrlChangeSourceParamObjAtom = useSetRecoilState(urlChangeSourceParamObjAtom);
-  if (profile.state === "loading") {
-    return null;
-  }
-  if (profile.state === "hasError") {
-    console.error(profile.contents);
-    return null;
-  }
-  console.log(">>>===ToolRoot");
-  const lastURLProp = lastURL.current;
-  if (location.href !== lastURL.current) {
-    let searchParamObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-    setUrlChangeSourceParamObjAtom(searchParamObj);
-    lastURL.current = location.href;
-  }
   function buildPanel({key, type, visible}) {
     let hideStyle = null;
     if (!visible) {
@@ -221,45 +115,23 @@ export default function ToolRoot(props) {
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
     }, React.createElement(LazyPanelObj[type], {key, style: {display: hideStyle}}));
   }
-  const lcpath = props.route.location.pathname.replaceAll("/", "").toLowerCase();
-  if (toolViewInfo.pageName.toLowerCase() !== lcpath) {
-    setPage(lcpath, props.route.location.pathname);
-    return null;
-  }
-  let toolHandler = null;
-  if (toolViewInfo.toolHandler) {
-    const ToolHandlerKey = `${toolViewInfo.pageName}-${toolViewInfo.toolHandler}`;
-    const handler = LazyToolHandlerObj[toolViewInfo.toolHandler];
-    if (handler) {
-      toolHandler = /* @__PURE__ */ React.createElement(Suspense, {
-        key: ToolHandlerKey,
-        fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
-      }, React.createElement(handler, {key: ToolHandlerKey}));
-    }
-  }
-  let MainPanelKey = `${toolViewInfo.pageName}-${toolViewInfo.currentMainPanel}`;
-  if (!toolViewInfo.currentMainPanel) {
-    MainPanelKey = "Empty";
-  }
+  let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
   if (!mainPanelDictionary.current[MainPanelKey]) {
-    let type = toolViewInfo.currentMainPanel;
-    if (MainPanelKey === "Empty") {
-      type = "Empty";
-    }
+    let type = toolRootMenusAndPanels.currentMainPanel;
     console.log(">>>NEW MAIN PANEL!!!", type);
     mainPanelArray.current.push(buildPanel({key: MainPanelKey, type, visible: true}));
     mainPanelDictionary.current[MainPanelKey] = {index: mainPanelArray.current.length - 1, type, visible: true};
   }
   let headerControls = null;
   let headerControlsPositions = null;
-  if (toolViewInfo.headerControls) {
+  if (toolRootMenusAndPanels.headerControls) {
     headerControls = [];
     headerControlsPositions = [];
-    for (const [i, controlName] of Object.entries(toolViewInfo.headerControls)) {
+    for (const [i, controlName] of Object.entries(toolRootMenusAndPanels.headerControls)) {
       const controlObj = LazyControlObj[controlName];
       if (controlObj) {
         const key = `headerControls${MainPanelKey}`;
-        headerControlsPositions.push(toolViewInfo.headerControlsPositions[i]);
+        headerControlsPositions.push(toolRootMenusAndPanels.headerControlsPositions[i]);
         headerControls.push(/* @__PURE__ */ React.createElement(Suspense, {
           key,
           fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
@@ -283,11 +155,11 @@ export default function ToolRoot(props) {
   let supportPanel = /* @__PURE__ */ React.createElement(SupportPanel, {
     hide: true
   }, supportPanelArray.current);
-  if (toolViewInfo.supportPanelOptions && toolViewInfo.supportPanelOptions.length > 0) {
-    const SupportPanelKey = `${toolViewInfo.pageName}-${toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex]}-${toolViewInfo.supportPanelIndex}`;
+  if (toolRootMenusAndPanels.supportPanelOptions && toolRootMenusAndPanels.supportPanelOptions.length > 0) {
+    const SupportPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex]}-${toolRootMenusAndPanels.supportPanelIndex}`;
     if (!supportPanelDictionary.current[SupportPanelKey]) {
-      supportPanelArray.current.push(buildPanel({key: SupportPanelKey, type: toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex], visible: true}));
-      supportPanelDictionary.current[SupportPanelKey] = {index: supportPanelArray.current.length - 1, type: toolViewInfo.supportPanelOptions[toolViewInfo.supportPanelIndex], visible: true};
+      supportPanelArray.current.push(buildPanel({key: SupportPanelKey, type: toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex], visible: true}));
+      supportPanelDictionary.current[SupportPanelKey] = {index: supportPanelArray.current.length - 1, type: toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex], visible: true};
     }
     if (lastSupportPanelKey.current !== null && lastSupportPanelKey.current !== SupportPanelKey) {
       const spObj = supportPanelDictionary.current[SupportPanelKey];
@@ -304,32 +176,31 @@ export default function ToolRoot(props) {
     lastSupportPanelKey.current = SupportPanelKey;
     supportPanel = /* @__PURE__ */ React.createElement(SupportPanel, {
       hide: false,
-      panelTitles: toolViewInfo.supportPanelTitles,
-      panelIndex: toolViewInfo.supportPanelIndex
+      panelTitles: toolRootMenusAndPanels.supportPanelTitles,
+      panelIndex: toolRootMenusAndPanels.supportPanelIndex
     }, supportPanelArray.current);
   }
   let menus = /* @__PURE__ */ React.createElement(MenuPanel, {
     key: "menuPanel",
     hide: true
   });
-  if (menusOpen && !toolViewInfo.hasNoMenuPanel) {
+  if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel) {
     menus = /* @__PURE__ */ React.createElement(MenuPanel, {
       key: "menuPanel",
       hide: false,
       setMenusOpen,
       menusOpen,
-      menusTitles: toolViewInfo.menusTitles,
-      currentMenus: toolViewInfo.currentMenus,
-      initOpen: toolViewInfo.menusInitOpen
+      menuPanelCap: toolRootMenusAndPanels.menuPanelCap,
+      menusTitles: toolRootMenusAndPanels.menusTitles,
+      currentMenus: toolRootMenusAndPanels.currentMenus,
+      initOpen: toolRootMenusAndPanels.menusInitOpen
     });
   }
   let profileInMainPanel = !menusOpen;
-  if (toolViewInfo.hasNoMenuPanel) {
+  if (toolRootMenusAndPanels.hasNoMenuPanel) {
     profileInMainPanel = false;
   }
-  return /* @__PURE__ */ React.createElement(ProfileContext.Provider, {
-    value: profile.contents
-  }, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
     main: /* @__PURE__ */ React.createElement(MainPanel, {
       headerControlsPositions,
       headerControls,
@@ -337,67 +208,321 @@ export default function ToolRoot(props) {
       displayProfile: profileInMainPanel
     }, mainPanelArray.current),
     support: supportPanel
-  })), /* @__PURE__ */ React.createElement(Toast, null), toolHandler, /* @__PURE__ */ React.createElement(RecoilSearchParamUpdater, {
-    lastURL: lastURLProp,
-    setURL: (newURL) => {
-      lastURL.current = newURL;
-    }
+  })), /* @__PURE__ */ React.createElement(Toast, null), /* @__PURE__ */ React.createElement(MemoizedRootController, {
+    key: "root_controller",
+    setToolRootMenusAndPanels
+  }), /* @__PURE__ */ React.createElement(MemoizedOnLeave, {
+    key: "MemoizedOnLeave"
   }));
 }
-function RecoilSearchParamUpdater(prop) {
-  let [eventSourceParamObj, setEventSourceParamObj] = useRecoilState(paramObjAtom);
-  let [urlSourceParamObj, setUrlSourceParamObj] = useRecoilState(urlChangeSourceParamObjAtom);
-  let currentParamObj = useRef({});
-  let lastPathName = useRef("");
+let navigationObj = {
+  content: {
+    default: {
+      pageName: "Content",
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      currentMainPanel: "Content",
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
+      hasNoMenuPanel: true
+    }
+  },
+  course: {
+    default: {
+      defaultTool: "courseChooser"
+    },
+    courseChooser: {
+      pageName: "Course",
+      currentMainPanel: "DriveCards",
+      currentMenus: ["CreateCourse"],
+      menusTitles: ["Create Course"],
+      menusInitOpen: [true, false],
+      onLeave: "CourseChooserLeave"
+    },
+    navigation: {
+      pageName: "Course",
+      currentMainPanel: "NavigationPanel",
+      menuPanelCap: "DriveInfoCap",
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      headerControls: ["NavigationBreadCrumb", "RoleDropdown"],
+      headerControlsPositions: ["Left", "Right"],
+      onLeave: "NavigationLeave",
+      views: {
+        instructor: {
+          currentMenus: ["AddDriveItems", "EnrollStudents"],
+          menusTitles: ["Add Items", "Enrollment"],
+          menusInitOpen: [true, false]
+        },
+        student: {}
+      }
+    },
+    editor: {
+      pageName: "Course",
+      menuPanelCap: "EditorInfoCap",
+      currentMainPanel: "EditorViewer",
+      currentMenus: ["VersionHistory", "DoenetMLSettings", "Variant"],
+      menusTitles: ["Version History", "Document Settings", "Variant"],
+      menusInitOpen: [true, false, false],
+      supportPanelOptions: ["DoenetMLEditor"],
+      supportPanelTitles: ["DoenetML Editor"],
+      supportPanelIndex: 0,
+      headerControls: ["BackButton", "ViewerUpdateButton"],
+      headerControlsPositions: ["Left", "Left"]
+    },
+    enrollment: {
+      pageName: "Enrollment",
+      currentMenus: ["LoadEnrollment", "ManualEnrollment"],
+      menusTitles: ["Load", "Manual"],
+      menusInitOpen: [false, false],
+      currentMainPanel: "Enrollment",
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
+      headerControls: ["BackButton"],
+      headerControlsPositions: ["Right"]
+    }
+  },
+  home: {
+    default: {
+      pageName: "Home",
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      currentMainPanel: "HomePanel",
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
+      hasNoMenuPanel: true
+    }
+  },
+  notfound: {
+    default: {
+      pageName: "Notfound",
+      currentMenus: [],
+      menusInitOpen: [],
+      currentMainPanel: "NotFound",
+      supportPanelOptions: [],
+      hasNoMenuPanel: true
+    }
+  },
+  settings: {
+    default: {
+      pageName: "Settings",
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      currentMainPanel: "AccountSettings",
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
+      hasNoMenuPanel: true,
+      headerControls: ["BackButton"],
+      headerControlsPositions: ["Right"]
+    }
+  },
+  signin: {
+    default: {
+      pageName: "SignIn",
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      currentMainPanel: "SignIn",
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
+      hasNoMenuPanel: true
+    }
+  },
+  signout: {
+    default: {
+      pageName: "SignOut",
+      currentMenus: [],
+      menusTitles: [],
+      menusInitOpen: [],
+      currentMainPanel: "SignOut",
+      supportPanelOptions: [],
+      supportPanelTitles: [],
+      supportPanelIndex: 0,
+      hasNoMenuPanel: true
+    }
+  }
+};
+let encodeParams = (p) => Object.entries(p).map((kv) => kv.map(encodeURIComponent).join("=")).join("&");
+export const pageToolViewAtom = atom({
+  key: "pageToolViewAtom",
+  default: {page: "init", tool: "", view: ""}
+});
+const onLeaveComponentStr = atom({
+  key: "onLeaveComponentStr",
+  default: {str: null, updateNum: 0}
+});
+export const finishedOnLeave = atom({
+  key: "finishedOnLeave",
+  default: null
+});
+const MemoizedOnLeave = React.memo(OnLeave);
+function OnLeave() {
+  const leaveComponentObj = useRecoilValue(onLeaveComponentStr);
+  const leaveComponentStr = leaveComponentObj.str;
+  let leaveComponent = null;
+  const LazyEnterLeaveObj = useRef({
+    NavigationLeave: lazy(() => import("./EnterLeave/NavigationLeave.js")),
+    CourseChooserLeave: lazy(() => import("./EnterLeave/CourseChooserLeave.js"))
+  }).current;
+  if (leaveComponentStr) {
+    const key = `leave${leaveComponentStr}`;
+    leaveComponent = /* @__PURE__ */ React.createElement(Suspense, {
+      key,
+      fallback: null
+    }, React.createElement(LazyEnterLeaveObj[leaveComponentStr]));
+  }
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, leaveComponent);
+}
+const MemoizedRootController = React.memo(RootController);
+function RootController(props) {
+  const [recoilPageToolView, setRecoilPageToolView] = useRecoilState(pageToolViewAtom);
+  const setOnLeaveStr = useSetRecoilState(onLeaveComponentStr);
+  let lastPageToolView = useRef({page: "init", tool: "", view: ""});
+  let backPageToolView = useRef({page: "init", tool: "", view: ""});
+  let backParams = useRef({});
+  let currentParams = useRef({});
+  let lastLocationStr = useRef("");
+  let location = useLocation();
   let history = useHistory();
-  let isURLSourceFLAG = false;
-  if (JSON.stringify(urlSourceParamObj) !== JSON.stringify(currentParamObj.current)) {
-    isURLSourceFLAG = true;
-  }
-  let isEventSourceFLAG = false;
-  if (JSON.stringify(eventSourceParamObj) !== JSON.stringify(currentParamObj.current)) {
-    isEventSourceFLAG = true;
-  }
+  let lastSearchObj = useRef({});
   const setSearchParamAtom = useRecoilCallback(({set}) => (paramObj) => {
     for (const [key, value] of Object.entries(paramObj)) {
-      if (currentParamObj.current[key] !== value) {
+      if (lastSearchObj.current[key] !== value) {
         set(searchParamAtomFamily(key), value);
       }
     }
-    for (const key of Object.keys(currentParamObj.current)) {
+    for (const key of Object.keys(lastSearchObj.current)) {
       if (!paramObj[key]) {
         set(searchParamAtomFamily(key), "");
       }
     }
   });
-  if (isURLSourceFLAG) {
-    setSearchParamAtom(urlSourceParamObj);
-  } else if (isEventSourceFLAG) {
-    setSearchParamAtom(eventSourceParamObj);
-  }
-  let [pathname, urlSearchParams] = location.hash.split("?");
-  pathname = pathname.replace("#", "");
-  if (!urlSearchParams) {
-    urlSearchParams = {};
-  }
-  if (isEventSourceFLAG) {
-    const url = location.origin + location.pathname + "#" + pathname + "?" + encodeParams(eventSourceParamObj);
-    if (!currentParamObj.current?.tool) {
+  let leaveComponentName = useRef(null);
+  let locationStr = `${location.pathname}${location.search}`;
+  let nextPageToolView = {page: "", tool: "", view: ""};
+  let nextMenusAndPanels = null;
+  console.log("\n>>>===RootController");
+  let isURLChange = false;
+  if (locationStr !== lastLocationStr.current) {
+    isURLChange = true;
+    nextPageToolView.page = location.pathname.replaceAll("/", "").toLowerCase();
+    if (nextPageToolView.page === "") {
+      nextPageToolView.page = "home";
+      const url = window.location.origin + window.location.pathname + "#home";
+      ;
       window.history.replaceState("", "", url);
-    } else {
-      const route = pathname + "?" + encodeParams(eventSourceParamObj);
-      history.push(route);
     }
-    prop.setURL(url);
+    let searchParamObj = Object.fromEntries(new URLSearchParams(location.search));
+    nextPageToolView.tool = searchParamObj["tool"];
+    if (!nextPageToolView.tool) {
+      nextPageToolView.tool = "";
+    }
   }
-  lastPathName.current = pathname;
-  if (isURLSourceFLAG) {
-    currentParamObj.current = urlSourceParamObj;
-    setEventSourceParamObj(urlSourceParamObj);
-  } else if (isEventSourceFLAG) {
-    currentParamObj.current = eventSourceParamObj;
-    setUrlSourceParamObj(eventSourceParamObj);
+  let isRecoilChange = false;
+  if (JSON.stringify(lastPageToolView.current) !== JSON.stringify(recoilPageToolView)) {
+    isRecoilChange = true;
+    if (recoilPageToolView.back) {
+      if (backPageToolView.current.page === "init") {
+        backPageToolView.current.page = "home";
+      }
+      let pageToolViewParams = {...backPageToolView.current, params: backParams.current};
+      setRecoilPageToolView(pageToolViewParams);
+      return null;
+    }
+    nextPageToolView = {...recoilPageToolView};
   }
+  if (!isURLChange && !isRecoilChange) {
+    lastLocationStr.current = locationStr;
+    return null;
+  }
+  let isPageChange = false;
+  let isToolChange = false;
+  let isViewChange = false;
+  if (lastPageToolView.current.page !== nextPageToolView.page) {
+    isPageChange = true;
+    if (nextPageToolView.tool === "") {
+      nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
+      if (Object.keys(nextMenusAndPanels).includes("defaultTool")) {
+        const url = window.location.origin + window.location.pathname + "#" + location.pathname + "?" + encodeParams({tool: nextMenusAndPanels.defaultTool});
+        window.history.replaceState("", "", url);
+        nextMenusAndPanels = navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
+      }
+    } else {
+      nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
+    }
+  } else if (lastPageToolView.current.tool !== nextPageToolView.tool) {
+    isToolChange = true;
+    nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
+  } else if (lastPageToolView.current.view !== nextPageToolView.view) {
+    isViewChange = true;
+    nextMenusAndPanels = {...navigationObj[nextPageToolView.page][nextPageToolView.tool]};
+  }
+  let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view];
+  if (isViewChange && typeof viewOverrides === "object" && viewOverrides !== null) {
+    for (let key of Object.keys(viewOverrides)) {
+      nextMenusAndPanels[key] = viewOverrides[key];
+    }
+  }
+  if (isPageChange || isToolChange) {
+    if (leaveComponentName.current) {
+      setOnLeaveStr((was) => ({str: leaveComponentName.current, updateNum: was.updateNum + 1}));
+    }
+    leaveComponentName.current = null;
+    if (nextMenusAndPanels.onLeave) {
+      leaveComponentName.current = nextMenusAndPanels.onLeave;
+    }
+  }
+  let searchObj = {};
+  if (isURLChange) {
+    searchObj = Object.fromEntries(new URLSearchParams(location.search));
+    setSearchParamAtom(searchObj);
+    nextPageToolView["params"] = {...searchObj};
+    delete nextPageToolView["params"].tool;
+    setRecoilPageToolView(nextPageToolView);
+  }
+  if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current)) {
+    backPageToolView.current = lastPageToolView.current;
+    let params = {};
+    if (isURLChange) {
+      params = searchObj;
+    } else if (isRecoilChange) {
+      params = recoilPageToolView.params;
+    }
+    backParams.current = currentParams.current;
+    currentParams.current = params;
+    props.setToolRootMenusAndPanels(nextMenusAndPanels);
+  }
+  if (isRecoilChange) {
+    let tool = nextPageToolView.tool;
+    let pathname = "/" + recoilPageToolView.page;
+    searchObj = {...recoilPageToolView.params};
+    if (tool !== "" && tool !== void 0) {
+      searchObj = {tool, ...recoilPageToolView.params};
+    }
+    let search = "";
+    if (Object.keys(searchObj).length > 0) {
+      search = "?" + encodeParams(searchObj);
+    }
+    const urlPush = pathname + search;
+    if (location.search !== search) {
+      setSearchParamAtom(searchObj);
+    }
+    if (location.pathname !== pathname || location.search !== search) {
+      history.push(urlPush);
+    }
+  }
+  lastSearchObj.current = searchObj;
+  lastLocationStr.current = locationStr;
+  lastPageToolView.current = nextPageToolView;
   return null;
 }
 const LoadingFallback = styled.div`
@@ -407,6 +532,6 @@ const LoadingFallback = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 2em;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 `;

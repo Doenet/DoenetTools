@@ -24,9 +24,9 @@ const getUserId = (students, name) => {
 };
 export default function GradebookAssignmentView(props) {
   const {openOverlay, activateMenuPanel} = useToolControlHelper();
-  let assignmentId = props.assignmentId;
+  let doenetId = props.doenetId;
   let assignmentsTable = {};
-  let attempts = useRecoilValueLoadable(attemptData(assignmentId));
+  let attempts = useRecoilValueLoadable(attemptData(doenetId));
   let students = useRecoilValueLoadable(studentData);
   let maxAttempts = 0;
   if (attempts.state == "hasValue") {
@@ -52,7 +52,7 @@ export default function GradebookAssignmentView(props) {
           let name = row.cell.row.cells[0].value;
           let userId = getUserId(students.contents, name);
           console.log("trying overlay");
-          openOverlay({type: "gradebookattemptview", title: "Gradebook Attempt View", assignmentId, attemptNumber: i, userId});
+          openOverlay({type: "gradebookattemptview", title: "Gradebook Attempt View", doenetId, attemptNumber: i, userId});
         }
       }, " ", row.value, " ")
     });

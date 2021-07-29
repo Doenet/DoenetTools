@@ -31,6 +31,12 @@ border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
 `;
+const MenuPanelsCapComponent = styled.div`
+width: 240px;
+background: white;
+border-top: 1px solid #e2e2e2;
+border-top: 1px solid #e2e2e2;
+`;
 const MenuHeaderButton = styled.button`
   border: none;
   border-top: ${({linkedPanel, activePanel}) => linkedPanel === activePanel ? "8px solid #1A5A99" : "none"};
@@ -141,25 +147,37 @@ const LoadingFallback = styled.div`
   width: 100vw;
   height: 100vh;
 `;
-export default function MenuPanel({hide, menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, menuPanelsOpen}) {
+export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, menuPanelsOpen}) {
+  console.log(">>>===MenuPanel");
+  console.log(">>>menuPanelCap", menuPanelCap);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   let toolMenus = useRef([]);
   let lastToolMenus = useRef([]);
   let toolMenusDictionary = useRef({});
-  const LazyObj = useRef({
+  const LazyMenuPanelCapObj = useRef({
+    DriveInfoCap: lazy(() => import("../MenuPanelCaps/DriveInfoCap.js")),
+    EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap.js"))
+  }).current;
+  const LazyMenuObj = useRef({
     SelectedCourse: lazy(() => import("../Menus/SelectedCourse.js")),
-    SelectedDoenetId: lazy(() => import("../Menus/SelectedDoenetId.js")),
+    SelectedDoenetML: lazy(() => import("../Menus/SelectedDoenetML.js")),
+    SelectedFolder: lazy(() => import("../Menus/SelectedFolder.js")),
+    SelectedCollection: lazy(() => import("../Menus/SelectedCollection.js")),
+    SelectedMulti: lazy(() => import("../Menus/SelectedMulti.js")),
     CreateCourse: lazy(() => import("../Menus/CreateCourse.js")),
     CourseEnroll: lazy(() => import("../Menus/CourseEnroll.js")),
     AddDriveItems: lazy(() => import("../Menus/AddDriveItems.js")),
     EnrollStudents: lazy(() => import("../Menus/EnrollStudents.js")),
     DoenetMLSettings: lazy(() => import("../Menus/DoenetMLSettings.js")),
     VersionHistory: lazy(() => import("../Menus/VersionHistory.js")),
-    Variant: lazy(() => import("../Menus/Variant.js"))
+    Variant: lazy(() => import("../Menus/Variant.js")),
+    AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
+    LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
+    ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js"))
   }).current;
   let selectionPanel = null;
   if (currentSelectionMenu) {
-    const panelToUse = LazyObj[currentSelectionMenu];
+    const panelToUse = LazyMenuObj[currentSelectionMenu];
     if (panelToUse) {
       const key = `SelectionMenu${currentSelectionMenu}`;
       selectionPanel = /* @__PURE__ */ React.createElement(SelectionMenu, {
@@ -168,6 +186,12 @@ export default function MenuPanel({hide, menusTitles = [], currentMenus = [], in
         fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
       }, React.createElement(panelToUse, {key})));
     }
+  }
+  let menuPanelCapComponent = null;
+  if (menuPanelCap !== "") {
+    menuPanelCapComponent = /* @__PURE__ */ React.createElement(MenuPanelsCapComponent, null, /* @__PURE__ */ React.createElement(Suspense, {
+      fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
+    }, React.createElement(LazyMenuPanelCapObj[menuPanelCap])));
   }
   function buildMenu({key, type, title, visible, initOpen: initOpen2}) {
     let hideStyle = null;
@@ -182,7 +206,7 @@ export default function MenuPanel({hide, menusTitles = [], currentMenus = [], in
       isInitOpen: initOpen2
     }, /* @__PURE__ */ React.createElement(Suspense, {
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
-    }, React.createElement(LazyObj[type], {key}))));
+    }, React.createElement(LazyMenuObj[type], {key}))));
   }
   for (let [i, menuName] of Object.entries(currentMenus)) {
     if (!lastToolMenus.current.includes(menuName)) {
@@ -218,5 +242,5 @@ export default function MenuPanel({hide, menusTitles = [], currentMenus = [], in
     onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronLeft
-  })))), selectionPanel, /* @__PURE__ */ React.createElement("div", null, toolMenus.current));
+  })))), menuPanelCapComponent, selectionPanel, /* @__PURE__ */ React.createElement("div", null, toolMenus.current));
 }

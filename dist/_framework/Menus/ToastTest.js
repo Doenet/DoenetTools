@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
-import {useToast} from "../Toast.js";
+import {useToast, toastType} from "../Toast.js";
 export default function ToastTest(props) {
-  const [toast, toastType] = useToast();
+  const toast = useToast();
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
   }, /* @__PURE__ */ React.createElement("p", {

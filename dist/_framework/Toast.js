@@ -76,7 +76,7 @@ const Button = styled("button")`
   color: black;
   font-size: 1em;
 `;
-const ToastType = {
+export const toastType = Object.freeze({
   ERROR: {
     timeout: -1,
     background: "rgba(193, 41, 46, 1)",
@@ -102,14 +102,14 @@ const ToastType = {
     timeout: 5e3,
     background: "rgba(26,90,153,1)"
   }
-};
+});
 const toastStack = atom({
   key: "toastStack",
   default: []
 });
 let id = 0;
 export const useToast = () => {
-  const addToast = useRecoilCallback(({set}) => (msg, type = ToastType.INFO, action = null) => {
+  const addToast = useRecoilCallback(({set}) => (msg, type = toastType.INFO, action = null) => {
     set(toastStack, (old) => [
       ...old,
       /* @__PURE__ */ React.createElement(ToastMessage, {
@@ -122,7 +122,7 @@ export const useToast = () => {
     ]);
     id++;
   }, []);
-  return [addToast, ToastType];
+  return addToast;
 };
 export default function Toast() {
   const toasts = useRecoilValue(toastStack);
