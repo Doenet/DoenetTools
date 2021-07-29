@@ -2,14 +2,24 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { ThemeProvider } from 'styled-components';
 
-
+const Container = styled.div`
+  display: ${(props) => props.vertical ? 'static' : 'flex'};
+  // margin: 2px 0px 2px 0px
+ ;
+`
 
 export default function ButtonGroup(props) {
     const buttonGroup = {
         margin: "0px 2px 0px 2px",
         borderRadius: '0',
         padding: '0px 12px 0px 10px'
-      };
+      }; 
+
+    const verticalButtonGroup = {
+      margin: "2px 0px 2px 0px",
+      borderRadius: '0',
+      padding: '0px 10px 0px 10px'
+    }; 
 
     // if (props.width) {
     //   if (props.width === "menu") {
@@ -25,9 +35,9 @@ export default function ButtonGroup(props) {
     //     .concat(React.cloneElement(elem[elem.length - 1], {num: 'last'}));
     // }
     return (
-      <div style={{display: 'flex'}}>
-        <ThemeProvider theme={buttonGroup}>{elem}</ThemeProvider>
-      </div>
+      <Container vertical={props.vertical}>
+        <ThemeProvider theme={props.vertical ? verticalButtonGroup : buttonGroup}>{elem}</ThemeProvider>
+      </Container>
       
     )
   }

@@ -1,8 +1,11 @@
+// import { ButtonGroup } from '@blueprintjs/core';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets, { itemType } from '../../../_reactComponents/Sockets';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export default function AddDriveItems(props) {
   const [driveId, parentFolderId] = useRecoilValue(
@@ -10,8 +13,8 @@ export default function AddDriveItems(props) {
   ).split(':');
   const { addItem } = useSockets('drive');
   return (
-    <div style={props.style}>
-      <div>
+    // <div style={props.style}>
+      <ButtonGroup vertical>
         <Button
           width="menu"
           onClick={() =>
@@ -24,9 +27,9 @@ export default function AddDriveItems(props) {
         >
           Add Folder
         </Button>
-      </div>
-      <div>
-        {' '}
+      {/* </div>
+      <div> */}
+        {/* {' '} */} 
         <Button
           width="menu"
           onClick={() =>
@@ -39,7 +42,7 @@ export default function AddDriveItems(props) {
         >
           Add DoenetML
         </Button>
-      </div>
-    </div>
+      </ButtonGroup>
+    // </div>
   );
 }
