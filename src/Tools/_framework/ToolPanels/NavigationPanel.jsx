@@ -38,8 +38,6 @@ export default function NavigationPanel(props) {
       ),
     );
   }, [setMainPanelClear]);
-  // const setOpenMenuPanel = useMenuPanelController();
-  // const setSelected = useSetRecoilState(selectedDriveItems({driveId:props.driveId,driveInstanceId:props.driveInstanceId,itemId}));
 
   // const toast = useToast();
 

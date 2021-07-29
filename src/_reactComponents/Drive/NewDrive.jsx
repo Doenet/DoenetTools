@@ -1106,6 +1106,14 @@ function Folder(props) {
         e.preventDefault();
         e.stopPropagation();
         toggleOpen();
+        props?.clickCallback?.({
+          driveId: props.driveId,
+          itemId,
+          driveInstanceId: props.driveInstanceId,
+          type: 'Folder',
+          instructionType: 'one item',
+          parentFolderId: itemId,
+        })
       }}
     >
       {openCloseText}
@@ -2026,10 +2034,6 @@ const DoenetML = React.memo(function DoenetML(props) {
         });
       }
     }
-  };
-
-  const onDragEndCb = () => {
-    onDragEnd();
   };
 
   let doenetMLJSX = (

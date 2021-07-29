@@ -1,7 +1,11 @@
 import React, { useCallback } from 'react';
 import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { folderDictionary, fetchDrivesQuery } from '../Drive/NewDrive';
+import {
+  folderDictionary,
+  fetchDrivesQuery,
+  clearDriveAndItemSelections,
+} from '../Drive/NewDrive';
 import {
   useRecoilValue,
   atomFamily,
@@ -51,6 +55,7 @@ const breadcrumbItemAtomFamily = atomFamily({
 export default function BreadCrumb({ path }) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   //TODO reivew for multi drive
   const items = useRecoilValue(
@@ -62,6 +67,7 @@ export default function BreadCrumb({ path }) {
 
   const goToFolder = useCallback(
     (driveId, folderId) => {
+      clearSelections();
       setPageToolView((was) => ({
         ...was,
         params: {
@@ -69,7 +75,7 @@ export default function BreadCrumb({ path }) {
         },
       }));
     },
-    [setPageToolView],
+    [setPageToolView, clearSelections],
   );
 
   //Don't show up if not in a drive

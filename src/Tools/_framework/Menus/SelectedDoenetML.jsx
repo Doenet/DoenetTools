@@ -4,8 +4,13 @@ import {
   faObjectGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState,useEffect } from 'react';
-import {atom, selector, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import React, { useState, useEffect } from 'react';
+import {
+  atom,
+  selector,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil';
 import {
   folderDictionaryFilterSelector,
   globalSelectedNodesAtom,
@@ -14,13 +19,16 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import IncrementMenu from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
-import { itemHistoryAtom,assignmentDictionarySelector } from '../ToolHandlers/CourseToolHandler';
+import {
+  itemHistoryAtom,
+  assignmentDictionarySelector,
+} from '../ToolHandlers/CourseToolHandler';
 import { useAssignment } from '../../../Tools/course/CourseActions';
-import {useAssignmentCallbacks} from '../../../_reactComponents/Drive/DriveActions';
+import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
 import { useToast } from '../Toast';
 import axios from 'axios';
 import Switch from '../../_framework/Switch';
-
+import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
@@ -28,21 +36,41 @@ export const selectedVersionAtom = atom({
 });
 
 export default function SelectedDoenetML() {
-  const selection =
-    useRecoilValueLoadable(selectedInformation).getValue() ?? [];
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
+  const selection = useRecoilValueLoadable(selectedInformation).getValue();
+  const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
-  const item = selection[0];
-  const dIcon = <FontAwesomeIcon icon={faCode} />;
-  useEffect(() => {
-    setLabel(selection[0]?.label);
-  }, [selection]);
-  let makeAssignmentforReleasedButton = null;
-  const {addContentAssignment,changeSettings,updateVersionHistory,saveSettings,assignmentToContent,loadAvailableAssignment, publishContentAssignment,onAssignmentError} = useAssignment();
-  const {makeAssignment, convertAssignmentToContent} = useAssignmentCallbacks();
+  const {
+    addContentAssignment,
+    changeSettings,
+    updateVersionHistory,
+    saveSettings,
+    assignmentToContent,
+    loadAvailableAssignment,
+    publishContentAssignment,
+    onAssignmentError,
+  } = useAssignment();
+  const { makeAssignment, convertAssignmentToContent } =
+    useAssignmentCallbacks();
   const [checkIsAssigned, setIsAssigned] = useState(false);
   const addToast = useToast();
+  const versionHistory = useRecoilValueLoadable(
+    itemHistoryAtom(item?.doenetId),
+  );
+
+  useEffect(() => {
+    if (!selection[0]) {
+      setSelectedMenu('');
+    } else {
+      setItem(selection[0]);
+      setLabel(selection[0]?.label);
+    }
+  }, [selection, setSelectedMenu]);
+
+  const dIcon = <FontAwesomeIcon icon={faCode} />;
+  let makeAssignmentforReleasedButton = null;
 
   const renameItemCallback = (newLabel) => {
     renameItem({
@@ -55,24 +83,24 @@ export default function SelectedDoenetML() {
       newLabel: newLabel,
     });
   };
-  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(selection[0]?.doenetId));
+
   let contentId = '';
   let versionId = '';
-  if (versionHistory.state === "loading"){ return null;}
-  if (versionHistory.state === "hasError"){ 
-    console.error(versionHistory.contents)
-    return null;}
-    if (versionHistory.state === "hasValue"){ 
-       contentId = versionHistory?.contents?.named[0]?.contentId;
-       versionId = versionHistory?.contents?.named[0]?.versionId;
-     }
-
-
-
+  if (versionHistory.state === 'loading') {
+    return null;
+  }
+  if (versionHistory.state === 'hasError') {
+    console.error(versionHistory.contents);
+    return null;
+  }
+  if (versionHistory.state === 'hasValue') {
+    contentId = versionHistory?.contents?.named[0]?.contentId;
+    versionId = versionHistory?.contents?.named[0]?.versionId;
+  }
 
   let assigned = (
     <>
-     {versionHistory.contents.named.map((item, i) => (
+      {versionHistory.contents.named.map((item, i) => (
         <>
           {item.isReleased == 1 ? (
             <label key={i} value={item.versionId}>
@@ -83,12 +111,12 @@ export default function SelectedDoenetML() {
             ''
           )}
         </>
-      ))}</>
-     
+      ))}
+    </>
   );
 
   // make assignment for released versions
- 
+
   makeAssignmentforReleasedButton = (
     <>
       <Button
@@ -97,43 +125,46 @@ export default function SelectedDoenetML() {
           setIsAssigned(true);
           let isAssigned = 1;
 
-          const versionResult = await updateVersionHistory(selection[0].doenetId, versionId,isAssigned);
+          const versionResult = await updateVersionHistory(
+            item?.doenetId,
+            versionId,
+            isAssigned,
+          );
 
           const result = await addContentAssignment({
             driveIditemIddoenetIdparentFolderId: {
-              driveId: selection[0].driveId,
-              folderId: selection[0].parentFolderId,
-              itemId: selection[0].itemId,
-              doenetId: selection[0].doenetId,
+              driveId: item?.driveId,
+              folderId: item?.parentFolderId,
+              itemId: item?.itemId,
+              doenetId: item?.doenetId,
               contentId: contentId,
               versionId: versionId,
             },
-            doenetId: selection[0].doenetId,
+            doenetId: item?.doenetId,
             contentId: contentId,
             versionId: versionId,
           });
           let payload = {
             // ...aInfo,
-            itemId: selection[0].itemId,
+            itemId: item?.itemId,
             isAssigned: '1',
-            doenetId: selection[0].doenetId,
+            doenetId: item?.doenetId,
             contentId: contentId,
-            driveId: selection[0].driveId,
-            versionId:versionId,
+            driveId: item?.driveId,
+            versionId: versionId,
           };
           //TODO update drive actions
-          makeAssignment({        
+          makeAssignment({
             driveIdFolderId: {
-              driveId: selection[0].driveId,
-              folderId: selection[0].parentFolderId,
+              driveId: item?.driveId,
+              folderId: item?.parentFolderId,
             },
-            itemId: selection[0].itemId,
+            itemId: item?.itemId,
             payload: payload,
           });
           try {
             if (result.success && versionResult) {
-              addToast(
-                `Add new assignment`);
+              addToast(`Add new assignment`);
             } else {
               onAssignmentError({ errorMessage: result.message });
             }
@@ -142,71 +173,75 @@ export default function SelectedDoenetML() {
           }
         }}
       />
-      
+
       <br />
     </>
   );
 
   // unassign
-  let unAssignButton = ''; 
-  
-unAssignButton = (
-  <>
-    <Button
-      value="Unassign"
-      onClick={async () => {
-        let isAssigned = 0;
-        const versionResult = await updateVersionHistory(selection[0].doenetId, versionId,isAssigned);
+  let unAssignButton = '';
 
-        assignmentToContent({
-          driveIditemIddoenetIdparentFolderId: {
-            driveId: selection[0].driveId,
-              folderId: selection[0].parentFolderId,
-              itemId: selection[0].itemId,
-              doenetId: selection[0].doenetId,
+  unAssignButton = (
+    <>
+      <Button
+        value="Unassign"
+        onClick={async () => {
+          let isAssigned = 0;
+          const versionResult = await updateVersionHistory(
+            item?.doenetId,
+            versionId,
+            isAssigned,
+          );
+
+          assignmentToContent({
+            driveIditemIddoenetIdparentFolderId: {
+              driveId: item?.driveId,
+              folderId: item?.parentFolderId,
+              itemId: item?.itemId,
+              doenetId: item?.doenetId,
               contentId: contentId,
-              versionId: versionId
-          },
-          doenetId: selection[0].doenetId,
-          contentId: contentId,
-          versionId: versionId
-        });
+              versionId: versionId,
+            },
+            doenetId: item?.doenetId,
+            contentId: contentId,
+            versionId: versionId,
+          });
           //TODO update drive actions
 
-        convertAssignmentToContent({ 
-          driveIdFolderId: {
-            driveId: selection[0].driveId,
-              folderId: selection[0].parentFolderId,
-          },
-             itemId: selection[0].itemId,
-              doenetId: selection[0].doenetId,
-              contentId: contentId,
-              versionId:versionId
-        });
-
-        const result = axios.post(`/api/handleMakeContent.php`, {
-          itemId: selection[0].itemId,
-          doenetId: selection[0].doenetId,
-          contentId: contentId,
-          versionId: versionId
-        });
-        result
-          .then((resp) => {
-            if (resp.data.success) {
-              addToast(`'UnAssigned ''`);
-            } else {
-              onAssignmentError({ errorMessage: resp.data.message });
-            }
-          })
-          .catch((e) => {
-            onAssignmentError({ errorMessage: e.message });
+          convertAssignmentToContent({
+            driveIdFolderId: {
+              driveId: item?.driveId,
+              folderId: item?.parentFolderId,
+            },
+            itemId: item?.itemId,
+            doenetId: item?.doenetId,
+            contentId: contentId,
+            versionId: versionId,
           });
-      }}
-    />
-    <br />
-    <br />
-  </>
-);
+
+          const result = axios.post(`/api/handleMakeContent.php`, {
+            itemId: item?.itemId,
+            doenetId: item?.doenetId,
+            contentId: contentId,
+            versionId: versionId,
+          });
+          result
+            .then((resp) => {
+              if (resp.data.success) {
+                addToast(`'UnAssigned ''`);
+              } else {
+                onAssignmentError({ errorMessage: resp.data.message });
+              }
+            })
+            .catch((e) => {
+              onAssignmentError({ errorMessage: e.message });
+            });
+        }}
+      />
+      <br />
+      <br />
+    </>
+  );
 
   return (
     <>
@@ -272,11 +307,19 @@ unAssignButton = (
       <br />
       {assigned}
       <br />
-      {selection[0].isAssigned === '0' && selection[0].isReleased === '1' && makeAssignmentforReleasedButton}
+      {item?.isAssigned === '0' &&
+        item?.isReleased === '1' &&
+        makeAssignmentforReleasedButton}
       <br />
-      {selection[0].isAssigned == '1' && selection[0].isReleased === '1'  &&  unAssignButton }
-    <br />
-      {( selection[0].isAssigned == '1') && selection[0].isReleased === '1' &&  <AssignmentForm selection={selection} versionId={versionId} contentId={contentId}/>}
+      {item?.isAssigned == '1' && item?.isReleased === '1' && unAssignButton}
+      <br />
+      {item?.isAssigned == '1' && item?.isReleased === '1' && (
+        <AssignmentForm
+          selection={item}
+          versionId={versionId}
+          contentId={contentId}
+        />
+      )}
     </>
   );
 }
@@ -307,20 +350,20 @@ export const selectedInformation = selector({
   },
 });
 
-const AssignmentForm = (props) =>{
-  const {changeSettings,saveSettings,onAssignmentError} = useAssignment();
-  const {updateAssignmentTitle} = useAssignmentCallbacks();
+const AssignmentForm = (props) => {
+  const { changeSettings, saveSettings, onAssignmentError } = useAssignment();
+  const { updateAssignmentTitle } = useAssignmentCallbacks();
   const addToast = useToast();
 
-const [oldValue,setoldValue] = useState();
+  const [oldValue, setoldValue] = useState();
 
-    const assignmentInfoSettings = useRecoilValueLoadable(
+  const assignmentInfoSettings = useRecoilValueLoadable(
     assignmentDictionarySelector({
-       driveId: props.selection[0]?.driveId,
-      folderId: props.selection[0]?.parentFolderId,
-      itemId: props.selection[0]?.itemId,
-      doenetId: props.selection[0]?.doenetId,
-      versionId:props.versionId,
+      driveId: props.selection?.driveId,
+      folderId: props.selection?.parentFolderId,
+      itemId: props.selection?.itemId,
+      doenetId: props.selection?.doenetId,
+      versionId: props.versionId,
       contentId: props.contentId,
     }),
   );
@@ -328,57 +371,56 @@ const [oldValue,setoldValue] = useState();
   let aInfo = '';
 
   if (assignmentInfoSettings?.state === 'hasValue') {
-    aInfo = assignmentInfoSettings?.contents; 
-
-  } 
+    aInfo = assignmentInfoSettings?.contents;
+  }
   // form update functions
   const handleOnBlur = (e) => {
     e.preventDefault();
     let name = e.target.name;
     let value = e.target.value;
-    if(value !== oldValue ){
-    const result = saveSettings({
-      [name]: value,
-      driveIditemIddoenetIdparentFolderId: {
-        driveId: props.selection[0]?.driveId,
-        folderId: props.selection[0]?.parentFolderId,
-        itemId: props.selection[0]?.itemId,
-        doenetId: props.selection[0]?.doenetId,
-        versionId:props.versionId,
+    if (value !== oldValue) {
+      const result = saveSettings({
+        [name]: value,
+        driveIditemIddoenetIdparentFolderId: {
+          driveId: props.selection?.driveId,
+          folderId: props.selection?.parentFolderId,
+          itemId: props.selection?.itemId,
+          doenetId: props.selection?.doenetId,
+          versionId: props.versionId,
+          contentId: props.contentId,
+        },
+      });
+      let payload = {
+        ...aInfo,
+        itemId: props.selection?.itemId,
+        isAssigned: '1',
+        [name]: value,
+        doenetId: props.selection?.doenetId,
         contentId: props.contentId,
-      },
-    });
-    let payload = {
-      ...aInfo,
-      itemId: props.selection[0]?.itemId,
-      isAssigned: '1',
-      [name]: value,
-      doenetId: props.selection[0]?.doenetId,
-      contentId: props.contentId,
-    };
-    updateAssignmentTitle({
-      driveIdFolderId: {
-        driveId: props.selection[0]?.driveId,
-        folderId: props.selection[0]?.parentFolderId,
-      },
-      itemId: props.selection[0]?.itemId,
-      payloadAssignment: payload,
-      doenetId: props.selection[0]?.doenetId,
-      contentId: props.contentId,
-    });
+      };
+      updateAssignmentTitle({
+        driveIdFolderId: {
+          driveId: props.selection?.driveId,
+          folderId: props.selection?.parentFolderId,
+        },
+        itemId: props.selection?.itemId,
+        payloadAssignment: payload,
+        doenetId: props.selection?.doenetId,
+        contentId: props.contentId,
+      });
 
-        result
-          .then((resp) => {
-            if (resp.data.success) {
-              addToast(`Updated '${name}' to '${value}'`);
-            } else {
-              onAssignmentError({ errorMessage: resp.data.message });
-            }
-          })
-          .catch((e) => {
-            onAssignmentError({ errorMessage: e.message });
-          });
-  }
+      result
+        .then((resp) => {
+          if (resp.data.success) {
+            addToast(`Updated '${name}' to '${value}'`);
+          } else {
+            onAssignmentError({ errorMessage: resp.data.message });
+          }
+        })
+        .catch((e) => {
+          onAssignmentError({ errorMessage: e.message });
+        });
+    }
   };
 
   const handleChange = (event) => {
@@ -388,11 +430,11 @@ const [oldValue,setoldValue] = useState();
     const result = changeSettings({
       [name]: value,
       driveIditemIddoenetIdparentFolderId: {
-        driveId: props.selection[0]?.driveId,
-        folderId: props.selection[0]?.parentFolderId,
-        itemId: props.selection[0]?.itemId,
-        doenetId: props.selection[0]?.doenetId,
-        versionId:props.versionId,
+        driveId: props.selection?.driveId,
+        folderId: props.selection?.parentFolderId,
+        itemId: props.selection?.itemId,
+        doenetId: props.selection?.doenetId,
+        versionId: props.versionId,
         contentId: props.contentId,
       },
     });
@@ -401,7 +443,7 @@ const [oldValue,setoldValue] = useState();
     event.preventDefault();
     let name = event.target.name;
     let value = event.target.value;
-    setoldValue(event.target.value)
+    setoldValue(event.target.value);
   };
   // Assignment Info
   let assignmentForm = (
@@ -463,9 +505,7 @@ const [oldValue,setoldValue] = useState();
           </div>
           <div>
             <label>Attempt Aggregation :</label>
-            <select name="attemptAggregation" 
-            onChange={handleOnBlur}
-            >
+            <select name="attemptAggregation" onChange={handleOnBlur}>
               <option
                 value="m"
                 selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}
@@ -515,7 +555,7 @@ const [oldValue,setoldValue] = useState();
           <div>
             <label>Multiple Attempts: </label>
             <Switch
-            name="multipleAttempts"
+              name="multipleAttempts"
               onChange={handleOnBlur}
               checked={aInfo ? aInfo?.multipleAttempts : false}
             ></Switch>
@@ -523,7 +563,7 @@ const [oldValue,setoldValue] = useState();
           <div>
             <label>Show solution: </label>
             <Switch
-            name="showSolution"
+              name="showSolution"
               onChange={handleOnBlur}
               checked={aInfo ? aInfo?.showSolution : false}
             ></Switch>
@@ -531,7 +571,7 @@ const [oldValue,setoldValue] = useState();
           <div>
             <label>Show feedback: </label>
             <Switch
-            name="showFeedback"
+              name="showFeedback"
               onChange={handleOnBlur}
               checked={aInfo ? aInfo?.showFeedback : false}
             ></Switch>
@@ -539,36 +579,31 @@ const [oldValue,setoldValue] = useState();
           <div>
             <label>Show hints: </label>
             <Switch
-            name="showHints"
+              name="showHints"
               onChange={handleOnBlur}
               checked={aInfo ? aInfo?.showHints : false}
-            ></Switch>         
+            ></Switch>
           </div>
           <div>
             <label>Show correctness: </label>
             <Switch
-            name="showCorrectness"
+              name="showCorrectness"
               onChange={handleOnBlur}
               checked={aInfo ? aInfo?.showCorrectness : false}
-            ></Switch> 
+            ></Switch>
           </div>
           <div>
             <label>Proctor make available: </label>
             <Switch
-            name="proctorMakesAvailable"
+              name="proctorMakesAvailable"
               onChange={handleOnBlur}
               checked={aInfo ? aInfo?.proctorMakesAvailable : false}
-            ></Switch> 
+            ></Switch>
           </div>
           <br />
         </>
       }
     </>
   );
-  return (
-    <>
-    {assignmentForm}
-    </>
-
-  )
-}
+  return <>{assignmentForm}</>;
+};
