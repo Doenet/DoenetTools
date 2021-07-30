@@ -178,7 +178,9 @@ export default class Section extends DoenetRenderer {
           <a name={this.componentName} />
           <span style={{
             display: "block",
-            margin: "4px 4px 0px 4px",
+            // margin: "4px 4px 0px 4px",
+            // padding: "6px",
+            // border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           }}
@@ -188,8 +190,9 @@ export default class Section extends DoenetRenderer {
           </span>
           <span style={{
             display: "block",
-            margin: "0px 4px 4px 4px",
-            padding: "6px",
+            // margin: "0px 4px 4px 4px",
+            // padding: "6px",
+            // border: "1px solid #C9C9C9",
             backgroundColor: "white",
           }}>
             {childrenToRender}
@@ -204,7 +207,9 @@ export default class Section extends DoenetRenderer {
           <a name={this.componentName} />
           <span style={{
             display: "block",
-            margin: "4px 4px 0px 4px",
+            // margin: "4px 4px 0px 4px",
+            // padding: "6px",
+            // border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           }}
