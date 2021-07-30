@@ -72,9 +72,9 @@ class DoenetViewerChild extends Component {
 
   createCore({ stateVariables, variant }) {
 
-    if (stateVariables === undefined) {
-      console.error(`error loading state variables`);
-      this.cumulativeStateVariableChanges = null;
+    if (!stateVariables) {
+      // console.error(`error loading state variables`);
+      this.cumulativeStateVariableChanges = {};
       variant = null;
     } else {
       this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedComponentsReviver)
@@ -112,6 +112,7 @@ class DoenetViewerChild extends Component {
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant,
+        stateVariableChanges: this.cumulativeStateVariableChanges,
       });
     } else {
       new Core({
@@ -128,6 +129,7 @@ class DoenetViewerChild extends Component {
         },
         flags: this.props.flags,
         requestedVariant: this.requestedVariant,
+        stateVariableChanges: this.cumulativeStateVariableChanges,
       });
     }
 
@@ -147,25 +149,26 @@ class DoenetViewerChild extends Component {
       this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
     }
 
-    if (this.cumulativeStateVariableChanges) {
-      // continue to try setting the state variables to cummulativeStateVariableChanges
-      // while there are a positive number of failures
-      // and the number of failures is increasing
-      let nFailures = Infinity;
-      while (nFailures > 0) {
-        let result = core.executeUpdateStateVariables({
-          newStateVariableValues: this.cumulativeStateVariableChanges
-        })
-        if (!(result.nFailures && result.nFailures < nFailures)) {
-          break;
-        }
-        nFailures = result.nFailures;
-      }
-    } else {
-      // if database doesn't contain contentId, cumulativeStateVariableChanges is null
-      // so change to empty object
-      this.cumulativeStateVariableChanges = {};
-    }
+    // if (this.cumulativeStateVariableChanges) {
+    //   // continue to try setting the state variables to cummulativeStateVariableChanges
+    //   // while there are a positive number of failures
+    //   // and the number of failures is increasing
+    //   let nFailures = Infinity;
+    //   while (nFailures > 0) {
+    //     let result = core.executeUpdateStateVariables({
+    //       newStateVariableValues: this.cumulativeStateVariableChanges
+    //     })
+    //     console.log(`nFailures: ${result.nFailures}`)
+    //     if (!(result.nFailures && result.nFailures < nFailures)) {
+    //       break;
+    //     }
+    //     nFailures = result.nFailures;
+    //   }
+    // } else {
+    //   // if database doesn't contain contentId, cumulativeStateVariableChanges is null
+    //   // so change to empty object
+    //   this.cumulativeStateVariableChanges = {};
+    // }
 
 
     // TODO: look up the items and their weights

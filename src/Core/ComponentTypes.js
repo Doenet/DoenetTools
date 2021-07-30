@@ -133,6 +133,9 @@ import FunctionIterates from './components/FunctionIterates';
 import Module from './components/Module';
 import CustomAttribute from './components/CustomAttribute';
 import Setup from './components/Setup';
+import Paginator from './components/Paginator';
+import PaginatorPage from './components/PaginatorPage';
+import PaginatorControls from './components/PaginatorControls';
 
 
 //Extended
@@ -266,6 +269,7 @@ const componentTypeArray = [
   Module,
   CustomAttribute,
   Setup,
+  Paginator, PaginatorPage, PaginatorControls,
 
   BaseComponent,
   InlineComponent,

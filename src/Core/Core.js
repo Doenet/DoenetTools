@@ -21,7 +21,9 @@ import Hex from 'crypto-js/enc-hex'
 
 export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
-    externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback, coreId }) {
+    externalFunctions, flags = {}, 
+    stateVariableChanges = {},
+    coreReadyCallback, coreUpdatedCallback, coreId }) {
     // console.time('start up time');
 
     this.coreId = coreId;
@@ -122,6 +124,22 @@ export default class Core {
       recordSolutionView: this.externalFunctions.recordSolutionView,
     }
 
+    this.updateInfo = {
+      componentsTouched: [],
+      compositesToExpand: new Set([]),
+      compositesToUpdateReplacements: [],
+
+      unresolvedDependencies: {},
+      unresolvedByDependent: {},
+      deletedStateVariables: {},
+      deletedComponents: {},
+      recreatedComponents: {},
+      itemScoreChanges: new Set(),
+      // parentsToUpdateDescendants: new Set(),
+      compositesBeingExpanded: [],
+      stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+    }
+
     this.animationIDs = {};
     this.lastAnimationID = 0;
     this.requestedVariant = requestedVariant;
@@ -194,20 +212,6 @@ export default class Core {
 
     this.unsatisfiedChildLogic = {};
 
-    this.updateInfo = {
-      componentsTouched: [],
-      compositesToExpand: new Set([]),
-      compositesToUpdateReplacements: [],
-
-      unresolvedDependencies: {},
-      unresolvedByDependent: {},
-      deletedStateVariables: {},
-      deletedComponents: {},
-      recreatedComponents: {},
-      itemScoreChanges: new Set(),
-      // parentsToUpdateDescendants: new Set(),
-      compositesBeingExpanded: []
-    }
 
     // console.timeEnd('serialize doenetML');
 
@@ -1332,6 +1336,8 @@ export default class Core {
       });
     }
 
+    this.checkForStateVariablesUpdatesForNewComponent(componentName)
+
     this.dependencies.resolveStateVariablesIfReady({ component: newComponent });
 
     this.checkForActionChaining({ component: newComponent });
@@ -1347,6 +1353,16 @@ export default class Core {
 
   }
 
+  checkForStateVariablesUpdatesForNewComponent(componentName) {
+    if (componentName in this.updateInfo.stateVariableUpdatesForMissingComponents) {
+      this.processNewStateVariableValues({
+        [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
+      });
+
+      delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
+    }
+
+  }
 
   propagateAncestorProps({ componentClass, componentName, sharedParameters }) {
 
@@ -1696,6 +1712,11 @@ export default class Core {
         component,
         serializedReplacements,
       });
+
+      if (result.withholdReplacements) {
+        component.replacementsToWithhold = component.replacements.length;
+      }
+
     } else {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
@@ -7847,8 +7868,16 @@ export default class Core {
       let comp = this._components[cName];
 
       if (comp === undefined) {
-        console.warn(`can't update state variables of component ${cName}, as it doesn't exist.`);
-        nFailures += 1;
+        // console.warn(`can't update state variables of component ${cName}, as it doesn't exist.`);
+        // nFailures += 1;
+
+        let updatesForComp = this.updateInfo.stateVariableUpdatesForMissingComponents[cName];
+        if (updatesForComp === undefined) {
+          updatesForComp = this.updateInfo.stateVariableUpdatesForMissingComponents[cName] = {};
+        }
+
+        Object.assign(updatesForComp, newStateVariableValues[cName]);
+
         continue;
       }
 
@@ -8039,6 +8068,7 @@ export default class Core {
     inverseDefinitionArgs.stateValues = component.stateValues;
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
     inverseDefinitionArgs.shadowedVariable = instruction.shadowedVariable;
+    inverseDefinitionArgs.sourceInformation = instruction.sourceInformation;
 
 
     let stateVariableForWorkspace = stateVariable;

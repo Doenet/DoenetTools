@@ -53,6 +53,7 @@ export default class MathInput extends DoenetRenderer {
 
     this.mathExpression = this.doenetSvData.valueForDisplay;
     this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+    this.latexValueSetInRender = true;
 
     // this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
     // this.inputRef = React.createRef();
@@ -86,7 +87,7 @@ export default class MathInput extends DoenetRenderer {
 
     // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
     // unlike math-expression's latex parser
-    text = text.replace(/\^(\d)/g, '^{$1}' );
+    text = text.replace(/\^(\d)/g, '^{$1}');
 
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
@@ -333,14 +334,14 @@ export default class MathInput extends DoenetRenderer {
         }
       }
 
-      if(this.doenetSvData.numberOfAttemptsLeft < 0) {
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
         checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (no attempts remaining)
-        </span>
-      </>
-      } else if(this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+          {checkWorkButton}
+          <span>
+            (no attempts remaining)
+          </span>
+        </>
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
 
         checkWorkButton = <>
           {checkWorkButton}
