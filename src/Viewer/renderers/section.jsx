@@ -190,7 +190,7 @@ export default class Section extends DoenetRenderer {
             display: "block",
             margin: "0px 4px 4px 4px",
             padding: "6px",
-            backgroundColor: "#ebebeb",
+            backgroundColor: "white",
           }}>
             {childrenToRender}
             {checkworkComponent}
