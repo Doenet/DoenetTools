@@ -20,6 +20,8 @@ import {useAssignmentCallbacks} from '../../../_reactComponents/Drive/DriveActio
 import { useToast } from '../Toast';
 import axios from 'axios';
 import Switch from '../../_framework/Switch';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 
 export const selectedVersionAtom = atom({
@@ -90,7 +92,7 @@ export default function SelectedDoenetML() {
   // make assignment for released versions
  
   makeAssignmentforReleasedButton = (
-    <>
+    <ButtonGroup vertical>
       <Button
         value="Make Assignment"
         onClick={async () => {
@@ -142,16 +144,14 @@ export default function SelectedDoenetML() {
           }
         }}
       />
-      
-      <br />
-    </>
+    </ButtonGroup>
   );
 
   // unassign
   let unAssignButton = ''; 
   
 unAssignButton = (
-  <>
+  <ButtonGroup vertical>
     <Button
       value="Unassign"
       onClick={async () => {
@@ -203,9 +203,7 @@ unAssignButton = (
           });
       }}
     />
-    <br />
-    <br />
-  </>
+  </ButtonGroup>
 );
 
   return (
@@ -238,37 +236,38 @@ unAssignButton = (
         />
       </label>
       <br />
-      <br />
-      <Button
-        value="Edit DoenetML"
-        onClick={() => {
-          setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
-            params: {
-              doenetId: item.doenetId,
-              path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
-            },
-          });
-        }}
-      />
-      <br />
-      <Button
-        data-cy="deleteDoenetMLButton"
-        value="Delete DoenetML"
-        onClick={() => {
-          deleteItem({
-            driveIdFolderId: {
-              driveId: item.driveId,
-              folderId: item.parentFolderId,
-            },
-            itemId: item.itemId,
-            driveInstanceId: item.driveInstanceId,
-            label: item.label,
-          });
-        }}
-      />
+      <ButtonGroup vertical>
+        <Button
+          value="Edit DoenetML"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                doenetId: item.doenetId,
+                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
+              },
+            });
+          }}
+        />
+        <Button
+          data-cy="deleteDoenetMLButton"
+          value="Delete DoenetML"
+          onClick={() => {
+            deleteItem({
+              driveIdFolderId: {
+                driveId: item.driveId,
+                folderId: item.parentFolderId,
+              },
+              itemId: item.itemId,
+              driveInstanceId: item.driveInstanceId,
+              label: item.label,
+            });
+          }}
+        />
+      </ButtonGroup>
+      
       <br />
       {assigned}
       <br />
