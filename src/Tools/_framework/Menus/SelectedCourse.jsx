@@ -82,7 +82,21 @@ export default function SelectedCourse(props) {
        
       </>
     );
-  } else {
+  } else if(selection.length === 1 && selection[0]?.role[0] === 'Administrator'){
+    return (
+      <>
+        <DriveInfoPanel
+          key={`DriveInfoPanel${selection[0].driveId}`}
+          label={selection[0].label}
+          color={selection[0].color}
+          image={selection[0].image}
+          driveId={selection[0].driveId}
+          role={'Administrator'}
+        />
+      </>
+    );
+  }
+  else {
     return '';
   }
 }
@@ -292,6 +306,8 @@ const DriveInfoPanel = function (props) {
       <h2 data-cy="infoPanelItemLabel">
         {dIcon} {panelDriveLabel}
       </h2>
+      {props.role == 'Administrator' ? <>{addAdmins}  {adminsList}</> : 
+      <>
       <label>
         Name :{' '}
         <input
@@ -354,6 +370,9 @@ const DriveInfoPanel = function (props) {
       {adminPerms}
 
       {deleteCourseButton}
+      </>
+        }
+
     </>
   );
 };
