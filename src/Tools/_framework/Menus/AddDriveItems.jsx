@@ -10,7 +10,7 @@ export default function AddDriveItems(props) {
   ).split(':');
   const { addItem } = useSockets('drive');
   return (
-    <div style={props.style}>
+    <div style={{display: 'flex', flexDirection: 'column', gap: '4px', ...props.style}}>
       <div>
         <Button
           width="menu"
@@ -39,6 +39,18 @@ export default function AddDriveItems(props) {
         >
           Add DoenetML
         </Button>
+      </div>
+      <div>
+        <Button
+          width="menu"
+          onClick={() =>
+            addItem({
+              driveIdFolderId: { driveId, folderId: parentFolderId },
+              type: itemType.COLLECTION,
+            })
+          }
+          value="Add Collection"
+        />
       </div>
     </div>
   );

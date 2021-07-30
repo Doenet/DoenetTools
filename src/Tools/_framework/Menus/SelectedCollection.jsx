@@ -1,28 +1,32 @@
-import {
-  faCode,
-  faFolder,
-  faObjectGroup,
-} from '@fortawesome/free-solid-svg-icons';
+import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
-import { selector, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
-import {
-  folderDictionaryFilterSelector,
-  globalSelectedNodesAtom,
-} from '../../../_reactComponents/Drive/NewDrive';
+import { useEffect } from 'react';
+import { useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
+import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
 
 export default function SelectedCollection() {
-  const selection =
-    useRecoilValueLoadable(selectedInformation).getValue() ?? [];
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
+  const selection = useRecoilValueLoadable(selectedInformation).getValue();
+  const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
-  const item = selection[0];
-  const dIcon = <FontAwesomeIcon icon={faFolder} />;
+
+  useEffect(() => {
+    if (!selection[0]) {
+      setSelectedMenu('');
+    } else {
+      setItem(selection[0]);
+      setLabel(selection[0]?.label);
+    }
+  }, [selection, setSelectedMenu]);
+
+  const dIcon = <FontAwesomeIcon icon={faLayerGroup} />;
 
   const renameItemCallback = (newLabel) => {
     renameItem({
@@ -42,7 +46,7 @@ export default function SelectedCollection() {
       </h2>
 
       <label>
-        DoenetML Label
+        Collection Label
         <input
           type="text"
           data-cy="infoPanelItemLabelInput"
@@ -67,7 +71,7 @@ export default function SelectedCollection() {
       <br />
       <br />
       <Button
-        value="Edit DoenetML"
+        value="Edit Collection"
         onClick={() => {
           setPageToolView({
             page: 'course',
@@ -83,7 +87,7 @@ export default function SelectedCollection() {
       <br />
       <Button
         data-cy="deleteDoenetMLButton"
-        value="Delete DoenetML"
+        value="Delete Collection"
         onClick={() => {
           deleteItem({
             driveIdFolderId: {

@@ -69,7 +69,7 @@ export default function SelectedFolder() {
       <br />
       <Button
         data-cy="deleteDoenetMLButton"
-        value="Delete DoenetML"
+        value="Delete Folder"
         onClick={() => {
           deleteItem({
             driveIdFolderId: {

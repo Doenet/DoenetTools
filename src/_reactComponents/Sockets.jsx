@@ -70,6 +70,7 @@ export const itemType = Object.freeze({
   FOLDER: 'Folder',
   DOENETML: 'DoenetML',
   URL: 'Url',
+  COLLECTION: 'Collection',
 });
 
 /**
@@ -114,7 +115,7 @@ export default function useSockets(nsp) {
       const itemId = nanoid(); //TODO: remove
       const doenetId = nanoid(); //Id per file
       const versionId = nanoid(); //Id per named version / data collection site
-      console.log(driveIdFolderId);
+
       //generate sort order
       const fInfo = await snapshot.getPromise(
         folderDictionary(driveIdFolderId),
