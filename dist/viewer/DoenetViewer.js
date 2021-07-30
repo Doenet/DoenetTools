@@ -305,14 +305,25 @@ class DoenetViewerChild extends Component {
     for (let contentId of contentIds) {
       promises.push(axios.get(`/media/${contentId}.doenet`));
     }
+    function ErrorFromWithinCallback(originalError) {
+      this.name = "ErrorFromWithinCallback";
+      this.originalError = originalError;
+    }
     Promise.all(promises).then((resps) => {
       newDoenetMLs = resps.map((x) => x.data);
-      callBack({
-        newDoenetMLs,
-        newContentIds,
-        success: true
-      });
+      try {
+        callBack({
+          newDoenetMLs,
+          newContentIds,
+          success: true
+        });
+      } catch (e) {
+        throw new ErrorFromWithinCallback(e);
+      }
     }).catch((err) => {
+      if (err.name === "ErrorFromWithinCallback") {
+        throw err.originalError;
+      }
       let message;
       if (newContentIds.length === 1) {
         message = `Could not retrieve contentId ${newContentIds[0]}`;

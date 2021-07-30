@@ -187,16 +187,20 @@ export default function attempt() {
       req_props: null,
       req_children: [React.createElement(Button), React.createElement(Button), React.createElement(Button)],
       use: 'This groups related buttons together.',
-    //   props: [
-    //     // {name: 'Width - Menu Panel',
-    //     // propPreview: '<ActionButtonGroup width="menu" />',
-    //     // propCode: {width: 'menu'},
-    //     // description: 'Sets width to fill menu panel width'},
-    //     // {name: 'Width - Custom',
-    //     // propPreview: '<ActionButtonGroup width="500px" />',
-    //     // propCode: {width: '500px'},
-    //     // description: 'Sets width to custom dimensions'},
-    //   ]
+      props: [
+        {name: 'Vertical',
+        propPreview: '<ButtonGroup vertical />',
+        propCode: {vertical},
+        description: 'Makes buttons align vertically'},
+        // {name: 'Width - Menu Panel',
+        // propPreview: '<ActionButtonGroup width="menu" />',
+        // propCode: {width: 'menu'},
+        // description: 'Sets width to fill menu panel width'},
+        // {name: 'Width - Custom',
+        // propPreview: '<ActionButtonGroup width="500px" />',
+        // propCode: {width: '500px'},
+        // description: 'Sets width to custom dimensions'},
+      ]
     },
     {
       name: 'Increment',
@@ -479,6 +483,8 @@ export default function attempt() {
 
     const component = dataStructure.find(({ id }) => id === match.params.componentId)
     var display = component.code
+    var children = component.req_children
+
 
     //PROPS SECTION
     function Props(component) {
@@ -488,7 +494,7 @@ export default function attempt() {
             <h3 key={name}>{name}</h3>
             <p key={name + 'code'} style={{color: "blue"}}>{propPreview}</p>
             <p key={description}>{description}</p>
-            {React.createElement(display, propCode)}
+            {React.createElement(display, propCode, children)}
           </div>)))
       }
       else {

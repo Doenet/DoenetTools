@@ -3,8 +3,6 @@ import InlineComponent from './abstract/InlineComponent';
 export default class triggerSet extends InlineComponent {
   static componentType = "triggerSet";
 
-  static triggeringAction = "triggerActions"
-
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     // attributes.width = {default: 300};

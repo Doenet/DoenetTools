@@ -40,10 +40,4 @@ function _setPrototypeOf(o, p) {
   return _setPrototypeOf(o, p);
 }
 
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-  _setPrototypeOf(subClass, superClass);
-}
-
-export { _inheritsLoose as _, _objectWithoutPropertiesLoose as a, _extends as b };
+export { _objectWithoutPropertiesLoose as _, _extends as a, _setPrototypeOf as b };

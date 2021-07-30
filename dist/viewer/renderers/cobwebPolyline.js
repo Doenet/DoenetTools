@@ -182,8 +182,10 @@ export default class CobwebPolyline extends DoenetRenderer {
         this.pointsJXG[i].visProp["visible"] = false;
         this.pointsJXG[i].visPropCalc["visible"] = false;
       }
-      this.pointsJXG[this.doenetSvData.nPoints - 1].visProp["visible"] = visible;
-      this.pointsJXG[this.doenetSvData.nPoints - 1].visPropCalc["visible"] = visible;
+      if (this.doenetSvData.nPoints > 0) {
+        this.pointsJXG[this.doenetSvData.nPoints - 1].visProp["visible"] = visible;
+        this.pointsJXG[this.doenetSvData.nPoints - 1].visPropCalc["visible"] = visible;
+      }
     } else {
       this.polylineJXG.visProp["visible"] = false;
       this.polylineJXG.visPropCalc["visible"] = false;
@@ -200,13 +202,15 @@ export default class CobwebPolyline extends DoenetRenderer {
     }
     this.polylineJXG.needsUpdate = true;
     this.polylineJXG.update().updateVisibility();
-    this.pointsJXG[this.doenetSvData.nPoints - 1].setAttribute({withlabel: true});
     for (let i = 0; i < this.doenetSvData.nPoints; i++) {
       this.pointsJXG[i].needsUpdate = true;
       this.pointsJXG[i].update();
     }
-    this.pointsJXG[this.doenetSvData.nPoints - 1].label.needsUpdate = true;
-    this.pointsJXG[this.doenetSvData.nPoints - 1].label.update();
+    if (this.doenetSvData.nPoints > 0) {
+      this.pointsJXG[this.doenetSvData.nPoints - 1].setAttribute({withlabel: true});
+      this.pointsJXG[this.doenetSvData.nPoints - 1].label.needsUpdate = true;
+      this.pointsJXG[this.doenetSvData.nPoints - 1].label.update();
+    }
     this.props.board.updateRenderer();
   }
   onDragHandler(i, transient) {

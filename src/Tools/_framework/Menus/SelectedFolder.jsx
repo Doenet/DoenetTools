@@ -14,6 +14,8 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { selectedInformation } from './SelectedDoenetML';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export default function SelectedFolder() {
   const selection =
@@ -64,22 +66,23 @@ export default function SelectedFolder() {
         />
       </label>
       <br />
-      <br />
-      <Button
-        data-cy="deleteDoenetMLButton"
-        value="Delete DoenetML"
-        onClick={() => {
-          deleteItem({
-            driveIdFolderId: {
-              driveId: item.driveId,
-              folderId: item.parentFolderId,
-            },
-            itemId: item.itemId,
-            driveInstanceId: item.driveInstanceId,
-            label: item.label,
-          });
-        }}
-      />
+      <ButtonGroup vertical>
+        <Button
+          data-cy="deleteDoenetMLButton"
+          value="Delete DoenetML"
+          onClick={() => {
+            deleteItem({
+              driveIdFolderId: {
+                driveId: item.driveId,
+                folderId: item.parentFolderId,
+              },
+              itemId: item.itemId,
+              driveInstanceId: item.driveInstanceId,
+              label: item.label,
+            });
+          }}
+        />
+      </ButtonGroup>
     </>
   );
 }

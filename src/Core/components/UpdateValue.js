@@ -4,8 +4,6 @@ import InlineComponent from './abstract/InlineComponent';
 export default class UpdateValue extends InlineComponent {
   static componentType = "updateValue";
 
-  static triggeringAction = "updateValue";
-
   static acceptTname = true;
 
   static get stateVariablesShadowedForReference() {

@@ -82,6 +82,7 @@ export default function ToolRoot(){
 
   const [toolRootMenusAndPanels,setToolRootMenusAndPanels] = useState({
     pageName:"init",
+    menuPanelCap:"",
     currentMenus:[],
     menusTitles:[],
     menusInitOpen:[],
@@ -123,6 +124,7 @@ export default function ToolRoot(){
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
  
 
@@ -222,7 +224,15 @@ export default function ToolRoot(){
 
   let menus = <MenuPanel key='menuPanel' hide={true} />;
   if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel){
-    menus = <MenuPanel key='menuPanel' hide={false} setMenusOpen={setMenusOpen} menusOpen={menusOpen} menusTitles={toolRootMenusAndPanels.menusTitles} currentMenus={toolRootMenusAndPanels.currentMenus} initOpen={toolRootMenusAndPanels.menusInitOpen}/>
+    menus = <MenuPanel 
+    key='menuPanel' 
+    hide={false} 
+    setMenusOpen={setMenusOpen} 
+    menusOpen={menusOpen} 
+    menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
+    menusTitles={toolRootMenusAndPanels.menusTitles} 
+    currentMenus={toolRootMenusAndPanels.currentMenus} 
+    initOpen={toolRootMenusAndPanels.menusInitOpen}/>
   }
 
   let profileInMainPanel = !menusOpen;
@@ -292,26 +302,31 @@ let navigationObj = {
     navigation:{ //allFilesInCourse
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
-      currentMenus:["AddDriveItems","EnrollStudents"],
-      menusTitles:["Add Items","Enrollment"],
+      menuPanelCap:"DriveInfoCap",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      
       // currentMenus:["AddDriveItems","EnrollStudents","gradebook"],
       // menusTitles:["Add Items","Enrollment","gradebook"],
-      menusInitOpen:[true,false],
-      headerControls: ["NavigationBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      // menusInitOpen:[true,false,false],
+
+      headerControls: ["NavigationBreadCrumb","RoleDropdown"],
+      headerControlsPositions: ["Left","Right"],
       onLeave:"NavigationLeave",
-      // views:{
-        // instructor:{
-        //   currentMenus:['',''], //Override for view
-
-        // },
-        // student:{
-
-        // }
-      // }
+      views:{
+        instructor:{
+          currentMenus:["AddDriveItems","EnrollStudents"],
+          menusTitles:["Add Items","Enrollment"],
+          menusInitOpen:[true,false],
+        },
+        student:{
+        }
+      }
     },
     editor:{ //singleFile
       pageName:"Course",
+      menuPanelCap:"EditorInfoCap",
       currentMainPanel:"EditorViewer",
       currentMenus:["VersionHistory","DoenetMLSettings","Variant"], 
       menusTitles:["Version History","Document Settings","Variant"],
@@ -520,10 +535,6 @@ let encodeParams = p => Object.entries(p).map(kv =>
       nextPageToolView = {...recoilPageToolView}
       
     }
-  
-    // console.log(">>>location",location)
-    // console.log(">>>isURLChange",isURLChange)
-    // console.log(">>>isRecoilChange",isRecoilChange)
 
     if (!isURLChange && !isRecoilChange){
       //Just updating traking variables
@@ -562,10 +573,31 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }else if (lastPageToolView.current.view !== nextPageToolView.view){
       //View changed!
       isViewChange = true;
+      //New object so we can use it as a template to add keys to
+      //Also causes refresh as useState will see it as a new object in root
+      nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
     }
+    // console.log(">>>isURLChange",isURLChange,"isRecoilChange",isRecoilChange)
+    // console.log(">>>page",isPageChange,"Tool",isToolChange,"view",isViewChange)
+    // console.log(">>>nextPageToolView",nextPageToolView)
+    let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view]
+    // console.log(">>>viewOverrides",viewOverrides)
+    // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
+
+    //Have view Override the next menu and panels
+    if (isViewChange && typeof viewOverrides === 'object' && viewOverrides !== null){
+      for (let key of Object.keys(viewOverrides)){
+        nextMenusAndPanels[key] = viewOverrides[key];
+      }
+    }
+    // console.log(">>> |view| ",nextPageToolView.view,"nextMenusAndPanels",nextMenusAndPanels)
+
 
     //Update Navigation Leave
-    if (isPageChange || isToolChange || isViewChange){
+    //Only when leaving page or tool
+    //TODO: test for main panel change???
+    if (isPageChange || isToolChange){
+      // if (isPageChange || isToolChange || isViewChange){
       if (leaveComponentName.current){
         setOnLeaveStr((was)=>({str:leaveComponentName.current,updateNum:was.updateNum+1})) 
       }
@@ -580,9 +612,13 @@ let encodeParams = p => Object.entries(p).map(kv =>
 
     //Update recoil isURLChange
     if (isURLChange){
-      setRecoilPageToolView(nextPageToolView);
       searchObj = Object.fromEntries(new URLSearchParams(location.search))
       setSearchParamAtom(searchObj)
+      nextPageToolView['params'] = {...searchObj};
+      delete nextPageToolView['params'].tool;
+      // console.log(">>>isURLChange nextPageToolView",nextPageToolView) //Changed this to keep params
+
+      setRecoilPageToolView(nextPageToolView);
     }
 
    
@@ -601,6 +637,8 @@ let encodeParams = p => Object.entries(p).map(kv =>
         backParams.current = currentParams.current; //Set params for back button to the previous page's params
         currentParams.current = params; 
 
+        // let newObj = {...nextMenusAndPanels} //Force refresh of root
+        // props.setToolRootMenusAndPanels(newObj)
         props.setToolRootMenusAndPanels(nextMenusAndPanels)
       
     }

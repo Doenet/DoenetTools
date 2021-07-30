@@ -13,7 +13,7 @@ $userId = $jwtArray['userId'];
 $email = mysqli_real_escape_string($conn,$_REQUEST["email"]);
 $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 $type = mysqli_real_escape_string($conn,$_REQUEST["type"]);
-$selected_userId = mysqli_real_escape_string($conn,$_REQUEST["userId"]);
+$selected_userId = $_REQUEST["userId"];
 
 $success = TRUE;
 $response_arr = array(
@@ -24,37 +24,56 @@ $response_arr = array(
 
 
 if ($type === "Remove User"){
+  for($k = 0; $k < count($selected_userId); $k++){
+
+    $userData = $selected_userId[$k];
+    $userDataDecode = json_decode($userData,true);
+    $userUserId =  $userDataDecode['userId'];
     $sql = "
     DELETE FROM drive_user
-    WHERE userId = '$selected_userId'
+    WHERE userId = '$userUserId'
     AND driveId = '$driveId'
     ";
     $result = $conn->query($sql); 
     $response_arr = array(
       "success"=>TRUE
     );
+  }
   }else if ($type === "To Owner"){
-    $sql = "
-    UPDATE drive_user
-    SET canDeleteDrive='1', canChangeAllDriveSettings= '1'
-    WHERE userId = '$selected_userId'
-    AND driveId = '$driveId'
-    ";
-    $result = $conn->query($sql); 
-    $response_arr = array(
-      "success"=>TRUE
-    );
+    for($k = 0; $k < count($selected_userId); $k++){
+
+      $userData = $selected_userId[$k];
+      $userDataDecode = json_decode($userData,true);
+      $ownerUserId =  $userDataDecode['userId'];
+      $sql = "
+      UPDATE drive_user
+      SET canDeleteDrive='1', canChangeAllDriveSettings= '1', role='Owner'
+      WHERE userId = '$ownerUserId'
+      AND driveId = '$driveId'
+      ";
+      $result = $conn->query($sql); 
+      $response_arr = array(
+        "success"=>TRUE
+      );
+    }
+  
   }else if ($type === "To Admin"){
-    $sql = "
-    UPDATE drive_user
-    SET canDeleteDrive='0', canChangeAllDriveSettings= '0'
-    WHERE userId = '$selected_userId'
-    AND driveId = '$driveId'
-    ";
-    $result = $conn->query($sql); 
-    $response_arr = array(
-      "success"=>TRUE
-    );
+    for($k = 0; $k < count($selected_userId); $k++){
+      $userData = $selected_userId[$k];
+      $userDataDecode = json_decode($userData,true);
+      $adminUserId =  $userDataDecode['userId'];
+      $sql = "
+      UPDATE drive_user
+      SET canDeleteDrive='0', canChangeAllDriveSettings= '0', role='Administrator'
+      WHERE userId = '$adminUserId'
+      AND driveId = '$driveId'
+      ";
+      $result = $conn->query($sql); 
+      $response_arr = array(
+        "success"=>TRUE
+      );
+    }
+   
 }else{
   //Attempt to add user
 

@@ -1,6 +1,7 @@
-import { b as _extends, _ as _inheritsLoose, a as _objectWithoutPropertiesLoose } from './inheritsLoose-adbe5217.js';
+import { _ as _inheritsLoose } from './inheritsLoose-90c3012b.js';
 import { r as react } from './index-61a7c514.js';
 import { p as propTypes } from './index-01840a39.js';
+import { a as _extends, _ as _objectWithoutPropertiesLoose } from './setPrototypeOf-ac807fbe.js';
 import { g as global } from './_polyfill-node:global-acbc543a.js';
 import { c as createCommonjsModule } from './_commonjsHelpers-b3efd043.js';
 import './hoist-non-react-statics.cjs-99a47c26.js';
@@ -2105,4 +2106,4 @@ function useLocation() {
   return useContext(context).location;
 }
 
-export { Router as R, Switch as S, createHashHistory as a, context as b, createBrowserHistory as c, createLocation as d, Route as e, useLocation as f, invariant as i, matchPath as m, useHistory as u };
+export { Router as R, Switch as S, useLocation as a, createHashHistory as b, createBrowserHistory as c, context as d, createLocation as e, Route as f, invariant as i, matchPath as m, useHistory as u };

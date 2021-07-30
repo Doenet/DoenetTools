@@ -9,20 +9,21 @@ include "db_connection.php";
 
 //TODO: Check if the user is the instructor in the course
 
-if (!isset($_REQUEST["courseId"])) {
+if (!isset($_REQUEST["driveId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No course specified!";
 } else {
-    $courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
+    $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
 
 
         $sql = "
-            SELECT a.assignmentId, a.title, ua.credit, ua.userId
+            SELECT a.doenetId, ua.credit, ua.userId
             FROM assignment AS a
-            RIGHT JOIN user_assignment AS ua
-            ON a.assignmentId = ua.assignmentId
-            WHERE a.courseId = '$courseId'
+            JOIN user_assignment AS ua
+            ON a.doenetId = ua.doenetId
+            WHERE a.driveId = '$driveId'
             ORDER BY a.dueDate
+
         ";
         // echo $sql;
 
@@ -32,8 +33,7 @@ if (!isset($_REQUEST["courseId"])) {
         while ($row = $result->fetch_assoc()) {
             array_push($response_arr,
                 array(
-                    $row['assignmentId'],
-                    $row['title'],
+                    $row['doenetId'],
                     $row['credit'],
                     $row['userId']
                 )
@@ -46,10 +46,6 @@ if (!isset($_REQUEST["courseId"])) {
         // make it json format
         echo json_encode($response_arr);
     } 
-
-    
-
-
 $conn->close();
 ?>
            

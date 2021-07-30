@@ -49,6 +49,12 @@ export default function Searchbar(props) {
     fontSize: "12px",
     overflow: "hidden"
   };
+  if (props.disabled) {
+    submitButton.backgroundColor = "#e2e2e2";
+    submitButton.color = "black";
+    submitButton.cursor = "not-allowed";
+    searchBar.cursor = "not-allowed";
+  }
   if (props.width) {
     if (props.width === "menu") {
       searchBar.width = "130px";

@@ -1,0 +1,31 @@
+<module>
+  <setup>
+    <customAttribute componentType="text" attribute="title" defaultValue="Find point" assignNames="title" />
+    <customAttribute componentType="math" attribute="initialx" defaultValue="0" assignNames="initialx" />
+    <customAttribute componentType="math" attribute="initialy" defaultValue="0" assignNames="initialy" />
+    <customAttribute componentType="math" attribute="goalx" defaultValue="3" assignNames="goalx" />
+    <customAttribute componentType="math" attribute="goaly" defaultValue="4" assignNames="goaly" />
+    <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
+    <customAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
+  </setup>
+
+  <problem name="prob"><title>$title</title>
+
+    <p>Move the point to <m>($goalx, $goaly)</m>.</p>
+    <graph width="$width" height="$height">
+      <point x="$(initialx{link='false'})" y="$(initialy{link='false'})" name="P">
+        <constraints>
+          <attractTo><point x="$goalx" y="$goaly" ></point></attractTo>
+        </constraints>
+      </point>
+    </graph>
+
+    <answer name="ans">
+      <award targetsAreResponses="P">
+        <when>
+          $P = ($goalx, $goaly)
+        </when>
+      </award>
+    </answer>
+  </problem>
+</module>

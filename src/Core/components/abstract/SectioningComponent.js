@@ -296,6 +296,14 @@ export default class SectioningComponent extends BlockComponent {
       definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
     }
 
+    stateVariableDefinitions.sectionPlaceholder = {
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: { sectionPlaceholder: { variablesToCheck: ["sectionPlaceholder"] } }
+      })
+    }
+
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
@@ -308,6 +316,7 @@ export default class SectioningComponent extends BlockComponent {
         variableName: "percentCreditAchieved",
         public: true,
         componentType: "number",
+        defaultValue: 0,
         stateVariablesPrescribingAdditionalAttributes: {
           displayDigits: "displayDigitsForCreditAchieved",
         }
@@ -324,6 +333,10 @@ export default class SectioningComponent extends BlockComponent {
           dependencies.scoredDescendants = {
             dependencyType: "stateVariable",
             variableName: "scoredDescendants"
+          }
+          dependencies.sectionPlaceholder = {
+            dependencyType: "stateVariable",
+            variableName: "sectionPlaceholder"
           }
           for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchieved" + ind] = {
@@ -347,6 +360,15 @@ export default class SectioningComponent extends BlockComponent {
           }
         }
 
+        if (dependencyValues.sectionPlaceholder) {
+          return {
+            useEssentialOrDefaultValue: {
+              creditAchieved: { variablesToCheck: ["creditAchieved"] },
+              percentCreditAchieved: { variablesToCheck: ["percentCreditAchieved"] },
+            }
+          }
+        }
+
         let creditSum = 0;
         let totalWeight = 0;
 
@@ -355,11 +377,39 @@ export default class SectioningComponent extends BlockComponent {
           creditSum += dependencyValues["creditAchieved" + ind] * weight;
           totalWeight += weight;
         }
-        let creditAchieved = creditSum / totalWeight;
+        let creditAchieved;
+        if(totalWeight > 0) {
+          creditAchieved = creditSum / totalWeight;
+        } else {
+          // give full credit if there are no scored items
+          creditAchieved = 1;
+        }
         let percentCreditAchieved = creditAchieved * 100;
 
         return { newValues: { creditAchieved, percentCreditAchieved } }
 
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (!dependencyValues.sectionPlaceholder) {
+          return { success: false }
+        }
+
+        let instructions = [];
+
+        for (let varName in desiredStateVariableValues) {
+          if (!["creditAchieved", "percentCreditAchieved"].includes(varName)) {
+            continue;
+          }
+          instructions.push({
+            setStateVariable: varName,
+            value: desiredStateVariableValues[varName]
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        }
       }
     }
 

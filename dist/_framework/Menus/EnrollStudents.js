@@ -1,15 +1,16 @@
 import React from "../../_snowpack/pkg/react.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-import {searchParamAtomFamily, paramObjAtom} from "../NewToolRoot.js";
+import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import {useSetRecoilState, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 export default function EnrollStudents(props) {
-  const setParamObj = useSetRecoilState(paramObjAtom);
-  const driveId = "tempDriveId";
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const path = useRecoilValue(searchParamAtomFamily("path"));
+  const driveId = path.split(":")[0];
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    onClick: () => setParamObj({tool: "enrollment", driveId}),
+    onClick: () => setPageToolView({page: "course", tool: "enrollment", view: "", params: {driveId}}),
     value: "Go to Enrollment"
   }, "Go to Enrollment"));
 }

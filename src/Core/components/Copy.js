@@ -588,12 +588,12 @@ export default class Copy extends CompositeComponent {
           if (!(dependencyValues.typeAttr in componentInfoObjects.allComponentClasses)) {
             throw Error(`Invalid componentType ${dependencyValues.typeAttr} of copy.`)
           }
-          if (dependencyValues.nComponentsAttr !== undefined) {
+          if (dependencyValues.nComponentsAttr !== null) {
             nComponentsSpecified = dependencyValues.nComponentsAttr
           } else {
             nComponentsSpecified = 1;
           }
-        } else if (dependencyValues.nComponentsAttr !== undefined) {
+        } else if (dependencyValues.nComponentsAttr !== null) {
           throw Error(`You must specify a componentType when specifying nComponents for a copy.`)
         } else {
           nComponentsSpecified = null;
@@ -621,7 +621,7 @@ export default class Copy extends CompositeComponent {
       }),
       definition({ dependencyValues, componentInfoObjects }) {
         let link;
-        if (dependencyValues.linkAttr === undefined) {
+        if (dependencyValues.linkAttr === null) {
           if (dependencyValues.serializedComponentsForContentId ||
             dependencyValues.replacementSourceIdentities &&
             dependencyValues.replacementSourceIdentities.some(x =>

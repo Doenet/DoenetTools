@@ -34,6 +34,12 @@ border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
 `;
+const MenuPanelsCapComponent = styled.div`
+width: 240px;
+background: white;
+border-top: 1px solid #e2e2e2;
+border-top: 1px solid #e2e2e2;
+`;
 
 const MenuHeaderButton = styled.button`
   border: none;
@@ -133,7 +139,7 @@ function Menu(props){
     <div style={{
       display: hideShowStyle,
       // paddingTop: "0px", 
-      paddingBottom: "4px", 
+      paddingBottom: "1px", 
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor:"white"}}>{props.children}</div>
@@ -151,8 +157,9 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
-// console.log(">>>===MenuPanel")
+export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
+console.log(">>>===MenuPanel")
+console.log(">>>menuPanelCap",menuPanelCap)
 
   //These maintain the panels' state
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
@@ -162,8 +169,12 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
   // const [userPanels,setUserPanels] = useState(null)
 
   // const profilePicName = profile.profilePicture;
+  const LazyMenuPanelCapObj = useRef({
+    DriveInfoCap:lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
+    EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
+  }).current;
 
-  const LazyObj = useRef({
+  const LazyMenuObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
     SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
     SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
@@ -183,7 +194,7 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
 
   let selectionPanel = null;
   if (currentSelectionMenu){
-    const panelToUse = LazyObj[currentSelectionMenu];
+    const panelToUse = LazyMenuObj[currentSelectionMenu];
     //protect from typos
     if (panelToUse){
       const key = `SelectionMenu${currentSelectionMenu}`
@@ -194,6 +205,15 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
     }
   }
 
+  let menuPanelCapComponent = null;
+  if (menuPanelCap !== ""){
+    menuPanelCapComponent = <MenuPanelsCapComponent>
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      {React.createElement(LazyMenuPanelCapObj[menuPanelCap])}
+        </Suspense>
+    </MenuPanelsCapComponent>;
+
+  }
   
 
 
@@ -205,7 +225,7 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
     
     return <div key={key} style={{display:hideStyle}} ><Menu title={title} isInitOpen={initOpen} >
       <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyObj[type],{key})}
+    {React.createElement(LazyMenuObj[type],{key})}
     </Suspense></Menu></div>
   } 
 
@@ -267,8 +287,9 @@ export default function MenuPanel({ hide, menusTitles=[], currentMenus=[], initO
           <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
         </span>
         
-          {/* {anchorImage} */}
       </MenuPanelsCap>
+      {menuPanelCapComponent}
+
     {selectionPanel}
     <div>{toolMenus.current}</div>
    {/* {toolMenus.current} */}

@@ -7872,4 +7872,4 @@ const activeLineHighlighter = /*@__PURE__*/ViewPlugin.fromClass(class {
     decorations: v => v.decorations
 });
 
-export { BlockType as B, Direction as D, EditorView as E, PluginField as P, RangeSet as R, StyleModule as S, ViewPlugin as V, WidgetType as W, RangeValue as a, Decoration as b, RangeSetBuilder as c, drawSelection as d, highlightActiveLine as e, highlightSpecialChars as h, keymap as k, logException as l, runScopeHandlers as r };
+export { BlockType as B, Decoration as D, EditorView as E, PluginField as P, RangeSet as R, StyleModule as S, ViewPlugin as V, WidgetType as W, RangeSetBuilder as a, Direction as b, RangeValue as c, drawSelection as d, highlightActiveLine as e, highlightSpecialChars as h, keymap as k, logException as l, runScopeHandlers as r };

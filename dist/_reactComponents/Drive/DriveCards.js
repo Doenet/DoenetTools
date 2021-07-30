@@ -20,7 +20,7 @@ import {
   fetchDrivesSelector,
   drivePathSyncFamily,
   loadDriveInfoQuery
-} from "./Drive.js";
+} from "./NewDrive.js";
 const DriveCards = (props) => {
   const {driveDoubleClickCallback, isOneDriveSelect, types, drivePathSyncKey} = props;
   const drivesInfo = useRecoilValueLoadable(fetchDrivesSelector);
