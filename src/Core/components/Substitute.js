@@ -255,8 +255,6 @@ export default class Substitute extends CompositeComponent {
       // so that the variable is marked fresh
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        // even with invalid sequence, still ready to expand
-        // (it will just expand with zero replacements)
         return { newValues: { readyToExpandWhenResolved: true } };
       },
     };

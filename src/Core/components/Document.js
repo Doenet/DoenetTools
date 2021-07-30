@@ -387,7 +387,15 @@ export default class Document extends BaseComponent {
           creditSum += dependencyValues.itemCreditAchieved[ind] * weight;
           totalWeight += weight;
         }
-        let creditAchieved = creditSum / totalWeight;
+        let creditAchieved;
+
+        if (totalWeight > 0) {
+          creditAchieved = creditSum / totalWeight;
+        } else {
+          // give full credit if there are no scored items
+          creditAchieved = 1;
+        }
+
         let percentCreditAchieved = creditAchieved * 100;
 
         return { newValues: { creditAchieved, percentCreditAchieved } }
