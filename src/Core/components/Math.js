@@ -227,12 +227,25 @@ export default class MathComponent extends InlineComponent {
 
     }
 
-    stateVariableDefinitions.unnormalizedValue = {
+    stateVariableDefinitions.mathChildrenWithCanBeModified = {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
           childLogicName: "atLeastZeroMaths",
           variableNames: ["value", "canBeModified"],
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { mathChildrenWithCanBeModified: dependencyValues.mathChildren }
+      })
+    }
+
+    stateVariableDefinitions.unnormalizedValue = {
+      returnDependencies: () => ({
+        mathChildren: {
+          dependencyType: "child",
+          childLogicName: "atLeastZeroMaths",
+          variableNames: ["value"],
         },
         stringChildren: {
           dependencyType: "child",
@@ -1376,7 +1389,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
   // update math children where have inversemap and canBeModified is true
   for (let [childInd, mathChild] of mathChildren.entries()) {
     if (stateValues.mathChildrenMapped.has(childInd) &&
-      mathChild.stateValues.canBeModified
+      stateValues.mathChildrenWithCanBeModified[childInd].stateValues.canBeModified
     ) {
 
       if (!childrenToSkip.includes(childInd)) {

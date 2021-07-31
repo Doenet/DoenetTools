@@ -52,7 +52,16 @@ export default class MathInput extends DoenetRenderer {
     // this.handleDragExit = this.handleDragExit.bind(this);
 
     this.mathExpression = this.doenetSvData.valueForDisplay;
-    this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+
+    if(this.doenetSvData.rawRendererValue !== null) {
+      this.latexValue = this.doenetSvData.rawRendererValue
+    } else {
+      this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      })
+    }
     this.latexValueSetInRender = true;
 
     // this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
@@ -117,17 +126,27 @@ export default class MathInput extends DoenetRenderer {
     let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
 
+    let rawValueChanged = text !== this.latexValue || this.latexValueSetFromValueForDisplay;
+    let transientForRaw = !this.latexValueSetInRender;
+
     let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
       || (!this.latexValueSetInRender && text !== this.latexValue);
 
     // Note: must set this.latexValue before calling updateImmediateValue action
     this.latexValue = text;
     this.latexValueSetInRender = false;
+    this.latexValueSetFromValueForDisplay = false;
 
     if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
-        mathExpression: newMathExpression
+        mathExpression: newMathExpression,
+        rawRendererValue: this.latexValue,
+      });
+    } else if(rawValueChanged) {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: transientForRaw
       });
     }
 
@@ -178,6 +197,11 @@ export default class MathInput extends DoenetRenderer {
     // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
+    } else {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      })
     }
     if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
       this.actions.submitAnswer();
@@ -209,6 +233,11 @@ export default class MathInput extends DoenetRenderer {
     // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
+    } else {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      })
     }
     this.forceUpdate();
 
@@ -249,6 +278,7 @@ export default class MathInput extends DoenetRenderer {
         this.latexValue = "";
       }
       this.latexValueSetInRender = true;
+      this.latexValueSetFromValueForDisplay = true;
       this.valueToRevertTo = this.doenetSvData.value;
       this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
       // this.latexValueToRevertTo = this.latexValue;

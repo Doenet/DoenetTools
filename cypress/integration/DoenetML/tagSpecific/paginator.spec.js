@@ -18,40 +18,45 @@ describe('Paginator Tag Tests', function () {
 
   it('Default behavior preserved scores as change pages', () => {
 
+    let doenetML = `
+    <text>a</text>
+  
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn">
+      <section>
+        <title>Page 1</title>
+        <p>What is 1+1? <answer>$two</answer></p>
+        <math hide name="two">2</math>
+      </section>
+      <section>
+        <p>What is your name? <textinput name="name" /></p>
+        <p>Hello, $name!</p>
+      </section>
+      <section>
+        <title>Page 3</title>
+        <math hide name="twox">2x</math>
+        <p>What is <m>x+x</m>? <answer>$twox</answer></p>
+        <p>What is <m>y+y</m>? <answer>2y</answer></p>
+      </section>
+    </paginator>
+    <p>
+    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
+    Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
+    of <copy prop="nPages" tname="pgn" assignNames="nPages" />
+    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
+    
+    </p>
+    <p>What is 2+2? <answer>4</answer></p>
+  
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+  
+    `
+
     cy.window().then((win) => {
       win.postMessage({
-        doenetML: `
-  <text>a</text>
-
-  <paginatorControls paginatorTname="pgn" name="pcontrols" />
-
-  <paginator name="pgn">
-    <section>
-      <title>Page 1</title>
-      <p>What is 1+1? <answer>2</answer></p>
-    </section>
-    <section>
-      <p>What is your name? <textinput name="name" /></p>
-      <p>Hello, $name!</p>
-    </section>
-    <section>
-      <title>Page 3</title>
-      <p>What is <m>x+x</m>? <answer>2x</answer></p>
-      <p>What is <m>y+y</m>? <answer>2y</answer></p>
-    </section>
-  </paginator>
-  <p>
-  <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
-  Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
-  of <copy prop="nPages" tname="pgn" assignNames="nPages" />
-  <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
-  
-  </p>
-  <p>What is 2+2? <answer>4</answer></p>
-
-  <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
-
-  `}, "*");
+        doenetML
+      }, "*");
     });
 
     // at least right now, this turns on Allow Local Page State
@@ -67,11 +72,13 @@ describe('Paginator Tag Tests', function () {
 
       let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
       let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+      let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
       let answer1Correct = cesc('#' + mathinput1Name + "_correct");
       let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
 
       let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
       let answer4Correct = cesc('#' + mathinput4Name + "_correct");
       let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
 
@@ -92,11 +99,17 @@ describe('Paginator Tag Tests', function () {
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.25');
 
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+      })
+
       cy.get(mathinput1Anchor).type("2{enter}", { force: true })
 
       cy.get(answer1Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.5');
-
+      cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
+      })
 
       cy.log('move to page 2')
       cy.get(cesc('#/pcontrols_next')).click()
@@ -105,6 +118,9 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/_title2')).should('not.exist');
 
       cy.get(answer4Correct).should('be.visible')
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+      })
 
       // since section 2 has no answer blanks
       // automatically get full credit for section 2
@@ -114,6 +130,8 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/name_input')).type("Me{enter}");
       cy.get(cesc('#/_p3')).should('have.text', "Hello, Me!")
       cy.get(cesc('#/ca')).should('have.text', '0.75');
+      cy.get(cesc('#/name_input')).should('have.value', "Me")
+
 
       cy.get(mathinput1Anchor).should('not.exist');
 
@@ -122,30 +140,15 @@ describe('Paginator Tag Tests', function () {
         expect(components["/_section3"]).eq(undefined);
         expect(components["/_answer2"]).eq(undefined);
         expect(components["/_answer3"]).eq(undefined);
-        expect(components["/_answer1"]).not.eq(undefined);
-        expect(components[mathinput1Name]).not.eq(undefined);
-        // for some reason, it takes awhile determine that
-        // "/name" is really there
-        for (let i = 1; i < 3; i++) {
-          if (components["/name"] !== undefined) {
-            break;
-          }
-          cy.wait(500);
-          cy.window().then((win) => {
-            components = Object.assign({}, win.state.components);
-          })
-        }
-        cy.window().then((win) => {
-          components = Object.assign({}, win.state.components);
-          expect(components["/name"]).not.eq(undefined);
-        })
       })
 
       cy.get(mathinput4Anchor).type("{end}{backspace}3{enter}", { force: true })
 
       cy.get(answer4Incorrect).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.5');
-
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+      })
 
       cy.log('back to page 1')
       cy.get(cesc('#/pcontrols_previous')).click()
@@ -153,8 +156,11 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/_section2_title')).should('not.exist')
       cy.get(cesc('#/_title2')).should('not.exist');
 
-      cy.get(mathinput1Anchor).should('exist');
+      cy.get(answer1Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.5');
+      cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
+      })
 
       cy.get(cesc('#/name')).should('not.exist');
 
@@ -163,8 +169,6 @@ describe('Paginator Tag Tests', function () {
         expect(components["/_section3"]).eq(undefined);
         expect(components["/_answer2"]).eq(undefined);
         expect(components["/_answer3"]).eq(undefined);
-        expect(components["/name"]).not.eq(undefined);
-        expect(components[mathinput1Name]).not.eq(undefined);
       })
 
       cy.log('back to second page')
@@ -173,12 +177,22 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
       cy.get(cesc('#/_title2')).should('not.exist');
 
+      cy.get(cesc('#/name_input')).should('have.value', "Me")
+      cy.get(cesc('#/_p3')).should('have.text', "Hello, Me!")
+
+      cy.get(answer4Incorrect).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.5');
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+      })
+
       cy.get(mathinput4Anchor).type("{end}{backspace}4{enter}", { force: true })
 
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.75');
-
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+      })
 
       cy.log('on to third page');
       cy.get(cesc('#/pcontrols_next')).click()
@@ -189,52 +203,97 @@ describe('Paginator Tag Tests', function () {
 
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.75');
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+      })
 
       cy.window().then((win) => {
         components = Object.assign({}, win.state.components);
 
         let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+        let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
 
         let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+        let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
         let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
-
-        expect(components["/_section3"]).not.eq(undefined);
-        expect(components["/_answer2"]).not.eq(undefined);
-        expect(components["/_answer3"]).not.eq(undefined);
-        expect(components["/name"]).not.eq(undefined);
-        expect(components[mathinput1Name]).not.eq(undefined);
 
         cy.get(mathinput2Anchor).type("2x{enter}", { force: true })
         cy.get(answer2Correct).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '0.875');
+        cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x')
+        })
 
         cy.get(mathinput3Anchor).type("2y{enter}", { force: true })
         cy.get(answer3Correct).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '1');
+        cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2y')
+        })
 
         cy.get(mathinput2Anchor).type("{end}{backspace}z{enter}", { force: true })
         cy.get(answer2Incorrect).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '0.875');
+        cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2z')
+        })
 
-
-        cy.log('back to second page again')
+        cy.log('back to second page')
         cy.get(cesc('#/prevPage')).click();
         cy.get(cesc('#/_title1')).should('not.exist');
         cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
         cy.get(cesc('#/_title2')).should('not.exist');
 
-        cy.get(cesc('#/ca')).should('have.text', '0.875').then(() => {
-          expect(components["/_section3"]).not.eq(undefined);
-          expect(components["/_answer2"]).not.eq(undefined);
-          expect(components["/_answer3"]).not.eq(undefined);
-          expect(components["/name"]).not.eq(undefined);
-          expect(components[mathinput1Name]).not.eq(undefined);
+        cy.get(cesc('#/name_input')).should('have.value', "Me")
+        cy.get(cesc('#/_p3')).should('have.text', "Hello, Me!")
 
+        cy.get(answer4Correct).should('be.visible')
+        cy.get(cesc('#/ca')).should('have.text', '0.875')
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+        })
+
+        cy.log('back to third page');
+        cy.get(cesc('#/pcontrols_next')).click()
+        cy.get(cesc('#/_title1')).should('not.exist');
+        cy.get(cesc('#/_section2_title')).should('not.exist');
+        cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
+
+        cy.get(answer4Correct).should('be.visible')
+        cy.get(cesc('#/ca')).should('have.text', '0.875')
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+        })
+
+        cy.get(answer2Incorrect).should('be.visible')
+        cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2z')
+        })
+        cy.get(answer3Correct).should('be.visible')
+        cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2y')
+        })
+
+        cy.get(cesc('#/ca')).should('have.text', '0.875')
+
+        cy.log('back to second page')
+        cy.get(cesc('#/prevPage')).click();
+        cy.get(cesc('#/_title1')).should('not.exist');
+        cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
+        cy.get(cesc('#/_title2')).should('not.exist');
+
+        cy.get(cesc('#/name_input')).should('have.value', "Me")
+        cy.get(cesc('#/_p3')).should('have.text', "Hello, Me!")
+
+        cy.get(answer4Correct).should('be.visible')
+        cy.get(cesc('#/ca')).should('have.text', '0.875')
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
         })
 
       });
@@ -252,38 +311,8 @@ describe('Paginator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetML: `
-  <text>a</text>
-
-  <paginatorControls paginatorTname="pgn" name="pcontrols" />
-
-  <paginator name="pgn">
-    <section>
-      <title>Page 1</title>
-      <p>What is 1+1? <answer>2</answer></p>
-    </section>
-    <section>
-      <p>What is your name? <textinput name="name" /></p>
-      <p>Hello, $name!</p>
-    </section>
-    <section>
-      <title>Page 3</title>
-      <p>What is <m>x+x</m>? <answer>2x</answer></p>
-      <p>What is <m>y+y</m>? <answer>2y</answer></p>
-    </section>
-  </paginator>
-  <p>
-  <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
-  Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
-  of <copy prop="nPages" tname="pgn" assignNames="nPages" />
-  <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
-  
-  </p>
-  <p>What is 2+2? <answer>4</answer></p>
-
-  <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
-
-  `}, "*");
+        doenetML
+      }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -295,8 +324,6 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
     cy.get(cesc('#/_title2')).should('not.exist');
 
-    cy.get(cesc('#/_p3')).should('have.text', "Hello, Me!")
-    cy.get(cesc('#/ca')).should('have.text', '0.875');
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -306,22 +333,33 @@ describe('Paginator Tag Tests', function () {
       expect(components["/_section3"]).eq(undefined);
       expect(components["/_answer2"]).eq(undefined);
       expect(components["/_answer3"]).eq(undefined);
-      expect(components["/_answer4"]).not.eq(undefined);
-      expect(components["/name"]).not.eq(undefined);
 
 
       let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
       let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
       let answer4Correct = cesc('#' + mathinput4Name + "_correct");
       let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
 
 
+      cy.get(cesc('#/name_input')).should('have.value', "Me")
+      cy.get(cesc('#/_p3')).should('have.text', "Hello, Me!")
+
+      cy.get(answer4Correct).should('be.visible')
+      cy.get(cesc('#/ca')).should('have.text', '0.875');
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+      })
 
       cy.get(cesc('#/name_input')).clear().type("You{enter}");
+      cy.get(cesc('#/name_input')).should('have.value', "You")
       cy.get(cesc('#/_p3')).should('have.text', "Hello, You!")
 
       cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.875');
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+      })
 
       cy.log('to third page');
       cy.get(cesc('#/pcontrols_next')).click()
@@ -330,45 +368,62 @@ describe('Paginator Tag Tests', function () {
       cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
 
 
+      cy.get(answer4Correct).should('be.visible')
       cy.get(cesc('#/ca')).should('have.text', '0.875');
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+      })
 
       cy.window().then((win) => {
         components = Object.assign({}, win.state.components);
 
         let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
         let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+        let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
         let answer2Correct = cesc('#' + mathinput2Name + "_correct");
         let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
+        let answer2Submit = cesc('#' + mathinput2Name + "_submit");
 
         let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
         let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+        let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
         let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
 
         expect(components["/_section1"]).eq(undefined);
         expect(components["/_answer1"]).eq(undefined);
-        expect(components["/_section3"]).not.eq(undefined);
-        expect(components["/_answer2"]).not.eq(undefined);
-        expect(components["/_answer3"]).not.eq(undefined);
-        expect(components["/_answer4"]).not.eq(undefined);
-        expect(components["/name"]).not.eq(undefined);
 
+        cy.get(answer2Incorrect).should('be.visible')
+        cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2z')
+        })
+        cy.get(answer3Correct).should('be.visible')
+        cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2y')
+        })
 
-        cy.get(answer2Incorrect).should('be.visible');
-        cy.get(answer3Correct).should('be.visible');
 
         cy.get(mathinput3Anchor).type("{end}{backspace}q{enter}", { force: true })
         cy.get(answer3Incorrect).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '0.75');
+        cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2q')
+        })
 
         cy.get(mathinput4Anchor).type("{end}{backspace}3{enter}", { force: true })
         cy.get(answer4Incorrect).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '0.5');
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+        })
 
 
         cy.get(mathinput2Anchor).type("{end}{backspace}x{enter}", { force: true })
         cy.get(answer2Correct).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '0.625');
+        cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x')
+        })
 
         cy.log('back to second page');
         cy.get(cesc('#/pcontrols_previous')).click()
@@ -376,9 +431,14 @@ describe('Paginator Tag Tests', function () {
         cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
         cy.get(cesc('#/_title2')).should('not.exist');
 
+        cy.get(cesc('#/name_input')).should('have.value', "You")
         cy.get(cesc('#/_p3')).should('have.text', "Hello, You!")
-        cy.get(cesc('#/ca')).should('have.text', '0.625');
 
+        cy.get(answer4Incorrect).should('be.visible')
+        cy.get(cesc('#/ca')).should('have.text', '0.625');
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+        })
 
         cy.log('to first page');
         cy.get(cesc('#/pcontrols_previous')).click()
@@ -386,28 +446,238 @@ describe('Paginator Tag Tests', function () {
         cy.get(cesc('#/_section2_title')).should('not.exist')
         cy.get(cesc('#/_title2')).should('not.exist');
 
+        cy.get(answer4Incorrect).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '0.625');
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+        })
 
         cy.window().then((win) => {
           let components = Object.assign({}, win.state.components);
 
           let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
           let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+          let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
           let answer1Correct = cesc('#' + mathinput1Name + "_correct");
           let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
 
-          expect(components["/_section1"]).not.eq(undefined);
-          expect(components["/_answer1"]).not.eq(undefined);
-          expect(components["/_section3"]).not.eq(undefined);
-          expect(components["/_answer2"]).not.eq(undefined);
-          expect(components["/_answer3"]).not.eq(undefined);
-          expect(components["/_answer4"]).not.eq(undefined);
-          expect(components["/name"]).not.eq(undefined);
-
           cy.get(answer1Correct).should('be.visible')
+          cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
+          })
+
+          cy.get(mathinput1Anchor).type("{end}-{enter}", { force: true })
+          cy.get(answer1Incorrect).should('be.visible')
+          cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2−')
+          })
+          cy.get(cesc('#/ca')).should('have.text', '0.375');
+
+
+          cy.log('back to second page');
+          cy.get(cesc('#/pcontrols_next')).click()
+          cy.get(cesc('#/_title1')).should('not.exist');
+          cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
+          cy.get(cesc('#/_title2')).should('not.exist');
+
+          cy.log('back to first page');
+          cy.get(cesc('#/pcontrols_previous')).click()
+          cy.get(cesc('#/_title1')).should('have.text', 'Page 1');
+          cy.get(cesc('#/_section2_title')).should('not.exist')
+          cy.get(cesc('#/_title2')).should('not.exist');
+
+          cy.get(answer1Incorrect).should('be.visible')
+          cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2−')
+          })
+
+          cy.log('to third page');
+
+          cy.get(cesc('#/pcontrols_next')).click().click()
+          cy.get(cesc('#/_title1')).should('not.exist');
+          cy.get(cesc('#/_section2_title')).should('not.exist');
+          cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
+
+          cy.get(answer3Incorrect).should('be.visible')
+          cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2q')
+          })
+
+          cy.get(answer4Incorrect).should('be.visible')
+          cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+          })
+
+          cy.get(answer2Correct).should('be.visible')
+          cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x')
+          })
+          cy.get(cesc('#/ca')).should('have.text', '0.375');
+
+          cy.get(mathinput2Anchor).type("{end}:", { force: true }).blur()
+          cy.get(answer2Submit).should('be.visible');
+          cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x:')
+          })
+          cy.get(cesc('#/ca')).should('have.text', '0.375');
+
+          cy.log('to second page');
+          cy.get(cesc('#/pcontrols_previous')).click()
+          cy.get(cesc('#/_title1')).should('not.exist');
+          cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
+          cy.get(cesc('#/_title2')).should('not.exist');
+
+          cy.log('back to third page');
+          cy.get(cesc('#/pcontrols_next')).click()
+          cy.get(cesc('#/_title1')).should('not.exist');
+          cy.get(cesc('#/_section2_title')).should('not.exist');
+          cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
+
+          cy.get(answer2Submit).should('be.visible');
+          cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x:')
+          })
+          cy.get(answer3Incorrect).should('be.visible')
+          cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2q')
+          })
+          cy.get(answer4Incorrect).should('be.visible')
+          cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+            expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+          })
+          cy.get(cesc('#/ca')).should('have.text', '0.375');
 
 
         })
+      })
+
+    })
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>b</text>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.log('on third page without first and second defined')
+    cy.get(cesc('#/_title1')).should('not.exist');
+    cy.get(cesc('#/_section2_title')).should('not.exist');
+    cy.get(cesc('#/_title2')).should('have.text', 'Page 3')
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components["/_section1"]).eq(undefined);
+      expect(components["/_answer1"]).eq(undefined);
+      expect(components["/_section2"]).eq(undefined);
+      expect(components["/name"]).eq(undefined);
+
+
+      let mathinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+      let mathinput2DisplayAnchor = cesc('#' + mathinput2Name) + " .mq-editable-field";
+      let answer2Correct = cesc('#' + mathinput2Name + "_correct");
+      let answer2Incorrect = cesc('#' + mathinput2Name + "_incorrect");
+      let answer2Submit = cesc('#' + mathinput2Name + "_submit");
+
+      let mathinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+      let mathinput3DisplayAnchor = cesc('#' + mathinput3Name) + " .mq-editable-field";
+      let answer3Correct = cesc('#' + mathinput3Name + "_correct");
+      let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
+
+      let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+      let mathinput4DisplayAnchor = cesc('#' + mathinput4Name) + " .mq-editable-field";
+      let answer4Correct = cesc('#' + mathinput4Name + "_correct");
+      let answer4Incorrect = cesc('#' + mathinput4Name + "_incorrect");
+
+      cy.get(answer2Submit).should('be.visible');
+      cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x:')
+      })
+      cy.get(answer3Incorrect).should('be.visible')
+      cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2q')
+      })
+      cy.get(answer4Incorrect).should('be.visible')
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+      })
+      cy.get(cesc('#/ca')).should('have.text', '0.375');
+
+
+      cy.log('to second page');
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get(cesc('#/_title1')).should('not.exist');
+      cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
+      cy.get(cesc('#/_title2')).should('not.exist');
+
+      cy.get(cesc('#/name_input')).should('have.value', "You")
+      cy.get(cesc('#/_p3')).should('have.text', "Hello, You!")
+
+      cy.get(answer4Incorrect).should('be.visible')
+      cy.get(cesc('#/ca')).should('have.text', '0.375');
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+      })
+
+      cy.log('back to third page')
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(answer2Submit).should('be.visible');
+      cy.get(mathinput2DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2x:')
+      })
+      cy.get(answer3Incorrect).should('be.visible')
+      cy.get(mathinput3DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2q')
+      })
+      cy.get(answer4Incorrect).should('be.visible')
+      cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+        expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+      })
+      cy.get(cesc('#/ca')).should('have.text', '0.375');
+
+      cy.log('to first page')
+      cy.get(cesc('#/pcontrols_previous')).click().click();
+      cy.get(cesc('#/_title1')).should('have.text', 'Page 1');
+      cy.get(cesc('#/_section2_title')).should('not.exist')
+      cy.get(cesc('#/_title2')).should('not.exist');
+
+
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let mathinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+        let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+        let mathinput1DisplayAnchor = cesc('#' + mathinput1Name) + " .mq-editable-field";
+        let answer1Correct = cesc('#' + mathinput1Name + "_correct");
+        let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
+
+        cy.get(answer1Incorrect).should('be.visible')
+        cy.get(mathinput1DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2−')
+        })
+        cy.get(cesc('#/ca')).should('have.text', '0.375');
+
+        cy.get(answer4Incorrect).should('be.visible')
+        cy.get(mathinput4DisplayAnchor).invoke('text').then((text) => {
+          expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+        })
+
       })
 
     })
@@ -416,40 +686,44 @@ describe('Paginator Tag Tests', function () {
 
   it('Set to not preserve scores as change pages', () => {
 
+    let doenetML = `
+    <text>a</text>
+  
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn" preserveScores="false">
+      <section>
+        <title>Page 1</title>
+        <p>What is 1+1? <answer>$two</answer></p>
+        <math hide name="two">2</math>
+      </section>
+      <section>
+        <p>What is your name? <textinput name="name" /></p>
+        <p>Hello, $name!</p>
+      </section>
+      <section>
+        <title>Page 3</title>
+        <math hide name="twox">2x</math>
+        <p>What is <m>x+x</m>? <answer>$twox</answer></p>
+        <p>What is <m>y+y</m>? <answer>2y</answer></p>
+      </section>
+    </paginator>
+    <p>
+    <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
+    Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
+    of <copy prop="nPages" tname="pgn" assignNames="nPages" />
+    <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
+    
+    </p>
+    <p>What is 2+2? <answer>4</answer></p>
+  
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+  
+    `
     cy.window().then((win) => {
       win.postMessage({
-        doenetML: `
-  <text>a</text>
-
-  <paginatorControls paginatorTname="pgn" name="pcontrols" />
-
-  <paginator name="pgn" preserveScores="false">
-    <section>
-      <title>Page 1</title>
-      <p>What is 1+1? <answer>2</answer></p>
-    </section>
-    <section>
-      <p>What is your name? <textinput name="name" /></p>
-      <p>Hello, $name!</p>
-    </section>
-    <section>
-      <title>Page 3</title>
-      <p>What is <m>x+x</m>? <answer>2x</answer></p>
-      <p>What is <m>y+y</m>? <answer>2y</answer></p>
-    </section>
-  </paginator>
-  <p>
-  <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
-  Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
-  of <copy prop="nPages" tname="pgn" assignNames="nPages" />
-  <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
-  
-  </p>
-  <p>What is 2+2? <answer>4</answer></p>
-
-  <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
-
-  `}, "*");
+        doenetML
+      }, "*");
     });
 
     // at least right now, this turns on Allow Local Page State
@@ -516,23 +790,6 @@ describe('Paginator Tag Tests', function () {
         expect(components["/_section3"]).eq(undefined);
         expect(components["/_answer2"]).eq(undefined);
         expect(components["/_answer3"]).eq(undefined);
-        expect(components["/_answer1"]).not.eq(undefined);
-        expect(components[mathinput1Name]).not.eq(undefined);
-        // for some reason, it takes awhile determine that
-        // "/name" is really there
-        for (let i = 1; i < 3; i++) {
-          if (components["/name"] !== undefined) {
-            break;
-          }
-          cy.wait(500);
-          cy.window().then((win) => {
-            components = Object.assign({}, win.state.components);
-          })
-        }
-        cy.window().then((win) => {
-          components = Object.assign({}, win.state.components);
-          expect(components["/name"]).not.eq(undefined);
-        })
       })
 
       cy.get(mathinput4Anchor).type("{end}{backspace}3{enter}", { force: true })
@@ -557,8 +814,6 @@ describe('Paginator Tag Tests', function () {
         expect(components["/_section3"]).eq(undefined);
         expect(components["/_answer2"]).eq(undefined);
         expect(components["/_answer3"]).eq(undefined);
-        expect(components["/name"]).not.eq(undefined);
-        expect(components[mathinput1Name]).not.eq(undefined);
       })
 
       cy.log('back to second page')
@@ -597,12 +852,6 @@ describe('Paginator Tag Tests', function () {
         let answer3Correct = cesc('#' + mathinput3Name + "_correct");
         let answer3Incorrect = cesc('#' + mathinput3Name + "_incorrect");
 
-        expect(components["/_section3"]).not.eq(undefined);
-        expect(components["/_answer2"]).not.eq(undefined);
-        expect(components["/_answer3"]).not.eq(undefined);
-        expect(components["/name"]).not.eq(undefined);
-        expect(components[mathinput1Name]).not.eq(undefined);
-
         cy.get(mathinput2Anchor).type("2x{enter}", { force: true })
         cy.get(answer2Correct).should('be.visible')
         cy.get(cesc('#/ca')).should('have.text', '0.667');
@@ -622,14 +871,7 @@ describe('Paginator Tag Tests', function () {
         cy.get(cesc('#/_section2_title')).should('have.text', 'Section 2')
         cy.get(cesc('#/_title2')).should('not.exist');
 
-        cy.get(cesc('#/ca')).should('have.text', '1').then(() => {
-          expect(components["/_section3"]).not.eq(undefined);
-          expect(components["/_answer2"]).not.eq(undefined);
-          expect(components["/_answer3"]).not.eq(undefined);
-          expect(components["/name"]).not.eq(undefined);
-          expect(components[mathinput1Name]).not.eq(undefined);
-
-        })
+        cy.get(cesc('#/ca')).should('have.text', '1');
 
       });
 
@@ -646,38 +888,8 @@ describe('Paginator Tag Tests', function () {
 
     cy.window().then((win) => {
       win.postMessage({
-        doenetML: `
-  <text>a</text>
-
-  <paginatorControls paginatorTname="pgn" name="pcontrols" />
-
-  <paginator name="pgn" preserveScores="false">
-    <section>
-      <title>Page 1</title>
-      <p>What is 1+1? <answer>2</answer></p>
-    </section>
-    <section>
-      <p>What is your name? <textinput name="name" /></p>
-      <p>Hello, $name!</p>
-    </section>
-    <section>
-      <title>Page 3</title>
-      <p>What is <m>x+x</m>? <answer>2x</answer></p>
-      <p>What is <m>y+y</m>? <answer>2y</answer></p>
-    </section>
-  </paginator>
-  <p>
-  <callAction name="prevPage" label="prev" disabled="$pageNum = 1" actionName="setPage" tName="pgn" number="$pageNum -1" />
-  Page <copy prop="currentPage" tname="pgn" assignNames="pageNum" />
-  of <copy prop="nPages" tname="pgn" assignNames="nPages" />
-  <callAction name="nextPage" label="next" disabled="$pageNum = $nPages" actionName="setPage" tName="pgn" number="$pageNum +1" />
-  
-  </p>
-  <p>What is 2+2? <answer>4</answer></p>
-
-  <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
-
-  `}, "*");
+        doenetML
+      }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -700,8 +912,6 @@ describe('Paginator Tag Tests', function () {
       expect(components["/_section3"]).eq(undefined);
       expect(components["/_answer2"]).eq(undefined);
       expect(components["/_answer3"]).eq(undefined);
-      expect(components["/_answer4"]).not.eq(undefined);
-      expect(components["/name"]).not.eq(undefined);
 
 
       let mathinput4Name = components["/_answer4"].stateValues.inputChildren[0].componentName;
@@ -741,11 +951,6 @@ describe('Paginator Tag Tests', function () {
 
         expect(components["/_section1"]).eq(undefined);
         expect(components["/_answer1"]).eq(undefined);
-        expect(components["/_section3"]).not.eq(undefined);
-        expect(components["/_answer2"]).not.eq(undefined);
-        expect(components["/_answer3"]).not.eq(undefined);
-        expect(components["/_answer4"]).not.eq(undefined);
-        expect(components["/name"]).not.eq(undefined);
 
 
         cy.get(answer2Incorrect).should('be.visible');
@@ -789,14 +994,6 @@ describe('Paginator Tag Tests', function () {
           let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
           let answer1Correct = cesc('#' + mathinput1Name + "_correct");
           let answer1Incorrect = cesc('#' + mathinput1Name + "_incorrect");
-
-          expect(components["/_section1"]).not.eq(undefined);
-          expect(components["/_answer1"]).not.eq(undefined);
-          expect(components["/_section3"]).not.eq(undefined);
-          expect(components["/_answer2"]).not.eq(undefined);
-          expect(components["/_answer3"]).not.eq(undefined);
-          expect(components["/_answer4"]).not.eq(undefined);
-          expect(components["/name"]).not.eq(undefined);
 
           cy.get(answer1Correct).should('be.visible')
 
