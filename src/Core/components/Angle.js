@@ -61,9 +61,17 @@ export default class Angle extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    sugarInstructions.push({
-      childrenRegex: "s",
-      replacementFunction: ({ matchedChildren }) => ({
+    let stringAndMacrosToRadiansAttribute = function({matchedChildren}) {
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      return {
         success: true,
         newAttributes: {
           radians: {
@@ -72,8 +80,13 @@ export default class Angle extends GraphicalComponent {
               children: matchedChildren
             }
           }
-        },
-      })
+        }
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: stringAndMacrosToRadiansAttribute
     });
 
     return sugarInstructions;

@@ -1,25 +1,54 @@
 
-export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType }) {
+export function returnGroupIntoComponentTypeSeparatedBySpaces({ componentType, forceComponentType = false }) {
 
-  return function ({ matchedChildren }) {
+  return function ({ matchedChildren, componentInfoObjects }) {
 
     // any components not separated by a space 
-    // are wrapped by a componentType unless it is a single non-string
+    // are wrapped by a componentType unless it is either
+    // - a single non-string component (when forceComponentType is false), or
+    // - a single component with a matching componentType (when forcComponentType is true)
 
     let newChildren = [];
     let pieces = [];
 
     function createNewChild() {
-      if (pieces.length === 1 && pieces[0].componentType !== "string") {
-        // a single non-string becomes a child
-        newChildren.push(pieces[0])
-      } else if (pieces.length > 0) {
+
+      let addedSingleMatch = false;
+      if (forceComponentType) {
+        // if have a single component of the matching componentType
+        // then add that component directly
+        if (pieces.length === 1) {
+          let comp = pieces[0];
+          let compComponentType = comp.componentType;
+          if (compComponentType === "copy" && comp.attributes && comp.attributes.componentType) {
+            if (!comp.attributes.nComponents || comp.attributes.nComponents.primitive === 1) {
+              compComponentType = comp.attributes.componentType.primitive;
+            }
+          }
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: compComponentType,
+            baseComponentType: componentType
+          })) {
+            newChildren.push(comp);
+            addedSingleMatch = true;
+          }
+        }
+      } else {
+        // forceComponentType is false so add any single non-string directly
+        if(pieces.length === 1 && pieces[0].componentType !== "string") {
+          newChildren.push(pieces[0]);
+          addedSingleMatch = true;
+        }
+      }
+
+      if (!addedSingleMatch && pieces.length > 0) {
         // wrap anything else in componentType
         newChildren.push({
           componentType,
           children: pieces
         })
       }
+
       pieces = [];
     }
 

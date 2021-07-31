@@ -341,6 +341,8 @@ describe('Function Operator Tag Tests', function () {
       <derivative name="d2"><math>x^2</math></derivative>
       <derivative name="d3"><function formula="x^2sin(z)" /></derivative>
       <derivative name="d4" variables="z">x^2sin(z)</derivative>
+      <math name='var'>z</math><number name="a">2</number>
+      <derivative name="d4b" variables="$var">x^$a sin($var)</derivative>
       <derivative name="d5"><copy tname="f1" /></derivative>
       <derivative name="d6"><copy tname="f2" /></derivative>
       <derivative name="d7"><copy tname="f3" /></derivative>
@@ -361,6 +363,7 @@ describe('Function Operator Tag Tests', function () {
       expect(components['/d2'].stateValues.formula.equals(me.fromText("2x"))).eq(true);
       expect(components['/d3'].stateValues.formula.equals(me.fromText("2x sin(z)"))).eq(true);
       expect(components['/d4'].stateValues.formula.equals(me.fromText("x^2cos(z)"))).eq(true);
+      expect(components['/d4b'].stateValues.formula.equals(me.fromText("x^2cos(z)"))).eq(true);
       expect(components['/d5'].stateValues.formula.equals(me.fromText("cos(x)"))).eq(true);
       expect(components['/d6'].stateValues.formula.equals(me.fromText("2e^(2y)"))).eq(true);
       expect(components['/d7'].stateValues.formula.equals(me.fromText("yz"))).eq(true);

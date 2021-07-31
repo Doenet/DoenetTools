@@ -33,11 +33,17 @@ export default class BooleanList extends InlineComponent {
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
-    let groupIntoBooleansSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({componentType: "boolean"});
-    let breakStringsIntoBooleansBySpaces = returnBreakStringsIntoComponentTypeBySpaces({componentType: "boolean"});
+    let groupIntoBooleansSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
+      componentType: "boolean"
+    });
+    let breakStringsIntoBooleansBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
+      componentType: "boolean"
+    });
 
     sugarInstructions.push({
-      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+      replacementFunction: function ({
+        matchedChildren, isAttributeComponent = false, createdFromMacro = false,
+      }) {
         if (isAttributeComponent && !createdFromMacro) {
           return groupIntoBooleansSeparatedBySpaces({ matchedChildren });
         } else {

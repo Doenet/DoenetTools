@@ -26,6 +26,13 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true
     };
+    attributes.size = {
+      createComponentOfType: "number",
+      createStateVariable: "size",
+      defaultValue: 10,
+      public: true,
+      propagateToDescendants: true
+    };
     attributes.symbolicEquality = {
       createComponentOfType: "boolean",
       createStateVariable: "symbolicEquality",
@@ -33,12 +40,12 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true
     };
-    attributes.size = {
-      createComponentOfType: "number",
-      createStateVariable: "size",
-      defaultValue: 10,
+    attributes.matchPartial = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchPartial",
+      defaultValue: false,
       public: true,
-      propagateToDescendants: true
+      propagateToDescendants: true,
     };
     attributes.forceFullCheckworkButton = {
       createComponentOfType: "boolean",
@@ -142,9 +149,16 @@ export default class Answer extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let replaceFromOneString = function ({ matchedChildren, componentAttributes }) {
-      // answer where only child is a string (other than activeChildren from attributes)
-      // wrap string with award and math/text
+    let replaceStringsAndMacros = function ({ matchedChildren, componentAttributes }) {
+      // if chidren are strings and macros
+      // wrap with award and type
+
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
 
 
       let type;
@@ -159,23 +173,22 @@ export default class Answer extends InlineComponent {
         type = "math";
       }
 
-      let awards = [{
+      let award = {
         componentType: "award",
         children: [{
           componentType: type,
           children: matchedChildren
         }]
-      }];
+      };
 
       return {
         success: true,
-        newChildren: awards,
+        newChildren: [award],
       }
     }
 
     sugarInstructions.push({
-      childrenRegex: "s",
-      replacementFunction: replaceFromOneString
+      replacementFunction: replaceStringsAndMacros
     })
 
 

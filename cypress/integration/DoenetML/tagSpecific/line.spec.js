@@ -181,6 +181,38 @@ describe('Line Tag Tests', function () {
 
   });
 
+  it('line from sugared equation, strings and macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <line>
+      $a x + $b y=$c
+    </line>
+  </graph>
+  <math name="a">5</math>
+  <number name="b">-2</number>
+  <number name="c">3</number>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    cy.log('equation is what it should be')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      // have to create unproxied version of equation for equals to work
+      let unproxiedEquation = me.fromAst(components['/_line1'].stateValues.equation.tree);
+      expect(unproxiedEquation.equals(me.fromText('5x-2y=3'))).to.be.true;
+    })
+
+    // Note: not yet able to move a line with equation depending on copies
+
+  });
+
   it('line from unsugared equation, single string', () => {
     cy.window().then((win) => {
       win.postMessage({

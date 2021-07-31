@@ -95,28 +95,35 @@ export default class Graph extends BlockComponent {
   }
 
 
-  static returnSugarInstructions() {
-    let sugarInstructions = super.returnSugarInstructions();
+  // static returnSugarInstructions() {
+  //   let sugarInstructions = super.returnSugarInstructions();
 
-    let addCurve = function ({ matchedChildren }) {
-      // add <curve> around strings, as long as they don't have points
-      if (matchedChildren[0].state.value.includes(",")) {
-        return { success: false }
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "curve", children: matchedChildren }],
-      }
-    }
+  //   let addCurve = function ({ matchedChildren }) {
+  //     // add <curve> around strings and macros, 
+  //     //as long as they don't have commas (for points)
 
-    sugarInstructions.push({
-      childrenRegex: "s",
-      replacementFunction: addCurve
-    });
 
-    return sugarInstructions;
+  //     // only apply if all children are strings without commas or macros
+  //     if (!matchedChildren.every(child =>
+  //       child.componentType === "string" && !child.state.value.includes(",") ||
+  //       child.doenetAttributes && child.doenetAttributes.createdFromMacro
+  //     )) {
+  //       return { success: false }
+  //     }
 
-  }
+  //     return {
+  //       success: true,
+  //       newChildren: [{ componentType: "curve", children: matchedChildren }],
+  //     }
+  //   }
+
+  //   sugarInstructions.push({
+  //     replacementFunction: addCurve
+  //   });
+
+  //   return sugarInstructions;
+
+  // }
 
 
   static returnChildLogic(args) {

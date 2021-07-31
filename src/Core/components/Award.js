@@ -104,6 +104,53 @@ export default class Award extends BaseComponent {
 
   }
 
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let replaceStringsAndMacros = function ({ matchedChildren, parentAttributes }) {
+      // if chidren are strings and macros
+      // wrap with award and type
+
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      let type;
+      if (parentAttributes.type) {
+        type = parentAttributes.type
+      } else {
+        type = "math";
+      }
+
+      if (!["math", "text", "boolean"].includes(type)) {
+        console.warn(`Invalid type ${type}`);
+        type = "math";
+      }
+
+
+      return {
+        success: true,
+        newChildren: [{
+          componentType: type,
+          children: matchedChildren
+        }],
+      }
+    }
+
+    sugarInstructions.push({
+      replacementFunction: replaceStringsAndMacros
+    })
+
+
+    return sugarInstructions;
+
+  }
+
+
   static returnChildLogic(args) {
     let childLogic = super.returnChildLogic(args);
 
@@ -182,7 +229,13 @@ export default class Award extends BaseComponent {
     };
 
     stateVariableDefinitions.creditAchieved = {
-      additionalStateVariablesDefined: ["fractionSatisfied"],
+      public: true,
+      componentType: "number",
+      additionalStateVariablesDefined: [{
+        variableName: "fractionSatisfied",
+        public: true,
+        componentType: "number"
+      }],
       returnDependencies: () => ({
         credit: {
           dependencyType: "stateVariable",
@@ -275,9 +328,11 @@ export default class Award extends BaseComponent {
 
         }
 
+        fractionSatisfied = Math.max(0, Math.min(1, fractionSatisfied));
+        
         let creditAchieved = 0;
         if (Number.isFinite(dependencyValues.credit)) {
-          creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * Math.max(0, Math.min(1, fractionSatisfied));
+          creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfied;
         }
         return {
           newValues: {

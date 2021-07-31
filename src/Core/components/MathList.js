@@ -54,11 +54,17 @@ export default class MathList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let groupIntoMathsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType: "math" });
-    let breakStringsIntoMathsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({ componentType: "math" });
+    let groupIntoMathsSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
+      componentType: "math"
+    });
+    let breakStringsIntoMathsBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
+      componentType: "math"
+    });
 
     sugarInstructions.push({
-      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+      replacementFunction: function ({
+        matchedChildren, isAttributeComponent = false, createdFromMacro = false,
+      }) {
         if (isAttributeComponent && !createdFromMacro) {
           return groupIntoMathsSeparatedBySpaces({ matchedChildren });
         } else {
