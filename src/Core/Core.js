@@ -21,7 +21,7 @@ import Hex from 'crypto-js/enc-hex'
 
 export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
-    externalFunctions, flags = {}, 
+    externalFunctions, flags = {},
     stateVariableChanges = {},
     coreReadyCallback, coreUpdatedCallback, coreId }) {
     // console.time('start up time');
@@ -467,6 +467,9 @@ export default class Core {
       this.expandAllComposites(this.document);
       this.expandAllComposites(this.document, true);
 
+      // calculate any replacement changes on composites touched
+      this.replacementChangesFromCompositesToUpdate();
+
       this.initializeRenderedComponentInstruction(this.document);
       this.processStateVariableTriggers();
 
@@ -492,6 +495,9 @@ export default class Core {
 
       this.expandAllComposites(this.document);
       this.expandAllComposites(this.document, true);
+
+      // calculate any replacement changes on composites touched
+      this.replacementChangesFromCompositesToUpdate();
 
       this.updateRendererInstructions({ componentNames: this.componentAndRenderedDescendants(parent) });
       this.processStateVariableTriggers();
@@ -1354,6 +1360,7 @@ export default class Core {
   }
 
   checkForStateVariablesUpdatesForNewComponent(componentName) {
+
     if (componentName in this.updateInfo.stateVariableUpdatesForMissingComponents) {
       this.processNewStateVariableValues({
         [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]

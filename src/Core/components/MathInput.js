@@ -10,6 +10,9 @@ export default class MathInput extends Input {
       updateImmediateValue: this.updateImmediateValue.bind(
         new Proxy(this, this.readOnlyProxyHandler)
       ),
+      updateRawValue: this.updateRawValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      ),
       updateValue: this.updateValue.bind(
         new Proxy(this, this.readOnlyProxyHandler)
       )
@@ -286,6 +289,28 @@ export default class MathInput extends Input {
       }
     }
 
+
+    // raw value from renderer
+    stateVariableDefinitions.rawRendererValue = {
+      defaultValue: null,
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          rawRendererValue: { variablesToCheck: ["rawRendererValue"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "rawRendererValue",
+            value: desiredStateVariableValues.rawRendererValue
+          }]
+        }
+      }
+    }
+
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { componentType: "math" } })
@@ -297,7 +322,7 @@ export default class MathInput extends Input {
   }
 
 
-  updateImmediateValue({ mathExpression }) {
+  updateImmediateValue({ mathExpression, rawRendererValue }) {
     if (!this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
@@ -307,8 +332,30 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: mathExpression,
+        },{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rawRendererValue",
+          value: rawRendererValue,
         }],
         transient: true
+      })
+    }
+  }
+
+  updateRawValue({ rawRendererValue, transient = false }) {
+    if (!this.stateValues.disabled) {
+      // we set transient to true so that each keystroke does not
+      // add a row to the database
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rawRendererValue",
+          value: rawRendererValue,
+        }],
+        transient
       })
     }
   }
@@ -320,6 +367,11 @@ export default class MathInput extends Input {
         componentName: this.componentName,
         stateVariable: "value",
         value: this.stateValues.immediateValue,
+      },{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rawRendererValue",
+        value: this.stateValues.rawRendererValue,  // so gets saved to database
       },
       // in case value ended up being a different value than requested
       // we set immediate value to whatever was the result

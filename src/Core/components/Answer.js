@@ -1027,18 +1027,81 @@ export default class Answer extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.justSubmitted = {
-      forRenderer: true,
-      essential: true,
+
+    stateVariableDefinitions.creditAchievedDependencies = {
       returnDependencies: () => ({
         currentCreditAchievedDependencies: {
           dependencyType: "recursiveDependencyValues",
           variableNames: ["creditAchievedIfSubmit"],
           includeImmediateValueWithValue: true,
+          includeRawValueWithImmediateValue: true,
         },
       }),
-      definition() {
-        return { newValues: { justSubmitted: false } }
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            creditAchievedDependencies: dependencyValues.currentCreditAchievedDependencies
+            // creditAchievedDependencies: Base64.stringify(sha1(JSON.stringify(dependencyValues.currentCreditAchievedDependencies)))
+          }
+        }
+      },
+    }
+
+
+    stateVariableDefinitions.creditAchievedDependenciesAtSubmit = {
+      defaultValue: null,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          creditAchievedDependenciesAtSubmit: {
+            variablesToCheck: ["creditAchievedDependenciesAtSubmit"]
+          }
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "creditAchievedDependenciesAtSubmit",
+            value: desiredStateVariableValues.creditAchievedDependenciesAtSubmit
+          }]
+        };
+      }
+    }
+
+
+    stateVariableDefinitions.justSubmitted = {
+      forRenderer: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        currentCreditAchievedDependencies: {
+          dependencyType: "stateVariable",
+          variableName: "creditAchievedDependencies",
+        },
+        creditAchievedDependenciesAtSubmit: {
+          dependencyType: "stateVariable",
+          variableName: "creditAchievedDependenciesAtSubmit"
+        },
+
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let foundChange = !deepCompare(
+          dependencyValues.currentCreditAchievedDependencies,
+          dependencyValues.creditAchievedDependenciesAtSubmit
+        )
+
+        if (foundChange) {
+          return {
+            newValues: { justSubmitted: false },
+            makeEssential: { justSubmitted: true }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { justSubmitted: { variablesToCheck: ["justSubmitted"] } }
+          }
+        }
+
       },
       inverseDefinition({ desiredStateVariableValues }) {
         return {
@@ -1196,7 +1259,7 @@ export default class Answer extends InlineComponent {
 
   submitAnswer() {
 
-    if(this.stateValues.numberOfAttemptsLeft < 1) {
+    if (this.stateValues.numberOfAttemptsLeft < 1) {
       console.warn(`Cannot submit answer for ${this.componentName} as number of attempts left is ${this.stateValues.numberOfAttemptsLeft}`);
       return;
     }
@@ -1258,6 +1321,13 @@ export default class Answer extends InlineComponent {
       componentName: this.componentName,
       stateVariable: "justSubmitted",
       value: true
+    })
+
+    instructions.push({
+      updateType: "updateValue",
+      componentName: this.componentName,
+      stateVariable: "creditAchievedDependenciesAtSubmit",
+      value: this.stateValues.creditAchievedDependencies
     })
 
     instructions.push({
