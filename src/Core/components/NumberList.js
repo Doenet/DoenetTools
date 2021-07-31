@@ -35,11 +35,17 @@ export default class NumberList extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let groupIntoNumbersSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType: "number" });
-    let breakStringsIntoNumbersBySpaces = returnBreakStringsIntoComponentTypeBySpaces({ componentType: "number" });
+    let groupIntoNumbersSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
+      componentType: "number"
+    });
+    let breakStringsIntoNumbersBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
+      componentType: "number"
+    });
 
     sugarInstructions.push({
-      replacementFunction: function ({ matchedChildren, isAttributeComponent = false, createdFromMacro = false }) {
+      replacementFunction: function ({
+        matchedChildren, isAttributeComponent = false, createdFromMacro = false,
+      }) {
         if (isAttributeComponent && !createdFromMacro) {
           return groupIntoNumbersSeparatedBySpaces({ matchedChildren });
         } else {

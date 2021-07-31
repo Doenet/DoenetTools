@@ -2493,7 +2493,6 @@ describe('MathInput Tag Tests', function () {
 
   })
 
-
   it('substitute unicode', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -2649,7 +2648,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log(`unicode × U+00D7 becomes multiplication`)
-    
+
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00D7z{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2669,7 +2668,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log(`unicode ∪ U+222A becomes union`)
-    
+
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u222AB{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2690,7 +2689,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log(`unicode ∩ U+2229 becomes intersect`)
-    
+
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u2229B{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2711,7 +2710,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log(`unicode ∞ U+221E becomes infinity`)
-    
+
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u221E{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2732,7 +2731,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log(`unicode µ U+u00B5 becomes mu`)
-    
+
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u00B5{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2753,7 +2752,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log(`unicode μ U+u03BC becomes mu`)
-    
+
     cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u03BC{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').invoke('text').then((text) => {
@@ -2829,6 +2828,141 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('rawValue is updated', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point x="1" y="2" name="A">
+        <constraints>
+          <constrainToGrid />
+        </constraints>
+      </point>
+    </graph>
+    
+    <mathinput name="mi" bindValueTo="$(A{prop='x'})" />
+    
+    <copy prop='x' tname="A" assignNames="Ax" />
+    <copy prop='value' tname='mi' assignNames="mi2" />
+
+    <graph>
+      <point x="$mi" y="3" name="B" />
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/mi2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+
+    cy.get('#\\/mi .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.rawRendererValue).eq('1')
+      expect(components['/mi'].stateValues.immediateValue.tree).eq(1)
+      expect(components['/mi'].stateValues.value.tree).eq(1)
+      expect(components['/A'].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/B'].stateValues.xs.map(x => x.tree)).eqls([1, 3]);
+    });
+
+
+    cy.get('#\\/mi textarea').type('{end}{backspace}-7.4{enter}', { force: true });
+
+    cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+    cy.get('#\\/mi2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−7')
+    })
+    cy.get('#\\/mi .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('−7')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.rawRendererValue).eq('-7')
+      expect(components['/mi'].stateValues.immediateValue.tree).eq(-7)
+      expect(components['/mi'].stateValues.value.tree).eq(-7)
+      expect(components['/A'].stateValues.xs.map(x => x.tree)).eqls([-7, 2]);
+      expect(components['/B'].stateValues.xs.map(x => x.tree)).eqls([-7, 3]);
+    });
+
+    cy.log('move point A')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({ x: 3.9, y: -8.4 })
+
+    });
+
+    cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/mi2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+
+    cy.get('#\\/mi .mq-editable-field').should('contain.text', '4')
+
+    cy.get('#\\/mi .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.rawRendererValue).eq('4')
+      expect(components['/mi'].stateValues.immediateValue.tree).eq(4)
+      expect(components['/mi'].stateValues.value.tree).eq(4)
+      expect(components['/A'].stateValues.xs.map(x => x.tree)).eqls([4, -8]);
+      expect(components['/B'].stateValues.xs.map(x => x.tree)).eqls([4, 3]);
+
+    });
+
+
+
+    cy.log('move point B')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/B"].movePoint({ x: 5.1, y: 1.3 })
+
+    });
+
+    cy.get('#\\/Ax').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+    cy.get('#\\/mi2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+
+    cy.get('#\\/mi .mq-editable-field').should('contain.text', '5')
+
+    cy.get('#\\/mi .mq-editable-field').invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mi'].stateValues.rawRendererValue).eq('5')
+      expect(components['/mi'].stateValues.immediateValue.tree).eq(5)
+      expect(components['/mi'].stateValues.value.tree).eq(5)
+      expect(components['/A'].stateValues.xs.map(x => x.tree)).eqls([5, -8]);
+      expect(components['/B'].stateValues.xs.map(x => x.tree)).eqls([5, 1.3]);
+
+    });
+
+
+  })
 
 
 });

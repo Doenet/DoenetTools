@@ -8,15 +8,35 @@ export default class FunctionOperator extends Function {
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    sugarInstructions.push({
-      childrenRegex: /s/,
-      replacementFunction: ({ matchedChildren }) => ({
+    let wrapStringsAndMacros = function ({ matchedChildren }) {
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      // don't apply to a single macro
+      if (matchedChildren.length === 1 &&
+        matchedChildren[0].componentType !== "string"
+      ) {
+        return { success: false }
+      }
+
+      return {
         success: true,
         newChildren: [{
           componentType: "math",
           children: matchedChildren
         }],
-      })
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: wrapStringsAndMacros
     });
 
     return sugarInstructions;

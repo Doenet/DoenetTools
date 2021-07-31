@@ -55,6 +55,32 @@ describe('Function curve Tag Tests', function () {
 
   });
 
+  it('sugar a function of x, with strings and macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+      x^$a-x
+    </curve>
+    </graph>
+    <number name="a">3</number>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
+      expect(components['/_curve1'].stateValues.flipFunction).eq(false);
+      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-8 + 2);
+      expect(components['/_curve1'].stateValues.fs[0](3)).eq(27 - 3);
+    })
+
+  });
+
   it.skip('x = a function of y', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -187,6 +213,34 @@ describe('Function curve Tag Tests', function () {
     r^3-r
     </curve>
     </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_curve1'].stateValues.curveType).eq("function");
+      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("r");
+      expect(components['/_curve1'].stateValues.flipFunction).eq(false);
+      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-8 + 2);
+      expect(components['/_curve1'].stateValues.fs[0](3)).eq(27 - 3);
+    })
+
+  });
+
+  it('sugar a function of r, with strings and macro', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve variable="r">
+    r^$b-r
+    </curve>
+    </graph>
+    <math name="b">3</math>
     `}, "*");
     });
 

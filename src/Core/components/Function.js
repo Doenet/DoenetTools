@@ -133,9 +133,27 @@ export default class Function extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    sugarInstructions.push({
-      childrenRegex: /s/,
-      replacementFunction: ({ matchedChildren }) => ({
+    let stringAndMacrosToFunctionAttribute = function ({ matchedChildren, isAttributeComponent = fase }) {
+
+      console.log(isAttributeComponent)
+      console.log(matchedChildren)
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      // if is an attribute component, don't apply to a single macro
+      if (isAttributeComponent && matchedChildren.length === 1 &&
+        matchedChildren[0].componentType !== "string"
+      ) {
+        return { success: false }
+      }
+
+      return {
         success: true,
         newAttributes: {
           formula: {
@@ -145,7 +163,12 @@ export default class Function extends InlineComponent {
             }
           }
         }
-      })
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: stringAndMacrosToFunctionAttribute
     });
 
     return sugarInstructions;

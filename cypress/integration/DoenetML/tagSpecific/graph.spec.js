@@ -5,7 +5,7 @@ describe('Graph Tag Tests', function () {
 
   })
 
-  it('string sugared to curve in graph', () => {
+  it.skip('string sugared to curve in graph', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

@@ -118,6 +118,15 @@ export default class Curve extends GraphicalComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
     let breakIntoFunctionsByCommas = function ({ matchedChildren }) {
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
       let childrenToComponentFunction = x => ({
         componentType: "function", children: x
       });
@@ -131,7 +140,7 @@ export default class Curve extends GraphicalComponent {
 
       if (!result.success) {
         // if didn't succeed,
-        // then just wrap string with a function
+        // then just wrap children with a function
         return {
           success: true,
           newChildren: [{
@@ -147,7 +156,6 @@ export default class Curve extends GraphicalComponent {
     };
 
     sugarInstructions.push({
-      childrenRegex: /s/,
       replacementFunction: breakIntoFunctionsByCommas
     })
 

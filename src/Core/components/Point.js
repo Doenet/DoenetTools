@@ -75,6 +75,17 @@ export default class Point extends GraphicalComponent {
         mustStripOffOuterParentheses: true
       })
 
+      // find index of first and last string
+      let cTypes = matchedChildren.map(x => x.componentType)
+      let beginInd = cTypes.indexOf("string");
+      let lastInd = cTypes.lastIndexOf("string");
+
+      let newChildren = [
+        ...matchedChildren.slice(0, beginInd),
+        ...matchedChildren.slice(lastInd + 1)
+      ]
+      matchedChildren = matchedChildren.slice(beginInd, lastInd + 1);
+
       let result = breakFunction({ matchedChildren });
 
       if (!result.success && matchedChildren.length === 1) {
@@ -89,31 +100,36 @@ export default class Point extends GraphicalComponent {
                 children: matchedChildren
               }
             }
-          }
+          },
+          newChildren
         }
       }
 
 
       if (result.success) {
         // wrap xs around the x children
-        result.newAttributes = {
-          xs: {
-            component: {
-              componentType: "mathList",
-              children: result.newChildren,
-              skipSugar: true,
+        return {
+          success: true,
+          newAttributes: {
+            xs: {
+              component: {
+                componentType: "mathList",
+                children: result.newChildren,
+                skipSugar: true,
+              }
             }
-          }
-        },
-          delete result.newChildren;
+          },
+          newChildren
+        }
+      } else {
+        return { success: false }
       }
 
-      return result;
 
     };
 
     sugarInstructions.push({
-      childrenRegex: /s+(.*s)?/,
+      childrenRegex: /n*s+(.*s)?n*/,
       replacementFunction: breakIntoXsByCommas
     })
 

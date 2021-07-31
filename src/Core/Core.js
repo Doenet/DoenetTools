@@ -2260,18 +2260,25 @@ export default class Core {
           }
         });
 
+        let typeConverter = x => x;
+        if(attributeSpecification.createComponentOfType === "boolean") {
+          typeConverter = Boolean
+        } else if(attributeSpecification.createComponentOfType === "text") {
+          typeConverter = String
+        }
+
         stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
 
           let attributeComponent = dependencyValues.attributeComponent;
           if (!attributeComponent) {
             if (!usedDefault.ancestorProp) {
-              return { newValues: { [varName]: dependencyValues.ancestorProp } }
+              return { newValues: { [varName]: typeConverter(dependencyValues.ancestorProp) } }
             } else {
               return {
                 useEssentialOrDefaultValue: {
                   [varName]: {
                     variablesToCheck: [varName, attrName],
-                    defaultValue: dependencyValues.ancestorProp,
+                    defaultValue: typeConverter(dependencyValues.ancestorProp),
                   }
                 }
               }
