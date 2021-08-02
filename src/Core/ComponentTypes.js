@@ -137,6 +137,7 @@ import Paginator from './components/Paginator';
 import PaginatorPage from './components/PaginatorPage';
 import PaginatorControls from './components/PaginatorControls';
 import Footnote from './components/Footnote';
+import Caption from './components/Caption';
 
 
 //Extended
@@ -272,6 +273,7 @@ const componentTypeArray = [
   Setup,
   Paginator, PaginatorPage, PaginatorControls,
   Footnote,
+  Caption,
 
   BaseComponent,
   InlineComponent,

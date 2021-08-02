@@ -8,6 +8,8 @@ export class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentWithSelectableType";
   static rendererType = undefined;
 
+  static includeBlankStringChildren = true;
+
   // used when referencing this component without prop
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value", "type"] };
@@ -37,6 +39,13 @@ export class ComponentWithSelectableType extends BaseComponent {
       }
 
       let componentType = type === "letters" ? "text" : type;
+
+      // remove blank string if componentType isn't text
+      if (componentType !== "text") {
+        matchedChildren = matchedChildren.filter(x =>
+          x.componentType !== "string" || x.state.value.trim() !== ""
+        )
+      }
 
       return {
         success: true,
@@ -127,7 +136,16 @@ export class ComponentWithSelectableType extends BaseComponent {
           // );
           value = dependencyValues.atMostOneChild[0].stateValues.value;
         } else {
-          value = null;
+          // use the behavior of the different types
+          if (dependencyValues.type === "text" || dependencyValues.type === "letters") {
+            value = ""
+          } else if (dependencyValues.type === "boolean") {
+            value = false;
+          } else if (dependencyValues.type === "number") {
+            value = NaN;
+          } else {
+            value = me.fromAst('\uff3f');
+          }
         }
 
         return {

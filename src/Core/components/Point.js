@@ -283,7 +283,7 @@ export default class Point extends GraphicalComponent {
           variableNames: ["nDimensions"]
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      definition: function ({ dependencyValues }) {
         // console.log(`nDimensions definition`)
         // console.log(dependencyValues)
 
@@ -334,10 +334,6 @@ export default class Point extends GraphicalComponent {
 
           // determine from which component children have
 
-          // Note: wouldn't have been marked stale (so wouldn't get to definution)
-          // if identities of one of the children hadn't changed
-          // so don't need to check if identity changed
-
           if (dependencyValues.z !== null) {
             nDimensions = 3;
           } else if (dependencyValues.y !== null) {
@@ -345,7 +341,7 @@ export default class Point extends GraphicalComponent {
           } else if (dependencyValues.x !== null) {
             nDimensions = 1;
           } else {
-            nDimensions = 2;
+            nDimensions = 0;
           }
         }
 

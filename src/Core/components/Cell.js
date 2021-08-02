@@ -45,6 +45,12 @@ export default class Cell extends BaseComponent {
     attributes.right = {
       createComponentOfType: "text",
     }
+    attributes.prefill = {
+      createComponentOfType: "text",
+      createStateVariable: "prefill",
+      defaultValue: "",
+      public: true,
+    };
 
     return attributes;
   }
@@ -58,20 +64,6 @@ export default class Cell extends BaseComponent {
       number: 1,
     });
 
-    let nothingElse = childLogic.newLeaf({
-      name: "nothingElse",
-      componentType: "_base",
-      number: 0,
-      allowSpillover: false,
-    });
-
-
-    let oneMathAndNothingElse = childLogic.newOperator({
-      name: "oneMathAndNothingElse",
-      operator: "and",
-      propositions: [exactlyOneMath, nothingElse],
-      requireConsecutive: true,
-    })
 
     let anything = childLogic.newLeaf({
       name: 'anything',
@@ -83,7 +75,7 @@ export default class Cell extends BaseComponent {
     childLogic.newOperator({
       name: "mathXorAnything",
       operator: "xor",
-      propositions: [oneMathAndNothingElse, anything],
+      propositions: [exactlyOneMath, anything],
       setAsBase: true,
     })
 
@@ -227,7 +219,7 @@ export default class Cell extends BaseComponent {
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "child",
-          childLogicName: "oneMathAndNothingElse"
+          childLogicName: "exactlyOneMath"
         },
       }),
       definition: ({ dependencyValues }) => ({
@@ -247,13 +239,20 @@ export default class Cell extends BaseComponent {
           childLogicName: "mathXorAnything",
           variableNames: ["text"],
           variablesOptional: true,
-        }
+        },
+        prefill: {
+          dependencyType: "stateVariable",
+          variableName: "prefill"
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.children.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              text: { variablesToCheck: ["text"] }
+              text: {
+                variablesToCheck: ["text"],
+                defaultValue: dependencyValues.prefill
+              }
             }
           }
         }
@@ -273,7 +272,7 @@ export default class Cell extends BaseComponent {
             success: true,
             instructions: [{
               setStateVariable: "text",
-              value: desiredStateVariableValues.text
+              value: desiredStateVariableValues.text === null ? "" : String(desiredStateVariableValues.text)
             }]
           }
         } else if (dependencyValues.children.length === 1) {
@@ -306,7 +305,7 @@ export default class Cell extends BaseComponent {
           return {
             mathChild: {
               dependencyType: "child",
-              childLogicName: "oneMathAndNothingElse",
+              childLogicName: "exactlyOneMath",
               variableNames: ["value"],
             },
           }

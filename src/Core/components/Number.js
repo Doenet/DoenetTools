@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { mathStateVariableFromNumberStateVariable, roundForDisplay, textToAst } from '../utils/math';
+import { getFromText, mathStateVariableFromNumberStateVariable, roundForDisplay, textToAst } from '../utils/math';
 import { buildParsedExpression, evaluateLogic } from '../utils/booleanLogic';
 
 export default class NumberComponent extends InlineComponent {
@@ -615,9 +615,53 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "valueForDisplay"
         },
+        // value is just for inverse definition
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        },
       }),
       definition: function ({ dependencyValues }) {
         return { newValues: { text: dependencyValues.valueForDisplay.toString() } };
+      },
+      inverseDefinition({ desiredStateVariableValues, stateValues }) {
+        let desiredNumber = Number(desiredStateVariableValues.text);
+        if (Number.isFinite(desiredNumber)) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "value",
+              desiredValue: desiredNumber
+            }]
+          }
+        } else {
+          let fromText = getFromText({
+            functionSymbols: stateValues.functionSymbols,
+            splitSymbols: stateValues.splitSymbols
+          });
+
+          let expr;
+          try {
+            expr = fromText(desiredStateVariableValues.text);
+          } catch (e) {
+            return { success: false }
+          }
+
+          desiredNumber = expr.evaluate_to_constant();
+
+          if (Number.isFinite(desiredNumber)) {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "value",
+                desiredValue: desiredNumber
+              }]
+            }
+          } else {
+            return { success: false };
+          }
+
+        }
       }
     }
 
