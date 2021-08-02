@@ -478,7 +478,6 @@ function TextEditor(props){
   if (!editorInit){return null;}
 
   return <>
-    <Button onClick={() =>{console.log(">>>readflip");setRead(!read)}} />
     <CodeMirror
       setInternalValue={textValue} 
       readOnly={read}
