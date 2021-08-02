@@ -41,6 +41,7 @@ export default class NumberComponent extends InlineComponent {
     }
     attributes.convertBoolean = {
       createPrimitiveOfType: "boolean",
+      createStateVariable: "convertBoolean",
       defaultValue: false,
     }
     return attributes;
@@ -64,59 +65,25 @@ export default class NumberComponent extends InlineComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "strings",
+      componentTypes: ["string"]
+    }, {
+      group: "numbers",
+      componentTypes: ["number"]
+    }, {
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "texts",
+      componentTypes: ["text"]
+    }, {
+      group: "booleans",
+      componentTypes: ["boolean"]
+    }]
 
-    let atLeastZeroNumbers = childLogic.newLeaf({
-      name: "atLeastZeroNumbers",
-      componentType: 'number',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroBooleans = childLogic.newLeaf({
-      name: "atLeastZeroBooleans",
-      componentType: "boolean",
-      comparison: "atLeast",
-      number: 0,
-    });
-
-
-    childLogic.newOperator({
-      name: "stringsNumbersMathsTextsAndBooleans",
-      operator: "and",
-      propositions: [
-        atLeastZeroStrings,
-        atLeastZeroNumbers,
-        atLeastZeroMaths,
-        atLeastZeroTexts,
-        atLeastZeroBooleans,
-      ],
-      setAsBase: true
-    })
-
-    return childLogic;
   }
 
 
@@ -124,40 +91,29 @@ export default class NumberComponent extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.convertBoolean = {
-      returnDependencies: () => ({
-        convertBooleanAttr: {
-          dependencyType: "attributePrimitive",
-          attributeName: "convertBoolean"
-        }
-      }),
-      definition({ dependencyValues }) {
-        return { newValues: { convertBoolean: dependencyValues.convertBooleanAttr } }
-      }
-    }
 
     stateVariableDefinitions.singleNumberOrStringChild = {
       additionalStateVariablesDefined: ["singleMathChild"],
       returnDependencies: () => ({
         numberChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroNumbers",
+          childGroups: ["numbers"],
         },
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
         },
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
         },
         booleanChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroBooleans",
+          childGroups: ["booleans"],
         },
         textChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroTexts",
+          childGroups: ["texts"],
         },
       }),
       definition({ dependencyValues }) {
@@ -183,11 +139,11 @@ export default class NumberComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathTextBooleanChildren: {
           dependencyType: "child",
-          childLogicName: "stringsNumbersMathsTextsAndBooleans",
+          childGroups: ["strings", "numbers", "maths", "texts", "booleans"],
         },
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
           variableNames: ["value"]
         }
       }),
@@ -203,7 +159,7 @@ export default class NumberComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathTextBooleanChildren: {
           dependencyType: "child",
-          childLogicName: "stringsNumbersMathsTextsAndBooleans",
+          childGroups: ["strings", "numbers", "maths", "texts", "booleans"],
           variableNames: ["value", "texts", "maths", "booleans"],
           variablesOptional: true,
         },
@@ -280,12 +236,12 @@ export default class NumberComponent extends InlineComponent {
             },
             numberChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroNumbers",
+              childGroups: ["numbers"],
               variableNames: ["value", "canBeModified"],
             },
             stringChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroStrings",
+              childGroups: ["strings"],
               variableNames: ["value"],
             },
           }
@@ -310,7 +266,7 @@ export default class NumberComponent extends InlineComponent {
             },
             stringMathTextBooleanChildren: {
               dependencyType: "child",
-              childLogicName: "stringsNumbersMathsTextsAndBooleans",
+              childGroups: ["strings", "numbers", "maths", "texts", "booleans"],
               variableNames: ["value", "texts", "maths", "unordered"],
               variablesOptional: true,
             },
@@ -676,7 +632,7 @@ export default class NumberComponent extends InlineComponent {
       returnDependencies: () => ({
         numberChildModifiable: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroNumbers",
+          childGroups: ["numbers"],
           variableNames: ["canBeModified"],
         },
         modifyIndirectly: {

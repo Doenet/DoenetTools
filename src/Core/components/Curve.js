@@ -163,32 +163,16 @@ export default class Curve extends GraphicalComponent {
 
   }
 
+  static returnChildGroups() {
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    return [{
+      group: "functions",
+      componentTypes: ["function"]
+    }, {
+      group: "bezierControls",
+      componentTypes: ["bezierControls"]
+    }]
 
-    let atLeastZeroFunctions = childLogic.newLeaf({
-      name: "atLeastZeroFunctions",
-      componentType: "function",
-      comparison: "atLeast",
-      number: 0
-    })
-
-    let atMostOneBezierControls = childLogic.newLeaf({
-      name: "atMostOneBezierControls",
-      componentType: 'bezierControls',
-      comparison: 'atMost',
-      number: 1
-    });
-
-    childLogic.newOperator({
-      name: "functionsXorControl",
-      operator: 'xor',
-      propositions: [atLeastZeroFunctions, atMostOneBezierControls],
-      setAsBase: true
-    });
-
-    return childLogic;
   }
 
 
@@ -231,7 +215,7 @@ export default class Curve extends GraphicalComponent {
       returnDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroFunctions"
+          childGroups: ["functions"],
         },
         through: {
           dependencyType: "attributeComponent",
@@ -332,7 +316,7 @@ export default class Curve extends GraphicalComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroFunctions",
+          childGroups: ["functions"],
           variableNames: ["domain"]
         },
         adapterSourceDomain: {
@@ -430,7 +414,7 @@ export default class Curve extends GraphicalComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroFunctions",
+          childGroups: ["functions"],
           variableNames: ["domain"]
         },
         adapterSourceDomain: {
@@ -749,13 +733,13 @@ export default class Curve extends GraphicalComponent {
       returnDependencies: () => ({
         controlChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneBezierControls"
+          childGroups: ["bezierControls"],
         }
       }),
       definition({ dependencyValues }) {
         return {
           newValues: {
-            haveBezierControls: dependencyValues.controlChild.length === 1
+            haveBezierControls: dependencyValues.controlChild.length > 0
           }
         }
       }
@@ -783,7 +767,7 @@ export default class Curve extends GraphicalComponent {
           dependenciesByKey[arrayKey] = {
             controlChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneBezierControls",
+              childGroups: ["bezierControls"],
               variableNames: ["direction" + (Number(arrayKey) + 1)],
             }
           }
@@ -806,7 +790,7 @@ export default class Curve extends GraphicalComponent {
 
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
-          if (controlChild && controlChild.length === 1) {
+          if (controlChild && controlChild.length > 0) {
             vectorControlDirections[arrayKey] = controlChild[0].stateValues["direction" + (Number(arrayKey) + 1)];
           } else {
             vectorControlDirections[arrayKey] = "none";
@@ -832,7 +816,7 @@ export default class Curve extends GraphicalComponent {
         for (let arrayKey in desiredStateVariableValues.vectorControlDirections) {
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
 
-          if (controlChild && controlChild.length === 1) {
+          if (controlChild && controlChild.length > 0) {
             instructions.push({
               setDependency: dependencyNamesByKey[arrayKey].controlChild,
               desiredValue: desiredStateVariableValues.vectorControlDirections[arrayKey],
@@ -970,7 +954,7 @@ export default class Curve extends GraphicalComponent {
             },
             controlChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneBezierControls",
+              childGroups: ["bezierControls"],
               variableNames: ["control" + jointVarEnding]
             }
           }
@@ -1146,7 +1130,7 @@ export default class Curve extends GraphicalComponent {
           // if find the control on the control child,
           // set its value to the desired value
           let controlChild = dependencyValuesByKey[arrayKey].controlChild;
-          if (controlChild.length === 1) {
+          if (controlChild.length > 0) {
             let control = controlChild[0].stateValues["control" + jointVarEnding];
             if (control) {
               instructions.push({
@@ -1690,7 +1674,7 @@ export default class Curve extends GraphicalComponent {
       returnArraySizeDependencies: () => ({
         functionChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroFunctions",
+          childGroups: ["functions"],
         },
         curveType: {
           dependencyType: "stateVariable",
@@ -1746,7 +1730,7 @@ export default class Curve extends GraphicalComponent {
           dependenciesByKey[arrayKey] = {
             functionChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroFunctions",
+              childGroups: ["functions"],
               variableNames: ["numericalf"],
               childIndices: [arrayKey]
             }

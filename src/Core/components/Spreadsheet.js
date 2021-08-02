@@ -72,45 +72,23 @@ export default class Spreadsheet extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let zeroOrMoreCells = childLogic.newLeaf({
-      name: "zeroOrMoreCells",
-      componentType: 'cell',
-      comparison: 'atLeast',
-      number: 0,
-    });
+  static returnChildGroups() {
 
-    let zeroOrMoreRows = childLogic.newLeaf({
-      name: "zeroOrMoreRows",
-      componentType: 'row',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "cells",
+      componentTypes: ["cell"]
+    }, {
+      group: "rows",
+      componentTypes: ["row"]
+    }, {
+      group: "columns",
+      componentTypes: ["column"]
+    }, {
+      group: "cellBlocks",
+      componentTypes: ["cellBlock"]
+    }]
 
-    let zeroOrMoreColumns = childLogic.newLeaf({
-      name: "zeroOrMoreColumns",
-      componentType: 'column',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let zeroOrMoreCellblocks = childLogic.newLeaf({
-      name: "zeroOrMoreCellblocks",
-      componentType: 'cellBlock',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "cellsRowsColumnsBlocks",
-      operator: 'and',
-      propositions: [zeroOrMoreCells, zeroOrMoreRows, zeroOrMoreColumns, zeroOrMoreCellblocks],
-      setAsBase: true,
-    });
-
-    return childLogic;
   }
 
 
@@ -123,7 +101,7 @@ export default class Spreadsheet extends BlockComponent {
       returnDependencies: () => ({
         cellRelatedChildren: {
           dependencyType: "child",
-          childLogicName: "cellsRowsColumnsBlocks",
+          childGroups: ["cells", "rows", "columns", "cellBlocks"],
           variableNames: [
             "rowNum",
             "colNum",

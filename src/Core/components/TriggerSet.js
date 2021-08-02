@@ -29,32 +29,13 @@ export default class triggerSet extends InlineComponent {
     return attributes;
   }
 
+  static returnChildGroups() {
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    return [{
+      group: "updateValuesCallActions",
+      componentTypes: ["updateValue", "callAction"]
+    }]
 
-    let atLeastZeroUpdateValues = childLogic.newLeaf({
-      name: "atLeastZeroUpdateValues",
-      componentType: 'updateValue',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atLeastZeroCallActions = childLogic.newLeaf({
-      name: "atLeastZeroCallActions",
-      componentType: 'callAction',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "updateValuesAndCallActions",
-      operator: "and",
-      propositions: [atLeastZeroUpdateValues, atLeastZeroCallActions],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -67,7 +48,7 @@ export default class triggerSet extends InlineComponent {
       returnDependencies: () => ({
         updateValueAndCallActionChildren: {
           dependencyType: "child",
-          childLogicName: "updateValuesAndCallActions",
+          childGroups: ["updateValuesCallActions"],
         }
       }),
       definition({ dependencyValues }) {

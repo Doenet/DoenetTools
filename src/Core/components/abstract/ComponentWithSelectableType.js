@@ -26,7 +26,7 @@ export class ComponentWithSelectableType extends BaseComponent {
     let sugarInstructions = [];
 
     function addType({ matchedChildren, componentAttributes, parentAttributes }) {
-
+      console.log(componentAttributes, parentAttributes)
       let type = componentAttributes.type;
       if (!type) {
         type = parentAttributes.type;
@@ -37,6 +37,8 @@ export class ComponentWithSelectableType extends BaseComponent {
         console.warn(`Invalid type ${type}, setting type to number`);
         type = "number";
       }
+
+      console.log(`type: ${type}`)
 
       let componentType = type === "letters" ? "text" : type;
 
@@ -64,20 +66,15 @@ export class ComponentWithSelectableType extends BaseComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: 'atMostOneChild',
-      componentType: "_base",
-      excludeComponentTypes: ["_composite"],
-      comparison: 'atMost',
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -122,14 +119,14 @@ export class ComponentWithSelectableType extends BaseComponent {
         },
         atMostOneChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneChild",
+          childGroups: ["anything"],
           variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
         let value;
 
-        if (dependencyValues.atMostOneChild.length === 1) {
+        if (dependencyValues.atMostOneChild.length > 0) {
           // value = convertValueToType(
           //   dependencyValues.atMostOneChild[0].stateValues.value,
           //   dependencyValues.type
@@ -216,23 +213,6 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-    childLogic.deleteAllLogic();
-
-    childLogic.newLeaf({
-      name: 'anythingForSelectedType',
-      componentType: "_base",
-      excludeComponentTypes: ["_composite"],
-      comparison: 'atLeast',
-      number: 1,
-      setAsBase: true,
-    });
-
-    return childLogic;
-  }
-
-
 
   static returnStateVariableDefinitions() {
 
@@ -245,7 +225,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       returnDependencies: () => ({
         anythingForSelectedType: {
           dependencyType: "child",
-          childLogicName: "anythingForSelectedType",
+          childGroups: ["anything"],
           variableNames: ["nValues"],
           variablesOptional: true,
         },
@@ -295,7 +275,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
           dependenciesByKey[arrayKey] = {
             anythingForSelectedType: {
               dependencyType: "child",
-              childLogicName: "anythingForSelectedType",
+              childGroups: ["anything"],
               variableNames: ["value", "values"],
               childIndices: [childInfo.child],
               variablesOptional: true,
@@ -408,19 +388,14 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-    childLogic.deleteAllLogic();
 
-    childLogic.newLeaf({
-      name: 'atLeastZeroLists',
-      componentType: "_componentListWithSelectableType",
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "lists",
+      componentTypes: ["_componentListWithSelectableType"]
+    }]
+
   }
 
 
@@ -434,7 +409,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
       returnDependencies: () => ({
         listChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroLists",
+          childGroups: ["lists"],
         },
       }),
       definition({ dependencyValues }) {
@@ -467,7 +442,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
           dependenciesByKey[arrayKey] = {
             listChildren: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroLists",
+              childGroups: ["lists"],
               variableNames: ["values", "type"],
               childIndices: [arrayKey]
             },

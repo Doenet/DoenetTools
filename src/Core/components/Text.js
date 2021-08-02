@@ -9,33 +9,15 @@ export default class Text extends InlineComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value"] };
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "stringsAndTexts",
+      componentTypes: ["string", "text"]
+    }]
 
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "stringsAndTexts",
-      operator: 'and',
-      propositions: [atLeastZeroStrings, atLeastZeroTexts],
-      requireConsecutive: true,
-      setAsBase: true
-    });
-
-    return childLogic;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -48,7 +30,7 @@ export default class Text extends InlineComponent {
       returnDependencies: () => ({
         stringTextChildren: {
           dependencyType: "child",
-          childLogicName: "stringsAndTexts",
+          childGroups: ["stringsAndTexts"],
           variableNames: ["value"],
         },
       }),

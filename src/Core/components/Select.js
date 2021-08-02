@@ -39,6 +39,12 @@ export default class Select extends CompositeComponent {
     attributes.type = {
       createPrimitiveOfType: "string"
     }
+    attributes.skipOptionsInAssignNames = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "skipOptionsInAssignNames",
+      defaultValue: false
+    }
+
     return attributes;
   }
 
@@ -86,9 +92,16 @@ export default class Select extends CompositeComponent {
           children: [child]
         }))
 
+        let newAttributes = {
+          skipOptionsInAssignNames: {
+            primitive: true
+          }
+        }
+
         return {
           success: true,
-          newChildren: newChildren,
+          newChildren,
+          newAttributes,
         }
       } else {
         return { success: false }
@@ -104,18 +117,13 @@ export default class Select extends CompositeComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroOptions",
-      componentType: 'option',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "options",
+      componentTypes: ["option"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -164,7 +172,7 @@ export default class Select extends CompositeComponent {
       returnDependencies: () => ({
         optionChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroOptions",
+          childGroups: ["options"],
           variableNames: ["selectForVariantNames", "selectWeight"]
         },
       }),
@@ -526,8 +534,14 @@ export default class Select extends CompositeComponent {
 
     let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
+    let assignNames = component.doenetAttributes.assignNames;
+
+    if (assignNames && component.stateValues.skipOptionsInAssignNames) {
+      assignNames = assignNames.map(x => [x])
+    }
+
     let processResult = processAssignNames({
-      assignNames: component.doenetAttributes.assignNames,
+      assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,

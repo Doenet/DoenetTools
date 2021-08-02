@@ -4,20 +4,14 @@ export default class ConsiderAsResponses extends BlockComponent {
   static componentType = "considerAsResponses";
   static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "anything",
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
-
 
   static returnStateVariableDefinitions() {
 
@@ -27,7 +21,7 @@ export default class ConsiderAsResponses extends BlockComponent {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childLogicName: "anything",
+          childGroups: ["anything"],
           variableNames: ["nValues"],
           variablesOptional: true,
         }
@@ -41,7 +35,7 @@ export default class ConsiderAsResponses extends BlockComponent {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childLogicName: "anything",
+          childGroups: ["anything"],
           variableNames: ["value", "values", "componentType"],
           variablesOptional: true,
         }

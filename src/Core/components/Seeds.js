@@ -7,9 +7,9 @@ export default class Seeds extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakStringsIntoSeedsBySpaces = function ({ matchedChildren }) {
+    let breakStringsBySpaces = function ({ matchedChildren }) {
 
-      // break any string by white space and wrap pieces with seed
+      // break any string by white space
 
       let newChildren = matchedChildren.reduce(function (a, c) {
         if (c.componentType === "string") {
@@ -18,7 +18,7 @@ export default class Seeds extends InlineComponent {
             ...c.state.value.split(/\s+/)
               .filter(s => s)
               .map(s => ({
-                componentType: "seed",
+                componentType: "string",
                 state: { value: s }
               }))
           ]
@@ -34,7 +34,7 @@ export default class Seeds extends InlineComponent {
     }
 
     sugarInstructions.push({
-      replacementFunction: breakStringsIntoSeedsBySpaces
+      replacementFunction: breakStringsBySpaces
     });
 
     return sugarInstructions;
@@ -42,20 +42,13 @@ export default class Seeds extends InlineComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroSeeds",
-      componentType: 'seed',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true
-    });
-
-    return childLogic;
+    return [{
+      group: "strings",
+      componentTypes: ["string"]
+    }]
   }
-
 
 
   static returnStateVariableDefinitions() {
@@ -66,13 +59,13 @@ export default class Seeds extends InlineComponent {
       public: true,
       componentType: "number",
       returnDependencies: () => ({
-        seedChildren: {
+        stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroSeeds",
+          childGroups: ["strings"],
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nSeeds: dependencyValues.seedChildren.length } }
+        return { newValues: { nSeeds: dependencyValues.stringChildren.length } }
       }
     }
 
@@ -94,9 +87,9 @@ export default class Seeds extends InlineComponent {
         let dependenciesByKey = {};
         for (let arrayKey of arrayKeys) {
           dependenciesByKey[arrayKey] = {
-            seedChild: {
+            stringChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroSeeds",
+              childGroups: ["strings"],
               variableNames: ["value"],
               childIndices: [arrayKey]
             }
@@ -107,8 +100,8 @@ export default class Seeds extends InlineComponent {
       arrayDefinitionByKey: function ({ dependencyValuesByKey, arrayKeys }) {
         let seeds = {};
         for (let arrayKey of arrayKeys) {
-          if (dependencyValuesByKey[arrayKey].seedChild.length === 1) {
-            seeds[arrayKey] = dependencyValuesByKey[arrayKey].seedChild[0]
+          if (dependencyValuesByKey[arrayKey].stringChild.length === 1) {
+            seeds[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0]
               .stateValues.value
           }
         }

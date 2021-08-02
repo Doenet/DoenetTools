@@ -4,20 +4,12 @@ export default class TextBaseOperatorOfMath extends TextComponent {
   static componentType = "_textOperatorOfMath";
   static rendererType = "text";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
-    
-    childLogic.deleteAllLogic();
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-
-    return childLogic;
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }]
 
   }
 
@@ -34,7 +26,7 @@ export default class TextBaseOperatorOfMath extends TextComponent {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
           variableNames: ["value"]
         }
       }),

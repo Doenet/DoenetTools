@@ -138,32 +138,16 @@ export default class Vector extends GraphicalComponent {
 
   }
 
+  static returnChildGroups() {
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    return [{
+      group: "points",
+      componentTypes: ["point"]
+    }, {
+      group: "vectors",
+      componentTypes: ["vector"]
+    }]
 
-    let atMostOnePoint = childLogic.newLeaf({
-      name: "atMostOnePoint",
-      componentType: 'point',
-      comparison: "atMost",
-      number: 1
-    });
-
-    let atMostOneVector = childLogic.newLeaf({
-      name: "atMostOneVector",
-      componentType: 'vector',
-      comparison: "atMost",
-      number: 1
-    });
-
-    childLogic.newOperator({
-      name: "vectorXorPoints",
-      operator: "xor",
-      propositions: [atMostOnePoint, atMostOneVector],
-      setAsBase: true
-    })
-
-    return childLogic;
   }
 
 
@@ -294,18 +278,18 @@ export default class Vector extends GraphicalComponent {
         },
         pointChild: {
           dependencyType: "child",
-          childLogicName: "atMostOnePoint"
+          childGroups: ["points"],
         },
         vectorChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneVector"
+          childGroups: ["vectors"],
         },
       }),
       definition({ dependencyValues }) {
         let sourceOfDisplacement = null;
-        if (dependencyValues.vectorChild.length === 1) {
+        if (dependencyValues.vectorChild.length > 0) {
           sourceOfDisplacement = "vectorChild"
-        } else if (dependencyValues.pointChild.length === 1) {
+        } else if (dependencyValues.pointChild.length > 0) {
           sourceOfDisplacement = "pointChild"
         } else if (dependencyValues.displacementAttr !== null) {
           sourceOfDisplacement = "displacementAttr"
@@ -474,12 +458,12 @@ export default class Vector extends GraphicalComponent {
           },
           vectorChild: {
             dependencyType: "child",
-            childLogicName: "atMostOneVector",
+            childGroups: ["vectors"],
             variableNames: ["nDimensions"],
           },
           pointChild: {
             dependencyType: "child",
-            childLogicName: "atMostOnePoint",
+            childGroups: ["points"],
             variableNames: ["nDimensions"],
           },
           xAttr: {
@@ -891,12 +875,12 @@ export default class Vector extends GraphicalComponent {
             },
             pointChild: {
               dependencyType: "child",
-              childLogicName: "atMostOnePoint",
+              childGroups: ["points"],
               variableNames: ["x" + varEnding],
             },
             vectorChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneVector",
+              childGroups: ["vectors"],
               variableNames: ["x" + varEnding],
             }
           }

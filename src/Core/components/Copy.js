@@ -54,7 +54,7 @@ export default class Copy extends CompositeComponent {
       public: true,
     };
     attributes.uri = {
-      createComponentOfType: "_textFromSingleStringChild",
+      createPrimitiveOfType: "string",
       createStateVariable: "uri",
       defaultValue: null,
       public: true,
@@ -78,19 +78,13 @@ export default class Copy extends CompositeComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atMostOneExternalContent",
-      componentType: 'externalContent',
-      number: 1,
-      comparison: "atMost",
-      setAsBase: true
-    });
+    return [{
+      group: "externalContents",
+      componentTypes: ["externalContent"]
+    }]
 
-
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -322,7 +316,7 @@ export default class Copy extends CompositeComponent {
         },
         externalContentChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneExternalContent",
+          childGroups: ["externalContents"],
           variableNames: ["serializedChildren", "newNamespace"],
         }
       }),

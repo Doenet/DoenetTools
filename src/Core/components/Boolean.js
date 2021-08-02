@@ -78,74 +78,16 @@ export default class BooleanComponent extends InlineComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "strings",
+      componentTypes: ["string"]
+    }, {
+      group: "mathsTextsBooleans",
+      componentTypes: ["math", "mathList", "text", "textList", "boolean", "booleanList"]
+    }]
 
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroMathLists = childLogic.newLeaf({
-      name: "atLeastZeroMathLists",
-      componentType: 'mathList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroTextLists = childLogic.newLeaf({
-      name: "atLeastZeroTextLists",
-      componentType: 'textList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroBooleans = childLogic.newLeaf({
-      name: "atLeastZeroBooleans",
-      componentType: "boolean",
-      comparison: "atLeast",
-      number: 0,
-    });
-
-    let atLeastZeroBooleanLists = childLogic.newLeaf({
-      name: "atLeastZeroBooleanLists",
-      componentType: 'booleanList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "stringsMathsTextsAndBooleans",
-      operator: "and",
-      propositions: [
-        atLeastZeroStrings,
-        atLeastZeroMaths,
-        atLeastZeroMathLists,
-        atLeastZeroTexts,
-        atLeastZeroTextLists,
-        atLeastZeroBooleans,
-        atLeastZeroBooleanLists,
-      ],
-      setAsBase: true
-    })
-
-    return childLogic;
   }
 
 
@@ -160,11 +102,11 @@ export default class BooleanComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathTextBooleanChildren: {
           dependencyType: "child",
-          childLogicName: "stringsMathsTextsAndBooleans",
+          childGroups: ["strings", "mathsTextsBooleans"],
         },
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
           variableNames: ["value"]
         }
       }),
@@ -181,7 +123,7 @@ export default class BooleanComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathTextBooleanChildren: {
           dependencyType: "child",
-          childLogicName: "stringsMathsTextsAndBooleans",
+          childGroups: ["strings", "mathsTextsBooleans"],
           variableNames: ["value", "texts", "maths", "booleans", "fractionSatisfied", "unordered"],
           variablesOptional: true,
         },
@@ -297,7 +239,7 @@ export default class BooleanComponent extends InlineComponent {
         },
         stringMathTextBooleanChildren: {
           dependencyType: "child",
-          childLogicName: "stringsMathsTextsAndBooleans",
+          childGroups: ["strings", "mathsTextsBooleans"],
           variableNames: ["value"],
           variablesOptional: true,
         },
@@ -417,6 +359,29 @@ export default class BooleanComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let desiredText = String(desiredStateVariableValues.text).toLowerCase();
+
+        let desiredBoolean;
+        if (desiredText === "true") {
+          desiredBoolean = true;
+        } else if (desiredText === "false") {
+          desiredBoolean = false;
+        }
+
+        if (desiredBoolean !== undefined) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "value",
+              desiredValue: desiredBoolean
+            }]
+          }
+        } else {
+          return { success: false }
+        }
+
       }
     }
 

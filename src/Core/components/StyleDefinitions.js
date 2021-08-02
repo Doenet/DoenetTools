@@ -84,32 +84,15 @@ export class StyleDefinitions extends BaseComponent {
   static componentType = "styleDefinitions";
   static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroStyleDefinitions = childLogic.newLeaf({
-      name: "atLeastZeroStyleDefinitions",
-      componentType: 'styleDefinition',
-      comparison: "atLeast",
-      number: 0,
-    });
-
-
-    let atMostOneStyleDefinitions = childLogic.newLeaf({
-      name: "atMostOneStyleDefinitions",
-      componentType: 'styleDefinitions',
-      comparison: "atMost",
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "styleDefinitionsXorStyleDefinition",
-      operator: "xor",
-      propositions: [atLeastZeroStyleDefinitions, atMostOneStyleDefinitions],
-      setAsBase: true
-    })
-
-    return childLogic
+    return [{
+      group: "styleDefinition",
+      componentTypes: ["styleDefinition"]
+    }, {
+      group: "styleDefinitions",
+      componentTypes: ["styleDefinitions"]
+    }]
 
   }
 
@@ -122,17 +105,17 @@ export class StyleDefinitions extends BaseComponent {
       returnDependencies: () => ({
         styleDefinitionChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStyleDefinitions",
+          childGroups: ["styleDefinition"]
         },
         styleDefinitionsChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneStyleDefinitions",
+          childGroups: ["styleDefinitions"],
           variableNames: ["nDefinitions"]
         },
       }),
       definition({ dependencyValues }) {
         let nDefinitions;
-        if (dependencyValues.styleDefinitionsChild.length === 1) {
+        if (dependencyValues.styleDefinitionsChild.length > 0) {
           nDefinitions = dependencyValues.styleDefinitionsChild[0].stateValues.nDefinitions;
         } else {
           nDefinitions = dependencyValues.styleDefinitionChildren.length;
@@ -162,13 +145,13 @@ export class StyleDefinitions extends BaseComponent {
           dependenciesByKey[arrayKey] = {
             styleDefinitionChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroStyleDefinitions",
+              childGroups: ["styleDefinition"],
               variableNames: ["value"],
               childIndices: [arrayKey]
             },
             styleDefinitionsChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneStyleDefinitions",
+              childGroups: ["styleDefinitions"],
               variableNames: ["styleDefinition" + (Number(arrayKey) + 1)],
             }
           };
@@ -182,11 +165,11 @@ export class StyleDefinitions extends BaseComponent {
 
         for (let arrayKey of arrayKeys) {
           let styleDefinitionChild = dependencyValuesByKey[arrayKey].styleDefinitionChild;
-          if (styleDefinitionChild.length === 1) {
+          if (styleDefinitionChild.length > 0) {
             value[arrayKey] = styleDefinitionChild[0].stateValues.value;
           } else {
             let styleDefinitionsChild = dependencyValuesByKey[arrayKey].styleDefinitionsChild;
-            if (styleDefinitionsChild.length === 1) {
+            if (styleDefinitionsChild.length > 0) {
               value[arrayKey] = styleDefinitionsChild[0].stateValues["styleDefinition" + (Number(arrayKey) + 1)]
             }
 

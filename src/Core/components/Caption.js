@@ -3,36 +3,19 @@ import BlockComponent from './abstract/BlockComponent';
 export default class Caption extends BlockComponent {
   static componentType = "caption";
   static rendererType = "container";
-  
+
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-    });
+  static returnChildGroups() {
 
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "inlinesBlocks",
+      componentTypes: ["_inline", "_block"]
+    }]
 
-    childLogic.newOperator({
-      name: "inlineOrBlock",
-      operator: "or",
-      propositions: [atLeastZeroInline, atLeastZeroBlock],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -46,7 +29,7 @@ export default class Caption extends BlockComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childLogicName: "inlineOrBlock",
+          childGroups: ["inlinesBlocks"],
           variableNames: ["text"],
           variablesOptional: true,
         }
