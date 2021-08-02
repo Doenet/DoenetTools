@@ -231,9 +231,9 @@ export default class Spreadsheet extends BlockComponent {
           // Do we want to cap default at a maximum?
           let height;
           if (Number.isFinite(dependencyValues.numRows) && dependencyValues.numRows >= 0) {
-            height = 50 + dependencyValues.numRows * 20;
+            height = 40 + dependencyValues.numRows * 23;
           } else {
-            height = 130;  // value if numRows = 4
+            height = 132;  // value if numRows = 4
           }
           return { newValues: { height: { size: height, isAbsolute: true } } }
         }
