@@ -430,8 +430,6 @@ function TextEditor(props){
 
   const timeout = useRef(null);
   const autosavetimeout = useRef(null);
-  //If this isn't a ref, it will update and force a refresh of Codemirror each time editorDoenetML changes
-  let textValue = useRef(editorDoenetML);
 
   function clearSaveTimeouts(){
     if (timeout.current !== null){
@@ -458,13 +456,32 @@ function TextEditor(props){
     clearSaveTimeouts()
   }
 
+
+  //silly hack to only load the first two updates of the editorDoenetML into the text editor
+  //why the first two? good question.
+  //changing textValue Manually will still work of course
+
+  //use .slice() to get a copy of the string, will make a reference (and refresh on every keypress) otherwise
+  let [textValue,setTextValue] = useState(editorDoenetML.slice()); 
+  let hasLoaded= useRef(0);
+
+  useEffect(() => {
+    if(hasLoaded.current < 2){
+      setTextValue(editorDoenetML);
+      hasLoaded.current += 1;
+    } 
+  },[editorDoenetML])
+
+  let [read,setRead] = useState(false);
+
   const editorInit = useRecoilValue(editorInitAtom);
   if (!editorInit){return null;}
 
   return <>
+    <Button onClick={() =>{console.log(">>>readflip");setRead(!read)}} />
     <CodeMirror
-      setInternalValue={textValue.current} 
-      readOnly={true}
+      setInternalValue={textValue} 
+      readOnly={read}
       onBeforeChange={(value) => {
         if (activeVersionId === "") { //No timers when active version history
           setEditorDoenetML(value);

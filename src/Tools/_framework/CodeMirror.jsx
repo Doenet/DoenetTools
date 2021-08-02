@@ -3,11 +3,11 @@ import { basicSetup } from '@codemirror/basic-setup';
 import { EditorState, Transaction, StateEffect } from '@codemirror/state';
 import { selectLine, deleteLine } from '@codemirror/commands';
 import { EditorView, keymap } from '@codemirror/view';
-import {styleTags, defaultHighlightStyle, tags as t} from "@codemirror/highlight";
-import {lineNumbers} from "@codemirror/gutter";
-import {LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp} from '@codemirror/language';
-import {completeFromSchema} from '@codemirror/lang-xml';
-import {parser} from "../../Parser/doenet";
+import { styleTags, defaultHighlightStyle, tags as t } from "@codemirror/highlight";
+import { lineNumbers } from "@codemirror/gutter";
+import { LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp } from '@codemirror/language';
+import { completeFromSchema } from '@codemirror/lang-xml';
+import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
 
 const editorConfigStateAtom = atom({
@@ -19,7 +19,8 @@ const editorConfigStateAtom = atom({
 
 let view;
 export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
-    let editorConfig= useRecoilValue(editorConfigStateAtom);
+
+    let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
     let parent = useRef(null);
 
@@ -29,7 +30,10 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
             onBeforeChange(strOfDoc);
             return true;
         }
-    },[onBeforeChange]);
+        //trust in the system
+        //eslint-disable-next-line
+    },[]);
+
 
     const doenetExtensions = useMemo(() => [
         basicSetup,
@@ -40,54 +44,11 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
         EditorState.changeFilter.of(changeFunc)
     ],[changeFunc]); 
 
-    const state = EditorState.create({
-        doc : setInternalValue,
-        extensions: doenetExtensions
-    });
-
-    useEffect(() => {
-        if(view.current !== null && parent.current !== null){
-            // console.log(">>> setInternalValue is",setInternalValue)
-            let tr = view.current.state.update({changes: {from : 0, to: view.current.state.doc.length, insert: setInternalValue}});
-            view.current.dispatch(tr);
-        }
-    },[setInternalValue])
-
-
-    useEffect(() => {
-        if(view.current === null && parent.current !== null){
-            view.current = new EditorView({state, parent: parent.current});
-        }
-    });
-    
-    useEffect(() => {
-        if(view.current !== null && parent.current !== null){
-            if(readOnly && view.current.state.facet(EditorView.editable)){
-                const disabledExtensions = [
-                    EditorView.editable.of(false),
-                    lineNumbers(),
-                    doenet(),
-                    defaultHighlightStyle.extension
-                ]
-                let tr = view.current.state.update({changes: {from : 0, to: view.current.state.doc.length, insert: setInternalValue}});
-                view.current.dispatch(tr);
-                view.current.dispatch({
-                    effects: StateEffect.reconfigure.of(disabledExtensions)
-                });
-            } else if(!readOnly && !view.current.state.facet(EditorView.editable)) {
-                view.current.dispatch({
-                    effects: StateEffect.reconfigure.of(doenetExtensions.push(EditorState.transactionFilter.of(matchTag)))
-                });
-            }
-        }
-    })
-
-
     const matchTag = useCallback((tr) => {
         const cursorPos = tr.newSelection.main.from;
         //if we may be closing an OpenTag
         if(tr.annotation(Transaction.userEvent) == "input" && tr.newDoc.sliceString(cursorPos-1,cursorPos) === ">"){
-            //check to se if we are actually closing an OpenTag
+            //check to see if we are actually closing an OpenTag
             let node = syntaxTree(tr.state).resolve(cursorPos,-1);
             if(node.name !== "OpenTag") {
                 return tr;
@@ -106,19 +67,69 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
         }
     },[changeFunc]);
 
+    const state = EditorState.create({
+        doc : setInternalValue,
+        extensions: doenetExtensions
+    });
+
+    useEffect(() => {
+        if(view.current !== null && parent.current !== null){
+            console.log(">>>changing setInternalValue to",setInternalValue)
+            let tr = view.current.state.update({changes: {from : 0, to: view.current.state.doc.length, insert: setInternalValue}});
+            view.current.dispatch(tr);
+        }
+    },[setInternalValue])
+
+
+    useEffect(() => {
+        if(view.current === null && parent.current !== null){
+            view.current = new EditorView({state, parent: parent.current});
+        }
+    });
+    
+    useEffect(() => {
+        if(view.current !== null && parent.current !== null){
+            if(readOnly && view.current.state.facet(EditorView.editable)){
+                // console.log(">>>read only has been set, changing");
+                const disabledExtensions = [
+                    EditorView.editable.of(false),
+                    lineNumbers(),
+                    doenet(),
+                    defaultHighlightStyle.extension
+                ]
+                view.current.dispatch({
+                    effects: StateEffect.reconfigure.of(disabledExtensions)
+                });
+            } else if(!readOnly && !view.current.state.facet(EditorView.editable)) {
+                // console.log(">>>read only has been turned off, changing");
+                view.current.dispatch({
+                    effects: StateEffect.reconfigure.of(doenetExtensions)
+                });
+                if(editorConfig.matchTag){
+                    view.current.dispatch({
+                        effects: StateEffect.appendConfig.of(EditorState.transactionFilter.of(matchTag))
+                    });
+                }
+
+            }
+        }
+        //annoying that editorConfig is a dependency, but no real way around it
+    },[doenetExtensions,setInternalValue,matchTag,readOnly,editorConfig.matchTag])
+
     //TODO any updates would force an update of each part of the config.
     //Doesn't matter since there's only one toggle at the moment, but could cause unneccesary work later
     useEffect(() => {
-       if(editorConfig.matchTag){
-          view.current.dispatch({
-            effects: StateEffect.appendConfig.of(EditorState.transactionFilter.of(matchTag))
-        });
-       } else {
-        view.current.dispatch({
-            //this will also need to change when more options are added, as this paves all of the added extensions.
-            effects: StateEffect.reconfigure.of(doenetExtensions)
-          }); 
-       }
+        // console.log(">>>config update")
+        if(editorConfig.matchTag){
+            view.current.dispatch({
+                effects: StateEffect.appendConfig.of(EditorState.transactionFilter.of(matchTag))
+            });
+        } else {
+            view.current.dispatch({
+                //this will also need to change when more options are added, as this paves all of the added extensions.
+                effects: StateEffect.reconfigure.of(doenetExtensions)
+            }); 
+        }
     },[editorConfig,matchTag,doenetExtensions])
 
 
