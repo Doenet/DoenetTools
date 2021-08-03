@@ -68,6 +68,13 @@ export default class Copy extends CompositeComponent {
     attributes.link = {
       createPrimitiveOfType: "boolean",
     };
+
+    // Note: only implemented with no wrapping components
+    attributes.removeEmptyArrayEntries = {
+      createPrimitiveOfType: "boolean",
+      createStateVariable: "removeEmptyArrayEntries",
+      defaultValue: false,
+    }
     return attributes;
   }
 
@@ -713,7 +720,7 @@ export default class Copy extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "targetComponent",
         "replacementSourceIdentities", "effectivePropNameBySource",
-        "propName", "obtainPropFromComposite", "link"
+        "propName", "obtainPropFromComposite", "link", "removeEmptyArrayEntries"
       ],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
 
@@ -792,6 +799,15 @@ export default class Copy extends CompositeComponent {
             variableNames: ["isInactiveCompositeReplacement"],
           }
 
+        }
+
+        if (stateValues.removeEmptyArrayEntries) {
+          // if we are to remove empty array entries,
+          // then we have to recalculate whenever replacement sources change
+          dependencies.replacementSources = {
+            dependencyType: "stateVariable",
+            variableName: "replacementSources"
+          }
         }
 
         return dependencies;
@@ -1244,10 +1260,10 @@ export default class Copy extends CompositeComponent {
       return { serializedReplacements: [] }
     }
 
-
-    // if not linking, then replacementSources is resolved,
+    // if not linking or removing empty array entries,
+    // then replacementSources is resolved,
     // which we need for state variable value
-    if (component.stateValues.link === false) {
+    if (component.stateValues.link === false || component.stateValues.removeEmptyArrayEntries) {
       replacementSource = component.stateValues.replacementSources[sourceNum];
     }
 
@@ -1932,156 +1948,130 @@ export function replacementFromProp({ component, components,
       let flattenedArrayKeys = flattenDeep(unflattenedArrayKeys);
 
       for (let ind = 0; ind < numReplacementsForSource; ind++) {
+
+        let arrayKey = flattenedArrayKeys[ind];
+
+        if (component.stateValues.removeEmptyArrayEntries) {
+          // check if value of replacmentSource is undefined or null
+          // if so, skip
+
+          if (!arrayKey) {
+            // skip because didn't match array key
+            continue;
+          }
+
+          let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
+          if (!Array.isArray(arrayIndex)) {
+            arrayIndex = [arrayIndex]
+          }
+          let propStateValue = arrayStateVarObj.value;
+          for (let ind2 of arrayIndex) {
+            propStateValue = propStateValue[ind2];
+          }
+
+          if(propStateValue === undefined || propStateValue  === null) {
+            continue;
+          }
+
+        }
+
         replacementInd++;
         let propVariablesCopied = propVariablesCopiedByReplacement[replacementInd] = [];
 
         let componentType = arrayStateVarObj.componentType;
         if (Array.isArray(componentType)) {
           // TODO: multidimensional arrays?
-          if (stateVarObj.isArrayEntry) {
-            componentType = componentType[arrayStateVarObj.keyToIndex(stateVarObj.arrayKeys[ind])];
+
+          if (componentType[arrayStateVarObj.keyToIndex(arrayKey)]) {
+            componentType = componentType[arrayStateVarObj.keyToIndex(arrayKey)];
           } else {
-            componentType = componentType[ind];
+            // TODO: better way to handle no match?
+            componentType = componentType[0];
           }
+          // if (stateVarObj.isArrayEntry) {
+          //   componentType = componentType[arrayStateVarObj.keyToIndex(arrayKey)];
+          // } else {
+          //   componentType = componentType[ind];
+          // }
         }
 
-        let arrayKey = flattenedArrayKeys[ind];
 
         if (arrayKey) {
           let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
 
           propVariablesCopied.push(propVariable);
 
-          if (false) {//propVariableObj.containsComponentNamesToCopy) {
+          let uniqueIdentifierBase = replacementSource.componentName + "|shadow|" + propVariable;
+          let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-            let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-            let componentToCopy = components[componentNameToCopy];
+          let attributesFromComposite = convertAttributesForComponentType({
+            attributes: component.attributes,
+            componentType,
+            componentInfoObjects, compositeAttributesObj,
+            compositeCreatesNewNamespace: newNamespace
+          });
 
-            if (componentToCopy) {
-              while (componentToCopy.replacementOf
-                && componentToCopy.replacementOf.replacements.length === 1
-              ) {
-                componentToCopy = componentToCopy.replacementOf;
+          if (component.stateValues.link !== false) {
+            serializedReplacements.push({
+              componentType: componentType,
+              attributes: attributesFromComposite,
+              downstreamDependencies: {
+                [replacementSource.componentName]: [{
+                  dependencyType: "referenceShadow",
+                  compositeName: component.componentName,
+                  propVariable
+                }]
+              },
+              uniqueIdentifier,
+            })
+          } else {
+            let primaryStateVariableForDefinition = "value";
+            let componentClass = componentInfoObjects.allComponentClasses[componentType];
+            if (componentClass.primaryStateVariableForDefinition) {
+              primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+            }
+
+
+            let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
+            if (!Array.isArray(arrayIndex)) {
+              arrayIndex = [arrayIndex]
+            }
+            let propStateValue = arrayStateVarObj.value;
+            for (let ind2 of arrayIndex) {
+              propStateValue = propStateValue[ind2];
+            }
+
+            let serializedComponent = {
+              componentType: componentType,
+              attributes: attributesFromComposite,
+              state: {
+                [primaryStateVariableForDefinition]: propStateValue
+              },
+              uniqueIdentifier,
+            }
+
+
+            if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+              let additionalAttributes = {};
+              for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+                let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
+                additionalAttributes[attrName] = target.stateValues[varName];
               }
 
-              let stateForReplacementCopy;
-              if (arrayStateVarObj.targetAttributesToIgnoreOnCopy) {
-                stateForReplacementCopy = {
-                  targetAttributesToIgnore: arrayStateVarObj.targetAttributesToIgnoreOnCopy
-                }
-              }
-
-              let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
-              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-              serializedReplacements.push({
-                componentType: "copy",
-                children: [{
-                  componentType: "tname",
-                  state: { targetName: componentToCopy.componentName },
-                }],
-                state: stateForReplacementCopy,
-                uniqueIdentifier,
+              let attributesFromComponent = convertAttributesForComponentType({
+                attributes: additionalAttributes,
+                componentType,
+                componentInfoObjects
               });
 
-              propVariablesCopied.push(componentToCopy.componentName)
-
-            } else {
-              // just give an empty component of componentType
-
-              let uniqueIdentifierBase = componentType + "|empty";
-              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-              serializedReplacements.push({
-                componentType,
-                uniqueIdentifier,
-              })
-              propVariablesCopied.push(null)
+              Object.assign(serializedComponent.attributes, attributesFromComponent)
 
             }
 
-          } else {
-            let uniqueIdentifierBase = replacementSource.componentName + "|shadow|" + propVariable;
-            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+            serializedReplacements.push(serializedComponent);
 
-            let attributesFromComposite = convertAttributesForComponentType({
-              attributes: component.attributes,
-              componentType,
-              componentInfoObjects, compositeAttributesObj,
-              compositeCreatesNewNamespace: newNamespace
-            });
-
-            if (component.stateValues.link !== false) {
-              serializedReplacements.push({
-                componentType: componentType,
-                attributes: attributesFromComposite,
-                downstreamDependencies: {
-                  [replacementSource.componentName]: [{
-                    dependencyType: "referenceShadow",
-                    compositeName: component.componentName,
-                    propVariable
-                  }]
-                },
-                uniqueIdentifier,
-              })
-            } else {
-              let primaryStateVariableForDefinition = "value";
-              let componentClass = componentInfoObjects.allComponentClasses[componentType];
-              if (componentClass.primaryStateVariableForDefinition) {
-                primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
-              }
-
-
-              let propStateVariableInTarget = target.state[propVariable];
-              let propStateValue;
-              if (propStateVariableInTarget) {
-                propStateValue = target.stateValues[propVariable]
-              } else {
-                propStateVariableInTarget = {};
-                let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
-                if (!Array.isArray(arrayIndex)) {
-                  arrayIndex = [arrayIndex]
-                }
-                propStateValue = arrayStateVarObj.value;
-
-                for (let ind of arrayIndex) {
-                  propStateValue = propStateValue[ind];
-                }
-
-
-              }
-
-              let serializedComponent = {
-                componentType: componentType,
-                attributes: attributesFromComposite,
-                state: {
-                  [primaryStateVariableForDefinition]: propStateValue
-                },
-                uniqueIdentifier,
-              }
-
-
-              if (propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
-                let additionalAttributes = {};
-                for (let attrName in propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
-                  let varName = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes[attrName]
-                  additionalAttributes[attrName] = target.stateValues[varName];
-                }
-
-                let attributesFromComponent = convertAttributesForComponentType({
-                  attributes: additionalAttributes,
-                  componentType,
-                  componentInfoObjects
-                });
-
-                Object.assign(serializedComponent.attributes, attributesFromComponent)
-
-              }
-
-              serializedReplacements.push(serializedComponent);
-
-            }
           }
+
         } else {
           // didn't match an array key, so just add an empty component of componentType
           let uniqueIdentifierBase = componentType + "|empty";
@@ -2115,134 +2105,79 @@ export function replacementFromProp({ component, components,
             let propVariable = arrayStateVarObj.arrayVarNameFromArrayKey(arrayKey);
             let propVariablesCopiedForThisPiece = [propVariable];
 
-            if (false) {//propVariableObj.containsComponentNamesToCopy) {
+            let uniqueIdentifierBase = replacementSource.componentName + "|shadow|" + propVariable;
+            let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
 
-              let componentNameToCopy = arrayStateVarObj.getArrayValue({ arrayKey });
-              let componentToCopy = components[componentNameToCopy];
-
-              if (componentToCopy) {
-                while (componentToCopy.replacementOf
-                  && componentToCopy.replacementOf.replacements.length === 1
-                ) {
-                  componentToCopy = componentToCopy.replacementOf;
-                }
-
-                let stateForReplacementCopy;
-                if (arrayStateVarObj.targetAttributesToIgnoreOnCopy) {
-                  stateForReplacementCopy = {
-                    targetAttributesToIgnore: arrayStateVarObj.targetAttributesToIgnoreOnCopy
-                  }
-                }
+            let componentType = arrayStateVarObj.componentType;
+            if (Array.isArray(componentType)) {
+              // TODO: multidimensional arrays?
+              componentType = componentType[arrayStateVarObj.keyToIndex(arrayKey)];
+            }
 
 
-                let uniqueIdentifierBase = componentToCopy.componentName + "|copy";
-                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                pieces.push({
-                  componentType: "copy",
-                  children: [{
-                    componentType: "tname",
-                    state: { targetName: componentToCopy.componentName },
-                  }],
-                  state: stateForReplacementCopy,
-                  uniqueIdentifier
-                });
-                propVariablesCopiedForThisPiece.push(componentToCopy.componentName)
-
-              } else {
-                // just give an empty component of componentType
-                let uniqueIdentifierBase = arrayStateVarObj.componentType + "|empty";
-                let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-                pieces.push({
-                  componentType: arrayStateVarObj.componentType,
-                  uniqueIdentifier,
-                })
-                propVariablesCopiedForThisPiece.push(null)
-
-              }
-
+            if (component.stateValues.link !== false) {
+              pieces.push({
+                componentType,
+                downstreamDependencies: {
+                  [replacementSource.componentName]: [{
+                    dependencyType: "referenceShadow",
+                    compositeName: component.componentName,
+                    propVariable
+                  }]
+                },
+                uniqueIdentifier,
+              })
             } else {
 
-              let uniqueIdentifierBase = replacementSource.componentName + "|shadow|" + propVariable;
-              let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
-
-              let componentType = arrayStateVarObj.componentType;
-              if (Array.isArray(componentType)) {
-                // TODO: multidimensional arrays?
-                componentType = componentType[arrayStateVarObj.keyToIndex(arrayKey)];
+              let primaryStateVariableForDefinition = "value";
+              let componentClass = componentInfoObjects.allComponentClasses[componentType];
+              if (componentClass.primaryStateVariableForDefinition) {
+                primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
               }
 
 
-              if (component.stateValues.link !== false) {
-                pieces.push({
+              let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
+              if (!Array.isArray(arrayIndex)) {
+                arrayIndex = [arrayIndex]
+              }
+
+              let propStateValue = arrayStateVarObj.value;
+              for (let ind of arrayIndex) {
+                propStateValue = propStateValue[ind];
+              }
+
+
+              let serializedComponent = {
+                componentType: componentType,
+                state: {
+                  [primaryStateVariableForDefinition]: propStateValue
+                },
+                uniqueIdentifier,
+              }
+
+
+              if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+                let additionalAttributes = {};
+                for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
+                  let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName]
+                  additionalAttributes[attrName] = target.stateValues[varName];
+                }
+
+                let attributesFromComponent = convertAttributesForComponentType({
+                  attributes: additionalAttributes,
                   componentType,
-                  downstreamDependencies: {
-                    [replacementSource.componentName]: [{
-                      dependencyType: "referenceShadow",
-                      compositeName: component.componentName,
-                      propVariable
-                    }]
-                  },
-                  uniqueIdentifier,
-                })
-              } else {
+                  componentInfoObjects
+                });
 
-                let primaryStateVariableForDefinition = "value";
-                let componentClass = componentInfoObjects.allComponentClasses[componentType];
-                if (componentClass.primaryStateVariableForDefinition) {
-                  primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
-                }
-
-                let propStateVariableInTarget = target.state[propVariable];
-                let propStateValue;
-                if (propStateVariableInTarget) {
-                  propStateValue = target.stateValues[propVariable]
-                } else {
-                  propStateVariableInTarget = {};
-                  let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
-                  if (!Array.isArray(arrayIndex)) {
-                    arrayIndex = [arrayIndex]
-                  }
-                  propStateValue = arrayStateVarObj.value;
-
-                  for (let ind of arrayIndex) {
-                    propStateValue = propStateValue[ind];
-                  }
-
-                }
-
-                let serializedComponent = {
-                  componentType: componentType,
-                  state: {
-                    [primaryStateVariableForDefinition]: propStateValue
-                  },
-                  uniqueIdentifier,
-                }
-
-
-                if (propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
-                  let additionalAttributes = {};
-                  for (let attrName in propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
-                    let varName = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes[attrName]
-                    additionalAttributes[attrName] = target.stateValues[varName];
-                  }
-
-                  let attributesFromComponent = convertAttributesForComponentType({
-                    attributes: additionalAttributes,
-                    componentType,
-                    componentInfoObjects
-                  });
-
-                  serializedComponent.attributes, attributesFromComponent;
-
-                }
-
-                pieces.push(serializedComponent);
+                serializedComponent.attributes, attributesFromComponent;
 
               }
+
+              pieces.push(serializedComponent);
 
             }
+
+
 
             propVariablesCopiedByPiece.push(propVariablesCopiedForThisPiece);
           }

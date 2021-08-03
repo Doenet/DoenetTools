@@ -424,5 +424,8 @@ export default class BooleanComponent extends InlineComponent {
 
   }
 
+  static adapters = ["text"];
+
+
 }
 

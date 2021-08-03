@@ -135,9 +135,6 @@ export default class Function extends InlineComponent {
 
     let stringAndMacrosToFunctionAttribute = function ({ matchedChildren, isAttributeComponent = fase }) {
 
-      console.log(isAttributeComponent)
-      console.log(matchedChildren)
-
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
         child.componentType === "string" ||

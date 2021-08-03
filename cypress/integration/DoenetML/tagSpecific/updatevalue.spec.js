@@ -1388,5 +1388,25 @@ describe('UpdateValue Tag Tests', function () {
     });
   })
 
+  it('update value to blank string', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <text name="t">something</text>
+    <updatevalue name="toBlank" label="setToBlank" type="text" tname="t" newValue="" />
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/t').should('have.text', 'something')
+    cy.get('#\\/toBlank').click();
+    cy.get('#\\/t').should('have.text', '')
+
+
+  })
+
 
 });
