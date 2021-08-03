@@ -210,7 +210,7 @@ export default class Core {
       core: this,
     });
 
-    this.unsatisfiedChildLogic = {};
+    this.unmatchedChildren = {};
 
 
     // console.timeEnd('serialize doenetML');
@@ -536,7 +536,7 @@ export default class Core {
         let currentChildNames = [];
         let unproxiedComponent = this._components[componentName];
         if (unproxiedComponent && unproxiedComponent.constructor.renderChildren) {
-          if (!unproxiedComponent.childLogicSatisfied) {
+          if (!unproxiedComponent.childrenMatched) {
             this.deriveChildResultsFromDefiningChildren({
               parent: unproxiedComponent, expandComposites: true, forceExpandComposites: true,
             });
@@ -677,7 +677,7 @@ export default class Core {
       return;
     }
 
-    if (!component.childLogicSatisfied) {
+    if (!component.childrenMatched) {
       this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, //forceExpandComposites: true,
       });
@@ -837,7 +837,7 @@ export default class Core {
 
     let parentsWithCompositesNotReady = [];
 
-    if (!component.childLogicSatisfied) {
+    if (!component.childrenMatched) {
       this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, forceExpandComposites,
       });
@@ -876,7 +876,7 @@ export default class Core {
 
     let componentNames = [component.componentName];
     if (component.constructor.renderChildren) {
-      if (!component.childLogicSatisfied) {
+      if (!component.childrenMatched) {
         this.deriveChildResultsFromDefiningChildren({
           parent: component, expandComposites: true, //forceExpandComposites: true,
         });
@@ -1202,16 +1202,6 @@ export default class Core {
     }
 
 
-    let childLogic = componentClass.returnChildLogic({
-      componentInfoObjects: this.componentInfoObjects,
-      components: this.components,
-    });
-
-    if (childLogic === undefined || typeof childLogic.applyLogic !== "function") {
-      throw Error("Invalid component class " + componentClass.componentType +
-        ": returnChildLogic must return a childLogic object")
-    }
-
     let attributes = {};
 
     if (serializedComponent.attributes) {
@@ -1258,10 +1248,8 @@ export default class Core {
     }
 
     let stateVariableDefinitions = this.createStateVariableDefinitions({
-      childLogic,
       componentClass,
       prescribedDependencies,
-      componentName,
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
@@ -1276,7 +1264,6 @@ export default class Core {
       componentName,
       ancestors,
       definingChildren,
-      childLogic,
       stateVariableDefinitions,
       serializedChildren: childrenToRemainSerialized,
       serializedComponent,
@@ -1500,17 +1487,17 @@ export default class Core {
     }
 
 
-    let childLogicResults = this.matchChildrenToChildLogic({
-      parent,
-      applyAdapters: true,
-    });
+    let childGroupResults = this.matchChildrenToChildGroups(parent);
 
-
-    if (childLogicResults.success) {
-      delete this.unsatisfiedChildLogic[parent.componentName]
+    if (childGroupResults.success) {
+      delete this.unmatchedChildren[parent.componentName];
+      parent.childrenMatchedWithPlaceholders = true;
     } else {
-      this.unsatisfiedChildLogic[parent.componentName] = {
-        message: parent.childLogic.logicResult.message
+      parent.childrenMatchedWithPlaceholders = false;
+      let unmatchedChildrenTypes = childGroupResults.unmatchedChildren
+        .map(x => x.componentType).join(', ')
+      this.unmatchedChildren[parent.componentName] = {
+        message: `unmatched children of type(s): ${unmatchedChildrenTypes}`
       }
     }
 
@@ -1525,12 +1512,12 @@ export default class Core {
       this.componentsWithChangedChildrenToRender.add(parent.componentName);
     }
 
-    return childLogicResults;
+    return childGroupResults;
 
   }
 
   expandCompositeOfDefiningChildren(parent, children, expandComposites, forceExpandComposites) {
-    // if composite is not directly matched by any childLogic leaf
+    // if composite is not directly matched by any childGroup
     // then replace the composite with its replacements,
     // expanding it if not already expanded
 
@@ -1548,7 +1535,7 @@ export default class Core {
         // if composite itself is in the child logic
         // then don't replace it with its replacements
         // but leave the composite as an activeChild
-        if (parent.childLogic.checkIfChildInLogic(child)) {
+        if (this.findChildGroup(child.componentType, parent.constructor).success) {
           continue;
         }
 
@@ -1607,45 +1594,192 @@ export default class Core {
 
   }
 
-  matchChildrenToChildLogic({ parent, applyAdapters = true }) {
+  matchChildrenToChildGroups(parent) {
 
-    // determine maximum number of adapters on any child
-    let maxNumAdapters = 0;
-    if (applyAdapters === true) {
-      for (let child of parent.activeChildren) {
-        let n;
-        if (child.componentName) {
-          n = child.constructor.nAdapters
-        } else {
-          n = this.allComponentClasses[child.componentType].nAdapters
-        }
-        if (n > maxNumAdapters) {
-          maxNumAdapters = n;
-        }
-      }
+    parent.childMatchesByGroup = {};
+
+    for (let groupName in parent.constructor.childGroupIndsByName) {
+      parent.childMatchesByGroup[groupName] = [];
     }
 
-    let numAdaptersUsed = 0;
+    let success = true;
 
-    let success = false;
+    let unmatchedChildren = [];
 
-    for (; numAdaptersUsed <= maxNumAdapters; numAdaptersUsed++) {
+    for (let [ind, child] of parent.activeChildren.entries()) {
 
-      let newResult = parent.childLogic.applyLogic({
-        activeChildren: parent.activeChildren,
-        maxAdapterNumber: numAdaptersUsed,
-      });
+      let result = this.findChildGroup(child.componentType, parent.constructor)
 
-      if (newResult.success) {
-        success = true;
-        this.substituteAdapters(parent);
-        break;
+      if (result.success) {
+
+        parent.childMatchesByGroup[result.group].push(ind);
+
+        if (result.adapterIndUsed !== undefined) {
+          this.substituteAdapter({
+            parent,
+            childInd: ind,
+            adapterIndUsed: result.adapterIndUsed
+          })
+        }
+
+      } else {
+        success = false;
+        unmatchedChildren.push(child)
       }
+
     }
 
-    return { success };
+    return { success, unmatchedChildren };
 
   }
+
+
+  findChildGroup(childType, parentClass) {
+
+    let result = this.findChildGroupNoAdapters(
+      childType, parentClass
+    )
+
+    if (result.success) {
+      return result;
+    }
+
+    // check if can match with adapters
+    let childClass = this.allComponentClasses[childType];
+
+    // if didn't match child, attempt to match with child's adapters
+    let nAdapters = childClass.nAdapters;
+
+    for (let n = 0; n < nAdapters; n++) {
+      let adapterComponentType = childClass
+        .getAdapterComponentType(n, this.publicStateVariableInfo)
+
+      result = this.findChildGroupNoAdapters(
+        adapterComponentType, parentClass
+      )
+
+      if (result.success) {
+        result.adapterIndUsed = n;
+        return result;
+      }
+
+    }
+
+    return { success: false }
+
+  }
+
+  findChildGroupNoAdapters(componentType, parentClass) {
+    if (parentClass.childGroupOfComponentType[componentType]) {
+      return {
+        success: true,
+        group: parentClass.childGroupOfComponentType[componentType]
+      }
+    }
+
+    for (let group of parentClass.childGroups) {
+      for (let typeFromGroup of group.componentTypes) {
+        if (this.componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: componentType,
+          baseComponentType: typeFromGroup
+        })) {
+          // don't match composites to the base component
+          // so that they will expand
+          if (!(typeFromGroup === "_base" &&
+            this.componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: componentType,
+              baseComponentType: "_composite"
+            }))) {
+
+            parentClass.childGroupOfComponentType[componentType] = group.group;
+
+            return {
+              success: true,
+              group: group.group
+            }
+          }
+
+        }
+      }
+
+    }
+
+    return { success: false }
+  }
+
+  substituteAdapter({ parent, childInd, adapterIndUsed }) {
+
+    // replace activeChildren with their adapters
+
+    let originalChild = parent.activeChildren[childInd];
+
+    let newSerializedChild;
+    if (originalChild.componentName) {
+      newSerializedChild = originalChild.getAdapter(adapterIndUsed);
+    } else {
+      // child isn't a component, just an object with a componentType
+      // Create an object that is just the componentType of the adapter
+      newSerializedChild = {
+        componentType:
+          this.allComponentClasses[originalChild.componentType]
+            .getAdapterComponentType(n, this.publicStateVariableInfo)
+      }
+    }
+
+    let adapter = originalChild.adapterUsed;
+
+    if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
+      if (originalChild.componentName) {
+        let namespaceForUnamed;
+        if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+          namespaceForUnamed = parent.componentName + "/";
+        } else {
+          namespaceForUnamed = getNamespaceFromName(parent.componentName);
+        }
+
+        newSerializedChild.adaptedFrom = originalChild.componentName;
+        let newChildrenResult = this.createIsolatedComponentsSub({
+          serializedComponents: [newSerializedChild],
+          shadow: true,
+          ancestors: originalChild.ancestors,
+          createNameContext: originalChild.componentName + "|adapter",
+          namespaceForUnamed,
+        });
+
+        adapter = newChildrenResult.components[0];
+      } else {
+        // didn't have a component for the original child, just a componentType
+        // Adapter will also just be the componentType returned from childmatches
+        newSerializedChild.adaptedFrom = originalChild;
+        adapter = newSerializedChild;
+      }
+
+    }
+
+    // Replace originalChild with its adapter in activeChildren
+    parent.activeChildren.splice(childInd, 1, adapter);
+
+    // Update allChildren to show that originalChild is no longer active
+    // and that adapter is now an active child
+    if (originalChild.componentName) {
+      // ignore placeholder active children
+      delete parent.allChildren[originalChild.componentName].activeChildrenIndex;
+      parent.allChildren[adapter.componentName] = {
+        activeChildrenIndex: childInd,
+        component: adapter,
+      }
+    }
+
+    // find index of originalChild in allChildrenOrdered
+    // and place adapter immediately afterward
+    if (originalChild.componentName) {
+      let originalInd = parent.allChildrenOrdered.indexOf(originalChild.componentName)
+      parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
+    }
+
+
+  }
+
 
   expandCompositeComponent(component) {
 
@@ -1891,7 +2025,7 @@ export default class Core {
   }
 
   replaceCompositeChildren(parent) {
-    // if composite is not directly matched by any childLogic leaf
+    // if composite is not directly matched by any childGroup
     // then replace the composite with its replacements,
     // expanding it if not already expanded
 
@@ -1908,7 +2042,7 @@ export default class Core {
         // if composite itself is in the child logic
         // then don't replace it with its replacements
         // but leave the composite as an activeChild
-        if (parent.childLogic.checkIfChildInLogic(child)) {
+        if (this.findChildGroup(child.componentType, parent.constructor).success) {
           continue;
         }
 
@@ -2054,71 +2188,6 @@ export default class Core {
     }
   }
 
-  substituteAdapters(component) {
-
-    // replace activeChildren with their adapters
-    let adapterResults = component.childLogic.logicResult.adapterResults;
-    for (let childNum in adapterResults) {
-
-      let originalChild = component.activeChildren[childNum];
-
-      let newSerializedChild = adapterResults[childNum];
-      let adapter = originalChild.adapterUsed;
-
-      if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
-        if (originalChild.componentName) {
-          let namespaceForUnamed;
-          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
-            namespaceForUnamed = component.componentName + "/";
-          } else {
-            namespaceForUnamed = getNamespaceFromName(component.componentName);
-          }
-
-          newSerializedChild.adaptedFrom = originalChild.componentName;
-          let newChildrenResult = this.createIsolatedComponentsSub({
-            serializedComponents: [newSerializedChild],
-            shadow: true,
-            ancestors: originalChild.ancestors,
-            createNameContext: originalChild.componentName + "|adapter",
-            namespaceForUnamed,
-          });
-
-          adapter = newChildrenResult.components[0];
-        } else {
-          // didn't have a component for the original child, just a componentType
-          // Adapter will also just be the componentType returned from childLogic
-          newSerializedChild.adaptedFrom = originalChild;
-          adapter = newSerializedChild;
-        }
-
-      }
-
-      // Replace originalChild with its adapter in activeChildren
-      component.activeChildren.splice(childNum, 1, adapter);
-
-      // Update allChildren to show that originalChild is no longer active
-      // and that adapter is now an active child
-      if (originalChild.componentName) {
-        // ignore placeholder active children
-        delete component.allChildren[originalChild.componentName].activeChildrenIndex;
-        component.allChildren[adapter.componentName] = {
-          activeChildrenIndex: Number(childNum),  // childNum is string since was defined via in
-          component: adapter,
-        }
-      }
-
-      // find index of originalChild in allChildrenOrdered
-      // and place adapter immediately afterward
-      if (originalChild.componentName) {
-        let originalInd = component.allChildrenOrdered.indexOf(originalChild.componentName)
-        component.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
-      }
-
-    }
-
-
-  }
-
   findShadowedChildInSerializedComponents({ serializedComponents, shadowedComponentName }) {
     for (let serializedComponent of serializedComponents) {
       if (serializedComponent.originalName === shadowedComponentName) {
@@ -2138,8 +2207,8 @@ export default class Core {
     return;
   }
 
-  createStateVariableDefinitions({ childLogic, componentClass,
-    prescribedDependencies, componentName
+  createStateVariableDefinitions({ componentClass,
+    prescribedDependencies
   }) {
 
     let redefineDependencies;
@@ -2194,7 +2263,7 @@ export default class Core {
 
       if (redefineDependencies.linkSource === "adapter") {
         this.createAdapterStateVariableDefinitions({
-          redefineDependencies, childLogic, stateVariableDefinitions, componentClass
+          redefineDependencies, stateVariableDefinitions, componentClass
         });
       } else {
         this.createReferenceShadowStateVariableDefinitions({
@@ -2232,9 +2301,6 @@ export default class Core {
         if (stateVarDef.componentType === undefined) {
           if (attributeFromPrimitive) {
             stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
-            if (stateVarDef.componentType === "string") {
-              stateVarDef.componentType = "text";
-            }
           } else {
             stateVarDef.componentType = attributeSpecification.createComponentOfType;
           }
@@ -2489,7 +2555,7 @@ export default class Core {
     }
   }
 
-  createAdapterStateVariableDefinitions({ redefineDependencies, childLogic, stateVariableDefinitions, componentClass }) {
+  createAdapterStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass }) {
 
     // attributes depend on adapterTarget (if attribute exists in adapterTarget)
     let adapterTargetComponent = this._components[redefineDependencies.adapterTargetIdentity.componentName];
@@ -3004,7 +3070,7 @@ export default class Core {
         let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
         if (!stateDef) {
           if (redefineDependencies.substituteForPrimaryStateVariable) {
-            throw Error(`Invalid public state variable of componentType ${componentClass.componentType}: substitueForPrimaryStateVariable ${redefineDependencies.substituteForPrimaryStateVariable} does not exist`)
+            throw Error(`Invalid public state variable of componentType ${componentClass.componentType}: substituteForPrimaryStateVariable ${redefineDependencies.substituteForPrimaryStateVariable} does not exist`)
           } else {
             throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
           }
@@ -6589,7 +6655,7 @@ export default class Core {
       this.updateInfo.deletedStateVariables[component.componentName].push(...Object.keys(component.state))
 
       this.updateInfo.deletedComponents[component.componentName] = true;
-      delete this.unsatisfiedChildLogic[component.componentName];
+      delete this.unmatchedChildren[component.componentName];
 
       delete this.stateVariableChangeTriggers[component.componentName];
 
@@ -7847,11 +7913,11 @@ export default class Core {
 
     this.finishUpdate();
 
-    if (Object.keys(this.unsatisfiedChildLogic).length > 0) {
+    if (Object.keys(this.unmatchedChildren).length > 0) {
       let childLogicMessage = "";
-      for (let componentName in this.unsatisfiedChildLogic) {
+      for (let componentName in this.unmatchedChildren) {
         if (!this._components[componentName].isShadow) {
-          childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+          childLogicMessage += `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message} `;
         }
       }
       if (childLogicMessage) {

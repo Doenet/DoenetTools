@@ -1,5 +1,4 @@
 import TextComponent from './Text';
-import TextFromSingleStringChild from './abstract/TextFromSingleStringChild';
 import TextOrInline from './abstract/TextOrInline';
 import Group from './Group';
 import Template from './Template';
@@ -15,16 +14,6 @@ export class Columns extends TextComponent {
 export class Title extends TextOrInline {
   static componentType = "title";
   static rendererType = "textOrInline";
-}
-
-export class VariantName extends TextFromSingleStringChild {
-  static componentType = "variantName";
-  static rendererType = "text";
-}
-
-export class Seed extends TextFromSingleStringChild {
-  static componentType = "seed";
-  static rendererType = "text";
 }
 
 export class RightHandSide extends MathComponent {

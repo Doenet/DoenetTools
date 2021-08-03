@@ -11,63 +11,15 @@ export class M extends InlineComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "latex";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    let atLeastZeroMathLists = childLogic.newLeaf({
-      name: "atLeastZeroMathLists",
-      componentType: 'mathList',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "stringsTextsAndMaths",
+      componentTypes: ["string", "text", "math", "mathList", "m", "mathInput"]
+    }]
 
-    let atLeastZeroMs = childLogic.newLeaf({
-      name: "atLeastZeroMs",
-      componentType: 'm',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atLeastZeroMathInputs = childLogic.newLeaf({
-      name: "atLeastZeroMathInputs",
-      componentType: 'mathInput',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    childLogic.newOperator({
-      name: "stringsTextsAndMaths",
-      operator: 'and',
-      propositions: [
-        atLeastZeroStrings,
-        atLeastZeroTexts,
-        atLeastZeroMaths,
-        atLeastZeroMathLists,
-        atLeastZeroMs,
-        atLeastZeroMathInputs
-      ],
-      requireConsecutive: true,
-      setAsBase: true,
-    });
-    return childLogic;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -80,7 +32,7 @@ export class M extends InlineComponent {
       returnDependencies: () => ({
         stringTextMathChildren: {
           dependencyType: "child",
-          childLogicName: "stringsTextsAndMaths",
+          childGroups: ["stringsTextsAndMaths"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },
@@ -116,7 +68,7 @@ export class M extends InlineComponent {
       returnDependencies: () => ({
         stringTextMathChildren: {
           dependencyType: "child",
-          childLogicName: "stringsTextsAndMaths",
+          childGroups: ["stringsTextsAndMaths"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },

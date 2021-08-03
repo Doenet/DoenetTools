@@ -56,31 +56,17 @@ export default class BooleanList extends InlineComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroBooleans = childLogic.newLeaf({
-      name: "atLeastZeroBooleans",
-      componentType: 'boolean',
-      comparison: 'atLeast',
-      number: 0
-    });
+  static returnChildGroups() {
 
-    let atLeastZeroBooleanLists = childLogic.newLeaf({
-      name: "atLeastZeroBooleanLists",
-      componentType: 'booleanList',
-      comparison: 'atLeast',
-      number: 0
-    });
+    return [{
+      group: "booleans",
+      componentTypes: ["boolean"]
+    }, {
+      group: "booleanLists",
+      componentTypes: ["booleanList"]
+    }]
 
-    childLogic.newOperator({
-      name: "booleanAndBooleanLists",
-      operator: "and",
-      propositions: [atLeastZeroBooleans, atLeastZeroBooleanLists],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -109,12 +95,12 @@ export default class BooleanList extends InlineComponent {
           },
           booleanListChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroBooleanLists",
+            childGroups: ["booleanLists"],
             variableNames: ["nComponents"],
           },
           booleanAndBooleanListChildren: {
             dependencyType: "child",
-            childLogicName: "booleanAndBooleanLists",
+            childGroups: ["booleans", "booleanLists"],
             skipComponentNames: true,
           },
         }
@@ -191,7 +177,7 @@ export default class BooleanList extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             booleanAndBooleanListChildren: {
               dependencyType: "child",
-              childLogicName: "booleanAndBooleanLists",
+              childGroups: ["booleans", "booleanLists"],
               variableNames: ["value", "boolean" + booleanIndex],
               variablesOptional: true,
               childIndices,

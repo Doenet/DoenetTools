@@ -12,7 +12,7 @@ export default class Cell extends BaseComponent {
   static primaryStateVariableForDefinition = "text";
 
   static get stateVariablesShadowedForReference() {
-    return ["halign", "bottom", "right",]
+    return ["halign", "bottom", "right"]
   };
 
   static createAttributesObject(args) {
@@ -55,31 +55,17 @@ export default class Cell extends BaseComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneMath = childLogic.newLeaf({
-      name: "exactlyOneMath",
-      componentType: "math",
-      number: 1,
-    });
+  static returnChildGroups() {
 
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    let anything = childLogic.newLeaf({
-      name: 'anything',
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "mathXorAnything",
-      operator: "xor",
-      propositions: [exactlyOneMath, anything],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -219,12 +205,17 @@ export default class Cell extends BaseComponent {
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneMath"
+          childGroups: ["maths"],
+        },
+        otherChildren: {
+          dependencyType: "child",
+          childGroups: ["anything"],
         },
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          onlyMathChild: dependencyValues.mathChild.length === 1
+          onlyMathChild: dependencyValues.mathChild.length === 1 &&
+            dependencyValues.otherChildren.length === 0
         }
       })
     }
@@ -236,7 +227,7 @@ export default class Cell extends BaseComponent {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childLogicName: "mathXorAnything",
+          childGroups: ["maths", "anything"],
           variableNames: ["text"],
           variablesOptional: true,
         },
@@ -305,7 +296,7 @@ export default class Cell extends BaseComponent {
           return {
             mathChild: {
               dependencyType: "child",
-              childLogicName: "exactlyOneMath",
+              childGroups: ["maths"],
               variableNames: ["value"],
             },
           }

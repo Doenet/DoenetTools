@@ -46,19 +46,15 @@ export default class VectorListComponent extends BaseComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroVectors",
-      componentType: 'vector',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "vectors",
+      componentTypes: ["vector"]
+    }]
 
-    return childLogic;
   }
+
 
 
   static returnStateVariableDefinitions() {
@@ -69,7 +65,7 @@ export default class VectorListComponent extends BaseComponent {
       returnDependencies: () => ({
         vectorChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroVectors",
+          childGroups: ["vectors"],
           skipComponentNames: true,
         }
       }),
@@ -79,12 +75,12 @@ export default class VectorListComponent extends BaseComponent {
       })
     }
 
-    
+
     stateVariableDefinitions.nDimensions = {
       returnDependencies: () => ({
         vectorChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroVectors",
+          childGroups: ["vectors"],
           variableNames: ["nDimensions"],
           skipPlaceholders: true,
         }
@@ -172,7 +168,7 @@ export default class VectorListComponent extends BaseComponent {
           dependenciesByKey[arrayKey] = {
             vectorChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroVectors",
+              childGroups: ["vectors"],
               variableNames: ["x" + (Number(dim) + 1)],
               childIndices: [vectorInd],
             }

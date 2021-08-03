@@ -24,6 +24,7 @@ export default class MathComponent extends InlineComponent {
       createStateVariable: "format",
       defaultValue: "text",
       public: true,
+      toLowerCase: true,
       validValues: ["text", "latex"]
     };
     // let simplify="" or simplify="true" be full simplify
@@ -113,29 +114,16 @@ export default class MathComponent extends InlineComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'and',
-      propositions: [atLeastZeroStrings, atLeastZeroMaths],
-      requireConsecutive: true,
-      setAsBase: true,
-    });
-    return childLogic;
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "strings",
+      componentTypes: ["string"]
+    }]
+
   }
 
   static returnStateVariableDefinitions() {
@@ -169,7 +157,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
           variableNames: ["value"],
         },
       }),
@@ -182,7 +170,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
-          childLogicName: "stringsAndMaths",
+          childGroups: ["strings", "maths"],
           variableNames: ["value"],
         },
         format: {
@@ -231,7 +219,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
           variableNames: ["value", "canBeModified"],
         },
       }),
@@ -244,12 +232,12 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
           variableNames: ["value"],
         },
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
           variableNames: ["value"],
         },
         expressionWithCodes: {
@@ -508,7 +496,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
-          childLogicName: "stringsAndMaths",
+          childGroups: ["strings", "maths"],
         },
         codePre: {
           dependencyType: "stateVariable",
@@ -530,7 +518,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         mathChildrenModifiable: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
           variableNames: ["canBeModified"],
         },
         expressionWithCodes: {
@@ -561,7 +549,7 @@ export default class MathComponent extends InlineComponent {
         },
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
         },
         expressionWithCodes: {
           dependencyType: "stateVariable",

@@ -3,20 +3,14 @@ import CompositeComponent from './abstract/CompositeComponent';
 export default class Setup extends CompositeComponent {
   static componentType = "setup";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: 'anything',
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
-
 
   static returnStateVariableDefinitions() {
 

@@ -5,18 +5,13 @@ import { applyConstraintFromComponentConstraints } from '../utils/constraints';
 export default class ConstraintUnion extends ConstraintComponent {
   static componentType = "constraintUnion";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastOneConstraint",
-      componentType: '_constraint',
-      comparison: 'atLeast',
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "constraints",
+      componentTypes: ["_constraint"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -27,7 +22,7 @@ export default class ConstraintUnion extends ConstraintComponent {
       returnDependencies: () => ({
         constraintChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneConstraint",
+          childGroups: ["constraints"],
           variableNames: ["applyConstraint", "applyComponentConstraint"],
           variablesOptional: true,
         },

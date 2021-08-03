@@ -6,7 +6,6 @@ describe('Boolean Tag Tests', function () {
 
   })
 
-
   it('basic boolean evaluation', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -113,7 +112,6 @@ describe('Boolean Tag Tests', function () {
 
   })
 
-
   it('boolean based on math', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -138,7 +136,6 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/_text1').should('contain.text', 'Hello there!')
 
   })
-
 
   it('boolean from computation', () => {
     cy.window().then((win) => {
@@ -262,6 +259,86 @@ describe('Boolean Tag Tests', function () {
 
 
   })
+
+  it('boolean adapts to text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="bi" />
+    <p><text name="t">You are hungry. $bi</text></p>
+    <p>Are you sure? <textinput bindvalueto="$bi" name="ti" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("false{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/ti_input').clear().type("tRuE{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("0{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("1=0{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("f{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("FALSE{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/ti_input').clear().type("1{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/ti_input').clear().type("t{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+  })
+
+  it('boolean does not adapt while number adapts', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b1"><number>3</number> != 1 and <boolean>true</boolean></boolean>
+    <boolean name="b2"><number>3</number> != 1 and <boolean>true</boolean> and <number>4</number> = <math>4</math></boolean>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/b1').should('have.text', "true")
+    cy.get('#\\/b2').should('have.text', "true")
+
+  })
+
 
 })
 

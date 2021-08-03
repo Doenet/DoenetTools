@@ -6,18 +6,14 @@ export default class Footnote extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "inlines",
+      componentTypes: ["_inline"]
+    }]
+
   }
 
 
@@ -32,7 +28,7 @@ export default class Footnote extends InlineComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroInline",
+          childGroups: ["inlines"],
           variableNames: ["text"],
           variablesOptional: true,
         }

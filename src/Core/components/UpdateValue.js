@@ -24,8 +24,12 @@ export default class UpdateValue extends InlineComponent {
 
     attributes.type = {
       createPrimitiveOfType: "string",
-      defaultValue: "math"
+      createStateVariable: "type",
+      defaultPrimitiveValue: "math",
+      toLowerCase: true,
+      validValues: ["math", "number", "boolean", "text"]
     }
+
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
@@ -72,26 +76,6 @@ export default class UpdateValue extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.type = {
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "attributePrimitive",
-          attributeName: "type",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.type) {
-          let type = dependencyValues.type.toLowerCase()
-          if (["math", "number", "boolean", "text"].includes(type)) {
-            return { newValues: { type } };
-          } else {
-            console.warn(`Invalid type ${dependencyValues.type} for an updateValue.  Defaulting to math.`)
-          }
-        }
-        return { newValues: { type: "math" } };
-      }
-    };
 
     stateVariableDefinitions.tName = {
       returnDependencies: () => ({

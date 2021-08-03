@@ -126,18 +126,13 @@ export default class Graph extends BlockComponent {
   // }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroGraphical",
-      componentType: '_graphical',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "graphical",
+      componentTypes: ["_graphical"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
