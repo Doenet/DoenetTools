@@ -19,33 +19,13 @@ export default class Solution extends BlockComponent {
     }
     return attributes;
   }
+  static returnChildGroups() {
 
+    return [{
+      group: "inlinesBlocks",
+      componentTypes: ["_inline", "_block"]
+    }]
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: 'inlineAndBlock',
-      operator: "and",
-      propositions: [atLeastZeroInline, atLeastZeroBlock],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 

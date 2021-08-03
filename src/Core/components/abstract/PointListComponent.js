@@ -44,18 +44,13 @@ export default class PointListComponent extends BaseComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroPoints",
-      componentType: 'point',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "points",
+      componentTypes: ["point"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -68,7 +63,7 @@ export default class PointListComponent extends BaseComponent {
       returnDependencies: () => ({
         pointChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroPoints",
+          childGroups: ["points"],
           skipComponentNames: true,
         }
       }),
@@ -85,7 +80,7 @@ export default class PointListComponent extends BaseComponent {
       returnDependencies: () => ({
         pointChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroPoints",
+          childGroups: ["points"],
           variableNames: ["nDimensions"],
           skipPlaceholders: true,
         }
@@ -172,7 +167,7 @@ export default class PointListComponent extends BaseComponent {
           dependenciesByKey[arrayKey] = {
             pointChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroPoints",
+              childGroups: ["points"],
               variableNames: ["x" + (Number(dim) + 1)],
               childIndices: [pointInd],
             }
@@ -201,7 +196,7 @@ export default class PointListComponent extends BaseComponent {
 
         // console.log("result")
         // console.log(JSON.parse(JSON.stringify(points)));
-        
+
         return { newValues: { points } }
 
       },

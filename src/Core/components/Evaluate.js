@@ -52,12 +52,11 @@ export default class Evaluate extends MathComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.deleteAllLogic();
+  static returnChildGroups() {
 
-    return childLogic;
+    return []
+
   }
 
   static returnStateVariableDefinitions() {

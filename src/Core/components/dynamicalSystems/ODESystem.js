@@ -102,20 +102,12 @@ export default class ODESystem extends InlineComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.deleteAllLogic();
-
-    childLogic.newLeaf({
-      name: 'atLeastZeroRHSs',
-      componentType: 'rightHandSide',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-
-    return childLogic;
+    return [{
+      group: "rightHandSides",
+      componentTypes: ["rightHandSide"]
+    }]
 
   }
 
@@ -144,7 +136,7 @@ export default class ODESystem extends InlineComponent {
       returnDependencies: () => ({
         rhsChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroRHSs",
+          childGroups: ["rightHandSides"],
           skipComponentNames: true,
         }
       }),
@@ -240,7 +232,7 @@ export default class ODESystem extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             rhsChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroRHSs",
+              childGroups: ["rightHandSides"],
               variableNames: ["value"],
               childIndices: [arrayKey]
             }

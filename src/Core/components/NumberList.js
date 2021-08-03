@@ -58,34 +58,17 @@ export default class NumberList extends InlineComponent {
 
   }
 
+  static returnChildGroups() {
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    return [{
+      group: "numbers",
+      componentTypes: ["number"]
+    }, {
+      group: "numberLists",
+      componentTypes: ["numberList"]
+    }]
 
-    let atLeastZeroNumbers = childLogic.newLeaf({
-      name: "atLeastZeroNumbers",
-      componentType: 'number',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroNumberLists = childLogic.newLeaf({
-      name: "atLeastZeroNumberLists",
-      componentType: 'numberList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "numberAndNumberLists",
-      operator: "and",
-      propositions: [atLeastZeroNumbers, atLeastZeroNumberLists],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
-
 
 
   static returnStateVariableDefinitions() {
@@ -111,12 +94,12 @@ export default class NumberList extends InlineComponent {
         },
         numberListChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroNumberLists",
+          childGroups: ["numberLists"],
           variableNames: ["nComponents"],
         },
         numberAndNumberListChildren: {
           dependencyType: "child",
-          childLogicName: "numberAndNumberLists",
+          childGroups: ["numbers", "numberLists"],
           skipComponentNames: true,
         },
       }),
@@ -193,7 +176,7 @@ export default class NumberList extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             numberAndNumberListChildren: {
               dependencyType: "child",
-              childLogicName: "numberAndNumberLists",
+              childGroups: ["numbers", "numberLists"],
               variableNames: ["value", "number" + numberIndex],
               variablesOptional: true,
               childIndices,
@@ -289,7 +272,7 @@ export default class NumberList extends InlineComponent {
       returnDependencies: () => ({
         numberAndNumberListChildren: {
           dependencyType: "child",
-          childLogicName: "numberAndNumberLists",
+          childGroups: ["numbers", "numberLists"],
           variableNames: ["valueForDisplay", "text", "texts"],
           variablesOptional: true,
         },

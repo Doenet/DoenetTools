@@ -78,33 +78,17 @@ export default class MathList extends InlineComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0
-    });
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "mathLists",
+      componentTypes: ["mathList"]
+    }]
 
-    let atLeastZeroMathLists = childLogic.newLeaf({
-      name: "atLeastZeroMathLists",
-      componentType: 'mathList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "mathAndMathLists",
-      operator: "and",
-      propositions: [atLeastZeroMaths, atLeastZeroMathLists],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
-
 
   static returnStateVariableDefinitions() {
 
@@ -154,19 +138,19 @@ export default class MathList extends InlineComponent {
         if (stateValues.mergeMathLists) {
           dependencies.mathAndMathListChildren = {
             dependencyType: "child",
-            childLogicName: "mathAndMathLists",
+            childGroups: ["maths", "mathLists"],
             variableNames: ["value", "nComponents"],
             variablesOptional: true,
           };
         } else {
           dependencies.mathListChildren = {
             dependencyType: "child",
-            childLogicName: "atLeastZeroMathLists",
+            childGroups: ["mathLists"],
             variableNames: ["nComponents"],
           };
           dependencies.mathAndMathListChildren = {
             dependencyType: "child",
-            childLogicName: "mathAndMathLists",
+            childGroups: ["maths", "mathLists"],
             skipComponentNames: true,
           };
 
@@ -290,7 +274,7 @@ export default class MathList extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             mathAndMathListChildren: {
               dependencyType: "child",
-              childLogicName: "mathAndMathLists",
+              childGroups: ["maths", "mathLists"],
               variableNames: ["value", "math" + mathIndex],
               variablesOptional: true,
               childIndices,
@@ -402,7 +386,7 @@ export default class MathList extends InlineComponent {
       returnDependencies: () => ({
         mathAndMathListChildren: {
           dependencyType: "child",
-          childLogicName: "mathAndMathLists",
+          childGroups: ["maths", "mathLists"],
           variableNames: ["valueForDisplay", "latex", "latexs"],
           variablesOptional: true,
         },
@@ -467,7 +451,7 @@ export default class MathList extends InlineComponent {
       returnDependencies: () => ({
         mathAndMathListChildren: {
           dependencyType: "child",
-          childLogicName: "mathAndMathLists",
+          childGroups: ["maths", "mathLists"],
           variableNames: ["valueForDisplay", "text", "texts"],
           variablesOptional: true,
         },

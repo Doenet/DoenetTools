@@ -52,31 +52,16 @@ export default class ConditionalContent extends CompositeComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroCases = childLogic.newLeaf({
-      name: "atLeastZeroCases",
-      componentType: 'case',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "cases",
+      componentTypes: ["case"]
+    }, {
+      group: "elses",
+      componentTypes: ["else"]
+    }]
 
-    let atMostOneElse = childLogic.newLeaf({
-      name: "atMostOneElse",
-      componentType: 'else',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "casesAndElse",
-      operator: "and",
-      propositions: [atLeastZeroCases, atMostOneElse],
-      setAsBase: true
-    });
-
-    return childLogic;
   }
 
 
@@ -109,7 +94,7 @@ export default class ConditionalContent extends CompositeComponent {
       returnDependencies: () => ({
         caseChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroCases",
+          childGroups: ["cases"],
         },
       }),
       definition({ dependencyValues }) {
@@ -126,12 +111,12 @@ export default class ConditionalContent extends CompositeComponent {
       returnDependencies: () => ({
         elseChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneElse"
+          childGroups: ["elses"],
         },
       }),
       definition({ dependencyValues }) {
         let elseChild = null;
-        if (dependencyValues.elseChild.length === 1) {
+        if (dependencyValues.elseChild.length > 0) {
           elseChild = dependencyValues.elseChild[0]
         }
         return { newValues: { elseChild } };
@@ -159,7 +144,7 @@ export default class ConditionalContent extends CompositeComponent {
       returnDependencies: () => ({
         caseChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroCases",
+          childGroups: ["cases"],
           variableNames: ["conditionSatisfied"]
         },
         elseChild: {
@@ -254,12 +239,12 @@ export default class ConditionalContent extends CompositeComponent {
         let selectedChildName, childComponentType, newNameForSelectedChild;
         if (selectedIndex < component.stateValues.nCases) {
           selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
-          newNameForSelectedChild = createUniqueName("case", `${component.componentName}|replacement|${selectedIndex}` )
+          newNameForSelectedChild = createUniqueName("case", `${component.componentName}|replacement|${selectedIndex}`)
           childComponentType = "case";
 
         } else {
           selectedChildName = component.stateValues.elseChild.componentName;
-          newNameForSelectedChild = createUniqueName("else", `${component.componentName}|replacement|${selectedIndex}` )
+          newNameForSelectedChild = createUniqueName("else", `${component.componentName}|replacement|${selectedIndex}`)
           childComponentType = "else";
         }
         // use state, not stateValues, as read only proxy messes up internal

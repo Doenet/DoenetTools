@@ -6,44 +6,16 @@ export default class Hint extends BlockComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atMostOneTitle = childLogic.newLeaf({
-      name: "atMostOneTitle",
-      componentType: "title",
-      comparison: "atMost",
-      number: 1,
-    })
+    return [{
+      group: "titles",
+      componentTypes: ["title"]
+    }, {
+      group: "inlinesBlocks",
+      componentTypes: ["_inline", "_block"]
+    }]
 
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let inlineOrBlock = childLogic.newOperator({
-      name: 'inlineOrBlock',
-      operator: "or",
-      propositions: [atLeastZeroInline, atLeastZeroBlock],
-    })
-
-    childLogic.newOperator({
-      name: "titleAndContent",
-      operator: "and",
-      propositions: [atMostOneTitle, inlineOrBlock],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -104,13 +76,13 @@ export default class Hint extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
         },
       }),
       definition({ dependencyValues }) {
         return {
           newValues: {
-            titleDefinedByChildren: dependencyValues.titleChild.length === 1
+            titleDefinedByChildren: dependencyValues.titleChild.length > 0
           }
         }
       }
@@ -123,7 +95,7 @@ export default class Hint extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
           variableNames: ["text"],
         },
       }),

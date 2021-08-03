@@ -127,18 +127,13 @@ export class Extremum extends BaseComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atMostOnePoint",
-      componentType: "point",
-      comparison: "atMost",
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "points",
+      componentTypes: ["point"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -161,7 +156,7 @@ export class Extremum extends BaseComponent {
       returnDependencies: () => ({
         extremumChild: {
           dependencyType: "child",
-          childLogicName: "atMostOnePoint",
+          childGroups: ["points"],
           variableNames: ["nDimensions", "xs"]
         },
         location: {
@@ -178,7 +173,7 @@ export class Extremum extends BaseComponent {
       definition: function ({ dependencyValues }) {
         let location, value;
 
-        if (dependencyValues.extremumChild.length === 1) {
+        if (dependencyValues.extremumChild.length > 0) {
           let extremumChild = dependencyValues.extremumChild[0];
           if (extremumChild.stateValues.nDimensions !== 2) {
             console.log("Cannot determine " + componentClass.componentType + " from a point that isn't 2D");
@@ -290,31 +285,16 @@ export class Extrema extends BaseComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroExtrema = childLogic.newLeaf({
-      name: "atLeastZeroExtrema",
-      componentType: this.componentTypeSingular,
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "extrema",
+      componentTypes: [this.componentTypeSingular]
+    }, {
+      group: "points",
+      componentTypes: ["point"]
+    }]
 
-    let atLeastZeroPoints = childLogic.newLeaf({
-      name: "atLeastZeroPoints",
-      componentType: "point",
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "extremaAndPoints",
-      operator: "and",
-      propositions: [atLeastZeroExtrema, atLeastZeroPoints],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -329,7 +309,7 @@ export class Extrema extends BaseComponent {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childLogicName: "extremaAndPoints",
+          childGroups: ["extrema", "points"],
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -430,7 +410,7 @@ export class Extrema extends BaseComponent {
           dependenciesByKey[arrayKey] = {
             child: {
               dependencyType: "child",
-              childLogicName: "extremaAndPoints",
+              childGroups: ["extrema", "points"],
               variableNames: [varName],
               childIndices: [extremumInd],
             }

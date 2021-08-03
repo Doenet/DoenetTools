@@ -55,39 +55,19 @@ export default class SectioningComponent extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atMostOneVariantControl = childLogic.newLeaf({
-      name: "atMostOneVariantControl",
-      componentType: "variantControl",
-      comparison: "atMost",
-      number: 1,
-      allowSpillover: false,
-    })
+    return [{
+      group: "variantControls",
+      componentTypes: ["variantControl"]
+    }, {
+      group: "titles",
+      componentTypes: ["title"]
+    }, {
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    let atMostOneTitle = childLogic.newLeaf({
-      name: "atMostOneTitle",
-      componentType: "title",
-      comparison: "atMost",
-      number: 1,
-    })
-
-    let anything = childLogic.newLeaf({
-      name: 'anything',
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "variantTitleAndAnything",
-      operator: "and",
-      propositions: [atMostOneVariantControl, atMostOneTitle, anything],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -133,12 +113,12 @@ export default class SectioningComponent extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
         },
       }),
       definition({ dependencyValues }) {
         let titleChildName = null;
-        if (dependencyValues.titleChild.length === 1) {
+        if (dependencyValues.titleChild.length > 0) {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
@@ -154,7 +134,7 @@ export default class SectioningComponent extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
           variableNames: ["text"],
         },
         sectionName: {
@@ -378,7 +358,7 @@ export default class SectioningComponent extends BlockComponent {
           totalWeight += weight;
         }
         let creditAchieved;
-        if(totalWeight > 0) {
+        if (totalWeight > 0) {
           creditAchieved = creditSum / totalWeight;
         } else {
           // give full credit if there are no scored items
@@ -470,7 +450,7 @@ export default class SectioningComponent extends BlockComponent {
       returnDependencies: ({ componentInfoObjects }) => ({
         variantControlChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneVariantControl",
+          childGroups: ["variantControls"],
           variableNames: ["selectedVariantIndex", "selectedVariantName"]
         },
         variantDescendants: {

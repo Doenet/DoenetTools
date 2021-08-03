@@ -1,11 +1,11 @@
 import { normalizeIndex } from '../utils/table';
-import BaseComponent from './abstract/BaseComponent';
+import BlockComponent from './abstract/BlockComponent';
 import { textToAst } from '../utils/math';
 import me from 'math-expressions';
 import { HyperFormula } from 'hyperformula';
 
 
-export default class Spreadsheet extends BaseComponent {
+export default class Spreadsheet extends BlockComponent {
   static componentType = "spreadsheet";
 
   // used when referencing this component without prop
@@ -72,45 +72,23 @@ export default class Spreadsheet extends BaseComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let zeroOrMoreCells = childLogic.newLeaf({
-      name: "zeroOrMoreCells",
-      componentType: 'cell',
-      comparison: 'atLeast',
-      number: 0,
-    });
+  static returnChildGroups() {
 
-    let zeroOrMoreRows = childLogic.newLeaf({
-      name: "zeroOrMoreRows",
-      componentType: 'row',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "cells",
+      componentTypes: ["cell"]
+    }, {
+      group: "rows",
+      componentTypes: ["row"]
+    }, {
+      group: "columns",
+      componentTypes: ["column"]
+    }, {
+      group: "cellBlocks",
+      componentTypes: ["cellBlock"]
+    }]
 
-    let zeroOrMoreColumns = childLogic.newLeaf({
-      name: "zeroOrMoreColumns",
-      componentType: 'column',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let zeroOrMoreCellblocks = childLogic.newLeaf({
-      name: "zeroOrMoreCellblocks",
-      componentType: 'cellBlock',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "cellsRowsColumnsBlocks",
-      operator: 'and',
-      propositions: [zeroOrMoreCells, zeroOrMoreRows, zeroOrMoreColumns, zeroOrMoreCellblocks],
-      setAsBase: true,
-    });
-
-    return childLogic;
   }
 
 
@@ -123,7 +101,7 @@ export default class Spreadsheet extends BaseComponent {
       returnDependencies: () => ({
         cellRelatedChildren: {
           dependencyType: "child",
-          childLogicName: "cellsRowsColumnsBlocks",
+          childGroups: ["cells", "rows", "columns", "cellBlocks"],
           variableNames: [
             "rowNum",
             "colNum",
@@ -231,9 +209,9 @@ export default class Spreadsheet extends BaseComponent {
           // Do we want to cap default at a maximum?
           let height;
           if (Number.isFinite(dependencyValues.numRows) && dependencyValues.numRows >= 0) {
-            height = 50 + dependencyValues.numRows * 20;
+            height = 40 + dependencyValues.numRows * 23;
           } else {
-            height = 130;  // value if numRows = 4
+            height = 132;  // value if numRows = 4
           }
           return { newValues: { height: { size: height, isAbsolute: true } } }
         }
@@ -341,7 +319,7 @@ export default class Spreadsheet extends BaseComponent {
 
           let arrayKeys = [];
           let arrayKeyEnd = "," + String(colIndex);
-          for (let i = 0; i < arraySize[1]; i++) {
+          for (let i = 0; i < arraySize[0]; i++) {
             arrayKeys.push(i + arrayKeyEnd);
           }
 
@@ -461,9 +439,10 @@ export default class Spreadsheet extends BaseComponent {
               desiredValue: desiredStateVariableValues.cells[arrayKey]
             })
           } else {
+            let cellText = desiredStateVariableValues.cells[arrayKey];
             instructions.push({
               setStateVariable: "cells",
-              value: { [arrayKey]: desiredStateVariableValues.cells[arrayKey] }
+              value: { [arrayKey]: cellText === null ? "" : String(cellText) }
             })
           }
 
@@ -549,9 +528,12 @@ export default class Spreadsheet extends BaseComponent {
       // }
     }
 
-    stateVariableDefinitions.pointsByCell = {
+    stateVariableDefinitions.pointsInCells = {
       isArray: true,
       nDimensions: 2,
+      public: true,
+      componentType: "point",
+      entryPrefixes: ["pointsInCell", "pointsInRow", "pointsInColumn", "pointsInRange"],
       returnArraySizeDependencies: () => ({
         numRows: {
           dependencyType: "stateVariable",
@@ -565,7 +547,130 @@ export default class Spreadsheet extends BaseComponent {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.numRows, dependencyValues.numColumns];
       },
+      returnEntryDimensions: prefix => prefix === "pointsInRange" ? 2 : 1,
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "pointsInCell") {
+          // accept two formats: pointsInCellB1 or pointsInCell(1,2)
+          // (accept letters in second format: (A, 2), (1, B), or (A,B))
 
+          let rowNum, colNum;
+
+          let letterNumStyle = /^([a-zA-Z]+)([1-9]\d*)$/;
+          let result = varEnding.match(letterNumStyle);
+          if (result) {
+            colNum = result[1];
+            rowNum = result[2]
+          } else {
+            let tupleStyle = /^\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\)$/;
+            result = varEnding.match(tupleStyle);
+            if (result) {
+              rowNum = result[1];
+              colNum = result[2];
+            } else {
+              return []; // invalid
+            }
+          }
+
+          let rowIndex = normalizeIndex(rowNum);
+          let colIndex = normalizeIndex(colNum);
+
+          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          return [String(rowIndex) + "," + String(colIndex)]
+
+        } else if (arrayEntryPrefix === "pointsInRow") {
+          // pointsInRow2 or pointsInRowB
+
+          let rowIndex = normalizeIndex(varEnding);
+          if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          let arrayKeys = [];
+          let arrayKeyBegin = String(rowIndex) + ",";
+          for (let i = 0; i < arraySize[1]; i++) {
+            arrayKeys.push(arrayKeyBegin + i);
+          }
+
+          return arrayKeys;
+
+        } else if (arrayEntryPrefix === "pointsInColumn") {
+          // pointsInColumn2 or pointsInColumnB
+
+          let colIndex = normalizeIndex(varEnding);
+          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          let arrayKeys = [];
+          let arrayKeyEnd = "," + String(colIndex);
+          for (let i = 0; i < arraySize[0]; i++) {
+            arrayKeys.push(i + arrayKeyEnd);
+          }
+
+          return arrayKeys;
+
+        } else {
+          // pointsInRange
+          // accept two formats: pointsInRangeB1D5 or pointsInRange((1,2),(5,4))
+
+          let fromRow, fromCol, toRow, toCol;
+
+          let letterNumStyle = /^([a-zA-Z]+)([1-9]\d*)([a-zA-Z]+)([1-9]\d*)$/;
+          let result = varEnding.match(letterNumStyle);
+          if (result) {
+            fromCol = normalizeIndex(result[1]);
+            fromRow = normalizeIndex(result[2]);
+            toCol = normalizeIndex(result[3]);
+            toRow = normalizeIndex(result[4]);
+          } else {
+            let tupleStyle = /^\(\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\),\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\)\)$/;
+            result = varEnding.match(tupleStyle);
+            if (result) {
+              fromRow = normalizeIndex(result[1]);
+              fromCol = normalizeIndex(result[2]);
+              toRow = normalizeIndex(result[3]);
+              toCol = normalizeIndex(result[4]);
+            } else {
+              return [];  //invalid
+            }
+          }
+
+
+          if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
+            // invalid range
+            return [];
+          }
+
+          let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
+          let row2 = Math.min(Math.max(fromRow, toRow), arraySize[0] - 1);
+          let col1 = Math.min(Math.min(fromCol, toCol), arraySize[1] - 1);
+          let col2 = Math.min(Math.max(fromCol, toCol), arraySize[1] - 1);
+
+          let arrayKeys = [];
+
+          for (let rowIndex = row1; rowIndex <= row2; rowIndex++) {
+            let rowKeys = [];
+            let arrayKeyBegin = String(rowIndex) + ",";
+            for (let colIndex = col1; colIndex <= col2; colIndex++) {
+              rowKeys.push(arrayKeyBegin + colIndex);
+            }
+            arrayKeys.push(rowKeys);
+          }
+
+          return arrayKeys;
+
+        }
+
+      },
+      arrayVarNameFromArrayKey(arrayKey) {
+        return "pointsInCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
+      },
       returnArrayDependenciesByKey({ arrayKeys }) {
         let dependenciesByKey = {};
 
@@ -583,44 +688,44 @@ export default class Spreadsheet extends BaseComponent {
       },
       arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
 
-        let pointsByCell = {};
+        let pointsInCells = {};
 
         for (let arrayKey of arrayKeys) {
           let cellText = dependencyValuesByKey[arrayKey].cellText;
           if (!cellText) {
-            pointsByCell[arrayKey] = null;
+            pointsInCells[arrayKey] = null;
             continue;
           }
           let cellME;
           try {
             cellME = me.fromAst(textToAst.convert(cellText));
           } catch (e) {
-            pointsByCell[arrayKey] = null;
+            pointsInCells[arrayKey] = null;
             continue;
           }
 
           if (Array.isArray(cellME.tree) && (
             cellME.tree[0] === "tuple" || cellME.tree[0] === "vector"
           )) {
-            pointsByCell[arrayKey] = cellME;
+            pointsInCells[arrayKey] = cellME;
           } else {
-            pointsByCell[arrayKey] = null;
+            pointsInCells[arrayKey] = null;
           }
         }
 
-        return { newValues: { pointsByCell } }
+        return { newValues: { pointsInCells } }
 
       },
       // inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyNamesByKey }) {
-      //   // console.log(`inverse definition by key of pointsByCell`)
+      //   // console.log(`inverse definition by key of pointsInCells`)
       //   // console.log(desiredStateVariableValues);
 
       //   let instructions = [];
 
-      //   for (let arrayKey in desiredStateVariableValues.pointsByCell) {
+      //   for (let arrayKey in desiredStateVariableValues.pointsInCells) {
       //     instructions.push({
       //       setDependency: dependencyNamesByKey[arrayKey].cellText,
-      //       desiredValue: desiredStateVariableValues.pointsByCell[arrayKey].toString()
+      //       desiredValue: desiredStateVariableValues.pointsInCells[arrayKey].toString()
       //     })
       //   }
 
@@ -632,138 +737,6 @@ export default class Spreadsheet extends BaseComponent {
       // }
 
     }
-
-    stateVariableDefinitions.cellIndicesOfPoints = {
-      additionalStateVariablesDefined: [{
-        variableName: "nPointsExtracted",
-        componentType: "integer"
-      }],
-      stateVariablesDeterminingDependencies: ["numRows", "numColumns"],
-      returnDependencies({ stateValues }) {
-
-        let dependencies = {
-          numRows: {
-            dependencyType: "stateVariable",
-            variableName: "numRows",
-          },
-          numColumns: {
-            dependencyType: "stateVariable",
-            variableName: "numColumns",
-          },
-        };
-        for (let ind1 = 0; ind1 < stateValues.numRows; ind1++) {
-          for (let ind2 = 0; ind2 < stateValues.numColumns; ind2++) {
-            dependencies[`pointsByCell${ind1}_${ind2}`] = {
-              dependencyType: "stateVariable",
-              variableName: `pointsByCell${ind1 + 1}_${ind2 + 1}`
-            }
-
-          }
-        }
-        return dependencies;
-      },
-      definition({ dependencyValues }) {
-        let cellIndicesOfPoints = [];
-        let nPointsExtracted = 0;
-        for (let ind1 = 0; ind1 < dependencyValues.numRows; ind1++) {
-          for (let ind2 = 0; ind2 < dependencyValues.numColumns; ind2++) {
-            if (dependencyValues[`pointsByCell${ind1}_${ind2}`]) {
-              cellIndicesOfPoints.push([ind1, ind2]);
-              nPointsExtracted++;
-            }
-          }
-        }
-
-        return { newValues: { cellIndicesOfPoints, nPointsExtracted } }
-      },
-      // inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
-      //   console.log(desiredStateVariableValues)
-      //   let n = 0;
-      //   let instructions = [];
-      //   for (let ind1 = 0; ind1 < dependencyValues.numRows; ind1++) {
-      //     for (let ind2 = 0; ind2 < dependencyValues.numColumns; ind2++) {
-      //       let p = dependencyValues[`pointsByCell${ind1}_${ind2}`];
-      //       if (p) {
-      //         instructions.push({
-      //           setDependency: `pointsByCell${ind1}_${ind2}`,
-      //           desiredValue: desiredStateVariableValues.allPoints[n]
-      //         })
-      //         n++;
-      //       }
-      //     }
-      //   }
-      //   return {
-      //     success: true,
-      //     instructions
-      //   }
-      // }
-    }
-
-
-    stateVariableDefinitions.extractedPoints = {
-      public: true,
-      componentType: "point",
-      isArray: true,
-      entryPrefixes: ["extractedPoint"],
-      stateVariablesDeterminingDependencies: ["cellIndicesOfPoints"],
-      returnArraySizeDependencies: () => ({
-        nPointsExtracted: {
-          dependencyType: "stateVariable",
-          variableName: "nPointsExtracted",
-        },
-      }),
-      returnArraySize({ dependencyValues }) {
-        return [dependencyValues.nPointsExtracted];
-      },
-      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
-
-        let dependenciesByKey = {};
-
-        for (let arrayKey of arrayKeys) {
-          let [ind1, ind2] = stateValues.cellIndicesOfPoints[arrayKey]
-          dependenciesByKey[arrayKey] = {
-            cellPoint: {
-              dependencyType: "stateVariable",
-              variableName: `pointsByCell${ind1 + 1}_${ind2 + 1}`
-            }
-          }
-        }
-
-
-        return { dependenciesByKey }
-      },
-      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
-
-        let extractedPoints = {};
-
-        for (let arrayKey of arrayKeys) {
-          extractedPoints[arrayKey] = dependencyValuesByKey[arrayKey].cellPoint;
-        }
-
-        return { newValues: { extractedPoints } }
-
-      },
-      inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyNamesByKey }) {
-        // console.log(`inverse definition by key of extractedPoints`)
-        // console.log(desiredStateVariableValues);
-
-        let instructions = [];
-
-        for (let arrayKey in desiredStateVariableValues.extractedPoints) {
-          instructions.push({
-            setDependency: dependencyNamesByKey[arrayKey].cellPoint,
-            desiredValue: desiredStateVariableValues.extractedPoints[arrayKey]
-          })
-        }
-
-        return {
-          success: true,
-          instructions
-        }
-
-      }
-    }
-
 
     return stateVariableDefinitions;
 

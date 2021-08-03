@@ -14,7 +14,10 @@ export default class Substitute extends CompositeComponent {
 
     attributes.type = {
       createPrimitiveOfType: "string",
-      defaultValue: "math"
+      createStateVariable: "type",
+      defaultPrimitiveValue: "math",
+      toLowerCase: true,
+      validValues: ["math", "text"]
     }
 
     attributes.match = {
@@ -96,18 +99,13 @@ export default class Substitute extends CompositeComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: 'atMostOneChild',
-      componentType: "_base",
-      comparison: 'atMost',
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -115,37 +113,17 @@ export default class Substitute extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.type = {
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "attributePrimitive",
-          attributeName: "type",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.type) {
-          let type = dependencyValues.type.toLowerCase()
-          if (["math", "text"].includes(type)) {
-            return { newValues: { type } };
-          } else {
-            console.warn(`Invalid type ${dependencyValues.type} for a substitute.  Defaulting to math.`)
-          }
-        }
-        return { newValues: { type: "math" } };
-      }
-    };
-
 
     stateVariableDefinitions.originalValue = {
       returnDependencies: () => ({
         child: {
           dependencyType: "child",
-          childLogicName: "atMostOneChild",
+          childGroups: ["anything"],
           variableNames: ["value"]
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.child.length === 1) {
+        if (dependencyValues.child.length > 0) {
           return { newValues: { originalValue: dependencyValues.child[0].stateValues.value } }
         } else {
           return { newValues: { originalValue: null } }

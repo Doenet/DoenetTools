@@ -45,20 +45,6 @@ export default class ConstrainToGrid extends ConstraintComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-
-    childLogic.newLeaf({
-      name: "atMostOneString",
-      componentType: 'string',
-      comparison: 'atMost',
-      number: 1,
-      setAsBase: true,
-    });
-
-    return childLogic;
-  }
-
 
   static returnStateVariableDefinitions() {
 

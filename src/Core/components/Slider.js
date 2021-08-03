@@ -19,7 +19,11 @@ export default class Slider extends BaseComponent {
     let attributes = super.createAttributesObject(args);
     attributes.type = {
       createPrimitiveOfType: "string",
-      defaultValue: "number"
+      createStateVariable: "type",
+      defaultValue: "number",
+      toLowerCase: true,
+      validValues: ["number", "text"],
+      forRenderer: true,
     };
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -115,72 +119,23 @@ export default class Slider extends BaseComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroNumbers = childLogic.newLeaf({
-      name: "atLeastZeroNumbers",
-      componentType: 'number',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0,
-    });
+  static returnChildGroups() {
 
+    return [{
+      group: "numbersTexts",
+      componentTypes: ["number", "text"]
+    }, {
+      group: "markers",
+      componentTypes: ["markers"]
+    }]
 
-    let numbersAndTexts = childLogic.newOperator({
-      name: "numbersAndTexts",
-      operator: 'and',
-      propositions: [atLeastZeroTexts, atLeastZeroNumbers],
-    });
-
-    let atMostOneMarkers = childLogic.newLeaf({
-      name: "atMostOneMarkers",
-      componentType: 'markers',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "SliderLogic",
-      operator: 'and',
-      propositions: [numbersAndTexts, atMostOneMarkers],
-      setAsBase: true,
-    });
-
-
-    return childLogic;
   }
 
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.type = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "attributePrimitive",
-          attributeName: "type",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.type) {
-          let type = dependencyValues.type.toLowerCase()
-          if (["number", "text"].includes(type)) {
-            return { newValues: { type } };
-          } else {
-            console.warn(`Invalid type ${dependencyValues.type} of a slider.  Defaulting to number.`)
-          }
-        }
-        return { newValues: { type: "number" } };
-      },
-    };
 
     stateVariableDefinitions.items = {
       forRenderer: true,
@@ -192,7 +147,7 @@ export default class Slider extends BaseComponent {
       returnDependencies: () => ({
         numberAndTextChildren: {
           dependencyType: "child",
-          childLogicName: "numbersAndTexts",
+          childGroups: ["numbersTexts"],
           variableNames: ["value"]
         },
         type: {
@@ -592,7 +547,7 @@ export default class Slider extends BaseComponent {
       returnDependencies: () => ({
         markersChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneMarkers",
+          childGroups: ["markers"],
           variableNames: ["markerType", "markers"]
         },
         type: {
@@ -607,7 +562,7 @@ export default class Slider extends BaseComponent {
       definition: function ({ dependencyValues }) {
         let markers = [];
 
-        if (dependencyValues.markersChild.length === 1) {
+        if (dependencyValues.markersChild.length > 0) {
 
           let markerType = dependencyValues.markersChild[0].stateValues.markerType;
 

@@ -7,18 +7,13 @@ export default class Intersection extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroLines",
-      componentType: 'line',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "lines",
+      componentTypes: ["line"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -30,7 +25,7 @@ export default class Intersection extends CompositeComponent {
       returnDependencies: () => ({
         lineChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroLines",
+          childGroups: ["lines"],
           variableNames: [
             "numericalCoeff0",
             "numericalCoeffvar1",

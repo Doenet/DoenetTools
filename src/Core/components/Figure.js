@@ -23,38 +23,16 @@ export default class Figure extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atMostOneCaption = childLogic.newLeaf({
-      name: "atMostOneCaption",
-      componentType: "caption",
-      comparison: "atMost",
-      number: 1,
-    })
+    return [{
+      group: "captions",
+      componentTypes: ["caption"]
+    }, {
+      group: "inlinesBlocks",
+      componentTypes: ["_inline", "_block"]
+    }]
 
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
-      componentType: "_block",
-      comparison: "atLeast",
-      number: 0,
-    })
-
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: "_inline",
-      comparison: "atLeast",
-      number: 0,
-    })
-
-    childLogic.newOperator({
-      name: "captionAndBlockInline",
-      operator: "and",
-      propositions: [atMostOneCaption, atLeastZeroBlock, atLeastZeroInline],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -101,12 +79,12 @@ export default class Figure extends BlockComponent {
       returnDependencies: () => ({
         captionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneCaption",
+          childGroups: ["captions"],
         },
       }),
       definition({ dependencyValues }) {
         let captionChildName = null;
-        if (dependencyValues.captionChild.length === 1) {
+        if (dependencyValues.captionChild.length > 0) {
           captionChildName = dependencyValues.captionChild[0].componentName
         }
         return {
@@ -123,7 +101,7 @@ export default class Figure extends BlockComponent {
       returnDependencies: () => ({
         captionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneCaption",
+          childGroups: ["captions"],
           variableNames: ["text"],
         },
       }),
@@ -131,7 +109,7 @@ export default class Figure extends BlockComponent {
 
         let caption = null;
 
-        if (dependencyValues.captionChild.length === 1) {
+        if (dependencyValues.captionChild.length > 0) {
           caption = dependencyValues.captionChild[0].stateValues.text;
         }
         return { newValues: { caption } }

@@ -44,19 +44,13 @@ export default class LineListComponent extends BaseComponent {
 
   }
 
- 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroLines",
-      componentType: 'line',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "lines",
+      componentTypes: ["line"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -69,7 +63,7 @@ export default class LineListComponent extends BaseComponent {
       returnDependencies: () => ({
         lineChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroLines",
+          childGroups: ["lines"],
           skipComponentNames: true,
         }
       }),
@@ -100,7 +94,7 @@ export default class LineListComponent extends BaseComponent {
           dependenciesByKey[arrayKey] = {
             lineChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroLines",
+              childGroups: ["lines"],
               childIndices: [arrayKey],
             }
           }

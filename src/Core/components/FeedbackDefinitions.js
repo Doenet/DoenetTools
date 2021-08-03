@@ -64,33 +64,15 @@ export class FeedbackDefinitions extends BaseComponent {
   static componentType = "feedbackDefinitions";
   static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-
-    let atLeastZeroFeedbackDefinitions = childLogic.newLeaf({
-      name: "atLeastZeroFeedbackDefinitions",
-      componentType: 'feedbackDefinition',
-      comparison: "atLeast",
-      number: 0,
-    });
-
-
-    let atMostOneFeedbackDefinitions = childLogic.newLeaf({
-      name: "atMostOneFeedbackDefinitions",
-      componentType: 'feedbackDefinitions',
-      comparison: "atMost",
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "feedbackDefinitionsXorFeedbackDefinition",
-      operator: "xor",
-      propositions: [atLeastZeroFeedbackDefinitions, atMostOneFeedbackDefinitions],
-      setAsBase: true
-    })
-
-    return childLogic
+    return [{
+      group: "feedbackDefinition",
+      componentTypes: ["feedbackDefinition"]
+    }, {
+      group: "feedbackDefinitions",
+      componentTypes: ["feedbackDefinitions"]
+    }]
 
   }
 
@@ -103,17 +85,17 @@ export class FeedbackDefinitions extends BaseComponent {
       returnDependencies: () => ({
         feedbackDefinitionChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroFeedbackDefinitions",
+          childGroups: ["feedbackDefinition"]
         },
         feedbackDefinitionsChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFeedbackDefinitions",
+          childGroups: ["feedbackDefinitions"],
           variableNames: ["nDefinitions"]
         },
       }),
       definition({ dependencyValues }) {
         let nDefinitions;
-        if (dependencyValues.feedbackDefinitionsChild.length === 1) {
+        if (dependencyValues.feedbackDefinitionsChild.length > 0) {
           nDefinitions = dependencyValues.feedbackDefinitionsChild[0].stateValues.nDefinitions;
         } else {
           nDefinitions = dependencyValues.feedbackDefinitionChildren.length;
@@ -143,13 +125,13 @@ export class FeedbackDefinitions extends BaseComponent {
           dependenciesByKey[arrayKey] = {
             feedbackDefinitionChild: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroFeedbackDefinitions",
+              childGroups: ["feedbackDefinition"],
               variableNames: ["value"],
               childIndices: [arrayKey]
             },
             feedbackDefinitionsChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneFeedbackDefinitions",
+              childGroups: ["feedbackDefinitions"],
               variableNames: ["feedbackDefinition" + (Number(arrayKey) + 1)],
             }
           };
@@ -162,11 +144,11 @@ export class FeedbackDefinitions extends BaseComponent {
 
         for (let arrayKey of arrayKeys) {
           let feedbackDefinitionChild = dependencyValuesByKey[arrayKey].feedbackDefinitionChild;
-          if (feedbackDefinitionChild.length === 1) {
+          if (feedbackDefinitionChild.length > 0) {
             value[arrayKey] = feedbackDefinitionChild[0].stateValues.value;
           } else {
             let feedbackDefinitionsChild = dependencyValuesByKey[arrayKey].feedbackDefinitionsChild;
-            if (feedbackDefinitionsChild.length === 1) {
+            if (feedbackDefinitionsChild.length > 0) {
               value[arrayKey] = feedbackDefinitionsChild[0].stateValues["feedbackDefinition" + (Number(arrayKey) + 1)]
             }
 

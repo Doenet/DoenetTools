@@ -61,31 +61,16 @@ export default class TextList extends InlineComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0
-    });
+    return [{
+      group: "texts",
+      componentTypes: ["text"]
+    }, {
+      group: "textLists",
+      componentTypes: ["textList"]
+    }]
 
-    let atLeastZeroTextLists = childLogic.newLeaf({
-      name: "atLeastZeroTextLists",
-      componentType: 'textList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "textAndTextLists",
-      operator: "and",
-      propositions: [atLeastZeroTexts, atLeastZeroTextLists],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -113,12 +98,12 @@ export default class TextList extends InlineComponent {
           },
           textListChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroTextLists",
+            childGroups: ["textLists"],
             variableNames: ["nComponents"],
           },
           textAndTextListChildren: {
             dependencyType: "child",
-            childLogicName: "textAndTextLists",
+            childGroups: ["texts", "textLists"],
             skipComponentNames: true,
           },
         }
@@ -195,7 +180,7 @@ export default class TextList extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             textAndTextListChildren: {
               dependencyType: "child",
-              childLogicName: "textAndTextLists",
+              childGroups: ["texts", "textLists"],
               variableNames: ["value", "text" + textIndex],
               variablesOptional: true,
               childIndices,

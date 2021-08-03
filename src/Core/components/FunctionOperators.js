@@ -214,7 +214,7 @@ export class Derivative extends FunctionBaseOperator {
 
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunctionForOperator",
+          childGroups: ["functions"],
           variableNames: ["returnNumericalDerivatives"],
           variablesOptional: true,
         },

@@ -12,7 +12,7 @@ describe('Spreadsheet Tag Tests', function () {
     } else {
       cy.get(`#${id} .handsontableInput`).type(`${text}{enter}`, { force: true });
     }
-    if(verify) {
+    if (verify) {
       cy.get(`#${id} tbody > :nth-child(${row}) > :nth-child(${column + 1})`).should('have.text', text)
     }
   }
@@ -1057,9 +1057,26 @@ describe('Spreadsheet Tag Tests', function () {
   <cell>5</cell>
   </spreadsheet>
   
-  <graph>
-    <copy prop="extractedPoints" tname="_spreadsheet1" />
+  <graph name="inAllCells">
+    <copy prop="pointsInCells" tname="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
+
+  <graph name="inCellB3">
+    <copy prop="pointsInCellB3" tname="_spreadsheet1" removeEmptyArrayEntries />
+  </graph>
+
+  <graph name="inRow2">
+    <copy prop="pointsInRow2" tname="_spreadsheet1" removeEmptyArrayEntries />
+  </graph>
+
+  <graph name="inColumn1">
+    <copy prop="pointsInColumn1" tname="_spreadsheet1" removeEmptyArrayEntries />
+  </graph>
+
+  <graph name="inRangeA2B4">
+    <copy prop="pointsInRangeA2B4" tname="_spreadsheet1" removeEmptyArrayEntries />
+  </graph>
+
   `}, "*");
     });
 
@@ -1072,22 +1089,26 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[0][0]).eq('(1,2)');
       expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
       expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
-      expect(components['/_graph1'].activeChildren.length).eq(1);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(1);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(2);
+      expect(components['/inAllCells'].activeChildren.length).eq(1);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/inCellB3'].activeChildren.length).eq(0);
+      expect(components['/inRow2'].activeChildren.length).eq(0);
+      expect(components['/inColumn1'].activeChildren.length).eq(1);
+      expect(components['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2]);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(0);
 
     })
 
     // cy.log('move point');
     // cy.window().then((win) => {
     //   let components = Object.assign({}, win.state.components);
-    //   components['/_graph1'].activeChildren[0].movePoint({ x: -3, y: 7 })
+    //   components['/inAllCells'].activeChildren[0].movePoint({ x: -3, y: 7 })
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][0]).eq('( -3, 7 )');
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
-    //   expect(components['/_graph1'].activeChildren.length).eq(1);
-    //   expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eqls(['-', 3]);
-    //   expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(7);
+    //   expect(components['/inAllCells'].activeChildren.length).eq(1);
+    //   expect(components['/inAllCells'].activeChildren[0].stateValues.xs[0].tree).eqls(['-', 3]);
+    //   expect(components['/inAllCells'].activeChildren[0].stateValues.xs[1].tree).eq(7);
 
     // })
 
@@ -1098,13 +1119,17 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[0][0]).eq('(4,9)');
       expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
       expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
-      expect(components['/_graph1'].activeChildren.length).eq(1);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(4);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(9);
+      expect(components['/inAllCells'].activeChildren.length).eq(1);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
+      expect(components['/inCellB3'].activeChildren.length).eq(0);
+      expect(components['/inRow2'].activeChildren.length).eq(0);
+      expect(components['/inColumn1'].activeChildren.length).eq(1);
+      expect(components['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(0);
 
     })
 
-    cy.log('enter new point');
+    cy.log('enter new point B3');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 3, column: 2, text: '(5,4)', clear: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1112,31 +1137,36 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
       expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(components['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
-      expect(components['/_graph1'].activeChildren.length).eq(2);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(4);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(9);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[0].tree).eq(5);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[1].tree).eq(4);
+      expect(components['/inAllCells'].activeChildren.length).eq(2);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
+      expect(components['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inCellB3'].activeChildren.length).eq(1);
+      expect(components['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRow2'].activeChildren.length).eq(0);
+      expect(components['/inColumn1'].activeChildren.length).eq(1);
+      expect(components['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([4, 9]);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(1);
+      expect(components['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
 
     })
 
     // cy.log('move new point');
     // cy.window().then((win) => {
     //   let components = Object.assign({}, win.state.components);
-    //   components['/_graph1'].activeChildren[1].movePoint({ x: 0, y: 1 })
+    //   components['/inAllCells'].activeChildren[1].movePoint({ x: 0, y: 1 })
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][0]).eq('(4,9)');
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
     //   expect(components['/_spreadsheet1'].stateValues.cells[2][1]).eq('( 0, 1 )');
-    //   expect(components['/_graph1'].activeChildren.length).eq(2);
-    //   expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(4);
-    //   expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(9);
-    //   expect(components['/_graph1'].activeChildren[1].stateValues.xs[0].tree).eq(0);
-    //   expect(components['/_graph1'].activeChildren[1].stateValues.xs[1].tree).eq(1);
+    //   expect(components['/inAllCells'].activeChildren.length).eq(2);
+    //   expect(components['/inAllCells'].activeChildren[0].stateValues.xs[0].tree).eq(4);
+    //   expect(components['/inAllCells'].activeChildren[0].stateValues.xs[1].tree).eq(9);
+    //   expect(components['/inAllCells'].activeChildren[1].stateValues.xs[0].tree).eq(0);
+    //   expect(components['/inAllCells'].activeChildren[1].stateValues.xs[1].tree).eq(1);
     // })
 
 
-    cy.log('enter random text on top of point');
+    cy.log('enter random text on top of point in A1');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: ')x,-', clear: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1144,13 +1174,18 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
       expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(components['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
-      expect(components['/_graph1'].activeChildren.length).eq(1);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(5);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(4);
+      expect(components['/inAllCells'].activeChildren.length).eq(1);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inCellB3'].activeChildren.length).eq(1);
+      expect(components['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRow2'].activeChildren.length).eq(0);
+      expect(components['/inColumn1'].activeChildren.length).eq(0);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(1);
+      expect(components['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
 
     })
 
-    cy.log('enter new point');
+    cy.log('enter new point in A4');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 4, column: 1, text: '(3,2)', clear: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1159,15 +1194,21 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(components['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
       expect(components['/_spreadsheet1'].stateValues.cells[3][0]).eq('(3,2)');
-      expect(components['/_graph1'].activeChildren.length).eq(2);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(5);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(4);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[0].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[1].tree).eq(2);
+      expect(components['/inAllCells'].activeChildren.length).eq(2);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inCellB3'].activeChildren.length).eq(1);
+      expect(components['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRow2'].activeChildren.length).eq(0);
+      expect(components['/inColumn1'].activeChildren.length).eq(1);
+      expect(components['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(2);
+      expect(components['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
 
     })
 
-    cy.log('enter point on top of text');
+    cy.log('enter point on top of text in A1');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: '(7,3)', clear: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1176,18 +1217,24 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
       expect(components['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
       expect(components['/_spreadsheet1'].stateValues.cells[3][0]).eq('(3,2)');
-      expect(components['/_graph1'].activeChildren.length).eq(3);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(7);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[0].tree).eq(5);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[1].tree).eq(4);
-      expect(components['/_graph1'].activeChildren[2].stateValues.xs[0].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[2].stateValues.xs[1].tree).eq(2);
+      expect(components['/inAllCells'].activeChildren.length).eq(3);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
+      expect(components['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inAllCells'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inCellB3'].activeChildren.length).eq(1);
+      expect(components['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRow2'].activeChildren.length).eq(0);
+      expect(components['/inColumn1'].activeChildren.length).eq(2);
+      expect(components['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
+      expect(components['/inColumn1'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(2);
+      expect(components['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
 
     })
 
 
-    cy.log('non-numerical point added (but not graphed)');
+    cy.log('non-numerical point added (but not graphed) in D2');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 4, text: '(x,q)', clear: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1197,20 +1244,26 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[2][1]).eq('(5,4)');
       expect(components['/_spreadsheet1'].stateValues.cells[3][0]).eq('(3,2)');
       expect(components['/_spreadsheet1'].stateValues.cells[1][3]).eq('(x,q)');
-      expect(components['/_graph1'].activeChildren.length).eq(4);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(7);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[0].tree).eq('x');
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[1].tree).eq('q');
-      expect(components['/_graph1'].activeChildren[2].stateValues.xs[0].tree).eq(5);
-      expect(components['/_graph1'].activeChildren[2].stateValues.xs[1].tree).eq(4);
-      expect(components['/_graph1'].activeChildren[3].stateValues.xs[0].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[3].stateValues.xs[1].tree).eq(2);
+      expect(components['/inAllCells'].activeChildren.length).eq(4);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
+      expect(components['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
+      expect(components['/inAllCells'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inAllCells'].activeChildren[3].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inCellB3'].activeChildren.length).eq(1);
+      expect(components['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRow2'].activeChildren.length).eq(1);
+      expect(components['/inRow2'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
+      expect(components['/inColumn1'].activeChildren.length).eq(2);
+      expect(components['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
+      expect(components['/inColumn1'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(2);
+      expect(components['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
 
     })
 
 
-    cy.log('3D point added (but not graphed)');
+    cy.log('3D point added (but not graphed) in A2');
     enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 2, column: 1, text: '(1,2,3)', clear: true });
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1221,18 +1274,26 @@ describe('Spreadsheet Tag Tests', function () {
       expect(components['/_spreadsheet1'].stateValues.cells[3][0]).eq('(3,2)');
       expect(components['/_spreadsheet1'].stateValues.cells[1][3]).eq('(x,q)');
       expect(components['/_spreadsheet1'].stateValues.cells[1][0]).eq('(1,2,3)');
-      expect(components['/_graph1'].activeChildren.length).eq(5);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(7);
-      expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[0].tree).eq(1);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[1].tree).eq(2);
-      expect(components['/_graph1'].activeChildren[1].stateValues.xs[2].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[2].stateValues.xs[0].tree).eq('x');
-      expect(components['/_graph1'].activeChildren[2].stateValues.xs[1].tree).eq('q');
-      expect(components['/_graph1'].activeChildren[3].stateValues.xs[0].tree).eq(5);
-      expect(components['/_graph1'].activeChildren[3].stateValues.xs[1].tree).eq(4);
-      expect(components['/_graph1'].activeChildren[4].stateValues.xs[0].tree).eq(3);
-      expect(components['/_graph1'].activeChildren[4].stateValues.xs[1].tree).eq(2);
+      expect(components['/inAllCells'].activeChildren.length).eq(5);
+      expect(components['/inAllCells'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
+      expect(components['/inAllCells'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
+      expect(components['/inAllCells'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
+      expect(components['/inAllCells'].activeChildren[3].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inAllCells'].activeChildren[4].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inCellB3'].activeChildren.length).eq(1);
+      expect(components['/inCellB3'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRow2'].activeChildren.length).eq(2);
+      expect(components['/inRow2'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
+      expect(components['/inRow2'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls(['x', 'q']);
+      expect(components['/inColumn1'].activeChildren.length).eq(3);
+      expect(components['/inColumn1'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([7, 3]);
+      expect(components['/inColumn1'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
+      expect(components['/inColumn1'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+      expect(components['/inRangeA2B4'].activeChildren.length).eq(3);
+      expect(components['/inRangeA2B4'].activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2, 3]);
+      expect(components['/inRangeA2B4'].activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([5, 4]);
+      expect(components['/inRangeA2B4'].activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 2]);
+
 
     })
 
@@ -1240,7 +1301,7 @@ describe('Spreadsheet Tag Tests', function () {
     // cy.log('move point');
     // cy.window().then((win) => {
     //   let components = Object.assign({}, win.state.components);
-    //   components['/_graph1'].activeChildren[2].movePoint({ x: 8, y: 5 });
+    //   components['/inAllCells'].activeChildren[2].movePoint({ x: 8, y: 5 });
 
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][0]).eq('(7,3)');
     //   expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
@@ -1249,21 +1310,88 @@ describe('Spreadsheet Tag Tests', function () {
     //   expect(components['/_spreadsheet1'].stateValues.cells[3][0]).eq('( 8, 5 )');
     //   expect(components['/_spreadsheet1'].stateValues.cells[1][3]).eq('(x,q)');
     //   expect(components['/_spreadsheet1'].stateValues.cells[1][0]).eq('(1,2,3)');
-    //   expect(components['/_graph1'].activeChildren.length).eq(5);
-    //   expect(components['/_graph1'].activeChildren[0].stateValues.xs[0].tree).eq(7);
-    //   expect(components['/_graph1'].activeChildren[0].stateValues.xs[1].tree).eq(3);
-    //   expect(components['/_graph1'].activeChildren[1].stateValues.xs[0].tree).eq(1);
-    //   expect(components['/_graph1'].activeChildren[1].stateValues.xs[1].tree).eq(2);
-    //   expect(components['/_graph1'].activeChildren[1].stateValues.xs[2].tree).eq(3);
-    //   expect(components['/_graph1'].activeChildren[2].stateValues.xs[0].tree).eq(8);
-    //   expect(components['/_graph1'].activeChildren[2].stateValues.xs[1].tree).eq(5);
-    //   expect(components['/_graph1'].activeChildren[3].stateValues.xs[0].tree).eq(0);
-    //   expect(components['/_graph1'].activeChildren[3].stateValues.xs[1].tree).eq(1);
-    //   expect(components['/_graph1'].activeChildren[4].stateValues.xs[0].tree).eq('x');
-    //   expect(components['/_graph1'].activeChildren[4].stateValues.xs[1].tree).eq('q');
+    //   expect(components['/inAllCells'].activeChildren.length).eq(5);
+    //   expect(components['/inAllCells'].activeChildren[0].stateValues.xs[0].tree).eq(7);
+    //   expect(components['/inAllCells'].activeChildren[0].stateValues.xs[1].tree).eq(3);
+    //   expect(components['/inAllCells'].activeChildren[1].stateValues.xs[0].tree).eq(1);
+    //   expect(components['/inAllCells'].activeChildren[1].stateValues.xs[1].tree).eq(2);
+    //   expect(components['/inAllCells'].activeChildren[1].stateValues.xs[2].tree).eq(3);
+    //   expect(components['/inAllCells'].activeChildren[2].stateValues.xs[0].tree).eq(8);
+    //   expect(components['/inAllCells'].activeChildren[2].stateValues.xs[1].tree).eq(5);
+    //   expect(components['/inAllCells'].activeChildren[3].stateValues.xs[0].tree).eq(0);
+    //   expect(components['/inAllCells'].activeChildren[3].stateValues.xs[1].tree).eq(1);
+    //   expect(components['/inAllCells'].activeChildren[4].stateValues.xs[0].tree).eq('x');
+    //   expect(components['/inAllCells'].activeChildren[4].stateValues.xs[1].tree).eq('q');
     // })
 
   })
+
+  it('spreadsheet prefill', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <math name="m1">x^2</math>
+  <text name="t1">hello</text>
+  <number name="n1">5</number>
+  <boolean name="b1">true</boolean>
+
+  <spreadsheet minNumRows="2" minNumColumns="4">
+  <row>
+    <cell prefill="$m1" />
+    <cell prefill="$t1" />
+    <cell prefill="$n1" />
+    <cell prefill="$b1" />
+  </row>
+  </spreadsheet>
+  
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.log('initial values')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x2')
+    })
+    cy.get('#\\/t1').should('have.text', 'hello')
+    cy.get('#\\/n1').should('have.text', '5')
+    cy.get('#\\/b1').should('have.text', 'true')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_spreadsheet1'].stateValues.cells[0][0]).eq('x^2');
+      expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('hello');
+      expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('5');
+      expect(components['/_spreadsheet1'].stateValues.cells[0][3]).eq('true');
+    })
+
+    cy.log("changing spreadsheet doesn't change prefill sources")
+    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 1, text: '3(-', clear: true });
+    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 2, text: 'bye', clear: true });
+    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 3, text: 'ab', clear: true });
+    enterSpreadsheetText({ id: "\\/_spreadsheet1", row: 1, column: 4, text: '1+q', clear: true });
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq('x2')
+    })
+    cy.get('#\\/t1').should('have.text', 'hello')
+    cy.get('#\\/n1').should('have.text', '5')
+    cy.get('#\\/b1').should('have.text', 'true')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_spreadsheet1'].stateValues.cells[0][0]).eq('3(-');
+      expect(components['/_spreadsheet1'].stateValues.cells[0][1]).eq('bye');
+      expect(components['/_spreadsheet1'].stateValues.cells[0][2]).eq('ab');
+      expect(components['/_spreadsheet1'].stateValues.cells[0][3]).eq('1+q');
+    })
+
+
+  })
+
+
 
   it.skip('internal references within spreadsheet', () => {
     cy.window().then((win) => {

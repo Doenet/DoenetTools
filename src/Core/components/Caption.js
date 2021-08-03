@@ -1,19 +1,23 @@
 import BlockComponent from './abstract/BlockComponent';
 
-export default class P extends BlockComponent {
-  static componentType = "p";
+export default class Caption extends BlockComponent {
+  static componentType = "caption";
+  static rendererType = "container";
+
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
 
+
   static returnChildGroups() {
 
     return [{
-      group: "inlines",
-      componentTypes: ["_inline"]
+      group: "inlinesBlocks",
+      componentTypes: ["_inline", "_block"]
     }]
 
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -25,7 +29,7 @@ export default class P extends BlockComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childGroups: ["inlines"],
+          childGroups: ["inlinesBlocks"],
           variableNames: ["text"],
           variablesOptional: true,
         }
