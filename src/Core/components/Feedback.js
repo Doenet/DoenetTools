@@ -50,7 +50,7 @@ export default class Feedback extends BlockComponent {
       }
     }
 
-    stateVariableDefinitions.updateWithFullTname = {
+    stateVariableDefinitions.updateWithFullTnames = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateHide"
       },
@@ -68,7 +68,11 @@ export default class Feedback extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { updateWithFullTname: dependencyValues.updateWithFullTname } }
+        if (dependencyValues.updateWithFullTname) {
+          return { newValues: { updateWithFullTnames: [dependencyValues.updateWithFullTname] } }
+        } else {
+          return { newValues: { updateWithFullTnames: [] } }
+        }
       }
     }
 
