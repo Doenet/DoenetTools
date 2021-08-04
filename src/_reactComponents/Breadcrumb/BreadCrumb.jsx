@@ -100,6 +100,27 @@ export default function BreadCrumb({ path }) {
     </span>
   );
 
+  const returnToDashboard = (
+    <span
+      role="button"
+      tabIndex="0"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          setPageToolView((was) => ({
+            ...was,
+            tool: 'dashboard',
+            view: '',
+          }));
+        }
+      }}
+      onClick={() => {
+        setPageToolView((was) => ({ ...was, tool: 'dashboard', view: '' }));
+      }}
+    >
+      {'Dashboard / '}
+    </span>
+  );
+
   const children = [...items].reverse().map((item) => (
     <span
       role="button"
@@ -120,7 +141,7 @@ export default function BreadCrumb({ path }) {
 
   return (
     <>
-      {returnToCourseChooser} {children}
+      {returnToCourseChooser} {' / '} {returnToDashboard} {children}
     </>
   );
 }

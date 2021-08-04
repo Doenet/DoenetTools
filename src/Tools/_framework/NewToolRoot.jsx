@@ -115,6 +115,7 @@ export default function ToolRoot(){
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
     SignOut:lazy(() => import('./ToolPanels/SignOut')),
     NavigationPanel:lazy(() => import('./ToolPanels/NavigationPanel')),
+    Dashboard: lazy(() => import('./ToolPanels/Dashboard')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
@@ -299,6 +300,16 @@ let navigationObj = {
       menusInitOpen:[true,false],
       onLeave:"CourseChooserLeave",
     },
+    dashboard: {
+      pageName: "Dashboards",
+      currentMainPanel: "Dashboard",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["NavigationBreadCrumb"],
+      headerControlsPositions: ["Left"],
+      onLeave:"DashboardLeave",
+    },
     navigation:{ //allFilesInCourse
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
@@ -446,6 +457,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     const LazyEnterLeaveObj = useRef({
       NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
       CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
+      DashboardLeave:lazy(() => import('./EnterLeave/DashboardLeave')),
     }).current;
 
     if (leaveComponentStr){
