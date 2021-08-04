@@ -68,7 +68,14 @@ export default class MathInput extends Input {
       defaultValue: ["f", "g"],
       forRenderer: true,
       public: true,
-    }
+    };
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      forRenderer: true,
+      public: true,
+    };
     attributes.displayDigits = {
       createComponentOfType: "integer",
       createStateVariable: "displayDigits",
@@ -127,6 +134,10 @@ export default class MathInput extends Input {
           dependencyType: "stateVariable",
           variableName: "functionSymbols"
         },
+        splitSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "splitSymbols"
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.bindValueTo) {
@@ -139,6 +150,7 @@ export default class MathInput extends Input {
                     inputString: dependencyValues.prefill,
                     format: dependencyValues.format,
                     functionSymbols: dependencyValues.functionSymbols,
+                    splitSymbols: dependencyValues.splitSymbols,
                   })
                 }
               }
@@ -332,7 +344,7 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: mathExpression,
-        },{
+        }, {
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "rawRendererValue",
@@ -367,7 +379,7 @@ export default class MathInput extends Input {
         componentName: this.componentName,
         stateVariable: "value",
         value: this.stateValues.immediateValue,
-      },{
+      }, {
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "rawRendererValue",
@@ -420,7 +432,7 @@ export default class MathInput extends Input {
 }
 
 
-function parseValueIntoMath({ inputString, format, functionSymbols }) {
+function parseValueIntoMath({ inputString, format, functionSymbols, splitSymbols }) {
 
   if (!inputString) {
     return me.fromAst('\uFF3F');
@@ -429,7 +441,8 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
   let expression;
   if (format === "latex") {
     let fromLatex = getFromLatex({
-      functionSymbols
+      functionSymbols,
+      splitSymbols
     });
     try {
       expression = fromLatex(inputString);
@@ -439,7 +452,8 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
     }
   } else if (format === "text") {
     let fromText = getFromText({
-      functionSymbols
+      functionSymbols,
+      splitSymbols,
     });
     try {
       expression = fromText(inputString);

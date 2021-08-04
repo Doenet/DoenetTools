@@ -852,46 +852,241 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <p><math>xyz</math></p>
-  <p><math splitSymbols="false">xyz</math></p>
-  <p><math splitSymbols="true">xyz</math></p>
-  <p><math simplify>xyx</math></p>
-  <p><math simplify splitSymbols="false">xyx</math></p>
-  <p><math simplify splitSymbols="true">xyx</math></p>
+  <p><math name="m1">xyz</math></p>
+  <p><math name="m2" splitSymbols="false">xyz</math></p>
+  <p><math name="m3" splitSymbols="true">xyz</math></p>
+  <p><math name="m4" simplify>xyx</math></p>
+  <p><math name="m5" simplify splitSymbols="false">xyx</math></p>
+  <p><math name="m6" simplify splitSymbols="true">xyx</math></p>
+  <p><math name="m7">xy_uv</math></p>
+  <p><math name="m8">x2_2x</math></p>
+  <p><math name="m9">2x_x2</math></p>
+  <p><math name="m10">xy uv x2y 2x x2</math></p>
+  <p><math name="m11" splitSymbols="false">xy_uv</math></p>
+  <p><math name="m12" splitSymbols="false">x2_2x</math></p>
+  <p><math name="m13" splitSymbols="false">2x_x2</math></p>
+  <p><math name="m14" splitSymbols="false">xy uv x2y 2x x2</math></p>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xyz')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xyz')
     })
-    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xyz')
     })
-    cy.get('#\\/_math4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('yx2')
     })
-    cy.get('#\\/_math5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xyx')
     })
-    cy.get('#\\/_math6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/m7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+    cy.get('#\\/m11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
     })
 
     cy.log('Test internal values')
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/_math2'].stateValues.value.tree).eqls("xyz");
-      expect(components['/_math3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
-      expect(components['/_math4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
-      expect(components['/_math5'].stateValues.value.tree).eqls("xyx");
-      expect(components['/_math6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(components['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/m2'].stateValues.value.tree).eqls("xyz");
+      expect(components['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/m4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(components['/m5'].stateValues.value.tree).eqls("xyx");
+      expect(components['/m6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(components['/m7'].stateValues.value.tree).eqls(["*", "x", ["_", "y", "u"], "v"]);
+      expect(components['/m8'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(components['/m9'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(components['/m10'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(components['/m11'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(components['/m12'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(components['/m13'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(components['/m14'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+
+    });
+
+  });
+
+  it('split symbols, latex', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math format="latex" name="m1">xyz</math></p>
+  <p><math format="latex" name="m2" splitSymbols="false">xyz</math></p>
+  <p><math format="latex" name="m2a" >\\var{xyz}</math></p>
+  <p><math format="latex" name="m2b" splitSymbols="false" >\\var{xyz}</math></p>
+  <p><math format="latex" name="m3" splitSymbols="true">xyz</math></p>
+  <p><math format="latex" name="m4" simplify>xyx</math></p>
+  <p><math format="latex" name="m5" simplify splitSymbols="false">xyx</math></p>
+  <p><math format="latex" name="m5a" simplify>\\var{xyx}</math></p>
+  <p><math format="latex" name="m5b" simplify splitSymbols="false">\\var{xyx}</math></p>
+  <p><math format="latex" name="m6" simplify splitSymbols="true">xyx</math></p>
+  <p><math format="latex" name="m7">xy_uv</math></p>
+  <p><math format="latex" name="m8">x2_2x</math></p>
+  <p><math format="latex" name="m8a">\\var{x2}_2x</math></p>
+  <p><math format="latex" name="m9">2x_x2</math></p>
+  <p><math format="latex" name="m9a">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m10">xy uv x2y 2x x2</math></p>
+  <p><math format="latex" name="m10a">xy uv \\var{x2y} 2x \\var{x2}</math></p>
+  <p><math format="latex" name="m11" splitSymbols="false">xy_uv</math></p>
+  <p><math format="latex" name="m11a">\\var{xy}_\\var{uv}</math></p>
+  <p><math format="latex" name="m11b" splitSymbols="false">\\var{xy}_\\var{uv}</math></p>
+  <p><math format="latex" name="m12" splitSymbols="false">x2_2x</math></p>
+  <p><math format="latex" name="m12a" splitSymbols="false">\\var{x2}_2x</math></p>
+  <p><math format="latex" name="m13" splitSymbols="false">2x_x2</math></p>
+  <p><math format="latex" name="m13a" splitSymbols="false">2x_\\var{x2}</math></p>
+  <p><math format="latex" name="m14" splitSymbols="false">xy uv x2y 2x x2</math></p>
+  <p><math format="latex" name="m14a">\\var{xy} \\var{uv} x2y 2x x2</math></p>
+  <p><math format="latex" name="m14b" splitSymbols="false">\\var{xy} \\var{uv} x2y 2x x2</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m2a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m2b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyx')
+    })
+    cy.get('#\\/m5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyx')
+    })
+    cy.get('#\\/m5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyx')
+    })
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/m7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m8a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m9a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+    cy.get('#\\/m10a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+    cy.get('#\\/m11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m11a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m11b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m12a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m13a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+    cy.get('#\\/m14a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+    cy.get('#\\/m14b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/m1'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/m2'].stateValues.value.tree).eqls("xyz");
+      expect(components['/m2a'].stateValues.value.tree).eqls("xyz");
+      expect(components['/m2b'].stateValues.value.tree).eqls("xyz");
+      expect(components['/m3'].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components['/m4'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(components['/m5'].stateValues.value.tree).eqls("xyx");
+      expect(components['/m5a'].stateValues.value.tree).eqls("xyx");
+      expect(components['/m5b'].stateValues.value.tree).eqls("xyx");
+      expect(components['/m6'].stateValues.value.tree).eqls(["*", "y", ["^", "x", 2]]);
+      expect(components['/m7'].stateValues.value.tree).eqls(["*", "x", ["_", "y", "u"], "v"]);
+      expect(components['/m8'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(components['/m8a'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(components['/m9'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(components['/m9a'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(components['/m10'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(components['/m10a'].stateValues.value.tree).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(components['/m11'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(components['/m11a'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(components['/m11b'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(components['/m12'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(components['/m12a'].stateValues.value.tree).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(components['/m13'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(components['/m13a'].stateValues.value.tree).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(components['/m14'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+      expect(components['/m14a'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+      expect(components['/m14b'].stateValues.value.tree).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
 
     });
 
