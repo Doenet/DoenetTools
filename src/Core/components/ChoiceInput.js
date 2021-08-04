@@ -866,26 +866,40 @@ export default class Choiceinput extends Input {
 
   updateSelectedIndices({ selectedIndices }) {
     if (!this.stateValues.disabled) {
-      this.coreFunctions.requestUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
+      let updateInstructions = [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "allSelectedIndices",
+        value: selectedIndices
+      }];
+
+      let event = {
+        verb: "selected",
+        object: {
           componentName: this.componentName,
-          stateVariable: "allSelectedIndices",
-          value: selectedIndices
-        }],
-        event: {
-          verb: "selected",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            response: selectedIndices,
-            responseText: selectedIndices
-              .map(i => this.stateValues.choiceTexts[i - 1])
-          }
+          componentType: this.componentType,
+        },
+        result: {
+          response: selectedIndices,
+          responseText: selectedIndices
+            .map(i => this.stateValues.choiceTexts[i - 1])
         }
+      }
+
+      if (this.stateValues.answerAncestor) {
+        event.context = {
+          answerAncestor: this.stateValues.answerAncestor.componentName
+        }
+      }
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event,
+        callBack: () => this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        })
       })
+
     }
   }
 

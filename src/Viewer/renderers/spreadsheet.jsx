@@ -30,6 +30,14 @@ export default class SpreadsheetRenderer extends DoenetRenderer {
         }}
         fixedRowsTop={this.doenetSvData.fixedRowsTop}
         fixedColumnsLeft={this.doenetSvData.fixedColumnsLeft}
+        hiddenColumns={{
+          columns: this.doenetSvData.hiddenColumns.map(x => x - 1),
+          indicators: false
+        }}
+        hiddenRows={{
+          rows: this.doenetSvData.hiddenRows.map(x => x - 1),
+          indicators: false
+        }}
         // contextMenu={
         //   {
         //     items: {

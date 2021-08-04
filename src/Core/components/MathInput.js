@@ -408,7 +408,10 @@ export default class MathInput extends Input {
 
       this.coreFunctions.requestUpdate({
         updateInstructions,
-        event
+        event,
+        callBack: () => this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        })
       })
 
     }

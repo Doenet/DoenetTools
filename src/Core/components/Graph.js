@@ -171,6 +171,50 @@ export default class Graph extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.xscale = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        xmin: {
+          dependencyType: "stateVariable",
+          variableName: "xmin"
+        },
+        xmax: {
+          dependencyType: "stateVariable",
+          variableName: "xmax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            xscale: dependencyValues.xmax - dependencyValues.xmin
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.yscale = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        ymin: {
+          dependencyType: "stateVariable",
+          variableName: "ymin"
+        },
+        ymax: {
+          dependencyType: "stateVariable",
+          variableName: "ymax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            yscale: dependencyValues.ymax - dependencyValues.ymin
+          }
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 

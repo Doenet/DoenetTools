@@ -69,6 +69,20 @@ export default class Spreadsheet extends BlockComponent {
       public: true,
       forRenderer: true,
     };
+    attributes.hiddenColumns = {
+      createComponentOfType: "numberList",
+      createStateVariable: "hiddenColumns",
+      defaultValue: [],
+      public: true,
+      forRenderer: true,
+    };
+    attributes.hiddenRows = {
+      createComponentOfType: "numberList",
+      createStateVariable: "hiddenRows",
+      defaultValue: [],
+      public: true,
+      forRenderer: true,
+    };
     return attributes;
   }
 

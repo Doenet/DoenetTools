@@ -26,7 +26,6 @@ export class ComponentWithSelectableType extends BaseComponent {
     let sugarInstructions = [];
 
     function addType({ matchedChildren, componentAttributes, parentAttributes }) {
-      console.log(componentAttributes, parentAttributes)
       let type = componentAttributes.type;
       if (!type) {
         type = parentAttributes.type;
@@ -37,8 +36,6 @@ export class ComponentWithSelectableType extends BaseComponent {
         console.warn(`Invalid type ${type}, setting type to number`);
         type = "number";
       }
-
-      console.log(`type: ${type}`)
 
       let componentType = type === "letters" ? "text" : type;
 
