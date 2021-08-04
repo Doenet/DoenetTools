@@ -1243,4 +1243,316 @@ describe('Allow error in numbers validation tests', function () {
     });
   })
 
+  it('expression with vector, matchPartial', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>a</p>
+    <p><math>(log(32x+c), 42)</math> 
+    <answer size="30" matchPartial>
+      <award allowederrorinnumbers="0.001">
+        <copy tname="_math1" />
+      </award>
+    </answer>
+    </p>
+    `}, "*");
+    });
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputAnchor = '#' + mathinputName + ' textarea';
+      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
+      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
+      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+
+      cy.log("Submit exact answer")
+      cy.get(mathinputAnchor).type('(log(32x+c), 42){enter}', { force: true, delay: 0 });
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Enter too large an error in first component")
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(log(32.04x+c), 42){enter}', { force: true, delay: 0 });
+      cy.get(mathinputPartialAnchor).should('have.text', '50 %');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      });
+
+      cy.log("Enter too large an error in second component")
+      cy.get(mathinputAnchor).type('{end}{leftArrow}.3{enter}', { force: true, delay: 0 });
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.0);
+      });
+
+      cy.log("shink error in first component")
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(log(32.01x+c), 42.3){enter}', { force: true, delay: 0 });
+      cy.get(mathinputPartialAnchor).should('have.text', '50 %');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).closeTo(0.5, 1E-14);
+      });
+
+      cy.log("Shrink error in second component")
+      cy.get(mathinputAnchor).type('{end}{leftArrow}{leftArrow}0{enter}', { force: true, delay: 0 });
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(1.0);
+      });
+
+    })
+
+  });
+
+  it('expression with vector, matchPartial, unordered', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>a</p>
+    <p><math unordered>(42, log(32x+c))</math> 
+    <answer size="30" matchPartial>
+      <award allowederrorinnumbers="0.001">
+        <copy tname="_math1" />
+      </award>
+    </answer>
+    </p>
+    `}, "*");
+    });
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinputName = cesc(components['/_answer1'].stateValues.inputChildren[0].componentName)
+      let mathinputAnchor = '#' + mathinputName + ' textarea';
+      let mathinputSubmitAnchor = '#' + mathinputName + '_submit';
+      let mathinputCorrectAnchor = '#' + mathinputName + '_correct';
+      let mathinputPartialAnchor = '#' + mathinputName + '_partial';
+      let mathinputIncorrectAnchor = '#' + mathinputName + '_incorrect';
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+
+      cy.log("Submit exact answer")
+      cy.get(mathinputAnchor).type('(log(32x+c), 42){enter}', { force: true, delay: 0 });
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(1);
+      });
+
+      cy.log("Enter too large an error in first component")
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(log(32.04x+c), 42){enter}', { force: true, delay: 0 });
+      cy.get(mathinputPartialAnchor).should('have.text', '50 %');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      });
+
+      cy.log("Enter too large an error in second component")
+      cy.get(mathinputAnchor).type('{end}{leftArrow}.3{enter}', { force: true, delay: 0 });
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(0.0);
+      });
+
+      cy.log("shink error in first component")
+      cy.get(mathinputAnchor).type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(log(32.01x+c), 42.3){enter}', { force: true, delay: 0 });
+      cy.get(mathinputPartialAnchor).should('have.text', '50 %');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).closeTo(0.5, 1E-14);
+      });
+
+      cy.log("Shrink error in second component")
+      cy.get(mathinputAnchor).type('{end}{leftArrow}{leftArrow}0{enter}', { force: true, delay: 0 });
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+        expect(components['/_answer1'].stateValues.creditAchieved).eq(1.0);
+      });
+
+    })
+
+  });
+
+  it('expression with math lists, matchPartial', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>a</p>
+    <p><mathlist name="ml">log(32x+c) 42</mathlist> 
+    <answer name="ans" size="30" matchPartial allowederrorinnumbers="0.001">
+      <mathinput name="mi1" />
+      <mathinput name="mi2" />
+      <award>
+        <when><mathlist>$mi1 $mi2</mathlist> = $ml</when>
+      </award>
+    </answer>
+    </p>
+    `}, "*");
+    });
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.get("#\\/ans_submit").should('be.visible');
+
+    cy.log("Submit exact answer")
+    cy.get("#\\/mi1 textarea").type('log(32x+c)', { force: true, delay: 0 });
+    cy.get("#\\/mi2 textarea").type('42', { force: true, delay: 0 });
+
+    cy.get("#\\/ans_submit").click();
+    cy.get('#\\/ans_correct').should('be.visible');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(1);
+    });
+
+    cy.log("Enter too large an error in first component")
+    cy.get("#\\/mi1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}log(32.04x+c)', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(0.5);
+    });
+
+    cy.log("Enter too large an error in second component")
+    cy.get("#\\/mi2 textarea").type('{end}.3{enter}', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(0.0);
+    });
+
+    cy.log("shink error in first component")
+    cy.get("#\\/mi1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}log(32.01x+c){enter}', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).closeTo(0.5, 1E-14);
+    });
+
+    cy.log("Shrink error in second component")
+    cy.get("#\\/mi2 textarea").type('{end}{leftArrow}0{enter}', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get('#\\/ans_correct').should('be.visible');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(1.0);
+    });
+
+
+
+  });
+
+  it('expression with math lists, matchPartial, unordered', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p>a</p>
+    <p><mathlist name="ml" unordered>42 log(32x+c)</mathlist> 
+    <answer name="ans" size="30" matchPartial allowederrorinnumbers="0.001">
+      <mathinput name="mi1" />
+      <mathinput name="mi2" />
+      <award>
+        <when><mathlist>$mi1 $mi2</mathlist> = $ml</when>
+      </award>
+    </answer>
+    </p>
+    `}, "*");
+    });
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.get("#\\/ans_submit").should('be.visible');
+
+    cy.log("Submit exact answer")
+    cy.get("#\\/mi1 textarea").type('log(32x+c)', { force: true, delay: 0 });
+    cy.get("#\\/mi2 textarea").type('42', { force: true, delay: 0 });
+
+    cy.get("#\\/ans_submit").click();
+    cy.get('#\\/ans_correct').should('be.visible');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(1);
+    });
+
+    cy.log("Enter too large an error in first component")
+    cy.get("#\\/mi1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}log(32.04x+c)', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(0.5);
+    });
+
+    cy.log("Enter too large an error in second component")
+    cy.get("#\\/mi2 textarea").type('{end}.3{enter}', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(0.0);
+    });
+
+    cy.log("shink error in first component")
+    cy.get("#\\/mi1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}log(32.01x+c){enter}', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get("#\\/ans_partial").invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).closeTo(0.5, 1E-14);
+    });
+
+    cy.log("Shrink error in second component")
+    cy.get("#\\/mi2 textarea").type('{end}{leftArrow}0{enter}', { force: true, delay: 0 });
+    cy.get("#\\/ans_submit").click();
+    cy.get('#\\/ans_correct').should('be.visible');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/ans'].stateValues.creditAchieved).eq(1.0);
+    });
+
+
+
+  });
+
 });

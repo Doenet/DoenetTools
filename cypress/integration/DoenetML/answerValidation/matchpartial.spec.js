@@ -20,21 +20,25 @@ describe('Match partial validation tests', function () {
       win.postMessage({
         doenetML: `
   <p>a</p>
+  <setup>
+    <math name="ordered">(1,2,3)</math>
+    <math name="unordered" unordered>(1,2,3)</math>
+  </setup>
 
   <p>Match partial: <answer>
-    <award matchpartial><math>(1,2,3)</math></award>
+    <award matchpartial>$ordered</award>
   </answer></p>
   
   <p>Match partial, unordered: <answer>
-    <award matchpartial><math unordered="true">(1,2,3)</math></award>
+    <award matchpartial>$unordered</award>
   </answer></p>
   
   <p>Strict equality: <answer>
-    <award><math>(1,2,3)</math></award>
+    <award>$ordered</award>
   </answer></p>
   
   <p>Unordered: <answer>
-    <award><math unordered="true">(1,2,3)</math></award>
+    <award>$unordered</award>
   </answer></p>
     `}, "*");
     });
