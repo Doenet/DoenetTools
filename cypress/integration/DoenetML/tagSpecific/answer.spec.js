@@ -11778,4 +11778,58 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('with split symbols', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>split symbols: <booleaninput name="split" /></p>
+  <p>Answer: <math name="ans" splitSymbols="$split">xyz</math></p>
+  <answer>
+    <mathinput name="mi" splitSymbols="$(ans{prop='splitSymbols'})" />
+    <award>$ans</award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi textarea').type("xyz{enter}", { force: true })
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/ans"].stateValues.value.tree).eqls("xyz");
+      expect(components["/mi"].stateValues.value.tree).eqls("xyz");
+    })
+
+    cy.get('#\\/split_input').click();
+
+    // modify textinput so that recalculates value
+    cy.get('#\\/mi textarea').type("{end} {backspace}{enter}", { force: true })
+
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/ans"].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+      expect(components["/mi"].stateValues.value.tree).eqls(["*", "x", "y", "z"]);
+    })
+
+
+    cy.get('#\\/split_input').click();
+
+    // modify textinput so that recalculates value
+    cy.get('#\\/mi textarea').type("{end} {enter}", { force: true })
+
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/ans"].stateValues.value.tree).eqls("xyz");
+      expect(components["/mi"].stateValues.value.tree).eqls("xyz");
+    })
+
+  });
+
 })

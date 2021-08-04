@@ -3016,5 +3016,73 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('split symbols in mathinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="mins" splitSymbols="false" />
+    <mathinput name="mis" />
+
+    <p>No split: <copy prop="value" tname="mins" assignNames="mns"/></p>
+    <p>Split: <copy prop="value" tname="mis" assignNames="ms"/></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mins textarea').type("xy{enter}", { force: true })
+    cy.get('#\\/mis textarea').type("xy{enter}", { force: true })
+    cy.get('#\\/mns').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+    cy.get('#\\/ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mins'].stateValues.value.tree).eqls("xy");
+      expect(components['/mis'].stateValues.value.tree).eqls(["*", "x", "y"]);
+      expect(components['/mns'].stateValues.value.tree).eqls("xy");
+      expect(components['/ms'].stateValues.value.tree).eqls(["*", "x", "y"]);
+    })
+
+    cy.get('#\\/mins textarea').type("{end}0{enter}", { force: true })
+    cy.get('#\\/mis textarea').type("{end}0{enter}", { force: true })
+    cy.get('#\\/mns').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy0')
+    })
+    cy.get('#\\/ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xy0')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mins'].stateValues.value.tree).eqls("xy0");
+      expect(components['/mis'].stateValues.value.tree).eqls("xy0");
+      expect(components['/mns'].stateValues.value.tree).eqls("xy0");
+      expect(components['/ms'].stateValues.value.tree).eqls("xy0");
+    })
+
+    cy.get('#\\/mins textarea').type("{end}{backspace}_uv{enter}", { force: true })
+    cy.get('#\\/mis textarea').type("{end}{backspace}_uv{enter}", { force: true })
+    cy.get('#\\/mns').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/mins'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(components['/mis'].stateValues.value.tree).eqls(["*", "x", ["_", "y", ["*", "u", "v"]]]);
+      expect(components['/mns'].stateValues.value.tree).eqls(["_", "xy", "uv"]);
+      expect(components['/ms'].stateValues.value.tree).eqls(["*", "x", ["_", "y", ["*", "u", "v"]]]);
+    })
+
+  })
+
 
 });

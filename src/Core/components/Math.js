@@ -804,7 +804,9 @@ function calculateCodePre({ dependencyValues }) {
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   if (!(("stringMathChildren" in changes && changes.stringMathChildren.componentIdentitiesChanged)
-    || "format" in changes || "createIntervals" in changes || "createVectors" in changes)) {
+    || "format" in changes || "createIntervals" in changes || "createVectors" in changes
+    || "splitSymbols" in changes
+  )) {
     // if component identities of stringMathChildren didn't change
     // and format didn't change
     // then expressionWithCodes remains unchanged.
