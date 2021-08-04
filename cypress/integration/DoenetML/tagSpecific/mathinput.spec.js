@@ -2964,5 +2964,57 @@ describe('MathInput Tag Tests', function () {
 
   })
 
+  it('chain update off mathinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="mi" />
+
+    <math simplify name="x">x</math>
+    <updateValue triggerWithTnames="mi" tname="x" newValue="$x+$mi" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+
+    cy.get('#\\/mi textarea').type("y", { force: true })
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+
+    cy.get('#\\/mi textarea').type("{backspace}x", { force: true })
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+
+    cy.get('#\\/mi textarea').blur();
+    cy.get('#\\/x .mjx-mrow').should('have.text', '2x')
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}y", { force: true })
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+
+    cy.get('#\\/mi textarea').type("+x", { force: true })
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+
+    cy.get('#\\/mi textarea').type("{enter}", { force: true })
+    cy.get('#\\/x .mjx-mrow').should('have.text', '3x+y')
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3x+y')
+    })
+
+  })
+
 
 });

@@ -51,7 +51,7 @@ export default class Feedback extends BlockComponent {
     }
 
     stateVariableDefinitions.updateWithFullTname = {
-      chainActionOnActionOfStateVariableTarget: {
+      chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateHide"
       },
       stateVariablesDeterminingDependencies: ["updateWithTname"],

@@ -135,35 +135,40 @@ export default class BooleanInput extends Input {
   }
 
   updateBoolean({ boolean }) {
-    let updateInstructions = [{
-      updateType: "updateValue",
-      componentName: this.componentName,
-      stateVariable: "value",
-      value: boolean,
-    }];
-
-    let event = {
-      verb: "selected",
-      object: {
+    if (!this.stateValues.disabled) {
+      let updateInstructions = [{
+        updateType: "updateValue",
         componentName: this.componentName,
-        componentType: this.componentType,
-      },
-      result: {
-        response: boolean,
-        responseText: boolean.toString(),
-      }
-    }
+        stateVariable: "value",
+        value: boolean,
+      }];
 
-    if (this.stateValues.answerAncestor) {
-      event.context = {
-        answerAncestor: this.stateValues.answerAncestor.componentName
+      let event = {
+        verb: "selected",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          response: boolean,
+          responseText: boolean.toString(),
+        }
       }
-    }
 
-    this.coreFunctions.requestUpdate({
-      updateInstructions,
-      event
-    })
+      if (this.stateValues.answerAncestor) {
+        event.context = {
+          answerAncestor: this.stateValues.answerAncestor.componentName
+        }
+      }
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event,
+        callBack: () => this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        })
+      })
+    }
   }
 
 }

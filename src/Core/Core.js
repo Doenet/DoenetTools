@@ -1497,7 +1497,7 @@ export default class Core {
       let unmatchedChildrenTypes = childGroupResults.unmatchedChildren
         .map(x => x.componentType).join(', ')
       this.unmatchedChildren[parent.componentName] = {
-        message: `unmatched children of type(s): ${unmatchedChildrenTypes}`
+        message: `invalid children of type(s): ${unmatchedChildrenTypes}`
       }
     }
 
@@ -3512,20 +3512,22 @@ export default class Core {
     for (let stateVariable in component.state) {
       let stateVarObj = component.state[stateVariable];
 
-      if (stateVarObj.chainActionOnActionOfStateVariableTarget) {
-        let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTarget;
-        let targetName = stateVarObj.value;
+      if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
+        let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
+        let targetNames = stateVarObj.value;
 
-        if (targetName) {
-          let componentActionsChained = this.actionsChangedToActions[targetName];
-          if (!componentActionsChained) {
-            componentActionsChained = this.actionsChangedToActions[targetName] = [];
+        if (Array.isArray(targetNames)) {
+          for (let tName of targetNames) {
+            let componentActionsChained = this.actionsChangedToActions[tName];
+            if (!componentActionsChained) {
+              componentActionsChained = this.actionsChangedToActions[tName] = [];
+            }
+
+            componentActionsChained.push({
+              componentName: component.componentName,
+              actionName: chainInfo.triggeredAction
+            });
           }
-
-          componentActionsChained.push({
-            componentName: component.componentName,
-            actionName: chainInfo.triggeredAction
-          });
 
         }
       }
