@@ -13,7 +13,8 @@ export default function Textfield(props) {
         borderRadius: '5px',
         color: '#000',
         value: 'Enter text here',
-        resize:'none'
+        resize:'none',
+        whiteSpace: 'nowrap',
       }
       var label ={
         value: 'Label:',
