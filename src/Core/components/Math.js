@@ -12,7 +12,7 @@ export default class MathComponent extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
+  static get stateVariablesShadowedForReference() { return ["unnormalizedValue", "unordered"] };
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -74,9 +74,6 @@ export default class MathComponent extends InlineComponent {
     };
     attributes.unordered = {
       createComponentOfType: "boolean",
-      createStateVariable: "unordered",
-      defaultValue: false,
-      public: true,
     };
     attributes.createVectors = {
       createComponentOfType: "boolean",
@@ -149,6 +146,42 @@ export default class MathComponent extends InlineComponent {
             value: desiredStateVariableValues.valueShadow
           }]
         };
+      }
+    }
+
+    stateVariableDefinitions.unordered = {
+      defaultValue: false,
+      public: true,
+      returnDependencies: () => ({
+        unorderedAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "unordered",
+          variableNames: ["value"]
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["unordered"]
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        if (dependencyValues.unorderedAttr === null) {
+          if (dependencyValues.mathChildren.length > 0) {
+            let unordered = dependencyValues.mathChildren.every(x => x.stateValues.unordered);
+            return { newValues: { unordered } }
+          } else {
+            return {
+              useEssentialOrDefaultValue: {
+                unordered: { variablesToCheck: ["unordered"] }
+              }
+            }
+          }
+        } else {
+          return {
+            newValues: { unordered: dependencyValues.unorderedAttr.stateValues.value }
+          }
+        }
       }
     }
 

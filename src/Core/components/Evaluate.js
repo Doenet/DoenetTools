@@ -48,6 +48,12 @@ export default class Evaluate extends MathComponent {
       valueForFalse: 0,
     };
 
+    attributes.unordered = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unordered",
+      defaultValue: false,
+      public: true,
+    };
 
     return attributes;
   }
@@ -68,6 +74,7 @@ export default class Evaluate extends MathComponent {
     delete stateVariableDefinitions.codesAdjacentToStrings;
     delete stateVariableDefinitions.mathChildrenByArrayComponent;
     delete stateVariableDefinitions.mathChildrenWithCanBeModified;
+    delete stateVariableDefinitions.unordered;
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({}),

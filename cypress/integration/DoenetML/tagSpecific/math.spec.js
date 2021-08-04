@@ -1132,4 +1132,31 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('math inherits unordered of children', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math name="unordered1"><math unordered>2,3</math></math>
+  <math name="unordered2">4<math unordered>(2,3)</math></math>
+  <math name="ordered1">2,3</math>
+  <math name="ordered2"><math>4</math><math unordered>(2,3)</math></math>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/unordered1"].stateValues.unordered).eq(true);
+      expect(components["/unordered2"].stateValues.unordered).eq(true);
+      expect(components["/ordered1"].stateValues.unordered).eq(false);
+      expect(components["/ordered2"].stateValues.unordered).eq(false);
+
+
+    });
+
+
+  });
+
 })
