@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import { doenetComponentForegroundInactive } from "./theme"
 
-export default function Textfield(props) {
+export default function TextArea(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
   //Assume small
   var textfield = {
         margin: '0px',
-        height: '20px',
+        height: '24px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
         borderRadius: '5px',
         color: '#000',
-        value: 'Enter text here',
-        resize:'none',
-        whiteSpace: 'nowrap',
-        padding:"0px 10px 0px 10px;",
-        lineHeight:"20px"
+        value: 'Enter text here'
       }
       var label ={
         value: 'Label:',

@@ -7,12 +7,16 @@ export default function Textfield(props) {
   //Assume small
   var textfield = {
         margin: '0px',
-        height: '24px',
+        height: '20px',
         border: `2px solid ${doenetComponentForegroundInactive}`,
         fontFamily: 'Arial',
         borderRadius: '5px',
         color: '#000',
-        value: 'Enter text here'
+        value: 'Enter text here',
+        resize:'none',
+        whiteSpace: 'nowrap',
+        padding:"0px 10px 0px 10px;",
+        lineHeight:"20px"
       }
       var label ={
         value: 'Label:',
