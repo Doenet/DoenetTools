@@ -3,6 +3,7 @@ import Template from './Template';
 export default class Paginator extends Template {
   static componentType = "paginator";
   static renderedDefault = true;
+  static includeBlankStringChildren = false;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
