@@ -14,8 +14,7 @@ import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
-import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
-import TextField from '../../_reactComponents/PanelHeaderComponents/TextField.jsx';
+import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
@@ -32,7 +31,7 @@ import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMen
 //   codePreview: example of how the code looks for most basic form of the component, EXAMPLE: <UnitMenu {units: ['EM', 'PX', 'PT']}
 //   req_props: {props needed for component to exist, null for most cases, written in this form: name: 'option}, EXAMPLE: {units: ['EM', 'PX', 'PT']}
 //   req_children: children needed to show how the component works, null for most cases, EXAMPLE: null,
-//   use: 'talk about why this thing exists', EXAMPLE: 'Adds added changable units for a textarea.'
+//   use: 'talk about why this thing exists', EXAMPLE: 'Adds added changable units for a textfield.'
 //   props: [
 //       {name: 'Title of prop', EXAMPLE: 'Label'
 //       propPreview: 'example of the component code with the prop', EXAMPLE: '<UnitMenu units={['EM', 'PX', 'PT']} label='Label: '>'
@@ -264,89 +263,50 @@ export default function attempt() {
         //   propCode: {label: 'What: ', width: 'menu'},
         //   description: 'Adds label to componenet'},
         {name: 'Disabled',
-          propPreview: '<SearchBar disabled />',
+          propPreview: '<Increment disabled />',
           propCode: {disabled},
-          description: 'Makes SearchBar not able to be used.'},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
-    name: 'TextArea',
-    id: 'textArea',
-    code: TextArea,
-    codePreview: '<TextArea/>',
+    name: 'Textfield',
+    id: 'textfield',
+    code: Textfield,
+    codePreview: '<Textfield/>',
     req_props: null,
     req_children: null,
     use: 'This is where you can enter text.',
     props: [
       {name: 'Width - Menu Panel',
-      propPreview: '<TextArea width="menu" />',
+      propPreview: '<Textfield width="menu" />',
       propCode: {width: 'menu'},
       description: 'Sets width to fill menu panel width'},
       {name: 'Value',
-      propPreview: '<TextArea value="Enter cat names"/>',
+      propPreview: '<Textfield value="Enter cat names"/>',
       propCode: {value: 'Enter cat names'},
       description: 'Changes the text'},
       {name: 'Label',
-          propPreview: '<TextArea label="What: "/>',
+          propPreview: '<Textfield label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to componenet'},
           {name: 'Vertical Label',
-          propPreview: '<TextArea label="What: " vertical/>',
+          propPreview: '<Textfield label="What: " vertical/>',
           propCode: {label: 'What: ', vertical},
           description: 'Adds label to component on top'},
       {name: 'Alert',
-      propPreview: '<TextArea alert/>',
+      propPreview: '<Textfield alert/>',
       propCode: {alert},
       description: 'Changes to alert mode (border is red)'},
       {name: 'onChange',
-      propPreview: '<TextArea onChange={(data) => console.log(data)} />',
+      propPreview: '<Textfield onChange={(data) => console.log(data)} />',
       propCode: {onChange: (data) => console.log(data)},
       description: 'Function called when data changes'},
       {name: 'Disabled',
-          propPreview: '<TextArea disabled />',
+          propPreview: '<Increment disabled />',
           propCode: {disabled},
-          description: 'Makes Text area not able to be used.'},
+          description: 'Makes button not able to be used.'},
       ]
     },
-    {
-      name: 'TextField',
-      id: 'textField',
-      code: TextField,
-      codePreview: '<TextField/>',
-      req_props: null,
-      req_children: null,
-      use: 'This is where you can enter text.',
-      props: [
-        {name: 'Width - Menu Panel',
-        propPreview: '<TextField width="menu" />',
-        propCode: {width: 'menu'},
-        description: 'Sets width to fill menu panel width'},
-        {name: 'Value',
-        propPreview: '<TextField value="Enter cat names"/>',
-        propCode: {value: 'Enter cat names'},
-        description: 'Changes the text'},
-        {name: 'Label',
-            propPreview: '<TextField label="What: "/>',
-            propCode: {label: 'What: '},
-            description: 'Adds label to componenet'},
-            {name: 'Vertical Label',
-            propPreview: '<TextField label="What: " vertical/>',
-            propCode: {label: 'What: ', vertical},
-            description: 'Adds label to component on top'},
-        {name: 'Alert',
-        propPreview: '<TextField alert/>',
-        propCode: {alert},
-        description: 'Changes to alert mode (border is red)'},
-        {name: 'onChange',
-        propPreview: '<TextField onChange={(data) => console.log(data)} />',
-        propCode: {onChange: (data) => console.log(data)},
-        description: 'Function called when data changes'},
-        {name: 'Disabled',
-            propPreview: '<TextField disabled />',
-            propCode: {disabled},
-            description: 'Makes textfield not able to be used.'},
-        ]
-      },
     {
       name: 'ToggleButton',
       id: 'togglebutton',
@@ -377,7 +337,7 @@ export default function attempt() {
         propCode: {label: 'What: '},
         description: 'Adds label to button'},
         {name: 'Vertical Label',
-          propPreview: '<ToggleButton label="What: " vertical/>',
+          propPreview: '<Textfield label="What: " vertical/>',
           propCode: {label: 'What: ', vertical},
           description: 'Adds label to component on top'},
         {name: 'Icon',
@@ -397,9 +357,9 @@ export default function attempt() {
         propCode: {onClick: (data) => console.log(data)},
         description: 'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)'},
         {name: 'Disabled',
-          propPreview: '<ToggleButton disabled />',
+          propPreview: '<Increment disabled />',
           propCode: {disabled},
-          description: 'Makes ToggleButton not able to be used.'},
+          description: 'Makes button not able to be used.'},
       ]
     },
     {
