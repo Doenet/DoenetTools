@@ -15,6 +15,7 @@ import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleBut
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
 import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
+import Form from '../../_reactComponents/PanelHeaderComponents/Form.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
@@ -307,6 +308,53 @@ export default function attempt() {
           description: 'Makes button not able to be used.'},
       ]
     },
+    {
+      name: 'Form',
+      id: 'form',
+      code: Form,
+      codePreview: '<Form/>',
+      req_props: null,
+      req_children: null,
+      use: 'This is where you can enter text.',
+      props: [
+        {name: 'Width - Menu Panel',
+        propPreview: '<Form width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Submit Button Text',
+        propPreview: '<Form submitButton="add Text" />',
+        propCode: {submitButton:"add Text"},
+        description: 'Changes the button text'},
+        {name: 'Value',
+        propPreview: '<Form value="Enter cat names"/>',
+        propCode: {value: 'Enter cat names'},
+        description: 'Changes the text'},
+        {name: 'Label',
+            propPreview: '<Form label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to componenet'},
+            {name: 'Vertical Label',
+            propPreview: '<Form label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+        {name: 'Alert',
+        propPreview: '<Form alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<Form onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'onClick',
+        propPreview: '<Form onClick={() => console.log("clicked")} />',
+        propCode: {onClick: () => console.log("clicked")},
+        description: 'Function called when form button is clicked'},
+        {name: 'Disabled',
+            propPreview: '<Form disabled />',
+            propCode: {disabled},
+            description: 'Makes Form not able to be used.'},
+        ]
+      },
     {
       name: 'ToggleButton',
       id: 'togglebutton',
