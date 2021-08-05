@@ -9,9 +9,16 @@ export default class AsList extends DoenetRenderer {
       return null;
     }
 
+    let children = this.children;
+    
+    if(this.doenetSvData.nChildrenToDisplay !== undefined) {
+      children = children.slice(0, this.doenetSvData.nChildrenToDisplay);
+    }
+    
+
     // BADBADBAD: what is the best way to filter out the hidden children?
     // This approach doesn't seem like a good idea.
-    let children = this.children.filter(x => !x.props.componentInstructions.stateValues.hidden);
+    children = children.filter(x => !x.props.componentInstructions.stateValues.hidden);
 
     if (children.length === 0) {
       return <React.Fragment key={this.componentName} />

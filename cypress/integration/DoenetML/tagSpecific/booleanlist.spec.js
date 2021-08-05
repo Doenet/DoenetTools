@@ -5,8 +5,7 @@ describe('BooleanList Tag Tests', function () {
 
   })
 
-  // TODO: deal with hidden children of a booleanlist
-  it.skip('booleanlist within booleanlists', () => {
+  it('booleanlist within booleanlists', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -16,6 +15,7 @@ describe('BooleanList Tag Tests', function () {
 
     <p><booleanlist>
       <boolean>true</boolean>
+      <boolean hide>false</boolean>
       <copy tname="_booleanlist1" />
       <boolean>false</boolean>
       <copy tname="_copy1" />
@@ -28,7 +28,7 @@ describe('BooleanList Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', '')
     cy.get('#\\/_p2').should('have.text', 'false, true, false')
     cy.get('#\\/_p3').should('have.text', 'true, false, true, false, false, false, true, false')
-    cy.get('#\\/_p4').should('have.text', 'true, false, true, false, false, false')
+    cy.get('#\\/_p4').should('have.text', 'true, false, true, false, false')
 
 
   })
