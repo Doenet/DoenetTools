@@ -15,8 +15,7 @@ describe('TextList Tag Tests', function () {
 
   })
 
-  // TODO: deal with hidden children of a textlist
-  it.skip('textlist within textlists', () => {
+  it('textlist within textlists', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

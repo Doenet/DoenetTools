@@ -307,43 +307,117 @@ export default class NumberList extends InlineComponent {
       }
     }
 
-    // stateVariableDefinitions.childrenToRender = {
-    //   returnDependencies: () => ({
-    //     numberAndNumberListChildren: {
-    //       dependencyType: "child",
-    //       childLogicName: "numberAndNumberLists",
-    //       variableNames: ["childrenToRender"],
-    //       variablesOptional: true,
-    //     },
-    //     maximumNumber: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "maximumNumber",
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues, componentInfoObjects }) {
-    //     let childrenToRender = [];
 
-    //     for (let child of dependencyValues.numberAndNumberListChildren) {
-    //       if (componentInfoObjects.isInheritedComponentType({
-    //         inheritedComponentType: child.componentType,
-    //         baseComponentType: "numberList"
-    //       })) {
-    //         childrenToRender.push(...child.stateValues.childrenToRender);
-    //       } else {
-    //         childrenToRender.push(child.componentName);
-    //       }
-    //     }
+    stateVariableDefinitions.componentNamesInList = {
+      returnDependencies: () => ({
+        numberAndNumberListChildren: {
+          dependencyType: "child",
+          childGroups: ["numbers", "numberLists"],
+          variableNames: ["componentNamesInList"],
+          variablesOptional: true,
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let componentNamesInList = [];
 
-    //     let maxNum = dependencyValues.maximumNumber;
-    //     if (maxNum !== null && childrenToRender.length > maxNum) {
-    //       maxNum = Math.max(0, Math.floor(maxNum));
-    //       childrenToRender = childrenToRender.slice(0, maxNum)
-    //     }
+        for (let child of dependencyValues.numberAndNumberListChildren) {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "numberList"
+          })) {
+            componentNamesInList.push(...child.stateValues.componentNamesInList);
+          } else {
+            componentNamesInList.push(child.componentName);
+          }
+        }
 
-    //     return { newValues: { childrenToRender } }
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== null && componentNamesInList.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          componentNamesInList = componentNamesInList.slice(0, maxNum)
+        }
 
-    //   }
-    // }
+        return { newValues: { componentNamesInList } }
+
+      }
+    }
+
+    stateVariableDefinitions.nComponentsToDisplayByChild = {
+      additionalStateVariablesDefined: [{
+        variableName: "nChildrenToDisplay",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        nComponents: {
+          dependencyType: "stateVariable",
+          variableName: "nComponents",
+        },
+        numberListChildren: {
+          dependencyType: "child",
+          childGroups: ["numberLists"],
+          variableNames: ["nComponents"],
+        },
+        numberAndNumberListChildren: {
+          dependencyType: "child",
+          childGroups: ["numbers", "numberLists"],
+          skipComponentNames: true,
+        },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable", 
+          parentComponentType: "numberList",
+          variableName: "nComponentsToDisplayByChild"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects, componentName }) {
+
+        let nComponentsToDisplay = dependencyValues.nComponents;
+
+        if(dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent numberList, which could have limited
+          // number of components to display
+          nComponentsToDisplay = dependencyValues.parentNComponentsToDisplayByChild[componentName]
+        }
+
+        let nComponentsToDisplayByChild = {};
+
+        let nComponentsSoFar = 0;
+        let nChildrenToDisplay = 0;
+
+        let nNumberLists = 0;
+        for (let child of dependencyValues.numberAndNumberListChildren) {
+          let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
+          if(nComponentsLeft > 0) {
+            nChildrenToDisplay++;
+          }
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "numberList"
+          })) {
+            let numberListChild = dependencyValues.numberListChildren[nNumberLists];
+            nNumberLists++;
+
+            let nComponentsForNumberListChild = Math.min(
+              nComponentsLeft,
+              numberListChild.stateValues.nComponents
+            )
+
+            nComponentsToDisplayByChild[numberListChild.componentName] = nComponentsForNumberListChild;
+            nComponentsSoFar += nComponentsForNumberListChild;
+
+          } else {
+            nComponentsSoFar += 1;
+          }
+        }
+
+        return {
+          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+        }
+      }
+    }
 
     return stateVariableDefinitions;
   }

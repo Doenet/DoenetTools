@@ -137,6 +137,7 @@ import PaginatorControls from './components/PaginatorControls';
 import Footnote from './components/Footnote';
 import Caption from './components/Caption';
 import Endpoint from './components/Endpoint';
+import Sort from './components/Sort';
 
 
 //Extended
@@ -271,6 +272,7 @@ const componentTypeArray = [
   Footnote,
   Caption,
   Endpoint,
+  Sort,
 
   BaseComponent,
   InlineComponent,
