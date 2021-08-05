@@ -1174,7 +1174,7 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
   });
 
-  it.only('point constrained to graph', () => {
+  it('point constrained to graph', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
