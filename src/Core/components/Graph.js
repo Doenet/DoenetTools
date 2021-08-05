@@ -126,18 +126,13 @@ export default class Graph extends BlockComponent {
   // }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroGraphical",
-      componentType: '_graphical',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "graphical",
+      componentTypes: ["_graphical"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -172,6 +167,50 @@ export default class Graph extends BlockComponent {
             setStateVariable: "nChildrenAdded",
             value: desiredStateVariableValues.nChildrenAdded
           }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.xscale = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        xmin: {
+          dependencyType: "stateVariable",
+          variableName: "xmin"
+        },
+        xmax: {
+          dependencyType: "stateVariable",
+          variableName: "xmax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            xscale: dependencyValues.xmax - dependencyValues.xmin
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.yscale = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        ymin: {
+          dependencyType: "stateVariable",
+          variableName: "ymin"
+        },
+        ymax: {
+          dependencyType: "stateVariable",
+          variableName: "ymax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            yscale: dependencyValues.ymax - dependencyValues.ymin
+          }
         }
       }
     }

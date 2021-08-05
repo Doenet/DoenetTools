@@ -48,16 +48,21 @@ export default class Evaluate extends MathComponent {
       valueForFalse: 0,
     };
 
+    attributes.unordered = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unordered",
+      defaultValue: false,
+      public: true,
+    };
 
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.deleteAllLogic();
+  static returnChildGroups() {
 
-    return childLogic;
+    return []
+
   }
 
   static returnStateVariableDefinitions() {
@@ -69,6 +74,7 @@ export default class Evaluate extends MathComponent {
     delete stateVariableDefinitions.codesAdjacentToStrings;
     delete stateVariableDefinitions.mathChildrenByArrayComponent;
     delete stateVariableDefinitions.mathChildrenWithCanBeModified;
+    delete stateVariableDefinitions.unordered;
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({}),

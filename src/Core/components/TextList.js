@@ -61,31 +61,16 @@ export default class TextList extends InlineComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0
-    });
+    return [{
+      group: "texts",
+      componentTypes: ["text"]
+    }, {
+      group: "textLists",
+      componentTypes: ["textList"]
+    }]
 
-    let atLeastZeroTextLists = childLogic.newLeaf({
-      name: "atLeastZeroTextLists",
-      componentType: 'textList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "textAndTextLists",
-      operator: "and",
-      propositions: [atLeastZeroTexts, atLeastZeroTextLists],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -113,12 +98,12 @@ export default class TextList extends InlineComponent {
           },
           textListChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroTextLists",
+            childGroups: ["textLists"],
             variableNames: ["nComponents"],
           },
           textAndTextListChildren: {
             dependencyType: "child",
-            childLogicName: "textAndTextLists",
+            childGroups: ["texts", "textLists"],
             skipComponentNames: true,
           },
         }
@@ -195,7 +180,7 @@ export default class TextList extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             textAndTextListChildren: {
               dependencyType: "child",
-              childLogicName: "textAndTextLists",
+              childGroups: ["texts", "textLists"],
               variableNames: ["value", "text" + textIndex],
               variablesOptional: true,
               childIndices,
@@ -299,44 +284,117 @@ export default class TextList extends InlineComponent {
     }
 
 
-    // stateVariableDefinitions.childrenToRender = {
-    //   returnDependencies: () => ({
-    //     textAndTextListChildren: {
-    //       dependencyType: "child",
-    //       childLogicName: "textAndTextLists",
-    //       variableNames: ["childrenToRender"],
-    //       variablesOptional: true,
-    //     },
-    //     maximumNumber: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "maximumNumber",
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues, componentInfoObjects }) {
+    stateVariableDefinitions.componentNamesInList = {
+      returnDependencies: () => ({
+        textAndTextListChildren: {
+          dependencyType: "child",
+          childGroups: ["texts", "textLists"],
+          variableNames: ["componentNamesInList"],
+          variablesOptional: true,
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
 
-    //     let childrenToRender = [];
+        let componentNamesInList = [];
 
-    //     for (let child of dependencyValues.textAndTextListChildren) {
-    //       if (componentInfoObjects.isInheritedComponentType({
-    //         inheritedComponentType: child.componentType,
-    //         baseComponentType: "textList"
-    //       })) {
-    //         childrenToRender.push(...child.stateValues.childrenToRender);
-    //       } else {
-    //         childrenToRender.push(child.componentName);
-    //       }
-    //     }
+        for (let child of dependencyValues.textAndTextListChildren) {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "textList"
+          })) {
+            componentNamesInList.push(...child.stateValues.componentNamesInList);
+          } else {
+            componentNamesInList.push(child.componentName);
+          }
+        }
 
-    //     let maxNum = dependencyValues.maximumNumber;
-    //     if (maxNum !== null && childrenToRender.length > maxNum) {
-    //       maxNum = Math.max(0, Math.floor(maxNum));
-    //       childrenToRender = childrenToRender.slice(0, maxNum)
-    //     }
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== null && componentNamesInList.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          componentNamesInList = componentNamesInList.slice(0, maxNum)
+        }
 
-    //     return { newValues: { childrenToRender } }
+        return { newValues: { componentNamesInList } }
 
-    //   }
-    // }
+      }
+    }
+
+    stateVariableDefinitions.nComponentsToDisplayByChild = {
+      additionalStateVariablesDefined: [{
+        variableName: "nChildrenToDisplay",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        nComponents: {
+          dependencyType: "stateVariable",
+          variableName: "nComponents",
+        },
+        textListChildren: {
+          dependencyType: "child",
+          childGroups: ["textLists"],
+          variableNames: ["nComponents"],
+        },
+        textAndTextListChildren: {
+          dependencyType: "child",
+          childGroups: ["texts", "textLists"],
+          skipComponentNames: true,
+        },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "textList",
+          variableName: "nComponentsToDisplayByChild"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects, componentName }) {
+
+        let nComponentsToDisplay = dependencyValues.nComponents;
+
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent textList, which could have limited
+          // text of components to display
+          nComponentsToDisplay = dependencyValues.parentNComponentsToDisplayByChild[componentName]
+        }
+
+        let nComponentsToDisplayByChild = {};
+
+        let nComponentsSoFar = 0;
+        let nChildrenToDisplay = 0;
+
+        let nTextLists = 0;
+        for (let child of dependencyValues.textAndTextListChildren) {
+          let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
+          if (nComponentsLeft > 0) {
+            nChildrenToDisplay++;
+          }
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "textList"
+          })) {
+            let textListChild = dependencyValues.textListChildren[nTextLists];
+            nTextLists++;
+
+            let nComponentsForTextListChild = Math.min(
+              nComponentsLeft,
+              textListChild.stateValues.nComponents
+            )
+
+            nComponentsToDisplayByChild[textListChild.componentName] = nComponentsForTextListChild;
+            nComponentsSoFar += nComponentsForTextListChild;
+
+          } else {
+            nComponentsSoFar += 1;
+          }
+        }
+
+        return {
+          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+        }
+      }
+    }
 
     return stateVariableDefinitions;
   }

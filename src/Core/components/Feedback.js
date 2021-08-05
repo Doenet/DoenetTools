@@ -23,18 +23,13 @@ export default class Feedback extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroAnything",
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -55,8 +50,8 @@ export default class Feedback extends BlockComponent {
       }
     }
 
-    stateVariableDefinitions.updateWithFullTname = {
-      chainActionOnActionOfStateVariableTarget: {
+    stateVariableDefinitions.updateWithFullTnames = {
+      chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateHide"
       },
       stateVariablesDeterminingDependencies: ["updateWithTname"],
@@ -73,7 +68,11 @@ export default class Feedback extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { updateWithFullTname: dependencyValues.updateWithFullTname } }
+        if (dependencyValues.updateWithFullTname) {
+          return { newValues: { updateWithFullTnames: [dependencyValues.updateWithFullTname] } }
+        } else {
+          return { newValues: { updateWithFullTnames: [] } }
+        }
       }
     }
 

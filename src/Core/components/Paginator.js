@@ -9,6 +9,7 @@ export default class Paginator extends Template {
 
     attributes.preserveScores = {
       createPrimitiveOfType: "boolean",
+      createStateVariable: "preserveScores",
       defaultValue: true
     }
     attributes.initialPage = {
@@ -119,7 +120,7 @@ export default class Paginator extends Template {
 
     let replacements = [];
     for (let [pInd, section] of sectionReplacements.entries()) {
-      if (component.attributes.preserveScores.primitive) {
+      if (component.stateValues.preserveScores) {
         if (!section.state) {
           section.state = {};
         }
@@ -138,7 +139,7 @@ export default class Paginator extends Template {
           componentType: section.componentType,
           state: {
             hide: true,
-            aggregateScores: component.attributes.preserveScores.primitive,
+            aggregateScores: component.stateValues.preserveScores,
             sectionPlaceholder: true,
           }
         }],
@@ -173,7 +174,7 @@ export default class Paginator extends Template {
       sourceInformation: { fromSetPage: true }
     }];
 
-    if (this.attributes.preserveScores.primitive) {
+    if (this.stateValues.preserveScores) {
       let sectionToBeWithheld = this.replacements[2 * (currentPageNumber - 1)].replacements[0];
       let sectionCreditAchieved = sectionToBeWithheld.stateValues.creditAchieved;
       let sectionPercentCreditAchieved = sectionToBeWithheld.stateValues.percentCreditAchieved;

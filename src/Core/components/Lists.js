@@ -18,19 +18,15 @@ export class Ol extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroLis",
-      componentType: 'li',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true
-    });
+    return [{
+      group: "lis",
+      componentTypes: ["li"]
+    }]
 
-    return childLogic;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -77,31 +73,13 @@ export class Li extends BaseComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "inlinesBlocks",
+      componentTypes: ["_inline", "_block"]
+    }]
 
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: 'inlineOrBlock',
-      operator: "or",
-      propositions: [atLeastZeroInline, atLeastZeroBlock],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 

@@ -53,7 +53,7 @@ export default class MathInput extends DoenetRenderer {
 
     this.mathExpression = this.doenetSvData.valueForDisplay;
 
-    if(this.doenetSvData.rawRendererValue !== null) {
+    if (this.doenetSvData.rawRendererValue !== null) {
       this.latexValue = this.doenetSvData.rawRendererValue
     } else {
       this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
@@ -100,6 +100,7 @@ export default class MathInput extends DoenetRenderer {
 
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
+      splitSymbols: this.doenetSvData.splitSymbols,
     });
 
     try {
@@ -143,7 +144,7 @@ export default class MathInput extends DoenetRenderer {
         mathExpression: newMathExpression,
         rawRendererValue: this.latexValue,
       });
-    } else if(rawValueChanged) {
+    } else if (rawValueChanged) {
       this.actions.updateRawValue({
         rawRendererValue: this.latexValue,
         transient: transientForRaw
@@ -510,10 +511,16 @@ var appliedFunctionSymbols = [
   'count', 'mod'
 ];
 
-function getFromLatex({ functionSymbols }) {
-  return x => me.fromAst((new me.converters.latexToAstObj({
-    appliedFunctionSymbols, functionSymbols
-  })).convert(x))
+function getFromLatex({ functionSymbols, splitSymbols }) {
+  if (splitSymbols) {
+    return x => me.fromAst((new me.converters.latexToAstObj({
+      appliedFunctionSymbols, functionSymbols, splitSymbols
+    })).convert(wrapWordIncludingNumberWithVar(x)))
+  } else {
+    return x => me.fromAst((new me.converters.latexToAstObj({
+      appliedFunctionSymbols, functionSymbols, splitSymbols
+    })).convert(wrapWordWithVar(x)))
+  }
 }
 
 
@@ -577,5 +584,106 @@ function substituteUnicodeInLatexString(latexString) {
   }
 
   return latexString;
+
+}
+
+
+function wrapWordWithVar(string) {
+
+  // wrap words that aren't already in a \var with a \var
+
+  let newString = "";
+
+  let regex = /\\var\s*{[^{}]*}/
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString +=  wrapWordWithVarSub(string);
+
+  return newString;
+
+}
+
+function wrapWordWithVarSub(string) {
+
+  let newString = "";
+
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      // start with backslash, so skip
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+
+    match = string.match(regex);
+  }
+
+  newString += string;
+
+  return newString;
+
+}
+
+function wrapWordIncludingNumberWithVar(string) {
+
+  let newString = "";
+
+  let regex = /\\var\s*{[^{}]*}/
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString += wrapWordIncludingNumberWithVarSub(string);
+
+  return newString;
+
+}
+
+function wrapWordIncludingNumberWithVarSub(string) {
+
+  let newString = "";
+
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      // start with backslash, so skip
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+
+    match = string.match(regex);
+  }
+
+  newString += string;
+
+  return newString;
 
 }

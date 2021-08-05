@@ -78,33 +78,17 @@ export default class MathList extends InlineComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0
-    });
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "mathLists",
+      componentTypes: ["mathList"]
+    }]
 
-    let atLeastZeroMathLists = childLogic.newLeaf({
-      name: "atLeastZeroMathLists",
-      componentType: 'mathList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "mathAndMathLists",
-      operator: "and",
-      propositions: [atLeastZeroMaths, atLeastZeroMathLists],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
-
 
   static returnStateVariableDefinitions() {
 
@@ -154,19 +138,19 @@ export default class MathList extends InlineComponent {
         if (stateValues.mergeMathLists) {
           dependencies.mathAndMathListChildren = {
             dependencyType: "child",
-            childLogicName: "mathAndMathLists",
+            childGroups: ["maths", "mathLists"],
             variableNames: ["value", "nComponents"],
             variablesOptional: true,
           };
         } else {
           dependencies.mathListChildren = {
             dependencyType: "child",
-            childLogicName: "atLeastZeroMathLists",
+            childGroups: ["mathLists"],
             variableNames: ["nComponents"],
           };
           dependencies.mathAndMathListChildren = {
             dependencyType: "child",
-            childLogicName: "mathAndMathLists",
+            childGroups: ["maths", "mathLists"],
             skipComponentNames: true,
           };
 
@@ -290,7 +274,7 @@ export default class MathList extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             mathAndMathListChildren: {
               dependencyType: "child",
-              childLogicName: "mathAndMathLists",
+              childGroups: ["maths", "mathLists"],
               variableNames: ["value", "math" + mathIndex],
               variablesOptional: true,
               childIndices,
@@ -402,7 +386,7 @@ export default class MathList extends InlineComponent {
       returnDependencies: () => ({
         mathAndMathListChildren: {
           dependencyType: "child",
-          childLogicName: "mathAndMathLists",
+          childGroups: ["maths", "mathLists"],
           variableNames: ["valueForDisplay", "latex", "latexs"],
           variablesOptional: true,
         },
@@ -467,7 +451,7 @@ export default class MathList extends InlineComponent {
       returnDependencies: () => ({
         mathAndMathListChildren: {
           dependencyType: "child",
-          childLogicName: "mathAndMathLists",
+          childGroups: ["maths", "mathLists"],
           variableNames: ["valueForDisplay", "text", "texts"],
           variablesOptional: true,
         },
@@ -522,44 +506,117 @@ export default class MathList extends InlineComponent {
       }
     }
 
-    // stateVariableDefinitions.childrenToRender = {
-    //   returnDependencies: () => ({
-    //     mathAndMathListChildren: {
-    //       dependencyType: "child",
-    //       childLogicName: "mathAndMathLists",
-    //       variableNames: ["childrenToRender"],
-    //       variablesOptional: true,
-    //     },
-    //     maximumNumber: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "maximumNumber",
-    //     },
-    //   }),
-    //   definition: function ({ dependencyValues, componentInfoObjects }) {
-    //     let childrenToRender = [];
 
-    //     for (let child of dependencyValues.mathAndMathListChildren) {
-    //       if (componentInfoObjects.isInheritedComponentType({
-    //         inheritedComponentType: child.componentType,
-    //         baseComponentType: "mathList"
-    //       })) {
-    //         childrenToRender.push(...child.stateValues.childrenToRender);
-    //       } else {
-    //         childrenToRender.push(child.componentName);
-    //       }
-    //     }
+    stateVariableDefinitions.componentNamesInList = {
+      returnDependencies: () => ({
+        mathAndMathListChildren: {
+          dependencyType: "child",
+          childGroups: ["maths", "mathLists"],
+          variableNames: ["componentNamesInList"],
+          variablesOptional: true,
+        },
+        maximumNumber: {
+          dependencyType: "stateVariable",
+          variableName: "maximumNumber",
+        },
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let componentNamesInList = [];
 
-    //     let maxNum = dependencyValues.maximumNumber;
-    //     if (maxNum !== null && childrenToRender.length > maxNum) {
-    //       maxNum = Math.max(0, Math.floor(maxNum));
-    //       childrenToRender = childrenToRender.slice(0, maxNum)
-    //     }
+        for (let child of dependencyValues.mathAndMathListChildren) {
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "mathList"
+          })) {
+            componentNamesInList.push(...child.stateValues.componentNamesInList);
+          } else {
+            componentNamesInList.push(child.componentName);
+          }
+        }
 
-    //     return { newValues: { childrenToRender } }
+        let maxNum = dependencyValues.maximumNumber;
+        if (maxNum !== null && componentNamesInList.length > maxNum) {
+          maxNum = Math.max(0, Math.floor(maxNum));
+          componentNamesInList = componentNamesInList.slice(0, maxNum)
+        }
 
-    //   }
-    // }
+        return { newValues: { componentNamesInList } }
 
+      }
+    }
+
+    stateVariableDefinitions.nComponentsToDisplayByChild = {
+      additionalStateVariablesDefined: [{
+        variableName: "nChildrenToDisplay",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        nComponents: {
+          dependencyType: "stateVariable",
+          variableName: "nComponents",
+        },
+        mathListChildren: {
+          dependencyType: "child",
+          childGroups: ["mathLists"],
+          variableNames: ["nComponents"],
+        },
+        mathAndMathListChildren: {
+          dependencyType: "child",
+          childGroups: ["maths", "mathLists"],
+          skipComponentNames: true,
+        },
+        parentNComponentsToDisplayByChild: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "nComponentsToDisplayByChild"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects, componentName }) {
+
+        let nComponentsToDisplay = dependencyValues.nComponents;
+
+        if (dependencyValues.parentNComponentsToDisplayByChild !== null) {
+          // have a parent mathList, which could have limited
+          // math of components to display
+          nComponentsToDisplay = dependencyValues.parentNComponentsToDisplayByChild[componentName]
+        }
+
+        let nComponentsToDisplayByChild = {};
+
+        let nComponentsSoFar = 0;
+        let nChildrenToDisplay = 0;
+
+        let nMathLists = 0;
+        for (let child of dependencyValues.mathAndMathListChildren) {
+          let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
+          if (nComponentsLeft > 0) {
+            nChildrenToDisplay++;
+          }
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: child.componentType,
+            baseComponentType: "mathList"
+          })) {
+            let mathListChild = dependencyValues.mathListChildren[nMathLists];
+            nMathLists++;
+
+            let nComponentsForMathListChild = Math.min(
+              nComponentsLeft,
+              mathListChild.stateValues.nComponents
+            )
+
+            nComponentsToDisplayByChild[mathListChild.componentName] = nComponentsForMathListChild;
+            nComponentsSoFar += nComponentsForMathListChild;
+
+          } else {
+            nComponentsSoFar += 1;
+          }
+        }
+
+        return {
+          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+        }
+      }
+    }
 
     return stateVariableDefinitions;
   }

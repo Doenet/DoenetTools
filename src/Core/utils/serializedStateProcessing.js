@@ -274,34 +274,19 @@ export function findContentCopies({ serializedComponents }) {
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "copy") {
       if (serializedComponent.attributes && serializedComponent.attributes.uri) {
-        let uriComponent = serializedComponent.attributes.uri.component;
-        if (uriComponent && uriComponent.componentType) {
-          let uri;
-          if (uriComponent.state !== undefined) {
-            uri = uriComponent.state.value;
-          }
-          // child overrides value from state
-          if (uriComponent.children !== undefined) {
-            for (let child of uriComponent.children) {
-              if (child.componentType === "string") {
-                uri = child.state.value;
-                break;
-              }
+        let uri = serializedComponent.attributes.uri.primitive;
+
+        if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
+
+          let result = uri.match(/[:&]contentid=([^&]+)/i);
+          if (result) {
+            let contentId = result[1];
+            if (contentIdComponents[contentId] === undefined) {
+              contentIdComponents[contentId] = [];
             }
+            contentIdComponents[contentId].push(serializedComponent);
           }
 
-          if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
-
-            let result = uri.match(/[:&]contentid=([^&]+)/i);
-            if (result) {
-              let contentId = result[1];
-              if (contentIdComponents[contentId] === undefined) {
-                contentIdComponents[contentId] = [];
-              }
-              contentIdComponents[contentId].push(serializedComponent);
-            }
-
-          }
         }
       }
     } else {
@@ -405,10 +390,10 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
     for (let attrName in classAttributes) {
       let attrObj = classAttributes[attrName];
 
-      if (attrObj.createPrimitiveOfType && ("defaultValue" in attrObj) && !(attrName in attributes)) {
+      if (attrObj.createPrimitiveOfType && ("defaultPrimitiveValue" in attrObj) && !(attrName in attributes)) {
         attributes[attrName] = componentFromAttribute({
           attrObj,
-          value: attrObj.defaultValue.toString(),
+          value: attrObj.defaultPrimitiveValue.toString(),
           componentInfoObjects,
           flags
         });

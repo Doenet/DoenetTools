@@ -37,9 +37,16 @@ export function getFromLatex({
   appliedFunctionSymbols = appliedFunctionSymbolsDefault,
   splitSymbols = true,
 }) {
-  return x => me.fromAst((new me.converters.latexToAstObj({
-    appliedFunctionSymbols, functionSymbols, splitSymbols,
-  })).convert(x))
+  if (splitSymbols) {
+    return x => me.fromAst((new me.converters.latexToAstObj({
+      appliedFunctionSymbols, functionSymbols,
+    })).convert(wrapWordIncludingNumberWithVar(x)))
+  } else {
+    return x => me.fromAst((new me.converters.latexToAstObj({
+      appliedFunctionSymbols, functionSymbols,
+    })).convert(wrapWordWithVar(x)))
+  }
+
 }
 
 export function normalizeMathExpression({ value, simplify, expand = false,
@@ -371,5 +378,105 @@ export function mergeListsWithOtherContainers(tree) {
   operands = operands.map(x => mergeListsWithOtherContainers(x))
 
   return [operator, ...operands];
+
+}
+
+export function wrapWordWithVar(string) {
+
+  // wrap words that aren't already in a \var with a \var
+
+  let newString = "";
+
+  let regex = /\\var\s*{[^{}]*}/
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString +=  wrapWordWithVarSub(string);
+
+  return newString;
+
+}
+
+function wrapWordWithVarSub(string) {
+
+  let newString = "";
+
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      // start with backslash, so skip
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+
+    match = string.match(regex);
+  }
+
+  newString += string;
+
+  return newString;
+
+}
+
+export function wrapWordIncludingNumberWithVar(string) {
+
+  let newString = "";
+
+  let regex = /\\var\s*{[^{}]*}/
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString += wrapWordIncludingNumberWithVarSub(string);
+
+  return newString;
+
+}
+
+function wrapWordIncludingNumberWithVarSub(string) {
+
+  let newString = "";
+
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      // start with backslash, so skip
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+
+    match = string.match(regex);
+  }
+
+  newString += string;
+
+  return newString;
 
 }

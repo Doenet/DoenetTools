@@ -3545,49 +3545,5 @@ describe('Specifying single variant document tests', function () {
 
   });
 
-  it('select by condition creates a variant', () => {
-
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: `
-        <text>a</text>
-        <p><number name="n">3</number></p>
-        <p><selectByCondition name="s" assignNames="t">
-          <case condition="$n > 0"><text>hello</text></case>
-          <else><text>bye</text></else>
-        </selectByCondition></p>
-        `,
-        requestedVariant: { index: 1 },
-      }, "*");
-    })
-    // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `a`)
-
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      let generatedVariantInfo = {
-        index: 1,
-        name: 'a',
-        meta: {
-          createdBy: "/_document1",
-          subvariantsSpecified: false,
-        },
-        subvariants: [{
-          indices: [1],
-          subvariants: [],
-          meta: { createdBy: "/s" }
-        }]
-      }
-
-      expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
-        generatedVariantInfo
-      )
-
-    })
-
-
-  });
-
 
 });

@@ -23,39 +23,18 @@ export default class Table extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atMostOneTitle = childLogic.newLeaf({
-      name: "atMostOneTitle",
-      componentType: "title",
-      comparison: "atMost",
-      number: 1,
-    })
+    return [{
+      group: "titles",
+      componentTypes: ["title"]
+    }, {
+      group: "inlinesBlocks",
+      componentTypes: ["_inline", "_block"]
+    }]
 
-    let atLeastZeroBlock = childLogic.newLeaf({
-      name: "atLeastZeroBlock",
-      componentType: "_block",
-      comparison: "atLeast",
-      number: 0,
-    })
-
-    let atLeastZeroInline = childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: "_inline",
-      comparison: "atLeast",
-      number: 0,
-    })
-
-    childLogic.newOperator({
-      name: "titleAndBlockInline",
-      operator: "and",
-      propositions: [atMostOneTitle, atLeastZeroBlock, atLeastZeroInline],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -102,12 +81,12 @@ export default class Table extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
         },
       }),
       definition({ dependencyValues }) {
         let titleChildName = null;
-        if (dependencyValues.titleChild.length === 1) {
+        if (dependencyValues.titleChild.length > 0) {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
@@ -124,14 +103,14 @@ export default class Table extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
           variableNames: ["text"],
         },
       }),
       definition({ dependencyValues }) {
 
         let title = null;
-        if (dependencyValues.titleChild.length === 1) {
+        if (dependencyValues.titleChild.length > 0) {
           title = dependencyValues.titleChild[0].stateValues.text;
         }
         return { newValues: { title } }

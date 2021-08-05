@@ -2172,14 +2172,14 @@ describe('Point Tag Tests', function () {
   <line>x=-2y-8</line>
   <point name="A" xs="7 3">
     <constraints>
-    <transformConstraintIntoAttractor>
+    <attractToConstraint>
       <constraintUnion>
         <constrainTo><copy tname="_line1" /></constrainTo>
         <constrainTo><copy tname="_line2" /><copy tname="_line3" /></constrainTo>
         <constrainTo><copy tname="_line4" /></constrainTo>
         <constrainToGrid dx="2" dy="2"/>
       </constraintUnion>
-    </transformConstraintIntoAttractor>
+    </attractToConstraint>
     </constraints>
   </point>
   </graph>

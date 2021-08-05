@@ -137,32 +137,16 @@ export default class Point extends GraphicalComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atMostOnePoint = childLogic.newLeaf({
-      name: "atMostOnePoint",
-      componentType: "point",
-      comparison: "atMost",
-      number: 1,
-    })
+    return [{
+      group: "points",
+      componentTypes: ["point"]
+    }, {
+      group: "constraints",
+      componentTypes: ["constraints"]
+    }]
 
-    let atMostOneConstraints = childLogic.newLeaf({
-      name: "atMostOneConstraints",
-      componentType: "constraints",
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "pointWithConstraints",
-      operator: "and",
-      propositions: [atMostOnePoint, atMostOneConstraints],
-      setAsBase: true,
-    });
-
-
-    return childLogic;
   }
 
 
@@ -279,11 +263,11 @@ export default class Point extends GraphicalComponent {
         },
         pointChild: {
           dependencyType: "child",
-          childLogicName: "atMostOnePoint",
+          childGroups: ["points"],
           variableNames: ["nDimensions"]
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      definition: function ({ dependencyValues }) {
         // console.log(`nDimensions definition`)
         // console.log(dependencyValues)
 
@@ -324,7 +308,7 @@ export default class Point extends GraphicalComponent {
               }
             }
           }
-          if (dependencyValues.pointChild.length === 1) {
+          if (dependencyValues.pointChild.length > 0) {
             return {
               newValues: {
                 nDimensions: dependencyValues.pointChild[0].stateValues.nDimensions
@@ -334,10 +318,6 @@ export default class Point extends GraphicalComponent {
 
           // determine from which component children have
 
-          // Note: wouldn't have been marked stale (so wouldn't get to definution)
-          // if identities of one of the children hadn't changed
-          // so don't need to check if identity changed
-
           if (dependencyValues.z !== null) {
             nDimensions = 3;
           } else if (dependencyValues.y !== null) {
@@ -345,7 +325,7 @@ export default class Point extends GraphicalComponent {
           } else if (dependencyValues.x !== null) {
             nDimensions = 1;
           } else {
-            nDimensions = 2;
+            nDimensions = 0;
           }
         }
 
@@ -407,7 +387,7 @@ export default class Point extends GraphicalComponent {
             },
             pointChild: {
               dependencyType: "child",
-              childLogicName: "atMostOnePoint",
+              childGroups: ["points"],
               variableNames: ["x" + varEnding]
             }
           }
@@ -486,7 +466,7 @@ export default class Point extends GraphicalComponent {
               newXs[arrayKey] = xs.stateValues["math" + varEnding].simplify();
             } else {
               let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild.length === 1) {
+              if (pointChild.length > 0) {
                 newXs[arrayKey] = pointChild[0].stateValues["x" + varEnding]
               } else {
                 let component = dependencyValuesByKey[arrayKey].component;
@@ -592,7 +572,7 @@ export default class Point extends GraphicalComponent {
             } else {
 
               let pointChild = dependencyValuesByKey[arrayKey].pointChild;
-              if (pointChild.length === 1) {
+              if (pointChild.length > 0) {
                 instructions.push({
                   setDependency: dependencyNamesByKey[arrayKey].pointChild,
                   desiredValue: convertValueToMathExpression(desiredStateVariableValues.unconstrainedXs[arrayKey]),
@@ -654,7 +634,7 @@ export default class Point extends GraphicalComponent {
           };
           keyDeps.constraintsChild = {
             dependencyType: "child",
-            childLogicName: "atMostOneConstraints",
+            childGroups: ["constraints"],
             variableNames: [`constraintResult${varEnding}`]
           }
           dependenciesByKey[arrayKey] = keyDeps;
@@ -671,7 +651,7 @@ export default class Point extends GraphicalComponent {
 
         for (let arrayKey of arrayKeys) {
 
-          if (dependencyValuesByKey[arrayKey].constraintsChild.length === 1) {
+          if (dependencyValuesByKey[arrayKey].constraintsChild.length > 0) {
             let varEnding = Number(arrayKey) + 1;
             xs[arrayKey] = convertValueToMathExpression(
               dependencyValuesByKey[arrayKey].constraintsChild[0].stateValues["constraintResult" + varEnding]
@@ -710,7 +690,7 @@ export default class Point extends GraphicalComponent {
           if (!dependencyValuesByKey[arrayKey]) {
             continue;
           }
-          if (dependencyValuesByKey[arrayKey].constraintsChild.length === 1) {
+          if (dependencyValuesByKey[arrayKey].constraintsChild.length > 0) {
             instructions.push({
               setDependency: dependencyNamesByKey[arrayKey].constraintsChild,
               desiredValue: desiredStateVariableValues.xs[arrayKey],
@@ -862,7 +842,7 @@ export default class Point extends GraphicalComponent {
       returnDependencies: () => ({
         constraintsChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneConstraints",
+          childGroups: ["constraints"],
           variableNames: ["constraintUsed"]
         }
       }),

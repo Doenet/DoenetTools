@@ -61,36 +61,18 @@ export default class MathOperator extends MathComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.deleteAllLogic();
-
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atLeastZeroNumbers = childLogic.newLeaf({
-      name: "atLeastZeroNumbers",
-      componentType: 'number',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "mathsAndNumbers",
-      operator: "and",
-      propositions: [atLeastZeroMaths, atLeastZeroNumbers],
-      setAsBase: true,
-    })
-
-
-    return childLogic;
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "numbers",
+      componentTypes: ["number"]
+    }]
 
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -108,7 +90,7 @@ export default class MathOperator extends MathComponent {
         },
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
           variableNames: ["isNumber"],
           variablesOptional: true,
         },
@@ -163,7 +145,7 @@ export default class MathOperator extends MathComponent {
       returnDependencies: () => ({
         mathNumberChildren: {
           dependencyType: "child",
-          childLogicName: "mathsAndNumbers",
+          childGroups: ["maths", "numbers"],
           variableNames: ["value"],
         },
         isNumericOperator: {
@@ -337,7 +319,7 @@ export default class MathOperator extends MathComponent {
         },
         mathNumberChildren: {
           dependencyType: "child",
-          childLogicName: "mathsAndNumbers",
+          childGroups: ["maths", "numbers"],
         },
         isNumericOperator: {
           dependencyType: "stateVariable",

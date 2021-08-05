@@ -52,22 +52,14 @@ export default class BezierControls extends BaseComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.deleteAllLogic();
+    return [{
+      group: "controlVectors",
+      componentTypes: ["controlVectors"]
+    }]
 
-    childLogic.newLeaf({
-      name: "atLeastZeroControlvectors",
-      componentType: 'controlVectors',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true
-    });
-
-    return childLogic;
   }
-
 
 
   static returnStateVariableDefinitions() {
@@ -96,7 +88,7 @@ export default class BezierControls extends BaseComponent {
       returnDependencies: () => ({
         controlChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroControlvectors",
+          childGroups: ["controlVectors"],
           variableNames: ["pointNumber"],
         }
       }),
@@ -139,7 +131,7 @@ export default class BezierControls extends BaseComponent {
             dependenciesByKey[arrayKey] = {
               controlChild: {
                 dependencyType: "child",
-                childLogicName: "atLeastZeroControlvectors",
+                childGroups: ["controlVectors"],
                 variableNames: ["direction"],
                 childIndices: [controlInd],
               }
@@ -352,14 +344,14 @@ export default class BezierControls extends BaseComponent {
               ) {
                 dependenciesByKey[arrayKey].controlChild = {
                   dependencyType: "child",
-                  childLogicName: "atLeastZeroControlvectors",
+                  childGroups: ["controlVectors"],
                   variableNames: ["vectorX1_" + varEndings[2]],
                   childIndices: [controlInd],
                 }
               } else if (direction === "both") {
                 dependenciesByKey[arrayKey].controlChild = {
                   dependencyType: "child",
-                  childLogicName: "atLeastZeroControlvectors",
+                  childGroups: ["controlVectors"],
                   variableNames: ["vectorX" + varEndings[1] + "_" + varEndings[2]],
                   childIndices: [controlInd],
                 }

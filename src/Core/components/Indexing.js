@@ -10,44 +10,16 @@ export class Idx extends BaseComponent {
   static componentType = "idx";
   static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroHs = childLogic.newLeaf({
-      name: "atLeastZeroHs",
-      componentType: "h",
-      comparison: 'atLeast',
-      number: 0,
-    })
+    return [{
+      group: "hs",
+      componentTypes: ["h"]
+    }, {
+      group: "stringsTexts",
+      componentTypes: ["string", "text"]
+    }]
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let stringsAndTexts = childLogic.newOperator({
-      name: "stringsAndTexts",
-      operator: 'and',
-      propositions: [atLeastZeroStrings, atLeastZeroTexts],
-    });
-
-    childLogic.newOperator({
-      name: "textXorHs",
-      operator: 'xor',
-      propositions: [atLeastZeroHs, stringsAndTexts],
-      setAsBase: true
-    });
-
-    return childLogic;
   }
 
 
@@ -60,12 +32,12 @@ export class Idx extends BaseComponent {
       returnDependencies: () => ({
         stringTextChildren: {
           dependencyType: "child",
-          childLogicName: "stringsAndTexts",
+          childGroups: ["stringsTexts"],
           variableNames: ["value"],
         },
         hChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroHs",
+          childGroups: ["hs"],
           variableNames: ["value"]
         }
       }),

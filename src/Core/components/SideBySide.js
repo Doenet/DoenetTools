@@ -32,20 +32,16 @@ export class SideBySide extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: 'atLeastOneBlock',
-      componentType: '_block',
-      comparison: 'atLeast',
-      number: 1,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "blocks",
+      componentTypes: ["_block"]
+    }]
 
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -56,7 +52,7 @@ export class SideBySide extends BlockComponent {
       returnDependencies: () => ({
         blockChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneBlock",
+          childGroups: ["blocks"],
           skipComponentNames: true,
         }
       }),
@@ -491,7 +487,7 @@ export class SideBySide extends BlockComponent {
             //    define them to be the same value that makes the total 100%
             // 3. else if there two or panels, set gapWidth to make the total 100%
             // 4. else if there is one panel, expand the right margin
-            // 5. do nothing (child logic isn't satisfied)
+            // 5. do nothing (child groups aren't matched)
 
             if (nWidthsUndefined > 0) {
 
@@ -1069,18 +1065,13 @@ export class SbsGroup extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: 'atLeastZeroSideBySides',
-      componentType: 'sideBySide',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "sideBySides",
+      componentTypes: ["sideBySide"]
+    }]
 
   }
 
@@ -1093,7 +1084,7 @@ export class SbsGroup extends BlockComponent {
       returnDependencies: () => ({
         sideBySideChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroSideBySides",
+          childGroups: ["sideBySides"],
           variableNames: ["nPanels"]
         }
       }),
@@ -1651,7 +1642,7 @@ export class SbsGroup extends BlockComponent {
             //    define them to be the same value that makes the total 100%
             // 3. else if there two or panels, set gapWidth to make the total 100%
             // 4. else if there is one panel, expand the right margin
-            // 5. do nothing (child logic isn't satisfied)
+            // 5. do nothing (child groups aren't matched)
 
             if (nWidthsUndefined > 0) {
 
@@ -1997,18 +1988,12 @@ export class Stack extends BlockComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: 'atLeastZeroChildren',
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-
-    return childLogic;
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
   }
 

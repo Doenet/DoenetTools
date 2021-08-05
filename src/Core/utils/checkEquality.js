@@ -497,9 +497,9 @@ export default function checkEquality({
         matchExactLocations: false,
         symbolicEquality,
         simplify, expand,
-        allowedErrorInNumbers: false,
-        allowedErrorIsAbsolute: false,
-        nSignErrorsMatched: 0,
+        allowedErrorInNumbers,
+        allowedErrorIsAbsolute,
+        nSignErrorsMatched,
       })
       n_matches += sub_results.fraction_equal;
     }
@@ -542,9 +542,9 @@ export default function checkEquality({
           matchExactLocations: false,
           symbolicEquality,
           simplify, expand,
-          allowedErrorInNumbers: false,
-          allowedErrorIsAbsolute: false,
-          nSignErrorsMatched: 0,
+          allowedErrorInNumbers,
+          allowedErrorIsAbsolute,
+          nSignErrorsMatched,
         })
         C[i + 1][j + 1] = Math.max(C[i][j] + sub_results.fraction_equal,
           C[i + 1][j], C[i][j + 1])
@@ -582,9 +582,9 @@ export default function checkEquality({
         matchExactLocations: false,
         symbolicEquality,
         simplify, expand,
-        allowedErrorInNumbers: false,
-        allowedErrorIsAbsolute: false,
-        nSignErrorsMatched: 0,
+        allowedErrorInNumbers,
+        allowedErrorIsAbsolute,
+        nSignErrorsMatched,
       })
       if (sub_results.fraction_equal > best_match) {
         best_match = sub_results.fraction_equal;

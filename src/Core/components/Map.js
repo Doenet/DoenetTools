@@ -26,30 +26,15 @@ export default class Map extends CompositeComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let exactlyOneTemplate = childLogic.newLeaf({
-      name: "exactlyOneTemplate",
-      componentType: 'template',
-      number: 1
-    });
-
-    let atLeastOneSources = childLogic.newLeaf({
-      name: "atLeastOneSources",
-      componentType: 'sources',
-      comparison: "atLeast",
-      number: 1
-    });
-
-    childLogic.newOperator({
-      name: "templateSources",
-      operator: 'and',
-      propositions: [exactlyOneTemplate, atLeastOneSources],
-      setAsBase: true,
-    });
-
-    return childLogic;
+    return [{
+      group: "templates",
+      componentTypes: ["template"]
+    }, {
+      group: "sources",
+      componentTypes: ["sources"]
+    }]
 
   }
 
@@ -63,7 +48,7 @@ export default class Map extends CompositeComponent {
       returnDependencies: () => ({
         sourcesChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneSources",
+          childGroups: ["sources"],
           variableNames: ["alias", "indexAlias"]
         },
       }),
@@ -84,7 +69,7 @@ export default class Map extends CompositeComponent {
       returnDependencies: () => ({
         sourcesChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneSources",
+          childGroups: ["sources"],
           variableNames: ["numberOfChildren", "childComponentNames"],
         },
       }),
@@ -107,7 +92,7 @@ export default class Map extends CompositeComponent {
       returnDependencies: () => ({
         templateChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneTemplate",
+          childGroups: ["templates"],
           variableNames: ["serializedChildren", "newNamespace"],
         },
       }),

@@ -16,20 +16,14 @@ export default class Column extends BaseComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroCells",
-      componentType: 'cell',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "cells",
+      componentTypes: ["cell"]
+    }]
 
-    return childLogic;
   }
-
 
 
   static returnStateVariableDefinitions() {
@@ -39,7 +33,7 @@ export default class Column extends BaseComponent {
       returnDependencies: () => ({
         cellChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroCells",
+          childGroups: ["cells"],
           variableNames: ["rowNum"]
         }
       }),

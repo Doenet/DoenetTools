@@ -1,10 +1,11 @@
-import BlockComponent from './abstract/BlockComponent';
+import InlineComponent from './abstract/InlineComponent';
 
-export default class P extends BlockComponent {
-  static componentType = "p";
+export default class Footnote extends InlineComponent {
+  static componentType = "footnote";
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
+
 
   static returnChildGroups() {
 
@@ -15,6 +16,7 @@ export default class P extends BlockComponent {
 
   }
 
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -22,6 +24,7 @@ export default class P extends BlockComponent {
     stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -42,6 +45,23 @@ export default class P extends BlockComponent {
         }
 
         return { newValues: { text } };
+      }
+    }
+
+    stateVariableDefinitions.footnoteTag = {
+      public: true,
+      componentType: "text",
+      forRenderer: true,
+      returnDependencies: () => ({
+        footnoteCounter: {
+          dependencyType: "counter",
+          counterName: "footnote"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: { footnoteTag: String(dependencyValues.footnoteCounter) }
+        }
       }
     }
 

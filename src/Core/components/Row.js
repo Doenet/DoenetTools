@@ -7,7 +7,7 @@ export default class Row extends BaseComponent {
   static renderChildren = true;
 
   static get stateVariablesShadowedForReference() {
-    return ["halign", "valign", "left", "bottom",]
+    return ["halign", "valign", "left", "bottom"]
   };
 
   static createAttributesObject(args) {
@@ -40,19 +40,16 @@ export default class Row extends BaseComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "atLeastZeroCells",
-      componentType: 'cell',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "cells",
+      componentTypes: ["cell"]
+    }]
+
   }
+
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -187,7 +184,7 @@ export default class Row extends BaseComponent {
       returnDependencies: () => ({
         cellChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroCells",
+          childGroups: ["cells"],
           variableNames: ["colNum"]
         }
       }),

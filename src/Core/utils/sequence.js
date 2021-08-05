@@ -13,7 +13,10 @@ export function returnStandardSequenceAttributes() {
   return {
     type: {
       createPrimitiveOfType: "string",
-      defaultValue: "number"
+      createStateVariable: "type",
+      defaultPrimitiveValue: "number",
+      toLowerCase: true,
+      validValues: ["number", "math", "letters"]
     },
     from: {
       createComponentOfType: "_componentWithSelectableType",
@@ -46,26 +49,6 @@ export function returnStandardSequenceStateVariableDefinitions() {
 
 
   let stateVariableDefinitions = {};
-
-  stateVariableDefinitions.type = {
-    returnDependencies: () => ({
-      type: {
-        dependencyType: "attributePrimitive",
-        attributeName: "type",
-      },
-    }),
-    definition: function ({ dependencyValues }) {
-      if (dependencyValues.type) {
-        let type = dependencyValues.type.toLowerCase()
-        if (["math", "number", "letters"].includes(type)) {
-          return { newValues: { type } };
-        } else {
-          console.warn(`Invalid type ${dependencyValues.type} of a sequence.  Defaulting to number.`)
-        }
-      }
-      return { newValues: { type: "number" } };
-    },
-  };
 
   stateVariableDefinitions.specifiedFrom = {
     returnDependencies: () => ({
