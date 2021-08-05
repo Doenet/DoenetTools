@@ -119,6 +119,7 @@ export default function ToolRoot(){
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
+    CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -301,7 +302,7 @@ let navigationObj = {
       onLeave:"CourseChooserLeave",
     },
     dashboard: {
-      pageName: "Dashboards",
+      pageName: "Dashboard",
       currentMainPanel: "Dashboard",
       currentMenus:[],
       menusTitles:[],
@@ -347,6 +348,11 @@ let navigationObj = {
       supportPanelIndex:0,
       headerControls: ["BackButton","ViewerUpdateButton",],
       headerControlsPositions: ["Left","Left"],
+    },
+    collection: {
+      currentMainPanel:"CollectionEditor",
+      headerControls: ["NavigationBreadCrumb"],
+      headerControlsPositions: ["Left"],
     },
     enrollment:{ //allStudentsInCourse
       pageName:"Enrollment",

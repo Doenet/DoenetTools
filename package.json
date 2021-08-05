@@ -95,7 +95,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy": "^1.18.1",
     "prettier": "^2.3.2",
-    "snowpack": "^3.8.3",
+    "snowpack": "^3.5.8",
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "eslintConfig": {
