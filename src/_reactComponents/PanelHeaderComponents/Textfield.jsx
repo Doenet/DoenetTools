@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { doenetComponentForegroundInactive } from "./theme"
 
-export default function Textfield(props) {
+export default function TextField(props) {
   const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
   const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
   //Assume small
