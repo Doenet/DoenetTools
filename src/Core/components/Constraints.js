@@ -6,20 +6,14 @@ export default class Constraints extends BaseComponent {
   static componentType = "constraints";
   static rendererType = undefined;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroConstraints",
-      componentType: '_constraint',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "constraints",
+      componentTypes: ["_constraint"]
+    }]
 
-    return childLogic;
   }
-
 
 
   static returnStateVariableDefinitions() {
@@ -30,7 +24,7 @@ export default class Constraints extends BaseComponent {
       returnDependencies: () => ({
         constraintChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroConstraints",
+          childGroups: ["constraints"],
           variableNames: ["independentComponentConstraints"]
         }
       }),
@@ -115,7 +109,7 @@ export default class Constraints extends BaseComponent {
         let globalDependencies = {
           constraintChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroConstraints",
+            childGroups: ["constraints"],
             variableNames: ["applyConstraint", "applyComponentConstraint"],
             variablesOptional: true,
           },
@@ -214,7 +208,7 @@ export default class Constraints extends BaseComponent {
             }
 
             if (constraintResult.constrained) {
-              for(let varName in constraintResult.variables) {
+              for (let varName in constraintResult.variables) {
                 variables[varName] = convertValueToMathExpression(constraintResult.variables[varName]);
               }
               constraintUsed = true;
@@ -323,7 +317,7 @@ export default class Constraints extends BaseComponent {
             }
 
             if (constraintResult.constrained) {
-              for(let varName in constraintResult.variables) {
+              for (let varName in constraintResult.variables) {
                 variables[varName] = convertValueToMathExpression(constraintResult.variables[varName]);
               }
             }

@@ -1596,13 +1596,13 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select math as sugar', () => {
+  it('select math as sugared string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <aslist>
-    <select type="math" assignnames="(m1) (m2) (m3) (m4) (m5)" numbertoselect="5">
+    <select type="math" assignnames="m1 m2 m3 m4 m5" numbertoselect="5">
       x^2  x/y  u  a  b-c  s+t  mn  -1
     </select>
     </aslist>
@@ -1627,13 +1627,13 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select math as sugar, no type specified', () => {
+  it('select math as sugared string, no type specified', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <aslist>
-    <select assignnames="(m1) (m2) (m3) (m4) (m5)" numbertoselect="5">
+    <select assignnames="m1 m2 m3 m4 m5" numbertoselect="5">
       x^2  x/y  u  a  b-c  s+t  mn  -1
     </select>
     </aslist>
@@ -1658,13 +1658,56 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select text as sugar', () => {
+  it('select math as sugared strings and macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <math name="var1">x</math>
+      <math name="var2">y</math>
+      <number name="a">7</number>
+      <math name="b">-3</math>
+    </setup>
+    <aslist>
+    <select assignnames="m1 m2 m3 m4 m5 m6" numbertoselect="6">
+      $a$var1^2  $b$var1/$var2  u-$b  $a  $var1-c $(var2{componentType="math"})
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let options = ["7x^2", "(-3)x/y", "u-(-3)", "7", "x-c", "y"]
+      .map(x => me.fromText(x))
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathsSoFar = [];
+      for (let ind = 1; ind <= 6; ind++) {
+        let comp = components['/m' + ind];
+        let math;
+        if (comp.componentType === "math") {
+          math = comp.stateValues.value
+        } else {
+          math = comp.replacements[0].stateValues.value;
+        }
+        expect(options.some(x => x.equalsViaSyntax(math))).eq(true);
+        expect(mathsSoFar.some(x => x.equalsViaSyntax(math))).eq(false);
+        mathsSoFar.push(math);
+      }
+    })
+  });
+
+  it('select text as sugared string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <aslist>
-    <select type="text" assignnames="(w1) (w2) (w3) (w4) (w5)" numbertoselect="5">
+    <select type="text" assignnames="w1 w2 w3 w4 w5" numbertoselect="5">
       Lorem  ipsum  dolor  sit  amet  consectetur  adipiscing  elit
     </select>
     </aslist>
@@ -1686,13 +1729,53 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select number as sugar', () => {
+  it('select text as sugared strings and macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <text name="a">amet</text>
+      <text name="cSpace">consectetur </text>
+      <text name="spaceD"> dolor</text>
+    </setup>
+    <aslist>
+    <select type="text" assignnames="w1 w2 w3 w4 w5" numbertoselect="5">
+      Lorem  ipsum$spaceD  sit  $(a{componentType="text"})  $(cSpace)adipiscing
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let wordsSoFar = [];
+      for (let ind = 1; ind <= 5; ind++) {
+        let comp = components['/w' + ind]
+        let word;
+        if (comp.componentType === "text") {
+          word = comp.stateValues.value
+        } else {
+          word = comp.replacements[0].stateValues.value;
+        }
+
+        expect(["Lorem", "ipsum dolor", "sit", "amet", "consectetur adipiscing"].includes(word)).eq(true);
+        expect(wordsSoFar.includes(word)).eq(false);
+        wordsSoFar.push(word);
+      }
+    })
+  });
+
+  it('select number as sugared string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <aslist>
-    <select type="number" assignnames="(n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (n9) (n10)" numbertoselect="10" withReplacement>
+    <select type="number" assignnames="n1 n2 n3 n4 n5 n6 n7 n8 n9 n10" numbertoselect="10" withReplacement>
       2 3 5 7 11 13 17 19
     </select>
     </aslist>
@@ -1711,13 +1794,49 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select boolean as sugar', () => {
+  it('select number as sugared strings and macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <number name="a">5</number>
+      <math name="b">-7</math>
+      <math name="c">6+2</math>
+    </setup>
+    <aslist>
+    <select type="number" assignnames="n1 n2 n3 n4 n5 n6 n7 n8 n9 n10" numbertoselect="6">
+      2 $a+$b 3-$c $(a{componentType="number"}) $b-1 $c
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      for (let ind = 1; ind <= 6; ind++) {
+        let comp = components['/n' + ind];
+        let num;
+        if (comp.componentType === "number") {
+          num = comp.stateValues.value;
+        } else {
+          num = comp.replacements[0].stateValues.value;
+        }
+        expect([2, -2, -5, 5, -8, 8].includes(num)).eq(true);
+      }
+    })
+  });
+
+  it('select boolean as sugared string', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <aslist>
-    <select type="boolean" assignnames="(b1) (b2) (b3) (b4) (b5) (b6) (b7) (b8) (b9) (b10) (b11) (b12) (b13) (b14) (b15) (b16) (b17) (b18) (b19) (b20)" numbertoselect="20" withReplacement>
+    <select type="boolean" assignnames="b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20" numbertoselect="20" withReplacement>
       true false
     </select>
     </aslist>
@@ -1733,7 +1852,50 @@ describe('Select Tag Tests', function () {
       for (let ind = 1; ind <= 20; ind++) {
         let bool = components['/b' + ind].stateValues.value;
         expect([true, false].includes(bool)).eq(true);
-        if(bool === true) {
+        if (bool === true) {
+          foundTrue = true;
+        } else {
+          foundFalse = true;
+        }
+      }
+      expect(foundTrue).be.true;
+      expect(foundFalse).be.true;
+    })
+  });
+
+  it('select boolean as sugared strings and macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <boolean name="t">true</boolean>
+      <boolean name="f">false</boolean>
+    </setup>
+    <aslist>
+    <select type="boolean" assignnames="b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20" numbertoselect="20" withReplacement>
+      true false $t $f $(t{componentType="boolean"}) $(f{componentType="boolean"})
+    </select>
+    </aslist>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let foundTrue = false, foundFalse = false;
+      for (let ind = 1; ind <= 20; ind++) {
+        let comp = components['/b' + ind];
+        let bool;
+        if(comp.componentType === "boolean") {
+          bool = comp.stateValues.value;
+        } else {
+          bool = comp.replacements[0].stateValues.value;
+        }
+        expect([true, false].includes(bool)).eq(true);
+        if (bool === true) {
           foundTrue = true;
         } else {
           foundFalse = true;
@@ -1917,7 +2079,7 @@ describe('Select Tag Tests', function () {
     <text>a</text>
 
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
-      <option><p newNamespace><select assignnames="(q) (r)" numbertoselect="2">a e i o u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
+      <option><p newNamespace><select assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
       <option><p newNamespace><selectfromsequence type="letters" assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
       <option><p newNamespace><text name="q">z</text><selectfromsequence type="letters" assignnames="r" numbertoselect="1" from="u" to="z" /><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
       <option><p newNamespace><text name="q">q</text><text name="r">r</text><copy name="q2" tname="q" /><copy name="r2" tname="r" /></p></option>
@@ -2033,7 +2195,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <select name="original" assignnames="(q) (r) (s) (t) (u) (v) (w)" numbertoselect="7" withreplacement>
-      <option><p newNamespace><select name="s" newnamespace assignnames="(q) (r)" numbertoselect="2">a e i o u</select><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
+      <option><p newNamespace><select name="s" newnamespace assignnames="q r" numbertoselect="2">a e i o u</select><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
       <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" from="a" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
       <option><p newNamespace><selectfromsequence type="letters" name="s" newnamespace assignnames="q r" numbertoselect="2" withreplacement from="u" to="z" /><copy name="q2" tname="s/q" /><copy name="r2" tname="s/r" /></p></option>
     </select>
@@ -2400,7 +2562,7 @@ describe('Select Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <select name="original" assignnames="(q) (r) (s) (t) (u)" numbertoselect="5" withreplacement>
-      <option><select newNamespace assignnames="(q) (r)" numbertoselect="2">a e i o u</select></option>
+      <option><select newNamespace assignnames="q r" numbertoselect="2">a e i o u</select></option>
       <option><selectfromsequence type="letters" newNamespace assignnames="q r" numbertoselect="2" from="a" to="z" /></option>
     </select>
 

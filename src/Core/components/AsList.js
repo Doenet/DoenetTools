@@ -4,18 +4,13 @@ export default class AsList extends InlineComponent {
   static componentType = "asList";
   static renderChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "inline",
+      componentTypes: ["_inline"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -23,33 +18,13 @@ export default class AsList extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    // stateVariableDefinitions.childrenToRender = {
-    //   returnDependencies: () => ({
-    //     activeChildren: {
-    //       dependencyType: "child",
-    //       childLogicName: "atLeastZeroInline",
-    //       variableNames: ["hidden"]
-    //     }
-    //   }),
-    //   definition: function ({ dependencyValues }) {
-    //     return {
-    //       newValues:
-    //       {
-    //         childrenToRender: dependencyValues.activeChildren
-    //           .filter(x => !x.stateValues.hidden)
-    //           .map(x => x.componentName)
-    //       }
-    //     };
-    //   }
-    // }
-
     stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroInline",
+          childGroups: ["inline"],
           variableNames: ["text"],
           variablesOptional: true,
         }

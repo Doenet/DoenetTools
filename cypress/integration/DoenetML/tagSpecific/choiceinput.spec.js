@@ -1654,5 +1654,38 @@ describe('ChoiceInput Tag Tests', function () {
 
   });
 
+  it('chain update off choiceinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <choiceinput name="ci" >
+      <choice>red</choice>
+      <choice>orange</choice>
+      <choice>yellow</choice>
+      <choice>green</choice>
+      <choice>blue</choice>
+    </choiceinput>
+
+    <text name="t"></text>
+    <updateValue triggerWithTnames="ci" tname="t" newValue="$t $ci" type="text" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/t').should('have.text', '')
+
+    cy.get(`#\\/ci_choice2_input`).click();
+    cy.get('#\\/t').should('have.text', ' orange')
+
+    cy.get(`#\\/ci_choice5_input`).click();
+    cy.get('#\\/t').should('have.text', ' orange blue')
+
+    cy.get(`#\\/ci_choice1_input`).click();
+    cy.get('#\\/t').should('have.text', ' orange blue red')
+
+  })
+
 
 });

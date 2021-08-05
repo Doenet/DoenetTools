@@ -7,6 +7,8 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets from '../../../_reactComponents/Sockets';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export default function SelectedFolder() {
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
@@ -66,22 +68,23 @@ export default function SelectedFolder() {
         />
       </label>
       <br />
-      <br />
-      <Button
-        data-cy="deleteDoenetMLButton"
-        value="Delete Folder"
-        onClick={() => {
-          deleteItem({
-            driveIdFolderId: {
-              driveId: item.driveId,
-              folderId: item.parentFolderId,
-            },
-            itemId: item.itemId,
-            driveInstanceId: item.driveInstanceId,
-            label: item.label,
-          });
-        }}
-      />
+      <ButtonGroup vertical>
+        <Button
+          data-cy="deleteDoenetMLButton"
+          value="Delete DoenetML"
+          onClick={() => {
+            deleteItem({
+              driveIdFolderId: {
+                driveId: item.driveId,
+                folderId: item.parentFolderId,
+              },
+              itemId: item.itemId,
+              driveInstanceId: item.driveInstanceId,
+              label: item.label,
+            });
+          }}
+        />
+      </ButtonGroup>
     </>
   );
 }

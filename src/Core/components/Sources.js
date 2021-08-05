@@ -37,19 +37,13 @@ export default class Sources extends BaseComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: 'atLeastZeroChildren',
-      componentType: '_base',
-      excludeComponentTypes: ['_composite'],
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -86,7 +80,7 @@ export default class Sources extends BaseComponent {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChildren",
+          childGroups: ["anything"],
         },
       }),
       definition: function ({ dependencyValues }) {

@@ -99,47 +99,22 @@ export class ComponentSize extends InlineComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let atMostOneString = childLogic.newLeaf({
-      name: "atMostOneString",
-      componentType: 'string',
-      comparison: 'atMost',
-      number: 1,
-    });
+  static returnChildGroups() {
 
-    let atMostOneNumber = childLogic.newLeaf({
-      name: "atMostOneNumber",
-      componentType: 'number',
-      comparison: 'atMost',
-      number: 1,
-    });
+    return [{
+      group: "strings",
+      componentTypes: ["string"]
+    }, {
+      group: "numbers",
+      componentTypes: ["number"]
+    }, {
+      group: "componentSizes",
+      componentTypes: ["_componentSize"]
+    }]
 
-    let numberAndString = childLogic.newOperator({
-      name: "numberAndString",
-      operator: 'and',
-      propositions: [atMostOneNumber, atMostOneString],
-      requireConsecutive: true,
-      sequenceMatters: true,
-    });
-
-    let atMostOneComponentSize = childLogic.newLeaf({
-      name: "atMostOneComponentSize",
-      componentType: '_componentSize',
-      comparison: 'atMost',
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "numberAndStringXorComponentSize",
-      operator: 'xor',
-      propositions: [numberAndString, atMostOneComponentSize],
-      setAsBase: true
-    });
-
-    return childLogic;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -151,17 +126,17 @@ export class ComponentSize extends InlineComponent {
       returnDependencies: () => ({
         componentSizeChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneComponentSize",
+          childGroups: ["componentSizes"],
           variableNames: ["componentSize"]
         },
         numberChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneNumber",
+          childGroups: ["numbers"],
           variableNames: ["value"]
         },
         stringChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneString",
+          childGroups: ["strings"],
           variableNames: ["value"]
         },
         parentDefaultAbsoluteSize: {
@@ -216,7 +191,7 @@ export class ComponentSize extends InlineComponent {
 
           let originalSize, originalUnit;
 
-          if (dependencyValues.numberChild.length === 1) {
+          if (dependencyValues.numberChild.length > 0) {
             //string and number child
 
             originalSize = dependencyValues.numberChild[0].stateValues.value;
@@ -320,7 +295,7 @@ export class ComponentSize extends InlineComponent {
         } else {
           //string child
 
-          if (dependencyValues.numberChild.length === 1) {
+          if (dependencyValues.numberChild.length > 0) {
             //string and number child
 
             // this is the only case where we use the original unit specified by the string
@@ -564,31 +539,16 @@ export class ComponentSizeList extends BaseComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroComponentSizes = childLogic.newLeaf({
-      name: "atLeastZeroComponentSizes",
-      componentType: '_componentSize',
-      comparison: 'atLeast',
-      number: 0
-    });
+    return [{
+      group: "componentSizes",
+      componentTypes: ["_componentSize"]
+    }, {
+      group: "componentSizeLists",
+      componentTypes: ["_componentSizeList"]
+    }]
 
-    let atLeastZeroComponentSizeLists = childLogic.newLeaf({
-      name: "atLeastZeroComponentSizeLists",
-      componentType: '_componentSizeList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "componentSizeAndComponentSizeLists",
-      operator: "and",
-      propositions: [atLeastZeroComponentSizes, atLeastZeroComponentSizeLists],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -612,12 +572,12 @@ export class ComponentSizeList extends BaseComponent {
         return {
           componentSizeListChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroComponentSizeLists",
+            childGroups: ["componentSizeLists"],
             variableNames: ["nComponents"],
           },
           componentSizeAndComponentSizeListChildren: {
             dependencyType: "child",
-            childLogicName: "componentSizeAndComponentSizeLists",
+            childGroups: ["componentSizes", "componentSizeLists"],
             skipComponentNames: true,
           },
         }
@@ -688,7 +648,7 @@ export class ComponentSizeList extends BaseComponent {
           dependenciesByKey[arrayKey] = {
             componentSizeAndComponentSizeListChildren: {
               dependencyType: "child",
-              childLogicName: "componentSizeAndComponentSizeLists",
+              childGroups: ["componentSizes", "componentSizeLists"],
               variableNames: ["componentSize", "componentSize" + componentSizeIndex],
               variablesOptional: true,
               childIndices,

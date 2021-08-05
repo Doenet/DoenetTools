@@ -8,6 +8,8 @@ import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export default function SelectedCollection() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -69,9 +71,9 @@ export default function SelectedCollection() {
         />
       </label>
       <br />
-      <br />
-      <Button
-        value="Edit Collection"
+      <ButtonGroup>
+        <Button
+        value="Edit DoenetML"
         onClick={() => {
           setPageToolView({
             page: 'course',
@@ -84,7 +86,7 @@ export default function SelectedCollection() {
           });
         }}
       />
-      <br />
+      {/* <br /> */}
       <Button
         data-cy="deleteDoenetMLButton"
         value="Delete Collection"
@@ -100,6 +102,8 @@ export default function SelectedCollection() {
           });
         }}
       />
+      </ButtonGroup>
+      
     </>
   );
 }

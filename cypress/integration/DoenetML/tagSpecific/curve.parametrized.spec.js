@@ -33,6 +33,37 @@ describe('Parameterized Curve Tag Tests', function () {
 
   });
 
+  it('sugar a parameterization in terms of x, with strings and macros', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+    ($b x^$a, $a x^$b)
+    </curve>
+    </graph>
+    <number name="a">3</number>
+    <math name="b">5</math>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("x");
+      expect(components['/_curve1'].stateValues.parMin).eq(-10);
+      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+    })
+
+  });
+
   it('sugar a parameterization in terms of t', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -43,6 +74,36 @@ describe('Parameterized Curve Tag Tests', function () {
     (5t^3, 3t^5)
     </curve>
     </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(components['/_curve1'].stateValues.variableForChild.tree).eq("t");
+      expect(components['/_curve1'].stateValues.parMin).eq(-10);
+      expect(components['/_curve1'].stateValues.parMax).eq(10);
+      expect(components['/_curve1'].stateValues.fs[0](-2)).eq(-5 * 8);
+      expect(components['/_curve1'].stateValues.fs[0](3)).eq(5 * 27);
+      expect(components['/_curve1'].stateValues.fs[1](-2)).eq(-3 * 32);
+      expect(components['/_curve1'].stateValues.fs[1](3)).eq(3 * 243);
+    })
+
+  });
+
+  it('sugar a parameterization in terms of t, with strings and macro', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve variable="$var">
+    (5$var^3, 3$var^5)
+    </curve>
+    </graph>
+    <math name="var">t</math>
     `}, "*");
     });
 

@@ -4,18 +4,13 @@ import ConstraintComponent from './abstract/ConstraintComponent';
 export default class ConstrainTo extends ConstraintComponent {
   static componentType = "constrainTo";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastOneGraphical",
-      componentType: '_graphical',
-      comparison: 'atLeast',
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "graphical",
+      componentTypes: ["_graphical"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -26,7 +21,7 @@ export default class ConstrainTo extends ConstraintComponent {
       returnDependencies: () => ({
         graphicalChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneGraphical",
+          childGroups: ["graphical"],
           variableNames: ["nearestPoint"],
           variablesOptional: true
         }

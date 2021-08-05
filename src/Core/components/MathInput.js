@@ -10,6 +10,9 @@ export default class MathInput extends Input {
       updateImmediateValue: this.updateImmediateValue.bind(
         new Proxy(this, this.readOnlyProxyHandler)
       ),
+      updateRawValue: this.updateRawValue.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      ),
       updateValue: this.updateValue.bind(
         new Proxy(this, this.readOnlyProxyHandler)
       )
@@ -65,7 +68,14 @@ export default class MathInput extends Input {
       defaultValue: ["f", "g"],
       forRenderer: true,
       public: true,
-    }
+    };
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      forRenderer: true,
+      public: true,
+    };
     attributes.displayDigits = {
       createComponentOfType: "integer",
       createStateVariable: "displayDigits",
@@ -124,6 +134,10 @@ export default class MathInput extends Input {
           dependencyType: "stateVariable",
           variableName: "functionSymbols"
         },
+        splitSymbols: {
+          dependencyType: "stateVariable",
+          variableName: "splitSymbols"
+        },
       }),
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.bindValueTo) {
@@ -136,6 +150,7 @@ export default class MathInput extends Input {
                     inputString: dependencyValues.prefill,
                     format: dependencyValues.format,
                     functionSymbols: dependencyValues.functionSymbols,
+                    splitSymbols: dependencyValues.splitSymbols,
                   })
                 }
               }
@@ -286,6 +301,28 @@ export default class MathInput extends Input {
       }
     }
 
+
+    // raw value from renderer
+    stateVariableDefinitions.rawRendererValue = {
+      defaultValue: null,
+      forRenderer: true,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          rawRendererValue: { variablesToCheck: ["rawRendererValue"] }
+        }
+      }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setStateVariable: "rawRendererValue",
+            value: desiredStateVariableValues.rawRendererValue
+          }]
+        }
+      }
+    }
+
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
       definition: () => ({ newValues: { componentType: "math" } })
@@ -297,7 +334,7 @@ export default class MathInput extends Input {
   }
 
 
-  updateImmediateValue({ mathExpression }) {
+  updateImmediateValue({ mathExpression, rawRendererValue }) {
     if (!this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
@@ -307,8 +344,30 @@ export default class MathInput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: mathExpression,
+        }, {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rawRendererValue",
+          value: rawRendererValue,
         }],
         transient: true
+      })
+    }
+  }
+
+  updateRawValue({ rawRendererValue, transient = false }) {
+    if (!this.stateValues.disabled) {
+      // we set transient to true so that each keystroke does not
+      // add a row to the database
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions: [{
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "rawRendererValue",
+          value: rawRendererValue,
+        }],
+        transient
       })
     }
   }
@@ -320,6 +379,11 @@ export default class MathInput extends Input {
         componentName: this.componentName,
         stateVariable: "value",
         value: this.stateValues.immediateValue,
+      }, {
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "rawRendererValue",
+        value: this.stateValues.rawRendererValue,  // so gets saved to database
       },
       // in case value ended up being a different value than requested
       // we set immediate value to whatever was the result
@@ -356,7 +420,10 @@ export default class MathInput extends Input {
 
       this.coreFunctions.requestUpdate({
         updateInstructions,
-        event
+        event,
+        callBack: () => this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        })
       })
 
     }
@@ -365,7 +432,7 @@ export default class MathInput extends Input {
 }
 
 
-function parseValueIntoMath({ inputString, format, functionSymbols }) {
+function parseValueIntoMath({ inputString, format, functionSymbols, splitSymbols }) {
 
   if (!inputString) {
     return me.fromAst('\uFF3F');
@@ -374,7 +441,8 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
   let expression;
   if (format === "latex") {
     let fromLatex = getFromLatex({
-      functionSymbols
+      functionSymbols,
+      splitSymbols
     });
     try {
       expression = fromLatex(inputString);
@@ -384,7 +452,8 @@ function parseValueIntoMath({ inputString, format, functionSymbols }) {
     }
   } else if (format === "text") {
     let fromText = getFromText({
-      functionSymbols
+      functionSymbols,
+      splitSymbols,
     });
     try {
       expression = fromText(inputString);

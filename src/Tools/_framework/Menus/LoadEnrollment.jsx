@@ -8,6 +8,8 @@ import {
 import {processAtom,headersAtom,entriesAtom, enrollmentTableDataAtom} from '../ToolPanels/Enrollment';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { nanoid } from 'nanoid';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export default function LoadEnrollment(props){
   // const [process, setProcess] = useState('Loading'); //array containing column names
@@ -194,7 +196,9 @@ export default function LoadEnrollment(props){
         {isDragActive ? (
           <p>Drop the files here</p>
         ) : (
-          <Button value="Enroll Learners"></Button>
+          <ButtonGroup vertical>
+            <Button value="Enroll Learners"></Button>
+          </ButtonGroup>
         )}
       </div>
   </div>

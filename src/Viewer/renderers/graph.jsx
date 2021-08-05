@@ -41,7 +41,8 @@ export default class Graph extends DoenetRenderer {
         xaxisOptions.withLabel = true;
         xaxisOptions.label = {
           position: 'rt',
-          offset: [-10, 15]
+          offset: [0, 15],
+          anchorx: 'right'
         };
       }
       xaxisOptions.ticks = {
@@ -69,7 +70,8 @@ export default class Graph extends DoenetRenderer {
         yaxisOptions.withLabel = true;
         yaxisOptions.label = {
           position: 'rt',
-          offset: [-25, -5],
+          offset: [-10, -5],
+          anchorx: 'right'
         }
       }
       yaxisOptions.ticks = {

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {
   atom,
   selector,
+  useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil';
@@ -25,6 +26,7 @@ import { useToast } from '../Toast';
 import axios from 'axios';
 import Switch from '../../_framework/Switch';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 export const selectedVersionAtom = atom({
   key: 'selectedVersionAtom',
@@ -36,6 +38,7 @@ export default function SelectedDoenetML() {
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
+  const pageToolView = useRecoilValue(pageToolViewAtom);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
   const {
@@ -114,7 +117,7 @@ export default function SelectedDoenetML() {
   // make assignment for released versions
 
   makeAssignmentforReleasedButton = (
-    <>
+    <ButtonGroup vertical>
       <Button
         value="Make Assignment"
         onClick={async () => {
@@ -169,16 +172,14 @@ export default function SelectedDoenetML() {
           }
         }}
       />
-
-      <br />
-    </>
+    </ButtonGroup>
   );
 
   // unassign
   let unAssignButton = '';
 
   unAssignButton = (
-    <>
+    <ButtonGroup vertical>
       <Button
         value="Unassign"
         onClick={async () => {
@@ -236,7 +237,7 @@ export default function SelectedDoenetML() {
       />
       <br />
       <br />
-    </>
+    </ButtonGroup>
   );
 
   return (
@@ -244,7 +245,7 @@ export default function SelectedDoenetML() {
       <h2 data-cy="infoPanelItemLabel">
         {dIcon} {item.label}
       </h2>
-
+      {/* {pageToolView?.view == 'instructor' ? */}
       <label>
         DoenetML Label
         <input
@@ -269,38 +270,66 @@ export default function SelectedDoenetML() {
         />
       </label>
       <br />
-      <br />
-      <Button
-        value="Edit DoenetML"
-        onClick={() => {
-          setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
-            params: {
-              doenetId: item.doenetId,
-              path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
-            },
-          });
-        }}
-      />
-      <br />
-      <Button
-        data-cy="deleteDoenetMLButton"
-        value="Delete DoenetML"
-        onClick={() => {
-          deleteItem({
-            driveIdFolderId: {
-              driveId: item.driveId,
-              folderId: item.parentFolderId,
-            },
-            itemId: item.itemId,
-            driveInstanceId: item.driveInstanceId,
-            label: item.label,
-          });
-        }}
-      />
-      <br />
+      <ButtonGroup vertical>
+        <Button
+          value="Edit DoenetML"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                doenetId: item.doenetId,
+                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
+              },
+            });
+          }}
+        />
+        <Button
+          data-cy="deleteDoenetMLButton"
+          value="Delete DoenetML"
+          onClick={() => {
+            deleteItem({
+              driveIdFolderId: {
+                driveId: item.driveId,
+                folderId: item.parentFolderId,
+              },
+              itemId: item.itemId,
+              driveInstanceId: item.driveInstanceId,
+              label: item.label,
+            });
+          }}
+        />
+        <Button
+          value="Edit DoenetML"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                doenetId: item.doenetId,
+                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
+              },
+            });
+          }}
+        />
+        <Button
+          data-cy="deleteDoenetMLButton"
+          value="Delete DoenetML"
+          onClick={() => {
+            deleteItem({
+              driveIdFolderId: {
+                driveId: item.driveId,
+                folderId: item.parentFolderId,
+              },
+              itemId: item.itemId,
+              driveInstanceId: item.driveInstanceId,
+              label: item.label,
+            });
+          }}
+        />
+      </ButtonGroup>
       {assigned}
       <br />
       {item?.isAssigned === '0' &&
@@ -350,6 +379,7 @@ const AssignmentForm = (props) => {
   const { changeSettings, saveSettings, onAssignmentError } = useAssignment();
   const { updateAssignmentTitle } = useAssignmentCallbacks();
   const addToast = useToast();
+  const pageToolView = useRecoilValue(pageToolViewAtom);
 
   const [oldValue, setoldValue] = useState();
 
@@ -601,5 +631,20 @@ const AssignmentForm = (props) => {
       }
     </>
   );
-  return <>{assignmentForm}</>;
+  let studentAInfo = (
+    <>
+      <div>
+        <p>Due: {aInfo?.dueDate}</p>
+        <p>Time Limit: {aInfo?.timeLimit}</p>
+        <p>Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
+        <p>Points: {aInfo?.totalPointsOrPercent}</p>
+      </div>
+    </>
+  );
+  return (
+    <>
+      {pageToolView?.view == 'student' ? <>{studentAInfo}</> : ''}
+      {pageToolView?.view == 'instructor' ? <>{assignmentForm}</> : ' '}
+    </>
+  );
 };

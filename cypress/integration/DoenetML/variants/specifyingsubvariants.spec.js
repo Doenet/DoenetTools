@@ -16,7 +16,7 @@ describe('Specifying subvariants tests', function () {
         win.postMessage({
           doenetML: `
       <text>${ind}</text>
-      <select type="text" assignnames="(x)">u v w x y z</select>
+      <select type="text" assignnames="x">u v w x y z</select>
     `,
           requestedVariant: {
             subvariants: [{
@@ -64,7 +64,7 @@ describe('Specifying subvariants tests', function () {
             doenetML: `
       <text>${ind1}</text>
       <text>${ind2}</text>
-      <select type="text" assignnames="(x) (y)" numbertoselect="2">x y z</select>
+      <select type="text" assignnames="x y" numbertoselect="2">x y z</select>
       `,
             requestedVariant: {
               subvariants: [{
@@ -1161,63 +1161,6 @@ describe('Specifying subvariants tests', function () {
           subvariants: [{
             values: [values[ind]],
             meta: { createdBy: "/_selectrandomnumbers1" },
-          }]
-        })
-      })
-
-    }
-  })
-
-  it('specify indices of a selectByCondition', () => {
-
-    let indices = [[3], [1], [2, 3]];
-    let texts = ["hello", "bye", "now"];
-
-    cy.log("specify indices, even if couldn't get them from a condition")
-    for (let ind = 0; ind < 3; ind++) {
-
-      cy.window().then((win) => {
-        win.postMessage({
-          doenetML: `
-      <text>${ind}</text>
-      <number name="n">3</number>
-      <selectByCondition assignNames="(t) (u)">
-        <case condition="$n > 0"><text>hello</text></case>
-        <case condition="$n < 0"><text>bye</text></case>
-        <else><text>now</text></else>
-      </selectByCondition>
-      `,
-          requestedVariant: {
-            subvariants: [{
-              indices: indices[ind]
-            }]
-          }
-        }, "*");
-      });
-
-      // to wait for page to load
-      cy.get('#\\/_text1').should('have.text', `${ind}`)
-
-      cy.window().then((win) => {
-
-        let components = Object.assign({}, win.state.components);
-        expect(components['/t'].stateValues.value).eq(texts[indices[ind][0]-1]);
-        if (indices[ind].length > 1) {
-          expect(components['/u'].stateValues.value).eq(texts[indices[ind][1]-1]);
-        } else {
-          expect(components['/u']).eq(undefined);
-        }
-        expect(components["/_document1"].stateValues.generatedVariantInfo).eqls({
-          index: 1,
-          name: 'a',
-          meta: {
-            subvariantsSpecified: true,
-            createdBy: "/_document1"
-          },
-          subvariants: [{
-            indices: indices[ind],
-            subvariants: [],
-            meta: { createdBy: "/_selectbycondition1" },
           }]
         })
       })

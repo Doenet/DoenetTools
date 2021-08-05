@@ -6,20 +6,14 @@ export class Div extends BlockComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "anything",
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-    
-    return childLogic;
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
+
   }
-
 
 }
 
@@ -29,18 +23,13 @@ export class Span extends InlineComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "anything",
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-    
-    return childLogic;
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
+
   }
 
 

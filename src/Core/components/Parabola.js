@@ -25,12 +25,11 @@ export default class Parabola extends Curve {
     return attributes
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.deleteAllLogic();
+  static returnChildGroups() {
 
-    return childLogic;
+    return []
+
   }
 
   static returnStateVariableDefinitions(args) {

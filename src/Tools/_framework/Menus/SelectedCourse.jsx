@@ -20,6 +20,7 @@ import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
 import { useToast } from '../../_framework/Toast';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 export default function SelectedCourse(props) {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
@@ -51,34 +52,51 @@ export default function SelectedCourse(props) {
     return (
       <>
         <h2> {selection.length} Courses Selected</h2>
-        <Button width="menu" value="Make Copy(Soon)" onClick={(e)=>{
-          e.preventDefault();
-          e.stopPropagation();
-          console.log(">> made copy of courses")
-        }}/><br />
+        <ButtonGroup vertical>
+          <Button width="menu" value="Make Copy(Soon)" onClick={(e)=>{
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(">> made copy of courses")
+          }}/>
           <Button width="menu" value="Delete Course" alert onClick={(e)=>{
-          e.preventDefault();
-          e.stopPropagation();
-    // alert("Delete Drive")
-   let selectionArr = [];
-    for(let x=0;x< selection.length;x++){
-      selectionArr.push(selection[x].driveId);
-    }
-      
-      setDrivesInfo({
-        color:'',
-        label:'',
-        image:'',
-        newDriveId:selectionArr,
-        type:"delete drive"
-      })
-      setDrivecardSelection([]);
-    // }
-    
-  }}/>
+            e.preventDefault();
+            e.stopPropagation();
+              // alert("Delete Drive")
+            let selectionArr = [];
+              for(let x=0;x< selection.length;x++){
+                selectionArr.push(selection[x].driveId);
+              }
+                
+                setDrivesInfo({
+                  color:'',
+                  label:'',
+                  image:'',
+                  newDriveId:selectionArr,
+                  type:"delete drive"
+                })
+                setDrivecardSelection([]);
+              // }
+              
+            }}/>
+        </ButtonGroup>
+       
       </>
     );
-  } else {
+  } else if(selection.length === 1 && selection[0]?.role[0] === 'Administrator'){
+    return (
+      <>
+        <DriveInfoPanel
+          key={`DriveInfoPanel${selection[0].driveId}`}
+          label={selection[0].label}
+          color={selection[0].color}
+          image={selection[0].image}
+          driveId={selection[0].driveId}
+          role={'Administrator'}
+        />
+      </>
+    );
+  }
+  else {
     return '';
   }
 }
@@ -130,7 +148,7 @@ const DriveInfoPanel = function (props) {
   let deleteCourseButton = null;
   if (isOwner) {
     deleteCourseButton = (
-      <>
+      <ButtonGroup vertical>
         <Button
           width="menu"
           value="Delete Course"
@@ -147,7 +165,7 @@ const DriveInfoPanel = function (props) {
             setDrivecardSelection([]);
           }}
         />
-      </>
+      </ButtonGroup>
     );
   }
   const selectedOwnerFn = (userId, e) => {
@@ -201,7 +219,7 @@ const DriveInfoPanel = function (props) {
       ''
     );
   let ownerPerms = (
-    <>
+    <ButtonGroup vertical>
       <Button
         width="menu"
         data-doenet-removebutton={selectedOwner}
@@ -217,7 +235,6 @@ const DriveInfoPanel = function (props) {
           });
         }}
       />
-      <br />
       <Button
         width="menu"
         data-doenet-removeButton={selectedOwner}
@@ -233,7 +250,7 @@ const DriveInfoPanel = function (props) {
           });
         }}
       />
-    </>
+    </ButtonGroup>
   );
   let adminsList =
     driveUsers?.contents?.admins.length > 0 ? (
@@ -251,7 +268,7 @@ const DriveInfoPanel = function (props) {
       ''
     );
   let adminPerms = (
-    <>
+    <ButtonGroup vertical>
       <Button
         width="menu"
         data-doenet-removebutton={selectedAdmin}
@@ -267,7 +284,6 @@ const DriveInfoPanel = function (props) {
           });
         }}
       />
-      <br />
       <Button
         width="menu"
         data-doenet-removeButton={selectedAdmin}
@@ -283,13 +299,15 @@ const DriveInfoPanel = function (props) {
           });
         }}
       />
-    </>
+    </ButtonGroup>
   );
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
         {dIcon} {panelDriveLabel}
       </h2>
+      {props.role == 'Administrator' ? <>{addAdmins}  {adminsList}</> : 
+      <>
       <label>
         Name :{' '}
         <input
@@ -350,9 +368,11 @@ const DriveInfoPanel = function (props) {
       <br />
       {adminsList}
       {adminPerms}
-      <br />
 
       {deleteCourseButton}
+      </>
+        }
+
     </>
   );
 };

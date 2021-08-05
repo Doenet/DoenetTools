@@ -46,12 +46,10 @@ export default class Circle extends Curve {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.deleteAllLogic();
+    return []
 
-    return childLogic;
   }
 
 

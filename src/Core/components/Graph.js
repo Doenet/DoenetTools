@@ -95,42 +95,44 @@ export default class Graph extends BlockComponent {
   }
 
 
-  static returnSugarInstructions() {
-    let sugarInstructions = super.returnSugarInstructions();
+  // static returnSugarInstructions() {
+  //   let sugarInstructions = super.returnSugarInstructions();
 
-    let addCurve = function ({ matchedChildren }) {
-      // add <curve> around strings, as long as they don't have points
-      if (matchedChildren[0].state.value.includes(",")) {
-        return { success: false }
-      }
-      return {
-        success: true,
-        newChildren: [{ componentType: "curve", children: matchedChildren }],
-      }
-    }
-
-    sugarInstructions.push({
-      childrenRegex: "s",
-      replacementFunction: addCurve
-    });
-
-    return sugarInstructions;
-
-  }
+  //   let addCurve = function ({ matchedChildren }) {
+  //     // add <curve> around strings and macros, 
+  //     //as long as they don't have commas (for points)
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  //     // only apply if all children are strings without commas or macros
+  //     if (!matchedChildren.every(child =>
+  //       child.componentType === "string" && !child.state.value.includes(",") ||
+  //       child.doenetAttributes && child.doenetAttributes.createdFromMacro
+  //     )) {
+  //       return { success: false }
+  //     }
 
-    childLogic.newLeaf({
-      name: "atLeastZeroGraphical",
-      componentType: '_graphical',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  //     return {
+  //       success: true,
+  //       newChildren: [{ componentType: "curve", children: matchedChildren }],
+  //     }
+  //   }
 
-    return childLogic;
+  //   sugarInstructions.push({
+  //     replacementFunction: addCurve
+  //   });
+
+  //   return sugarInstructions;
+
+  // }
+
+
+  static returnChildGroups() {
+
+    return [{
+      group: "graphical",
+      componentTypes: ["_graphical"]
+    }]
+
   }
 
   static returnStateVariableDefinitions() {
@@ -165,6 +167,50 @@ export default class Graph extends BlockComponent {
             setStateVariable: "nChildrenAdded",
             value: desiredStateVariableValues.nChildrenAdded
           }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.xscale = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        xmin: {
+          dependencyType: "stateVariable",
+          variableName: "xmin"
+        },
+        xmax: {
+          dependencyType: "stateVariable",
+          variableName: "xmax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            xscale: dependencyValues.xmax - dependencyValues.xmin
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.yscale = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        ymin: {
+          dependencyType: "stateVariable",
+          variableName: "ymin"
+        },
+        ymax: {
+          dependencyType: "stateVariable",
+          variableName: "ymax"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            yscale: dependencyValues.ymax - dependencyValues.ymin
+          }
         }
       }
     }

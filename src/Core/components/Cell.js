@@ -12,7 +12,7 @@ export default class Cell extends BaseComponent {
   static primaryStateVariableForDefinition = "text";
 
   static get stateVariablesShadowedForReference() {
-    return ["halign", "bottom", "right",]
+    return ["halign", "bottom", "right"]
   };
 
   static createAttributesObject(args) {
@@ -45,49 +45,27 @@ export default class Cell extends BaseComponent {
     attributes.right = {
       createComponentOfType: "text",
     }
+    attributes.prefill = {
+      createComponentOfType: "text",
+      createStateVariable: "prefill",
+      defaultValue: "",
+      public: true,
+    };
 
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneMath = childLogic.newLeaf({
-      name: "exactlyOneMath",
-      componentType: "math",
-      number: 1,
-    });
+  static returnChildGroups() {
 
-    let nothingElse = childLogic.newLeaf({
-      name: "nothingElse",
-      componentType: "_base",
-      number: 0,
-      allowSpillover: false,
-    });
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-
-    let oneMathAndNothingElse = childLogic.newOperator({
-      name: "oneMathAndNothingElse",
-      operator: "and",
-      propositions: [exactlyOneMath, nothingElse],
-      requireConsecutive: true,
-    })
-
-    let anything = childLogic.newLeaf({
-      name: 'anything',
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "mathXorAnything",
-      operator: "xor",
-      propositions: [oneMathAndNothingElse, anything],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -227,12 +205,17 @@ export default class Cell extends BaseComponent {
       returnDependencies: () => ({
         mathChild: {
           dependencyType: "child",
-          childLogicName: "oneMathAndNothingElse"
+          childGroups: ["maths"],
+        },
+        otherChildren: {
+          dependencyType: "child",
+          childGroups: ["anything"],
         },
       }),
       definition: ({ dependencyValues }) => ({
         newValues: {
-          onlyMathChild: dependencyValues.mathChild.length === 1
+          onlyMathChild: dependencyValues.mathChild.length === 1 &&
+            dependencyValues.otherChildren.length === 0
         }
       })
     }
@@ -244,16 +227,23 @@ export default class Cell extends BaseComponent {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childLogicName: "mathXorAnything",
+          childGroups: ["maths", "anything"],
           variableNames: ["text"],
           variablesOptional: true,
-        }
+        },
+        prefill: {
+          dependencyType: "stateVariable",
+          variableName: "prefill"
+        },
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.children.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              text: { variablesToCheck: ["text"] }
+              text: {
+                variablesToCheck: ["text"],
+                defaultValue: dependencyValues.prefill
+              }
             }
           }
         }
@@ -273,7 +263,7 @@ export default class Cell extends BaseComponent {
             success: true,
             instructions: [{
               setStateVariable: "text",
-              value: desiredStateVariableValues.text
+              value: desiredStateVariableValues.text === null ? "" : String(desiredStateVariableValues.text)
             }]
           }
         } else if (dependencyValues.children.length === 1) {
@@ -306,7 +296,7 @@ export default class Cell extends BaseComponent {
           return {
             mathChild: {
               dependencyType: "child",
-              childLogicName: "oneMathAndNothingElse",
+              childGroups: ["maths"],
               variableNames: ["value"],
             },
           }

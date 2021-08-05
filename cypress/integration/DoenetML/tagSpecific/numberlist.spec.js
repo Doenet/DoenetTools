@@ -462,8 +462,7 @@ describe('Numberlist Tag Tests', function () {
     })
   })
 
-  // TODO: address maximum number in rendered children of numberlist
-  it.skip('numberlist with maximum number', () => {
+  it('numberlist with maximum number', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -520,8 +519,7 @@ describe('Numberlist Tag Tests', function () {
     })
   })
 
-  // TODO: deal with hidden children of a numberlist
-  it.skip('numberlist within numberlists, ignore child hide', () => {
+  it('numberlist within numberlists, with child hide', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -550,9 +548,9 @@ describe('Numberlist Tag Tests', function () {
 
     cy.get('#\\/_p2').should('have.text', '1, 2, 3')
 
-    cy.get('#\\/_p3').should('have.text', '4, 1, 2, 3, 5, 1, 2, 3')
+    cy.get('#\\/_p3').should('have.text', '4, 1, 2, 3, 1, 2, 3')
 
-    cy.get('#\\/_p4').should('have.text', '4, 1, 2, 3, 5, 1')
+    cy.get('#\\/_p4').should('have.text', '4, 1, 2, 3, 1')
 
 
     cy.log('Test internal values are set to the correct values')
