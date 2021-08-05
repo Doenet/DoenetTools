@@ -77,12 +77,39 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true
     };
+    attributes.xlabelPosition = {
+      createComponentOfType: "text",
+      createStateVariable: "xlabelPosition",
+      defaultValue: "right",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["right", "left"]
+    };
     attributes.ylabel = {
       createComponentOfType: "text",
       createStateVariable: "ylabel",
       defaultValue: "",
       public: true,
       forRenderer: true
+    };
+    attributes.ylabelPosition = {
+      createComponentOfType: "text",
+      createStateVariable: "ylabelPosition",
+      defaultValue: "top",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["top", "bottom"]
+    };
+    attributes.ylabelAlignment = {
+      createComponentOfType: "text",
+      createStateVariable: "ylabelAlignment",
+      defaultValue: "left",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["left", "right"]
     };
     attributes.showNavigation = {
       createComponentOfType: "boolean",

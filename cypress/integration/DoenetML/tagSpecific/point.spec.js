@@ -1174,6 +1174,69 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
   });
 
+  it.only('point constrained to graph', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+
+  <point x="1" y="2">
+    <constraints>
+      <constrainToGraph/>
+    </constraints>
+  </point>
+
+  </graph>
+  <math><copy prop="coords" tname="_point1" /></math>
+  <boolean><copy prop="constraintUsed" tname="_point1" /></boolean>
+  `}, "*");
+    });
+
+    // use this to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a')
+
+    cy.log(`move point to (105,3)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: 105, y: 3 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(9.8);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(3);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9.8,3)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (-30,11)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -9.8, y: 9.8 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-9.8);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(9.8);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9.8,9.8)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+
+    cy.log(`move point to (-3,1)`)
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components['/_point1'].movePoint({ x: -3, y: 1 });
+      expect(components['/_point1'].stateValues.xs[0].tree).eq(-3);
+      expect(components['/_point1'].stateValues.xs[1].tree).eq(1);
+      expect(components['/_point1'].stateValues.constraintUsed).eq(true);
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−3,1)')
+    });
+    cy.get('#\\/_boolean1').should('have.text', "true")
+  });
+
+
   it('three points with one constrained to grid', () => {
     cy.window().then((win) => {
       win.postMessage({
