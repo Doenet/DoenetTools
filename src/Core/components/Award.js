@@ -478,8 +478,9 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   let dependenciesForEvaluateLogic = {
     mathChildrenByCode: {},
-    numberChildrenByCode: {},
     mathListChildrenByCode: {},
+    numberChildrenByCode: {},
+    numberListChildrenByCode: {},
     textChildrenByCode: {},
     textListChildrenByCode: {},
     booleanChildrenByCode: {},
