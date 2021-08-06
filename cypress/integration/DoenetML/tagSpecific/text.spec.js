@@ -37,7 +37,27 @@ describe('Text Tag Tests', function () {
 
   })
 
-  
+  it('text attribute of paragraph components', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <p name="orig"><q>Hello,</q> said the <em>cow</em>.  <sq>Bye,</sq> came the <alert>reply</alert>.  The <attr>text</attr> attribute of <tag>text</tag> or <tage>text</tage> doesn't <term>do</term> <c>much</c>.</p>
+
+    <p name="textOnly"><copy prop="text" tname="orig" assignNames="t" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/orig').should('have.text', `“Hello,” said the cow.  ‘Bye,’ came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    cy.get('#\\/textOnly').should('have.text', `"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/t'].stateValues.value).eq(`"Hello," said the cow.  'Bye,' came the reply.  The text attribute of <text> or <text/> doesn't do much.`)
+    })
+
+
+  })
+
 
 })
 
