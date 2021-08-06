@@ -14,16 +14,26 @@ import styled from "styled-components";
 const Breadcrumb = styled.ul`
   list-style: none;
   overflow: hidden;
+  
  ;
 `
 
 const BreadcrumbItem = styled.li`
   float: left;
+  &:last-of-type span{
+    border-radius: 0px 15px 15px 0px;
+    padding: 0px 25px 0px 45px;
+    background: hsl(209,54%,82%);
+    color: black;
+  }
+  &:first-of-type span{
+    padding: 0px 0px 0px 30px;
+  }
  ;
 `
 
 const BreadcrumbSpan = styled.span`
-  padding: 0px 0 0px 45px;
+  padding: 0px 0px 0px 45px;
   position: relative; 
   display: block;
   float: left;
