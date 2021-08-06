@@ -121,7 +121,7 @@ export default function Form(props) {
         document.getElementById('textarea').value = '';
         setCancelShown('hidden')
     }
-    function changeSearchTerm() {
+    function changeTextTerm() {
         setTextTerm(document.getElementById('textarea').value)
         setCancelShown('visible')
     }
@@ -142,7 +142,7 @@ export default function Form(props) {
             type="text"
             style={textfield}
             onKeyUp={() => {
-              changeSearchTerm();
+              changeTextTerm();
             }}
             onChange={(e) => {
               handleChange(e);
