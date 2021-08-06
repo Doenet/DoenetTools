@@ -14,18 +14,13 @@ export class Md extends InlineComponent {
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["latex"] };
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroMrows",
-      componentType: 'mrow',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "mrows",
+      componentTypes: ["mrow"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -38,7 +33,7 @@ export class Md extends InlineComponent {
       returnDependencies: () => ({
         mrowChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMrows",
+          childGroups: ["mrows"],
         }
       }),
       definition: ({ dependencyValues }) => ({
@@ -53,7 +48,7 @@ export class Md extends InlineComponent {
       returnDependencies: () => ({
         mrowChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMrows",
+          childGroups: ["mrows"],
           variableNames: ["latex", "hide", "equationTag", "numbered"],
         }
       }),
@@ -93,7 +88,7 @@ export class Md extends InlineComponent {
       returnDependencies: () => ({
         mrowChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMrows",
+          childGroups: ["mrows"],
           variableNames: ["latexWithInputChildren", "hide", "equationTag", "numbered"],
         },
         latex: {

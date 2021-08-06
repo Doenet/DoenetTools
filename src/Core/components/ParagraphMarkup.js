@@ -10,10 +10,15 @@ export class Alert extends InlineRenderInlineChildren {
 
 export class Q extends InlineRenderInlineChildren {
   static componentType = "q";
+  static beginTextDelimiter = '"';
+  static endTextDelimiter = '"';
+
 }
 
 export class SQ extends InlineRenderInlineChildren {
   static componentType = "sq";
+  static beginTextDelimiter = "'";
+  static endTextDelimiter = "'";
 }
 
 export class Term extends InlineRenderInlineChildren {
@@ -28,11 +33,15 @@ export class C extends InlineRenderInlineChildren {
 export class Tag extends InlineRenderInlineChildren {
   static componentType = "tag";
   static rendererType = "tag";
+  static beginTextDelimiter = "<";
+  static endTextDelimiter = ">";
 }
 
 export class Tage extends InlineRenderInlineChildren {
   static componentType = "tage";
   static rendererType = "tag";
+  static beginTextDelimiter = "<";
+  static endTextDelimiter = "/>";
 
   static returnStateVariableDefinitions() {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();

@@ -816,4 +816,40 @@ describe('TextInput Tag Tests', function () {
 
   })
 
+  it('chain update off textinput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <textinput name="ti" />
+
+    <text name="h">hello</text>
+    <updateValue triggerWithTnames="ti" tname="h" newValue="$h$ti" type="text" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/h').should('have.text', 'hello')
+
+    cy.get('#\\/ti_input').type(" bye")
+    cy.get('#\\/h').should('have.text', 'hello')
+
+    cy.get('#\\/ti_input').clear().type(" there")
+    cy.get('#\\/h').should('have.text', 'hello')
+
+    cy.get('#\\/ti_input').blur();
+    cy.get('#\\/h').should('have.text', 'hello there')
+
+    cy.get('#\\/ti_input').clear().type("?")
+    cy.get('#\\/h').should('have.text', 'hello there')
+
+    cy.get('#\\/ti_input').clear().type("!")
+    cy.get('#\\/h').should('have.text', 'hello there')
+
+    cy.get('#\\/ti_input').type("{enter}")
+    cy.get('#\\/h').should('have.text', 'hello there!')
+
+  })
+
 });

@@ -23,45 +23,13 @@ export default class CellBlock extends BaseComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let zeroOrMoreCells = childLogic.newLeaf({
-      name: "zeroOrMoreCells",
-      componentType: 'cell',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "children",
+      componentTypes: ["cell", "row", "column", "cellblock"]
+    }]
 
-    let zeroOrMoreRows = childLogic.newLeaf({
-      name: "zeroOrMoreRows",
-      componentType: 'row',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let zeroOrMoreColumns = childLogic.newLeaf({
-      name: "zeroOrMoreColumns",
-      componentType: 'column',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    let zeroOrMoreCellblocks = childLogic.newLeaf({
-      name: "zeroOrMoreCellblocks",
-      componentType: 'cellblock',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "cellsRowsColumnsBlocks",
-      operator: 'and',
-      propositions: [zeroOrMoreCells, zeroOrMoreRows, zeroOrMoreColumns, zeroOrMoreCellblocks],
-      setAsBase: true,
-    });
-
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -71,7 +39,7 @@ export default class CellBlock extends BaseComponent {
       returnDependencies: () => ({
         cellRelatedChildren: {
           dependencyType: "child",
-          childLogicName: "cellsRowsColumnsBlocks",
+          childGroups: ["children"],
           variableNames: [
             "rowNum",
             "colNum",

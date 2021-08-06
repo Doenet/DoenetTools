@@ -3,53 +3,16 @@ import BaseComponent from './abstract/BaseComponent';
 export default class Markers extends BaseComponent {
   static componentType = "markers";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastOneNumbers = childLogic.newLeaf({
-      name: "atLeastOneNumbers",
-      componentType: 'number',
-      comparison: 'atLeast',
-      number: 1,
-    });
-    let atLeastOneTexts = childLogic.newLeaf({
-      name: "atLeastOneTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 1,
-    });
+    return [{
+      group: "texts",
+      componentTypes: ["text"]
+    }, {
+      group: "numbers",
+      componentTypes: ["number"]
+    }]
 
-    let noTexts = childLogic.newLeaf({
-      name: "noTexts",
-      componentType: 'text',
-      comparison: 'exactly',
-      number: 0,
-      allowSpillover: false,
-    });
-
-    let noNumbers = childLogic.newLeaf({
-      name: "noNumbers",
-      componentType: 'number',
-      comparison: 'exactly',
-      number: 0,
-      allowSpillover: false,
-    });
-
-    let noTextAndNoNumbers = childLogic.newOperator({
-      name: "noTextAndNoNumbers",
-      operator: 'and',
-      propositions: [noNumbers, noTexts],
-    });
-
-    childLogic.newOperator({
-      name: "MarkerLogic",
-      operator: 'xor',
-      propositions: [atLeastOneNumbers, atLeastOneTexts, noTextAndNoNumbers],
-      setAsBase: true,
-    });
-
-
-    return childLogic;
   }
 
 
@@ -64,11 +27,11 @@ export default class Markers extends BaseComponent {
       returnDependencies: () => ({
         textChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneTexts",
+          childGroups: ["texts"],
         },
         numberChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneNumbers",
+          childGroups: ["numbers"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -96,12 +59,12 @@ export default class Markers extends BaseComponent {
         },
         textChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneTexts",
+          childGroups: ["texts"],
           variableNames: ["value"]
         },
         numberChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneNumbers",
+          childGroups: ["numbers"],
           variableNames: ["value"],
         },
       }),

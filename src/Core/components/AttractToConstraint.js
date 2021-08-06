@@ -2,8 +2,8 @@ import ConstraintComponent from './abstract/ConstraintComponent';
 import { findFiniteNumericalValue } from '../utils/math';
 import { applyConstraintFromComponentConstraints } from '../utils/constraints';
 
-export default class TransformConstraintIntoAttractor extends ConstraintComponent {
-  static componentType = "transformConstraintIntoAttractor";
+export default class AttractToConstraint extends ConstraintComponent {
+  static componentType = "attractToConstraint";
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -16,17 +16,13 @@ export default class TransformConstraintIntoAttractor extends ConstraintComponen
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "exactlyOneConstraint",
-      componentType: '_constraint',
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "constraints",
+      componentTypes: ["_constraint"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -38,7 +34,7 @@ export default class TransformConstraintIntoAttractor extends ConstraintComponen
       returnDependencies: () => ({
         constraintChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneConstraint",
+          childGroups: ["constraints"],
           variableNames: ["applyConstraint", "applyComponentConstraint"],
           variablesOptional: true,
         },
@@ -58,6 +54,11 @@ export default class TransformConstraintIntoAttractor extends ConstraintComponen
             let constraintResult;
 
             let constraintChild = dependencyValues.constraintChild[0];
+
+            if(!constraintChild) {
+              return {};
+            }
+
             if (constraintChild.stateValues.applyConstraint) {
               constraintResult = constraintChild.stateValues.applyConstraint(variables);
             } else {

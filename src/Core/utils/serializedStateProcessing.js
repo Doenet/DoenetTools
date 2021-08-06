@@ -274,34 +274,19 @@ export function findContentCopies({ serializedComponents }) {
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "copy") {
       if (serializedComponent.attributes && serializedComponent.attributes.uri) {
-        let uriComponent = serializedComponent.attributes.uri.component;
-        if (uriComponent && uriComponent.componentType) {
-          let uri;
-          if (uriComponent.state !== undefined) {
-            uri = uriComponent.state.value;
-          }
-          // child overrides value from state
-          if (uriComponent.children !== undefined) {
-            for (let child of uriComponent.children) {
-              if (child.componentType === "string") {
-                uri = child.state.value;
-                break;
-              }
+        let uri = serializedComponent.attributes.uri.primitive;
+
+        if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
+
+          let result = uri.match(/[:&]contentid=([^&]+)/i);
+          if (result) {
+            let contentId = result[1];
+            if (contentIdComponents[contentId] === undefined) {
+              contentIdComponents[contentId] = [];
             }
+            contentIdComponents[contentId].push(serializedComponent);
           }
 
-          if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
-
-            let result = uri.match(/[:&]contentid=([^&]+)/i);
-            if (result) {
-              let contentId = result[1];
-              if (contentIdComponents[contentId] === undefined) {
-                contentIdComponents[contentId] = [];
-              }
-              contentIdComponents[contentId].push(serializedComponent);
-            }
-
-          }
         }
       }
     } else {
@@ -405,10 +390,10 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
     for (let attrName in classAttributes) {
       let attrObj = classAttributes[attrName];
 
-      if (attrObj.createPrimitiveOfType && ("defaultValue" in attrObj) && !(attrName in attributes)) {
+      if (attrObj.createPrimitiveOfType && ("defaultPrimitiveValue" in attrObj) && !(attrName in attributes)) {
         attributes[attrName] = componentFromAttribute({
           attrObj,
-          value: attrObj.defaultValue.toString(),
+          value: attrObj.defaultPrimitiveValue.toString(),
           componentInfoObjects,
           flags
         });
@@ -1127,50 +1112,54 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
           if (sugarResults.success) {
 
-            if (sugarResults.newChildren) {
-              let newChildren = sugarResults.newChildren;
-              let preSugarIndsFound = findPreSugarIndsAndMarkFromSugar(newChildren);
+            let newChildren = sugarResults.newChildren;
+            let newAttributes = sugarResults.newAttributes;
 
-              if (preSugarIndsFound.length !== nNonStrings ||
-                !preSugarIndsFound.every((v, i) => v === i)
-              ) {
-                console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
-              } else {
+            let preSugarIndsFoundInChildren = [], preSugarIndsFoundInAttributes = [];
 
-                component.children = newChildren;
-
-                if (sugarResults.parametersForChildrenSugar) {
-                  Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
-                }
-              }
-            } else if (sugarResults.newAttributes) {
-              let newAttributes = sugarResults.newAttributes;
-
-              let preSugarIndsFound = [];
-
+            if (newChildren) {
+              preSugarIndsFoundInChildren = findPreSugarIndsAndMarkFromSugar(newChildren);
+            }
+            if (newAttributes) {
               for (let attrName in newAttributes) {
                 let comp = newAttributes[attrName].component;
                 if (comp) {
-                  preSugarIndsFound.push(...findPreSugarIndsAndMarkFromSugar(comp.children));
+                  preSugarIndsFoundInAttributes.push(...findPreSugarIndsAndMarkFromSugar(comp.children));
                 }
               }
+            }
 
-              if (preSugarIndsFound.length !== nNonStrings ||
-                !preSugarIndsFound.sort().every((v, i) => v === i)
-              ) {
-                console.error(`Invalid sugar for ${componentType} as didn't return original components in order`)
-              } else {
+            let preSugarIndsFound = [...preSugarIndsFoundInChildren, ...preSugarIndsFoundInAttributes];
 
-                if (!component.attributes) {
-                  component.attributes = {}
-                }
-                Object.assign(component.attributes, newAttributes)
-                component.children = [];
+            if (preSugarIndsFound.length !== nNonStrings ||
+              !preSugarIndsFound.sort((a, b) => a - b).every((v, i) => v === i)
+            ) {
+              throw Error(`Invalid sugar for ${componentType} as didn't return set of original components`)
+            }
 
-                if (sugarResults.parametersForChildrenSugar) {
-                  Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
-                }
+            if (preSugarIndsFoundInChildren.length > 0) {
+              let sortedList = [...preSugarIndsFoundInChildren].sort((a, b) => a - b);
+              if (!sortedList.every((v, i) => v === preSugarIndsFoundInChildren[i])) {
+                throw Error(`Invalid sugar for ${componentType} as didn't return original components in order`)
               }
+            }
+
+
+            if (sugarResults.parametersForChildrenSugar) {
+              Object.assign(newParentParametersFromSugar, sugarResults.parametersForChildrenSugar)
+            }
+
+            if (newChildren) {
+              component.children = newChildren;
+            } else {
+              component.children = [];
+            }
+
+            if (newAttributes) {
+              if (!component.attributes) {
+                component.attributes = {}
+              }
+              Object.assign(component.attributes, newAttributes)
 
             }
 

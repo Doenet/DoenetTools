@@ -35,20 +35,15 @@ export default class Choice extends InlineComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "atLeastZeroChildren",
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "children",
+      componentTypes: ["_base"]
+    }]
+
   }
-
 
   static returnStateVariableDefinitions() {
 
@@ -60,7 +55,7 @@ export default class Choice extends InlineComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChildren",
+          childGroups: ["children"],
           variableNames: ["text"],
           variablesOptional: true
         }

@@ -139,7 +139,7 @@ function Menu(props){
     <div style={{
       display: hideShowStyle,
       // paddingTop: "0px", 
-      paddingBottom: "4px", 
+      paddingBottom: "1px", 
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor:"white"}}>{props.children}</div>

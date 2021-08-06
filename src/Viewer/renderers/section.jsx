@@ -46,17 +46,17 @@ export default class Section extends DoenetRenderer {
     }
 
     if (this.doenetSvData.level === 0) {
-      heading = <h1 id={id}>{title}</h1>;
+      heading = <h1 id={id} style={{fontSize:'2em'}}>{title}</h1>;
     } else if (this.doenetSvData.level === 1) {
-      heading = <h2 id={id}>{title}</h2>;
+      heading = <h2 id={id} style={{fontSize:'1.5em'}}>{title}</h2>;
     } else if (this.doenetSvData.level === 2) {
-      heading = <h3 id={id}>{title}</h3>;
+      heading = <h3 id={id} style={{fontSize:'1.17em'}}>{title}</h3>;
     } else if (this.doenetSvData.level === 3) {
-      heading = <h4 id={id}>{title}</h4>;
+      heading = <h4 id={id} style={{fontSize:'1em'}}>{title}</h4>;
     } else if (this.doenetSvData.level === 4) {
-      heading = <h5 id={id}>{title}</h5>;
+      heading = <h5 id={id} style={{fontSize:'.83em'}}>{title}</h5>;
     } else if (this.doenetSvData.level === 5) {
-      heading = <h6 id={id}>{title}</h6>;
+      heading = <h6 id={id} style={{fontSize:'.67em'}}>{title}</h6>;
     }
 
     //  if (this.doenetSvData.level === 0) {
@@ -178,9 +178,9 @@ export default class Section extends DoenetRenderer {
           <a name={this.componentName} />
           <span style={{
             display: "block",
-            margin: "4px 4px 0px 4px",
-            padding: "6px",
-            border: "1px solid #C9C9C9",
+            // margin: "4px 4px 0px 4px",
+            // padding: "6px",
+            // border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           }}
@@ -190,9 +190,9 @@ export default class Section extends DoenetRenderer {
           </span>
           <span style={{
             display: "block",
-            margin: "0px 4px 4px 4px",
-            padding: "6px",
-            border: "1px solid #C9C9C9",
+            // margin: "0px 4px 4px 4px",
+            // padding: "6px",
+            // border: "1px solid #C9C9C9",
             backgroundColor: "white",
           }}>
             {childrenToRender}
@@ -207,9 +207,9 @@ export default class Section extends DoenetRenderer {
           <a name={this.componentName} />
           <span style={{
             display: "block",
-            margin: "4px 4px 0px 4px",
-            padding: "6px",
-            border: "1px solid #C9C9C9",
+            // margin: "4px 4px 0px 4px",
+            // padding: "6px",
+            // border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           }}

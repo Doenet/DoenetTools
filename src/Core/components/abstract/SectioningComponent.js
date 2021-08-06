@@ -55,39 +55,19 @@ export default class SectioningComponent extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atMostOneVariantControl = childLogic.newLeaf({
-      name: "atMostOneVariantControl",
-      componentType: "variantControl",
-      comparison: "atMost",
-      number: 1,
-      allowSpillover: false,
-    })
+    return [{
+      group: "variantControls",
+      componentTypes: ["variantControl"]
+    }, {
+      group: "titles",
+      componentTypes: ["title"]
+    }, {
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    let atMostOneTitle = childLogic.newLeaf({
-      name: "atMostOneTitle",
-      componentType: "title",
-      comparison: "atMost",
-      number: 1,
-    })
-
-    let anything = childLogic.newLeaf({
-      name: 'anything',
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "variantTitleAndAnything",
-      operator: "and",
-      propositions: [atMostOneVariantControl, atMostOneTitle, anything],
-      setAsBase: true,
-    })
-
-    return childLogic;
   }
 
 
@@ -133,12 +113,12 @@ export default class SectioningComponent extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
         },
       }),
       definition({ dependencyValues }) {
         let titleChildName = null;
-        if (dependencyValues.titleChild.length === 1) {
+        if (dependencyValues.titleChild.length > 0) {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
@@ -154,7 +134,7 @@ export default class SectioningComponent extends BlockComponent {
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneTitle",
+          childGroups: ["titles"],
           variableNames: ["text"],
         },
         sectionName: {
@@ -296,6 +276,14 @@ export default class SectioningComponent extends BlockComponent {
       definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
     }
 
+    stateVariableDefinitions.sectionPlaceholder = {
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: { sectionPlaceholder: { variablesToCheck: ["sectionPlaceholder"] } }
+      })
+    }
+
     stateVariableDefinitions.creditAchieved = {
       public: true,
       componentType: "number",
@@ -308,6 +296,7 @@ export default class SectioningComponent extends BlockComponent {
         variableName: "percentCreditAchieved",
         public: true,
         componentType: "number",
+        defaultValue: 0,
         stateVariablesPrescribingAdditionalAttributes: {
           displayDigits: "displayDigitsForCreditAchieved",
         }
@@ -324,6 +313,10 @@ export default class SectioningComponent extends BlockComponent {
           dependencies.scoredDescendants = {
             dependencyType: "stateVariable",
             variableName: "scoredDescendants"
+          }
+          dependencies.sectionPlaceholder = {
+            dependencyType: "stateVariable",
+            variableName: "sectionPlaceholder"
           }
           for (let [ind, descendant] of stateValues.scoredDescendants.entries()) {
             dependencies["creditAchieved" + ind] = {
@@ -347,6 +340,15 @@ export default class SectioningComponent extends BlockComponent {
           }
         }
 
+        if (dependencyValues.sectionPlaceholder) {
+          return {
+            useEssentialOrDefaultValue: {
+              creditAchieved: { variablesToCheck: ["creditAchieved"] },
+              percentCreditAchieved: { variablesToCheck: ["percentCreditAchieved"] },
+            }
+          }
+        }
+
         let creditSum = 0;
         let totalWeight = 0;
 
@@ -355,11 +357,39 @@ export default class SectioningComponent extends BlockComponent {
           creditSum += dependencyValues["creditAchieved" + ind] * weight;
           totalWeight += weight;
         }
-        let creditAchieved = creditSum / totalWeight;
+        let creditAchieved;
+        if (totalWeight > 0) {
+          creditAchieved = creditSum / totalWeight;
+        } else {
+          // give full credit if there are no scored items
+          creditAchieved = 1;
+        }
         let percentCreditAchieved = creditAchieved * 100;
 
         return { newValues: { creditAchieved, percentCreditAchieved } }
 
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        if (!dependencyValues.sectionPlaceholder) {
+          return { success: false }
+        }
+
+        let instructions = [];
+
+        for (let varName in desiredStateVariableValues) {
+          if (!["creditAchieved", "percentCreditAchieved"].includes(varName)) {
+            continue;
+          }
+          instructions.push({
+            setStateVariable: varName,
+            value: desiredStateVariableValues[varName]
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        }
       }
     }
 
@@ -420,7 +450,7 @@ export default class SectioningComponent extends BlockComponent {
       returnDependencies: ({ componentInfoObjects }) => ({
         variantControlChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneVariantControl",
+          childGroups: ["variantControls"],
           variableNames: ["selectedVariantIndex", "selectedVariantName"]
         },
         variantDescendants: {

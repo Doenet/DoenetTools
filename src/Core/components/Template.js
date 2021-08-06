@@ -87,11 +87,11 @@ export default class Template extends CompositeComponent {
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects }) {
+  static createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
     // console.log(component.stateValues.rendered);
 
-    if (!component.stateValues.rendered) {
+    if (!(component.stateValues.rendered || alwaysCreateReplacements)) {
       return { replacements: [] };
     } else {
 
@@ -112,7 +112,7 @@ export default class Template extends CompositeComponent {
           })
         }
 
-        if(!repl.attributes) {
+        if (!repl.attributes) {
           repl.attributes = {};
         }
 
@@ -126,7 +126,7 @@ export default class Template extends CompositeComponent {
       // In addition, we make them consistent if don't assignNames
       // so that a template (actually group, usually)
       // gets expanded with the original names.
-      
+
       // However, at some point, got duplicate names if copying without link,
       // but can't reproduce that error now
       // Adding condition for not being replacement fixed the duplicate name
@@ -140,10 +140,10 @@ export default class Template extends CompositeComponent {
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
-        originalNamesAreConsistent: newNamespace 
-        || (!component.doenetAttributes.assignNames
-          //  && !component.replacementOf
-           ),
+        originalNamesAreConsistent: newNamespace
+          || (!component.doenetAttributes.assignNames
+            //  && !component.replacementOf
+          ),
       });
 
       return { replacements: processResult.serializedComponents };

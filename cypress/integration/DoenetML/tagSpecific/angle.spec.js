@@ -729,4 +729,42 @@ describe('Angle Tag Tests', function () {
 
   })
 
+  it('angle from sugar with macro and string', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <angle>$pi/2</angle>
+  <math simplify>2<copy tname="_angle1" /></math>
+  <math simplify>2<copy prop="angle" tname="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" tname="_angle1" /></math>
+  <math name="pi">pi</math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π/2")
+    })
+
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π")
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("π")
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_angle1'].stateValues.radians.tree).eqls(["/", "pi", 2]);
+      expect(components['/_angle1'].stateValues.degrees.tree).eq(90);
+    })
+
+  })
+
 });

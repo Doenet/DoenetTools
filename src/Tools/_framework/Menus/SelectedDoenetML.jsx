@@ -5,7 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState,useEffect } from 'react';
-import {atom, selector, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import {atom, selector,useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 import {
   folderDictionaryFilterSelector,
   globalSelectedNodesAtom,
@@ -20,6 +20,8 @@ import {useAssignmentCallbacks} from '../../../_reactComponents/Drive/DriveActio
 import { useToast } from '../Toast';
 import axios from 'axios';
 import Switch from '../../_framework/Switch';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 
 export const selectedVersionAtom = atom({
@@ -31,6 +33,7 @@ export default function SelectedDoenetML() {
   const selection =
     useRecoilValueLoadable(selectedInformation).getValue() ?? [];
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const pageToolView = useRecoilValue(pageToolViewAtom);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
   const item = selection[0];
@@ -90,7 +93,7 @@ export default function SelectedDoenetML() {
   // make assignment for released versions
  
   makeAssignmentforReleasedButton = (
-    <>
+    <ButtonGroup vertical>
       <Button
         value="Make Assignment"
         onClick={async () => {
@@ -142,16 +145,14 @@ export default function SelectedDoenetML() {
           }
         }}
       />
-      
-      <br />
-    </>
+    </ButtonGroup>
   );
 
   // unassign
   let unAssignButton = ''; 
   
 unAssignButton = (
-  <>
+  <ButtonGroup vertical>
     <Button
       value="Unassign"
       onClick={async () => {
@@ -203,9 +204,7 @@ unAssignButton = (
           });
       }}
     />
-    <br />
-    <br />
-  </>
+  </ButtonGroup>
 );
 
   return (
@@ -213,8 +212,8 @@ unAssignButton = (
       <h2 data-cy="infoPanelItemLabel">
         {dIcon} {item.label}
       </h2>
-
-      <label>
+      {pageToolView?.view == 'instructor' ? 
+      <><label>
         DoenetML Label
         <input
           type="text"
@@ -238,44 +237,49 @@ unAssignButton = (
         />
       </label>
       <br />
+      <ButtonGroup vertical>
+        <Button
+          value="Edit DoenetML"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                doenetId: item.doenetId,
+                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
+              },
+            });
+          }}
+        />
+        <Button
+          data-cy="deleteDoenetMLButton"
+          value="Delete DoenetML"
+          onClick={() => {
+            deleteItem({
+              driveIdFolderId: {
+                driveId: item.driveId,
+                folderId: item.parentFolderId,
+              },
+              itemId: item.itemId,
+              driveInstanceId: item.driveInstanceId,
+              label: item.label,
+            });
+          }}
+        />
+      </ButtonGroup>
+      
       <br />
-      <Button
-        value="Edit DoenetML"
-        onClick={() => {
-          setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
-            params: {
-              doenetId: item.doenetId,
-              path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
-            },
-          });
-        }}
-      />
+     {assigned}  
+     <br />
+     
+      {selection[0].isAssigned === '0' && selection[0].isReleased === '1' && makeAssignmentforReleasedButton} 
       <br />
-      <Button
-        data-cy="deleteDoenetMLButton"
-        value="Delete DoenetML"
-        onClick={() => {
-          deleteItem({
-            driveIdFolderId: {
-              driveId: item.driveId,
-              folderId: item.parentFolderId,
-            },
-            itemId: item.itemId,
-            driveInstanceId: item.driveInstanceId,
-            label: item.label,
-          });
-        }}
-      />
-      <br />
-      {assigned}
-      <br />
-      {selection[0].isAssigned === '0' && selection[0].isReleased === '1' && makeAssignmentforReleasedButton}
-      <br />
-      {selection[0].isAssigned == '1' && selection[0].isReleased === '1'  &&  unAssignButton }
-    <br />
+      
+     {selection[0].isAssigned == '1' && selection[0].isReleased === '1'  &&  unAssignButton }
+   
+       </>: ''}
+        
       {( selection[0].isAssigned == '1') && selection[0].isReleased === '1' &&  <AssignmentForm selection={selection} versionId={versionId} contentId={contentId}/>}
     </>
   );
@@ -311,6 +315,7 @@ const AssignmentForm = (props) =>{
   const {changeSettings,saveSettings,onAssignmentError} = useAssignment();
   const {updateAssignmentTitle} = useAssignmentCallbacks();
   const addToast = useToast();
+  const pageToolView = useRecoilValue(pageToolViewAtom);
 
 const [oldValue,setoldValue] = useState();
 
@@ -565,9 +570,20 @@ const [oldValue,setoldValue] = useState();
       }
     </>
   );
+  let studentAInfo = (
+    <>
+     <div>
+          <p>Due: {aInfo?.dueDate}</p>
+          <p>Time Limit: {aInfo?.timeLimit}</p>
+          <p>Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
+          <p>Points: {aInfo?.totalPointsOrPercent}</p>
+        </div>
+    </>
+  )
   return (
     <>
-    {assignmentForm}
+    {pageToolView?.view == 'student' ? <>{studentAInfo}</> : ''}
+    {pageToolView?.view == 'instructor' ? <>{assignmentForm}</>: ' '}
     </>
 
   )

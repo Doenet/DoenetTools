@@ -870,7 +870,7 @@ describe('CobwebPolyline Tag Tests', function () {
     <function formula="2x-x^2/3" name="f" />
   </setup>
   
-  <copy uri="doenet:contentId=6a3e8ebf85e78a89e3169e166dc60fad1a2d32e39e2cb9e1e17ac4482a9b646e" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:contentId=6d72350e798b3c98ad5f78b47c3ed1dee7526cc219c0265a4114314b2aa9e708" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   <p>Credit achieved: <copy tname="_document1" prop="creditAchieved" assignNames="ca" /></p>
   `}, "*");

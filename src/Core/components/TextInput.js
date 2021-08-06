@@ -276,7 +276,10 @@ export default class Textinput extends Input {
 
       this.coreFunctions.requestUpdate({
         updateInstructions,
-        event
+        event,
+        callBack: () => this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        })
       })
 
     }

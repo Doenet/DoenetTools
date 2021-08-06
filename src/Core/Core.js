@@ -21,7 +21,9 @@ import Hex from 'crypto-js/enc-hex'
 
 export default class Core {
   constructor({ doenetML, parameters, requestedVariant,
-    externalFunctions, flags = {}, coreReadyCallback, coreUpdatedCallback, coreId }) {
+    externalFunctions, flags = {},
+    stateVariableChanges = {},
+    coreReadyCallback, coreUpdatedCallback, coreId }) {
     // console.time('start up time');
 
     this.coreId = coreId;
@@ -122,6 +124,22 @@ export default class Core {
       recordSolutionView: this.externalFunctions.recordSolutionView,
     }
 
+    this.updateInfo = {
+      componentsTouched: [],
+      compositesToExpand: new Set([]),
+      compositesToUpdateReplacements: [],
+
+      unresolvedDependencies: {},
+      unresolvedByDependent: {},
+      deletedStateVariables: {},
+      deletedComponents: {},
+      recreatedComponents: {},
+      itemScoreChanges: new Set(),
+      // parentsToUpdateDescendants: new Set(),
+      compositesBeingExpanded: [],
+      stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
+    }
+
     this.animationIDs = {};
     this.lastAnimationID = 0;
     this.requestedVariant = requestedVariant;
@@ -192,22 +210,8 @@ export default class Core {
       core: this,
     });
 
-    this.unsatisfiedChildLogic = {};
+    this.unmatchedChildren = {};
 
-    this.updateInfo = {
-      componentsTouched: [],
-      compositesToExpand: new Set([]),
-      compositesToUpdateReplacements: [],
-
-      unresolvedDependencies: {},
-      unresolvedByDependent: {},
-      deletedStateVariables: {},
-      deletedComponents: {},
-      recreatedComponents: {},
-      itemScoreChanges: new Set(),
-      // parentsToUpdateDescendants: new Set(),
-      compositesBeingExpanded: []
-    }
 
     // console.timeEnd('serialize doenetML');
 
@@ -463,6 +467,9 @@ export default class Core {
       this.expandAllComposites(this.document);
       this.expandAllComposites(this.document, true);
 
+      // calculate any replacement changes on composites touched
+      this.replacementChangesFromCompositesToUpdate();
+
       this.initializeRenderedComponentInstruction(this.document);
       this.processStateVariableTriggers();
 
@@ -488,6 +495,9 @@ export default class Core {
 
       this.expandAllComposites(this.document);
       this.expandAllComposites(this.document, true);
+
+      // calculate any replacement changes on composites touched
+      this.replacementChangesFromCompositesToUpdate();
 
       this.updateRendererInstructions({ componentNames: this.componentAndRenderedDescendants(parent) });
       this.processStateVariableTriggers();
@@ -526,7 +536,7 @@ export default class Core {
         let currentChildNames = [];
         let unproxiedComponent = this._components[componentName];
         if (unproxiedComponent && unproxiedComponent.constructor.renderChildren) {
-          if (!unproxiedComponent.childLogicSatisfied) {
+          if (!unproxiedComponent.childrenMatched) {
             this.deriveChildResultsFromDefiningChildren({
               parent: unproxiedComponent, expandComposites: true, forceExpandComposites: true,
             });
@@ -667,7 +677,7 @@ export default class Core {
       return;
     }
 
-    if (!component.childLogicSatisfied) {
+    if (!component.childrenMatched) {
       this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, //forceExpandComposites: true,
       });
@@ -827,7 +837,7 @@ export default class Core {
 
     let parentsWithCompositesNotReady = [];
 
-    if (!component.childLogicSatisfied) {
+    if (!component.childrenMatched) {
       this.deriveChildResultsFromDefiningChildren({
         parent: component, expandComposites: true, forceExpandComposites,
       });
@@ -866,7 +876,7 @@ export default class Core {
 
     let componentNames = [component.componentName];
     if (component.constructor.renderChildren) {
-      if (!component.childLogicSatisfied) {
+      if (!component.childrenMatched) {
         this.deriveChildResultsFromDefiningChildren({
           parent: component, expandComposites: true, //forceExpandComposites: true,
         });
@@ -1192,16 +1202,6 @@ export default class Core {
     }
 
 
-    let childLogic = componentClass.returnChildLogic({
-      componentInfoObjects: this.componentInfoObjects,
-      components: this.components,
-    });
-
-    if (childLogic === undefined || typeof childLogic.applyLogic !== "function") {
-      throw Error("Invalid component class " + componentClass.componentType +
-        ": returnChildLogic must return a childLogic object")
-    }
-
     let attributes = {};
 
     if (serializedComponent.attributes) {
@@ -1248,10 +1248,8 @@ export default class Core {
     }
 
     let stateVariableDefinitions = this.createStateVariableDefinitions({
-      childLogic,
       componentClass,
       prescribedDependencies,
-      componentName,
     });
 
     // in case component with same name was deleted before, delete from deleteComponents and deletedStateVariable
@@ -1266,7 +1264,6 @@ export default class Core {
       componentName,
       ancestors,
       definingChildren,
-      childLogic,
       stateVariableDefinitions,
       serializedChildren: childrenToRemainSerialized,
       serializedComponent,
@@ -1332,6 +1329,8 @@ export default class Core {
       });
     }
 
+    this.checkForStateVariablesUpdatesForNewComponent(componentName)
+
     this.dependencies.resolveStateVariablesIfReady({ component: newComponent });
 
     this.checkForActionChaining({ component: newComponent });
@@ -1347,6 +1346,17 @@ export default class Core {
 
   }
 
+  checkForStateVariablesUpdatesForNewComponent(componentName) {
+
+    if (componentName in this.updateInfo.stateVariableUpdatesForMissingComponents) {
+      this.processNewStateVariableValues({
+        [componentName]: this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
+      });
+
+      delete this.updateInfo.stateVariableUpdatesForMissingComponents[componentName]
+    }
+
+  }
 
   propagateAncestorProps({ componentClass, componentName, sharedParameters }) {
 
@@ -1477,17 +1487,17 @@ export default class Core {
     }
 
 
-    let childLogicResults = this.matchChildrenToChildLogic({
-      parent,
-      applyAdapters: true,
-    });
+    let childGroupResults = this.matchChildrenToChildGroups(parent);
 
-
-    if (childLogicResults.success) {
-      delete this.unsatisfiedChildLogic[parent.componentName]
+    if (childGroupResults.success) {
+      delete this.unmatchedChildren[parent.componentName];
+      parent.childrenMatchedWithPlaceholders = true;
     } else {
-      this.unsatisfiedChildLogic[parent.componentName] = {
-        message: parent.childLogic.logicResult.message
+      parent.childrenMatchedWithPlaceholders = false;
+      let unmatchedChildrenTypes = childGroupResults.unmatchedChildren
+        .map(x => x.componentType).join(', ')
+      this.unmatchedChildren[parent.componentName] = {
+        message: `invalid children of type(s): ${unmatchedChildrenTypes}`
       }
     }
 
@@ -1502,12 +1512,12 @@ export default class Core {
       this.componentsWithChangedChildrenToRender.add(parent.componentName);
     }
 
-    return childLogicResults;
+    return childGroupResults;
 
   }
 
   expandCompositeOfDefiningChildren(parent, children, expandComposites, forceExpandComposites) {
-    // if composite is not directly matched by any childLogic leaf
+    // if composite is not directly matched by any childGroup
     // then replace the composite with its replacements,
     // expanding it if not already expanded
 
@@ -1525,7 +1535,7 @@ export default class Core {
         // if composite itself is in the child logic
         // then don't replace it with its replacements
         // but leave the composite as an activeChild
-        if (parent.childLogic.checkIfChildInLogic(child)) {
+        if (this.findChildGroup(child.componentType, parent.constructor).success) {
           continue;
         }
 
@@ -1584,45 +1594,192 @@ export default class Core {
 
   }
 
-  matchChildrenToChildLogic({ parent, applyAdapters = true }) {
+  matchChildrenToChildGroups(parent) {
 
-    // determine maximum number of adapters on any child
-    let maxNumAdapters = 0;
-    if (applyAdapters === true) {
-      for (let child of parent.activeChildren) {
-        let n;
-        if (child.componentName) {
-          n = child.constructor.nAdapters
-        } else {
-          n = this.allComponentClasses[child.componentType].nAdapters
-        }
-        if (n > maxNumAdapters) {
-          maxNumAdapters = n;
-        }
-      }
+    parent.childMatchesByGroup = {};
+
+    for (let groupName in parent.constructor.childGroupIndsByName) {
+      parent.childMatchesByGroup[groupName] = [];
     }
 
-    let numAdaptersUsed = 0;
+    let success = true;
 
-    let success = false;
+    let unmatchedChildren = [];
 
-    for (; numAdaptersUsed <= maxNumAdapters; numAdaptersUsed++) {
+    for (let [ind, child] of parent.activeChildren.entries()) {
 
-      let newResult = parent.childLogic.applyLogic({
-        activeChildren: parent.activeChildren,
-        maxAdapterNumber: numAdaptersUsed,
-      });
+      let result = this.findChildGroup(child.componentType, parent.constructor)
 
-      if (newResult.success) {
-        success = true;
-        this.substituteAdapters(parent);
-        break;
+      if (result.success) {
+
+        parent.childMatchesByGroup[result.group].push(ind);
+
+        if (result.adapterIndUsed !== undefined) {
+          this.substituteAdapter({
+            parent,
+            childInd: ind,
+            adapterIndUsed: result.adapterIndUsed
+          })
+        }
+
+      } else {
+        success = false;
+        unmatchedChildren.push(child)
       }
+
     }
 
-    return { success };
+    return { success, unmatchedChildren };
 
   }
+
+
+  findChildGroup(childType, parentClass) {
+
+    let result = this.findChildGroupNoAdapters(
+      childType, parentClass
+    )
+
+    if (result.success) {
+      return result;
+    }
+
+    // check if can match with adapters
+    let childClass = this.allComponentClasses[childType];
+
+    // if didn't match child, attempt to match with child's adapters
+    let nAdapters = childClass.nAdapters;
+
+    for (let n = 0; n < nAdapters; n++) {
+      let adapterComponentType = childClass
+        .getAdapterComponentType(n, this.publicStateVariableInfo)
+
+      result = this.findChildGroupNoAdapters(
+        adapterComponentType, parentClass
+      )
+
+      if (result.success) {
+        result.adapterIndUsed = n;
+        return result;
+      }
+
+    }
+
+    return { success: false }
+
+  }
+
+  findChildGroupNoAdapters(componentType, parentClass) {
+    if (parentClass.childGroupOfComponentType[componentType]) {
+      return {
+        success: true,
+        group: parentClass.childGroupOfComponentType[componentType]
+      }
+    }
+
+    for (let group of parentClass.childGroups) {
+      for (let typeFromGroup of group.componentTypes) {
+        if (this.componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: componentType,
+          baseComponentType: typeFromGroup
+        })) {
+          // don't match composites to the base component
+          // so that they will expand
+          if (!(typeFromGroup === "_base" &&
+            this.componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: componentType,
+              baseComponentType: "_composite"
+            }))) {
+
+            parentClass.childGroupOfComponentType[componentType] = group.group;
+
+            return {
+              success: true,
+              group: group.group
+            }
+          }
+
+        }
+      }
+
+    }
+
+    return { success: false }
+  }
+
+  substituteAdapter({ parent, childInd, adapterIndUsed }) {
+
+    // replace activeChildren with their adapters
+
+    let originalChild = parent.activeChildren[childInd];
+
+    let newSerializedChild;
+    if (originalChild.componentName) {
+      newSerializedChild = originalChild.getAdapter(adapterIndUsed);
+    } else {
+      // child isn't a component, just an object with a componentType
+      // Create an object that is just the componentType of the adapter
+      newSerializedChild = {
+        componentType:
+          this.allComponentClasses[originalChild.componentType]
+            .getAdapterComponentType(n, this.publicStateVariableInfo)
+      }
+    }
+
+    let adapter = originalChild.adapterUsed;
+
+    if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
+      if (originalChild.componentName) {
+        let namespaceForUnamed;
+        if (parent.attributes.newNamespace && parent.attributes.newNamespace.primitive) {
+          namespaceForUnamed = parent.componentName + "/";
+        } else {
+          namespaceForUnamed = getNamespaceFromName(parent.componentName);
+        }
+
+        newSerializedChild.adaptedFrom = originalChild.componentName;
+        let newChildrenResult = this.createIsolatedComponentsSub({
+          serializedComponents: [newSerializedChild],
+          shadow: true,
+          ancestors: originalChild.ancestors,
+          createNameContext: originalChild.componentName + "|adapter",
+          namespaceForUnamed,
+        });
+
+        adapter = newChildrenResult.components[0];
+      } else {
+        // didn't have a component for the original child, just a componentType
+        // Adapter will also just be the componentType returned from childmatches
+        newSerializedChild.adaptedFrom = originalChild;
+        adapter = newSerializedChild;
+      }
+
+    }
+
+    // Replace originalChild with its adapter in activeChildren
+    parent.activeChildren.splice(childInd, 1, adapter);
+
+    // Update allChildren to show that originalChild is no longer active
+    // and that adapter is now an active child
+    if (originalChild.componentName) {
+      // ignore placeholder active children
+      delete parent.allChildren[originalChild.componentName].activeChildrenIndex;
+      parent.allChildren[adapter.componentName] = {
+        activeChildrenIndex: childInd,
+        component: adapter,
+      }
+    }
+
+    // find index of originalChild in allChildrenOrdered
+    // and place adapter immediately afterward
+    if (originalChild.componentName) {
+      let originalInd = parent.allChildrenOrdered.indexOf(originalChild.componentName)
+      parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
+    }
+
+
+  }
+
 
   expandCompositeComponent(component) {
 
@@ -1696,6 +1853,11 @@ export default class Core {
         component,
         serializedReplacements,
       });
+
+      if (result.withholdReplacements) {
+        component.replacementsToWithhold = component.replacements.length;
+      }
+
     } else {
       throw Error(`Invalid createSerializedReplacements of ${component.componentName}`);
     }
@@ -1863,7 +2025,7 @@ export default class Core {
   }
 
   replaceCompositeChildren(parent) {
-    // if composite is not directly matched by any childLogic leaf
+    // if composite is not directly matched by any childGroup
     // then replace the composite with its replacements,
     // expanding it if not already expanded
 
@@ -1880,7 +2042,7 @@ export default class Core {
         // if composite itself is in the child logic
         // then don't replace it with its replacements
         // but leave the composite as an activeChild
-        if (parent.childLogic.checkIfChildInLogic(child)) {
+        if (this.findChildGroup(child.componentType, parent.constructor).success) {
           continue;
         }
 
@@ -2026,71 +2188,6 @@ export default class Core {
     }
   }
 
-  substituteAdapters(component) {
-
-    // replace activeChildren with their adapters
-    let adapterResults = component.childLogic.logicResult.adapterResults;
-    for (let childNum in adapterResults) {
-
-      let originalChild = component.activeChildren[childNum];
-
-      let newSerializedChild = adapterResults[childNum];
-      let adapter = originalChild.adapterUsed;
-
-      if (adapter === undefined || adapter.componentType !== newSerializedChild.componentType) {
-        if (originalChild.componentName) {
-          let namespaceForUnamed;
-          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
-            namespaceForUnamed = component.componentName + "/";
-          } else {
-            namespaceForUnamed = getNamespaceFromName(component.componentName);
-          }
-
-          newSerializedChild.adaptedFrom = originalChild.componentName;
-          let newChildrenResult = this.createIsolatedComponentsSub({
-            serializedComponents: [newSerializedChild],
-            shadow: true,
-            ancestors: originalChild.ancestors,
-            createNameContext: originalChild.componentName + "|adapter",
-            namespaceForUnamed,
-          });
-
-          adapter = newChildrenResult.components[0];
-        } else {
-          // didn't have a component for the original child, just a componentType
-          // Adapter will also just be the componentType returned from childLogic
-          newSerializedChild.adaptedFrom = originalChild;
-          adapter = newSerializedChild;
-        }
-
-      }
-
-      // Replace originalChild with its adapter in activeChildren
-      component.activeChildren.splice(childNum, 1, adapter);
-
-      // Update allChildren to show that originalChild is no longer active
-      // and that adapter is now an active child
-      if (originalChild.componentName) {
-        // ignore placeholder active children
-        delete component.allChildren[originalChild.componentName].activeChildrenIndex;
-        component.allChildren[adapter.componentName] = {
-          activeChildrenIndex: Number(childNum),  // childNum is string since was defined via in
-          component: adapter,
-        }
-      }
-
-      // find index of originalChild in allChildrenOrdered
-      // and place adapter immediately afterward
-      if (originalChild.componentName) {
-        let originalInd = component.allChildrenOrdered.indexOf(originalChild.componentName)
-        component.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
-      }
-
-    }
-
-
-  }
-
   findShadowedChildInSerializedComponents({ serializedComponents, shadowedComponentName }) {
     for (let serializedComponent of serializedComponents) {
       if (serializedComponent.originalName === shadowedComponentName) {
@@ -2110,8 +2207,8 @@ export default class Core {
     return;
   }
 
-  createStateVariableDefinitions({ childLogic, componentClass,
-    prescribedDependencies, componentName
+  createStateVariableDefinitions({ componentClass,
+    prescribedDependencies
   }) {
 
     let redefineDependencies;
@@ -2166,7 +2263,7 @@ export default class Core {
 
       if (redefineDependencies.linkSource === "adapter") {
         this.createAdapterStateVariableDefinitions({
-          redefineDependencies, childLogic, stateVariableDefinitions, componentClass
+          redefineDependencies, stateVariableDefinitions, componentClass
         });
       } else {
         this.createReferenceShadowStateVariableDefinitions({
@@ -2196,64 +2293,94 @@ export default class Core {
         isAttribute: true,
       };
 
+      let attributeFromPrimitive = !attributeSpecification.createComponentOfType;
+
       if (attributeSpecification.public) {
         stateVarDef.public = true;
         stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
         if (stateVarDef.componentType === undefined) {
-          stateVarDef.componentType = attributeSpecification.createComponentOfType;
+          if (attributeFromPrimitive) {
+            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
+          } else {
+            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+          }
         }
       }
 
+      let stateVariableForAttributeValue;
 
-      let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
-      if (!attributeClass) {
-        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
-      }
+      if (!attributeFromPrimitive) {
 
-      let stateVariableForAttributeValue = attributeSpecification.componentStateVariableForAttributeValue;
-      if (stateVariableForAttributeValue === undefined) {
-        stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
+        let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
+        if (!attributeClass) {
+          throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
+        }
+
+        stateVariableForAttributeValue = attributeSpecification.componentStateVariableForAttributeValue;
         if (stateVariableForAttributeValue === undefined) {
-          stateVariableForAttributeValue = "value";
+          stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
+          if (stateVariableForAttributeValue === undefined) {
+            stateVariableForAttributeValue = "value";
+          }
         }
       }
 
       if (attrName in ancestorProps) {
-        stateVarDef.returnDependencies = () => ({
-          attributeComponent: {
-            dependencyType: "attributeComponent",
-            attributeName: attrName,
-            variableNames: [stateVariableForAttributeValue],
-          },
-          ancestorProp: {
-            dependencyType: "stateVariable",
-            componentName: ancestorProps[attrName].componentName,
-            variableName: attrName,
+        stateVarDef.returnDependencies = function () {
+          let dependencies = {
+            ancestorProp: {
+              dependencyType: "stateVariable",
+              componentName: ancestorProps[attrName].componentName,
+              variableName: attrName,
+            }
           }
-        });
+          if (attributeFromPrimitive) {
+            dependencies.attributePrimitive = {
+              dependencyType: "attributePrimitive",
+              attributeName: attrName
+            }
+          } else {
+            dependencies.attributeComponent = {
+              dependencyType: "attributeComponent",
+              attributeName: attrName,
+              variableNames: [stateVariableForAttributeValue],
+            }
+          }
+          return dependencies;
+        };
+
+        let typeConverter = x => x;
+        if (stateVarDef.componentType === "boolean") {
+          typeConverter = Boolean
+        } else if (stateVarDef.componentType === "text") {
+          typeConverter = String
+        }
 
         stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
 
-          let attributeComponent = dependencyValues.attributeComponent;
-          if (!attributeComponent) {
+          let attributeValue;
+          if (dependencyValues.attributeComponent) {
+            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
+          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+            attributeValue = dependencyValues.attributePrimitive;
+          } else {
             if (!usedDefault.ancestorProp) {
-              return { newValues: { [varName]: dependencyValues.ancestorProp } }
+              return { newValues: { [varName]: typeConverter(dependencyValues.ancestorProp) } }
             } else {
               return {
                 useEssentialOrDefaultValue: {
                   [varName]: {
                     variablesToCheck: [varName, attrName],
-                    defaultValue: dependencyValues.ancestorProp,
+                    defaultValue: typeConverter(dependencyValues.ancestorProp),
                   }
                 }
               }
             }
           }
 
-          // attribute based on component
 
-          let attributeVariable = validateAttributeValue({
-            value: attributeComponent.stateValues[stateVariableForAttributeValue],
+          attributeValue = validateAttributeValue({
+            value: attributeValue,
             attributeSpecification, attrName
           })
 
@@ -2261,20 +2388,25 @@ export default class Core {
           // are arrays, then attribute value will combine those arrays
           if (attributeSpecification.mergeArrays
             && Array.isArray(dependencyValues.ancestorProp)
-            && Array.isArray(attributeVariable)
+            && Array.isArray(attributeValue)
           ) {
-            let mergedArray = [...attributeVariable, ...dependencyValues.ancestorProp];
+            let mergedArray = [...attributeValue, ...dependencyValues.ancestorProp];
             return { newValues: { [varName]: mergedArray } }
           } else {
-            return { newValues: { [varName]: attributeVariable } };
+            return { newValues: { [varName]: attributeValue } };
           }
 
         };
 
         stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
           if (!dependencyValues.attributeComponent) {
+            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+              // can't invert if have primitive
+              return { success: false }
+            }
+
             if (usedDefault.ancestorProp) {
-              // no children, so value is essential and give it the desired value
+              // no component or primitive, so value is essential and give it the desired value
               return {
                 success: true,
                 instructions: [{
@@ -2317,18 +2449,34 @@ export default class Core {
 
         // usual case of attribute with no ancestor attribute being propagated
 
-        stateVarDef.returnDependencies = () => ({
-          attributeComponent: {
-            dependencyType: "attributeComponent",
-            attributeName: attrName,
-            variableNames: [stateVariableForAttributeValue],
-          },
-        });
+        stateVarDef.returnDependencies = function () {
+          if (attributeFromPrimitive) {
+            return {
+              attributePrimitive: {
+                dependencyType: "attributePrimitive",
+                attributeName: attrName
+              }
+            }
+          } else {
+            return {
+              attributeComponent: {
+                dependencyType: "attributeComponent",
+                attributeName: attrName,
+                variableNames: [stateVariableForAttributeValue],
+              }
+            }
+          }
+        };
 
 
         stateVarDef.definition = function ({ dependencyValues }) {
-          let attributeComponent = dependencyValues.attributeComponent;
-          if (!attributeComponent) {
+
+          let attributeValue;
+          if (dependencyValues.attributeComponent) {
+            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
+          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+            attributeValue = dependencyValues.attributePrimitive;
+          } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: { variablesToCheck: [varName, attrName] }
@@ -2336,26 +2484,30 @@ export default class Core {
             }
           }
 
-          let childVariable = validateAttributeValue({
-            value: attributeComponent.stateValues[stateVariableForAttributeValue],
+          attributeValue = validateAttributeValue({
+            value: attributeValue,
             attributeSpecification, attrName
           })
 
-          if (attributeSpecification.mergeArrayWithDefault && Array.isArray(childVariable)) {
+          if (attributeSpecification.mergeArrayWithDefault && Array.isArray(attributeValue)) {
             let defaultValue = attributeSpecification.defaultValue;
             if (Array.isArray(defaultValue)) {
-              let mergedArray = [...childVariable, ...defaultValue];
+              let mergedArray = [...attributeValue, ...defaultValue];
               return { newValues: { [varName]: mergedArray } }
             }
           }
 
-          return { newValues: { [varName]: childVariable } };
+          return { newValues: { [varName]: attributeValue } };
         };
 
         stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues }) {
 
           if (!dependencyValues.attributeComponent) {
-            // no attribute component, so value is essential and give it the desired value
+            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+              // can't invert if have primitive
+              return { success: false }
+            }
+            // no attribute component or primitive, so value is essential and give it the desired value
             return {
               success: true,
               instructions: [{
@@ -2364,8 +2516,8 @@ export default class Core {
               }]
             };
           }
-          // attribute based on child
 
+          // attribute based on component
 
           if (attributeSpecification.mergeArrays) {
             // can't invert if we merged arrays to get the value
@@ -2403,7 +2555,7 @@ export default class Core {
     }
   }
 
-  createAdapterStateVariableDefinitions({ redefineDependencies, childLogic, stateVariableDefinitions, componentClass }) {
+  createAdapterStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass }) {
 
     // attributes depend on adapterTarget (if attribute exists in adapterTarget)
     let adapterTargetComponent = this._components[redefineDependencies.adapterTargetIdentity.componentName];
@@ -2422,25 +2574,22 @@ export default class Core {
         isAttribute: true,
       };
 
+      let attributeFromPrimitive = !attributeSpecification.createComponentOfType;
+
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
+        if (stateVarDef.componentType === undefined) {
+          if (attributeFromPrimitive) {
+            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
+            if (stateVarDef.componentType === "string") {
+              stateVarDef.componentType = "text";
+            }
+          } else {
+            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+          }
+        }
       }
-
-
-      let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
-      if (!attributeClass) {
-        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
-      }
-
-
-      stateVarDef.returnDependencies = () => ({
-        attributeComponent: {
-          dependencyType: "attributeComponent",
-          attributeName: attrName,
-          variableNames: [stateVariableForAttributeValue],
-        },
-      });
 
       if (varName in adapterTargetComponent.state) {
         stateVarDef.returnDependencies = () => ({
@@ -2581,28 +2730,57 @@ export default class Core {
         isAttribute: true,
       };
 
+      let attributeFromPrimitive = !attributeSpecification.createComponentOfType;
+
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
+        if (stateVarDef.componentType === undefined) {
+          if (attributeFromPrimitive) {
+            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
+            if (stateVarDef.componentType === "string") {
+              stateVarDef.componentType = "text";
+            }
+          } else {
+            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+          }
+        }
       }
 
-      let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
-      if (!attributeClass) {
-        throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
+
+      let stateVariableForAttributeValue;
+
+      if (!attributeFromPrimitive) {
+
+        let attributeClass = this.allComponentClasses[attributeSpecification.createComponentOfType];
+        if (!attributeClass) {
+          throw Error(`Component type ${attributeSpecification.createComponentOfType} does not exist so cannot create state variable for attribute ${attrName} of componentType ${componentClass.componentType}.`)
+        }
+
+        stateVariableForAttributeValue = attributeSpecification.componentStateVariableForAttributeValue;
+        if (stateVariableForAttributeValue === undefined) {
+          stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
+          if (stateVariableForAttributeValue === undefined) {
+            stateVariableForAttributeValue = "value";
+          }
+        }
       }
 
-      let stateVariableForAttributeValue = attributeClass.stateVariableForAttributeValue;
-      if (stateVariableForAttributeValue === undefined) {
-        stateVariableForAttributeValue = "value";
-      }
+      let thisDependencies = {}
 
-      let thisDependencies = {
-        attributeComponent: {
+      if (attributeFromPrimitive) {
+        thisDependencies.attributePrimitive = {
+          dependencyType: "attributePrimitive",
+          attributeName: attrName
+        }
+      } else {
+        thisDependencies.attributeComponent = {
           dependencyType: "attributeComponent",
           attributeName: attrName,
           variableNames: [stateVariableForAttributeValue],
-        },
-      };
+        }
+      }
+
 
       if ((!redefineDependencies.propVariable || attributeSpecification.propagateToProps)
         && (attrName in targetComponent.state)
@@ -2650,14 +2828,18 @@ export default class Core {
 
         stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
 
-          let attributeComponent = dependencyValues.attributeComponent;
-          if (!attributeComponent) {
+          let attributeValue;
+          if (dependencyValues.attributeComponent) {
+            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
+          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+            attributeValue = dependencyValues.attributePrimitive;
+          } else {
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
                 dependencyValues.targetAttributesToIgnore.includes(attrName))
               && !usedDefault.targetVariable) {
-              // if don't have attribute component 
+              // if don't have attribute component or primitive
               // and target has attribute, use that value
               return { newValues: { [attrName]: dependencyValues.targetVariable } };
             } else if (!usedDefault.ancestorProp) {
@@ -2680,10 +2862,10 @@ export default class Core {
             }
           }
 
-          // attribute based on component
+          // attribute based on component or primitive
 
-          let attributeVariable = validateAttributeValue({
-            value: attributeComponent.stateValues[stateVariableForAttributeValue],
+          attributeValue = validateAttributeValue({
+            value: attributeValue,
             attributeSpecification, attribute: attrName
           })
 
@@ -2691,18 +2873,22 @@ export default class Core {
           // are arrays, then attribute value will combine those arrays
           if (attributeSpecification.mergeArrays
             && Array.isArray(dependencyValues.ancestorProp)
-            && Array.isArray(attributeVariable)
+            && Array.isArray(attributeValue)
           ) {
-            let mergedArray = [...attributeVariable, ...dependencyValues.ancestorProp];
+            let mergedArray = [...attributeValue, ...dependencyValues.ancestorProp];
             return { newValues: { [varName]: mergedArray } }
           } else {
-            return { newValues: { [varName]: attributeVariable } };
+            return { newValues: { [varName]: attributeValue } };
           }
 
         };
 
         stateVarDef.inverseDefinition = function ({ desiredStateVariableValues, dependencyValues, usedDefault }) {
           if (!dependencyValues.attributeComponent) {
+            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+              // can't invert if have primitive
+              return { success: false }
+            }
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
@@ -2760,14 +2946,18 @@ export default class Core {
         // usual case of attribute with no ancestor attribute being propagated
 
         stateVarDef.definition = function ({ dependencyValues, usedDefault }) {
-          let attributeComponent = dependencyValues.attributeComponent;
-          if (!attributeComponent) {
+          let attributeValue;
+          if (dependencyValues.attributeComponent) {
+            attributeValue = dependencyValues.attributeComponent.stateValues[stateVariableForAttributeValue];
+          } else if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+            attributeValue = dependencyValues.attributePrimitive;
+          } else {
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
                 dependencyValues.targetAttributesToIgnore.includes(attrName))
               && !usedDefault.targetVariable) {
-              // if don't have attribute component 
+              // if don't have attribute component or primitive
               // and target has attribute, use that value
               return { newValues: { [varName]: dependencyValues.targetVariable } };
             } else {
@@ -2779,20 +2969,20 @@ export default class Core {
             }
           }
 
-          let childVariable = validateAttributeValue({
-            value: attributeComponent.stateValues[stateVariableForAttributeValue],
+          attributeValue = validateAttributeValue({
+            value: attributeValue,
             attributeSpecification, attribute: attrName
           })
 
-          if (attributeSpecification.mergeArrayWithDefault && Array.isArray(childVariable)) {
+          if (attributeSpecification.mergeArrayWithDefault && Array.isArray(attributeValue)) {
             let defaultValue = attributeSpecification.defaultValue;
             if (Array.isArray(defaultValue)) {
-              let mergedArray = [...childVariable, ...defaultValue];
+              let mergedArray = [...attributeValue, ...defaultValue];
               return { newValues: { [varName]: mergedArray } }
             }
           }
 
-          return { newValues: { [varName]: childVariable } };
+          return { newValues: { [varName]: attributeValue } };
         };
 
         stateVarDef.inverseDefinition = function ({ desiredStateVariableValues,
@@ -2800,6 +2990,10 @@ export default class Core {
         }) {
 
           if (!dependencyValues.attributeComponent) {
+            if (dependencyValues.attributePrimitive !== undefined && dependencyValues.attributePrimitive !== null) {
+              // can't invert if have primitive
+              return { success: false }
+            }
 
             if (dependencyValues.targetVariable !== undefined
               && !(dependencyValues.targetAttributesToIgnore &&
@@ -2876,7 +3070,7 @@ export default class Core {
         let stateDef = stateVariableDefinitions[primaryStateVariableForDefinition];
         if (!stateDef) {
           if (redefineDependencies.substituteForPrimaryStateVariable) {
-            throw Error(`Invalid public state variable of componentType ${componentClass.componentType}: substitueForPrimaryStateVariable ${redefineDependencies.substituteForPrimaryStateVariable} does not exist`)
+            throw Error(`Invalid public state variable of componentType ${componentClass.componentType}: substituteForPrimaryStateVariable ${redefineDependencies.substituteForPrimaryStateVariable} does not exist`)
           } else {
             throw Error(`Cannot have a public state variable with componentType ${componentClass.componentType} as the class doesn't have a primary state variable for definition`)
           }
@@ -3318,20 +3512,22 @@ export default class Core {
     for (let stateVariable in component.state) {
       let stateVarObj = component.state[stateVariable];
 
-      if (stateVarObj.chainActionOnActionOfStateVariableTarget) {
-        let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTarget;
-        let targetName = stateVarObj.value;
+      if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
+        let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
+        let targetNames = stateVarObj.value;
 
-        if (targetName) {
-          let componentActionsChained = this.actionsChangedToActions[targetName];
-          if (!componentActionsChained) {
-            componentActionsChained = this.actionsChangedToActions[targetName] = [];
+        if (Array.isArray(targetNames)) {
+          for (let tName of targetNames) {
+            let componentActionsChained = this.actionsChangedToActions[tName];
+            if (!componentActionsChained) {
+              componentActionsChained = this.actionsChangedToActions[tName] = [];
+            }
+
+            componentActionsChained.push({
+              componentName: component.componentName,
+              actionName: chainInfo.triggeredAction
+            });
           }
-
-          componentActionsChained.push({
-            componentName: component.componentName,
-            actionName: chainInfo.triggeredAction
-          });
 
         }
       }
@@ -6461,7 +6657,7 @@ export default class Core {
       this.updateInfo.deletedStateVariables[component.componentName].push(...Object.keys(component.state))
 
       this.updateInfo.deletedComponents[component.componentName] = true;
-      delete this.unsatisfiedChildLogic[component.componentName];
+      delete this.unmatchedChildren[component.componentName];
 
       delete this.stateVariableChangeTriggers[component.componentName];
 
@@ -7719,11 +7915,11 @@ export default class Core {
 
     this.finishUpdate();
 
-    if (Object.keys(this.unsatisfiedChildLogic).length > 0) {
+    if (Object.keys(this.unmatchedChildren).length > 0) {
       let childLogicMessage = "";
-      for (let componentName in this.unsatisfiedChildLogic) {
+      for (let componentName in this.unmatchedChildren) {
         if (!this._components[componentName].isShadow) {
-          childLogicMessage += `Invalid children for ${componentName}: ${this.unsatisfiedChildLogic[componentName].message} `;
+          childLogicMessage += `Invalid children for ${componentName}: ${this.unmatchedChildren[componentName].message} `;
         }
       }
       if (childLogicMessage) {
@@ -7847,8 +8043,16 @@ export default class Core {
       let comp = this._components[cName];
 
       if (comp === undefined) {
-        console.warn(`can't update state variables of component ${cName}, as it doesn't exist.`);
-        nFailures += 1;
+        // console.warn(`can't update state variables of component ${cName}, as it doesn't exist.`);
+        // nFailures += 1;
+
+        let updatesForComp = this.updateInfo.stateVariableUpdatesForMissingComponents[cName];
+        if (updatesForComp === undefined) {
+          updatesForComp = this.updateInfo.stateVariableUpdatesForMissingComponents[cName] = {};
+        }
+
+        Object.assign(updatesForComp, newStateVariableValues[cName]);
+
         continue;
       }
 
@@ -8039,6 +8243,7 @@ export default class Core {
     inverseDefinitionArgs.stateValues = component.stateValues;
     inverseDefinitionArgs.overrideFixed = instruction.overrideFixed;
     inverseDefinitionArgs.shadowedVariable = instruction.shadowedVariable;
+    inverseDefinitionArgs.sourceInformation = instruction.sourceInformation;
 
 
     let stateVariableForWorkspace = stateVariable;

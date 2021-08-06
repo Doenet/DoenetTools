@@ -5,7 +5,7 @@ describe('Graph Tag Tests', function () {
 
   })
 
-  it('string sugared to curve in graph', () => {
+  it.skip('string sugared to curve in graph', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -263,6 +263,58 @@ describe('Graph Tag Tests', function () {
 
 
   });
+
+  it('labels and positioning', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" xlabel="$xlabel" xlabelPosition="$xlabelpos" ylabel="$ylabel" ylabelPosition="$ylabelpos" ylabelAlignment="$ylabelalign">
+
+    </graph>
+
+    <tabular>
+      <row>
+        <cell>xlabel: <textinput name="xlabel" prefill="x" /></cell>
+        <cell>position: 
+        <choiceinput inline preselectChoice="2" name="xlabelpos">
+          <choice>left</choice>
+          <choice>right</choice>
+        </choiceinput></cell>
+      </row>
+      <row>
+        <cell>ylabel: <textinput name="ylabel" prefill="y" /></cell>
+        <cell>position:
+        <choiceinput inline preselectChoice="1" name="ylabelpos">
+          <choice>top</choice>
+          <choice>bottom</choice>
+        </choiceinput>
+        </cell>
+        <cell>alignment:
+        <choiceinput inline preselectChoice="1" name="ylabelalign">
+          <choice>left</choice>
+          <choice>right</choice>
+        </choiceinput>
+        </cell>
+      </row>
+    </tabular>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+
+    cy.get('#\\/xlabel_input').clear().type("hello{enter}")
+    cy.get('#\\/ylabel_input').clear().type("bye{enter}")
+
+    cy.get('#\\/xlabelpos').select("left")
+    cy.get('#\\/ylabelpos').select("bottom")
+    cy.get('#\\/ylabelalign').select("left")
+
+  });
+
 
 
 });

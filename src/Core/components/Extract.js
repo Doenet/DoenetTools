@@ -51,19 +51,13 @@ export default class Extract extends CompositeComponent {
   }
 
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: 'anything',
-      componentType: '_base',
-      comparison: 'atLeast',
-      excludeComponentTypes: ["_composite"],
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
 
 
@@ -90,7 +84,7 @@ export default class Extract extends CompositeComponent {
       returnDependencies: ({ stateValues }) => ({
         children: {
           dependencyType: "child",
-          childLogicName: "anything",
+          childGroups: ["anything"],
           variableNames: [stateValues.propName],
           variablesOptional: true,
           componentIndex: stateValues.componentIndex,

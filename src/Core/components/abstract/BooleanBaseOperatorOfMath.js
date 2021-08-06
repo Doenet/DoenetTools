@@ -4,22 +4,16 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
   static componentType = "_booleanOperatorOfMath";
   static rendererType = "boolean";
 
-  static returnChildLogic (args) {
-    let childLogic = super.returnChildLogic(args);
-    
-    childLogic.deleteAllLogic();
 
-    childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }]
 
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -37,7 +31,7 @@ export default class BooleanBaseOperatorOfMath extends BooleanComponent {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
           variableNames: ["value"]
         }
       }),

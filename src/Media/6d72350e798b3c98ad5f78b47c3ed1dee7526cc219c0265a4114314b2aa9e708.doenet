@@ -455,10 +455,10 @@
       <updateValue tName="previewShortcut" newValue="false" type="boolean" />
       <updateValue tname="stepCompleted" newValue="0" />
     </triggerSet>
-    <callAction triggerWithTName="resetTutorial" tName="ans" actionName="submitAnswer" />
+    <callAction triggerWithTnames="resetTutorial" tName="ans" actionName="submitAnswer" />
     
     <updateValue label="Next" name="next" disabled="$stepCompleted < $step" tname="step" newValue="$step+1" />
-    <callAction triggerWithTName="next" tName="ans" actionName="submitAnswer" />
+    <callAction triggerWithTnames="next" tName="ans" actionName="submitAnswer" />
 
     <answer name="ans" hide weight="$answerWeight">
       <award credit="$stepCompleted/6"><when>true</when></award>

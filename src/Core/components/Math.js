@@ -12,7 +12,7 @@ export default class MathComponent extends InlineComponent {
 
   // used when referencing this component without prop
   static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["unnormalizedValue"] };
+  static get stateVariablesShadowedForReference() { return ["unnormalizedValue", "unordered"] };
 
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
@@ -24,6 +24,7 @@ export default class MathComponent extends InlineComponent {
       createStateVariable: "format",
       defaultValue: "text",
       public: true,
+      toLowerCase: true,
       validValues: ["text", "latex"]
     };
     // let simplify="" or simplify="true" be full simplify
@@ -73,9 +74,6 @@ export default class MathComponent extends InlineComponent {
     };
     attributes.unordered = {
       createComponentOfType: "boolean",
-      createStateVariable: "unordered",
-      defaultValue: false,
-      public: true,
     };
     attributes.createVectors = {
       createComponentOfType: "boolean",
@@ -113,29 +111,16 @@ export default class MathComponent extends InlineComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0,
-    });
-    childLogic.newOperator({
-      name: "stringsAndMaths",
-      operator: 'and',
-      propositions: [atLeastZeroStrings, atLeastZeroMaths],
-      requireConsecutive: true,
-      setAsBase: true,
-    });
-    return childLogic;
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "strings",
+      componentTypes: ["string"]
+    }]
+
   }
 
   static returnStateVariableDefinitions() {
@@ -164,12 +149,48 @@ export default class MathComponent extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.unordered = {
+      defaultValue: false,
+      public: true,
+      returnDependencies: () => ({
+        unorderedAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "unordered",
+          variableNames: ["value"]
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["unordered"]
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        if (dependencyValues.unorderedAttr === null) {
+          if (dependencyValues.mathChildren.length > 0) {
+            let unordered = dependencyValues.mathChildren.every(x => x.stateValues.unordered);
+            return { newValues: { unordered } }
+          } else {
+            return {
+              useEssentialOrDefaultValue: {
+                unordered: { variablesToCheck: ["unordered"] }
+              }
+            }
+          }
+        } else {
+          return {
+            newValues: { unordered: dependencyValues.unorderedAttr.stateValues.value }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.codePre = {
       // deferCalculation: false,
       returnDependencies: () => ({
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
           variableNames: ["value"],
         },
       }),
@@ -182,7 +203,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
-          childLogicName: "stringsAndMaths",
+          childGroups: ["strings", "maths"],
           variableNames: ["value"],
         },
         format: {
@@ -227,16 +248,29 @@ export default class MathComponent extends InlineComponent {
 
     }
 
+    stateVariableDefinitions.mathChildrenWithCanBeModified = {
+      returnDependencies: () => ({
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["value", "canBeModified"],
+        },
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { mathChildrenWithCanBeModified: dependencyValues.mathChildren }
+      })
+    }
+
     stateVariableDefinitions.unnormalizedValue = {
       returnDependencies: () => ({
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
-          variableNames: ["value", "canBeModified"],
+          childGroups: ["maths"],
+          variableNames: ["value"],
         },
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
           variableNames: ["value"],
         },
         expressionWithCodes: {
@@ -495,7 +529,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         stringMathChildren: {
           dependencyType: "child",
-          childLogicName: "stringsAndMaths",
+          childGroups: ["strings", "maths"],
         },
         codePre: {
           dependencyType: "stateVariable",
@@ -517,7 +551,7 @@ export default class MathComponent extends InlineComponent {
       returnDependencies: () => ({
         mathChildrenModifiable: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
           variableNames: ["canBeModified"],
         },
         expressionWithCodes: {
@@ -548,7 +582,7 @@ export default class MathComponent extends InlineComponent {
         },
         mathChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroMaths",
+          childGroups: ["maths"],
         },
         expressionWithCodes: {
           dependencyType: "stateVariable",
@@ -770,7 +804,9 @@ function calculateCodePre({ dependencyValues }) {
 function calculateExpressionWithCodes({ dependencyValues, changes }) {
 
   if (!(("stringMathChildren" in changes && changes.stringMathChildren.componentIdentitiesChanged)
-    || "format" in changes || "createIntervals" in changes || "createVectors" in changes)) {
+    || "format" in changes || "createIntervals" in changes || "createVectors" in changes
+    || "splitSymbols" in changes
+  )) {
     // if component identities of stringMathChildren didn't change
     // and format didn't change
     // then expressionWithCodes remains unchanged.
@@ -1376,7 +1412,7 @@ function invertMath({ desiredStateVariableValues, dependencyValues, stateValues,
   // update math children where have inversemap and canBeModified is true
   for (let [childInd, mathChild] of mathChildren.entries()) {
     if (stateValues.mathChildrenMapped.has(childInd) &&
-      mathChild.stateValues.canBeModified
+      stateValues.mathChildrenWithCanBeModified[childInd].stateValues.canBeModified
     ) {
 
       if (!childrenToSkip.includes(childInd)) {

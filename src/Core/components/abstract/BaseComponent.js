@@ -1,4 +1,3 @@
-import ChildLogicClass from '../../ChildLogic';
 import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
 import { flattenDeep, mapDeep } from '../../utils/array';
@@ -9,7 +8,7 @@ export default class BaseComponent {
     componentName, ancestors,
     serializedComponent,
     definingChildren,
-    serializedChildren, childLogic,
+    serializedChildren,
     attributes,
     stateVariableDefinitions,
     componentInfoObjects,
@@ -41,8 +40,6 @@ export default class BaseComponent {
     }
 
     this.serializedChildren = serializedChildren;
-
-    this.childLogic = childLogic;
 
     this.attributes = attributes;
 
@@ -232,14 +229,11 @@ export default class BaseComponent {
     return potentialRendererTypes;
   }
 
-  get childLogicSatisfied() {
-    return this.childLogic.logicResult && this.childLogic.logicResult.success
+  get childrenMatched() {
+    return this.childrenMatchedWithPlaceholders
       && !this.placeholderActiveChildrenIndices;
   }
 
-  get childLogicSatisfiedWithPlaceholders() {
-    return this.childLogic.logicResult && this.childLogic.logicResult.success;
-  }
 
   static createAttributesObject({ flags = {} } = {}) {
 
@@ -294,14 +288,59 @@ export default class BaseComponent {
     return [];
   }
 
-  static returnChildLogic({ componentInfoObjects, components }) {
-    let childLogic = new ChildLogicClass({
-      parentComponentType: this.componentType,
-      componentInfoObjects,
-      components,
-    });
+  static returnChildGroups() {
+    return [];
+  }
 
-    return childLogic;
+  static get childGroups() {
+    if (this.hasOwnProperty("childGroupsData")) {
+      return this.childGroupsData;
+    } else {
+      this.childGroupsData = this.returnChildGroups();
+      return this.childGroupsData;
+    }
+  }
+
+  static childGroupOfComponentTypeData;
+
+  static get childGroupOfComponentType() {
+    if (this.hasOwnProperty("childGroupOfComponentTypeData")) {
+      return this.childGroupOfComponentTypeData
+    } else {
+      this.childGroupOfComponentTypeData = {};
+      return this.childGroupOfComponentTypeData;
+    }
+  }
+
+  static childGroupIndsByNameData;
+
+  static get childGroupIndsByName() {
+    if (this.hasOwnProperty("childGroupIndsByNameData")) {
+      return Object.assign({}, this.childGroupIndsByNameData);
+    }
+
+    this.childGroupIndsByNameData = {};
+    for (let [ind, group] of this.childGroups.entries()) {
+      if (group.group in this.childGroupIndsByNameData) {
+        throw Error(`Invalid childGroups for componentClass ${this.componentType}: ${group} is repeated`)
+      }
+      this.childGroupIndsByNameData[group.group] = ind;
+    }
+
+    return Object.assign({}, this.childGroupIndsByNameData);
+  }
+
+
+  returnMatchedChildIndices(childGroups) {
+    let matchedIndices = [];
+    for (let groupName of childGroups) {
+      let matches = this.childMatchesByGroup[groupName];
+      if (!matches) {
+        throw Error(`child group ${groupName} is not defined for a component of type ${this.componentType}`)
+      }
+      matchedIndices.push(...matches)
+    }
+    return matchedIndices.sort((a, b) => a - b);
   }
 
   static returnStateVariableDefinitions() {
@@ -407,15 +446,15 @@ export default class BaseComponent {
         // but wasn't specified via an attribute component
         // It must have been specified from a target shadowing
         // or from an essential state variable
-        if(useEssential && dependencyValues.disabledPreliminary !== null && !usedDefault.disabledPreliminary) {
+        if (useEssential && dependencyValues.disabledPreliminary !== null && !usedDefault.disabledPreliminary) {
           useEssential = false;
-          disabled = dependencyValues.disabledPreliminary 
+          disabled = dependencyValues.disabledPreliminary
         }
 
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              disabled: { defaultValue: dependencyValues.readOnly === true}
+              disabled: { defaultValue: dependencyValues.readOnly === true }
             }
           }
         } else {
@@ -485,9 +524,9 @@ export default class BaseComponent {
         // but wasn't specified via an attribute component
         // It must have been specified from a target shadowing
         // or from an essential state variable
-        if(useEssential && dependencyValues.fixedPreliminary !== null && !usedDefault.fixedPreliminary) {
+        if (useEssential && dependencyValues.fixedPreliminary !== null && !usedDefault.fixedPreliminary) {
           useEssential = false;
-          fixed = dependencyValues.fixedPreliminary 
+          fixed = dependencyValues.fixedPreliminary
         }
 
         if (useEssential) {

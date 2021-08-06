@@ -4,19 +4,56 @@ export default class InlineRenderInlineChildren extends InlineComponent {
   static componentType = "_inlineRenderInlineChildren";
   static renderChildren = true;
   static includeBlankStringChildren = true;
+  
+  static beginTextDelimiter = "";
+  static endTextDelimiter = "";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "AtLeastZeroInline",
-      componentType: "_inline",
-      comparison: "atLeast",
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "inlines",
+      componentTypes: ["_inline"]
+    }]
 
-    return childLogic;
+  }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let componentClass = this;
+
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        inlineChildren: {
+          dependencyType: "child",
+          childGroups: ["inlines"],
+          variableNames: ["text"],
+          variablesOptional: true,
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let text = ""
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child.stateValues.text === "string") {
+            text += child.stateValues.text;
+          } else {
+            text += " ";
+          }
+        }
+
+        text = componentClass.beginTextDelimiter + text + componentClass.endTextDelimiter;
+
+        return { newValues: { text } };
+      }
+    }
+
+    return stateVariableDefinitions;
+
   }
 
 }

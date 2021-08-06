@@ -347,7 +347,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="y">y</math>
     
     <updateValue name="trip" tName="x" newValue="3$x" label="update" simplify />
-    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTname="trip" simplify />
+    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTnames="trip" simplify />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -381,6 +381,78 @@ describe('UpdateValue Tag Tests', function () {
     cy.get('#\\/y').find('.mjx-mrow').should('have.text', '16y')
     cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('16y')
+    });
+
+  })
+
+  it('chained updates on multiple sources', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="x">x</math>
+    <math name="y">y</math>
+    <math name="z">z</math>
+    
+    <updateValue name="doub" tName="z" newValue="2$z" label="update" simplify />
+    <updateValue name="trip" tName="x" newValue="3$x" label="update" simplify />
+    <updateValue name="quad" tName="y" newValue="4$y" triggerWithTnames="doub trip" simplify />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+
+    cy.get('#\\/quad').should('not.exist');
+
+    cy.get('#\\/trip').click();
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3x')
+    });
+    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('z')
+    });
+    // since second change is asynchronous, need to use other form so that cypress will wait
+    cy.get('#\\/y').find('.mjx-mrow').should('have.text', '4y')
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4y')
+    });
+
+    cy.get('#\\/doub').click();
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3x')
+    });
+    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2z')
+    });
+    // since second change is asynchronous, need to use other form so that cypress will wait
+    cy.get('#\\/y').find('.mjx-mrow').should('have.text', '16y')
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('16y')
+    });
+
+    cy.get('#\\/trip').click();
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('9x')
+    });
+    cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2z')
+    });
+    // since second change is asynchronous, need to use other form so that cypress will wait
+    // (keep other form of test to make it clear we aren't actually changing anything)
+    cy.get('#\\/y').find('.mjx-mrow').should('have.text', '64y')
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('64y')
     });
 
   })
@@ -487,7 +559,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="y">y</math>
     
     <updateValue name="trip" tName="x" newValue="3$x" simplify triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
-    <updateValue name="quad" tName="y" newValue="4$y" simplify triggerWithTname="trip"  />
+    <updateValue name="quad" tName="y" newValue="4$y" simplify triggerWithTnames="trip"  />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -610,7 +682,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="x">x</math>
     
     <updateValue name="trip" tName="x" newValue="3$x" simplify triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
-    <updateValue name="quad" tName="x" newValue="4$x" simplify triggerWithTname="trip"  />
+    <updateValue name="quad" tName="x" newValue="4$x" simplify triggerWithTnames="trip"  />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -713,7 +785,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="y">y</math>
     
     <updateValue name="trip" tName="x" newValue="3$x" simplify triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" />
-    <updateValue name="quad" tName="y" newValue="4$y" simplify triggerWithTname="trip" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
+    <updateValue name="quad" tName="y" newValue="4$y" simplify triggerWithTnames="trip" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -876,7 +948,7 @@ describe('UpdateValue Tag Tests', function () {
 
     </triggerSet>
 
-    <updateValue tName="n" newValue="$n+1" type="number" triggerWithTname="_triggerset1" />
+    <updateValue tName="n" newValue="$n+1" type="number" triggerWithTnames="_triggerset1" />
 
     `}, "*");
     });
@@ -918,7 +990,7 @@ describe('UpdateValue Tag Tests', function () {
       <updateValue tName="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTname="_triggerset1" >
+    <triggerSet label="perform updates" triggerWithTnames="_triggerset1" >
       <updateValue tName="n" newValue="$n+1" type="number"  />
       <updateValue tName="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -1093,7 +1165,7 @@ describe('UpdateValue Tag Tests', function () {
       <updateValue tName="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTname="_triggerset1" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" >
+    <triggerSet label="perform updates" triggerWithTnames="_triggerset1" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" >
       <updateValue tName="n" newValue="$n+1" type="number"  />
       <updateValue tName="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -1297,7 +1369,7 @@ describe('UpdateValue Tag Tests', function () {
     <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
       <updateValue tName="b" newValue="not$b" type="boolean" />
       <updateValue tName="hello" newValue="$hello hello" type="text" />
-      <updateValue tName="n" newValue="$n+1" type="number" triggerWithTname="uv" />
+      <updateValue tName="n" newValue="$n+1" type="number" triggerWithTnames="uv" />
     </triggerSet>
 
     <updateValue name="uv" tName="m" newValue="$m-1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
@@ -1386,6 +1458,26 @@ describe('UpdateValue Tag Tests', function () {
       cy.get('#\\/m').should('have.text', "3");
 
     });
+  })
+
+  it('update value to blank string', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <text name="t">something</text>
+    <updatevalue name="toBlank" label="setToBlank" type="text" tname="t" newValue="" />
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/t').should('have.text', 'something')
+    cy.get('#\\/toBlank').click();
+    cy.get('#\\/t').should('have.text', '')
+
+
   })
 
 
