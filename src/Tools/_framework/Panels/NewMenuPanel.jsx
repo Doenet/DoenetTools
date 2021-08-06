@@ -128,8 +128,7 @@ function Menu(props){
   console.log("menu built")
 
 
-  // let isInitOpen = props.isInitOpen;
-  let isInitOpen = true;
+  let isInitOpen = props.isInitOpen;
   if (!isInitOpen){isInitOpen = false;}
   let [isOpen,setIsOpen] = useState(isInitOpen);
   let [firstOpen,setFirstOpen] = useState(isInitOpen ? 1 : 0);
@@ -142,12 +141,7 @@ function Menu(props){
   const [heightStyle, setHeightStyle] = useState("fit-content")
 
   useEffect(() => {
-    if(firstOpen === 2){
-      if (heightRef.current && heightRef.current.clientHeight !== 0 ){
-        setHeightStyle(heightRef.current.clientHeight)
-      }
-    }
-    else if(firstOpen === 1){
+    if(firstOpen === 2 || firstOpen === 1){
       setTimeout(
         () => {
           if (heightRef.current && heightRef.current.clientHeight !== 0 ){
