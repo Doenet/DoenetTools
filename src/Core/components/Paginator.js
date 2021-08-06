@@ -134,10 +134,16 @@ export default class Paginator extends Template {
         state: { pageNumber: pInd + 1 }
       })
 
+      let placeholderAttributes = {};
+      if(section.attributes) {
+        placeholderAttributes = section.attributes;
+      }
+
       replacements.push({
         componentType: "paginatorPage",
         children: [{
           componentType: section.componentType,
+          attributes: placeholderAttributes,
           state: {
             hide: true,
             aggregateScores: component.stateValues.preserveScores,
