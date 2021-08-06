@@ -63,6 +63,7 @@
     "react-mathjax2": "0.0.2",
     "react-mathquill": "^1.0.1",
     "react-measure": "^2.5.2",
+    "react-resizable": "^3.0.4",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-select": "^4.3.1",

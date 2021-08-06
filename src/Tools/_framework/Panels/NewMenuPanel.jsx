@@ -1,4 +1,4 @@
-import React, { useState, lazy, useRef, Suspense } from 'react';
+import React, { useState, lazy, useRef, Suspense, useEffect } from 'react';
 import { atom,  useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -125,25 +125,57 @@ function SelectionMenu(props){
 }
 
 function Menu(props){
-  let isInitOpen = props.isInitOpen;
+  console.log("menu built")
+
+
+  // let isInitOpen = props.isInitOpen;
+  let isInitOpen = true;
   if (!isInitOpen){isInitOpen = false;}
   let [isOpen,setIsOpen] = useState(isInitOpen);
-
+  let [firstOpen,setFirstOpen] = useState(isInitOpen ? 1 : 0);
+  let heightRef = useRef(null);
   let hideShowStyle = null;
   if (!isOpen){
     hideShowStyle = 'none'
   }
 
-  return <>
-    <MenuPanelTitle isOpen={isOpen} onClick={()=>setIsOpen(was=>!was)}><h3>{props.title}</h3></MenuPanelTitle>
-    <div style={{
+  const [heightStyle, setHeightStyle] = useState("fit-content")
+
+  useEffect(() => {
+    if(firstOpen === 2){
+      if (heightRef.current && heightRef.current.clientHeight !== 0 ){
+        setHeightStyle(heightRef.current.clientHeight)
+      }
+    }
+    else if(firstOpen === 1){
+      setTimeout(
+        () => {
+          if (heightRef.current && heightRef.current.clientHeight !== 0 ){
+            setHeightStyle(heightRef.current.clientHeight)
+          }
+        },
+        500
+      );
+    }
+  }, [firstOpen]);
+
+  return <div>
+    <MenuPanelTitle isOpen={isOpen} onClick={()=>{
+      setIsOpen(was=>!was)
+      if(firstOpen === 0){
+        setFirstOpen(2);
+      }
+    }}><h3>{props.title}</h3></MenuPanelTitle>
+    <div ref = {heightRef} style={{
+      resize: "vertical", 
+      overflow: "scroll",
       display: hideShowStyle,
-      // paddingTop: "0px", 
-      paddingBottom: "1px", 
-      paddingLeft: "4px",
+      // paddingTop: "0px",
+      maxHeight: heightStyle,
+      paddingBottom: "1px",
       paddingRight: "4px",
       backgroundColor:"white"}}>{props.children}</div>
-  </>
+  </div>
 }
 
 const LoadingFallback = styled.div`
@@ -155,6 +187,11 @@ const LoadingFallback = styled.div`
   font-size: 2em;
   width: 100vw;
   height: 100vh;
+`;
+
+const ResizeMenu = styled.div`
+  resize: vertical;
+  overflow: scroll;
 `;
 
 export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {

@@ -23,6 +23,7 @@ import { animated } from '@react-spring/web';
 import { useHistory, useLocation } from 'react-router';
 
 
+
 const ToolContainer = styled(animated.div)`
   display: grid;
   grid-template:
@@ -376,14 +377,14 @@ let navigationObj = {
   settings:{
     default:{
       pageName:"Settings",
-      currentMenus:[],
-      menusTitles:[],
-      menusInitOpen:[],
+      currentMenus:["LoadEnrollment","ManualEnrollment"],
+      menusTitles:["Load","Manual"],
+      menusInitOpen:[false,false],
       currentMainPanel:"AccountSettings",
       supportPanelOptions:[],
       supportPanelTitles:[],
       supportPanelIndex:0,
-      hasNoMenuPanel: true,
+      hasNoMenuPanel: false,
       headerControls: ["BackButton"],
       headerControlsPositions: ["Right"]
     }
