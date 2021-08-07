@@ -218,11 +218,27 @@ export default function checkEquality({
     let object1_operator = object1.tree[0];
     let object2_operator = object2.tree[0];
 
-    if (object1_operator === "vector") {
+    if (object1_operator === "list") {
+      object1 = object1.tree.slice(1);
+      if (object2_operator === "list") {
+        object2 = object2.tree.slice(1);
+      } else {
+        // since a single object could be considered
+        // a list of length 1
+        // make object2 act like a list of the one element
+        object2 = [object2.tree];
+      }
+    } else if (object2_operator === "list") {
+      object2 = object2.tree.slice(1);
+      // since a single object could be considered
+      // a list of length 1
+      // make object1 act like a list of the one element
+      object1 = [object1.tree];
+    } else if (object1_operator === "vector") {
       // change object1 to array of elements
       object1 = object1.tree.slice(1);
 
-      if (object2_operator === "list" || object2_operator === "interval"
+      if (object2_operator === "interval"
         || object2_operator === "matrix" || object2_operator === "array"
         || object2_operator === "set"
       ) {
@@ -240,7 +256,7 @@ export default function checkEquality({
       // change object2 to array of elements
       object2 = object2.tree.slice(1);
 
-      if (object1_operator === "list" || object1_operator === "interval"
+      if (object1_operator === "interval"
         || object1_operator === "matrix" || object1_operator === "array"
         || object1_operator === "set"
       ) {
@@ -264,9 +280,7 @@ export default function checkEquality({
       // change object to be the array of the interval endpoints
       object1 = object1.tree[1].slice(1);
 
-      if (object2_operator === "list" || object2_operator === "matrix"
-        || object2_operator === "set"
-      ) {
+      if (object2_operator === "matrix" || object2_operator === "set") {
         return { fraction_equal: 0 };
       } else if (object2_operator === "tuple") {
         let operands = object2.tree.slice(1);
@@ -312,9 +326,7 @@ export default function checkEquality({
       // change object to be the array of the interval endpoints
       object2 = object2.tree[1].slice(1);
 
-      if (object1_operator === "list" || object1_operator === "matrix"
-        || object1_operator === "set"
-      ) {
+      if (object1_operator === "matrix" || object1_operator === "set") {
         return { fraction_equal: 0 };
       } else if (object1_operator === "tuple") {
         let operands = object1.tree.slice(1);
@@ -361,9 +373,7 @@ export default function checkEquality({
       }
       object1 = distinctElements;
       isUnordered = true;
-      if (object2_operator === "tuple" || object2_operator === "array"
-        || object2_operator === "list"
-      ) {
+      if (object2_operator === "tuple" || object2_operator === "array") {
         return { fraction_equal: 0 };
       } else if (object2_operator === "set") {
         distinctElements = [];
@@ -389,32 +399,10 @@ export default function checkEquality({
       }
       object2 = distinctElements;
       isUnordered = true;
-      if (object1_operator === "tuple" || object1_operator === "array"
-        || object1_operator === "list"
-      ) {
-        return { fraction_equal: 0 };
-      } else {
-        // since can convert singleton to a set of length 1
-        // make object1 array of the one element
-        object1 = [object1.tree];
-      }
-    } else if (object1_operator === "list") {
-      object1 = object1.tree.slice(1);
-      if (object2_operator === "tuple" || object2_operator === "array") {
-        return { fraction_equal: 0 };
-      } else if (object2_operator === "list") {
-        object2 = object2.tree.slice(1);
-      } else {
-        // since can convert singleton to a list of length 1
-        // make object2 array of the one element
-        object2 = [object2.tree];
-      }
-    } else if (object2_operator === "list") {
-      object2 = object2.tree.slice(1);
       if (object1_operator === "tuple" || object1_operator === "array") {
         return { fraction_equal: 0 };
       } else {
-        // since can convert singleton to a list of length 1
+        // since can convert singleton to a set of length 1
         // make object1 array of the one element
         object1 = [object1.tree];
       }
