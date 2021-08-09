@@ -1108,7 +1108,7 @@ describe('Function Tag Tests', function () {
       p.movePoint({ x: -2, y: 2 });
       expect(p.stateValues.xs[0].evaluate_to_constant()).closeTo(-2, 1E-6)
       expect(p.stateValues.xs[1].evaluate_to_constant()).closeTo(4, 1E-6)
-      
+
     })
   });
 
@@ -1190,7 +1190,7 @@ describe('Function Tag Tests', function () {
 
     //wait for window to load
     cy.get('#\\/_text1').should('have.text', 'a');
-    let f = x => Math.sqrt(x)*Math.sqrt(5-x);
+    let f = x => Math.sqrt(x) * Math.sqrt(5 - x);
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
@@ -1304,13 +1304,13 @@ describe('Function Tag Tests', function () {
     })
   });
 
-  it('function determined by formula', () => {
+  it('function determined by math formula', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <graph>
-    <function formula="3/(1+e^(-x/2))" />
+    <function><math>3/(1+e^(-x/2))</math></function>
     </graph>
     `}, "*");
     });
@@ -1336,6 +1336,44 @@ describe('Function Tag Tests', function () {
 
     })
   });
+
+  it('function determined by math formula, with explicit copy tags', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function>
+    <math><copy tname="a"/>/(1+e^(-x/<copy tname="b"/>))</math>
+    </function>
+    </graph>
+    <number name="a">3</number>
+    <math name="b">2</math>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = components['/_function1'].stateValues.fs[0];
+      let numericalf = components['/_function1'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function1'].stateValues.symbolicfs[0];
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(numericalf(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(numericalf(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
+      expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
+      expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
 
   it('symbolic function determined by formula via sugar', () => {
     cy.window().then((win) => {
@@ -1406,13 +1444,13 @@ describe('Function Tag Tests', function () {
     })
   });
 
-  it('symbolic function determined by formula', () => {
+  it('symbolic function determined by math formula', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <graph>
-    <function symbolic formula="3/(1+e^(-x/2))" />
+    <function symbolic><math>3/(1+e^(-x/2))</math></function>
     </graph>
     `}, "*");
     });
@@ -1508,14 +1546,13 @@ describe('Function Tag Tests', function () {
     })
   });
 
-  it('function determined by formula in different variable', () => {
+  it('function determined by math formula in different variable', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <graph>
-    <function variables="q" formula="q^2 sin(pi q/2)/100" />
-
+      <function variables="q"><math>q^2 sin(pi q/2)/100</math></function>
     </graph>
     `}, "*");
     });
@@ -1536,6 +1573,39 @@ describe('Function Tag Tests', function () {
       expect(symbolicf(-5).equals(me.fromText('(-5)^2sin(pi(-5)/2)/100'))).eq(true)
       expect(symbolicf(3).equals(me.fromText('(3)^2sin(pi(3)/2)/100'))).eq(true)
       expect(symbolicf('p').equals(me.fromText('p^2sin(pi p/2)/100'))).eq(true)
+
+    })
+  });
+
+  it('function determined by function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="q"><math>q^2 sin(pi q/2)/100</math></function>
+    <graph>
+      <function>$_function1</function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let f = components['/_function2'].stateValues.fs[0];
+      let numericalf = components['/_function2'].stateValues.numericalfs[0];
+      let symbolicf = components['/_function2'].stateValues.symbolicfs[0];
+
+      expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(numericalf(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(numericalf(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+      expect(symbolicf(-5).equals(me.fromText('(-5)^2sin(pi(-5)/2)/100'))).eq(true)
+      expect(symbolicf(3).equals(me.fromText('(3)^2sin(pi(3)/2)/100'))).eq(true)
+      expect(symbolicf('p').equals(me.fromText('p^2sin(pi p/2)/100'))).eq(true)
+
 
     })
   });
@@ -1933,7 +2003,7 @@ describe('Function Tag Tests', function () {
 
         cy.get('#\\/xmin textarea').type('{end}{backspace}6{enter}', { force: true });
         cy.get('#\\/xmax textarea').type('{end}{backspace}8{enter}', { force: true });
-  
+
         cy.get(numberMaximaAnchor).should('have.text', '2');
         cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('((−1.5,7),(5,6))');
@@ -1996,7 +2066,7 @@ describe('Function Tag Tests', function () {
     <graph>
     <point layer="2">(0,1)</point>
     <point layer="2">(3,1)</point>
-    <function formula="$(_point1{prop='y'}) exp(-(x-$(_point1{prop='x'}))^2)+$(_point2{prop='y'}) exp(-(x-$(_point2{prop='x'}))^2)" />
+    <function>$(_point1{prop='y'}) exp(-(x-$(_point1{prop='x'}))^2)+$(_point2{prop='y'}) exp(-(x-$(_point2{prop='x'}))^2)</function>
     <copy prop="extrema" tname="_function1" />
     </graph>
     
@@ -2203,7 +2273,7 @@ describe('Function Tag Tests', function () {
     <text>a</text>
     Period: <mathinput />
     <graph>
-    <function formula="sin(2*pi*x/$_mathinput1)" />
+    <function>sin(2*pi*x/$_mathinput1)</function>
     <copy prop="extrema" tname="_function1" />
     </graph>
     <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
@@ -2336,7 +2406,7 @@ describe('Function Tag Tests', function () {
     <p>xmin = <mathinput name="xmin" prefill="-10" />
     xmax = <mathinput name="xmax" prefill="10" /></p>
     <graph>
-    <function formula="sin(2*pi*x/$_mathinput1)" domain="($xmin, $xmax)" />
+    <function domain="($xmin, $xmax)">sin(2*pi*x/$_mathinput1)</function>
     <copy prop="extrema" tname="_function1" />
     </graph>
     <p><aslist><copy prop="maximumLocations" tname="_function1" /></aslist></p>
@@ -2830,7 +2900,7 @@ describe('Function Tag Tests', function () {
     <mathinput />
     <mathinput />
     
-    <function xscale="$_mathinput1" formula="$_mathinput2 x^3+1" />
+    <function xscale="$_mathinput1">$_mathinput2 x^3+1</function>
     
     <graph>
       <copy name="f1a" tname="_function1" />
@@ -2883,7 +2953,7 @@ describe('Function Tag Tests', function () {
     <mathinput prefill="0" />
     <mathinput prefill="-2" />
     
-    <function formula="$_mathinput1 x^4 + $_mathinput2 x^3 +$_mathinput3 x^2 +1" />
+    <function>$_mathinput1 x^4 + $_mathinput2 x^3 +$_mathinput3 x^2 +1</function>
     
     <graph>
       <copy name="f1a" tname="_function1" />
@@ -2969,16 +3039,16 @@ describe('Function Tag Tests', function () {
     });
   });
 
-  it('function of function uses second variable', () => {
+  it('function of function can redefine variable', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <function variables="t" name="f">t^3</function>
+    <function variables="t" name="f" symbolic>st^3</function>
 
-    <function name="f2"><copy tname="f"/></function>
-    <function name="f3" variables="s"><copy tname="f"/></function>
+    <function name="f2" symbolic><copy tname="f"/></function>
+    <function name="f3" variables="s" symbolic><copy tname="f"/></function>
 
     <copy name="f4" tname="f"/>
     <copy name="f5" tname="f2"/>
@@ -2990,6 +3060,13 @@ describe('Function Tag Tests', function () {
     <copy prop="variable" tname="f4" name="f4v" />
     <copy prop="variable" tname="f5" name="f5v" />
     <copy prop="variable" tname="f6" name="f6v" />
+
+    <p name="fOfu">$$f(u)</p>
+    <p name="f2Ofu">$$f2(u)</p>
+    <p name="f3Ofu">$$f3(u)</p>
+    <p name="f4Ofu">$$f4(u)</p>
+    <p name="f5Ofu">$$f5(u)</p>
+    <p name="f6Ofu">$$f6(u)</p>
     
     `}, "*");
     });
@@ -3015,7 +3092,7 @@ describe('Function Tag Tests', function () {
         expect(text.trim()).equal('t')
       })
       cy.get(variable3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('t')
+        expect(text.trim()).equal('s')
       })
       cy.get(variable4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('t')
@@ -3024,29 +3101,190 @@ describe('Function Tag Tests', function () {
         expect(text.trim()).equal('t')
       })
       cy.get(variable6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('t')
+        expect(text.trim()).equal('s')
+      })
+      cy.get("#\\/fOfu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('su3')
+      })
+      cy.get("#\\/f2Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('su3')
+      })
+      cy.get("#\\/f3Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('ut3')
+      })
+      cy.get("#\\/f4Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('su3')
+      })
+      cy.get("#\\/f5Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('su3')
+      })
+      cy.get("#\\/f6Ofu").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('ut3')
       })
 
       cy.window().then((win) => {
 
         expect(components["/f"].stateValues.variables[0].tree).eq('t');
         expect(components["/f2"].stateValues.variables[0].tree).eq('t');
-        expect(components["/f3"].stateValues.variables[0].tree).eq('t');
+        expect(components["/f3"].stateValues.variables[0].tree).eq('s');
         expect(components["/f4"].replacements[0].stateValues.variables[0].tree).eq('t');
         expect(components["/f5"].replacements[0].stateValues.variables[0].tree).eq('t');
-        expect(components["/f6"].replacements[0].stateValues.variables[0].tree).eq('t');
+        expect(components["/f6"].replacements[0].stateValues.variables[0].tree).eq('s');
 
-        expect(components["/f"].stateValues.formula.tree).eqls(["^", "t", 3]);
-        expect(components["/f2"].stateValues.formula.tree).eqls(["^", "t", 3]);
-        expect(components["/f3"].stateValues.formula.tree).eqls(["^", "t", 3]);
-        expect(components["/f4"].replacements[0].stateValues.formula.tree).eqls(["^", "t", 3]);
-        expect(components["/f5"].replacements[0].stateValues.formula.tree).eqls(["^", "t", 3]);
-        expect(components["/f6"].replacements[0].stateValues.formula.tree).eqls(["^", "t", 3]);
+        expect(components["/f"].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect(components["/f2"].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect(components["/f3"].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect(components["/f4"].replacements[0].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect(components["/f5"].replacements[0].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
+        expect(components["/f6"].replacements[0].stateValues.formula.tree).eqls(["*", "s", ["^", "t", 3]]);
+
+        expect(components["/fOfu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect(components["/f2Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect(components["/f3Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "u", ["^", "t", 3]]);
+        expect(components["/f4Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect(components["/f5Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "s", ["^", "u", 3]]);
+        expect(components["/f6Ofu"].activeChildren[0].stateValues.value.tree).eqls(["*", "u", ["^", "t", 3]]);
 
       })
     });
 
   });
+
+  it('function of interpolated function can redefine variable without changing function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function minima="(2)" name="f" />
+
+    <function name="f2"><copy tname="f"/></function>
+    <function name="f3" variables="s"><copy tname="f"/></function>
+
+    <copy name="f4" tname="f"/>
+    <copy name="f5" tname="f2"/>
+    <copy name="f6" tname="f3"/>
+
+    <copy prop="variable" tname="f" name="fv" />
+    <copy prop="variable" tname="f2" name="f2v" />
+    <copy prop="variable" tname="f3" name="f3v" />
+    <copy prop="variable" tname="f4" name="f4v" />
+    <copy prop="variable" tname="f5" name="f5v" />
+    <copy prop="variable" tname="f6" name="f6v" />
+
+    <p name="fOf0">$$f(0)</p>
+    <p name="f2Of0">$$f2(0)</p>
+    <p name="f3Of0">$$f3(0)</p>
+    <p name="f4Of0">$$f4(0)</p>
+    <p name="f5Of0">$$f5(0)</p>
+    <p name="f6Of0">$$f6(0)</p>
+
+    <p name="fOf1">$$f(1)</p>
+    <p name="f2Of1">$$f2(1)</p>
+    <p name="f3Of1">$$f3(1)</p>
+    <p name="f4Of1">$$f4(1)</p>
+    <p name="f5Of1">$$f5(1)</p>
+    <p name="f6Of1">$$f6(1)</p>
+
+    <p name="fOf2">$$f(2)</p>
+    <p name="f2Of2">$$f2(2)</p>
+    <p name="f3Of2">$$f3(2)</p>
+    <p name="f4Of2">$$f4(2)</p>
+    <p name="f5Of2">$$f5(2)</p>
+    <p name="f6Of2">$$f6(2)</p>
+
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let variable1Anchor = cesc('#' + components["/fv"].replacements[0].componentName);
+      let variable2Anchor = cesc('#' + components["/f2v"].replacements[0].componentName);
+      let variable3Anchor = cesc('#' + components["/f3v"].replacements[0].componentName);
+      let variable4Anchor = cesc('#' + components["/f4v"].replacements[0].componentName);
+      let variable5Anchor = cesc('#' + components["/f5v"].replacements[0].componentName);
+      let variable6Anchor = cesc('#' + components["/f6v"].replacements[0].componentName);
+
+      cy.get(variable1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      })
+      cy.get(variable2Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      })
+      cy.get(variable3Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('s')
+      })
+      cy.get(variable4Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      })
+      cy.get(variable5Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      })
+      cy.get(variable6Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('s')
+      })
+      cy.get("#\\/fOf0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get("#\\/f2Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get("#\\/f3Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get("#\\/f4Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get("#\\/f5Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get("#\\/f6Of0").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('2')
+      })
+      cy.get("#\\/fOf1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get("#\\/f2Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get("#\\/f3Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get("#\\/f4Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get("#\\/f5Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get("#\\/f6Of1").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3')
+      })
+      cy.get("#\\/fOf2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('6')
+      })
+      cy.get("#\\/f2Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('6')
+      })
+      cy.get("#\\/f3Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('6')
+      })
+      cy.get("#\\/f4Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('6')
+      })
+      cy.get("#\\/f5Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('6')
+      })
+      cy.get("#\\/f6Of2").find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('6')
+      })
+
+    });
+
+  });
+
 
   it('extrema not resolved if not requested', () => {
     cy.window().then((win) => {
@@ -3157,7 +3395,7 @@ describe('Function Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-    <function nInputs="1" formula="3/(1+e^(-x/2))" />
+    <function nInputs="1">3/(1+e^(-x/2))</function>
     </graph>
     `}, "*");
     });
@@ -3189,7 +3427,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function nInputs="2" formula="3/(y+e^(-x/2))" />
+    <function nInputs="2">3/(y+e^(-x/2))</function>
     `}, "*");
     });
 
@@ -3220,7 +3458,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function nInputs="2" variables="q r" formula="3/(r+e^(-q/2))" />
+    <function nInputs="2" variables="q r">3/(r+e^(-q/2))</function>
     `}, "*");
     });
 
@@ -3251,7 +3489,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function variables="q r" formula="3/(r+e^(-q/2))" />
+    <function variables="q r">3/(r+e^(-q/2))</function>
     `}, "*");
     });
 
@@ -3282,7 +3520,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function nInputs="3" formula="z/(y+e^(-x/2))" />
+    <function nInputs="3">z/(y+e^(-x/2))</function>
     `}, "*");
     });
 
@@ -3313,7 +3551,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function variables="q r s" formula="s/(r+e^(-q/2))" />
+    <function variables="q r s">s/(r+e^(-q/2))</function>
     `}, "*");
     });
 
@@ -3344,7 +3582,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function nInputs="4" formula="x_3/(x_2+e^(-x_1/2))+x_4" />
+    <function nInputs="4">x_3/(x_2+e^(-x_1/2))+x_4</function>
     `}, "*");
     });
 
@@ -3375,7 +3613,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function nInputs="4" variables="x y z" formula="z/(y+e^(-x/2))+x_4" />
+    <function nInputs="4" variables="x y z">z/(y+e^(-x/2))+x_4</function>
     `}, "*");
     });
 
@@ -3406,7 +3644,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function formula="(x^2, x^3)" />
+    <function>(x^2, x^3)</function>
     `}, "*");
     });
 
@@ -3449,7 +3687,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function variables="t" formula="(t^2, t^3)" />
+    <function variables="t">(t^2, t^3)</function>
     `}, "*");
     });
 
@@ -3492,7 +3730,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function variables="t" nOutputs="2" formula="(t^2, t^3)" />
+    <function variables="t" nOutputs="2">(t^2, t^3)</function>
     `}, "*");
     });
 
@@ -3535,7 +3773,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function formula="(x^2, x^3, x^4)" />
+    <function>(x^2, x^3, x^4)</function>
     `}, "*");
     });
 
@@ -3588,7 +3826,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function variables="t" formula="(t^2, t^3, t^4)" />
+    <function variables="t">(t^2, t^3, t^4)</function>
     `}, "*");
     });
 
@@ -3641,7 +3879,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function nInputs="2" formula="(x^2y^3, x^3y^2)" />
+    <function nInputs="2">(x^2y^3, x^3y^2)</function>
     `}, "*");
     });
 
@@ -3684,7 +3922,7 @@ describe('Function Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <function variables="s t" formula="(s^2t^3, s^3t^2, st)" />
+    <function variables="s t">(s^2t^3, s^3t^2, st)</function>
     `}, "*");
     });
 

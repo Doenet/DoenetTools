@@ -610,7 +610,7 @@ describe('CobwebPolyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <setup>
-    <function formula="2x-x^2/3" name="f" />
+    <function name="f">2x-x^2/3</function>
   </setup>
   
   <copy uri="doenet:contentId=331401b388f39d33269b8d2cd8b4e964afec124cddfa7b60500038da5f9d2e59" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
@@ -867,7 +867,7 @@ describe('CobwebPolyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <setup>
-    <function formula="2x-x^2/3" name="f" />
+    <function name="f">2x-x^2/3</function>
   </setup>
   
   <copy uri="doenet:contentId=6d72350e798b3c98ad5f78b47c3ed1dee7526cc219c0265a4114314b2aa9e708" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
