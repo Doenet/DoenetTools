@@ -291,7 +291,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <mathinput prefill="1" name="a" />
     <graph>
-    <curve><function formula='x^3-x$a'/></curve>
+    <curve><function>x^3-x$a</function></curve>
     </graph>
     `}, "*");
     });

@@ -1931,7 +1931,7 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <group name='g'>
       <graph>
-        <function formula='x' />
+        <function>x</function>
       </graph>
     </group>
     

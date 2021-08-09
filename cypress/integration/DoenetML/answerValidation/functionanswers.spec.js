@@ -136,7 +136,7 @@ describe('Function answer validation tests', function () {
   <p>Offset: <mathinput name="offset" prefill="0"/></p>
   <p>Period: <mathinput name="period" prefill="1"/></p>
   <p>Magnitude <mathinput name="magnitude" prefill="1"/></p>
-  <function name="f" formula="$magnitude cos(2*pi*(x-$offset)/$period)" />
+  <function name="f">$magnitude cos(2*pi*(x-$offset)/$period)</function>
   <p>Enter a number:
   <answer>
     <mathinput name="x" />
