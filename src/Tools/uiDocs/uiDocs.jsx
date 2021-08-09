@@ -15,7 +15,7 @@ import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleBut
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
 import Form from '../../_reactComponents/PanelHeaderComponents/Form.jsx';
-import TextField from '../../_reactComponents/PanelHeaderComponents/TextField.jsx';
+import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
 import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
