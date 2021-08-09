@@ -366,6 +366,36 @@ export default class Function extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.isInterpolatedFunction = {
+      returnDependencies: () => ({
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
+        },
+        minima: {
+          dependencyType: "attributeComponent",
+          attributeName: "minima",
+        },
+        maxima: {
+          dependencyType: "attributeComponent",
+          attributeName: "maxima",
+        },
+        extrema: {
+          dependencyType: "attributeComponent",
+          attributeName: "extrema",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            isInterpolatedFunction:
+              dependencyValues.through || dependencyValues.minima ||
+              dependencyValues.maxima || dependencyValues.extrema
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.nInputs = {
       defaultValue: 1,
       public: true,
@@ -386,9 +416,16 @@ export default class Function extends InlineComponent {
           attributeName: "variables",
           variableNames: ["nComponents"],
         },
+        isInterpolatedFunction: {
+          dependencyType: "stateVariable",
+          variableName: "isInterpolatedFunction"
+        }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.functionChild.length > 0) {
+        if (dependencyValues.isInterpolatedFunction) {
+          return { newValues: { nInputs: 1 } }
+        }
+        else if (dependencyValues.functionChild.length > 0) {
           return {
             newValues: {
               nInputs: dependencyValues.functionChild[0].stateValues.nInputs
@@ -547,36 +584,6 @@ export default class Function extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.isInterpolatedFunction = {
-      returnDependencies: () => ({
-        through: {
-          dependencyType: "attributeComponent",
-          attributeName: "through",
-        },
-        minima: {
-          dependencyType: "attributeComponent",
-          attributeName: "minima",
-        },
-        maxima: {
-          dependencyType: "attributeComponent",
-          attributeName: "maxima",
-        },
-        extrema: {
-          dependencyType: "attributeComponent",
-          attributeName: "extrema",
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          newValues: {
-            isInterpolatedFunction:
-              dependencyValues.through || dependencyValues.minima ||
-              dependencyValues.maxima || dependencyValues.extrema
-          }
-        }
-      }
-    }
-
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
@@ -602,10 +609,6 @@ export default class Function extends InlineComponent {
             dependencyType: "parentStateVariable",
             variableName: "variableForChild"
           },
-          isInterpolatedFunction: {
-            dependencyType: "stateVariable",
-            variableName: "isInterpolatedFunction"
-          },
           functionChild: {
             dependencyType: "child",
             childGroups: ["functions"],
@@ -626,9 +629,7 @@ export default class Function extends InlineComponent {
         return { globalDependencies, dependenciesByKey }
       },
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arraySize, arrayKeys, usedDefault }) {
-        if (globalDependencyValues.isInterpolatedFunction) {
-          return { newValues: { variables: Array(arraySize[0]).fill(me.fromAst('\uff3f')) } };
-        } else if (globalDependencyValues.functionChild.length > 0) {
+        if (globalDependencyValues.functionChild.length > 0) {
           if (globalDependencyValues.variablesAttr !== null) {
             console.warn("Variable for function is ignored when it has a function child")
           }
@@ -2400,6 +2401,10 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables"
             }
           }
         } else {
@@ -3741,16 +3746,21 @@ function returnReturnDerivativesOfInterpolatedFunction(dependencyValues) {
 
   let xs = dependencyValues.xs;
   let coeffs = dependencyValues.coeffs;
+  let variable1Trans = dependencyValues.variables[0].subscripts_to_strings().tree;
 
   let x0 = xs[0], xL = xs[xs.length - 1];
 
-  return function (order = 1) {
+  return function (derivVariables) {
 
-    if (order > 3) {
+    let derivVariablesTrans = derivVariables.map(x => x.subscripts_to_strings().tree);
+
+    let order = derivVariablesTrans.length;
+
+    if (order > 3 || !derivVariablesTrans.every(x => x === variable1Trans)) {
       return x => 0
     }
 
-    if (order < 1 || !Number.isInteger(order) || xs == null) {
+    if (order === 0 || xs === null) {
       return x => NaN
     }
 

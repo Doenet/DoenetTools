@@ -3051,7 +3051,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
 
     cy.log("scalar in second tuple")
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
@@ -3061,7 +3061,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
     cy.log('permute order in first tuple')
     cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
@@ -3142,7 +3142,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
 
     cy.log("scalar in second tuple")
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
@@ -3152,7 +3152,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
     cy.log('permute order in first tuple')
     cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
@@ -3233,7 +3233,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
 
     cy.log("scalar in second tuple")
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
@@ -3243,7 +3243,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
     cy.log('permute order in first tuple')
     cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
@@ -3326,7 +3326,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
 
     cy.log("scalar in second tuple")
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
@@ -3336,7 +3336,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
     cy.log('permute order in first tuple')
     cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
@@ -3418,7 +3418,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
 
     cy.log("scalar in second tuple")
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
@@ -3428,7 +3428,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
     cy.log('permute order in first tuple')
     cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
@@ -3511,7 +3511,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
 
     cy.log("scalar in second tuple")
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3{enter}', { force: true });
@@ -3521,7 +3521,7 @@ describe('Match partial validation tests', function () {
     })
     cy.get("#\\/strict_submit").click();
     cy.get('#\\/strict_incorrect').should('be.visible')
-    
+
     cy.log('permute order in first tuple')
     cy.get("#\\/m1 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,1){enter}', { force: true });
     cy.get("#\\/m2 textarea").type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(3,4){enter}', { force: true });
@@ -3766,6 +3766,396 @@ describe('Match partial validation tests', function () {
     cy.get('#\\/partial_correct').should('be.visible')
     cy.get('#\\/strict_submit').click();
     cy.get('#\\/strict_correct').should('be.visible');
+
+
+  });
+
+  it('match tuple with list of tuples', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+  <p>
+  <mathinput name="mi" />
+  <answer name="ans1">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        $mi = <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist> = $mi
+      </when>
+    </award>
+  </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit first tuple")
+    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.log("Submit both tuples")
+    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+
+    cy.log("Submit second tuple")
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+
+
+  });
+
+  it('match tuple with list of vectors', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+  <p>
+  <mathinput name="mi" />
+  <answer name="ans1">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        $mi = <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist> = $mi
+      </when>
+    </award>
+  </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit first tuple")
+    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.log("Submit both tuples")
+    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+
+    cy.log("Submit second tuple")
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+
+
+  });
+
+  it('match vector with list of tuples', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+  <p>
+  <mathinput name="mi" />
+  <answer name="ans1">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <math createVectors>$mi</math> = <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist> = <math createVectors>$mi</math>
+      </when>
+    </award>
+  </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit first tuple")
+    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.log("Submit both tuples")
+    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+
+    cy.log("Submit second tuple")
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+
+
+  });
+
+  it('match vector with list of vectors', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+  <p>
+  <mathinput name="mi" />
+  <answer name="ans1">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <math createVectors>$mi</math> = <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist> = <math createVectors>$mi</math>
+      </when>
+    </award>
+  </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit first tuple")
+    cy.get('#\\/mi textarea').type("(1,2){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.log("Submit both tuples")
+    cy.get('#\\/mi textarea').type("{end},(3,4){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+
+    cy.log("Submit second tuple")
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+
+
+  });
+
+  it('match interval with list of intervals', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+  <p>
+  <mathinput name="mi" />
+  <answer name="ans1">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        $mi = <mathlist><math>[1,2)</math><math>(3,4]</math></mathlist>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <mathlist><math>[1,2)</math><math>(3,4]</math></mathlist> = $mi
+      </when>
+    </award>
+  </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit first interval")
+    cy.get('#\\/mi textarea').type("[1,2){enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.log("Submit both intervals")
+    cy.get('#\\/mi textarea').type("{end},(3,4]{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+
+    cy.log("Submit second interval")
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+
+
+  });
+
+  it('match array with list of arrays', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+
+  <p>a</p>
+  <p>
+  <mathinput name="mi" />
+  <answer name="ans1">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        $mi = <mathlist><math>[1,2]</math><math>[3,4]</math></mathlist>
+      </when>
+    </award>
+  </answer>
+  <answer name="ans2">
+    <award targetsAreResponses="mi">
+      <when matchpartial>
+        <mathlist><math>[1,2]</math><math>[3,4]</math></mathlist> = $mi
+      </when>
+    </award>
+  </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_p1').should('have.text', "a");  // to wait until loaded
+
+    cy.log("Submit first array")
+    cy.get('#\\/mi textarea').type("[1,2]{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans2_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
+    cy.log("Submit both arrays")
+    cy.get('#\\/mi textarea').type("{end},[3,4]{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_correct').should('be.visible')
+    cy.get('#\\/ans2_correct').should('be.visible')
+
+
+    cy.log("Submit second array")
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{leftArrow}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+    cy.get('#\\/ans1_submit').click();
+    cy.get('#\\/ans2_submit').click();
+
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/ans1_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+
 
 
   });

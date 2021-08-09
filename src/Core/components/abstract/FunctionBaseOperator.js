@@ -73,31 +73,6 @@ export default class FunctionOperator extends Function {
     delete stateVariableDefinitions.xs;
 
 
-    // let variablesToChangeFunctionChildLogicName = [
-    //   "displayDigits", "displayDecimals", "displaySmallAsZero",
-    //   "nInputs", "nOutputs",
-    //   "symbolic", "domain",
-    // ];
-
-    // for (let vName of variablesToChangeFunctionChildLogicName) {
-    //   let originalReturnDependences = stateVariableDefinitions[vName].returnDependencies;
-    //   stateVariableDefinitions[vName].returnDependencies = function () {
-    //     let dependencies = originalReturnDependences();
-    //     dependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
-    //     return dependencies;
-    //   }
-    // }
-
-
-    // let originalVariablesReturnDependences = stateVariableDefinitions.variables.returnArrayDependenciesByKey;
-    // stateVariableDefinitions.variables.returnArrayDependenciesByKey = function ({ arrayKeys }) {
-    //   let dependencies = originalVariablesReturnDependences({ arrayKeys });
-    //   dependencies.globalDependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
-    //   for (let arrayKey of arrayKeys) {
-    //     dependencies.dependenciesByKey[arrayKey].functionChild.childLogicName = "atMostOneFunctionForOperator";
-    //   }
-    //   return dependencies;
-    // }
 
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),

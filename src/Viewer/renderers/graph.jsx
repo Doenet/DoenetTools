@@ -81,7 +81,7 @@ export default class Graph extends DoenetRenderer {
           position = 'lft';
           offset[1] = 5;
         }
-        if(this.doenetSvData.ylabelAlignment === "right") {
+        if (this.doenetSvData.ylabelAlignment === "right") {
           anchorx = 'left';
           offset[0] = 10;
         }
@@ -115,7 +115,7 @@ export default class Graph extends DoenetRenderer {
     // this.board.on('down', this.setAllBoardsToStayLowQuality);
 
     this.board.on('boundingbox', () => {
-      if (!this.settingBoundingBox) {
+      if (!(this.settingBoundingBox || this.resizingBoard)) {
         this.previousBoundingbox = this.board.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = this.previousBoundingbox;
         this.actions.changeAxisLimits({
@@ -168,7 +168,7 @@ export default class Graph extends DoenetRenderer {
           position = 'lft';
           offset[1] = 5;
         }
-        if(this.doenetSvData.ylabelAlignment === "right") {
+        if (this.doenetSvData.ylabelAlignment === "right") {
           anchorx = 'left';
           offset[0] = 10;
         }
@@ -188,7 +188,9 @@ export default class Graph extends DoenetRenderer {
       currentDimensions.height !== this.previousDimensions.height)
       && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)
     ) {
+      this.resizingBoard = true;
       this.board.resizeContainer(currentDimensions.width, currentDimensions.height);
+      this.resizingBoard = false;
       this.previousDimensions = currentDimensions;
     }
 
