@@ -893,7 +893,7 @@ export const folderOpenAtom = atomFamily({
   default: false,
 });
 
-const folderOpenSelector = selectorFamily({
+export const folderOpenSelector = selectorFamily({
   key: 'folderOpenSelector',
   get:
     (driveInstanceIdItemId) =>
@@ -1613,6 +1613,7 @@ function Folder(props) {
                 doubleClickCallback={props.doubleClickCallback}
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
+                indentLevel={props.indentLevel + 1}
               />,
             );
             break;
@@ -1635,7 +1636,7 @@ function Folder(props) {
   );
 }
 
-const EmptyNode = React.memo(function Node() {
+export const EmptyNode = React.memo(function Node() {
   return (
     <div
       style={{
@@ -1651,7 +1652,7 @@ const EmptyNode = React.memo(function Node() {
   );
 });
 
-const DragShadow = React.memo(function Node(props) {
+export const DragShadow = React.memo(function Node(props) {
   const indentPx = 30;
   return (
     <div
@@ -1702,7 +1703,7 @@ export const clearDriveAndItemSelections = selector({
 });
 
 //key: driveInstanceId
-const driveInstanceParentFolderIdAtom = atomFamily({
+export const driveInstanceParentFolderIdAtom = atomFamily({
   key: 'driveInstanceParentFolderIdAtom',
   default: selectorFamily({
     key: 'driveInstanceParentFolderIdAtom/Default',
@@ -1939,7 +1940,7 @@ export function ColumnJSX(columnType, item) {
   return <span></span>;
 }
 
-const DoenetML = React.memo(function DoenetML(props) {
+export const DoenetML = React.memo(function DoenetML(props) {
   // console.log(`=== 📜 DoenetML`)
 
   const isSelected = useRecoilValue(
@@ -2193,7 +2194,7 @@ const DoenetML = React.memo(function DoenetML(props) {
   return doenetMLJSX;
 });
 
-function useDnDCallbacks() {
+export function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
@@ -2276,6 +2277,7 @@ function useDnDCallbacks() {
       const copyMode = dragState.copyMode || draggingAcrossDrives;
 
       if (copyMode) {
+        console.log('COOOOOOPPPY!', globalSelectedNodes, targetDriveId);
         copyItems({
           items: globalSelectedNodes,
           targetDriveId,

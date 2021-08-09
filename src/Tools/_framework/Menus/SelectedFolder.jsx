@@ -9,7 +9,6 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
-
 export default function SelectedFolder() {
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
@@ -71,7 +70,7 @@ export default function SelectedFolder() {
       <ButtonGroup vertical>
         <Button
           data-cy="deleteDoenetMLButton"
-          value="Delete DoenetML"
+          value="Delete Folder"
           onClick={() => {
             deleteItem({
               driveIdFolderId: {
