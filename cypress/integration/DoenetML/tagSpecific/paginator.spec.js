@@ -1005,6 +1005,179 @@ describe('Paginator Tag Tests', function () {
 
   })
 
+  it('With weights', () => {
+
+    let doenetML = `
+    <text>a</text>
+  
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn">
+      <problem>
+        <answer type="text">a</answer>
+      </problem>
+      <problem weight="2">
+        <answer type="text">b</answer>
+      </problem>
+      <problem weight="3">
+        <answer type="text">c</answer>
+      </problem>
+    </paginator>
+  
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+  
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let textinput1Name = components["/_answer1"].stateValues.inputChildren[0].componentName;
+      let textinput1Anchor = cesc('#' + textinput1Name) + "_input";
+      let textinput1DisplayAnchor = cesc('#' + textinput1Name) + " .mq-editable-field";
+      let answer1Submit = cesc('#' + textinput1Name + "_submit");
+      let answer1Correct = cesc('#' + textinput1Name + "_correct");
+      let answer1Incorrect = cesc('#' + textinput1Name + "_incorrect");
+
+      cy.get(cesc('#/_problem1_title')).should('have.text', 'Problem 1')
+
+      cy.get(cesc('#/ca')).should('have.text', '0');
+
+      cy.get(textinput1Anchor).type("a{enter}")
+
+      cy.get(answer1Correct).should('be.visible')
+      cy.get(cesc('#/ca')).should('have.text', '0.167');
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(cesc('#/_problem2_title')).should('have.text', 'Problem 2')
+      cy.get(cesc('#/ca')).should('have.text', '0.167');
+
+      cy.window().then((win) => {
+        let components = Object.assign({}, win.state.components);
+
+        let textinput2Name = components["/_answer2"].stateValues.inputChildren[0].componentName;
+        let textinput2Anchor = cesc('#' + textinput2Name) + "_input";
+        let textinput2DisplayAnchor = cesc('#' + textinput2Name) + " .mq-editable-field";
+        let answer2Submit = cesc('#' + textinput2Name + "_submit");
+        let answer2Correct = cesc('#' + textinput2Name + "_correct");
+        let answer2Incorrect = cesc('#' + textinput2Name + "_incorrect");
+
+        cy.get(answer2Submit).should('be.visible')
+
+
+        cy.get(cesc('#/pcontrols_next')).click()
+        cy.get(cesc('#/_problem3_title')).should('have.text', 'Problem 3')
+        cy.get(cesc('#/ca')).should('have.text', '0.167');
+
+        cy.window().then((win) => {
+          let components = Object.assign({}, win.state.components);
+
+          let textinput3Name = components["/_answer3"].stateValues.inputChildren[0].componentName;
+          let textinput3Anchor = cesc('#' + textinput3Name) + "_input";
+          let textinput3DisplayAnchor = cesc('#' + textinput3Name) + " .mq-editable-field";
+          let answer3Submit = cesc('#' + textinput3Name + "_submit");
+          let answer3Correct = cesc('#' + textinput3Name + "_correct");
+          let answer3Incorrect = cesc('#' + textinput3Name + "_incorrect");
+
+          cy.get(answer3Submit).should('be.visible')
+
+          cy.get(cesc('#/pcontrols_previous')).click()
+          cy.get(cesc('#/_problem2_title')).should('have.text', 'Problem 2')
+          cy.get(cesc('#/ca')).should('have.text', '0.167');
+
+
+          cy.get(textinput2Anchor).type("b{enter}")
+
+          cy.get(answer2Correct).should('be.visible')
+          cy.get(cesc('#/ca')).should('have.text', '0.5');
+
+
+          cy.get(cesc('#/pcontrols_previous')).click()
+          cy.get(cesc('#/_problem1_title')).should('have.text', 'Problem 1')
+          cy.get(cesc('#/ca')).should('have.text', '0.5');
+
+
+          cy.get(answer1Correct).should('be.visible')
+
+          cy.get(textinput1Anchor).clear().type("{enter}")
+          cy.get(answer1Incorrect).should('be.visible')
+          cy.get(cesc('#/ca')).should('have.text', '0.333');
+
+          cy.get(cesc('#/pcontrols_next')).click()
+          cy.get(cesc('#/_problem2_title')).should('have.text', 'Problem 2')
+          cy.get(cesc('#/ca')).should('have.text', '0.333');
+
+          cy.get(answer2Correct).should('be.visible')
+
+          cy.get(cesc('#/pcontrols_next')).click()
+          cy.get(cesc('#/_problem3_title')).should('have.text', 'Problem 3')
+          cy.get(cesc('#/ca')).should('have.text', '0.333');
+
+          cy.get(textinput3Anchor).clear().type("c{enter}")
+          cy.get(answer3Correct).should('be.visible')
+          cy.get(cesc('#/ca')).should('have.text', '0.833');
+
+          cy.get(cesc('#/pcontrols_previous')).click()
+          cy.get(cesc('#/_problem2_title')).should('have.text', 'Problem 2')
+          cy.get(cesc('#/ca')).should('have.text', '0.833');
+
+          cy.get(answer2Correct).should('be.visible')
+
+
+        })
+
+      });
+
+    })
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>b</text>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/_problem2_title')).should('have.text', 'Problem 2')
+    cy.get(cesc('#/ca')).should('have.text', '0.833');
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/_problem1_title')).should('have.text', 'Problem 1')
+    cy.get(cesc('#/ca')).should('have.text', '0.833');
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_problem2_title')).should('have.text', 'Problem 2')
+    cy.get(cesc('#/ca')).should('have.text', '0.833');
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_problem3_title')).should('have.text', 'Problem 3')
+    cy.get(cesc('#/ca')).should('have.text', '0.833');
+
+
+  })
+
 
 
 });

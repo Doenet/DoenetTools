@@ -36,14 +36,14 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
   let nonMathCodes = [];
   let stringChildInd = 0;
 
-  for (let child of dependencyValues.stringMathTextBooleanChildren) {
+  for (let child of dependencyValues.allChildren) {
     if (child.componentType === "string") {
       // need to use stringChildren
       // as child variable doesn't have stateVariables
       inputString += " " + dependencyValues.stringChildren[stringChildInd].stateValues.value + " ";
       stringChildInd++;
     }
-    else { // a math, mathList, text, textList, boolean, or booleanList
+    else { // a math, mathList, number, numberList, text, textList, boolean, or booleanList
       let code = codePre + subnum;
 
       // make sure code is surrounded by spaces
@@ -63,6 +63,10 @@ export function buildParsedExpression({ dependencyValues, componentInfoObjects }
         componentInfoObjects.isInheritedComponentType({
           inheritedComponentType: child.componentType,
           baseComponentType: "number"
+        }) ||
+        componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: child.componentType,
+          baseComponentType: "numberList"
         })
       )) {
         nonMathCodes.push(code);
@@ -100,11 +104,6 @@ export function evaluateLogic({ logicTree,
   canOverrideUnorderedCompare = false,
   dependencyValues, valueOnInvalid = 0
 }) {
-
-  if (!dependencyValues.numberChildrenByCode) {
-    dependencyValues = Object.assign({}, dependencyValues);
-    dependencyValues.numberChildrenByCode = {};
-  }
 
   let evaluateSub = x => evaluateLogic({
     logicTree: x,
@@ -195,7 +194,8 @@ export function evaluateLogic({ logicTree,
     if (typeof x === "string") {
       if (x in dependencyValues.mathChildrenByCode ||
         x in dependencyValues.mathListChildrenByCode ||
-        x in dependencyValues.numberChildrenByCode
+        x in dependencyValues.numberChildrenByCode ||
+        x in dependencyValues.numberListChildrenByCode
       ) {
         foundMath = true;
       } else if (x in dependencyValues.textChildrenByCode || x in dependencyValues.textListChildrenByCode) {
@@ -215,11 +215,24 @@ export function evaluateLogic({ logicTree,
       }
       child = dependencyValues.mathListChildrenByCode[tree];
       if (child !== undefined) {
-        return ["list", ...child.stateValues.maths.map(x => x.tree)];
+        if (child.stateValues.maths.length === 1) {
+          child.stateValues.maths[0].tree;
+        } else {
+          return ["list", ...child.stateValues.maths.map(x => x.tree)];
+        }
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
         return child.stateValues.value;
+      }
+      child = dependencyValues.numberListChildrenByCode[tree];
+
+      if (child !== undefined) {
+        if (child.stateValues.numbers.length === 1) {
+          return child.stateValues.numbers[0];
+        } else {
+          return ["list", ...child.stateValues.numbers];
+        }
       }
       return tree;
     }
@@ -480,7 +493,7 @@ export function evaluateLogic({ logicTree,
     }
   }
 
-  // no boolean or text, just math, mathList, and strings
+  // no boolean or text, just math, mathList, number, numberList, and strings
 
 
   let strict;
@@ -495,21 +508,36 @@ export function evaluateLogic({ logicTree,
     if (typeof tree === "string") {
       let child = dependencyValues.mathChildrenByCode[tree];
       if (child !== undefined) {
-        if(child.stateValues.unordered) {
+        if (child.stateValues.unordered) {
           foundUnordered = true;
         }
         return child.stateValues.value.tree;
       }
       child = dependencyValues.mathListChildrenByCode[tree];
       if (child !== undefined) {
-        if(child.stateValues.unordered) {
+        if (child.stateValues.unordered) {
           foundUnordered = true;
         }
-        return ["list", ...child.stateValues.maths.map(x => x.tree)];
+        if (child.stateValues.maths.length === 1) {
+          return child.stateValues.maths[0].tree;
+        } else {
+          return ["list", ...child.stateValues.maths.map(x => x.tree)];
+        }
       }
       child = dependencyValues.numberChildrenByCode[tree];
       if (child !== undefined) {
         return child.stateValues.value;
+      }
+      child = dependencyValues.numberListChildrenByCode[tree];
+      if (child !== undefined) {
+        if (child.stateValues.unordered) {
+          foundUnordered = true;
+        }
+        if (child.stateValues.numbers.length === 1) {
+          return child.stateValues.numbers[0];
+        } else {
+          return ["list", ...child.stateValues.numbers];
+        }
       }
       return tree;
     }

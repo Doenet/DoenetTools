@@ -315,6 +315,472 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('identical axis scales', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-10')
+    cy.get('#\\/ymax').should('have.text', '10')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-5')
+    cy.get('#\\/ymax').should('have.text', '5')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '20')
+
+    cy.log('xmin alone specified')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>b</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-5" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-5')
+    cy.get('#\\/xmax').should('have.text', '15')
+    cy.get('#\\/ymin').should('have.text', '-10')
+    cy.get('#\\/ymax').should('have.text', '10')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-5')
+    cy.get('#\\/xmax').should('have.text', '15')
+    cy.get('#\\/ymin').should('have.text', '-5')
+    cy.get('#\\/ymax').should('have.text', '5')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-5')
+    cy.get('#\\/xmax').should('have.text', '15')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '20')
+
+
+    cy.log('xmax alone specified')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>c</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmax="5" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'c') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-15')
+    cy.get('#\\/xmax').should('have.text', '5')
+    cy.get('#\\/ymin').should('have.text', '-10')
+    cy.get('#\\/ymax').should('have.text', '10')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-15')
+    cy.get('#\\/xmax').should('have.text', '5')
+    cy.get('#\\/ymin').should('have.text', '-5')
+    cy.get('#\\/ymax').should('have.text', '5')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-15')
+    cy.get('#\\/xmax').should('have.text', '5')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '20')
+
+
+
+    cy.log('ymin alone specified')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>d</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" ymin="-5" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'd') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-5')
+    cy.get('#\\/ymax').should('have.text', '15')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-5')
+    cy.get('#\\/ymax').should('have.text', '5')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-5')
+    cy.get('#\\/ymax').should('have.text', '35')
+
+
+
+    cy.log('ymax alone specified')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>e</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" ymax="5" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'e') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-15')
+    cy.get('#\\/ymax').should('have.text', '5')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-5')
+    cy.get('#\\/ymax').should('have.text', '5')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-10')
+    cy.get('#\\/xmax').should('have.text', '10')
+    cy.get('#\\/ymin').should('have.text', '-35')
+    cy.get('#\\/ymax').should('have.text', '5')
+
+
+
+    cy.log('xmin and xmax specified')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>f</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmin='-20' xmax="40" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'f') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-20')
+    cy.get('#\\/xmax').should('have.text', '40')
+    cy.get('#\\/ymin').should('have.text', '-30')
+    cy.get('#\\/ymax').should('have.text', '30')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-20')
+    cy.get('#\\/xmax').should('have.text', '40')
+    cy.get('#\\/ymin').should('have.text', '-15')
+    cy.get('#\\/ymax').should('have.text', '15')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-20')
+    cy.get('#\\/xmax').should('have.text', '40')
+    cy.get('#\\/ymin').should('have.text', '-60')
+    cy.get('#\\/ymax').should('have.text', '60')
+
+
+
+    cy.log('ymin and ymax specified')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>g</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" ymin='-20' ymax="40" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'g') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-30')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-60')
+    cy.get('#\\/xmax').should('have.text', '60')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-15')
+    cy.get('#\\/xmax').should('have.text', '15')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+
+
+
+    cy.log('xmin, xmax, ymin and ymax specified')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>h</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-50" xmax="30" ymin='-20' ymax="40" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'h') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '60')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '70')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '140')
+
+
+
+    cy.log('leave out xmin')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>i</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmax="30" ymin='-20' ymax="40" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'i') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-30')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-90')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '0')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+
+
+    cy.log('leave out xmax')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>j</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-30" ymin='-20' ymax="40" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'j') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-30')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-30')
+    cy.get('#\\/xmax').should('have.text', '90')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-30')
+    cy.get('#\\/xmax').should('have.text', '0')
+    cy.get('#\\/ymin').should('have.text', '-20')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+
+
+    cy.log('leave out ymin')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>k</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-50" xmax="30" ymax="40" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'k') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-40')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '0')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-120')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+
+
+    cy.log('leave out ymax')
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>l</text>
+    <p>Width: <mathinput name="width" prefill="200" /></p>
+    <p>Height: <mathinput name="height" prefill="200" /></p>
+
+    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-50" xmax="30" ymin="-40" />
+
+    <p>xmin: <copy prop="xmin" tname="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" tname="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" tname="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" tname="g" assignNames="ymax" /></p>
+   
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'l') //wait for page to load
+
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-40')
+    cy.get('#\\/ymax').should('have.text', '40')
+
+    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-40')
+    cy.get('#\\/ymax').should('have.text', '0')
+
+    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true });
+    cy.get('#\\/xmin').should('have.text', '-50')
+    cy.get('#\\/xmax').should('have.text', '30')
+    cy.get('#\\/ymin').should('have.text', '-40')
+    cy.get('#\\/ymax').should('have.text', '120')
+
+
+  });
 
 
 });

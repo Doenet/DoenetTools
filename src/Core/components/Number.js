@@ -137,7 +137,7 @@ export default class NumberComponent extends InlineComponent {
         "codePre"
       ],
       returnDependencies: () => ({
-        stringMathTextBooleanChildren: {
+        allChildren: {
           dependencyType: "child",
           childGroups: ["strings", "numbers", "maths", "texts", "booleans"],
         },
@@ -157,7 +157,7 @@ export default class NumberComponent extends InlineComponent {
         "booleanChildrenByCode",
       ],
       returnDependencies: () => ({
-        stringMathTextBooleanChildren: {
+        allChildren: {
           dependencyType: "child",
           childGroups: ["strings", "numbers", "maths", "texts", "booleans"],
           variableNames: ["value", "texts", "maths", "booleans"],
@@ -178,7 +178,7 @@ export default class NumberComponent extends InlineComponent {
 
         let codePre = dependencyValues.codePre;
 
-        for (let child of dependencyValues.stringMathTextBooleanChildren) {
+        for (let child of dependencyValues.allChildren) {
           if (child.componentType !== "string") {
             // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
@@ -264,7 +264,7 @@ export default class NumberComponent extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "parsedExpression",
             },
-            stringMathTextBooleanChildren: {
+            allChildren: {
               dependencyType: "child",
               childGroups: ["strings", "numbers", "maths", "texts", "booleans"],
               variableNames: ["value", "texts", "maths", "unordered"],
@@ -314,7 +314,7 @@ export default class NumberComponent extends InlineComponent {
                     let parsedExpression = buildParsedExpression({
                       dependencyValues: {
                         stringChildren: dependencyValues.stringChild,
-                        stringMathTextBooleanChildren: dependencyValues.stringChild
+                        allChildren: dependencyValues.stringChild
                       },
                       componentInfoObjects
                     }).newValues.parsedExpression;
@@ -328,7 +328,8 @@ export default class NumberComponent extends InlineComponent {
                         textListChildrenByCode: {},
                         mathChildrenByCode: {},
                         mathListChildrenByCode: {},
-                        numberChildrenByCode: {}
+                        numberChildrenByCode: {},
+                        numberListChildrenByCode: {}
                       },
                       valueOnInvalid: NaN
                     })
@@ -400,28 +401,15 @@ export default class NumberComponent extends InlineComponent {
             return { newValues: { value: NaN } }
           }
 
-          let unorderedCompare = false;
-
-          // if compare attributes haven't been explicitly prescribed by <if>
-          // or one of its ancestors
-          // then any of the attributes can be turned on if there is a
-          // child with the comparable property
-
-          // check all children for an unordered property
-          for (let child of dependencyValues.stringMathTextBooleanChildren) {
-            if (child.stateValues.unordered) {
-              unorderedCompare = true;
-            }
-          }
 
           dependencyValues = Object.assign({}, dependencyValues);
           dependencyValues.mathListChildrenByCode = {};
+          dependencyValues.numberListChildrenByCode = {};
           dependencyValues.textListChildrenByCode = {};
           dependencyValues.booleanListChildrenByCode = {};
 
           let fractionSatisfied = evaluateLogic({
             logicTree: dependencyValues.parsedExpression.tree,
-            unorderedCompare: unorderedCompare,
             dependencyValues,
             valueOnInvalid: NaN,
           });
@@ -476,7 +464,7 @@ export default class NumberComponent extends InlineComponent {
             return {
               success: true,
               instructions: [{
-                setDependency: "stringMathTextBooleanChildren",
+                setDependency: "allChildren",
                 desiredValue: me.fromAst(desiredValue),
                 childIndex: 0,
                 variableIndex: 0,

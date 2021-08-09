@@ -14,7 +14,8 @@ import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
-import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
+import TextField from '../../_reactComponents/PanelHeaderComponents/TextField.jsx';
+import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
@@ -121,7 +122,7 @@ export default function attempt() {
       req_props: null,
       req_children: [React.createElement(ActionButton), React.createElement(ActionButton), React.createElement(ActionButton)],
       use: 'This groups related action buttons together.',
-    //   props: [
+      props: [
     //     // {name: 'Width - Menu Panel',
     //     // propPreview: '<ActionButtonGroup width="menu" />',
     //     // propCode: {width: 'menu'},
@@ -130,7 +131,11 @@ export default function attempt() {
     //     // propPreview: '<ActionButtonGroup width="500px" />',
     //     // propCode: {width: '500px'},
     //     // description: 'Sets width to custom dimensions'},
-    //   ]
+        {name: 'Vertical',
+        propPreview: '<ActionButtonGroup vertical />',
+        propCode: {vertical},
+        description: 'Aligns buttons vertically'},
+      ]
     },
     {
       name: 'Button',
@@ -269,44 +274,83 @@ export default function attempt() {
       ]
     },
     {
-    name: 'Textfield',
-    id: 'textfield',
-    code: Textfield,
-    codePreview: '<Textfield/>',
+    name: 'TextArea',
+    id: 'textarea',
+    code: TextArea,
+    codePreview: '<TextArea/>',
     req_props: null,
     req_children: null,
     use: 'This is where you can enter text.',
     props: [
       {name: 'Width - Menu Panel',
-      propPreview: '<Textfield width="menu" />',
+      propPreview: '<TextArea width="menu" />',
       propCode: {width: 'menu'},
       description: 'Sets width to fill menu panel width'},
       {name: 'Value',
-      propPreview: '<Textfield value="Enter cat names"/>',
+      propPreview: '<TextArea value="Enter cat names"/>',
       propCode: {value: 'Enter cat names'},
       description: 'Changes the text'},
       {name: 'Label',
-          propPreview: '<Textfield label="What: "/>',
+          propPreview: '<TextArea label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to componenet'},
           {name: 'Vertical Label',
-          propPreview: '<Textfield label="What: " vertical/>',
+          propPreview: '<TextArea label="What: " vertical/>',
           propCode: {label: 'What: ', vertical},
           description: 'Adds label to component on top'},
       {name: 'Alert',
-      propPreview: '<Textfield alert/>',
+      propPreview: '<TextArea alert/>',
       propCode: {alert},
       description: 'Changes to alert mode (border is red)'},
       {name: 'onChange',
-      propPreview: '<Textfield onChange={(data) => console.log(data)} />',
+      propPreview: '<TextArea onChange={(data) => console.log(data)} />',
       propCode: {onChange: (data) => console.log(data)},
       description: 'Function called when data changes'},
       {name: 'Disabled',
-          propPreview: '<Increment disabled />',
+          propPreview: '<TextArea disabled />',
           propCode: {disabled},
-          description: 'Makes button not able to be used.'},
+          description: 'Makes TextArea not able to be used.'},
       ]
     },
+    {
+      name: 'TextField',
+      id: 'textfield',
+      code: TextField,
+      codePreview: '<TextField/>',
+      req_props: null,
+      req_children: null,
+      use: 'This is where you can enter text.',
+      props: [
+        {name: 'Width - Menu Panel',
+        propPreview: '<TextField width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Value',
+        propPreview: '<TextField value="Enter cat names"/>',
+        propCode: {value: 'Enter cat names'},
+        description: 'Changes the text'},
+        {name: 'Label',
+            propPreview: '<TextField label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to componenet'},
+            {name: 'Vertical Label',
+            propPreview: '<TextField label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+        {name: 'Alert',
+        propPreview: '<TextField alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<TextField onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'Disabled',
+            propPreview: '<TextField disabled />',
+            propCode: {disabled},
+            description: 'Makes TextField not able to be used.'},
+        ]
+      },
     {
       name: 'ToggleButton',
       id: 'togglebutton',
@@ -337,7 +381,7 @@ export default function attempt() {
         propCode: {label: 'What: '},
         description: 'Adds label to button'},
         {name: 'Vertical Label',
-          propPreview: '<Textfield label="What: " vertical/>',
+          propPreview: '<TextField label="What: " vertical/>',
           propCode: {label: 'What: ', vertical},
           description: 'Adds label to component on top'},
         {name: 'Icon',
@@ -369,7 +413,7 @@ export default function attempt() {
       codePreview: '<UnitMenu units={["EM", "PT", "PX"]}/>',
       req_props: {units: ['EM', 'PT', 'PX']},
       req_children: null,
-      use: 'Textfield with attached menu. Current application is displaying and changing units of values',
+      use: 'TextField with attached menu. Current application is displaying and changing units of values',
       props: [
         {name: 'Units',
         propPreview: '<UnitMenu units={["EM", "PT", "PX"]}/>',
