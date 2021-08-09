@@ -2147,8 +2147,11 @@ export const DoenetML = React.memo(function DoenetML(props) {
           type: itemType.DOENETML,
         });
         props?.clickCallback?.({
-          instructionType: 'one item',
+          driveId: props.driveId,
           parentFolderId: props.item.parentFolderId,
+          itemId: props.item.itemId,
+          driveInstanceId: props.driveInstanceId,
+          instructionType: 'one item',
           type: itemType.DOENETML,
         });
       }

@@ -201,7 +201,7 @@ function Collection(props) {
           driveInstanceId: props.driveInstanceId,
           type: itemType.COLLECTION,
           instructionType: 'one item',
-          parentFolderId: itemId,
+          parentFolderId: props.item.parentFolderId,
         });
       }}
     >
@@ -341,7 +341,7 @@ function Collection(props) {
             props?.doubleClickCallback?.({
               driveId: props.driveId,
               parentFolderId: itemId,
-              itemId,
+              item: props.item,
               type: itemType.COLLECTION,
             });
           }
@@ -381,14 +381,12 @@ function Collection(props) {
         onDoubleClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          console.log(props.item);
           props?.doubleClickCallback?.({
             driveId: props.driveId,
             parentFolderId: props.item.parentFolderId,
             item: props.item,
             type: itemType.COLLECTION,
           });
-          // toggleOpen();
         }}
         onBlur={(e) => {
           //Don't clear on navigation changes
@@ -432,15 +430,19 @@ function Collection(props) {
   let draggableClassName = '';
   if (!props.isNav) {
     const onDragStartCallback = () => {
+      console.log(globalSelectedNodes.length === 0, !isSelected);
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
           instructionType: 'clear all',
-          type: itemType.FOLDER,
+          type: itemType.COLLECTION,
         });
         props?.clickCallback?.({
+          driveId: props.driveId,
+          parentFolderId: props.item.parentFolderId,
+          itemId,
+          driveInstanceId: props.driveInstanceId,
           instructionType: 'one item',
-          parentFolderId: props.parentFolderId,
-          type: itemType.FOLDER,
+          type: itemType.COLLECTION,
         });
       }
     };
