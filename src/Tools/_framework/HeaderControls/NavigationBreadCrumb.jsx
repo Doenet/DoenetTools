@@ -8,7 +8,9 @@ export default function NavigationBreadCrumb() {
 
   return (
     <Suspense fallback={<div>loading Drive...</div>}>
-      <div style={{ margin: '10px 20px', maxWidth: '850px' }}>
+      <div style={{ 
+        margin: '-9px 0px 0px -25px', 
+        maxWidth: '850px' }}>
         <BreadCrumb path={path} />
       </div>
     </Suspense>
