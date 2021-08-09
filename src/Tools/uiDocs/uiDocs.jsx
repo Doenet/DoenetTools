@@ -122,7 +122,7 @@ export default function attempt() {
       req_props: null,
       req_children: [React.createElement(ActionButton), React.createElement(ActionButton), React.createElement(ActionButton)],
       use: 'This groups related action buttons together.',
-    //   props: [
+      props: [
     //     // {name: 'Width - Menu Panel',
     //     // propPreview: '<ActionButtonGroup width="menu" />',
     //     // propCode: {width: 'menu'},
@@ -131,7 +131,11 @@ export default function attempt() {
     //     // propPreview: '<ActionButtonGroup width="500px" />',
     //     // propCode: {width: '500px'},
     //     // description: 'Sets width to custom dimensions'},
-    //   ]
+        {name: 'Vertical',
+        propPreview: '<ActionButtonGroup vertical />',
+        propCode: {vertical},
+        description: 'Aligns buttons vertically'},
+      ]
     },
     {
       name: 'Button',
