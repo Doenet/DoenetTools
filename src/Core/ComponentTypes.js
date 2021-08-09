@@ -77,6 +77,7 @@ import Slider from './components/Slider';
 import Markers from './components/Markers';
 import Constraints from './components/Constraints';
 import ConstrainToGrid from './components/ConstrainToGrid';
+import ConstrainToGraph from './components/ConstrainToGraph';
 import AttractToGrid from './components/AttractToGrid';
 import ConstrainTo from './components/ConstrainTo';
 import AttractTo from './components/AttractTo';
@@ -230,6 +231,7 @@ const componentTypeArray = [
   Map, Sources,
   Constraints,
   ConstrainToGrid,
+  ConstrainToGraph,
   AttractToGrid,
   ConstrainTo,
   AttractTo,

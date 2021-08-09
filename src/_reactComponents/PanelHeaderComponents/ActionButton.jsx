@@ -77,8 +77,17 @@ export default function ActionButton(props) {
   if (props.num === 'first') {
     actionButton.borderRadius = '5px 0px 0px 5px'
   }
+  
   if (props.num === 'last') {
     actionButton.borderRadius = '0px 5px 5px 0px'
+  }
+
+  if (props.num === 'first_vert') {
+    actionButton.borderRadius = '5px 5px 0px 0px'
+  }
+  
+  if (props.num === 'last_vert') {
+    actionButton.borderRadius = '0px 0px 5px 5px'
   }
   
   if (props.alert) {

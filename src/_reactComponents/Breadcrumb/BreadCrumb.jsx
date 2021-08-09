@@ -13,6 +13,69 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
+import styled from "styled-components";
+
+const Breadcrumb = styled.ul`
+  list-style: none;
+  overflow: hidden;
+  
+ ;
+`
+
+const BreadcrumbItem = styled.li`
+  float: left;
+  &:last-of-type span{
+    border-radius: 0px 15px 15px 0px;
+    padding: 0px 25px 0px 45px;
+    background: hsl(209,54%,82%);
+    color: black;
+  }
+  &:first-of-type span{
+    padding: 0px 0px 0px 30px;
+  }
+ ;
+`
+
+const BreadcrumbSpan = styled.span`
+  padding: 0px 0px 0px 45px;
+  position: relative; 
+  display: block;
+  float: left;
+  color: white;
+  background: #1A5A99;
+  border-radius: 15px 0px 0px 15px;
+  cursor: pointer;
+  &::after {
+    content: " "; 
+    display: block; 
+    width: 0; 
+    height: 0;
+    border-top: 50px solid transparent;
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid #1A5A99;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px; 
+    left: 100%;
+    z-index: 2; 
+  }
+  &::before {
+    content: " "; 
+    display: block; 
+    width: 0; 
+    height: 0;
+    border-top: 50px solid transparent;       
+    border-bottom: 50px solid transparent;
+    border-left: 30px solid white;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px; 
+    margin-left: 1px;
+    left: 100%;
+    z-index: 1; 
+  }
+ ;
+`
 
 const breadcrumbItemAtomFamily = atomFamily({
   key: 'breadcrumbItemAtomFamily',
@@ -84,20 +147,23 @@ export default function BreadCrumb({ path }) {
   }
 
   const returnToCourseChooser = (
-    <span
-      role="button"
-      tabIndex="0"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+    <BreadcrumbItem>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
+          }
+        }}
+        onClick={() => {
           setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
-        }
-      }}
-      onClick={() => {
-        setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
-      }}
-    >
-      <FontAwesomeIcon icon={faTh} />
-    </span>
+        }}
+      >
+        <FontAwesomeIcon icon={faTh} />
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+    
   );
 
   const returnToDashboard = (
@@ -122,26 +188,29 @@ export default function BreadCrumb({ path }) {
   );
 
   const children = [...items].reverse().map((item) => (
-    <span
-      role="button"
-      tabIndex="0"
-      key={item.folderId}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+    <BreadcrumbItem>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        key={item.folderId}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            goToFolder(driveId, item.folderId);
+          }
+        }}
+        onClick={() => {
           goToFolder(driveId, item.folderId);
-        }
-      }}
-      onClick={() => {
-        goToFolder(driveId, item.folderId);
-      }}
-    >
-      {item.label} /{' '}
-    </span>
+        }}
+      >
+        {item.label} 
+        {/* /{' '} */}
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
   ));
 
   return (
-    <>
-      {returnToCourseChooser} {' / '} {returnToDashboard} {children}
-    </>
+    <Breadcrumb>
+      {returnToCourseChooser} {children}
+    </Breadcrumb>
   );
 }

@@ -3,6 +3,7 @@ import Template from './Template';
 export default class Paginator extends Template {
   static componentType = "paginator";
   static renderedDefault = true;
+  static includeBlankStringChildren = false;
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -133,10 +134,16 @@ export default class Paginator extends Template {
         state: { pageNumber: pInd + 1 }
       })
 
+      let placeholderAttributes = {};
+      if(section.attributes) {
+        placeholderAttributes = section.attributes;
+      }
+
       replacements.push({
         componentType: "paginatorPage",
         children: [{
           componentType: section.componentType,
+          attributes: placeholderAttributes,
           state: {
             hide: true,
             aggregateScores: component.stateValues.preserveScores,
