@@ -12,7 +12,7 @@ import Textinput from "../Textinput";
 import Switch from "../Switch";
 // import GlobalFont from '../../_utils/GlobalFont';
 import axios from "axios";
-import TextField from '../../../_reactComponents/PanelHeaderComponents/TextField';
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 
 let SectionHeader = styled.h2`
   margin-top: 2em;
@@ -168,7 +168,7 @@ export default function DoenetProfile(props) {
                       }}
                   ></Textinput> */}
                   
-                  <TextField label="Screen Name" 
+                  <Textfield label="Screen Name" 
                   style={{ width: '300px' }}
                   id="screen name"
                   value={profile.screenName} 
@@ -201,7 +201,7 @@ export default function DoenetProfile(props) {
                      {profile.firstName} 
                    </Textinput> */}
 
-                     <TextField label="First Name" 
+                     <Textfield label="First Name" 
                      style={{ width: '300px' }}
                   id="firstName"
                   value = {profile.firstName}
@@ -235,7 +235,7 @@ export default function DoenetProfile(props) {
                      {profile.lastName} 
                   </Textinput>  */}
 
-                  <TextField label="Last Name" 
+                  <Textfield label="Last Name" 
                   style={{ width: '300px' }}
                   id="lastName"
                   value = {profile.lastName}
