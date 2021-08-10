@@ -10,9 +10,9 @@ export default function Dashboard(props) {
 
   return (
     <div style={props?.style ?? {}}>
-      <h1>Welcome to the Dashbaord</h1>
+      <h1>Welcome!</h1>
       <Button
-        value="Drive"
+        value="Content"
         onClick={() => {
           setPageToolView((was) => ({ ...was, tool: 'navigation' }));
         }}
@@ -28,7 +28,16 @@ export default function Dashboard(props) {
           })
         }
       />
-      <Button value="GradeBook" onClick={() => {}} />
+      <Button value="GradeBook" 
+        onClick={() => 
+        setPageToolView({
+          page: 'course',
+          tool: 'gradebook',
+          view: '',
+          params: { driveId },
+          })
+        } 
+      />
     </div>
   );
 }

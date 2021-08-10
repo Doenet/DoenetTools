@@ -210,8 +210,8 @@ export default function BreadCrumb({ path }) {
 
   return (
     <Breadcrumb>
-      {/* {returnToCourseChooser} {returnToDashboard} {children} */}
-      {returnToCourseChooser} {children} 
+      {returnToCourseChooser} {returnToDashboard} {children}
+      {/* {returnToCourseChooser} {children}  */}
     </Breadcrumb>
   );
 }
