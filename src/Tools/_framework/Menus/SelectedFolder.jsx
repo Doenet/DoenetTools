@@ -6,13 +6,13 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { selector, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
-import {
-  folderDictionaryFilterSelector,
-  globalSelectedNodesAtom,
-} from '../../../_reactComponents/Drive/NewDrive';
+// import {
+//   folderDictionaryFilterSelector,
+//   globalSelectedNodesAtom,
+// } from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets from '../../../_reactComponents/Sockets';
-import { pageToolViewAtom } from '../NewToolRoot';
+// import { pageToolViewAtom } from '../NewToolRoot';
 import { selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
@@ -36,6 +36,11 @@ export default function SelectedFolder() {
       newLabel: newLabel,
     });
   };
+
+  
+  if (!item){
+    return null;
+  }
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">
