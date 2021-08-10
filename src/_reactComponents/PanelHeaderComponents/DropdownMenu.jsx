@@ -56,12 +56,13 @@ const DropdownMenu = (props) => {
         }),
         control: (provided, state) => {
 
-            console.log(">>> state", state)
-            console.log(">>> provided", provided)
+            // console.log(">>> state", state)
+            // console.log(">>> provided", provided)
 
             return ({
                 // none of react-select's styles are passed to <Control />
                 alignItems: "center",
+                fontFamily: "Open Sans",
                 backgroundColor: "hsl(0, 0%, 100%)",
                 cursor: "default",
                 display: "flex",
@@ -93,17 +94,22 @@ const DropdownMenu = (props) => {
         //console.log("value", value, "label", label)
         return {value, label}
     })
-    console.log(">>>", options)
+    // console.log(">>>", options)
+    var width = props.width;
+    if (props.width == 'menu') {
+        width = '235px'
+    }
+
     return (
         <Select
         //value={selectedOption}
         styles={customStyles}
-        width = {props.width}
+        width = {width}
         isSearchable = {false}
         autoFocus = {false}
-        onChange={props.callBack}
+        onChange={props.onChange}
         options={options}
-        placeholder = {props.title}
+        placeholder = {props.defaultValue}
         closeMenuOnSelect = {false}
         isMulti = {props.isMulti ? props.isMulti : false}
       />

@@ -22,6 +22,8 @@ import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/Vertic
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
+import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
+
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -206,6 +208,37 @@ export default function attempt() {
         // propPreview: '<ActionButtonGroup width="500px" />',
         // propCode: {width: '500px'},
         // description: 'Sets width to custom dimensions'},
+      ]
+    },
+    {
+      name: 'DropdownMenu',
+      id: 'dropdownmenu',
+      code: DropdownMenu,
+      codePreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]}/>',
+      req_props: {items: [[1, "one"], [2, "two"]]},
+      req_children: null,
+      use: 'This is used for selecting one option out of multiple',
+      props: [
+        {name: 'Items',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"], [3, "three"]]} />',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]]},
+        description: 'Sets options'},
+        {name: 'defaultValue',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} defaultValue="Choose your favorite number"/>',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]], defaultValue: "Choose your favorite number"},
+        description: 'Sets default text'},
+        {name: 'Width - Menu Panel',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} width="menu" />',
+        propCode: {items: [[1, "one"], [2, "two"]], width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Width - Custom',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} width="500px" />',
+        propCode: {items: [[1, "one"], [2, "two"]], width: '500px'},
+        description: 'Sets width to custom dimensions'},
+        {name: 'onChange',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} onChange={(({ value }) => console.log(">>>", value)} />',
+        propCode: {items: [[1, "one"], [2, "two"]], onChange: ({ value }) => console.log(">>>", value)},
+        description: 'Function called when data changes'},
       ]
     },
     {
