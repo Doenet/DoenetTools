@@ -26,6 +26,7 @@
     "@blueprintjs/core": "^4.0.0-alpha.0",
     "@blueprintjs/datetime": "^4.0.0-alpha.0",
     "@codemirror/basic-setup": "^0.18.2",
+    "@codemirror/commands": "^0.18.3",
     "@codemirror/gutter": "^0.18.4",
     "@codemirror/highlight": "^0.18.4",
     "@codemirror/lang-xml": "^0.18.0",
@@ -48,7 +49,6 @@
     "hyperformula": "^0.6.2",
     "js-cookie": "^2.2.1",
     "lezer": "^0.13.4",
-    "lezer-generator": "^0.13.3",
     "lezer-xml": "^0.13.4",
     "lodash.debounce": "^4.0.8",
     "lorem-ipsum": "^2.0.3",
@@ -94,6 +94,7 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "http-proxy": "^1.18.1",
+    "lezer-generator": "^0.13.3",
     "prettier": "^2.3.2",
     "snowpack": "^3.5.8",
     "snowpack-plugin-raw-file-loader": "^1.0.9"

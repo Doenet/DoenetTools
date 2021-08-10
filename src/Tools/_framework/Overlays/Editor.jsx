@@ -464,13 +464,30 @@ function TextEditor(props){
     clearSaveTimeouts()
   }
 
+
+  //silly hack to only load the first two updates of the editorDoenetML into the text editor
+  //why the first two? good question.
+  //changing textValue Manually will still work of course
+
+  //use .slice() to get a copy of the string, will make a reference (and refresh on every keypress) otherwise
+  // let [textValue,setTextValue] = useState(editorDoenetML.slice()); 
+  // let hasLoaded= useRef(0);
+
+  // useEffect(() => {
+  //   if(hasLoaded.current < 2){
+  //     setTextValue(editorDoenetML);
+  //     hasLoaded.current += 1;
+  //   } 
+  // },[editorDoenetML])
+
+
   const editorInit = useRecoilValue(editorInitAtom);
+
   if (!editorInit){return null;}
 
   return <>
     <CodeMirror
       setInternalValue={internalValue} 
-      // readOnly={true}
       onBeforeChange={(value) => {
         if (activeVersionId === "") { //No timers when active version history
           setEditorDoenetML(value);
