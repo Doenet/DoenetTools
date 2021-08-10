@@ -44,7 +44,7 @@ export default class BooleanInput extends DoenetRenderer {
 
     this.updateValidationState();
 
-    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+    let disabled = this.doenetSvData.disabled;
 
     const inputKey = this.componentName + '_input';
 
@@ -66,10 +66,15 @@ export default class BooleanInput extends DoenetRenderer {
     if (this.doenetSvData.includeCheckWork) {
 
       if (this.validationState === "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        if (disabled) {
+          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        } else {
+          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        }
         checkWorkButton = <button
           id={this.componentName + '_submit'}
           tabIndex="0"
+          disabled={disabled}
           ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           style={checkWorkStyle}
           onClick={this.actions.submitAnswer}
@@ -127,14 +132,14 @@ export default class BooleanInput extends DoenetRenderer {
         }
       }
 
-      if(this.doenetSvData.numberOfAttemptsLeft < 0) {
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
         checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (no attempts remaining)
-        </span>
-      </>
-      } else if(this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+          {checkWorkButton}
+          <span>
+            (no attempts remaining)
+          </span>
+        </>
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
 
         checkWorkButton = <>
           {checkWorkButton}

@@ -12,8 +12,6 @@ export default class IntComma extends Text {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.originalValue = stateVariableDefinitions.value;
-
     // rename value to originalValue
     renameStateVariable({
       stateVariableDefinitions,
