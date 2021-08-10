@@ -95,8 +95,6 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
                 const disabledExtensions = [
                     EditorView.editable.of(false),
                     lineNumbers(),
-                    doenet(),
-                    defaultHighlightStyle.extension
                 ]
                 view.current.dispatch({
                     effects: StateEffect.reconfigure.of(disabledExtensions)
