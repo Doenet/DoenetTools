@@ -167,25 +167,25 @@ export default function BreadCrumb({ path }) {
   );
 
   const returnToDashboard = (
-    <span
-      role="button"
-      tabIndex="0"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          setPageToolView((was) => ({
-            ...was,
-            tool: 'dashboard',
-            view: '',
-          }));
-        }
-      }}
-      onClick={() => {
-        setPageToolView((was) => ({ ...was, tool: 'dashboard', view: '' }));
-      }}
-    >
-      {'Dashboard / '}
-    </span>
+    <BreadcrumbItem>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setPageToolView((was) => ({ ...was, tool: 'dashboard', view: '' }));
+          }
+        }}
+        onClick={() => {
+          setPageToolView((was) => ({ ...was, tool: 'dashboard', view: '' }));
+        }}
+      >
+        Cover Page
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+    
   );
+
 
   const children = [...items].reverse().map((item) => (
     <BreadcrumbItem>
