@@ -19,6 +19,9 @@ const editorConfigStateAtom = atom({
 
 let view;
 export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
+    if(readOnly === undefined){
+        readOnly = false;
+    }
 
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);

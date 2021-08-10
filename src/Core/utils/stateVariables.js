@@ -53,23 +53,25 @@ export function renameStateVariable({ stateVariableDefinitions, oldName, newName
 
   let originalInverseDefinition = stateVarDef.inverseDefinition;
 
-  stateVarDef.inverseDefinition = function (args) {
-    let desiredStateVariableValues = args.desiredStateVariableValues;
-    desiredStateVariableValues[oldName] = desiredStateVariableValues[newName];
-    delete desiredStateVariableValues[newName];
+  if (originalInverseDefinition) {
+    stateVarDef.inverseDefinition = function (args) {
+      let desiredStateVariableValues = args.desiredStateVariableValues;
+      desiredStateVariableValues[oldName] = desiredStateVariableValues[newName];
+      delete desiredStateVariableValues[newName];
 
-    let results = originalInverseDefinition(args);
+      let results = originalInverseDefinition(args);
 
-    if (results.success) {
-      for (let instruction of results.instructions) {
-        if (instruction.setStateVariable === oldName) {
-          instruction.setStateVariable = newName
+      if (results.success) {
+        for (let instruction of results.instructions) {
+          if (instruction.setStateVariable === oldName) {
+            instruction.setStateVariable = newName
+          }
         }
       }
+
+      return results;
+
     }
-
-    return results;
-
   }
 
 }

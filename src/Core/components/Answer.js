@@ -1,5 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import { deepCompare } from '../utils/deepFunctions';
+import { renameStateVariable } from '../utils/stateVariables';
 // import sha1 from 'crypto-js/sha1';
 // import Base64 from 'crypto-js/enc-base64';
 
@@ -141,6 +142,13 @@ export default class Answer extends InlineComponent {
     }
     attributes.type = {
       createPrimitiveOfType: "string"
+    }
+
+    attributes.disableAfterCorrect = {
+      createComponentOfType: "boolean",
+      createStateVariable: "disableAfterCorrect",
+      defaultValue: false,
+      public: true,
     }
 
     return attributes;
@@ -292,6 +300,13 @@ export default class Answer extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    // rename disabled to disabledOriginal
+    renameStateVariable({
+      stateVariableDefinitions,
+      oldName: "disabled",
+      newName: "disabledOriginal"
+    });
 
     stateVariableDefinitions.haveAwardThatRequiresInput = {
       returnDependencies: () => ({
@@ -1240,6 +1255,72 @@ export default class Answer extends InlineComponent {
               - dependencyValues.nSubmissions
           }
         }
+      }
+    }
+
+    stateVariableDefinitions.hasBeenCorrect = {
+      defaultValue: false,
+      returnDependencies: () => ({
+        creditAchieved: {
+          dependencyType: "stateVariable",
+          variableName: "creditAchieved"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.creditAchieved === 1) {
+          return {
+            newValues: { hasBeenCorrect: true },
+            makeEssential: { hasBeenCorrect: true }
+          }
+        }
+
+        return {
+          useEssentialOrDefaultValue: {
+            hasBeenCorrect: { variablesToCheck: ["hasBeenCorrect"] }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.disabled = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["disableAfterCorrect"],
+      returnDependencies({ stateValues }) {
+
+        let dependencies = {
+          disabledOriginal: {
+            dependencyType: "stateVariable",
+            variableName: "disabledOriginal",
+          },
+          numberOfAttemptsLeft: {
+            dependencyType: "stateVariable",
+            variableName: "numberOfAttemptsLeft",
+          },
+          disableAfterCorrect: {
+            dependencyType: "stateVariable",
+            variableName: "disableAfterCorrect",
+          },
+        }
+
+        if (stateValues.disableAfterCorrect) {
+          dependencies.hasBeenCorrect = {
+            dependencyType: "stateVariable",
+            variableName: "hasBeenCorrect",
+          }
+        }
+
+        return dependencies;
+
+      },
+      definition({ dependencyValues }) {
+
+        let disabled = dependencyValues.disabledOriginal
+          || dependencyValues.numberOfAttemptsLeft < 1
+          || (dependencyValues.disableAfterCorrect && dependencyValues.hasBeenCorrect);
+
+        return { newValues: { disabled } }
       }
     }
 

@@ -483,16 +483,11 @@ function TextEditor(props){
 
   const editorInit = useRecoilValue(editorInitAtom);
 
-  
-  let [isRead, setIsRead] = useState(false);
-
   if (!editorInit){return null;}
 
   return <>
-    <Button onClick={() => setIsRead(!isRead)} />
     <CodeMirror
       setInternalValue={internalValue} 
-      readOnly={isRead}
       onBeforeChange={(value) => {
         if (activeVersionId === "") { //No timers when active version history
           setEditorDoenetML(value);
