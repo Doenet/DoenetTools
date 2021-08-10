@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { basicSetup } from '@codemirror/basic-setup';
 import { EditorState, Transaction, StateEffect } from '@codemirror/state';
-import { selectLine, deleteLine } from '@codemirror/commands';
+import { selectLine, deleteLine, cursorLineUp } from '@codemirror/commands';
 import { EditorView, keymap } from '@codemirror/view';
 import { styleTags, defaultHighlightStyle, tags as t } from "@codemirror/highlight";
 import { lineNumbers } from "@codemirror/gutter";
@@ -41,6 +41,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
         EditorView.lineWrapping,
         tabExtension,
         cutExtension,
+        copyExtension,
         EditorState.changeFilter.of(changeFunc)
     ],[changeFunc]); 
 
@@ -74,7 +75,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
 
     useEffect(() => {
         if(view.current !== null && parent.current !== null){
-            console.log(">>>changing setInternalValue to",setInternalValue)
+            // console.log(">>>changing setInternalValue to",setInternalValue)
             let tr = view.current.state.update({changes: {from : 0, to: view.current.state.doc.length, insert: setInternalValue}});
             view.current.dispatch(tr);
         }
@@ -141,7 +142,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
     )
 }
 
-//tab = 2 spaces
+//tabs = 2 spaces
 const tab = "  ";
 const tabCommand = ({state,dispatch}) => {
     dispatch(state.update(state.replaceSelection(tab), {scrollIntoView: true, annotations: Transaction.userEvent.of("input")}));
@@ -153,12 +154,34 @@ const tabExtension = keymap.of([{
     run : tabCommand
 }])
 
-const cutCommand = ({state,dispatch}) => {
-    //if the selection isn't empty
+
+const copyCommand = ({state,dispatch}) => {
     if(state.selection.main.empty){
         selectLine({state: state, dispatch: dispatch});
         document.execCommand("copy");
-        deleteLine(view.current);
+    } else {
+        document.execCommand("copy");
+    }
+    return true;
+}
+
+const copyExtension = keymap.of([{
+    key : "Mod-x",
+    run : copyCommand 
+}])
+
+
+const cutCommand = ({state,dispatch}) => {
+    //if the selection is empty
+    if(state.selection.main.empty){
+        selectLine({state: state, dispatch: dispatch});
+        document.execCommand("copy");
+        if(state.doc.lineAt(state.selection.main.from).number !== state.doc.lines){
+            deleteLine(view.current);
+            cursorLineUp(view.current);
+        } else {
+            deleteLine(view.current);
+        }
     } else {
         document.execCommand("copy");
         dispatch(state.update(state.replaceSelection(""), {scrollIntoView: true, annotations: Transaction.userEvent.of("input")}));
