@@ -70,7 +70,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
 
     this.updateValidationState();
 
-    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+    let disabled = this.doenetSvData.disabled;
 
     if (this.doenetSvData.inline) {
 
@@ -92,9 +92,14 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       if (this.doenetSvData.includeCheckWork) {
 
         if (this.validationState === "unvalidated") {
-          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+          if (disabled) {
+            checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+          } else {
+            checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+          }
           checkWorkButton = <button
             id={this.componentName + '_submit'}
+            disabled={disabled}
             tabIndex="0"
             ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
             style={checkWorkStyle}
@@ -153,14 +158,14 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
           }
         }
 
-        if(this.doenetSvData.numberOfAttemptsLeft < 0) {
+        if (this.doenetSvData.numberOfAttemptsLeft < 0) {
           checkWorkButton = <>
-          {checkWorkButton}
-          <span>
-            (no attempts remaining)
-          </span>
-        </>
-        } else if(this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+            {checkWorkButton}
+            <span>
+              (no attempts remaining)
+            </span>
+          </>
+        } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
 
           checkWorkButton = <>
             {checkWorkButton}
@@ -227,10 +232,13 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
           if (!this.doenetSvData.showCorrectness) {
             checkWorkText = "Submit Response";
           }
-
+          if (disabled) {
+            checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+          }
           checkworkComponent = (
             <button id={this.componentName + "_submit"}
               tabIndex="0"
+              disabled={disabled}
               style={checkWorkStyle}
               onClick={this.actions.submitAnswer}
               onKeyPress={(e) => {

@@ -259,7 +259,7 @@ export default class MathInput extends DoenetRenderer {
 
     this.updateValidationState();
 
-    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+    let disabled = this.doenetSvData.disabled;
 
     // const inputKey = this.componentName + '_input';
 
@@ -304,10 +304,15 @@ export default class MathInput extends DoenetRenderer {
     if (this.doenetSvData.includeCheckWork) {
 
       if (this.validationState === "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        if (disabled) {
+          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        } else {
+          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        }
         checkWorkButton = <button
           id={this.componentName + '_submit'}
           tabIndex="0"
+          disabled={disabled}
           ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
           style={checkWorkStyle}
           onClick={this.actions.submitAnswer}
@@ -604,7 +609,7 @@ function wrapWordWithVar(string) {
     string = string.substring(endMatch);
     match = string.match(regex);
   }
-  newString +=  wrapWordWithVarSub(string);
+  newString += wrapWordWithVarSub(string);
 
   return newString;
 

@@ -285,18 +285,6 @@ export default class Choiceinput extends Input {
     }
 
     stateVariableDefinitions.choiceTexts = {
-      additionalStateVariablesDefined: [{
-        variableName: "choicePreselects",
-        isArray: true,
-      }, {
-        variableName: "choicesDisabled",
-        isArray: true,
-        forRenderer: true,
-      }, {
-        variableName: "choicesHidden",
-        isArray: true,
-        forRenderer: true,
-      }],
       public: true,
       componentType: "text",
       isArray: true,
@@ -320,7 +308,7 @@ export default class Choiceinput extends Input {
           choiceChildren: {
             dependencyType: "child",
             childGroups: ["choices"],
-            variableNames: ["text", "preSelect", "disabled", "hidden"]
+            variableNames: ["text"]
           },
         };
 
@@ -334,8 +322,127 @@ export default class Choiceinput extends Input {
         return {
           newValues: {
             choiceTexts: choiceChildrenOrdered.map(x => x.stateValues.text),
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.choicePreselects = {
+      isArray: true,
+      returnArraySizeDependencies: () => ({
+        numberChoices: {
+          dependencyType: "stateVariable",
+          variableName: "numberChoices",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberChoices];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          choiceOrder: {
+            dependencyType: "stateVariable",
+            variableName: "choiceOrder"
+          },
+          choiceChildren: {
+            dependencyType: "child",
+            childGroups: ["choices"],
+            variableNames: ["preSelect"]
+          },
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(
+          i => globalDependencyValues.choiceChildren[i - 1]
+        );
+
+        return {
+          newValues: {
             choicePreselects: choiceChildrenOrdered.map(x => x.stateValues.preSelect),
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.choicesDisabled = {
+      isArray: true,
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        numberChoices: {
+          dependencyType: "stateVariable",
+          variableName: "numberChoices",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberChoices];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          choiceOrder: {
+            dependencyType: "stateVariable",
+            variableName: "choiceOrder"
+          },
+          choiceChildren: {
+            dependencyType: "child",
+            childGroups: ["choices"],
+            variableNames: ["disabled"]
+          },
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(
+          i => globalDependencyValues.choiceChildren[i - 1]
+        );
+
+        return {
+          newValues: {
             choicesDisabled: choiceChildrenOrdered.map(x => x.stateValues.disabled),
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.choicesHidden = {
+      isArray: true,
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        numberChoices: {
+          dependencyType: "stateVariable",
+          variableName: "numberChoices",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.numberChoices];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          choiceOrder: {
+            dependencyType: "stateVariable",
+            variableName: "choiceOrder"
+          },
+          choiceChildren: {
+            dependencyType: "child",
+            childGroups: ["choices"],
+            variableNames: ["hidden"]
+          },
+        };
+
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        let choiceChildrenOrdered = globalDependencyValues.choiceOrder.map(
+          i => globalDependencyValues.choiceChildren[i - 1]
+        );
+
+        return {
+          newValues: {
             choicesHidden: choiceChildrenOrdered.map(x => x.stateValues.hidden),
           }
         }
