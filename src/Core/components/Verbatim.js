@@ -6,4 +6,13 @@ export class Pre extends BlockComponent {
 
   static includeBlankStringChildren = true;
 
+  static returnChildGroups() {
+
+    return [{
+      group: "inlines",
+      componentTypes: ["_inline"]
+    }]
+
+  }
+
 }
