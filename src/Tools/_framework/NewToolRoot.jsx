@@ -126,6 +126,7 @@ export default function ToolRoot(){
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
  
@@ -307,7 +308,7 @@ let navigationObj = {
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: ["NavigationBreadCrumb"],
+      headerControls: ["DashboardBreadCrumb"],
       headerControlsPositions: ["Left"],
       onLeave:"DashboardLeave",
     },
