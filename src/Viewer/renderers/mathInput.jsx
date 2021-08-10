@@ -52,7 +52,17 @@ export default class MathInput extends DoenetRenderer {
     // this.handleDragExit = this.handleDragExit.bind(this);
 
     this.mathExpression = this.doenetSvData.valueForDisplay;
-    this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+
+    if (this.doenetSvData.rawRendererValue !== null) {
+      this.latexValue = this.doenetSvData.rawRendererValue
+    } else {
+      this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      })
+    }
+    this.latexValueSetInRender = true;
 
     // this.state = {isDragging: false, previewLeftOffset: this.doenetSvData.size * 10 + 80, previewTopOffset: 0, clickXOffset: 0, clickYOffset: 0};
     // this.inputRef = React.createRef();
@@ -84,8 +94,13 @@ export default class MathInput extends DoenetRenderer {
 
     text = substituteUnicodeInLatexString(text);
 
+    // replace ^25 with ^{2}5, since mathQuill uses standard latex conventions
+    // unlike math-expression's latex parser
+    text = text.replace(/\^(\d)/g, '^{$1}');
+
     let fromLatex = getFromLatex({
       functionSymbols: this.doenetSvData.functionSymbols,
+      splitSymbols: this.doenetSvData.splitSymbols,
     });
 
     try {
@@ -112,17 +127,27 @@ export default class MathInput extends DoenetRenderer {
     let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
 
+    let rawValueChanged = text !== this.latexValue || this.latexValueSetFromValueForDisplay;
+    let transientForRaw = !this.latexValueSetInRender;
+
     let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized)
       || (!this.latexValueSetInRender && text !== this.latexValue);
 
     // Note: must set this.latexValue before calling updateImmediateValue action
     this.latexValue = text;
     this.latexValueSetInRender = false;
+    this.latexValueSetFromValueForDisplay = false;
 
     if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
-        mathExpression: newMathExpression
+        mathExpression: newMathExpression,
+        rawRendererValue: this.latexValue,
+      });
+    } else if (rawValueChanged) {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: transientForRaw
       });
     }
 
@@ -132,7 +157,7 @@ export default class MathInput extends DoenetRenderer {
   updateValidationState() {
 
     this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated) {
+    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
       if (this.doenetSvData.creditAchieved === 1) {
         this.validationState = "correct";
       } else if (this.doenetSvData.creditAchieved === 0) {
@@ -173,6 +198,11 @@ export default class MathInput extends DoenetRenderer {
     // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
+    } else {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      })
     }
     if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
       this.actions.submitAnswer();
@@ -204,6 +234,11 @@ export default class MathInput extends DoenetRenderer {
     // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
+    } else {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      })
     }
     this.forceUpdate();
 
@@ -224,6 +259,8 @@ export default class MathInput extends DoenetRenderer {
 
     this.updateValidationState();
 
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+
     // const inputKey = this.componentName + '_input';
 
     let surroundingBorderColor = "#efefef";
@@ -242,6 +279,7 @@ export default class MathInput extends DoenetRenderer {
         this.latexValue = "";
       }
       this.latexValueSetInRender = true;
+      this.latexValueSetFromValueForDisplay = true;
       this.valueToRevertTo = this.doenetSvData.value;
       this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
       // this.latexValueToRevertTo = this.latexValue;
@@ -326,6 +364,24 @@ export default class MathInput extends DoenetRenderer {
 
         }
       }
+
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkWorkButton = <>
+          {checkWorkButton}
+          <span>
+            (no attempts remaining)
+          </span>
+        </>
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+
+        checkWorkButton = <>
+          {checkWorkButton}
+          <span>
+            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
+          </span>
+        </>
+      }
+
     }
 
     // TODO: remove inf and sup from the autoOperatorNames so that
@@ -344,7 +400,7 @@ export default class MathInput extends DoenetRenderer {
         id={inputKey}
         ref = {this.inputRef}
         value={this.textValue}
-        disabled={this.doenetSvData.disabled}
+        disabled={disabled}
         onChange={this.onChangeHandler}
         onKeyPress={this.handleKeyPress}
         onKeyDown={this.handleKeyDown}
@@ -455,10 +511,16 @@ var appliedFunctionSymbols = [
   'count', 'mod'
 ];
 
-function getFromLatex({ functionSymbols }) {
-  return x => me.fromAst((new me.converters.latexToAstObj({
-    appliedFunctionSymbols, functionSymbols
-  })).convert(x))
+function getFromLatex({ functionSymbols, splitSymbols }) {
+  if (splitSymbols) {
+    return x => me.fromAst((new me.converters.latexToAstObj({
+      appliedFunctionSymbols, functionSymbols, splitSymbols
+    })).convert(wrapWordIncludingNumberWithVar(x)))
+  } else {
+    return x => me.fromAst((new me.converters.latexToAstObj({
+      appliedFunctionSymbols, functionSymbols, splitSymbols
+    })).convert(wrapWordWithVar(x)))
+  }
 }
 
 
@@ -522,5 +584,106 @@ function substituteUnicodeInLatexString(latexString) {
   }
 
   return latexString;
+
+}
+
+
+function wrapWordWithVar(string) {
+
+  // wrap words that aren't already in a \var with a \var
+
+  let newString = "";
+
+  let regex = /\\var\s*{[^{}]*}/
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString +=  wrapWordWithVarSub(string);
+
+  return newString;
+
+}
+
+function wrapWordWithVarSub(string) {
+
+  let newString = "";
+
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      // start with backslash, so skip
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+
+    match = string.match(regex);
+  }
+
+  newString += string;
+
+  return newString;
+
+}
+
+function wrapWordIncludingNumberWithVar(string) {
+
+  let newString = "";
+
+  let regex = /\\var\s*{[^{}]*}/
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString += wrapWordIncludingNumberWithVarSub(string);
+
+  return newString;
+
+}
+
+function wrapWordIncludingNumberWithVarSub(string) {
+
+  let newString = "";
+
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      // start with backslash, so skip
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+
+    match = string.match(regex);
+  }
+
+  newString += string;
+
+  return newString;
 
 }

@@ -658,4 +658,351 @@ describe('Feedback Tag Tests', function () {
     })
   });
 
+  it('feedback updated with tname', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="mi" />
+  <answer name="ans">
+    <award>
+      <when>$mi = x</when>
+    </award>
+  </answer>
+  
+  <feedback condition="$mi=y" updateWithTname="ans" name="fback"><p>You typed y!</p></feedback>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/mi textarea').type("y{enter}", { force: true })
+    cy.get("#\\/fback").should('not.exist')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback").should('have.text', 'You typed y!');
+
+    cy.get('#\\/mi textarea').type("{end}{backspace}x{enter}", { force: true })
+    cy.get("#\\/fback").should('have.text', 'You typed y!');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get("#\\/fback").should('not.exist')
+
+  });
+
+  it('feedback based on booleans, updated with tname', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <mathinput name="m1" />
+  <mathinput name="m2" />
+  <boolean name="got1">$m1 = x</boolean>
+  <boolean name="got2">$m2 = y</boolean>
+  <answer name="ans">
+    <award>
+      <when>$got1 and $got2</when>
+    </award>
+    <considerAsResponses>$m1 $m2</considerAsResponses>
+  </answer>
+
+  <p>Submitted responses: <copy prop="submittedResponses" tname="ans" assignNames="r1 r2" /></p>
+  
+  <subsection>
+    <title>Desired feedback behavior</title>
+    <feedback condition="$got1 and not $got2" updateWithTname="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" updateWithTname="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
+  </subsection>
+  <subsection>
+    <title>Default feedback behavior</title>
+    <feedback condition="$got1 and not $got2" name="fback1b"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" name="fback2b"><p>You got the second; what about the first?</p></feedback>
+  </subsection>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1").should('not.exist')
+    cy.get("#\\/r2").should('not.exist')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get('#\\/m2 textarea').type("y{enter}", { force: true })
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/m1 textarea').type("x{enter}", { force: true })
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('have.text', 'You got the second; what about the first?');
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('not.exist')
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', 'x')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/m2 textarea').type("{end}{backspace}{enter}", { force: true })
+    cy.get("#\\/fback1").should('not.exist')
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('have.text', 'You got the first; what about the second?');
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', 'x')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', 'y')
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get("#\\/fback1").should('have.text', 'You got the first; what about the second?');
+    cy.get("#\\/fback2").should('not.exist')
+    cy.get("#\\/fback1b").should('have.text', 'You got the first; what about the second?');
+    cy.get("#\\/fback2b").should('not.exist')
+    cy.get("#\\/r1 .mjx-mrow").eq(0).should('have.text', 'x')
+    cy.get("#\\/r2 .mjx-mrow").eq(0).should('have.text', '\uff3f')
+
+  });
+
+  it('feedback based on fractionSatisfied/creditAchieved of award', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer matchPartial name="ans">
+    <mathinput name="mi1" /> <mathinput name="mi2" />
+    <award name="small"><when>$mi1 < 1 and $mi2 < 1</when></award>
+    <award name="medium" credit="0.5"><when>$mi1 < 2 and $mi2 < 2</when></award>
+    <award name="large" credit="0"><when>$mi1 < 3 and $mi2 < 3</when></award>
+  </answer></p>
+  <section>
+  <feedback name="close" condition="$(medium{prop='creditAchieved'}) > $(small{prop='creditAchieved'})" updateWithTname='ans'>
+  <p>A number or two is close but not quite.</p>
+  </feedback>
+  <feedback name="goodAndClose" condition="$(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0" updateWithTname='ans'>
+  <p>One number is good, the other number is close but not quite.</p>
+  </feedback>
+  <feedback name="startingClose" condition="$(large{prop='fractionSatisfied'}) > 0 and $(medium{prop='fractionSatisfied'}) = 0" updateWithTname='ans'>
+  <p>A number or two is starting to get close.</p>
+  </feedback>
+  <feedback name="closeStartingClose" condition="$(large{prop='fractionSatisfied'}) >  $(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <p>A number is close but not quite; the other number is starting to get close.</p>
+  </feedback>
+  <feedback name="goodStartingClose" condition="$(large{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0 and  $(small{prop='fractionSatisfied'}) =  $(medium{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <p>One number is good, the other number is starting to get close.</p>
+  </feedback>
+  <feedback name="good" condition="1 > $(small{prop='fractionSatisfied'}) > 0 and $(small{prop='fractionSatisfied'}) = $(medium{prop='fractionSatisfied'}) = $(large{prop='fractionSatisfied'})" updateWithTname='ans'>
+  <p>One number is good.</p>
+  </feedback>
+  </section>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+
+    cy.get('#\\/mi1 textarea').type("2{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_incorrect').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('contain.text', 'A number or two is starting to get close.');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('contain.text', 'A number or two is starting to get close.');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('25% correct')
+    })
+    cy.get('#\\/close').should('contain.text', 'A number or two is close but not quite.');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('contain.text', 'A number or two is close but not quite.');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('contain.text', 'One number is good.');
+
+
+    cy.get('#\\/mi2 textarea').type("2{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('contain.text', 'One number is good.');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('have.text', 'One number is good, the other number is starting to get close.');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('have.text', 'One number is good, the other number is starting to get close.');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('have.text', 'One number is good, the other number is close but not quite.');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}0{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('have.text', 'One number is good, the other number is close but not quite.');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_correct').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{end}{backspace}1{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('not.exist');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('50% correct')
+    })
+    cy.get('#\\/close').should('contain.text', 'A number or two is close but not quite.');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/ans_submit').should('be.visible');
+    cy.get('#\\/close').should('contain.text', 'A number or two is close but not quite.');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('not.exist');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+    cy.get('#\\/ans_submit').click();
+    cy.get('#\\/ans_partial').invoke('text').then((text) => {
+      expect(text.trim().toLowerCase()).equal('25% correct')
+    })
+    cy.get('#\\/close').should('contain.text', 'A number or two is close but not quite.');
+    cy.get('#\\/goodAndClose').should('not.exist');
+    cy.get('#\\/startingClose').should('not.exist');
+    cy.get('#\\/closeStartingClose').should('contain.text', 'A number is close but not quite; the other number is starting to get close.');
+    cy.get('#\\/goodStartingClose').should('not.exist');
+    cy.get('#\\/good').should('not.exist');
+
+  });
+
 });

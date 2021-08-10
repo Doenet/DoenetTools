@@ -12,6 +12,7 @@ import Textinput from "../Textinput";
 import Switch from "../Switch";
 // import GlobalFont from '../../_utils/GlobalFont';
 import axios from "axios";
+import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 
 let SectionHeader = styled.h2`
   margin-top: 2em;
@@ -147,7 +148,7 @@ export default function DoenetProfile(props) {
                     }}
                   </InfiniteSlider>
                   </div>
-                  <Textinput
+                  {/* <Textinput   // TODO : Remove
                       style={{ width: '300px' }}
                       id="screen name"
                       label="Screen Name"
@@ -165,8 +166,20 @@ export default function DoenetProfile(props) {
                           setProfile(data)
                         }
                       }}
-                  ></Textinput>
-                  <Textinput
+                  ></Textinput> */}
+                  
+                  <Textfield label="Screen Name" 
+                  style={{ width: '300px' }}
+                  id="screen name"
+                  value={profile.screenName} 
+                  onChange={e =>{
+                    if(e.key === 'Enter'){
+                      let data = {...profile}
+                      data.screenName = e.target.value
+                      setProfile(data)
+                    }
+                  }}/>
+                  {/* <Textinput       // TODO : Remove
                     style={{ width: '300px' }}
                     id="firstName"
                     label="First Name"
@@ -184,10 +197,23 @@ export default function DoenetProfile(props) {
                         setProfile(data)
                       }
                     }}
-                  >
-                    {/* {profile.firstName} */}
-                  </Textinput>
-                  <Textinput
+                  > 
+                     {profile.firstName} 
+                   </Textinput> */}
+
+                     <Textfield label="First Name" 
+                     style={{ width: '300px' }}
+                  id="firstName"
+                  value = {profile.firstName}
+                  onChange={e =>{
+                    if(e.key === 'Enter'){
+                      let data = {...profile}
+                      data.firstName = e.target.value
+                      setProfile(data)
+                    }
+                  }}/>
+                 
+                   {/* <Textinput            // TODO : Remove
                     style={{ width: '300px' }}
                     id="lastName"
                     label="Last Name"
@@ -206,8 +232,20 @@ export default function DoenetProfile(props) {
                       }
                     }}
                   >
-                    {/* {profile.lastName} */}
-                  </Textinput>
+                     {profile.lastName} 
+                  </Textinput>  */}
+
+                  <Textfield label="Last Name" 
+                  style={{ width: '300px' }}
+                  id="lastName"
+                  value = {profile.lastName}
+                  onChange={e =>{
+                    if(e.key === 'Enter'){
+                      let data = {...profile}
+                      data.lastName = e.target.value
+                      setProfile(data)
+                    }
+                  }}/>
                 </div>
 
                 <p>Email Address: {profile.email}</p>

@@ -56,9 +56,17 @@ export default class Line extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    sugarInstructions.push({
-      childrenRegex: "s",
-      replacementFunction: ({ matchedChildren }) => ({
+    let stringAndMacrosToEquationAttribute = function({matchedChildren}) {
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      return {
         success: true,
         newAttributes: {
           equation: {
@@ -68,7 +76,12 @@ export default class Line extends GraphicalComponent {
             }
           }
         }
-      })
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: stringAndMacrosToEquationAttribute
     });
 
     return sugarInstructions;

@@ -4,10 +4,11 @@ import axios from "axios";
 
 import { useToast, toastType } from '@Toast';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler';
 import { useRecoilCallback } from 'recoil';
 // import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
+import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 
 const CreateCourse = (props) =>{
@@ -55,7 +56,8 @@ const CreateCourse = (props) =>{
 
   return <div style={props.style}>
   {/* <Button value="Create New Course" onClick={()=>toast('Stub Created Course!', toastType.SUCCESS)}  /> */}
-  <Button   width="menu"  value="Create New Course" onClick={()=>{
+  <ButtonGroup vertical>
+    <Button   width="menu"  value="Create New Course" onClick={()=>{
         // e.stopPropagation();
         let driveId = null;
         let newDriveId = nanoid();
@@ -73,6 +75,8 @@ const CreateCourse = (props) =>{
           onError({errorMessage: e.message});
         })
     }} >Create New Course</Button>
+  </ButtonGroup>
+  
  
   </div>
 }

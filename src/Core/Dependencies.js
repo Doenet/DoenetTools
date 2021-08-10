@@ -29,7 +29,7 @@ export class DependencyHandler {
       childDependenciesByParent: {},
       parentDependenciesByParent: {},
       dependenciesMissingComponentBySpecifiedName: {},
-      dependenciesBasedOnDependenciesOfStateVariables: {}
+      dependenciesBasedOnDependenciesOfStateVariables: {},
     }
 
     this.resolveBlockers = {
@@ -235,6 +235,40 @@ export class DependencyHandler {
 
   }
 
+  addBlockersFromChangedStateVariableDependencies({ componentName, stateVariables }) {
+    let triggersForComponent = this.updateTriggers.dependenciesBasedOnDependenciesOfStateVariables[componentName];
+    if (triggersForComponent) {
+      for (let varName of stateVariables) {
+        let triggersForVarName = triggersForComponent[varName];
+        if (triggersForVarName) {
+          for (let dep of triggersForVarName) {
+            if (dep.gettingValue) {
+              let compWithUpdated = dep.varsWithUpdatedDeps[componentName];
+              if (!compWithUpdated) {
+                compWithUpdated = dep.varsWithUpdatedDeps[componentName] = [];
+              }
+              if (!compWithUpdated.includes(varName)) {
+                compWithUpdated.push(varName);
+              }
+            } else {
+              for (let vName of dep.upstreamVariableNames) {
+                this.addBlocker({
+                  blockerComponentName: dep.upstreamComponentName,
+                  blockerType: "recalculateDownstreamComponents",
+                  blockerStateVariable: vName,
+                  blockerDependency: dep.dependencyName,
+                  componentNameBlocked: dep.upstreamComponentName,
+                  typeBlocked: "stateVariable",
+                  stateVariableBlocked: vName,
+                })
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   addBlockersFromChangedActiveChildren({ parent }) {
 
     // console.log(`add blockers to dependencies of active children of ${parent.componentName}`)
@@ -256,6 +290,10 @@ export class DependencyHandler {
             stateVariableBlocked: varName,
           })
         }
+        this.addBlockersFromChangedStateVariableDependencies({
+          componentName: dep.upstreamComponentName,
+          stateVariables: dep.upstreamVariableNames
+        })
       }
     }
 
@@ -275,6 +313,10 @@ export class DependencyHandler {
               stateVariableBlocked: varName,
             })
           }
+          this.addBlockersFromChangedStateVariableDependencies({
+            componentName: dep.upstreamComponentName,
+            stateVariables: dep.upstreamVariableNames
+          })
         }
       }
 
@@ -295,6 +337,10 @@ export class DependencyHandler {
               stateVariableBlocked: varName,
             })
           }
+          this.addBlockersFromChangedStateVariableDependencies({
+            componentName: dep.upstreamComponentName,
+            stateVariables: dep.upstreamVariableNames
+          })
         }
 
       }
@@ -380,6 +426,10 @@ export class DependencyHandler {
             stateVariableBlocked: varName,
           })
         }
+        this.addBlockersFromChangedStateVariableDependencies({
+          componentName: dep.upstreamComponentName,
+          stateVariables: dep.upstreamVariableNames
+        })
       }
     }
 
@@ -519,7 +569,7 @@ export class DependencyHandler {
       if (upstream) {
         for (let upDep of upstream) {
           for (let vName of upDep.upstreamVariableNames) {
-            if (vName !== '__childLogic' && vName !== "__identity") {
+            if (vName !== "__identity") {
               this.resetCircularCheckPassed(upDep.upstreamComponentName, vName)
             }
           }
@@ -820,37 +870,11 @@ export class DependencyHandler {
       }
     }
 
-    let triggersForComponent = this.updateTriggers.dependenciesBasedOnDependenciesOfStateVariables[componentName];
-    if (triggersForComponent) {
-      for (let varName of allStateVariablesAffected) {
-        let triggersForVarName = triggersForComponent[varName];
-        if (triggersForVarName) {
-          for (let dep of triggersForVarName) {
-            if (dep.gettingValue) {
-              let compWithUpdated = dep.varsWithUpdatedDeps[componentName];
-              if (!compWithUpdated) {
-                compWithUpdated = dep.varsWithUpdatedDeps[componentName] = [];
-              }
-              if (!compWithUpdated.includes(varName)) {
-                compWithUpdated.push(varName);
-              }
-            } else {
-              for (let vName of dep.upstreamVariableNames) {
-                this.addBlocker({
-                  blockerComponentName: dep.upstreamComponentName,
-                  blockerType: "recalculateDownstreamComponents",
-                  blockerStateVariable: vName,
-                  blockerDependency: dep.dependencyName,
-                  componentNameBlocked: dep.upstreamComponentName,
-                  typeBlocked: "stateVariable",
-                  stateVariableBlocked: vName,
-                })
-              }
-            }
-          }
-        }
-      }
-    }
+    this.addBlockersFromChangedStateVariableDependencies({
+      componentName,
+      stateVariables: allStateVariablesAffected
+    })
+
 
     // console.log(`finished updating dependencies of ${stateVariable} of ${component.componentName}`)
 
@@ -1874,18 +1898,18 @@ export class DependencyHandler {
           // (resolving all upstream variables of the dependency)
           return { success: true }
         }
-      } else if (typeNewlyResolved === "childLogic") {
+      } else if (typeNewlyResolved === "childMatches") {
         let component = this._components[componentNameNewlyResolved];
 
         if (component) {
 
-          if (!component.childLogicSatisfied) {
+          if (!component.childrenMatched) {
 
             let result = this.core.deriveChildResultsFromDefiningChildren({
               parent: component, expandComposites, forceExpandComposites: force,
             });
 
-            if (!result.skipping && !(component.childLogicSatisfiedWithPlaceholders || force)) {
+            if (!result.skipping && !(component.childrenMatchedWithPlaceholders || force)) {
               // console.warn(`cannot resolve child logic of ${componentNameNewlyResolved} as child logic isn't satisfied`);
               return { success: false };
             }
@@ -2524,7 +2548,7 @@ class Dependency {
 
     let downComponent = this.dependencyHandler._components[downstreamComponentName];
 
-    if (downComponent || !this.skipComponentNames) {
+    if (downComponent) {
 
       let originalVarNames;
 
@@ -3029,6 +3053,8 @@ class Dependency {
 
   recalculateDownstreamComponents({ force = false } = {}) {
 
+    // console.log(`recalc down of ${this.dependencyName} of ${this.representativeStateVariable} of ${this.upstreamComponentName}`)
+
     let newDownComponents = this.determineDownstreamComponents({ force });
 
 
@@ -3450,12 +3476,15 @@ class RecursiveDependencyValuesDependency extends Dependency {
     this.originalVariablesByComponent = true;
 
     this.includeImmediateValueWithValue = this.definition.includeImmediateValueWithValue;
+    this.includeRawValueWithImmediateValue = this.definition.includeRawValueWithImmediateValue;
 
     this.variablesOptional = true;
 
   }
 
   determineDownstreamComponents({ force = false } = {}) {
+
+    // console.log(`determine downstream of ${this.dependencyName}, ${this.representativeStateVariable}, ${this.upstreamComponentName}`)
 
     this.missingComponents = [];
     this.originalDownstreamVariableNamesByComponent = [];
@@ -3494,6 +3523,8 @@ class RecursiveDependencyValuesDependency extends Dependency {
   }
 
   getRecursiveDependencyVariables({ componentName, variableNames, force, components = {} }) {
+
+    // console.log(`get recursive dependency variables for ${componentName}`, variableNames)
 
     let component = this.dependencyHandler._components[componentName];
 
@@ -3540,7 +3571,14 @@ class RecursiveDependencyValuesDependency extends Dependency {
       "immediateValue" in component.state
     ) {
       variableNames = [...variableNames, "immediateValue"];
+    }
 
+    if (this.includeRawValueWithImmediateValue &&
+      variableNames.includes("immediateValue") &&
+      !variableNames.includes("rawRendererValue") &&
+      "rawRendererValue" in component.state
+    ) {
+      variableNames = [...variableNames, "rawRendererValue"];
     }
 
     let thisComponentObj = components[componentName];
@@ -3935,7 +3973,7 @@ class ChildDependency extends Dependency {
       this.originalDownstreamVariableNames = [];
     }
 
-    this.childLogicName = this.definition.childLogicName;
+    this.childGroups = this.definition.childGroups;
 
     if (this.definition.childIndices !== undefined) {
       this.childIndices = this.definition.childIndices.map(x => Number(x))
@@ -3998,9 +4036,9 @@ class ChildDependency extends Dependency {
       childDependencies.push(this);
     }
 
-    let activeChildrenIndices = parent.childLogic.returnMatches(this.definition.childLogicName);
+    let activeChildrenIndices = parent.returnMatchedChildIndices(this.childGroups);
     if (activeChildrenIndices === undefined) {
-      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: childLogicName ${this.definition.childLogicName} does not exist.`);
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: childGroups ${this.childGroups} does not exist.`);
     }
 
     // if childIndices specified, filter out just those indices
@@ -4012,11 +4050,11 @@ class ChildDependency extends Dependency {
         .filter((x, i) => this.childIndices.includes(i));
     }
 
-    if (!parent.childLogicSatisfied) {
+    if (!parent.childrenMatched) {
 
       let canProceedWithPlaceholders = false;
 
-      if (parent.childLogicSatisfiedWithPlaceholders) {
+      if (parent.childrenMatchedWithPlaceholders) {
 
         if (this.skipPlaceholders) {
           activeChildrenIndices = activeChildrenIndices
@@ -4049,7 +4087,7 @@ class ChildDependency extends Dependency {
           for (let varName of this.upstreamVariableNames) {
             this.dependencyHandler.addBlocker({
               blockerComponentName: this.parentName,
-              blockerType: "childLogic",
+              blockerType: "childMatches",
               blockerStateVariable: varName, // add so that can have different blockers of child logic
               componentNameBlocked: this.upstreamComponentName,
               typeBlocked: "recalculateDownstreamComponents",
@@ -4080,7 +4118,7 @@ class ChildDependency extends Dependency {
           for (let varName of this.upstreamVariableNames) {
             this.dependencyHandler.addBlocker({
               blockerComponentName: this.parentName,
-              blockerType: "childLogic",
+              blockerType: "childMatches",
               blockerStateVariable: varName, // add so that can have different blockers of child logic
               componentNameBlocked: this.upstreamComponentName,
               typeBlocked: "recalculateDownstreamComponents",
@@ -4114,7 +4152,7 @@ class ChildDependency extends Dependency {
 
           for (let compositeNotReady of parent.unexpandedCompositesNotReady) {
 
-            if (parent.childLogicSatisfiedWithPlaceholders) {
+            if (parent.childrenMatchedWithPlaceholders) {
               // if child logic is satisifed with placeholders,
               // then we don't need to expand any composites
               // that don't overlap with the active children indices we need
@@ -4145,7 +4183,7 @@ class ChildDependency extends Dependency {
                 blockerType: "stateVariable",
                 blockerStateVariable: "readyToExpandWhenResolved",
                 componentNameBlocked: this.upstreamComponentName,
-                typeBlocked: "childLogic",
+                typeBlocked: "childMatches",
                 stateVariableBlocked: varName, // add to just block for this variable
               });
             }
@@ -4356,7 +4394,7 @@ class DescendantDependency extends Dependency {
         for (let parentName in result.unexpandedCompositesReadyByParentName) {
           this.dependencyHandler.addBlocker({
             blockerComponentName: parentName,
-            blockerType: "childLogic",
+            blockerType: "childMatches",
             blockerStateVariable: varName,
             componentNameBlocked: this.upstreamComponentName,
             typeBlocked: "recalculateDownstreamComponents",
@@ -4368,7 +4406,7 @@ class DescendantDependency extends Dependency {
         for (let parentName in result.unexpandedCompositesNotReadyByParentName) {
           this.dependencyHandler.addBlocker({
             blockerComponentName: parentName,
-            blockerType: "childLogic",
+            blockerType: "childMatches",
             blockerStateVariable: varName,
             componentNameBlocked: this.upstreamComponentName,
             typeBlocked: "recalculateDownstreamComponents",
@@ -4388,7 +4426,7 @@ class DescendantDependency extends Dependency {
           //     blockerType: "stateVariable",
           //     blockerStateVariable: "readyToExpandWhenResolved",
           //     componentNameBlocked: this.upstreamComponentName,
-          //     typeBlocked: "childLogic",
+          //     typeBlocked: "childMatches",
           //     stateVariableBlocked: varName,
           //   });
           // }
@@ -4441,9 +4479,9 @@ class DescendantDependency extends Dependency {
       this.skipComponentNames && this.originalDownstreamVariableNames.length === 0;
 
 
-    if (!component.childLogicSatisfied) {
+    if (!component.childrenMatched) {
 
-      if (component.childLogicSatisfiedWithPlaceholders) {
+      if (component.childrenMatchedWithPlaceholders) {
         if (component.unexpandedCompositesReady.length > 0) {
           let unexpandedReady = this.unexpandedCompositesAdjustedForPlacedholders(
             component.unexpandedCompositesReady, placeholdersOKForMatchedDescendants
@@ -5876,9 +5914,9 @@ class CountAmongSiblingsDependency extends Dependency {
     }
 
 
-    if (!parent.childLogicSatisfied) {
+    if (!parent.childrenMatched) {
 
-      let canProceedWithPlaceholders = parent.childLogicSatisfiedWithPlaceholders;
+      let canProceedWithPlaceholders = parent.childrenMatchedWithPlaceholders;
 
       if (!canProceedWithPlaceholders) {
 
@@ -5891,7 +5929,7 @@ class CountAmongSiblingsDependency extends Dependency {
           for (let varName of this.upstreamVariableNames) {
             this.dependencyHandler.addBlocker({
               blockerComponentName: this.parentName,
-              blockerType: "childLogic",
+              blockerType: "childMatches",
               blockerStateVariable: varName, // add so that can have different blockers of child logic
               componentNameBlocked: this.upstreamComponentName,
               typeBlocked: "recalculateDownstreamComponents",
@@ -5922,7 +5960,7 @@ class CountAmongSiblingsDependency extends Dependency {
           for (let varName of this.upstreamVariableNames) {
             this.dependencyHandler.addBlocker({
               blockerComponentName: this.parentName,
-              blockerType: "childLogic",
+              blockerType: "childMatches",
               blockerStateVariable: varName, // add so that can have different blockers of child logic
               componentNameBlocked: this.upstreamComponentName,
               typeBlocked: "recalculateDownstreamComponents",
@@ -5953,7 +5991,7 @@ class CountAmongSiblingsDependency extends Dependency {
                 blockerType: "stateVariable",
                 blockerStateVariable: "readyToExpandWhenResolved",
                 componentNameBlocked: this.upstreamComponentName,
-                typeBlocked: "childLogic",
+                typeBlocked: "childMatches",
                 stateVariableBlocked: varName, // add to just block for this variable
               });
             }
@@ -6274,6 +6312,8 @@ class AttributePrimitiveDependency extends StateVariableDependency {
       value = depComponent.attributes[this.attributeName];
       if (value) {
         value = value.primitive;
+      } else {
+        value = null;
       }
 
     }

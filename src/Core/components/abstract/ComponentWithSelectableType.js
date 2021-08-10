@@ -8,6 +8,8 @@ export class ComponentWithSelectableType extends BaseComponent {
   static componentType = "_componentWithSelectableType";
   static rendererType = undefined;
 
+  static includeBlankStringChildren = true;
+
   // used when referencing this component without prop
   static useChildrenForReference = false;
   static get stateVariablesShadowedForReference() { return ["value", "type"] };
@@ -24,7 +26,6 @@ export class ComponentWithSelectableType extends BaseComponent {
     let sugarInstructions = [];
 
     function addType({ matchedChildren, componentAttributes, parentAttributes }) {
-
       let type = componentAttributes.type;
       if (!type) {
         type = parentAttributes.type;
@@ -37,6 +38,13 @@ export class ComponentWithSelectableType extends BaseComponent {
       }
 
       let componentType = type === "letters" ? "text" : type;
+
+      // remove blank string if componentType isn't text
+      if (componentType !== "text") {
+        matchedChildren = matchedChildren.filter(x =>
+          x.componentType !== "string" || x.state.value.trim() !== ""
+        )
+      }
 
       return {
         success: true,
@@ -55,20 +63,15 @@ export class ComponentWithSelectableType extends BaseComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: 'atMostOneChild',
-      componentType: "_base",
-      excludeComponentTypes: ["_composite"],
-      comparison: 'atMost',
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    return childLogic;
   }
+
 
   static returnStateVariableDefinitions() {
 
@@ -113,21 +116,30 @@ export class ComponentWithSelectableType extends BaseComponent {
         },
         atMostOneChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneChild",
+          childGroups: ["anything"],
           variableNames: ["value"],
         },
       }),
       definition({ dependencyValues }) {
         let value;
 
-        if (dependencyValues.atMostOneChild.length === 1) {
+        if (dependencyValues.atMostOneChild.length > 0) {
           // value = convertValueToType(
           //   dependencyValues.atMostOneChild[0].stateValues.value,
           //   dependencyValues.type
           // );
           value = dependencyValues.atMostOneChild[0].stateValues.value;
         } else {
-          value = null;
+          // use the behavior of the different types
+          if (dependencyValues.type === "text" || dependencyValues.type === "letters") {
+            value = ""
+          } else if (dependencyValues.type === "boolean") {
+            value = false;
+          } else if (dependencyValues.type === "number") {
+            value = NaN;
+          } else {
+            value = me.fromAst('\uff3f');
+          }
         }
 
         return {
@@ -163,7 +175,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
     sugarInstructions.push({
       replacementFunction: function ({ matchedChildren,
         componentAttributes, parentAttributes,
-        isAttributeComponent = false, createdFromMacro = false
+        isAttributeComponent = false, createdFromMacro = false,
+        componentInfoObjects
       }) {
         let type = componentAttributes.type;
         if (!type) {
@@ -179,10 +192,14 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         let componentType = type === "letters" ? "text" : type;
 
         if (isAttributeComponent && !createdFromMacro) {
-          let groupIntoComponentTypesSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({ componentType });
+          let groupIntoComponentTypesSeparatedBySpaces = returnGroupIntoComponentTypeSeparatedBySpaces({
+            componentType
+          });
           return groupIntoComponentTypesSeparatedBySpaces({ matchedChildren });
         } else {
-          let breakStringsIntoComponentTypesBySpaces = returnBreakStringsIntoComponentTypeBySpaces({ componentType });
+          let breakStringsIntoComponentTypesBySpaces = returnBreakStringsIntoComponentTypeBySpaces({
+            componentType
+          });
           return breakStringsIntoComponentTypesBySpaces({ matchedChildren })
         }
       }
@@ -192,23 +209,6 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
     return sugarInstructions;
 
   }
-
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-    childLogic.deleteAllLogic();
-
-    childLogic.newLeaf({
-      name: 'anythingForSelectedType',
-      componentType: "_base",
-      excludeComponentTypes: ["_composite"],
-      comparison: 'atLeast',
-      number: 1,
-      setAsBase: true,
-    });
-
-    return childLogic;
-  }
-
 
 
   static returnStateVariableDefinitions() {
@@ -222,7 +222,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
       returnDependencies: () => ({
         anythingForSelectedType: {
           dependencyType: "child",
-          childLogicName: "anythingForSelectedType",
+          childGroups: ["anything"],
           variableNames: ["nValues"],
           variablesOptional: true,
         },
@@ -272,7 +272,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
           dependenciesByKey[arrayKey] = {
             anythingForSelectedType: {
               dependencyType: "child",
-              childLogicName: "anythingForSelectedType",
+              childGroups: ["anything"],
               variableNames: ["value", "values"],
               childIndices: [childInfo.child],
               variablesOptional: true,
@@ -385,19 +385,14 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
-    childLogic.deleteAllLogic();
 
-    childLogic.newLeaf({
-      name: 'atLeastZeroLists',
-      componentType: "_componentListWithSelectableType",
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "lists",
+      componentTypes: ["_componentListWithSelectableType"]
+    }]
+
   }
 
 
@@ -411,7 +406,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
       returnDependencies: () => ({
         listChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroLists",
+          childGroups: ["lists"],
         },
       }),
       definition({ dependencyValues }) {
@@ -444,7 +439,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
           dependenciesByKey[arrayKey] = {
             listChildren: {
               dependencyType: "child",
-              childLogicName: "atLeastZeroLists",
+              childGroups: ["lists"],
               variableNames: ["values", "type"],
               childIndices: [arrayKey]
             },

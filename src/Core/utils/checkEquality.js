@@ -112,6 +112,10 @@ export default function checkEquality({
           expr_b = JSON.parse(JSON.stringify(expr_b), me.reviver);
 
           let equalityFunction = function (aa, bb) {
+            // temporary fix until equalsViaSyntax returns false for \uff3f
+            if (aa.variables().includes('\uFF3F') || bb.variables().includes('\uFF3F')) {
+              return false;
+            }
             aa = normalize(aa); // only have to normalize aa as that is the one that gets modified
             return aa.equalsViaSyntax(bb, {
               allowed_error_in_numbers: allowedErrorInNumbers,
@@ -126,6 +130,10 @@ export default function checkEquality({
           return { fraction_equal: equality ? 1 : 0 };
 
         } else {
+          // temporary fix until equalsViaSyntax returns false for \uff3f
+          if (expr_a.variables().includes('\uFF3F') || expr_b.variables().includes('\uFF3F')) {
+            return { fraction_equal: 0 };
+          }
           let equality = expr_a.equalsViaSyntax(expr_b, {
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
@@ -210,11 +218,27 @@ export default function checkEquality({
     let object1_operator = object1.tree[0];
     let object2_operator = object2.tree[0];
 
-    if (object1_operator === "vector") {
+    if (object1_operator === "list") {
+      object1 = object1.tree.slice(1);
+      if (object2_operator === "list") {
+        object2 = object2.tree.slice(1);
+      } else {
+        // since a single object could be considered
+        // a list of length 1
+        // make object2 act like a list of the one element
+        object2 = [object2.tree];
+      }
+    } else if (object2_operator === "list") {
+      object2 = object2.tree.slice(1);
+      // since a single object could be considered
+      // a list of length 1
+      // make object1 act like a list of the one element
+      object1 = [object1.tree];
+    } else if (object1_operator === "vector") {
       // change object1 to array of elements
       object1 = object1.tree.slice(1);
 
-      if (object2_operator === "list" || object2_operator === "interval"
+      if (object2_operator === "interval"
         || object2_operator === "matrix" || object2_operator === "array"
         || object2_operator === "set"
       ) {
@@ -232,7 +256,7 @@ export default function checkEquality({
       // change object2 to array of elements
       object2 = object2.tree.slice(1);
 
-      if (object1_operator === "list" || object1_operator === "interval"
+      if (object1_operator === "interval"
         || object1_operator === "matrix" || object1_operator === "array"
         || object1_operator === "set"
       ) {
@@ -256,9 +280,7 @@ export default function checkEquality({
       // change object to be the array of the interval endpoints
       object1 = object1.tree[1].slice(1);
 
-      if (object2_operator === "list" || object2_operator === "matrix"
-        || object2_operator === "set"
-      ) {
+      if (object2_operator === "matrix" || object2_operator === "set") {
         return { fraction_equal: 0 };
       } else if (object2_operator === "tuple") {
         let operands = object2.tree.slice(1);
@@ -304,9 +326,7 @@ export default function checkEquality({
       // change object to be the array of the interval endpoints
       object2 = object2.tree[1].slice(1);
 
-      if (object1_operator === "list" || object1_operator === "matrix"
-        || object1_operator === "set"
-      ) {
+      if (object1_operator === "matrix" || object1_operator === "set") {
         return { fraction_equal: 0 };
       } else if (object1_operator === "tuple") {
         let operands = object1.tree.slice(1);
@@ -353,9 +373,7 @@ export default function checkEquality({
       }
       object1 = distinctElements;
       isUnordered = true;
-      if (object2_operator === "tuple" || object2_operator === "array"
-        || object2_operator === "list"
-      ) {
+      if (object2_operator === "tuple" || object2_operator === "array") {
         return { fraction_equal: 0 };
       } else if (object2_operator === "set") {
         distinctElements = [];
@@ -381,32 +399,10 @@ export default function checkEquality({
       }
       object2 = distinctElements;
       isUnordered = true;
-      if (object1_operator === "tuple" || object1_operator === "array"
-        || object1_operator === "list"
-      ) {
-        return { fraction_equal: 0 };
-      } else {
-        // since can convert singleton to a set of length 1
-        // make object1 array of the one element
-        object1 = [object1.tree];
-      }
-    } else if (object1_operator === "list") {
-      object1 = object1.tree.slice(1);
-      if (object2_operator === "tuple" || object2_operator === "array") {
-        return { fraction_equal: 0 };
-      } else if (object2_operator === "list") {
-        object2 = object2.tree.slice(1);
-      } else {
-        // since can convert singleton to a list of length 1
-        // make object2 array of the one element
-        object2 = [object2.tree];
-      }
-    } else if (object2_operator === "list") {
-      object2 = object2.tree.slice(1);
       if (object1_operator === "tuple" || object1_operator === "array") {
         return { fraction_equal: 0 };
       } else {
-        // since can convert singleton to a list of length 1
+        // since can convert singleton to a set of length 1
         // make object1 array of the one element
         object1 = [object1.tree];
       }
@@ -489,9 +485,9 @@ export default function checkEquality({
         matchExactLocations: false,
         symbolicEquality,
         simplify, expand,
-        allowedErrorInNumbers: false,
-        allowedErrorIsAbsolute: false,
-        nSignErrorsMatched: 0,
+        allowedErrorInNumbers,
+        allowedErrorIsAbsolute,
+        nSignErrorsMatched,
       })
       n_matches += sub_results.fraction_equal;
     }
@@ -534,9 +530,9 @@ export default function checkEquality({
           matchExactLocations: false,
           symbolicEquality,
           simplify, expand,
-          allowedErrorInNumbers: false,
-          allowedErrorIsAbsolute: false,
-          nSignErrorsMatched: 0,
+          allowedErrorInNumbers,
+          allowedErrorIsAbsolute,
+          nSignErrorsMatched,
         })
         C[i + 1][j + 1] = Math.max(C[i][j] + sub_results.fraction_equal,
           C[i + 1][j], C[i][j + 1])
@@ -574,9 +570,9 @@ export default function checkEquality({
         matchExactLocations: false,
         symbolicEquality,
         simplify, expand,
-        allowedErrorInNumbers: false,
-        allowedErrorIsAbsolute: false,
-        nSignErrorsMatched: 0,
+        allowedErrorInNumbers,
+        allowedErrorIsAbsolute,
+        nSignErrorsMatched,
       })
       if (sub_results.fraction_equal > best_match) {
         best_match = sub_results.fraction_equal;

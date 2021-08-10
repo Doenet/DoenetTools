@@ -87,9 +87,9 @@ export const Styles = styled.div`
     }
   }
 `;
-const courseId = atom({
-  key: "courseId",
-  default: ""
+const driveId = atom({
+  key: "driveId",
+  default: "8tpQGDhHNgj6rePCO6Qgz"
 });
 const coursesDataQuerry = atom({
   key: "coursesDataQuerry",
@@ -119,11 +119,11 @@ const assignmentDataQuerry = atom({
     key: "assignmentDataQuerry/Default",
     get: async ({get}) => {
       try {
-        const courseIdPayload = {params: {courseId: get(courseId)}};
-        const {data} = await axios.get("/api/loadAssignments.php", courseIdPayload);
+        const driveIdPayload = {params: {driveId: get(driveId)}};
+        const {data} = await axios.get("/api/loadAssignments.php", driveIdPayload);
         return data;
       } catch (error) {
-        console.log("No assignments associated with course ID: ", get(courseId));
+        console.log("No assignments associated with drive ID: ", get(driveId));
         return {};
       }
     }
@@ -135,8 +135,8 @@ const assignmentData = selector({
     let assignmentArray = {};
     let data = get(assignmentDataQuerry);
     for (let row of data) {
-      let [assignmentId2, assignmentName] = row;
-      assignmentArray[assignmentId2] = assignmentName;
+      let [doenetId, assignmentName] = row;
+      assignmentArray[doenetId] = assignmentName;
     }
     return assignmentArray;
   },
@@ -148,12 +148,12 @@ const studentDataQuerry = atom({
   default: selector({
     key: "studentDataQuerry/Default",
     get: async ({get}) => {
-      const courseIdPayload = {params: {courseId: get(courseId)}};
+      const driveIdPayload = {params: {driveId: get(driveId)}};
       try {
-        const {data} = await axios.get("/api/loadGradebookEnrollment.php", courseIdPayload);
+        const {data} = await axios.get("/api/loadGradebookEnrollment.php", driveIdPayload);
         return data;
       } catch (error) {
-        console.log("No students associated with course ID: ", get(courseId), error);
+        console.log("No students associated with course ID: ", get(driveId), error);
         return {};
       }
     }
@@ -171,7 +171,8 @@ export const studentData = selector({
         lastName,
         courseCredit,
         courseGrade,
-        overrideCourseGrade
+        overrideCourseGrade,
+        role
       ] = row;
       students[userId] = {
         firstName,
@@ -190,11 +191,11 @@ const overViewDataQuerry = atom({
     key: "overViewDataQuerry/Default",
     get: async ({get}) => {
       try {
-        const courseIdPayload = {params: {courseId: get(courseId)}};
-        let {data} = await axios.get("/api/loadGradebookOverview.php", courseIdPayload);
+        const driveIdPayload = {params: {driveId: get(driveId)}};
+        let {data} = await axios.get("/api/loadGradebookOverview.php", driveIdPayload);
         return data;
       } catch (error) {
-        console.log("Error loading overview data for courdse ID: ", get(courseId), error.message);
+        console.log("Error loading overview data for courdse ID: ", get(driveId), error.message);
         return {};
       }
     }
@@ -211,19 +212,18 @@ const overViewData = selector({
         grade: students[userId].courseGrade,
         assignments: {}
       };
-      for (let assignmentId2 in assignments) {
-        overView[userId].assignments[assignmentId2] = null;
+      for (let doenetId in assignments) {
+        overView[userId].assignments[doenetId] = null;
       }
     }
     let data = get(overViewDataQuerry);
     for (let userAssignment in data) {
       let [
-        assignmentId2,
-        assignmentName,
+        doenetId,
         credit,
         userId
       ] = data[userAssignment];
-      overView[userId].assignments[assignmentId2] = credit;
+      overView[userId].assignments[doenetId] = credit;
     }
     return overView;
   }
@@ -232,13 +232,13 @@ const attemptDataQuerry = atomFamily({
   key: "attemptDataQuerry",
   default: selectorFamily({
     key: "attemptDataQuerry/Default",
-    get: (assignmentId2) => async () => {
+    get: (doenetId) => async () => {
       try {
-        let assignmentIdPayload = {params: {assignmentId: assignmentId2}};
-        let {data} = await axios.get("/api/loadGradebookAssignmentAttempts.php", assignmentIdPayload);
+        let doenetIdPayload = {params: {doenetId}};
+        let {data} = await axios.get("/api/loadGradebookAssignmentAttempts.php", doenetIdPayload);
         return data;
       } catch (error) {
-        console.log("Error loading attempts data for assignmentId: ", assignmentId2, error.message);
+        console.log("Error loading attempts data for doenetId: ", doenetId, error.message);
         return {};
       }
     }
@@ -246,7 +246,7 @@ const attemptDataQuerry = atomFamily({
 });
 export const attemptData = selectorFamily({
   key: "attemptData",
-  get: (assignmentId2) => ({get}) => {
+  get: (doenetId) => ({get}) => {
     let attempts = {};
     const students = get(studentData);
     for (let userId in students) {
@@ -255,15 +255,13 @@ export const attemptData = selectorFamily({
         attempts: {}
       };
     }
-    let data = get(attemptDataQuerry(assignmentId2));
+    let data = get(attemptDataQuerry(doenetId));
     for (let row of data) {
       let [
         userId,
         attemptNumber,
         assignmentCredit,
-        assignmentCreditOverride,
-        attemptCredit,
-        attemptCreditOverride
+        attemptCredit
       ] = row;
       attempts[userId].credit = assignmentCredit;
       attempts[userId].attempts[attemptNumber] = attemptCredit;
@@ -291,19 +289,35 @@ export const specificAttemptData = selectorFamily({
   key: "specificAttemptData",
   get: (params) => ({get}) => {
     let data = get(specificAttemptDataQuerry(params));
+    let doenetML = get(doenetMLQuerry(data.contentId));
     let specificAttempt = {
       assignmentAttempted: data.assignmentAttempted,
-      doenetML: data.doenetML,
       stateVariables: data.stateVariables,
       variant: data.variant,
+      interactionSource: data.interactionSource,
       assignmentCredit: data.assignmentCredit,
       assignmentCreditOverride: data.assignmentCreditOverride,
       attemptCredit: data.attemptCredit,
       attemptCreditOverride: data.attemptCreditOverride,
-      timestamp: data.timestamp
+      timestamp: data.timestamp,
+      doenetML
     };
     return specificAttempt;
   }
+});
+const doenetMLQuerry = atomFamily({
+  key: "doenetMLQuerry",
+  default: selectorFamily({
+    key: "doenetMLQuerry/Default",
+    get: (contentId) => async () => {
+      try {
+        const server = await axios.get(`/media/${contentId}.doenet`);
+        return server.data;
+      } catch (err) {
+        return "File not found";
+      }
+    }
+  })
 });
 export function Table({columns, data}) {
   const filterTypes = React.useMemo(() => ({
@@ -394,15 +408,15 @@ function GradebookOverview(props) {
   }];
   let assignments = useRecoilValueLoadable(assignmentData);
   if (assignments.state == "hasValue") {
-    for (let assignmentId2 in assignments.contents) {
+    for (let doenetId in assignments.contents) {
       overviewTable.headers.push({
         Header: /* @__PURE__ */ React.createElement("a", {
           onClick: (e) => {
             e.stopPropagation();
-            openOverlay({type: "gradebookassignmentview", title: "Gradebook Assignment View", assignmentId: assignmentId2});
+            openOverlay({type: "gradebookassignmentview", title: "Gradebook Assignment View", doenetId});
           }
-        }, assignments.contents[assignmentId2]),
-        accessor: assignmentId2,
+        }, assignments.contents[doenetId]),
+        accessor: doenetId,
         disableFilters: true
       });
     }
@@ -428,8 +442,8 @@ function GradebookOverview(props) {
       let row = {};
       row["name"] = firstName + " " + lastName;
       if (overView.state == "hasValue" && assignments.state == "hasValue") {
-        for (let assignmentId2 in assignments.contents) {
-          row[assignmentId2] = overView.contents[userId].assignments[assignmentId2] * 100 + "%";
+        for (let doenetId in assignments.contents) {
+          row[doenetId] = overView.contents[userId].assignments[doenetId] * 100 + "%";
         }
       }
       row["weight"] = credit;
@@ -458,30 +472,22 @@ function CourseSelector(props) {
   }, course.longname)));
 }
 export default function Gradebook(props) {
-  let [courseIdVal, setCourseIdVal] = useRecoilState(courseId);
+  let [driveIdVal, setDriveIdVal] = useRecoilState(driveId);
   const history2 = useHistory();
   let urlParamsObj = Object.fromEntries(new URLSearchParams(props.route.location.search));
-  useEffect(() => {
-    if (urlParamsObj.courseId) {
-      setCourseIdVal(urlParamsObj.courseId);
-    } else {
-      setCourseIdVal("");
-    }
-  }, [urlParamsObj]);
-  console.log("courseId", courseIdVal);
+  console.log(">>> driveId", driveIdVal);
   return /* @__PURE__ */ React.createElement(Tool, null, /* @__PURE__ */ React.createElement("headerPanel", {
     title: "Gradebook"
-  }), /* @__PURE__ */ React.createElement("mainPanel", null, courseIdVal != "" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(BackButton, {
-    callback: setCourseIdVal
-  }), /* @__PURE__ */ React.createElement(GradebookOverview, null)) : /* @__PURE__ */ React.createElement(DriveCards, {
+  }), /* @__PURE__ */ React.createElement("mainPanel", null, driveIdVal != "" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(BackButton, null), /* @__PURE__ */ React.createElement(GradebookOverview, null)) : /* @__PURE__ */ React.createElement(DriveCards, {
     types: ["course"],
     subTypes: ["Administrator"],
     routePathDriveId: "",
     driveDoubleClickCallback: ({item}) => {
+      console.log(">>> Here");
       let newParams = {};
-      newParams["courseId"] = `${item.courseId}`;
+      newParams["driveId"] = `${item.driveId}`;
       history2.push("?" + encodeParams(newParams));
-      setCourseIdVal(item.courseId);
+      setDriveIdVal(item.driveId);
     }
   })));
 }

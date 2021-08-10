@@ -1,6 +1,5 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import LineSegment from './LineSegment';
 
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
@@ -61,9 +60,17 @@ export default class Angle extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    sugarInstructions.push({
-      childrenRegex: "s",
-      replacementFunction: ({ matchedChildren }) => ({
+    let stringAndMacrosToRadiansAttribute = function({matchedChildren}) {
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      return {
         success: true,
         newAttributes: {
           radians: {
@@ -72,8 +79,13 @@ export default class Angle extends GraphicalComponent {
               children: matchedChildren
             }
           }
-        },
-      })
+        }
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: stringAndMacrosToRadiansAttribute
     });
 
     return sugarInstructions;
@@ -226,7 +238,7 @@ export default class Angle extends GraphicalComponent {
           globalDependencies.lineChildren = {
             dependencyType: "child",
             parentName: stateValues.betweenLinesName,
-            childLogicName: "atLeastZeroLines",
+            childGroups: ["lines"],
             variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
           }
         }

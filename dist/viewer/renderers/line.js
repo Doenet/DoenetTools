@@ -96,6 +96,22 @@ export default class Line extends DoenetRenderer {
       this.lineJXG.visProp["visible"] = false;
       this.lineJXG.visPropCalc["visible"] = false;
     }
+    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
+      this.lineJXG.visProp.fixed = false;
+    } else {
+      this.lineJXG.visProp.fixed = true;
+    }
+    if (this.lineJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.lineColor) {
+      this.lineJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.lineColor;
+      this.lineJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.lineColor;
+    }
+    let newDash = styleToDash(this.doenetSvData.selectedStyle.lineStyle);
+    if (this.lineJXG.visProp.dash !== newDash) {
+      this.lineJXG.visProp.dash = newDash;
+    }
+    if (this.lineJXG.visProp.strokewidth !== this.doenetSvData.selectedStyle.lineWidth) {
+      this.lineJXG.visProp.strokewidth = this.doenetSvData.selectedStyle.lineWidth;
+    }
     this.lineJXG.name = this.doenetSvData.label;
     let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
     if (withlabel != this.previousWithLabel) {

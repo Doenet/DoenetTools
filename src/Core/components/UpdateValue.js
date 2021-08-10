@@ -4,8 +4,6 @@ import InlineComponent from './abstract/InlineComponent';
 export default class UpdateValue extends InlineComponent {
   static componentType = "updateValue";
 
-  static triggeringAction = "updateValue";
-
   static acceptTname = true;
 
   static get stateVariablesShadowedForReference() {
@@ -26,8 +24,12 @@ export default class UpdateValue extends InlineComponent {
 
     attributes.type = {
       createPrimitiveOfType: "string",
-      defaultValue: "math"
+      createStateVariable: "type",
+      defaultPrimitiveValue: "math",
+      toLowerCase: true,
+      validValues: ["math", "number", "boolean", "text"]
     }
+
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
@@ -50,7 +52,7 @@ export default class UpdateValue extends InlineComponent {
       triggerActionOnChange: "updateValueIfTriggerNewlyTrue"
     }
 
-    attributes.triggerWithTname = {
+    attributes.triggerWithTnames = {
       createPrimitiveOfType: "string"
     }
 
@@ -74,26 +76,6 @@ export default class UpdateValue extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    stateVariableDefinitions.type = {
-      returnDependencies: () => ({
-        type: {
-          dependencyType: "attributePrimitive",
-          attributeName: "type",
-        },
-      }),
-      definition: function ({ dependencyValues }) {
-        if (dependencyValues.type) {
-          let type = dependencyValues.type.toLowerCase()
-          if (["math", "number", "boolean", "text"].includes(type)) {
-            return { newValues: { type } };
-          } else {
-            console.warn(`Invalid type ${dependencyValues.type} for an updateValue.  Defaulting to math.`)
-          }
-        }
-        return { newValues: { type: "math" } };
-      }
-    };
 
     stateVariableDefinitions.tName = {
       returnDependencies: () => ({
@@ -305,11 +287,11 @@ export default class UpdateValue extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.triggerWithTname = {
+    stateVariableDefinitions.triggerWithTnames = {
       returnDependencies: () => ({
-        triggerWithTname: {
+        triggerWithTnames: {
           dependencyType: "attributePrimitive",
-          attributeName: "triggerWithTname"
+          attributeName: "triggerWithTnames"
         },
         triggerWhen: {
           dependencyType: "attributeComponent",
@@ -321,33 +303,48 @@ export default class UpdateValue extends InlineComponent {
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet) {
-          return { newValues: { triggerWithTname: null } }
+        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet
+          || dependencyValues.triggerWithTnames === null
+        ) {
+          return { newValues: { triggerWithTnames: null } }
         } else {
-          return { newValues: { triggerWithTname: dependencyValues.triggerWithTname } }
+          return {
+            newValues: {
+              triggerWithTnames: dependencyValues.triggerWithTnames
+                .split(/\s+/).filter(s => s)
+            }
+          }
         }
       }
     }
 
-    stateVariableDefinitions.triggerWithFullTname = {
-      chainActionOnActionOfStateVariableTarget: {
+    stateVariableDefinitions.triggerWithFullTnames = {
+      chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateValue"
       },
-      stateVariablesDeterminingDependencies: ["triggerWithTname"],
+      stateVariablesDeterminingDependencies: ["triggerWithTnames"],
       returnDependencies({ stateValues }) {
-        if (stateValues.triggerWithTname) {
-          return {
-            triggerWithFullTname: {
+        let dependencies = {};
+        if (stateValues.triggerWithTnames) {
+          for (let [ind, tName] of stateValues.triggerWithTnames.entries()) {
+
+            dependencies[`triggerWithFullTname${ind}`] = {
               dependencyType: "expandTargetName",
-              tName: stateValues.triggerWithTname
+              tName
             }
           }
-        } else {
-          return {}
         }
+        return dependencies;
       },
       definition({ dependencyValues }) {
-        return { newValues: { triggerWithFullTname: dependencyValues.triggerWithFullTname } }
+        let triggerWithFullTnames = [];
+        let n = Object.keys(dependencyValues).length;
+
+        for (let i = 0; i < n; i++) {
+          triggerWithFullTnames.push(dependencyValues[`triggerWithFullTname${i}`])
+        }
+
+        return { newValues: { triggerWithFullTnames } }
       }
     }
 
@@ -361,9 +358,9 @@ export default class UpdateValue extends InlineComponent {
         dependencyType: "attributeComponent",
         attributeName: "triggerWhen"
       };
-      dependencies.triggerWithTname = {
+      dependencies.triggerWithTnames = {
         dependencyType: "stateVariable",
-        variableName: "triggerWithTname"
+        variableName: "triggerWithTnames"
       }
       dependencies.insideTriggerSet = {
         dependencyType: "stateVariable",
@@ -374,7 +371,7 @@ export default class UpdateValue extends InlineComponent {
 
     stateVariableDefinitions.hidden.definition = function (args) {
       if (args.dependencyValues.triggerWhen ||
-        args.dependencyValues.triggerWithTname ||
+        args.dependencyValues.triggerWithTnames ||
         args.dependencyValues.insideTriggerSet
       ) {
         return { newValues: { hidden: true } }

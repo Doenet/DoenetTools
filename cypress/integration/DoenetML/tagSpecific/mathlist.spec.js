@@ -845,7 +845,7 @@ describe('MathList Tag Tests', function () {
   })
 
   // TODO: address maximum number in rendered children of mathlist
-  it.skip('mathlist with maximum number', () => {
+  it('mathlist with maximum number', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1339,7 +1339,7 @@ describe('MathList Tag Tests', function () {
   })
 
   // TODO: deal with hidden children of a mathlist
-  it.skip('mathlist within mathlists, ignore child hide', () => {
+  it('mathlist within mathlists, with child hide', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -1390,18 +1390,15 @@ describe('MathList Tag Tests', function () {
       expect(text.trim()).equal('c')
     });
     cy.get('#\\/_p3').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
-      expect(text.trim()).equal('y')
-    });
-    cy.get('#\\/_p3').find('.mjx-mrow').eq(5).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/_p3').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
+    cy.get('#\\/_p3').find('.mjx-mrow').eq(5).invoke('text').then((text) => {
       expect(text.trim()).equal('b')
     });
-    cy.get('#\\/_p3').find('.mjx-mrow').eq(7).invoke('text').then((text) => {
+    cy.get('#\\/_p3').find('.mjx-mrow').eq(6).invoke('text').then((text) => {
       expect(text.trim()).equal('c')
     });
-    cy.get('#\\/_p3').find('.mjx-mrow').eq(8).should('not.exist')
+    cy.get('#\\/_p3').find('.mjx-mrow').eq(7).should('not.exist')
 
     cy.get('#\\/_p4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
@@ -1416,12 +1413,9 @@ describe('MathList Tag Tests', function () {
       expect(text.trim()).equal('c')
     });
     cy.get('#\\/_p4').find('.mjx-mrow').eq(4).invoke('text').then((text) => {
-      expect(text.trim()).equal('y')
-    });
-    cy.get('#\\/_p4').find('.mjx-mrow').eq(5).invoke('text').then((text) => {
       expect(text.trim()).equal('a')
     });
-    cy.get('#\\/_p4').find('.mjx-mrow').eq(6).should('not.exist');
+    cy.get('#\\/_p4').find('.mjx-mrow').eq(5).should('not.exist');
 
 
     cy.log('Test internal values are set to the correct values')

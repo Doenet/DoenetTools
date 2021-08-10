@@ -328,4 +328,26 @@ describe('BooleanInput Tag Tests', function () {
 
   })
 
+  it('chain update off booleaninput', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="bi" />
+    <number name="n">1</number>
+    <updateValue triggerWithTnames="bi" tname="n" newValue="$n+1" type="number" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/n').should('have.text', '1')
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/n').should('have.text', '2')
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/n').should('have.text', '3')
+
+  })
+
+
 });

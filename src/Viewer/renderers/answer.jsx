@@ -12,6 +12,8 @@ export default class Answer extends DoenetRenderer {
       return null;
     }
 
+    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+
     let submitAnswer = this.actions.submitAnswer;
     if (this.doenetSvData.submitAllAnswersAtAncestor) {
       submitAnswer = this.actions.submitAllAnswers;
@@ -33,7 +35,7 @@ export default class Answer extends DoenetRenderer {
     if (!this.doenetSvData.delegateCheckWork) {
 
       let validationState = "unvalidated";
-      if (this.doenetSvData.justSubmitted) {
+      if (this.doenetSvData.justSubmitted || this.doenetSvData.numberOfAttemptsLeft < 1) {
         if (this.doenetSvData.creditAchieved === 1) {
           validationState = "correct";
         } else if (this.doenetSvData.creditAchieved === 0) {
@@ -53,7 +55,7 @@ export default class Answer extends DoenetRenderer {
         //marginBottom: "30px",  //Space after check work
       }
 
-      if (this.doenetSvData.disabled) {
+      if (disabled) {
         checkWorkStyle.backgroundColor = "rgb(200,200,200)";
       }
 
@@ -64,7 +66,7 @@ export default class Answer extends DoenetRenderer {
       let checkworkComponent = (
         <button id={this.componentName + "_submit"}
           tabIndex="0"
-          disabled={this.doenetSvData.disabled}
+          disabled={disabled}
           style={checkWorkStyle}
           onClick={submitAnswer}
           onKeyPress={(e) => {
@@ -124,6 +126,23 @@ export default class Answer extends DoenetRenderer {
               Response Saved
             </span>);
         }
+      }
+
+      if(this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkworkComponent = <>
+        {checkworkComponent}
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
+      } else if(this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+
+        checkworkComponent = <>
+          {checkworkComponent}
+          <span>
+            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
+          </span>
+        </>
       }
 
       return <span id={this.componentName}>

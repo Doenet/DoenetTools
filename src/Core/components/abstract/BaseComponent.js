@@ -1,4 +1,3 @@
-import ChildLogicClass from '../../ChildLogic';
 import readOnlyProxyHandler from '../../ReadOnlyProxyHandler';
 import createStateProxyHandler from '../../StateProxyHandler';
 import { flattenDeep, mapDeep } from '../../utils/array';
@@ -9,7 +8,7 @@ export default class BaseComponent {
     componentName, ancestors,
     serializedComponent,
     definingChildren,
-    serializedChildren, childLogic,
+    serializedChildren,
     attributes,
     stateVariableDefinitions,
     componentInfoObjects,
@@ -41,8 +40,6 @@ export default class BaseComponent {
     }
 
     this.serializedChildren = serializedChildren;
-
-    this.childLogic = childLogic;
 
     this.attributes = attributes;
 
@@ -232,14 +229,11 @@ export default class BaseComponent {
     return potentialRendererTypes;
   }
 
-  get childLogicSatisfied() {
-    return this.childLogic.logicResult && this.childLogic.logicResult.success
+  get childrenMatched() {
+    return this.childrenMatchedWithPlaceholders
       && !this.placeholderActiveChildrenIndices;
   }
 
-  get childLogicSatisfiedWithPlaceholders() {
-    return this.childLogic.logicResult && this.childLogic.logicResult.success;
-  }
 
   static createAttributesObject({ flags = {} } = {}) {
 
@@ -250,11 +244,11 @@ export default class BaseComponent {
         defaultValue: false,
         public: true,
       },
-      disable: {
+      disabled: {
         createComponentOfType: "boolean",
-        createStateVariable: "disable",
-        defaultValue: flags.readOnly ? true : false,
-        public: true,
+        createStateVariable: "disabledPreliminary",
+        defaultValue: null,//flags.readOnly ? true : false,
+        // public: true,
       },
       modifyIndirectly: {
         createComponentOfType: "boolean",
@@ -265,10 +259,10 @@ export default class BaseComponent {
       },
       fixed: {
         createComponentOfType: "boolean",
-        createStateVariable: "fixed",
-        defaultValue: false,
-        public: true,
-        forRenderer: true,
+        createStateVariable: "fixedPreliminary",
+        defaultValue: null, //false,
+        // public: true,
+        // forRenderer: true,
       },
       styleNumber: {
         createComponentOfType: "number",
@@ -294,14 +288,59 @@ export default class BaseComponent {
     return [];
   }
 
-  static returnChildLogic({ componentInfoObjects, components }) {
-    let childLogic = new ChildLogicClass({
-      parentComponentType: this.componentType,
-      componentInfoObjects,
-      components,
-    });
+  static returnChildGroups() {
+    return [];
+  }
 
-    return childLogic;
+  static get childGroups() {
+    if (this.hasOwnProperty("childGroupsData")) {
+      return this.childGroupsData;
+    } else {
+      this.childGroupsData = this.returnChildGroups();
+      return this.childGroupsData;
+    }
+  }
+
+  static childGroupOfComponentTypeData;
+
+  static get childGroupOfComponentType() {
+    if (this.hasOwnProperty("childGroupOfComponentTypeData")) {
+      return this.childGroupOfComponentTypeData
+    } else {
+      this.childGroupOfComponentTypeData = {};
+      return this.childGroupOfComponentTypeData;
+    }
+  }
+
+  static childGroupIndsByNameData;
+
+  static get childGroupIndsByName() {
+    if (this.hasOwnProperty("childGroupIndsByNameData")) {
+      return Object.assign({}, this.childGroupIndsByNameData);
+    }
+
+    this.childGroupIndsByNameData = {};
+    for (let [ind, group] of this.childGroups.entries()) {
+      if (group.group in this.childGroupIndsByNameData) {
+        throw Error(`Invalid childGroups for componentClass ${this.componentType}: ${group} is repeated`)
+      }
+      this.childGroupIndsByNameData[group.group] = ind;
+    }
+
+    return Object.assign({}, this.childGroupIndsByNameData);
+  }
+
+
+  returnMatchedChildIndices(childGroups) {
+    let matchedIndices = [];
+    for (let groupName of childGroups) {
+      let matches = this.childMatchesByGroup[groupName];
+      if (!matches) {
+        throw Error(`child group ${groupName} is not defined for a component of type ${this.componentType}`)
+      }
+      matchedIndices.push(...matches)
+    }
+    return matchedIndices.sort((a, b) => a - b);
   }
 
   static returnStateVariableDefinitions() {
@@ -322,10 +361,6 @@ export default class BaseComponent {
           dependencyType: "parentStateVariable",
           variableName: "hidden"
         },
-        parentOverrideChildHide: {
-          dependencyType: "parentStateVariable",
-          variableName: "overrideChildHide"
-        },
         sourceCompositeHidden: {
           dependencyType: "sourceCompositeStateVariable",
           variableName: "hidden"
@@ -341,7 +376,7 @@ export default class BaseComponent {
             dependencyValues.parentHidden === true
             || dependencyValues.sourceCompositeHidden === true
             || dependencyValues.adapterSourceHidden === true
-            || (dependencyValues.hide === true && !dependencyValues.parentOverrideChildHide)
+            || dependencyValues.hide === true
         }
       })
     }
@@ -350,11 +385,20 @@ export default class BaseComponent {
       public: true,
       componentType: "boolean",
       forRenderer: true,
+      neverShadow: true,
       returnDependencies: () => ({
-        disable: {
+        disabledPreliminary: {
           dependencyType: "stateVariable",
-          variableName: "disable",
+          variableName: "disabledPreliminary",
           variablesOptional: true,
+        },
+        disabledAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "disabled",
+        },
+        readOnly: {
+          dependencyType: "flag",
+          flagName: "readOnly"
         },
         parentDisabled: {
           dependencyType: "parentStateVariable",
@@ -369,15 +413,133 @@ export default class BaseComponent {
           variableName: "disabled"
         },
       }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          disabled:  // check === true so null gives false
-            dependencyValues.parentDisabled === true
-            || dependencyValues.sourceCompositeDisabled === true
-            || dependencyValues.adapterSourceDisabled === true
-            || dependencyValues.disable === true
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.disabledPreliminary !== null &&
+          dependencyValues.disabledAttr !== null
+        ) {
+          return {
+            newValues: {
+              disabled: dependencyValues.disabledPreliminary
+            }
+          }
         }
-      })
+
+        let disabled = false;
+        let useEssential = true;
+
+        if (dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
+          disabled = disabled || dependencyValues.parentDisabled;
+          useEssential = false;
+        }
+        if (dependencyValues.sourceCompositeDisabled !== null && !usedDefault.sourceCompositeDisabled) {
+          disabled = disabled || dependencyValues.sourceCompositeDisabled;
+          useEssential = false;
+        }
+        if (dependencyValues.adapterSourceDisabled !== null && !usedDefault.adapterSourceDisabled) {
+          disabled = disabled || dependencyValues.adapterSourceDisabled;
+          useEssential = false;
+        }
+
+        // disabled wasn't supplied by parent/sourceComposite/adapterSource,
+        // was specified as a non-default from disabledPreliminary,
+        // but wasn't specified via an attribute component
+        // It must have been specified from a target shadowing
+        // or from an essential state variable
+        if (useEssential && dependencyValues.disabledPreliminary !== null && !usedDefault.disabledPreliminary) {
+          useEssential = false;
+          disabled = dependencyValues.disabledPreliminary
+        }
+
+        if (useEssential) {
+          return {
+            useEssentialOrDefaultValue: {
+              disabled: { defaultValue: dependencyValues.readOnly === true }
+            }
+          }
+        } else {
+          return { newValues: { disabled } }
+        }
+      },
+    }
+
+    stateVariableDefinitions.fixed = {
+      public: true,
+      componentType: "boolean",
+      forRenderer: true,
+      defaultValue: false,
+      neverShadow: true,
+      returnDependencies: () => ({
+        fixedPreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "fixedPreliminary",
+          variablesOptional: true,
+        },
+        fixedAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "fixed",
+        },
+        parentFixed: {
+          dependencyType: "parentStateVariable",
+          variableName: "fixed"
+        },
+        sourceCompositeFixed: {
+          dependencyType: "sourceCompositeStateVariable",
+          variableName: "fixed"
+        },
+        adapterSourceFixed: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "fixed"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.fixedPreliminary !== null &&
+          dependencyValues.fixedAttr !== null
+        ) {
+          return {
+            newValues: {
+              fixed: dependencyValues.fixedPreliminary
+            }
+          }
+        }
+
+        let fixed = false;
+        let useEssential = true;
+
+        if (dependencyValues.parentFixed !== null && !usedDefault.parentFixed) {
+          fixed = fixed || dependencyValues.parentFixed;
+          useEssential = false;
+        }
+        if (dependencyValues.sourceCompositeFixed !== null && !usedDefault.sourceCompositeFixed) {
+          fixed = fixed || dependencyValues.sourceCompositeFixed;
+          useEssential = false;
+        }
+        if (dependencyValues.adapterSourceFixed !== null && !usedDefault.adapterSourceFixed) {
+          fixed = fixed || dependencyValues.adapterSourceFixed;
+          useEssential = false;
+        }
+
+        // fixed wasn't supplied by parent/sourceComposite/adapterSource,
+        // was specified as a non-default from fixedPreliminary,
+        // but wasn't specified via an attribute component
+        // It must have been specified from a target shadowing
+        // or from an essential state variable
+        if (useEssential && dependencyValues.fixedPreliminary !== null && !usedDefault.fixedPreliminary) {
+          useEssential = false;
+          fixed = dependencyValues.fixedPreliminary
+        }
+
+        if (useEssential) {
+          return {
+            useEssentialOrDefaultValue: {
+              fixed: { variablesToCheck: [] }
+            }
+          }
+        }
+        else {
+          return { newValues: { fixed } }
+        }
+      }
     }
 
     stateVariableDefinitions.isInactiveCompositeReplacement = {

@@ -604,16 +604,16 @@ describe('CobwebPolyline Tag Tests', function () {
 
   });
 
-  it('cobweb polyline graded applet', () => {
+  it('cobweb graded applet', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <setup>
-    <function formula="2x-x^2/3" name="f" />
+    <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:contentId=53c92488b79c60d8bfef45e43f47e5a0e98f09208495a3bd0ae4fbbd747b5dd9" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:contentId=331401b388f39d33269b8d2cd8b4e964afec124cddfa7b60500038da5f9d2e59" assignNames="gradedApplet" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   `}, "*");
     });
@@ -861,4 +861,266 @@ describe('CobwebPolyline Tag Tests', function () {
 
   });
 
+  it('cobweb intro tutorial', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <setup>
+    <function name="f">2x-x^2/3</function>
+  </setup>
+  
+  <copy uri="doenet:contentId=6d72350e798b3c98ad5f78b47c3ed1dee7526cc219c0265a4114314b2aa9e708" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+ 
+  <p>Credit achieved: <copy tname="_document1" prop="creditAchieved" assignNames="ca" /></p>
+  `}, "*");
+    });
+
+    let f = x => 2 * x - x ** 2 / 3;
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/cobwebTutorial/addPoint1')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P1"].movePoint({ x: 0.9, y: -0.1 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.get((cesc('#/cobwebTutorial/addVline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v1"].moveLine({ 
+        point1coords: [1.2, 1], 
+        point2coords: [1.2, 2]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get((cesc('#/cobwebTutorial/addHline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h1"].moveLine({ 
+        point1coords: [2, 1.5], 
+        point2coords: [3, 1.5]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P2"].movePoint({ x: -0.1, y: 1.7 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get((cesc('#/cobwebTutorial/addPoint3'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P3"].movePoint({ x: 1.8, y: 0 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+    cy.get((cesc('#/cobwebTutorial/addVline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v2"].moveLine({ 
+        point1coords: [1.5, 3], 
+        point2coords: [1.5, 4]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+
+    cy.get((cesc('#/cobwebTutorial/addHline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h2"].moveLine({ 
+        point1coords: [4, 2.3], 
+        point2coords: [5, 2.3]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint4'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P4"].movePoint({ x: 0.1, y: 2.5 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+    cy.get(cesc('#/cobwebTutorial/shortcutButton')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+    cy.get(cesc('#/cobwebTutorial/resetTutorial')).click();
+  
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/cobwebTutorial/addPoint1')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P1"].movePoint({ x: 0.9, y: -0.1 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.get((cesc('#/cobwebTutorial/addVline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v1"].moveLine({ 
+        point1coords: [1.2, 1], 
+        point2coords: [1.2, 2]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get((cesc('#/cobwebTutorial/addHline1'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h1"].moveLine({ 
+        point1coords: [2, 1.5], 
+        point2coords: [3, 1.5]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P2"].movePoint({ x: -0.1, y: 1.7 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get((cesc('#/cobwebTutorial/addPoint3'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P3"].movePoint({ x: 1.8, y: 0 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+    cy.get((cesc('#/cobwebTutorial/addVline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/v2"].moveLine({ 
+        point1coords: [1.5, 3], 
+        point2coords: [1.5, 4]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.667')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+
+    cy.get((cesc('#/cobwebTutorial/addHline2'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/h2"].moveLine({ 
+        point1coords: [4, 2.3], 
+        point2coords: [5, 2.3]
+       });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get((cesc('#/cobwebTutorial/addPoint4'))).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/cobwebTutorial/P4"].movePoint({ x: 0.1, y: 2.5 });
+    })
+
+    cy.get(cesc('#/ca')).should('have.text', '0.833')
+    cy.get(cesc('#/cobwebTutorial/next')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+    cy.get(cesc('#/cobwebTutorial/shortcutButton')).click();
+    cy.get(cesc('#/cobwebTutorial/next_button')).should('be.disabled');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+  
+  });
+
+  
 });

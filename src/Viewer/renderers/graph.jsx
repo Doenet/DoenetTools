@@ -37,11 +37,20 @@ export default class Graph extends DoenetRenderer {
     if (this.doenetSvData.displayXAxis) {
       let xaxisOptions = {};
       if (this.doenetSvData.xlabel) {
+        let position = 'rt';
+        let offset = [5, 10];
+        let anchorx = 'right'
+        if (this.doenetSvData.xlabelPosition === "left") {
+          position = 'lft';
+          anchorx = 'left';
+          offset = [-5, 10];
+        }
         xaxisOptions.name = this.doenetSvData.xlabel;
         xaxisOptions.withLabel = true;
         xaxisOptions.label = {
-          position: 'rt',
-          offset: [-10, 15]
+          position,
+          offset,
+          anchorx
         };
       }
       xaxisOptions.ticks = {
@@ -65,11 +74,23 @@ export default class Graph extends DoenetRenderer {
 
       let yaxisOptions = {};
       if (this.doenetSvData.ylabel) {
+        let position = 'rt';
+        let offset = [-10, -5];
+        let anchorx = 'right';
+        if (this.doenetSvData.ylabelPosition === "bottom") {
+          position = 'lft';
+          offset[1] = 5;
+        }
+        if (this.doenetSvData.ylabelAlignment === "right") {
+          anchorx = 'left';
+          offset[0] = 10;
+        }
         yaxisOptions.name = this.doenetSvData.ylabel;
         yaxisOptions.withLabel = true;
         yaxisOptions.label = {
-          position: 'rt',
-          offset: [-25, -5],
+          position,
+          offset,
+          anchorx
         }
       }
       yaxisOptions.ticks = {
@@ -94,7 +115,7 @@ export default class Graph extends DoenetRenderer {
     // this.board.on('down', this.setAllBoardsToStayLowQuality);
 
     this.board.on('boundingbox', () => {
-      if (!this.settingBoundingBox) {
+      if (!(this.settingBoundingBox || this.resizingBoard)) {
         this.previousBoundingbox = this.board.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = this.previousBoundingbox;
         this.actions.changeAxisLimits({
@@ -121,16 +142,41 @@ export default class Graph extends DoenetRenderer {
     if (this.doenetSvData.displayXAxis) {
       this.xaxis.name = this.doenetSvData.xlabel;
       if (this.xaxis.hasLabel) {
+        let position = 'rt';
+        let offset = [5, 10];
+        let anchorx = 'right'
+        if (this.doenetSvData.xlabelPosition === "left") {
+          position = 'lft';
+          anchorx = 'left';
+          offset = [-5, 10];
+        }
+        this.xaxis.label.visProp.position = position;
+        this.xaxis.label.visProp.anchorx = anchorx;
+        this.xaxis.label.visProp.offset = offset;
         this.xaxis.label.needsUpdate = true;
-        this.xaxis.label.update();
+        this.xaxis.label.fullUpdate();
       }
     }
 
     if (this.doenetSvData.displayYAxis) {
       this.yaxis.name = this.doenetSvData.ylabel;
       if (this.yaxis.hasLabel) {
+        let position = 'rt';
+        let offset = [-10, -5];
+        let anchorx = 'right';
+        if (this.doenetSvData.ylabelPosition === "bottom") {
+          position = 'lft';
+          offset[1] = 5;
+        }
+        if (this.doenetSvData.ylabelAlignment === "right") {
+          anchorx = 'left';
+          offset[0] = 10;
+        }
+        this.yaxis.label.visProp.position = position;
+        this.yaxis.label.visProp.offset = offset;
+        this.yaxis.label.visProp.anchorx = anchorx;
         this.yaxis.label.needsUpdate = true;
-        this.yaxis.label.update();
+        this.yaxis.label.fullUpdate();
       }
     }
     let currentDimensions = {
@@ -142,7 +188,9 @@ export default class Graph extends DoenetRenderer {
       currentDimensions.height !== this.previousDimensions.height)
       && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)
     ) {
+      this.resizingBoard = true;
       this.board.resizeContainer(currentDimensions.width, currentDimensions.height);
+      this.resizingBoard = false;
       this.previousDimensions = currentDimensions;
     }
 

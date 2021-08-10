@@ -83,18 +83,14 @@ export default class Tabular extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "zeroOrMoreRows",
-      componentType: 'row',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "rows",
+      componentTypes: ["row"]
+    }]
+
   }
 
 

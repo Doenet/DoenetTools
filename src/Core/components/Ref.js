@@ -15,7 +15,7 @@ export default class Ref extends InlineComponent {
       public: true,
     };
     attributes.uri = {
-      createComponentOfType: "_textFromSingleStringChild",
+      createPrimitiveOfType: "string",
       createStateVariable: "uri",
       defaultValue: null,
       public: true,
@@ -24,20 +24,13 @@ export default class Ref extends InlineComponent {
     return attributes;
   }
 
+  static returnChildGroups() {
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+    return [{
+      group: "anything",
+      componentTypes: ["_base"]
+    }]
 
-    // for the link text
-    childLogic.newLeaf({
-      name: "atLeastZeroAnything",
-      componentType: '_base',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
-
-    return childLogic;
   }
 
 
@@ -160,7 +153,7 @@ export default class Ref extends InlineComponent {
         let dependencies = {
           inlineChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroAnything",
+            childGroups: ["anything"],
             variableNames: ["text"],
             variablesOptional: true
           },

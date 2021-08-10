@@ -12,17 +12,17 @@ $userId = $jwtArray['userId'];
 
 //TODO: Check if $userId is an Instructor who has access
 
-if (!isset($_GET["assignmentId"])) {
+if (!isset($_GET["doenetId"])) {
     http_response_code(400);
     echo "Database Retrieval Error: No assignment specified!";
 } else {
-    $assignmentId = mysqli_real_escape_string($conn,$_REQUEST["assignmentId"]);
-    // echo($assignmentId);
+    $doenetId = mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
+    // echo($doenetId);
     // check to make sure assignment exists
     $sql = "
-        SELECT assignmentId
+        SELECT doenetId
         FROM assignment
-        WHERE assignment.assignmentId = '$assignmentId'
+        WHERE assignment.doenetId = '$doenetId'
     ";
 
     $result = $conn->query($sql);
@@ -32,16 +32,13 @@ if (!isset($_GET["assignmentId"])) {
         SELECT 
 		ua.userId as userId,
 		ua.credit as assignmentCredit,
-		ua.creditOverride as assignmentCreditOverride,
 		uaa.attemptNumber as attemptNumber,
-		uaa.credit as attemptCredit,
-		uaa.creditOverride AS attemptCreditOverride
+		uaa.credit as attemptCredit
         FROM user_assignment_attempt AS uaa
-        LEFT JOIN user_assignment AS ua
-        ON ua.assignmentId = uaa.assignmentId 
+        RIGHT JOIN user_assignment AS ua
+        ON ua.doenetId = uaa.doenetId 
         AND ua.userId = uaa.userId
-        WHERE uaa.assignmentId = '$assignmentId'
-        ORDER BY uaa.attemptNumber
+        WHERE uaa.doenetId = '$doenetId'
         ";
     
         $result = $conn->query($sql);
@@ -53,9 +50,7 @@ if (!isset($_GET["assignmentId"])) {
                     $row['userId'],
                     $row['attemptNumber'],
                     $row['assignmentCredit'],
-                    $row['assignmentCreditOverride'],
                     $row['attemptCredit'],
-                    $row['attemptCreditOverride']
                 )
             );
         }
@@ -67,7 +62,7 @@ if (!isset($_GET["assignmentId"])) {
         echo json_encode($response_arr);
     } else {
         http_response_code(404);
-        echo "Database Retrieval Error: No such assignment: '$assignmentId', or assignmentId exists more than once.";
+        echo "Database Retrieval Error: No such assignment: '$doenetId', or doenetId exists more than once.";
     }
 
     

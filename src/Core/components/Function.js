@@ -26,16 +26,15 @@ export default class Function extends InlineComponent {
 
     attributes.simplify = {
       createComponentOfType: "text",
-      createStateVariable: "simplify",
+      createStateVariable: "simplifySpecified",
       defaultValue: "none",
-      public: true,
       toLowerCase: true,
       valueTransformations: { "true": "full" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     attributes.expand = {
       createComponentOfType: "boolean",
-      createStateVariable: "expand",
+      createStateVariable: "expandSpecified",
       defaultValue: false,
       public: true,
     };
@@ -88,11 +87,6 @@ export default class Function extends InlineComponent {
       forRenderer: true
     };
 
-
-    attributes.formula = {
-      createComponentOfType: "math"
-    }
-
     attributes.minima = {
       createComponentOfType: "extrema"
     }
@@ -133,37 +127,52 @@ export default class Function extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    sugarInstructions.push({
-      childrenRegex: /s/,
-      replacementFunction: ({ matchedChildren }) => ({
+    let wrapStringsAndMacros = function ({ matchedChildren }) {
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      // don't apply to a single macro
+      if (matchedChildren.length === 1 &&
+        matchedChildren[0].componentType !== "string"
+      ) {
+        return { success: false }
+      }
+
+      return {
         success: true,
-        newAttributes: {
-          formula: {
-            component: {
-              componentType: "math",
-              children: matchedChildren
-            }
-          }
-        }
-      })
+        newChildren: [{
+          componentType: "math",
+          children: matchedChildren
+        }],
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: wrapStringsAndMacros
     });
 
     return sugarInstructions;
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "atMostOneFunction",
-      componentType: "function",
-      comparison: 'atMost',
-      number: 1,
-      setAsBase: true,
-    })
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "functions",
+      componentTypes: ["function"]
+    }]
+
   }
 
 
@@ -251,7 +260,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["displayDigits"],
         },
       }),
@@ -262,7 +271,7 @@ export default class Function extends InlineComponent {
               displayDigits: dependencyValues.displayDecimalsAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.functionChild.length === 1 && !usedDefault.functionChild[0]) {
+        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
           return {
             newValues: {
               displayDigits: dependencyValues.functionChild[0].stateValues.displayDigits
@@ -288,7 +297,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["displayDecimals"],
         },
       }),
@@ -299,7 +308,7 @@ export default class Function extends InlineComponent {
               displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.functionChild.length === 1 && !usedDefault.functionChild[0]) {
+        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
           return {
             newValues: {
               displayDecimals: dependencyValues.functionChild[0].stateValues.displayDecimals
@@ -325,7 +334,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["displaySmallAsZero"],
         },
       }),
@@ -336,7 +345,7 @@ export default class Function extends InlineComponent {
               displaySmallAsZero: dependencyValues.displayDecimalsAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.functionChild.length === 1 && !usedDefault.functionChild[0]) {
+        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
           return {
             newValues: {
               displaySmallAsZero: dependencyValues.functionChild[0].stateValues.displaySmallAsZero
@@ -345,6 +354,36 @@ export default class Function extends InlineComponent {
         } else {
           return {
             useEssentialOrDefaultValue: { displaySmallAsZero: { variablesToCheck: ["displaySmallAsZero"] } }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.isInterpolatedFunction = {
+      returnDependencies: () => ({
+        through: {
+          dependencyType: "attributeComponent",
+          attributeName: "through",
+        },
+        minima: {
+          dependencyType: "attributeComponent",
+          attributeName: "minima",
+        },
+        maxima: {
+          dependencyType: "attributeComponent",
+          attributeName: "maxima",
+        },
+        extrema: {
+          dependencyType: "attributeComponent",
+          attributeName: "extrema",
+        },
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            isInterpolatedFunction:
+              dependencyValues.through || dependencyValues.minima ||
+              dependencyValues.maxima || dependencyValues.extrema
           }
         }
       }
@@ -362,7 +401,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["nInputs"]
         },
         variablesAttr: {
@@ -370,14 +409,14 @@ export default class Function extends InlineComponent {
           attributeName: "variables",
           variableNames: ["nComponents"],
         },
+        isInterpolatedFunction: {
+          dependencyType: "stateVariable",
+          variableName: "isInterpolatedFunction"
+        }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.functionChild.length === 1) {
-          return {
-            newValues: {
-              nInputs: dependencyValues.functionChild[0].stateValues.nInputs
-            }
-          }
+        if (dependencyValues.isInterpolatedFunction) {
+          return { newValues: { nInputs: 1 } }
         } else if (dependencyValues.nInputsAttr !== null) {
           let nInputs = dependencyValues.nInputsAttr.stateValues.value;
           if (!(nInputs >= 0)) {
@@ -386,6 +425,12 @@ export default class Function extends InlineComponent {
           return { newValues: { nInputs } };
         } else if (dependencyValues.variablesAttr !== null) {
           return { newValues: { nInputs: dependencyValues.variablesAttr.stateValues.nComponents } }
+        } else if (dependencyValues.functionChild.length > 0) {
+          return {
+            newValues: {
+              nInputs: dependencyValues.functionChild[0].stateValues.nInputs
+            }
+          }
         } else {
           return { useEssentialOrDefaultValue: { nInputs: { variablesToCheck: ["nInputs"] } } }
         }
@@ -404,17 +449,17 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["nOutputs"]
         },
-        formulaAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "formula",
-          variableNames: ["value"],
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["value"]
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.functionChild.length === 1) {
+        if (dependencyValues.functionChild.length > 0) {
           return {
             newValues: {
               nOutputs: dependencyValues.functionChild[0].stateValues.nOutputs
@@ -426,8 +471,8 @@ export default class Function extends InlineComponent {
             nOutputs = 1;
           }
           return { newValues: { nOutputs } };
-        } else if (dependencyValues.formulaAttr !== null) {
-          let formula = dependencyValues.formulaAttr.stateValues.value;
+        } else if (dependencyValues.mathChild.length > 0) {
+          let formula = dependencyValues.mathChild[0].stateValues.value;
           let formulaIsVectorValued = Array.isArray(formula.tree) &&
             ["tuple", "vector"].includes(formula.tree[0]);
 
@@ -452,21 +497,117 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["domain"]
         },
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.functionChild.length === 1) {
+        if (dependencyValues.domainAttr !== null) {
+          return { newValues: { domain: dependencyValues.domainAttr.stateValues.points } };
+        } else if (dependencyValues.functionChild.length > 0) {
           return {
             newValues: {
               domain: dependencyValues.functionChild[0].stateValues.domain
             }
           }
-        } else if (dependencyValues.domainAttr !== null) {
-          return { newValues: { domain: dependencyValues.domainAttr.stateValues.points } };
         } else {
           return { useEssentialOrDefaultValue: { domain: { variablesToCheck: ["domain"] } } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.simplify = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        simplifySpecified: {
+          dependencyType: "stateVariable",
+          variableName: "simplifySpecified"
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["simplify"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (usedDefault.simplifySpecified && dependencyValues.functionChild.length > 0) {
+          return {
+            newValues: {
+              simplify: dependencyValues.functionChild[0].stateValues.simplify
+            }
+          }
+        } else {
+          return { newValues: { simplify: dependencyValues.simplifySpecified } }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues, usedDefault }) {
+        if (usedDefault.simplifySpecified && dependencyValues.functionChild.length > 0) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "functionChild",
+              desiredValue: desiredStateVariableValues.simplify,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "simplifySpecified",
+              desiredValue: desiredStateVariableValues.simplify,
+            }]
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.expand = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        expandSpecified: {
+          dependencyType: "stateVariable",
+          variableName: "expandSpecified"
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["expand"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (usedDefault.expandSpecified && dependencyValues.functionChild.length > 0) {
+          return {
+            newValues: {
+              expand: dependencyValues.functionChild[0].stateValues.expand
+            }
+          }
+        } else {
+          return { newValues: { expand: dependencyValues.expandSpecified } }
+        }
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues, usedDefault }) {
+        if (usedDefault.expandSpecified && dependencyValues.functionChild.length > 0) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "functionChild",
+              desiredValue: desiredStateVariableValues.expand,
+              childIndex: 0,
+              variableIndex: 0
+            }]
+          }
+        } else {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "expandSpecified",
+              desiredValue: desiredStateVariableValues.expand,
+            }]
+          }
         }
       }
     }
@@ -504,7 +645,7 @@ export default class Function extends InlineComponent {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["symbolic"]
         },
         numericalfShadow: {
@@ -519,7 +660,7 @@ export default class Function extends InlineComponent {
       definition({ dependencyValues }) {
         if (dependencyValues.symbolicAttr !== null) {
           return { newValues: { symbolic: dependencyValues.symbolicAttr.stateValues.value } }
-        } else if (dependencyValues.functionChild.length === 1) {
+        } else if (dependencyValues.functionChild.length > 0) {
           return { newValues: { symbolic: dependencyValues.functionChild[0].stateValues.symbolic } }
         } else if (dependencyValues.numericalfShadow) {
           return { newValues: { symbolic: false } }
@@ -527,36 +668,6 @@ export default class Function extends InlineComponent {
           return { newValues: { symbolic: true } }
         } else {
           return { useEssentialOrDefaultValue: { symbolic: { variablesToCheck: ["symbolic"] } } }
-        }
-      }
-    }
-
-    stateVariableDefinitions.isInterpolatedFunction = {
-      returnDependencies: () => ({
-        through: {
-          dependencyType: "attributeComponent",
-          attributeName: "through",
-        },
-        minima: {
-          dependencyType: "attributeComponent",
-          attributeName: "minima",
-        },
-        maxima: {
-          dependencyType: "attributeComponent",
-          attributeName: "maxima",
-        },
-        extrema: {
-          dependencyType: "attributeComponent",
-          attributeName: "extrema",
-        },
-      }),
-      definition({ dependencyValues }) {
-        return {
-          newValues: {
-            isInterpolatedFunction:
-              dependencyValues.through || dependencyValues.minima ||
-              dependencyValues.maxima || dependencyValues.extrema
-          }
         }
       }
     }
@@ -586,13 +697,9 @@ export default class Function extends InlineComponent {
             dependencyType: "parentStateVariable",
             variableName: "variableForChild"
           },
-          isInterpolatedFunction: {
-            dependencyType: "stateVariable",
-            variableName: "isInterpolatedFunction"
-          },
           functionChild: {
             dependencyType: "child",
-            childLogicName: "atMostOneFunction",
+            childGroups: ["functions"],
           },
         };
 
@@ -601,7 +708,7 @@ export default class Function extends InlineComponent {
           dependenciesByKey[arrayKey] = {
             functionChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneFunction",
+              childGroups: ["functions"],
               variableNames: ["variable" + (Number(arrayKey) + 1)],
             },
           }
@@ -610,25 +717,20 @@ export default class Function extends InlineComponent {
         return { globalDependencies, dependenciesByKey }
       },
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arraySize, arrayKeys, usedDefault }) {
-        if (globalDependencyValues.isInterpolatedFunction) {
-          return { newValues: { variables: Array(arraySize[0]).fill(me.fromAst('\uff3f')) } };
-        } else if (globalDependencyValues.functionChild.length === 1) {
-          if (globalDependencyValues.variablesAttr !== null) {
-            console.warn("Variable for function is ignored when it has a function child")
-          }
-          let variables = {};
-          for (let arrayKey of arrayKeys) {
-            variables[arrayKey] = dependencyValuesByKey[arrayKey].functionChild[0]
-              .stateValues["variable" + (Number(arrayKey) + 1)];
-          }
-          return { newValues: { variables } }
-        } else if (globalDependencyValues.variablesAttr !== null) {
+        if (globalDependencyValues.variablesAttr !== null) {
           let variablesSpecified = globalDependencyValues.variablesAttr.stateValues.variables;
           return {
             newValues: {
               variables: returnNVariables(arraySize[0], variablesSpecified)
             }
           }
+        } else if (globalDependencyValues.functionChild.length > 0) {
+          let variables = {};
+          for (let arrayKey of arrayKeys) {
+            variables[arrayKey] = dependencyValuesByKey[arrayKey].functionChild[0]
+              .stateValues["variable" + (Number(arrayKey) + 1)];
+          }
+          return { newValues: { variables } }
         } else if (globalDependencyValues.parentVariableForChild && !usedDefault.parentVariableForChild) {
           return { newValues: { variables: Array(arraySize[0]).fill(globalDependencyValues.parentVariableForChild) } }
         } else {
@@ -651,14 +753,14 @@ export default class Function extends InlineComponent {
       componentType: "math",
       defaultValue: me.fromAst(0),
       returnDependencies: () => ({
-        formulaAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "formula",
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
           variableNames: ["value"]
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunction",
+          childGroups: ["functions"],
           variableNames: ["formula"],
         },
         isInterpolatedFunction: {
@@ -666,22 +768,22 @@ export default class Function extends InlineComponent {
           variableName: "isInterpolatedFunction"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
 
         if (dependencyValues.isInterpolatedFunction) {
           return { newValues: { formula: me.fromAst('\uff3f') } };
-        } else if (dependencyValues.functionChild.length === 1) {
-
+        } else if (dependencyValues.mathChild.length > 0) {
+          return {
+            newValues: {
+              formula: dependencyValues.mathChild[0].stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionChild.length > 0 &&
+          !usedDefault.functionChild[0].formula
+        ) {
           return {
             newValues: {
               formula: dependencyValues.functionChild[0].stateValues.formula
-            }
-          }
-        } else if (dependencyValues.formulaAttr !== null) {
-
-          return {
-            newValues: {
-              formula: dependencyValues.formulaAttr.stateValues.value
             }
           }
         } else {
@@ -954,7 +1056,7 @@ export default class Function extends InlineComponent {
               },
               functionChild: {
                 dependencyType: "child",
-                childLogicName: "atMostOneFunction",
+                childGroups: ["functions"],
                 variableNames: ["symbolicfs"],
               },
               simplify: {
@@ -1002,19 +1104,22 @@ export default class Function extends InlineComponent {
           return {
             newValues: { symbolicfs }
           }
-        } else if (globalDependencyValues.functionChild.length === 1) {
+        } else if (!usedDefault.formula && (
+          globalDependencyValues.formula.tree !== '\uff3f'
+          || globalDependencyValues.functionChild.length === 0
+        )) {
           let symbolicfs = {};
           for (let arrayKey of arrayKeys) {
-            symbolicfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
-              .symbolicfs[arrayKey];
+            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey);
           }
           return {
             newValues: { symbolicfs }
           }
-        } else if (!usedDefault.formula) {
+        } else if (globalDependencyValues.functionChild.length > 0) {
           let symbolicfs = {};
           for (let arrayKey of arrayKeys) {
-            symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey);
+            symbolicfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
+              .symbolicfs[arrayKey];
           }
           return {
             newValues: { symbolicfs }
@@ -1124,7 +1229,7 @@ export default class Function extends InlineComponent {
               },
               functionChild: {
                 dependencyType: "child",
-                childLogicName: "atMostOneFunction",
+                childGroups: ["functions"],
                 variableNames: ["numericalfs"],
               },
               isInterpolatedFunction: {
@@ -1160,19 +1265,22 @@ export default class Function extends InlineComponent {
           return {
             newValues: { numericalfs }
           }
-        } else if (globalDependencyValues.functionChild.length === 1) {
+        } else if (!usedDefault.formula && (
+          globalDependencyValues.formula.tree !== '\uff3f'
+          || globalDependencyValues.functionChild.length === 0
+        )) {
           let numericalfs = {};
           for (let arrayKey of arrayKeys) {
-            numericalfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
-              .numericalfs[arrayKey];
+            numericalfs[arrayKey] = returnNumericalFunctionFromFormula(globalDependencyValues, arrayKey);
           }
           return {
             newValues: { numericalfs }
           }
-        } else if (!usedDefault.formula) {
+        } else if (globalDependencyValues.functionChild.length > 0) {
           let numericalfs = {};
           for (let arrayKey of arrayKeys) {
-            numericalfs[arrayKey] = returnNumericalFunctionFromFormula(globalDependencyValues, arrayKey);
+            numericalfs[arrayKey] = globalDependencyValues.functionChild[0].stateValues
+              .numericalfs[arrayKey];
           }
           return {
             newValues: { numericalfs }
@@ -1356,7 +1464,7 @@ export default class Function extends InlineComponent {
             },
             functionChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneFunction",
+              childGroups: ["functions"],
               variableNames: ["allMinima"],
             },
             isInterpolatedFunction: {
@@ -1548,7 +1656,7 @@ export default class Function extends InlineComponent {
           // check for presence of functionChild
           // as derived classes may have changed the dependencies
           // to eliminate functionChildDependency
-          if (dependencyValues.functionChild && dependencyValues.functionChild.length === 1) {
+          if (dependencyValues.functionChild && dependencyValues.functionChild.length > 0) {
 
             return {
               newValues: {
@@ -1803,7 +1911,7 @@ export default class Function extends InlineComponent {
             },
             functionChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneFunction",
+              childGroups: ["functions"],
               variableNames: ["allMaxima"],
             },
             isInterpolatedFunction: {
@@ -1994,7 +2102,7 @@ export default class Function extends InlineComponent {
           // check for presence of functionChild
           // as derived classes may have changed the dependencies
           // to eliminate functionChildDependency
-          if (dependencyValues.functionChild && dependencyValues.functionChild.length === 1) {
+          if (dependencyValues.functionChild && dependencyValues.functionChild.length > 0) {
             return {
               newValues: {
                 allMaxima: dependencyValues.functionChild[0].stateValues.allMaxima
@@ -2384,18 +2492,26 @@ export default class Function extends InlineComponent {
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables"
             }
           }
         } else {
           return {
             functionChild: {
               dependencyType: "child",
-              childLogicName: "atMostOneFunction",
-              variableNames: ["returnNumericalDerivatives"],
+              childGroups: ["functions"],
+              variableNames: ["returnNumericalDerivatives", "variables"],
             },
             isInterpolatedFunction: {
               dependencyType: "stateVariable",
               variableName: "isInterpolatedFunction"
+            },
+            variables: {
+              dependencyType: "stateVariable",
+              variableName: "variables"
             }
           }
         }
@@ -2411,12 +2527,52 @@ export default class Function extends InlineComponent {
 
         } else {
 
-          if (dependencyValues.functionChild.length === 1 &&
+          if (dependencyValues.functionChild.length > 0 &&
             dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives
           ) {
-            return {
-              newValues: { returnNumericalDerivatives: dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives }
+
+            // check if variables are the same
+            let functionVariables = dependencyValues.variables.map(x => x.subscripts_to_strings().tree);
+            let childVariables = dependencyValues.functionChild[0].stateValues.variables;
+            let childVariablesTrans = childVariables.map(x => x.subscripts_to_strings().tree);
+
+            let variableMapping = {};
+
+            for (let [ind, variable] of functionVariables.entries()) {
+              if (childVariablesTrans[ind] && childVariablesTrans[ind] !== variable) {
+                variableMapping[variable] = childVariables[ind];
+              }
             }
+
+
+            if (Object.keys(variableMapping).length === 0) {
+              return {
+                newValues: { returnNumericalDerivatives: dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives }
+              }
+            } else {
+              let returnNumericalDerivatives = function (derivVariables) {
+                let mappedDerivVariables = [];
+
+                for (let dVar of derivVariables) {
+                  let mapped = variableMapping[dVar.subscripts_to_strings().tree];
+                  if (mapped) {
+                    mappedDerivVariables.push(mapped)
+                  } else {
+                    // have a mapping, but 
+                    mappedDerivVariables.push(me.fromAst('\uff3f'))
+                  }
+                }
+
+                return dependencyValues.functionChild[0].stateValues.returnNumericalDerivatives(mappedDerivVariables)
+
+              }
+
+
+              return {
+                newValues: { returnNumericalDerivatives }
+              }
+            }
+
           } else {
             return { newValues: { returnNumericalDerivatives: null } }
           }
@@ -3725,16 +3881,23 @@ function returnReturnDerivativesOfInterpolatedFunction(dependencyValues) {
 
   let xs = dependencyValues.xs;
   let coeffs = dependencyValues.coeffs;
+  let variable1Trans = dependencyValues.variables[0].subscripts_to_strings().tree;
 
   let x0 = xs[0], xL = xs[xs.length - 1];
 
-  return function (order = 1) {
+  return function (derivVariables) {
 
-    if (order > 3) {
+    let derivVariablesTrans = derivVariables.map(x => x.subscripts_to_strings().tree);
+
+    let order = derivVariablesTrans.length;
+
+    if (order > 3 || !derivVariablesTrans.every(x => x === variable1Trans)
+      || derivVariablesTrans.includes('\uff3f')
+    ) {
       return x => 0
     }
 
-    if (order < 1 || !Number.isInteger(order) || xs == null) {
+    if (order === 0 || xs === null) {
       return x => NaN
     }
 

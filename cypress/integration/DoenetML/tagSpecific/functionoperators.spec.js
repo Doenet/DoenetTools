@@ -210,7 +210,7 @@ describe('Function Operator Tag Tests', function () {
     </math>
 
     <p><m>f($x) =
-    <function name="f" variables="$x" formula="$formula" />
+    <function name="f" variables="$x">$formula</function>
     </m></p>
 
     <p><m>f'($x) =
@@ -338,17 +338,27 @@ describe('Function Operator Tag Tests', function () {
       <function name="f3">xyz</function>
       <function name="f4" variables="z">xyz</function>
       <derivative name="d1"><function>x^2</function></derivative>
-      <derivative name="d2"><math>x^2</math></derivative>
-      <derivative name="d3"><function formula="x^2sin(z)" /></derivative>
+      <derivative name="d2"><math name="x2">x^2</math></derivative>
+      <derivative name="d2b">$x2</derivative>
+      <derivative name="d2c"><copy tname="x2" /></derivative>
+      <derivative name="d3"><function>x^2sin(z)</function></derivative>
       <derivative name="d4" variables="z">x^2sin(z)</derivative>
+      <math name='var'>z</math><number name="a">2</number>
+      <derivative name="d4b" variables="$var">x^$a sin($var)</derivative>
       <derivative name="d5"><copy tname="f1" /></derivative>
+      <derivative name="d5b">$f1</derivative>
       <derivative name="d6"><copy tname="f2" /></derivative>
+      <derivative name="d6b">$f2</derivative>
       <derivative name="d7"><copy tname="f3" /></derivative>
+      <derivative name="d7b">$f3</derivative>
       <derivative name="d8"><copy tname="f4" /></derivative>
+      <derivative name="d8b">$f4</derivative>
       <derivative variables="q" name="d9"><copy tname="f1" /></derivative>
       <derivative variables="q" name="d10"><copy tname="f2" /></derivative>
       <derivative variables="q" name="d11"><copy tname="f3" /></derivative>
       <derivative variables="q" name="d12"><copy tname="f4" /></derivative>
+      <derivative variables="y" name="d13"><copy tname="f3" /></derivative>
+      <derivative variables="y" name="d14"><copy tname="f4" /></derivative>
       `}, "*");
     });
 
@@ -359,18 +369,408 @@ describe('Function Operator Tag Tests', function () {
       let components = Object.assign({}, win.state.components);
       expect(components['/d1'].stateValues.formula.equals(me.fromText("2x"))).eq(true);
       expect(components['/d2'].stateValues.formula.equals(me.fromText("2x"))).eq(true);
+      expect(components['/d2b'].stateValues.formula.equals(me.fromText("2x"))).eq(true);
+      expect(components['/d2c'].stateValues.formula.equals(me.fromText("2x"))).eq(true);
       expect(components['/d3'].stateValues.formula.equals(me.fromText("2x sin(z)"))).eq(true);
       expect(components['/d4'].stateValues.formula.equals(me.fromText("x^2cos(z)"))).eq(true);
+      expect(components['/d4b'].stateValues.formula.equals(me.fromText("x^2cos(z)"))).eq(true);
       expect(components['/d5'].stateValues.formula.equals(me.fromText("cos(x)"))).eq(true);
+      expect(components['/d5b'].stateValues.formula.equals(me.fromText("cos(x)"))).eq(true);
       expect(components['/d6'].stateValues.formula.equals(me.fromText("2e^(2y)"))).eq(true);
+      expect(components['/d6b'].stateValues.formula.equals(me.fromText("2e^(2y)"))).eq(true);
       expect(components['/d7'].stateValues.formula.equals(me.fromText("yz"))).eq(true);
+      expect(components['/d7b'].stateValues.formula.equals(me.fromText("yz"))).eq(true);
       expect(components['/d8'].stateValues.formula.equals(me.fromText("xy"))).eq(true);
-      expect(components['/d9'].stateValues.formula.equals(me.fromText("cos(x)"))).eq(true);
-      expect(components['/d10'].stateValues.formula.equals(me.fromText("2e^(2y)"))).eq(true);
-      expect(components['/d11'].stateValues.formula.equals(me.fromText("yz"))).eq(true);
-      expect(components['/d12'].stateValues.formula.equals(me.fromText("xy"))).eq(true);
+      expect(components['/d8b'].stateValues.formula.equals(me.fromText("xy"))).eq(true);
+      expect(components['/d9'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d10'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d11'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d12'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d13'].stateValues.formula.equals(me.fromText("xz"))).eq(true);
+      expect(components['/d14'].stateValues.formula.equals(me.fromText("xz"))).eq(true);
     })
   })
+
+  it('specifying derivative variables of a function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f1" nInputs="3">sin(x+y^2)z</function>
+      <function name="f2" variables="z y x">sin(x+y^2)z</function>
+      <function name="f3" variables="x y">sin(x+y^2)z</function>
+      <function name="f4" variables="x_1 x_2 x_3">sin(x_1+x_2^2)x_3</function>
+      <derivative name="d11">$f1</derivative>
+      <derivative name="d12" variables="z">$f1</derivative>
+      <derivative name="d13" derivVariables="x">$f1</derivative>
+      <derivative name="d14" derivVariables="z">$f1</derivative>
+      <derivative name="d15" derivVariables="y z">$f1</derivative>
+      <derivative name="d16" derivVariables="x x y">$f1</derivative>
+      <derivative name="d17" derivVariables="u">$f1</derivative>
+      <derivative name="d18" derivVariables="x x y" variables="z">$f1</derivative>
+
+      <derivative name="d21">$f2</derivative>
+      <derivative name="d22" variables="x">$f2</derivative>
+      <derivative name="d23" derivVariables="x">$f2</derivative>
+      <derivative name="d24" derivVariables="z">$f2</derivative>
+      <derivative name="d25" derivVariables="y z">$f2</derivative>
+      <derivative name="d26" derivVariables="x x y">$f2</derivative>
+      <derivative name="d27" derivVariables="u">$f2</derivative>
+      <derivative name="d28" derivVariables="x x y" variables="z">$f2</derivative>
+
+      <derivative name="d31">$f3</derivative>
+      <derivative name="d32" variables="z">$f3</derivative>
+      <derivative name="d33" derivVariables="x">$f3</derivative>
+      <derivative name="d34" derivVariables="z">$f3</derivative>
+      <derivative name="d35" derivVariables="y z">$f3</derivative>
+      <derivative name="d36" derivVariables="x x y">$f3</derivative>
+      <derivative name="d37" derivVariables="u">$f3</derivative>
+      <derivative name="d38" derivVariables="x x y" variables="z">$f3</derivative>
+
+      <derivative name="d41">$f4</derivative>
+      <derivative name="d42" derivVariables="x_1 x_2 x_3">$f4</derivative>
+      <derivative name="d43" derivVariables="x">$f4</derivative>
+      <derivative name="d44" derivVariables="x_1 x_2 x_3" variables="x_3 x_2 x_1">$f4</derivative>
+
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/d11'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d11'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d11'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d12'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/d12'].stateValues.variables.map(x => x.tree)).eqls(["z"])
+      expect(components['/d12'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d13'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d13'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d13'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d14'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/d14'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d14'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d15'].stateValues.formula.equals(me.fromText("2 y cos(x+y^2)"))).eq(true);
+      expect(components['/d15'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d15'].stateValues.derivVariables.map(x => x.tree)).eqls(["y", "z"])
+
+      expect(components['/d16'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d16'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d16'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x", "y"])
+
+      expect(components['/d17'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d17'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d17'].stateValues.derivVariables.map(x => x.tree)).eqls(["u"])
+
+      expect(components['/d18'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d18'].stateValues.variables.map(x => x.tree)).eqls(["z"])
+      expect(components['/d18'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x", "y"])
+
+
+      expect(components['/d21'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/d21'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/d21'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d22'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d22'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d22'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d23'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d23'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/d23'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d24'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/d24'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/d24'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d25'].stateValues.formula.equals(me.fromText("2 y cos(x+y^2)"))).eq(true);
+      expect(components['/d25'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/d25'].stateValues.derivVariables.map(x => x.tree)).eqls(["y", "z"])
+
+      expect(components['/d26'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d26'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/d26'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x", "y"])
+
+      expect(components['/d27'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d27'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/d27'].stateValues.derivVariables.map(x => x.tree)).eqls(["u"])
+
+      expect(components['/d28'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d28'].stateValues.variables.map(x => x.tree)).eqls(["z"])
+      expect(components['/d28'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x", "y"])
+
+
+      expect(components['/d31'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d31'].stateValues.variables.map(x => x.tree)).eqls(["x", "y"])
+      expect(components['/d31'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d32'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/d32'].stateValues.variables.map(x => x.tree)).eqls(["z"])
+      expect(components['/d32'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d33'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d33'].stateValues.variables.map(x => x.tree)).eqls(["x", "y"])
+      expect(components['/d33'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d34'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/d34'].stateValues.variables.map(x => x.tree)).eqls(["x", "y"])
+      expect(components['/d34'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d35'].stateValues.formula.equals(me.fromText("2 y cos(x+y^2)"))).eq(true);
+      expect(components['/d35'].stateValues.variables.map(x => x.tree)).eqls(["x", "y"])
+      expect(components['/d35'].stateValues.derivVariables.map(x => x.tree)).eqls(["y", "z"])
+
+      expect(components['/d36'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d36'].stateValues.variables.map(x => x.tree)).eqls(["x", "y"])
+      expect(components['/d36'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x", "y"])
+
+      expect(components['/d37'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d37'].stateValues.variables.map(x => x.tree)).eqls(["x", "y"])
+      expect(components['/d37'].stateValues.derivVariables.map(x => x.tree)).eqls(["u"])
+
+      expect(components['/d38'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d38'].stateValues.variables.map(x => x.tree)).eqls(["z"])
+      expect(components['/d38'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x", "y"])
+
+
+      expect(components['/d41'].stateValues.formula.equals(me.fromText("cos(x_1+x_2^2)x_3"))).eq(true);
+      expect(components['/d41'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+      expect(components['/d41'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 1]])
+
+      expect(components['/d42'].stateValues.formula.equals(me.fromText("-2 x_2 sin(x_1+x_2^2)"))).eq(true);
+      expect(components['/d42'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+      expect(components['/d42'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+
+      expect(components['/d43'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d43'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+      expect(components['/d43'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d44'].stateValues.formula.equals(me.fromText("-2 x_2 sin(x_1+x_2^2)"))).eq(true);
+      expect(components['/d44'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 3], ["_", "x", 2], ["_", "x", 1]])
+      expect(components['/d44'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+
+    })
+  })
+
+  it('specifying derivative variables of an expression', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <math name="m1">sin(x+y^2)z</math>
+      <math name="m2">sin(x_1+x_2^2)x_3</math>
+      <derivative name="d1">$m1</derivative>
+      <derivative name="d2" variables="x">$m1</derivative>
+      <derivative name="d3" variables="x y z">$m1</derivative>
+      <derivative name="d4" variables="z y x">$m1</derivative>
+      <derivative name="d5" derivVariables="x">$m1</derivative>
+      <derivative name="d5a" derivVariables="x" variables="x y z">$m1</derivative>
+      <derivative name="d6" derivVariables="x x">$m1</derivative>
+      <derivative name="d6a" derivVariables="x"><derivative derivVariables="x">$m1</derivative></derivative>
+      <derivative name="d6b" derivVariables="x" variables="x y z"><derivative derivVariables="x">$m1</derivative></derivative>
+      <derivative name="d6c" derivVariables="x"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative>
+      <derivative name="d6d" derivVariables="x x" variables="x y z">$m1</derivative>
+      <derivative name="d7" derivVariables="x y">$m1</derivative>
+      <derivative name="d7a" derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative>
+      <derivative name="d7b" derivVariables="y" variables="x y z"><derivative derivVariables="x">$m1</derivative></derivative>
+      <derivative name="d7c" derivVariables="y"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative>
+      <derivative name="d8" derivVariables="x y z">$m1</derivative>
+      <derivative name="d8a" derivVariables="z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative>
+      <derivative name="d8b" derivVariables="z" variables="x y z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative>
+      <derivative name="d8c" derivVariables="z"><derivative derivVariables="y"><derivative derivVariables="x" variables="x y z">$m1</derivative></derivative></derivative>
+      <derivative name="d9" derivVariables="x y z x">$m1</derivative>
+      <derivative name="d9a" derivVariables="x"><derivative derivVariables="z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
+      <derivative name="d9b" derivVariables="x"><derivative derivVariables="z" variables="x y z"><derivative derivVariables="y"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
+      <derivative name="d9c" derivVariables="x"><derivative derivVariables="z"><derivative derivVariables="y" variables="x y z"><derivative derivVariables="x">$m1</derivative></derivative></derivative></derivative>
+      <derivative name="d10" derivVariables="q">$m1</derivative>
+      <derivative name="d11" derivVariables="y" variables="x y z">$m1</derivative>
+      <derivative name="d12" derivVariables="y" variables="x z">$m1</derivative>
+
+
+      <derivative name="d13" variables="x_1 x_2 x_3">$m2</derivative>
+      <derivative name="d14" derivVariables="x_1 x_1">$m2</derivative>
+      <derivative name="d15" derivVariables="x_1 x_1" variables="x_1 x_2 x_3">$m2</derivative>
+
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/d1'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d1'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d1'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d2'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d2'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d2'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d3'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d3'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d3'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d4'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/d4'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/d4'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d5'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d5'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d5'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d5a'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/d5a'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d5a'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d6'].stateValues.formula.equals(me.fromText("-sin(x+y^2)z"))).eq(true);
+      expect(components['/d6'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d6'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x"])
+
+      expect(components['/d6a'].stateValues.formula.equals(me.fromText("-sin(x+y^2)z"))).eq(true);
+      expect(components['/d6a'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d6a'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d6b'].stateValues.formula.equals(me.fromText("-sin(x+y^2)z"))).eq(true);
+      expect(components['/d6b'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d6b'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d6c'].stateValues.formula.equals(me.fromText("-sin(x+y^2)z"))).eq(true);
+      expect(components['/d6c'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d6c'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d6d'].stateValues.formula.equals(me.fromText("-sin(x+y^2)z"))).eq(true);
+      expect(components['/d6d'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d6d'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "x"])
+
+      expect(components['/d7'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)z"))).eq(true);
+      expect(components['/d7'].stateValues.variables.map(x => x.tree)).eqls(["x", "y"])
+      expect(components['/d7'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "y"])
+
+      expect(components['/d7a'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)z"))).eq(true);
+      expect(components['/d7a'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d7a'].stateValues.derivVariables.map(x => x.tree)).eqls(["y"])
+
+      expect(components['/d7b'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)z"))).eq(true);
+      expect(components['/d7b'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d7b'].stateValues.derivVariables.map(x => x.tree)).eqls(["y"])
+
+      expect(components['/d7c'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)z"))).eq(true);
+      expect(components['/d7c'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d7c'].stateValues.derivVariables.map(x => x.tree)).eqls(["y"])
+
+      expect(components['/d8'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)"))).eq(true);
+      expect(components['/d8'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d8'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "y", "z"])
+
+      expect(components['/d8a'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)"))).eq(true);
+      expect(components['/d8a'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d8a'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d8b'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)"))).eq(true);
+      expect(components['/d8b'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d8b'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d8c'].stateValues.formula.equals(me.fromText("-2 y sin(x+y^2)"))).eq(true);
+      expect(components['/d8c'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d8c'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/d9'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)"))).eq(true);
+      expect(components['/d9'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d9'].stateValues.derivVariables.map(x => x.tree)).eqls(["x", "y", "z", "x"])
+
+      expect(components['/d9a'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)"))).eq(true);
+      expect(components['/d9a'].stateValues.variables.map(x => x.tree)).eqls(["x"])
+      expect(components['/d9a'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d9b'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)"))).eq(true);
+      expect(components['/d9b'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d9b'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d9c'].stateValues.formula.equals(me.fromText("-2 y cos(x+y^2)"))).eq(true);
+      expect(components['/d9c'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d9c'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/d10'].stateValues.formula.equals(me.fromText("0"))).eq(true);
+      expect(components['/d10'].stateValues.variables.map(x => x.tree)).eqls(["q"])
+      expect(components['/d10'].stateValues.derivVariables.map(x => x.tree)).eqls(["q"])
+
+      expect(components['/d11'].stateValues.formula.equals(me.fromText("2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d11'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/d11'].stateValues.derivVariables.map(x => x.tree)).eqls(["y"])
+
+      expect(components['/d12'].stateValues.formula.equals(me.fromText("2 y cos(x+y^2)z"))).eq(true);
+      expect(components['/d12'].stateValues.variables.map(x => x.tree)).eqls(["x", "z"])
+      expect(components['/d12'].stateValues.derivVariables.map(x => x.tree)).eqls(["y"])
+
+      expect(components['/d13'].stateValues.formula.equals(me.fromText("cos(x_1+x_2^2)x_3"))).eq(true);
+      expect(components['/d13'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+      expect(components['/d13'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 1]])
+
+      expect(components['/d14'].stateValues.formula.equals(me.fromText("-sin(x_1+x_2^2)x_3"))).eq(true);
+      expect(components['/d14'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 1]])
+      expect(components['/d14'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 1]])
+
+      expect(components['/d15'].stateValues.formula.equals(me.fromText("-sin(x_1+x_2^2)x_3"))).eq(true);
+      expect(components['/d15'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+      expect(components['/d15'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 1]])
+
+    })
+  })
+
+  it('derivative of function with changed variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f1" variables="x y z">sin(x+y^2)z</function>
+      <function name="f2" variables="z y x">$f1</function>
+      <function name="g1" variables="x_1 x_2 x_3">sin(x_1+x_2^2)x_3</function>
+      <function name="g2" variables="x_3 x_2 x_1">$g1</function>
+      <derivative name="df1">$f1</derivative>
+      <derivative name="d2f1">$df1</derivative>
+      <derivative name="df2">$f2</derivative>
+      <derivative name="d2f2">$df2</derivative>
+      <derivative name="dg1">$g1</derivative>
+      <derivative name="d2g1">$dg1</derivative>
+      <derivative name="dg2">$g2</derivative>
+      <derivative name="d2g2">$dg2</derivative>
+
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      expect(components['/df1'].stateValues.formula.equals(me.fromText("cos(x+y^2)z"))).eq(true);
+      expect(components['/df1'].stateValues.variables.map(x => x.tree)).eqls(["x", "y", "z"])
+      expect(components['/df1'].stateValues.derivVariables.map(x => x.tree)).eqls(["x"])
+
+      expect(components['/df2'].stateValues.formula.equals(me.fromText("sin(x+y^2)"))).eq(true);
+      expect(components['/df2'].stateValues.variables.map(x => x.tree)).eqls(["z", "y", "x"])
+      expect(components['/df2'].stateValues.derivVariables.map(x => x.tree)).eqls(["z"])
+
+      expect(components['/dg1'].stateValues.formula.equals(me.fromText("cos(x_1+x_2^2)x_3"))).eq(true);
+      expect(components['/dg1'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 1], ["_", "x", 2], ["_", "x", 3]])
+      expect(components['/dg1'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 1]])
+
+      expect(components['/dg2'].stateValues.formula.equals(me.fromText("sin(x_1+x_2^2)"))).eq(true);
+      expect(components['/dg2'].stateValues.variables.map(x => x.tree)).eqls([["_", "x", 3], ["_", "x", 2], ["_", "x", 1]])
+      expect(components['/dg2'].stateValues.derivVariables.map(x => x.tree)).eqls([["_", "x", 3]])
+    })
+  })
+
 
   // check to make sure fixed bug where wasn't displaying inside <m>
   it('derivative displayed inside <m>', () => {
@@ -481,6 +881,302 @@ describe('Function Operator Tag Tests', function () {
     })
   })
 
+  it('derivatives of interpolated function specified with variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f" variables="x" maxima="(5,-3)" minima="(-5,3)" />
+      <function name="g" styleNumber="2" variables="y" minima="(3,-9)" maxima="(-3,9)" />
+    
+      <derivative name="df1">$f</derivative>
+      <derivative name="dg1" styleNumber="2">$g</derivative>
+    
+      <derivative name="df1b" derivVariables="x">$f</derivative>
+      <derivative name="zero1" derivVariables="x" styleNumber="2">$g</derivative>
+    
+      <derivative name="zero2" derivVariables="y">$f</derivative>
+      <derivative name="dg1b" derivVariables="y" styleNumber="2">$g</derivative>
+    
+      <derivative name="df2" derivVariables="x x">$f</derivative>
+      <derivative name="dg2" derivVariables="y y" styleNumber="2">$g</derivative>
+
+      <derivative name="zero3" derivVariables="x y">$f</derivative>
+      <derivative name="zero4" derivVariables="x y" styleNumber="2">$g</derivative>
+
+      <derivative name="zero5" derivVariables="y x">$f</derivative>
+      <derivative name="zero6" derivVariables="y x" styleNumber="2">$g</derivative>
+
+      <derivative name="df3" derivVariables="x x x">$f</derivative>
+      <derivative name="dg3" derivVariables="y y y" styleNumber="2">$g</derivative>
+    
+      <derivative name="df4" derivVariables="x x x x">$f</derivative>
+      <derivative name="dg4" derivVariables="y y y y" styleNumber="2">$g</derivative>
+      
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = 0.0001;
+
+      // make sure we don't get within dx of a grid point
+      for (let x = -10.02412412; x <= 10; x += 0.5) {
+
+        let f_0 = components["/f"].stateValues.fs[0](x);
+        let f_1 = components["/f"].stateValues.fs[0](x + dx);
+        let df1_05 = components["/df1"].stateValues.fs[0](x + dx / 2);
+        let df1b_05 = components["/df1b"].stateValues.fs[0](x + dx / 2);
+        expect(df1_05).closeTo((f_1 - f_0) / dx, 1E-6);
+        expect(df1b_05).eq(df1_05);
+
+        let g_0 = components["/g"].stateValues.fs[0](x);
+        let g_1 = components["/g"].stateValues.fs[0](x + dx);
+        let dg1_05 = components["/dg1"].stateValues.fs[0](x + dx / 2);
+        let dg1b_05 = components["/dg1b"].stateValues.fs[0](x + dx / 2);
+        expect(dg1_05).closeTo((g_1 - g_0) / dx, 1E-6);
+        expect(dg1b_05).eq(dg1_05);
+
+
+        let df1_n05 = components["/df1"].stateValues.fs[0](x - dx / 2);
+        let df2_0 = components["/df2"].stateValues.fs[0](x);
+        expect(df2_0).closeTo((df1b_05 - df1_n05) / dx, 1E-6)
+
+        let dg1_n05 = components["/dg1"].stateValues.fs[0](x - dx / 2);
+        let dg2_0 = components["/dg2"].stateValues.fs[0](x);
+        expect(dg2_0).closeTo((dg1b_05 - dg1_n05) / dx, 1E-6)
+
+        let df2_1 = components["/df2"].stateValues.fs[0](x + dx);
+        let df3_05 = components["/df3"].stateValues.fs[0](x + dx / 2);
+        expect(df3_05).closeTo((df2_1 - df2_0) / dx, 1E-6)
+
+        let dg2_1 = components["/dg2"].stateValues.fs[0](x + dx);
+        let dg3_05 = components["/dg3"].stateValues.fs[0](x + dx / 2);
+        expect(dg3_05).closeTo((dg2_1 - dg2_0) / dx, 1E-6)
+
+        let df3_n05 = components["/df3"].stateValues.fs[0](x - dx / 2);
+        let df4_0 = components["/df4"].stateValues.fs[0](x);
+        expect(df4_0).closeTo((df3_05 - df3_n05) / dx, 1E-6)
+
+        let dg3_n05 = components["/dg3"].stateValues.fs[0](x - dx / 2);
+        let dg4_0 = components["/dg4"].stateValues.fs[0](x);
+        expect(dg4_0).closeTo((dg3_05 - dg3_n05) / dx, 1E-6)
+
+        expect(components["/zero1"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero2"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero3"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero4"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero5"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero6"].stateValues.fs[0](x)).eq(0)
+
+      }
+    })
+  })
+
+  it('derivatives of interpolated function with changed variables', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f" variables="x" maxima="(5,-3)" minima="(-5,3)" />
+      <function name="g" styleNumber="2" variables="y" >$f</function>
+    
+      <derivative name="df1">$f</derivative>
+      <derivative name="dg1" styleNumber="2">$g</derivative>
+    
+      <derivative name="df1b" derivVariables="x">$f</derivative>
+      <derivative name="zero1" derivVariables="x" styleNumber="2">$g</derivative>
+    
+      <derivative name="zero2" derivVariables="y">$f</derivative>
+      <derivative name="dg1b" derivVariables="y" styleNumber="2">$g</derivative>
+    
+      <derivative name="df2" derivVariables="x x">$f</derivative>
+      <derivative name="dg2" derivVariables="y y" styleNumber="2">$g</derivative>
+    
+      <derivative name="df2b" derivVariables="x"><derivative derivVariables="x">$f</derivative></derivative>
+      <derivative name="dg2b" derivVariables="y" styleNumber="2"><derivative derivVariables="y">$g</derivative></derivative>
+
+      <derivative name="zero3" derivVariables="x y">$f</derivative>
+      <derivative name="zero4" derivVariables="x y" styleNumber="2">$g</derivative>
+
+      <derivative name="zero5" derivVariables="y x">$f</derivative>
+      <derivative name="zero6" derivVariables="y x" styleNumber="2">$g</derivative>
+
+      <derivative name="df3" derivVariables="x x x">$f</derivative>
+      <derivative name="dg3" derivVariables="y y y" styleNumber="2">$g</derivative>
+    
+      <derivative name="df4" derivVariables="x x x x">$f</derivative>
+      <derivative name="dg4" derivVariables="y y y y" styleNumber="2">$g</derivative>
+      
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = 0.0001;
+
+      // make sure we don't get within dx of a grid point
+      for (let x = -10.02412412; x <= 10; x += 0.5) {
+
+        let f_0 = components["/f"].stateValues.fs[0](x);
+        let f_1 = components["/f"].stateValues.fs[0](x + dx);
+        let df1_05 = components["/df1"].stateValues.fs[0](x + dx / 2);
+        let df1b_05 = components["/df1b"].stateValues.fs[0](x + dx / 2);
+        expect(df1_05).closeTo((f_1 - f_0) / dx, 1E-6);
+        expect(df1b_05).eq(df1_05);
+
+        let dg1_05 = components["/dg1"].stateValues.fs[0](x + dx / 2);
+        let dg1b_05 = components["/dg1b"].stateValues.fs[0](x + dx / 2);
+        expect(dg1_05).eq(dg1_05);
+        expect(dg1b_05).eq(dg1_05);
+
+
+        let df1_n05 = components["/df1"].stateValues.fs[0](x - dx / 2);
+        let df2_0 = components["/df2"].stateValues.fs[0](x);
+        expect(df2_0).closeTo((df1b_05 - df1_n05) / dx, 1E-6)
+
+        let dg2_0 = components["/dg2"].stateValues.fs[0](x);
+        expect(dg2_0).eq(df2_0)
+
+        let df2b_0 = components["/df2b"].stateValues.fs[0](x);
+        expect(df2b_0).eq(df2_0)
+
+        let dg2b_0 = components["/dg2b"].stateValues.fs[0](x);
+        expect(dg2b_0).eq(dg2_0)
+
+        let df2_1 = components["/df2"].stateValues.fs[0](x + dx);
+        let df3_05 = components["/df3"].stateValues.fs[0](x + dx / 2);
+        expect(df3_05).closeTo((df2_1 - df2_0) / dx, 1E-6)
+
+        let dg3_05 = components["/dg3"].stateValues.fs[0](x + dx / 2);
+        expect(dg3_05).eq(df3_05)
+
+        let df3_n05 = components["/df3"].stateValues.fs[0](x - dx / 2);
+        let df4_0 = components["/df4"].stateValues.fs[0](x);
+        expect(df4_0).closeTo((df3_05 - df3_n05) / dx, 1E-6)
+
+        let dg4_0 = components["/dg4"].stateValues.fs[0](x);
+        expect(dg4_0).eq(df4_0)
+
+        expect(components["/zero1"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero2"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero3"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero4"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero5"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero6"].stateValues.fs[0](x)).eq(0)
+
+      }
+    })
+  })
+
+  it('derivatives of interpolated function with changed variables, subscript', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f" variables="x_1" maxima="(5,-3)" minima="(-5,3)" />
+      <function name="g" styleNumber="2" variables="x_2" >$f</function>
+    
+      <derivative name="df1">$f</derivative>
+      <derivative name="dg1" styleNumber="2">$g</derivative>
+    
+      <derivative name="df1b" derivVariables="x_1">$f</derivative>
+      <derivative name="zero1" derivVariables="x_1" styleNumber="2">$g</derivative>
+    
+      <derivative name="zero2" derivVariables="x_2">$f</derivative>
+      <derivative name="dg1b" derivVariables="x_2" styleNumber="2">$g</derivative>
+    
+      <derivative name="df2" derivVariables="x_1 x_1">$f</derivative>
+      <derivative name="dg2" derivVariables="x_2 x_2" styleNumber="2">$g</derivative>
+    
+      <derivative name="df2b" derivVariables="x_1"><derivative derivVariables="x_1">$f</derivative></derivative>
+      <derivative name="dg2b" derivVariables="x_2" styleNumber="2"><derivative derivVariables="x_2">$g</derivative></derivative>
+
+      <derivative name="zero3" derivVariables="x_1 x_2">$f</derivative>
+      <derivative name="zero4" derivVariables="x_1 x_2" styleNumber="2">$g</derivative>
+
+      <derivative name="zero5" derivVariables="x_2 x_1">$f</derivative>
+      <derivative name="zero6" derivVariables="x_2 x_1" styleNumber="2">$g</derivative>
+
+      <derivative name="df3" derivVariables="x_1 x_1 x_1">$f</derivative>
+      <derivative name="dg3" derivVariables="x_2 x_2 x_2" styleNumber="2">$g</derivative>
+    
+      <derivative name="df4" derivVariables="x_1 x_1 x_1 x_1">$f</derivative>
+      <derivative name="dg4" derivVariables="x_2 x_2 x_2 x_2" styleNumber="2">$g</derivative>
+    
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let dx = 0.0001;
+
+      // make sure we don't get within dx of a grid point
+      for (let x = -10.02412412; x <= 10; x += 0.5) {
+
+        let f_0 = components["/f"].stateValues.fs[0](x);
+        let f_1 = components["/f"].stateValues.fs[0](x + dx);
+        let df1_05 = components["/df1"].stateValues.fs[0](x + dx / 2);
+        let df1b_05 = components["/df1b"].stateValues.fs[0](x + dx / 2);
+        expect(df1_05).closeTo((f_1 - f_0) / dx, 1E-6);
+        expect(df1b_05).eq(df1_05);
+
+        let dg1_05 = components["/dg1"].stateValues.fs[0](x + dx / 2);
+        let dg1b_05 = components["/dg1b"].stateValues.fs[0](x + dx / 2);
+        expect(dg1_05).eq(dg1_05);
+        expect(dg1b_05).eq(dg1_05);
+
+
+        let df1_n05 = components["/df1"].stateValues.fs[0](x - dx / 2);
+        let df2_0 = components["/df2"].stateValues.fs[0](x);
+        expect(df2_0).closeTo((df1b_05 - df1_n05) / dx, 1E-6)
+
+        let dg2_0 = components["/dg2"].stateValues.fs[0](x);
+        expect(dg2_0).eq(df2_0)
+
+        let df2b_0 = components["/df2b"].stateValues.fs[0](x);
+        expect(df2b_0).eq(df2_0)
+
+        let dg2b_0 = components["/dg2b"].stateValues.fs[0](x);
+        expect(dg2b_0).eq(dg2_0)
+
+        let df2_1 = components["/df2"].stateValues.fs[0](x + dx);
+        let df3_05 = components["/df3"].stateValues.fs[0](x + dx / 2);
+        expect(df3_05).closeTo((df2_1 - df2_0) / dx, 1E-6)
+
+        let dg3_05 = components["/dg3"].stateValues.fs[0](x + dx / 2);
+        expect(dg3_05).eq(df3_05)
+
+        let df3_n05 = components["/df3"].stateValues.fs[0](x - dx / 2);
+        let df4_0 = components["/df4"].stateValues.fs[0](x);
+        expect(df4_0).closeTo((df3_05 - df3_n05) / dx, 1E-6)
+
+        let dg4_0 = components["/dg4"].stateValues.fs[0](x);
+        expect(dg4_0).eq(df4_0)
+
+        expect(components["/zero1"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero2"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero3"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero4"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero5"].stateValues.fs[0](x)).eq(0)
+        expect(components["/zero6"].stateValues.fs[0](x)).eq(0)
+
+      }
+    })
+  })
+
   it('extrema of derivative', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -501,7 +1197,7 @@ describe('Function Operator Tag Tests', function () {
     </math>
 
     <p><m>f($x) =
-    <function name="f" variables="$x" formula="$formula" />
+    <function name="f" variables="$x">$formula</function>
     </m></p>
 
     <p><m>f'($x) =
@@ -729,7 +1425,7 @@ describe('Function Operator Tag Tests', function () {
 
       let fp = components["/fp"].stateValues.numericalf;
 
-      let max1x = (-5-3)/2
+      let max1x = (-5 - 3) / 2
       cy.get('#\\/max1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${max1x},${me.math.round(fp(max1x), 5)})`)
       })
@@ -737,7 +1433,7 @@ describe('Function Operator Tag Tests', function () {
         expect(text.replace(/−/g, '-').trim()).equal(`(${max1x},${me.math.round(fp(max1x), 5)})`)
       })
 
-      let min1x = (-3+0)/2
+      let min1x = (-3 + 0) / 2
       cy.get('#\\/min1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${min1x},${me.math.round(fp(min1x), 5)})`)
       })
@@ -745,7 +1441,7 @@ describe('Function Operator Tag Tests', function () {
         expect(text.replace(/−/g, '-').trim()).equal(`(${min1x},${me.math.round(fp(min1x), 5)})`)
       })
 
-      let max2x = (0+6)/2
+      let max2x = (0 + 6) / 2
       cy.get('#\\/max2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.replace(/−/g, '-').trim()).equal(`(${max2x},${me.math.round(fp(max2x), 5)})`)
       })

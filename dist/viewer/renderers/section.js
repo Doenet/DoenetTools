@@ -181,6 +181,26 @@ export default class Section extends DoenetRenderer {
           onClick: this.actions.revealSection
         }, heading));
       }
+    } else if (this.doenetSvData.boxed) {
+      content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+        style: {
+          display: "block",
+          margin: "4px 4px 0px 4px",
+          padding: "6px",
+          border: "1px solid #C9C9C9",
+          backgroundColor: "#ebebeb"
+        }
+      }, /* @__PURE__ */ React.createElement("a", {
+        name: this.componentName
+      }), heading), /* @__PURE__ */ React.createElement("span", {
+        style: {
+          display: "block",
+          margin: "0px 4px 4px 4px",
+          padding: "6px",
+          border: "1px solid #C9C9C9",
+          backgroundColor: "white"
+        }
+      }, childrenToRender, checkworkComponent));
     } else {
       content = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
         name: this.componentName

@@ -22,6 +22,10 @@ import {
  } from '@fortawesome/free-regular-svg-icons';
 
 import { nanoid } from 'nanoid';
+import {folderDictionaryFilterSelector} from '../../../_reactComponents/Drive/NewDrive';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export const itemHistoryAtom = atomFamily({
   key:"itemHistoryAtom",
@@ -221,6 +225,56 @@ export const fetchDrivesSelector = selector({
     }
   }
 })
+export const loadAssignmentSelector = selectorFamily({
+  key: 'loadAssignmentSelector',
+  get:
+    (doenetId) =>
+    async ({ get, set }) => {
+      const { data } = await axios.get(
+        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
+      );
+      return data;
+    },
+});
+export const assignmentDictionary = atomFamily({
+  key: 'assignmentDictionary',
+  default: selectorFamily({
+    key: 'assignmentDictionary/Default',
+    get:
+      (driveIditemIddoenetIdparentFolderId) =>
+      async ({ get }, instructions) => {
+        let folderInfoQueryKey = {
+          driveId: driveIditemIddoenetIdparentFolderId.driveId,
+          folderId: driveIditemIddoenetIdparentFolderId.folderId,
+        };
+        let folderInfo = get(
+          folderDictionaryFilterSelector(folderInfoQueryKey),
+        );
+        const itemObj =
+          folderInfo?.contentsDictionary?.[
+            driveIditemIddoenetIdparentFolderId.itemId
+          ];
+        if (driveIditemIddoenetIdparentFolderId.doenetId) {
+          const aInfo = await get(
+            loadAssignmentSelector(
+              driveIditemIddoenetIdparentFolderId.doenetId,
+            ),
+          );
+          if (aInfo) {
+            return aInfo?.assignments[0];
+          } else return null;
+        } else return null;
+      },
+  }),
+});
+export let assignmentDictionarySelector = selectorFamily({
+  key: 'assignmentDictionarySelector',
+  get:
+    (driveIditemIddoenetIdparentFolderId) =>
+    ({ get }) => {
+      return get(assignmentDictionary(driveIditemIddoenetIdparentFolderId));
+    },
+});
 
 export const variantInfoAtom = atom({
   key:"variantInfoAtom",
@@ -257,21 +311,32 @@ export function ClipboardLinkButtons(props){
   const addToast = useToast();
 
 
-  if (!props.contentId){
-    console.error("Component only handles contentId at this point")
-    return null;
-  }
+
+  // if (!props.contentId){
+  //   console.error("Component only handles contentId at this point")
+  //   return null;
+  // }
   
 
   const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div> 
+    <ButtonGroup>
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>
-  <button>copy link <FontAwesomeIcon icon={faClipboard}/></button> 
+  {/* <button>copy link <FontAwesomeIcon icon={faClipboard}/></button>  */}
+  <Button disabled={props.disabled} icon={<FontAwesomeIcon icon={faClipboard}/>} value="copy link" />
   </CopyToClipboard>
 
-  <button onClick={
+  <Button 
+  icon = {<FontAwesomeIcon icon={faExternalLinkAlt}/>}
+  value = "visit"
+  disabled={props.disabled} 
+  onClick={
     ()=>window.open(link, '_blank')
-  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button>
+  } /> 
+</ButtonGroup>
+  {/* <button onClick={
+    ()=>window.open(link, '_blank')
+  }>visit <FontAwesomeIcon icon={faExternalLinkAlt}/></button> */}
   </div>
 }
 
@@ -311,7 +376,7 @@ export function RenameVersionControl(props){
     }
 
     if (!textFieldFlag){
-      return <button onClick={()=>setTextFieldFlag(true)}>Rename</button>
+      return <Button disabled={props.disabled} onClick={()=>setTextFieldFlag(true)} value="Rename" />
     }
   return <input type='text' autoFocus value={currentTitle} 
   onChange={(e)=>{setCurrentTitle(e.target.value)}}

@@ -6,20 +6,14 @@ export default class P extends BlockComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "inlines",
+      componentTypes: ["_inline"]
+    }]
 
-    return childLogic;
   }
-
 
   static returnStateVariableDefinitions() {
 
@@ -31,7 +25,7 @@ export default class P extends BlockComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroInline",
+          childGroups: ["inlines"],
           variableNames: ["text"],
           variablesOptional: true,
         }

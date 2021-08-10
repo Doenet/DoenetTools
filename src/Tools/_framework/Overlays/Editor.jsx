@@ -83,6 +83,7 @@ function ReturnToEditingButton(props){
       newObj.doenetML = doenetML;
       newObj.updateNumber = was.updateNumber+1;
       return newObj});
+    set(textEditorInternalValueAtom,doenetML)
   })
 
   if (activeVersionId === ""){ return null; }
@@ -258,6 +259,7 @@ function VersionHistoryPanel(props){
       newObj.doenetML = doenetML;
       newObj.updateNumber = was.updateNumber+1;
       return newObj});
+    set(textEditorInternalValueAtom,doenetML)
   })
 
   const setAsCurrent = useRecoilCallback(({snapshot,set})=> async (doenetId,version)=>{
@@ -364,8 +366,14 @@ function buildTimestamp(){
     dt.getSeconds().toString().padStart(2, '0')}`
 }
 
+const textEditorInternalValueAtom = atom({
+  key:"textEditorInternalValueAtom",
+  default:null
+})
+
 function TextEditor(props){
-  const [editorDoenetML,setEditorDoenetML] = useRecoilState(editorDoenetMLAtom);
+  const setEditorDoenetML = useSetRecoilState(editorDoenetMLAtom);
+  const internalValue = useRecoilValue(textEditorInternalValueAtom);
   const [activeVersionId,setactiveVersionId]  = useRecoilState(versionHistoryActiveAtom);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
@@ -462,24 +470,24 @@ function TextEditor(props){
   //changing textValue Manually will still work of course
 
   //use .slice() to get a copy of the string, will make a reference (and refresh on every keypress) otherwise
-  let [textValue,setTextValue] = useState(editorDoenetML.slice()); 
-  let hasLoaded= useRef(0);
+  // let [textValue,setTextValue] = useState(editorDoenetML.slice()); 
+  // let hasLoaded= useRef(0);
 
-  useEffect(() => {
-    if(hasLoaded.current < 2){
-      setTextValue(editorDoenetML);
-      hasLoaded.current += 1;
-    } 
-  },[editorDoenetML])
+  // useEffect(() => {
+  //   if(hasLoaded.current < 2){
+  //     setTextValue(editorDoenetML);
+  //     hasLoaded.current += 1;
+  //   } 
+  // },[editorDoenetML])
 
 
   const editorInit = useRecoilValue(editorInitAtom);
+
   if (!editorInit){return null;}
 
   return <>
     <CodeMirror
-      setInternalValue={textValue} 
-      readOnly={false}
+      setInternalValue={internalValue} 
       onBeforeChange={(value) => {
         if (activeVersionId === "") { //No timers when active version history
           setEditorDoenetML(value);
@@ -750,6 +758,7 @@ export default function Editor({ doenetId, title, driveId, folderId, itemId }) {
     const viewerObj = await snapshot.getPromise(viewerDoenetMLAtom);
     const updateNumber = viewerObj.updateNumber+1;
     set(viewerDoenetMLAtom,{updateNumber,doenetML})
+    set(textEditorInternalValueAtom,doenetML)
     set(editorInitAtom,true);
   })
 

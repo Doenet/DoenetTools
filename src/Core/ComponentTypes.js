@@ -77,11 +77,12 @@ import Slider from './components/Slider';
 import Markers from './components/Markers';
 import Constraints from './components/Constraints';
 import ConstrainToGrid from './components/ConstrainToGrid';
+import ConstrainToGraph from './components/ConstrainToGraph';
 import AttractToGrid from './components/AttractToGrid';
 import ConstrainTo from './components/ConstrainTo';
 import AttractTo from './components/AttractTo';
 import ConstraintUnion from './components/ConstraintUnion';
-import TransformConstraintIntoAttractor from './components/TransformConstraintIntoAttractor';
+import AttractToConstraint from './components/AttractToConstraint';
 import Intersection from './components/Intersection';
 import Panel from './components/Panel';
 import ConstrainToAngles from './components/ConstrainToAngles';
@@ -122,18 +123,22 @@ import Feedback from './components/Feedback';
 import CollaborateGroups from './components/CollaborateGroups';
 import CollaborateGroupSetup from './components/CollaborateGroupSetup';
 import ConsiderAsResponses from './components/ConsiderAsResponses';
-import SelectByIndex from './components/SelectByIndex';
 import Case from './components/Case';
-import SelectByCondition from './components/SelectByCondition';
 import Lorem from './components/Lorem';
 import UpdateValue from './components/UpdateValue';
 import CallAction from './components/CallAction';
 import TriggerSet from './components/TriggerSet';
 import FunctionIterates from './components/FunctionIterates';
 import Module from './components/Module';
-import ModuleAttribute from './components/ModuleAttribute';
-import ModuleSetup from './components/ModuleSetup';
+import CustomAttribute from './components/CustomAttribute';
 import Setup from './components/Setup';
+import Paginator from './components/Paginator';
+import PaginatorPage from './components/PaginatorPage';
+import PaginatorControls from './components/PaginatorControls';
+import Footnote from './components/Footnote';
+import Caption from './components/Caption';
+import Endpoint from './components/Endpoint';
+import Sort from './components/Sort';
 
 
 //Extended
@@ -151,7 +156,6 @@ import MathBaseOperator from './components/abstract/MathBaseOperator';
 import MathBaseOperatorOneInput from './components/abstract/MathBaseOperatorOneInput';
 import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
 import SectioningComponent from './components/abstract/SectioningComponent';
-import TextFromSingleStringChild from './components/abstract/TextFromSingleStringChild';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
 
@@ -227,11 +231,12 @@ const componentTypeArray = [
   Map, Sources,
   Constraints,
   ConstrainToGrid,
+  ConstrainToGraph,
   AttractToGrid,
   ConstrainTo,
   AttractTo,
   ConstraintUnion,
-  TransformConstraintIntoAttractor,
+  AttractToConstraint,
   Intersection,
   ConstrainToAngles, AttractToAngles,
   ConditionalContent,
@@ -256,18 +261,20 @@ const componentTypeArray = [
   CollaborateGroups,
   CollaborateGroupSetup,
   ConsiderAsResponses,
-  SelectByIndex,
   Case,
-  SelectByCondition,
   Lorem,
   UpdateValue,
   CallAction,
   TriggerSet,
   FunctionIterates,
   Module,
-  ModuleAttribute,
-  ModuleSetup,
+  CustomAttribute,
   Setup,
+  Paginator, PaginatorPage, PaginatorControls,
+  Footnote,
+  Caption,
+  Endpoint,
+  Sort,
 
   BaseComponent,
   InlineComponent,
@@ -286,7 +293,6 @@ const componentTypeArray = [
   FunctionBaseOperator,
   ...Object.values(ComponentSize),
   SectioningComponent,
-  TextFromSingleStringChild,
   InlineRenderInlineChildren,
   TextOrInline,
 ];

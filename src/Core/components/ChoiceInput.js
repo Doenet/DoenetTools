@@ -100,21 +100,15 @@ export default class Choiceinput extends Input {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "atLeastZeroChoices",
-      componentType: "choice",
-      comparison: "atLeast",
-      number: 0,
-      setAsBase: true,
-    })
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "choices",
+      componentTypes: ["choice"]
+    }]
+
   }
-
-
 
   static returnStateVariableDefinitions() {
 
@@ -127,7 +121,7 @@ export default class Choiceinput extends Input {
       returnDependencies: () => ({
         choiceChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChoices",
+          childGroups: ["choices"],
         },
       }),
       definition({ dependencyValues }) {
@@ -140,7 +134,7 @@ export default class Choiceinput extends Input {
       returnDependencies: ({ sharedParameters }) => ({
         choiceChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChoices",
+          childGroups: ["choices"],
           variableNames: ["text"]
         },
         randomizeOrder: {
@@ -273,7 +267,7 @@ export default class Choiceinput extends Input {
         },
         choiceChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChoices",
+          childGroups: ["choices"],
           // variableNames: ["text", "selected", "submitted", "credit"]
         },
       }),
@@ -325,7 +319,7 @@ export default class Choiceinput extends Input {
           },
           choiceChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroChoices",
+            childGroups: ["choices"],
             variableNames: ["text", "preSelect", "disabled", "hidden"]
           },
         };
@@ -362,7 +356,7 @@ export default class Choiceinput extends Input {
         },
         choiceChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChoices",
+          childGroups: ["choices"],
           variableNames: ["text"]
         },
         bindValueTo: {
@@ -417,7 +411,7 @@ export default class Choiceinput extends Input {
           },
           choiceChildren: {
             dependencyType: "child",
-            childLogicName: "atLeastZeroChoices",
+            childGroups: ["choices"],
             variableNames: ["text"]
           },
           indicesMatchedByBoundValue: {
@@ -642,7 +636,7 @@ export default class Choiceinput extends Input {
       returnDependencies: () => ({
         choiceChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChoices",
+          childGroups: ["choices"],
           variableNames: ["selected", "credit"]
         },
         selectMultiple: {
@@ -711,7 +705,7 @@ export default class Choiceinput extends Input {
         },
         choiceChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChoices",
+          childGroups: ["choices"],
           variableNames: ["submitted"]
         },
       }),
@@ -762,7 +756,7 @@ export default class Choiceinput extends Input {
         },
         choiceChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroChoices",
+          childGroups: ["choices"],
           variableNames: ["feedbacks"]
         },
       }),
@@ -872,26 +866,40 @@ export default class Choiceinput extends Input {
 
   updateSelectedIndices({ selectedIndices }) {
     if (!this.stateValues.disabled) {
-      this.coreFunctions.requestUpdate({
-        updateInstructions: [{
-          updateType: "updateValue",
+      let updateInstructions = [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "allSelectedIndices",
+        value: selectedIndices
+      }];
+
+      let event = {
+        verb: "selected",
+        object: {
           componentName: this.componentName,
-          stateVariable: "allSelectedIndices",
-          value: selectedIndices
-        }],
-        event: {
-          verb: "selected",
-          object: {
-            componentName: this.componentName,
-            componentType: this.componentType,
-          },
-          result: {
-            response: selectedIndices,
-            responseText: selectedIndices
-              .map(i => this.stateValues.choiceTexts[i - 1])
-          }
+          componentType: this.componentType,
+        },
+        result: {
+          response: selectedIndices,
+          responseText: selectedIndices
+            .map(i => this.stateValues.choiceTexts[i - 1])
         }
+      }
+
+      if (this.stateValues.answerAncestor) {
+        event.context = {
+          answerAncestor: this.stateValues.answerAncestor.componentName
+        }
+      }
+
+      this.coreFunctions.requestUpdate({
+        updateInstructions,
+        event,
+        callBack: () => this.coreFunctions.triggerChainedActions({
+          componentName: this.componentName,
+        })
       })
+
     }
   }
 

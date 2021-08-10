@@ -14,12 +14,16 @@ import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
+import Form from '../../_reactComponents/PanelHeaderComponents/Form.jsx';
 import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
+import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
+import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
+
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -121,7 +125,7 @@ export default function attempt() {
       req_props: null,
       req_children: [React.createElement(ActionButton), React.createElement(ActionButton), React.createElement(ActionButton)],
       use: 'This groups related action buttons together.',
-    //   props: [
+      props: [
     //     // {name: 'Width - Menu Panel',
     //     // propPreview: '<ActionButtonGroup width="menu" />',
     //     // propCode: {width: 'menu'},
@@ -130,7 +134,11 @@ export default function attempt() {
     //     // propPreview: '<ActionButtonGroup width="500px" />',
     //     // propCode: {width: '500px'},
     //     // description: 'Sets width to custom dimensions'},
-    //   ]
+        {name: 'Vertical',
+        propPreview: '<ActionButtonGroup vertical />',
+        propCode: {vertical},
+        description: 'Aligns buttons vertically'},
+      ]
     },
     {
       name: 'Button',
@@ -187,16 +195,51 @@ export default function attempt() {
       req_props: null,
       req_children: [React.createElement(Button), React.createElement(Button), React.createElement(Button)],
       use: 'This groups related buttons together.',
-    //   props: [
-    //     // {name: 'Width - Menu Panel',
-    //     // propPreview: '<ActionButtonGroup width="menu" />',
-    //     // propCode: {width: 'menu'},
-    //     // description: 'Sets width to fill menu panel width'},
-    //     // {name: 'Width - Custom',
-    //     // propPreview: '<ActionButtonGroup width="500px" />',
-    //     // propCode: {width: '500px'},
-    //     // description: 'Sets width to custom dimensions'},
-    //   ]
+      props: [
+        {name: 'Vertical',
+        propPreview: '<ButtonGroup vertical />',
+        propCode: {vertical},
+        description: 'Makes buttons align vertically'},
+        // {name: 'Width - Menu Panel',
+        // propPreview: '<ActionButtonGroup width="menu" />',
+        // propCode: {width: 'menu'},
+        // description: 'Sets width to fill menu panel width'},
+        // {name: 'Width - Custom',
+        // propPreview: '<ActionButtonGroup width="500px" />',
+        // propCode: {width: '500px'},
+        // description: 'Sets width to custom dimensions'},
+      ]
+    },
+    {
+      name: 'DropdownMenu',
+      id: 'dropdownmenu',
+      code: DropdownMenu,
+      codePreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]}/>',
+      req_props: {items: [[1, "one"], [2, "two"]]},
+      req_children: null,
+      use: 'This is used for selecting one option out of multiple',
+      props: [
+        {name: 'Items',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"], [3, "three"]]} />',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]]},
+        description: 'Sets options'},
+        {name: 'defaultValue',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} defaultValue="Choose your favorite number"/>',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]], defaultValue: "Choose your favorite number"},
+        description: 'Sets default text'},
+        {name: 'Width - Menu Panel',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} width="menu" />',
+        propCode: {items: [[1, "one"], [2, "two"]], width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Width - Custom',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} width="500px" />',
+        propCode: {items: [[1, "one"], [2, "two"]], width: '500px'},
+        description: 'Sets width to custom dimensions'},
+        {name: 'onChange',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} onChange={(({ value }) => console.log(">>>", value)} />',
+        propCode: {items: [[1, "one"], [2, "two"]], onChange: ({ value }) => console.log(">>>", value)},
+        description: 'Function called when data changes'},
+      ]
     },
     {
       name: 'Increment',
@@ -265,44 +308,130 @@ export default function attempt() {
       ]
     },
     {
-    name: 'Textfield',
-    id: 'textfield',
-    code: Textfield,
-    codePreview: '<Textfield/>',
+    name: 'TextArea',
+    id: 'textarea',
+    code: TextArea,
+    codePreview: '<TextArea/>',
     req_props: null,
     req_children: null,
     use: 'This is where you can enter text.',
     props: [
       {name: 'Width - Menu Panel',
-      propPreview: '<Textfield width="menu" />',
+      propPreview: '<TextArea width="menu" />',
       propCode: {width: 'menu'},
       description: 'Sets width to fill menu panel width'},
       {name: 'Value',
-      propPreview: '<Textfield value="Enter cat names"/>',
+      propPreview: '<TextArea value="Enter cat names"/>',
       propCode: {value: 'Enter cat names'},
       description: 'Changes the text'},
       {name: 'Label',
-          propPreview: '<Textfield label="What: "/>',
+          propPreview: '<TextArea label="What: "/>',
           propCode: {label: 'What: '},
           description: 'Adds label to componenet'},
           {name: 'Vertical Label',
-          propPreview: '<Textfield label="What: " vertical/>',
+          propPreview: '<TextArea label="What: " vertical/>',
           propCode: {label: 'What: ', vertical},
           description: 'Adds label to component on top'},
       {name: 'Alert',
-      propPreview: '<Textfield alert/>',
+      propPreview: '<TextArea alert/>',
       propCode: {alert},
       description: 'Changes to alert mode (border is red)'},
       {name: 'onChange',
-      propPreview: '<Textfield onChange={(data) => console.log(data)} />',
+      propPreview: '<TextArea onChange={(data) => console.log(data)} />',
       propCode: {onChange: (data) => console.log(data)},
       description: 'Function called when data changes'},
       {name: 'Disabled',
-          propPreview: '<Increment disabled />',
+          propPreview: '<TextArea disabled />',
           propCode: {disabled},
-          description: 'Makes button not able to be used.'},
+          description: 'Makes TextArea not able to be used.'},
       ]
     },
+    {
+      name: 'Textfield',
+      id: 'textfield',
+      code: Textfield,
+      codePreview: '<Textfield/>',
+      req_props: null,
+      req_children: null,
+      use: 'This is where you can enter text.',
+      props: [
+        {name: 'Width - Menu Panel',
+        propPreview: '<Textfield width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Value',
+        propPreview: '<Textfield value="Enter cat names"/>',
+        propCode: {value: 'Enter cat names'},
+        description: 'Changes the text'},
+        {name: 'Label',
+            propPreview: '<Textfield label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to componenet'},
+            {name: 'Vertical Label',
+            propPreview: '<Textfield label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+        {name: 'Alert',
+        propPreview: '<Textfield alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<Textfield onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'Disabled',
+            propPreview: '<Textfield disabled />',
+            propCode: {disabled},
+            description: 'Makes Textf dield not able to be used.'},
+        ]
+      },
+    {
+      name: 'Form',
+      id: 'form',
+      code: Form,
+      codePreview: '<Form/>',
+      req_props: null,
+      req_children: null,
+      use: 'This is where you can enter text.',
+      props: [
+        {name: 'Width - Menu Panel',
+        propPreview: '<Form width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Submit Button Text',
+        propPreview: '<Form submitButton="add Text" />',
+        propCode: {submitButton:"add Text"},
+        description: 'Changes the button text'},
+        {name: 'Value',
+        propPreview: '<Form value="Enter cat names"/>',
+        propCode: {value: 'Enter cat names'},
+        description: 'Changes the text'},
+        {name: 'Label',
+            propPreview: '<Form label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to componenet'},
+            {name: 'Vertical Label',
+            propPreview: '<Form label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+        {name: 'Alert',
+        propPreview: '<Form alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<Form onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'onClick',
+        propPreview: '<Form onClick={() => console.log("clicked")} />',
+        propCode: {onClick: () => console.log("clicked")},
+        description: 'Function called when form button is clicked'},
+        {name: 'Disabled',
+            propPreview: '<Form disabled />',
+            propCode: {disabled},
+            description: 'Makes Form not able to be used.'},
+        ]
+      },
     {
       name: 'ToggleButton',
       id: 'togglebutton',
@@ -479,6 +608,8 @@ export default function attempt() {
 
     const component = dataStructure.find(({ id }) => id === match.params.componentId)
     var display = component.code
+    var children = component.req_children
+
 
     //PROPS SECTION
     function Props(component) {
@@ -488,7 +619,7 @@ export default function attempt() {
             <h3 key={name}>{name}</h3>
             <p key={name + 'code'} style={{color: "blue"}}>{propPreview}</p>
             <p key={description}>{description}</p>
-            {React.createElement(display, propCode)}
+            {React.createElement(display, propCode, children)}
           </div>)))
       }
       else {

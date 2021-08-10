@@ -104,35 +104,68 @@ export default class Award extends BaseComponent {
 
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let exactlyOneWhen = childLogic.newLeaf({
-      name: "exactlyOneWhen",
-      componentType: 'when',
-      number: 1
-    });
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
 
-    let exactlyOneMath = childLogic.newLeaf({
-      name: "exactlyOneMath",
-      componentType: 'math',
-      number: 1
-    });
+    let replaceStringsAndMacros = function ({ matchedChildren, parentAttributes }) {
+      // if chidren are strings and macros
+      // wrap with award and type
 
-    let exactlyOneText = childLogic.newLeaf({
-      name: "exactlyOneText",
-      componentType: 'text',
-      number: 1
-    });
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
 
-    childLogic.newOperator({
-      name: "whenXorStringXorMathXorText",
-      operator: 'xor',
-      propositions: [exactlyOneWhen, exactlyOneMath, exactlyOneText],
-      setAsBase: true,
-    });
+      let type;
+      if (parentAttributes.type) {
+        type = parentAttributes.type
+      } else {
+        type = "math";
+      }
 
-    return childLogic;
+      if (!["math", "text", "boolean"].includes(type)) {
+        console.warn(`Invalid type ${type}`);
+        type = "math";
+      }
+
+
+      return {
+        success: true,
+        newChildren: [{
+          componentType: type,
+          children: matchedChildren
+        }],
+      }
+    }
+
+    sugarInstructions.push({
+      replacementFunction: replaceStringsAndMacros
+    })
+
+
+    return sugarInstructions;
+
+  }
+
+  static returnChildGroups() {
+
+    return [{
+      group: "whens",
+      componentTypes: ["when"]
+    }, {
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "texts",
+      componentTypes: ["text"]
+    }, {
+      group: "booleans",
+      componentTypes: ["boolean"]
+    }]
+
   }
 
 
@@ -143,13 +176,14 @@ export default class Award extends BaseComponent {
     stateVariableDefinitions.parsedExpression = {
       additionalStateVariablesDefined: ["requireInputInAnswer"],
       returnDependencies: () => ({
-        mathChild: {
+        whenChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneMath",
+          childGroups: ["whens"],
+          variableNames: ["fractionSatisfied"]
         },
-        textChild: {
+        typeChildren: {
           dependencyType: "child",
-          childLogicName: "exactlyOneText",
+          childGroups: ["maths", "texts", "booleans"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -157,9 +191,9 @@ export default class Award extends BaseComponent {
         let parsedExpression = null;
         let requireInputInAnswer = false;
 
-        if (dependencyValues.mathChild.length === 1 ||
-          dependencyValues.textChild.length === 1
-        ) {
+        if (
+          dependencyValues.whenChild.length == 0 &&
+          dependencyValues.typeChildren.length > 0) {
 
           requireInputInAnswer = true;
 
@@ -171,7 +205,13 @@ export default class Award extends BaseComponent {
     };
 
     stateVariableDefinitions.creditAchieved = {
-      additionalStateVariablesDefined: ["fractionSatisfied"],
+      public: true,
+      componentType: "number",
+      additionalStateVariablesDefined: [{
+        variableName: "fractionSatisfied",
+        public: true,
+        componentType: "number"
+      }],
       returnDependencies: () => ({
         credit: {
           dependencyType: "stateVariable",
@@ -179,17 +219,22 @@ export default class Award extends BaseComponent {
         },
         whenChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneWhen",
+          childGroups: ["whens"],
           variableNames: ["fractionSatisfied"]
         },
         mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneMath",
+          childGroups: ["maths"],
           variableNames: ["value", "unordered"]
         },
         textChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneText",
+          childGroups: ["texts"],
+          variableNames: ["value"]
+        },
+        booleanChild: {
+          dependencyType: "child",
+          childGroups: ["booleans"],
           variableNames: ["value"]
         },
         answerInput: {
@@ -241,7 +286,7 @@ export default class Award extends BaseComponent {
 
         let fractionSatisfied;
 
-        if (dependencyValues.whenChild.length === 1) {
+        if (dependencyValues.whenChild.length > 0) {
           fractionSatisfied = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
         } else {
           if (!dependencyValues.answerInput || !dependencyValues.parsedExpression) {
@@ -259,9 +304,11 @@ export default class Award extends BaseComponent {
 
         }
 
+        fractionSatisfied = Math.max(0, Math.min(1, fractionSatisfied));
+
         let creditAchieved = 0;
         if (Number.isFinite(dependencyValues.credit)) {
-          creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * Math.max(0, Math.min(1, fractionSatisfied));
+          creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfied;
         }
         return {
           newValues: {
@@ -431,8 +478,9 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   let dependenciesForEvaluateLogic = {
     mathChildrenByCode: {},
-    numberChildrenByCode: {},
     mathListChildrenByCode: {},
+    numberChildrenByCode: {},
+    numberListChildrenByCode: {},
     textChildrenByCode: {},
     textListChildrenByCode: {},
     booleanChildrenByCode: {},
@@ -441,22 +489,14 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   Object.assign(dependenciesForEvaluateLogic, dependencyValues);
 
-  let unorderedCompare = dependencyValues.unorderedCompare;
-  let simplifyOnCompare = dependencyValues.simplifyOnCompare;
-  let expandOnCompare = dependencyValues.expandOnCompare;
-
   let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
 
-  if (dependencyValues.textChild.length === 1) {
+  if (dependencyValues.textChild.length > 0) {
     dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
-  } else if (dependencyValues.mathChild.length === 1) {
-    let child = dependencyValues.mathChild[0];
-
-    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = child;
-    if (canOverrideUnorderedCompare && child.stateValues.unordered) {
-      unorderedCompare = true;
-    }
-
+  } else if (dependencyValues.mathChild.length > 0) {
+    dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = dependencyValues.mathChild[0];
+  } else if (dependencyValues.booleanChild.length > 0) {
+    dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 = dependencyValues.booleanChild[0];
   }
 
   let answerValue = dependencyValues.answerInput.stateValues.immediateValue;
@@ -470,15 +510,15 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
   if (dependencyValues.answerInput.componentType === "textInput") {
     dependenciesForEvaluateLogic.textChildrenByCode.comp1 = answerChildForLogic;
+  } else if (dependencyValues.answerInput.componentType === "booleanInput") {
+    dependenciesForEvaluateLogic.booleanChildrenByCode.comp1 = answerChildForLogic;
   } else {
     dependenciesForEvaluateLogic.mathChildrenByCode.comp1 = answerChildForLogic;
   }
 
   return evaluateLogic({
     logicTree: dependencyValues.parsedExpression.tree,
-    unorderedCompare: unorderedCompare,
-    simplifyOnCompare: simplifyOnCompare,
-    expandOnCompare: expandOnCompare,
+    canOverrideUnorderedCompare,
     dependencyValues: dependenciesForEvaluateLogic,
   });
 

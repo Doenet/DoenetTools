@@ -56,32 +56,16 @@ export default class IntervalInput extends BlockComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    let atLeastZeroIntervals = childLogic.newLeaf({
-      name: "atLeastZeroIntervals",
-      componentType: 'interval',
-      comparison: 'atLeast',
-      number: 0,
-    });
+    return [{
+      group: "intervals",
+      componentTypes: ["interval"]
+    }, {
+      group: "points",
+      componentTypes: ["point"]
+    }]
 
-    let atLeastZeroPoints = childLogic.newLeaf({
-      name: "atLeastZeroPoints",
-      componentType: 'point',
-      comparison: 'atLeast',
-      number: 0,
-    });
-
-    childLogic.newOperator({
-      name: "intervalsAndPoints",
-      operator: 'and',
-      propositions: [atLeastZeroIntervals, atLeastZeroPoints],
-      requireConsecutive: true,
-      setAsBase: true
-    });
-
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -98,7 +82,7 @@ export default class IntervalInput extends BlockComponent {
       returnDependencies: () => ({
         pointChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroPoints",
+          childGroups: ["points"],
           variableNames: ["x"],
         },
       }),
@@ -179,7 +163,7 @@ export default class IntervalInput extends BlockComponent {
       returnDependencies: () => ({
         intervalChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroIntervals",
+          childGroups: ["intervals"],
           variableNames: ["value"],
         },
       }),

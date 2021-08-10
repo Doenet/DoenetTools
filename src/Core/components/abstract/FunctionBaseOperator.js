@@ -8,46 +8,49 @@ export default class FunctionOperator extends Function {
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    sugarInstructions.push({
-      childrenRegex: /s/,
-      replacementFunction: ({ matchedChildren }) => ({
+    let wrapStringsAndMacros = function ({ matchedChildren }) {
+
+      // only apply if all children are strings or macros
+      if (!matchedChildren.every(child =>
+        child.componentType === "string" ||
+        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+      )) {
+        return { success: false }
+      }
+
+      // don't apply to a single macro
+      if (matchedChildren.length === 1 &&
+        matchedChildren[0].componentType !== "string"
+      ) {
+        return { success: false }
+      }
+
+      return {
         success: true,
         newChildren: [{
           componentType: "math",
           children: matchedChildren
         }],
-      })
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: wrapStringsAndMacros
     });
 
     return sugarInstructions;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.deleteAllLogic();
-
-    let exactlyOneMath = childLogic.newLeaf({
-      name: "exactlyOneMath",
-      componentType: 'math',
-      number: 1,
-    });
-
-    let atMostOneFunctionForOperator = childLogic.newLeaf({
-      name: "atMostOneFunctionForOperator",
-      componentType: 'function',
-      comparison: "atMost",
-      number: 1,
-    });
-
-    childLogic.newOperator({
-      name: "functionXorMath",
-      operator: "xor",
-      propositions: [exactlyOneMath, atMostOneFunctionForOperator],
-      setAsBase: true
-    })
-
-    return childLogic;
+    return [{
+      group: "maths",
+      componentTypes: ["math"]
+    }, {
+      group: "functions",
+      componentTypes: ["function"]
+    }]
 
   }
 
@@ -70,31 +73,6 @@ export default class FunctionOperator extends Function {
     delete stateVariableDefinitions.xs;
 
 
-    let variablesToChangeFunctionChildLogicName = [
-      "displayDigits", "displayDecimals", "displaySmallAsZero",
-      "nInputs", "nOutputs",
-      "symbolic", "domain",
-    ];
-
-    for (let vName of variablesToChangeFunctionChildLogicName) {
-      let originalReturnDependences = stateVariableDefinitions[vName].returnDependencies;
-      stateVariableDefinitions[vName].returnDependencies = function () {
-        let dependencies = originalReturnDependences();
-        dependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
-        return dependencies;
-      }
-    }
-
-
-    let originalVariablesReturnDependences = stateVariableDefinitions.variables.returnArrayDependenciesByKey;
-    stateVariableDefinitions.variables.returnArrayDependenciesByKey = function ({ arrayKeys }) {
-      let dependencies = originalVariablesReturnDependences({ arrayKeys });
-      dependencies.globalDependencies.functionChild.childLogicName = "atMostOneFunctionForOperator";
-      for (let arrayKey of arrayKeys) {
-        dependencies.dependenciesByKey[arrayKey].functionChild.childLogicName = "atMostOneFunctionForOperator";
-      }
-      return dependencies;
-    }
 
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
@@ -147,12 +125,12 @@ export default class FunctionOperator extends Function {
         },
         functionChild: {
           dependencyType: "child",
-          childLogicName: "atMostOneFunctionForOperator",
+          childGroups: ["functions"],
           variableNames: ["formula"],
         },
         mathChild: {
           dependencyType: "child",
-          childLogicName: "exactlyOneMath",
+          childGroups: ["maths"],
           variableNames: ["value"],
         },
         formulaOperator: {
@@ -235,12 +213,12 @@ export default class FunctionOperator extends Function {
           },
           functionChild: {
             dependencyType: "child",
-            childLogicName: "atMostOneFunctionForOperator",
+            childGroups: ["functions"],
             variableNames: ["symbolicfs"]
           },
           mathChild: {
             dependencyType: "child",
-            childLogicName: "exactlyOneMath",
+            childGroups: ["maths"],
             variableNames: ["value"],
           },
           symbolicFunctionOperator: {
@@ -364,12 +342,12 @@ export default class FunctionOperator extends Function {
           },
           functionChild: {
             dependencyType: "child",
-            childLogicName: "atMostOneFunctionForOperator",
+            childGroups: ["functions"],
             variableNames: ["numericalfs"]
           },
           mathChild: {
             dependencyType: "child",
-            childLogicName: "exactlyOneMath",
+            childGroups: ["maths"],
             variableNames: ["value"],
           },
           numericalFunctionOperator: {

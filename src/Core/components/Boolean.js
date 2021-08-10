@@ -12,74 +12,87 @@ export default class BooleanComponent extends InlineComponent {
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    let atLeastZeroStrings = childLogic.newLeaf({
-      name: "atLeastZeroStrings",
-      componentType: 'string',
-      comparison: 'atLeast',
-      number: 0,
-    });
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.symbolicEquality = {
+      createComponentOfType: "boolean",
+      createStateVariable: "symbolicEquality",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.expandOnCompare = {
+      createComponentOfType: "boolean",
+      createStateVariable: "expandOnCompare",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.simplifyOnCompare = {
+      createComponentOfType: "text",
+      createStateVariable: "simplifyOnCompare",
+      defaultValue: "none",
+      toLowerCase: true,
+      valueTransformations: { "": "full", "true": "full" },
+      validValues: ["none", "full", "numbers", "numbersepreserveorder"],
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.unorderedCompare = {
+      createComponentOfType: "boolean",
+      createStateVariable: "unorderedCompare",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.allowedErrorInNumbers = {
+      createComponentOfType: "number",
+      createStateVariable: "allowedErrorInNumbers",
+      defaultValue: 0,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.includeErrorInNumberExponents = {
+      createComponentOfType: "boolean",
+      createStateVariable: "includeErrorInNumberExponents",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.allowedErrorIsAbsolute = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowedErrorIsAbsolute",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    attributes.nSignErrorsMatched = {
+      createComponentOfType: "number",
+      createStateVariable: "nSignErrorsMatched",
+      defaultValue: 0,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    };
+    return attributes;
+  }
 
-    let atLeastZeroMaths = childLogic.newLeaf({
-      name: "atLeastZeroMaths",
-      componentType: 'math',
-      comparison: 'atLeast',
-      number: 0
-    });
 
-    let atLeastZeroMathLists = childLogic.newLeaf({
-      name: "atLeastZeroMathLists",
-      componentType: 'mathList',
-      comparison: 'atLeast',
-      number: 0
-    });
+  static returnChildGroups() {
 
-    let atLeastZeroTexts = childLogic.newLeaf({
-      name: "atLeastZeroTexts",
-      componentType: 'text',
-      comparison: 'atLeast',
-      number: 0
-    });
+    return [{
+      group: "strings",
+      componentTypes: ["string"]
+    }, {
+      group: "mathsNumbersTextsBooleans",
+      componentTypes: [
+        "math", "mathList",
+        "number", "numberList",
+        "text", "textList",
+        "boolean", "booleanList"
+      ]
+    }]
 
-    let atLeastZeroTextLists = childLogic.newLeaf({
-      name: "atLeastZeroTextLists",
-      componentType: 'textList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    let atLeastZeroBooleans = childLogic.newLeaf({
-      name: "atLeastZeroBooleans",
-      componentType: "boolean",
-      comparison: "atLeast",
-      number: 0,
-    });
-
-    let atLeastZeroBooleanLists = childLogic.newLeaf({
-      name: "atLeastZeroBooleanLists",
-      componentType: 'booleanList',
-      comparison: 'atLeast',
-      number: 0
-    });
-
-    childLogic.newOperator({
-      name: "stringsMathsTextsAndBooleans",
-      operator: "and",
-      propositions: [
-        atLeastZeroStrings,
-        atLeastZeroMaths,
-        atLeastZeroMathLists,
-        atLeastZeroTexts,
-        atLeastZeroTextLists,
-        atLeastZeroBooleans,
-        atLeastZeroBooleanLists,
-      ],
-      setAsBase: true
-    })
-
-    return childLogic;
   }
 
 
@@ -92,13 +105,13 @@ export default class BooleanComponent extends InlineComponent {
         "codePre"
       ],
       returnDependencies: () => ({
-        stringMathTextBooleanChildren: {
+        allChildren: {
           dependencyType: "child",
-          childLogicName: "stringsMathsTextsAndBooleans",
+          childGroups: ["strings", "mathsNumbersTextsBooleans"],
         },
         stringChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroStrings",
+          childGroups: ["strings"],
           variableNames: ["value"]
         }
       }),
@@ -109,14 +122,15 @@ export default class BooleanComponent extends InlineComponent {
     stateVariableDefinitions.mathChildrenByCode = {
       additionalStateVariablesDefined: [
         "mathListChildrenByCode",
+        "numberChildrenByCode", "numberListChildrenByCode",
         "textChildrenByCode", "textListChildrenByCode",
         "booleanChildrenByCode", "booleanListChildrenByCode",
       ],
       returnDependencies: () => ({
-        stringMathTextBooleanChildren: {
+        allChildren: {
           dependencyType: "child",
-          childLogicName: "stringsMathsTextsAndBooleans",
-          variableNames: ["value", "texts", "maths", "booleans"],
+          childGroups: ["strings", "mathsNumbersTextsBooleans"],
+          variableNames: ["value", "texts", "maths", "numbers", "booleans", "fractionSatisfied", "unordered"],
           variablesOptional: true,
         },
         codePre: {
@@ -128,6 +142,8 @@ export default class BooleanComponent extends InlineComponent {
 
         let mathChildrenByCode = {};
         let mathListChildrenByCode = {};
+        let numberChildrenByCode = {};
+        let numberListChildrenByCode = {};
         let textChildrenByCode = {};
         let textListChildrenByCode = {};
         let booleanChildrenByCode = {};
@@ -136,7 +152,7 @@ export default class BooleanComponent extends InlineComponent {
 
         let codePre = dependencyValues.codePre;
 
-        for (let child of dependencyValues.stringMathTextBooleanChildren) {
+        for (let child of dependencyValues.allChildren) {
           if (child.componentType !== "string") {
             // a math, mathList, text, textList, boolean, or booleanList
             let code = codePre + subnum;
@@ -151,6 +167,16 @@ export default class BooleanComponent extends InlineComponent {
               baseComponentType: "mathList"
             })) {
               mathListChildrenByCode[code] = child;
+            } else if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "number"
+            })) {
+              numberChildrenByCode[code] = child;
+            } else if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "numberList"
+            })) {
+              numberListChildrenByCode[code] = child;
             } else if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
               baseComponentType: "text"
@@ -177,6 +203,7 @@ export default class BooleanComponent extends InlineComponent {
         return {
           newValues: {
             mathChildrenByCode, mathListChildrenByCode,
+            numberChildrenByCode, numberListChildrenByCode,
             textChildrenByCode, textListChildrenByCode,
             booleanChildrenByCode, booleanListChildrenByCode,
           }
@@ -193,14 +220,46 @@ export default class BooleanComponent extends InlineComponent {
       defaultValue: false,
       set: Boolean,
       returnDependencies: () => ({
+        symbolicEquality: {
+          dependencyType: "stateVariable",
+          variableName: "symbolicEquality",
+        },
+        expandOnCompare: {
+          dependencyType: "stateVariable",
+          variableName: "expandOnCompare",
+        },
+        simplifyOnCompare: {
+          dependencyType: "stateVariable",
+          variableName: "simplifyOnCompare",
+        },
+        unorderedCompare: {
+          dependencyType: "stateVariable",
+          variableName: "unorderedCompare",
+        },
+        allowedErrorInNumbers: {
+          dependencyType: "stateVariable",
+          variableName: "allowedErrorInNumbers",
+        },
+        includeErrorInNumberExponents: {
+          dependencyType: "stateVariable",
+          variableName: "includeErrorInNumberExponents",
+        },
+        allowedErrorIsAbsolute: {
+          dependencyType: "stateVariable",
+          variableName: "allowedErrorIsAbsolute",
+        },
+        nSignErrorsMatched: {
+          dependencyType: "stateVariable",
+          variableName: "nSignErrorsMatched",
+        },
         parsedExpression: {
           dependencyType: "stateVariable",
           variableName: "parsedExpression",
         },
-        stringMathTextBooleanChildren: {
+        allChildren: {
           dependencyType: "child",
-          childLogicName: "stringsMathsTextsAndBooleans",
-          variableNames: ["value", "texts", "maths", "unordered"],
+          childGroups: ["strings", "mathsNumbersTextsBooleans"],
+          variableNames: ["value"],
           variablesOptional: true,
         },
         booleanChildrenByCode: {
@@ -227,10 +286,18 @@ export default class BooleanComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "mathListChildrenByCode",
         },
+        numberChildrenByCode: {
+          dependencyType: "stateVariable",
+          variableName: "numberChildrenByCode",
+        },
+        numberListChildrenByCode: {
+          dependencyType: "stateVariable",
+          variableName: "numberListChildrenByCode",
+        },
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, usedDefault }) {
 
-        if (dependencyValues.stringMathTextBooleanChildren.length === 0) {
+        if (dependencyValues.allChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               value: { variablesToCheck: ["value"] }
@@ -247,24 +314,11 @@ export default class BooleanComponent extends InlineComponent {
 
         // evaluate logic in parsedExpression
 
-        let unorderedCompare = false;
-
-        // if compare attributes haven't been explicitly prescribed by <if>
-        // or one of its ancestors
-        // then any of the attributes can be turned on if there is a
-        // child with the comparable property
-
-        // check all children for an unordered property
-        for (let child of dependencyValues.stringMathTextBooleanChildren) {
-          if (child.stateValues.unordered) {
-            unorderedCompare = true;
-          }
-        }
-
+        let canOverrideUnorderedCompare = usedDefault.unorderedCompare;
 
         let fractionSatisfied = evaluateLogic({
           logicTree: dependencyValues.parsedExpression.tree,
-          unorderedCompare: unorderedCompare,
+          canOverrideUnorderedCompare,
           dependencyValues,
         });
 
@@ -275,7 +329,7 @@ export default class BooleanComponent extends InlineComponent {
 
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues, componentInfoObjects }) {
-        if (dependencyValues.stringMathTextBooleanChildren.length === 0) {
+        if (dependencyValues.allChildren.length === 0) {
           // no children, so value is essential and give it the desired value
           return {
             success: true,
@@ -284,14 +338,14 @@ export default class BooleanComponent extends InlineComponent {
               value: Boolean(desiredStateVariableValues.value)
             }]
           };
-        } else if (dependencyValues.stringMathTextBooleanChildren.length === 1) {
+        } else if (dependencyValues.allChildren.length === 1) {
 
-          let child = dependencyValues.stringMathTextBooleanChildren[0];
+          let child = dependencyValues.allChildren[0];
           if (child.componentType === "string") {
             return {
               success: true,
               instructions: [{
-                setDependency: "stringMathTextBooleanChildren",
+                setDependency: "allChildren",
                 desiredValue: desiredStateVariableValues.value,
                 childIndex: 0,
                 variableIndex: 0,
@@ -306,7 +360,7 @@ export default class BooleanComponent extends InlineComponent {
             return {
               success: true,
               instructions: [{
-                setDependency: "stringMathTextBooleanChildren",
+                setDependency: "allChildren",
                 desiredValue: desiredStateVariableValues.value,
                 childIndex: 0,
                 variableIndex: 0,
@@ -332,12 +386,38 @@ export default class BooleanComponent extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
         return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let desiredText = String(desiredStateVariableValues.text).toLowerCase();
+
+        let desiredBoolean;
+        if (desiredText === "true") {
+          desiredBoolean = true;
+        } else if (desiredText === "false") {
+          desiredBoolean = false;
+        }
+
+        if (desiredBoolean !== undefined) {
+          return {
+            success: true,
+            instructions: [{
+              setDependency: "value",
+              desiredValue: desiredBoolean
+            }]
+          }
+        } else {
+          return { success: false }
+        }
+
       }
     }
 
     return stateVariableDefinitions;
 
   }
+
+  static adapters = ["text"];
+
 
 }
 

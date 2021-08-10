@@ -4,13 +4,14 @@ import axios from "axios";
 import Button from '../temp/Button'
 import { useRecoilCallback,selector, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-import { drivecardSelectedNodesAtom , fetchDrivesSelector, fetchDrivesQuery} from '../ToolHandlers/CourseToolHandler'
-import { searchParamAtomFamily, paramObjAtom, pageToolViewAtom } from '../NewToolRoot';
-import DriveCards from '../../../_reactComponents/Drive/DriveCards';
+import { drivecardSelectedNodesAtom} from '../ToolHandlers/CourseToolHandler'
+import { pageToolViewAtom } from '../NewToolRoot';
+// import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 import { useMenuPanelController } from '../Panels/MenuPanel';
-import { drivePathSyncFamily, loadDriveInfoQuery } from '../../../_reactComponents/Drive/Drive';
+import { drivePathSyncFamily, loadDriveInfoQuery , fetchDrivesSelector,fetchDrivesQuery} from '../../../_reactComponents/Drive/NewDrive';
 import Measure from 'react-measure';
+import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 
 export default function DriveCardsNew(props){
   console.log(">>>===DriveCards");
@@ -28,15 +29,23 @@ export default function DriveCardsNew(props){
     set(selectedMenuPanelAtom,"SelectedCourse");
   },[])
 
+  const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
+
+  useEffect(() => {
+    setMainPanelClear((was) => [
+      ...was,
+      { atom: selectedMenuPanelAtom, value: null },
+    ]);
+    return setMainPanelClear((was) =>
+      was.filter((obj) => obj.atom !== selectedMenuPanelAtom),
+    );
+  }, [setMainPanelClear]);
+
   // const goToNav = useRecoilCallback(({set})=>()=>{
     // window.history.pushState('','','/new#/course?tool=navigation')
     // set(searchParamAtomFamily('tool'), "navigation")
 
-  // },[])
 
-
-  // const [count,setCount] = useState(0)
-  // let history = useHistory();
   return <div style={props.style}>
 
   { driveIdsAndLabelsInfo && <DriveCardWrapper 
@@ -56,8 +65,6 @@ const DriveCardWrapper = (props) => {
   const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
   // console.log(" columnJSX drivesInfo",drivecardInfo)
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-
-
 
   let driveCardItems =[];
   let heights = [];

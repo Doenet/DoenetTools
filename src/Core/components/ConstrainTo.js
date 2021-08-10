@@ -1,20 +1,16 @@
+import { findFiniteNumericalValue } from '../utils/math';
 import ConstraintComponent from './abstract/ConstraintComponent';
 
 export default class ConstrainTo extends ConstraintComponent {
   static componentType = "constrainTo";
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastOneGraphical",
-      componentType: '_graphical',
-      comparison: 'atLeast',
-      number: 1,
-      setAsBase: true,
-    });
+    return [{
+      group: "graphical",
+      componentTypes: ["_graphical"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -25,7 +21,7 @@ export default class ConstrainTo extends ConstraintComponent {
       returnDependencies: () => ({
         graphicalChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneGraphical",
+          childGroups: ["graphical"],
           variableNames: ["nearestPoint"],
           variablesOptional: true
         }
@@ -62,6 +58,11 @@ export default class ConstrainTo extends ConstraintComponent {
 
             let constrained = false;
 
+            let numericalVariables = {};
+            for(let varName in variables) {
+              numericalVariables[varName] = findFiniteNumericalValue(variables[varName]);
+            }
+
             for (let nearestPointFunction of dependencyValues.nearestPointFunctions) {
 
               let nearestPoint = nearestPointFunction(variables);
@@ -73,26 +74,26 @@ export default class ConstrainTo extends ConstraintComponent {
               let constrainedVariables = {};
               let distance2 = 0;
 
-              if (variables.x1 !== undefined) {
+              if (numericalVariables.x1 !== undefined) {
                 if (nearestPoint.x1 === undefined) {
                   continue;
                 }
                 constrainedVariables.x1 = nearestPoint.x1;
-                distance2 += Math.pow(variables.x1 - nearestPoint.x1, 2);
+                distance2 += Math.pow(numericalVariables.x1 - nearestPoint.x1, 2);
               }
-              if (variables.x2 !== undefined) {
+              if (numericalVariables.x2 !== undefined) {
                 if (nearestPoint.x2 === undefined) {
                   continue;
                 }
                 constrainedVariables.x2 = nearestPoint.x2;
-                distance2 += Math.pow(variables.x2 - nearestPoint.x2, 2);
+                distance2 += Math.pow(numericalVariables.x2 - nearestPoint.x2, 2);
               }
-              if (variables.x3 !== undefined) {
+              if (numericalVariables.x3 !== undefined) {
                 if (nearestPoint.x3 === undefined) {
                   continue;
                 }
                 constrainedVariables.x3 = nearestPoint.x3;
-                distance2 += Math.pow(variables.x3 - nearestPoint.x3, 2);
+                distance2 += Math.pow(numericalVariables.x3 - nearestPoint.x3, 2);
               }
 
               if (distance2 < closestDistance2) {

@@ -684,4 +684,33 @@ describe('Math Display Tag Tests', function () {
 
   });
 
+  it('include blank string children', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="b">beta</math>
+    <math name="s">s</math>
+    <m>$b $s</m>
+    <me>$b $s</me>
+    <md>
+      <mrow>$b $s</mrow>
+    </md>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('βs')
+    })
+    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('βs')
+    })
+    cy.get('#\\/_md1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('βs')
+    })
+
+  })
+
 })

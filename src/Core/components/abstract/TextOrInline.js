@@ -6,18 +6,13 @@ export default class TextOrInline extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
+  static returnChildGroups() {
 
-    childLogic.newLeaf({
-      name: "atLeastZeroInline",
-      componentType: '_inline',
-      comparison: 'atLeast',
-      number: 0,
-      setAsBase: true,
-    });
+    return [{
+      group: "inlines",
+      componentTypes: ["_inline"]
+    }]
 
-    return childLogic;
   }
 
   static returnStateVariableDefinitions() {
@@ -30,7 +25,7 @@ export default class TextOrInline extends InlineComponent {
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastZeroInline",
+          childGroups: ["inlines"],
           variableNames: ["text"],
           variablesOptional: true,
         },
@@ -38,7 +33,7 @@ export default class TextOrInline extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let value = "";
         for (let comp of dependencyValues.inlineChildren) {
-          if(typeof comp.stateValues.text === "string") {
+          if (typeof comp.stateValues.text === "string") {
             value += comp.stateValues.text;
           }
         }

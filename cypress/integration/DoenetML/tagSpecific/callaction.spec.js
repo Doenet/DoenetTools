@@ -176,7 +176,7 @@ describe('CallAction Tag Tests', function () {
       <point name="P">(1,2)</point>
     </graph>
     
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTname="rs">
+    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="rs">
     <point>(3,4)</point>
     </callAction>
 
@@ -223,6 +223,92 @@ describe('CallAction Tag Tests', function () {
           }
           expect(numbers2).not.eqls(numbers)
         })
+
+      })
+
+    });
+
+  })
+
+  it('chained actions on multiple sources', () => {
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs" /></p>
+
+    <p><number name="n">1</number></p>
+    <p><updateValue label="increment number and add point" name="in" tname="n" newValue="$n+1" type="number" /></p>
+
+    <graph name="g">
+      <point name="P">(1,2)</point>
+    </graph>
+    
+    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="rs in">
+    <point>(3,4)</point>
+    </callAction>
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/addPoint').should("not.exist");
+
+
+    cy.window().then((win) => {
+      let components = win.state.components;
+
+      let g = components["/g"];
+
+      expect(g.activeChildren.length).eq(1);
+
+      let numbers;
+
+      cy.get('#\\/nums').invoke('text').then(text => {
+        numbers = text.split(',').map(Number);
+        expect(numbers.length).eq(5);
+        for (let num of numbers) {
+          expect(Number.isInteger(num)).be.true;
+          expect(num).gte(1)
+          expect(num).lte(6)
+        }
+      })
+      cy.get('#\\/n').should('have.text', '1');
+
+      cy.get('#\\/rs').click().then(() => {
+        expect(g.activeChildren.length).eq(2);
+        expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+        expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+        g.activeChildren[1].movePoint({ x: -2, y: 5 })
+        expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
+
+        cy.get('#\\/nums').invoke('text').then(text => {
+          let numbers2 = text.split(',').map(Number);
+          expect(numbers2.length).eq(5);
+          for (let num of numbers2) {
+            expect(Number.isInteger(num)).be.true;
+            expect(num).gte(1)
+            expect(num).lte(6)
+          }
+          expect(numbers2).not.eqls(numbers)
+        })
+
+        cy.get('#\\/n').should('have.text', '1');
+
+      })
+
+      cy.get('#\\/in').click().then(() => {
+        expect(g.activeChildren.length).eq(3);
+        expect(g.activeChildren[0].stateValues.xs.map(x => x.tree)).eqls([1, 2])
+        expect(g.activeChildren[1].stateValues.xs.map(x => x.tree)).eqls([-2, 5])
+        expect(g.activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([3, 4])
+        g.activeChildren[2].movePoint({ x: 7, y: -9 })
+        expect(g.activeChildren[2].stateValues.xs.map(x => x.tree)).eqls([7, -9])
+
+        cy.get('#\\/n').should('have.text', '2');
 
       })
 
@@ -361,7 +447,7 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTname="addPoint" /></p>
+    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTnames="addPoint" /></p>
 
     <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
     <point>(3,4)</point>
@@ -501,7 +587,7 @@ describe('CallAction Tag Tests', function () {
     </graph>
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTname="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
+    <p><callAction tName="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTnames="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
 
     <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
     <point>(3,4)</point>
@@ -721,7 +807,7 @@ describe('CallAction Tag Tests', function () {
       </callAction>
     </triggerSet>
 
-    <callAction name="sub" tName="ans" actionName="submitAnswer" triggerWithTname="tset" />
+    <callAction name="sub" tName="ans" actionName="submitAnswer" triggerWithTnames="tset" />
 
     `}, "*");
     });
@@ -812,12 +898,12 @@ describe('CallAction Tag Tests', function () {
     </graph>
     
 
-    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTname="addOne">
+    <callAction name="addPoint" tName="g" actionName="addChildren" label="add point" triggerWithTnames="addOne">
     <point>(3,4)</point>
     </callAction>
 
     <p>Count: <number name="n">1</number></p>
-    <updateValue name="addOne" tName="n" newValue="$n+1" type="number" triggerWithTname="rs" />
+    <updateValue name="addOne" tName="n" newValue="$n+1" type="number" triggerWithTnames="rs" />
 
 
     `}, "*");

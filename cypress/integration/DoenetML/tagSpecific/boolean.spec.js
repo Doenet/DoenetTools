@@ -6,7 +6,6 @@ describe('Boolean Tag Tests', function () {
 
   })
 
-
   it('basic boolean evaluation', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -113,7 +112,6 @@ describe('Boolean Tag Tests', function () {
 
   })
 
-
   it('boolean based on math', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -138,7 +136,6 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/_text1').should('contain.text', 'Hello there!')
 
   })
-
 
   it('boolean from computation', () => {
     cy.window().then((win) => {
@@ -177,6 +174,126 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/_boolean3').should('have.text', "true")
     cy.get('#\\/_boolean4').should('have.text', "true")
 
+
+  })
+
+  it('boolean with lists', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <boolean name="t1"><math>1,2</math> = <mathlist>1 2</mathlist></boolean>
+    <boolean name="t2"><math>1,2</math> = <mathlist unordered>2 1</mathlist></boolean>
+    <boolean name="t3"><math unordered>1,2</math> = <mathlist>2 1</mathlist></boolean>
+    <boolean name="t4"><math unordered>1,2</math> = <mathlist unordered>2 1</mathlist></boolean>
+    <boolean name="t5"><numberlist>1 2</numberlist> = <mathlist>1 2</mathlist></boolean>
+    <boolean name="t6"><mathlist unordered>1 2</mathlist> = <mathlist>2 1</mathlist></boolean>
+    <boolean name="t7"><numberlist unordered>1 2</numberlist> = <mathlist>2 1</mathlist></boolean>
+    <boolean name="t8"><numberlist unordered>1 2</numberlist> = <numberlist>2 1</numberlist></boolean>
+    <boolean name="t9"><textlist unordered>a b</textlist> = <textlist>b a</textlist></boolean>
+    <boolean name="t10"><booleanlist unordered>true false</booleanlist> = <booleanlist>false true</booleanlist></boolean>
+    <boolean name="t11"><mathlist></mathlist> = <mathlist></mathlist></boolean>
+    <boolean name="t12"><mathlist></mathlist> = <numberlist></numberlist></boolean>
+    <boolean name="t13"><numberlist></numberlist> = <numberlist></numberlist></boolean>
+    <boolean name="t14"><textlist></textlist> = <textlist></textlist></boolean>
+    <boolean name="t15"><mathlist>1</mathlist> = <math>1</math></boolean>
+    <boolean name="t16"><mathlist>1</mathlist> = <number>1</number></boolean>
+    <boolean name="t17"><numberlist>1</numberlist> = <math>1</math></boolean>
+    <boolean name="t18"><numberlist>1</numberlist> = <number>1</number></boolean>
+
+    <boolean name="f1"><math>1,2</math> = <mathlist>2 1</mathlist></boolean>
+    <boolean name="f2"><mathlist>1 2</mathlist> = <mathlist>2 1</mathlist></boolean>
+    <boolean name="f3"><numberlist>1 2</numberlist> = <mathlist>2 1</mathlist></boolean>
+    <boolean name="f4"><numberlist>1 2</numberlist> = <numberlist>2 1</numberlist></boolean>
+    <boolean name="f5"><textlist>a b</textlist> = <textlist>b a</textlist></boolean>
+    <boolean name="f6"><booleanlist>true false</booleanlist> = <booleanlist>false true</booleanlist></boolean>
+    <boolean name="f7"><mathlist></mathlist> = <mathlist>1</mathlist></boolean>
+    <boolean name="f8"><numberlist></numberlist> = <mathlist>1</mathlist></boolean>
+    <boolean name="f9"><numberlist>1</numberlist> = <mathlist>0</mathlist></boolean>
+    <boolean name="f10"><numberlist></numberlist> = <numberlist>1</numberlist></boolean>
+    <boolean name="f11"><textlist></textlist> = <textlist>a</textlist></boolean>
+    <boolean name="f12"><mathlist>1</mathlist> = <math>2</math></boolean>
+    <boolean name="f13"><mathlist>1</mathlist> = <number>2</number></boolean>
+    <boolean name="f14"><numberlist>1</numberlist> = <math>2</math></boolean>
+    <boolean name="f15"><numberlist>1</numberlist> = <number>2</number></boolean>
+    <boolean name="f16"><mathlist></mathlist> = <math></math></boolean>
+    <boolean name="f17"><numberlist></numberlist> = <number></number></boolean>
+    <boolean name="f18"><textlist></textlist> = <text></text></boolean>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/t1').should('have.text', "true")
+    cy.get('#\\/t2').should('have.text', "true")
+    cy.get('#\\/t3').should('have.text', "true")
+    cy.get('#\\/t4').should('have.text', "true")
+    cy.get('#\\/t5').should('have.text', "true")
+    cy.get('#\\/t6').should('have.text', "true")
+    cy.get('#\\/t7').should('have.text', "true")
+    cy.get('#\\/t8').should('have.text', "true")
+    cy.get('#\\/t9').should('have.text', "true")
+    cy.get('#\\/t10').should('have.text', "true")
+    cy.get('#\\/t11').should('have.text', "true")
+    cy.get('#\\/t12').should('have.text', "true")
+    cy.get('#\\/t13').should('have.text', "true")
+    cy.get('#\\/t14').should('have.text', "true")
+    cy.get('#\\/t15').should('have.text', "true")
+    cy.get('#\\/t16').should('have.text', "true")
+    cy.get('#\\/t17').should('have.text', "true")
+    cy.get('#\\/t18').should('have.text', "true")
+
+    cy.get('#\\/f1').should('have.text', "false")
+    cy.get('#\\/f2').should('have.text', "false")
+    cy.get('#\\/f3').should('have.text', "false")
+    cy.get('#\\/f4').should('have.text', "false")
+    cy.get('#\\/f5').should('have.text', "false")
+    cy.get('#\\/f6').should('have.text', "false")
+    cy.get('#\\/f7').should('have.text', "false")
+    cy.get('#\\/f8').should('have.text', "false")
+    cy.get('#\\/f9').should('have.text', "false")
+    cy.get('#\\/f10').should('have.text', "false")
+    cy.get('#\\/f11').should('have.text', "false")
+    cy.get('#\\/f12').should('have.text', "false")
+    cy.get('#\\/f13').should('have.text', "false")
+    cy.get('#\\/f14').should('have.text', "false")
+    cy.get('#\\/f15').should('have.text', "false")
+    cy.get('#\\/f16').should('have.text', "false")
+    cy.get('#\\/f17').should('have.text', "false")
+    cy.get('#\\/f18').should('have.text', "false")
+
+  })
+
+  it('boolean with texts', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <boolean name="t1"><text>hello there</text> = hello there</boolean>
+    <boolean name="t2"><text>hello there</text> = <text>hello</text> <text>there</text></boolean>
+    <boolean name="t3"><text>hello there</text> = hello  there</boolean>
+    <boolean name="t4"><text>hello there</text> = <text>hello</text><text>there</text></boolean>
+    <boolean name="t5"><text>hellothere</text> = <text><text>hello</text><text>there</text></text></boolean>
+    <boolean name="t6"><textlist>hello</textlist> = hello</boolean>
+
+
+    <boolean name="f1"><text>hello  there</text> = hello there</boolean>
+    <boolean name="f2"><text>hello  there</text> = hello  there</boolean>
+    <boolean name="f3"><text>hello there</text> = <text><text>hello</text><text>there</text></text></boolean>
+    <boolean name="f4"><textlist>hello there</textlist> = hello there</boolean>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/t1').should('have.text', "true")
+    cy.get('#\\/t2').should('have.text', "true")
+    cy.get('#\\/t3').should('have.text', "true")
+    cy.get('#\\/t4').should('have.text', "true")
+    cy.get('#\\/t5').should('have.text', "true")
+    cy.get('#\\/t5').should('have.text', "true")
+
+    cy.get('#\\/f1').should('have.text', "false")
+    cy.get('#\\/f2').should('have.text', "false")
+    cy.get('#\\/t5').should('have.text', "true")
+    cy.get('#\\/f4').should('have.text', "false")
 
   })
 
@@ -262,6 +379,86 @@ describe('Boolean Tag Tests', function () {
 
 
   })
+
+  it('boolean adapts to text', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <booleaninput name="bi" />
+    <p><text name="t">You are hungry. $bi</text></p>
+    <p>Are you sure? <textinput bindvalueto="$bi" name="ti" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("false{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/ti_input').clear().type("tRuE{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("0{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("1=0{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("f{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/ti_input').clear().type("FALSE{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/ti_input').clear().type("1{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/ti_input').clear().type("t{enter}")
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/t').should('have.text', "You are hungry. true")
+    cy.get('#\\/ti_input').should('have.value', 'true')
+
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/t').should('have.text', "You are hungry. false")
+    cy.get('#\\/ti_input').should('have.value', 'false')
+
+  })
+
+  it('boolean does not adapt while number adapts', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b1"><number>3</number> != 1 and <boolean>true</boolean></boolean>
+    <boolean name="b2"><number>3</number> != 1 and <boolean>true</boolean> and <number>4</number> = <math>4</math></boolean>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/b1').should('have.text', "true")
+    cy.get('#\\/b2').should('have.text', "true")
+
+  })
+
 
 })
 

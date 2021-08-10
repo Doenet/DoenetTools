@@ -15,20 +15,15 @@ export default class AttractTo extends ConstraintComponent {
     return attributes;
   }
 
-  static returnChildLogic(args) {
-    let childLogic = super.returnChildLogic(args);
 
-    childLogic.newLeaf({
-      name: "atLeastOneGraphical",
-      componentType: '_graphical',
-      comparison: 'atLeast',
-      number: 1,
-      setAsBase: true,
-    });
+  static returnChildGroups() {
 
-    return childLogic;
+    return [{
+      group: "graphical",
+      componentTypes: ["_graphical"]
+    }]
+
   }
-
 
   static returnStateVariableDefinitions() {
 
@@ -38,7 +33,7 @@ export default class AttractTo extends ConstraintComponent {
       returnDependencies: () => ({
         graphicalChildren: {
           dependencyType: "child",
-          childLogicName: "atLeastOneGraphical",
+          childGroups: ["graphical"],
           variableNames: ["nearestPoint"],
           variablesOptional: true
         }

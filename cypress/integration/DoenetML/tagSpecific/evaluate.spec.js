@@ -18,9 +18,9 @@ describe('Evaluate Tag Tests', function () {
   <p>Function: <mathinput name="formula" prefill="sin(x)"/></p>
   <p>Input value: <mathinput name="input" prefill="0" /></p>
 
-  <function name="f_symbolic" variables="$variable" symbolic formula="$formula" />
+  <function name="f_symbolic" variables="$variable" symbolic>$formula</function>
 
-  <function name="f_numeric" variables="$variable" formula="$formula" />
+  <function name="f_numeric" variables="$variable">$formula</function>
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic" function="$f_symbolic" input="$input" />
@@ -266,7 +266,7 @@ describe('Evaluate Tag Tests', function () {
   Let <m>u = </m> <mathinput name="u" prefill="3v" />.
   Then <m name="result">f(u) = f($u) = $$f($u)</m>.</p>
 
-  <p hide><function name="f" variables="$x" symbolic simplify expand formula="$fformula" /></p>
+  <p hide><function name="f" variables="$x" symbolic simplify expand>$fformula</function></p>
   
 
   `}, "*");
@@ -355,10 +355,10 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <function displayDigits="3" name="f1" formula="100sin(x)" />
-  <function displayDecimals="3" name="f2" formula="100sin(x)" />
-  <function displaySmallAsZero="1E-13" name="f3" formula="100sin(x)" />
-  <function name="f4" formula="100sin(x)" />
+  <function displayDigits="3" name="f1">100sin(x)</function>
+  <function displayDecimals="3" name="f2">100sin(x)</function>
+  <function displaySmallAsZero="1E-13" name="f3">100sin(x)</function>
+  <function name="f4">100sin(x)</function>
 
   <p>Input: <mathinput name="input" prefill="1" /></p>
 
@@ -692,9 +692,9 @@ describe('Evaluate Tag Tests', function () {
   <p>Input 1 value: <mathinput name="input1" prefill="0" /></p>
   <p>Input 2 value: <mathinput name="input2" prefill="0" /></p>
 
-  <function name="f_symbolic" variables="$variable1 $variable2" symbolic formula="$formula" />
+  <function name="f_symbolic" variables="$variable1 $variable2" symbolic>$formula</function>
 
-  <function name="f_numeric" variables="$variable1 $variable2" formula="$formula" />
+  <function name="f_numeric" variables="$variable1 $variable2">$formula</function>
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic" function="$f_symbolic" input="$input1 $input2" />
@@ -901,7 +901,7 @@ describe('Evaluate Tag Tests', function () {
   <p>Input: <mathinput name="input" prefill="(0,0)" /></p>
   <mathlist mergeMathLists name="variables" hide>$variablesOrig</mathlist>
 
-  <function name="f" variables="$variables" symbolic simplify formula="$formula" />
+  <function name="f" variables="$variables" symbolic simplify>$formula</function>
 
   <p>Evaluate 1: 
     <evaluate name="result1" function="$f" input="$input" />
@@ -1075,7 +1075,7 @@ describe('Evaluate Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <function name="f" variables="x y" symbolic simplify formula="x^2/y^3" />
+  <function name="f" variables="x y" symbolic simplify>x^2/y^3</function>
   <p>Input as vector: <mathinput name="input1" prefill="(2,3)" /></p>
   <p>Input as list: <mathinput name="input2Orig" prefill="2,3" /></p>
   <mathList mergeMathLists name="input2" hide>$input2Orig</mathList>
@@ -1307,9 +1307,9 @@ describe('Evaluate Tag Tests', function () {
   <p>Input 1 value: <mathinput name="input1" prefill="0" /></p>
   <p>Input 2 value: <mathinput name="input2" prefill="0" /></p>
 
-  <function name="f_symbolic" variables="$variable1 $variable2" symbolic formula="$formula" displaySmallAsZero />
+  <function name="f_symbolic" variables="$variable1 $variable2" symbolic displaySmallAsZero >$formula</function>
 
-  <function name="f_numeric" variables="$variable1 $variable2" formula="$formula" displaySmallAsZero />
+  <function name="f_numeric" variables="$variable1 $variable2" displaySmallAsZero >$formula</function>
 
   <p>Evaluate symbolic: 
     <evaluate name="result_symbolic" function="$f_symbolic" input="$input1 $input2" />
@@ -1521,7 +1521,7 @@ describe('Evaluate Tag Tests', function () {
   <p>Input: <mathinput name="input" prefill="(0,0)" /></p>
   <mathlist mergeMathLists name="variables" hide>$variablesOrig</mathlist>
 
-  <function name="f" variables="$variables" symbolic simplify formula="$formula" displaySmallAsZero />
+  <function name="f" variables="$variables" symbolic simplify displaySmallAsZero>$formula</function>
 
   <p>Evaluate 1: 
     <evaluate name="result1" function="$f" input="$input" />
@@ -1719,6 +1719,114 @@ describe('Evaluate Tag Tests', function () {
       expect(components['/result1'].stateValues.value.tree).eqls(["vector", 17, 1, 210, 5]);
       expect(components['/result2'].activeChildren[0].stateValues.value.tree).eqls(["vector", 17, 1, 210, 5]);
       expect(components['/result3'].stateValues.value.tree).eqls(["vector", 17, 1, 210, 5]);
+    })
+
+
+  })
+
+  it('change variables of symbolic function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f: <function name="f" variables="s t" symbolic simplify expand>st^2</function></p>
+  <p>g: <function name="g" variables="t s">$f</function></p>
+
+  <p name="pf1">f(u, v+w) = $$f(u, v+w)</p>
+  <p name="pf2">f(a+b, c) = $$f(a+b, c)</p>
+  <p name="pg1">g(u, v+w) = $$g(u, v+w)</p>
+  <p name="pg2">g(a+b, c) = $$g(a+b, c)</p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.log('initial state');
+
+    cy.get('#\\/pf1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('uv2+2uvw+uw2')
+    })
+    cy.get('#\\/pf2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ac2+bc2')
+    })
+    cy.get('#\\/pg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('vu2+wu2')
+    })
+    cy.get('#\\/pg2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('ca2+2abc+cb2')
+    })
+
+
+  })
+
+  it('change variables of numeric function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f: <function name="f" variables="s t">st^2</function></p>
+  <p>g: <function name="g" variables="t s">$f</function></p>
+
+  <p name="pf">f(2, -3) = $$f(2, -3)</p>
+  <p name="pg">g(2, -3) = $$g(2, -3)</p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.log('initial state');
+
+    cy.get('#\\/pf').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('18')
+    })
+    cy.get('#\\/pg').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−12')
+    })
+
+
+  })
+
+  it('change variables of interpolated function', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f: <function name="f" variables="s" maxima="(3,4)" /></p>
+  <p>g: <function name="g" variables="t">$f</function></p>
+
+  <p name="pf1">f(3) = $$f(3)</p>
+  <p name="pf2">f(4) = $$f(4)</p>
+  <p name="pf3">f(5) = $$f(5)</p>
+  <p name="pg1">g(3) = $$g(3)</p>
+  <p name="pg2">g(4) = $$g(4)</p>
+  <p name="pg3">g(5) = $$g(5)</p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.log('initial state');
+
+    cy.get('#\\/pf1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/pf2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/pf3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/pg1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('4')
+    })
+    cy.get('#\\/pg2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('3')
+    })
+    cy.get('#\\/pg3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
     })
 
 
