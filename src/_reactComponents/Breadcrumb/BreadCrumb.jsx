@@ -154,9 +154,19 @@ export default function BreadCrumb({ path, tool }) {
   let returnToToolHead = null;
   if (tool){
     let toolName = '';
+    let params = {
+      path: `${driveId}:${driveId}:${driveId}:Drive`,
+    }
     if (tool === 'Content'){
       toolName = 'navigation';
+    }else if (tool === 'Enrollment'){
+      toolName = 'enrollment';
+      params = {driveId}
+    }else if (tool === 'Gradebook'){
+      toolName = 'gradebook';
+      params = {driveId}
     }
+
     returnToToolHead = 
       (
         <BreadcrumbItem>
@@ -169,9 +179,7 @@ export default function BreadCrumb({ path, tool }) {
                   page:was.page,
                   tool:toolName,
                   view:'',
-                  params: {
-                    path: `${driveId}:${driveId}:${driveId}:Drive`,
-                  },}));
+                  params,}));
               }
             }}
             onClick={() => {
@@ -179,9 +187,7 @@ export default function BreadCrumb({ path, tool }) {
                 page:was.page,
                 tool:toolName,
                 view:'',
-                params: {
-                  path: `${driveId}:${driveId}:${driveId}:Drive`,
-                },}));
+                params,}));
             }}
           >
             {tool}

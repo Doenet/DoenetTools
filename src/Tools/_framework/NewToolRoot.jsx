@@ -127,6 +127,8 @@ export default function ToolRoot(){
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
+    EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
+    GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
  
@@ -318,8 +320,8 @@ let navigationObj = {
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: [],
-      headerControlsPositions: [],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
       // onLeave:"",
     },
     navigation:{ //allFilesInCourse
@@ -369,8 +371,10 @@ let navigationObj = {
       supportPanelOptions:[],
       supportPanelTitles:[],
       supportPanelIndex:0,
-      headerControls: ["BackButton"],
-      headerControlsPositions: ["Right"]
+      headerControls: ["EnrollmentBreadCrumb"],
+      headerControlsPositions: ["Left"]
+      // headerControls: ["BackButton"],
+      // headerControlsPositions: ["Right"]
     }
   },
   home:{
