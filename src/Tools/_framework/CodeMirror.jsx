@@ -19,6 +19,9 @@ const editorConfigStateAtom = atom({
 
 let view;
 export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
+    if(readOnly === undefined){
+        readOnly = false;
+    }
 
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
@@ -95,8 +98,6 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
                 const disabledExtensions = [
                     EditorView.editable.of(false),
                     lineNumbers(),
-                    doenet(),
-                    defaultHighlightStyle.extension
                 ]
                 view.current.dispatch({
                     effects: StateEffect.reconfigure.of(disabledExtensions)
