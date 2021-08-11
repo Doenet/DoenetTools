@@ -111,7 +111,7 @@ export default function NavigationPanel(props) {
             tool: 'collection',
             view: '',
             params: {
-              path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:Collection`,
+              path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
             },
           });
           break;
