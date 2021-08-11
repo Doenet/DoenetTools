@@ -142,13 +142,18 @@ export default function useSockets(nsp) {
         creationDate,
         url,
       };
-
-      const resp = await axios.get('/api/addItem.php', { params: payload });
-
-      if (resp.data.success) {
-        acceptAddItem(payload);
-      } else {
+      let resp = {};
+      try {
+        resp = await axios.get('/api/addItem.php', { params: payload });
+      } catch (error) {
+        console.error(error);
         addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+      } finally {
+        if (resp?.data?.success) {
+          acceptAddItem(payload);
+        } else {
+          addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+        }
       }
 
       // realtime upgrade
