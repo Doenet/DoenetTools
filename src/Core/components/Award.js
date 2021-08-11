@@ -164,6 +164,15 @@ export default class Award extends BaseComponent {
     }, {
       group: "booleans",
       componentTypes: ["boolean"]
+    }, {
+      group: "mathLists",
+      componentTypes: ["mathList"]
+    }, {
+      group: "textLists",
+      componentTypes: ["textList"]
+    }, {
+      group: "booleanLists",
+      componentTypes: ["booleanList"]
     }]
 
   }
@@ -183,7 +192,7 @@ export default class Award extends BaseComponent {
         },
         typeChildren: {
           dependencyType: "child",
-          childGroups: ["maths", "texts", "booleans"],
+          childGroups: ["maths", "texts", "booleans", "mathLists", "textLists", "booleanLists"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -236,6 +245,21 @@ export default class Award extends BaseComponent {
           dependencyType: "child",
           childGroups: ["booleans"],
           variableNames: ["value"]
+        },
+        mathListChild: {
+          dependencyType: "child",
+          childGroups: ["mathLists"],
+          variableNames: ["maths", "unordered"]
+        },
+        textListChild: {
+          dependencyType: "child",
+          childGroups: ["textLists"],
+          variableNames: ["texts", "unordered"]
+        },
+        booleanListChild: {
+          dependencyType: "child",
+          childGroups: ["booleanLists"],
+          variableNames: ["booleans", "unordered"]
         },
         answerInput: {
           dependencyType: "parentStateVariable",
@@ -497,6 +521,12 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
     dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = dependencyValues.mathChild[0];
   } else if (dependencyValues.booleanChild.length > 0) {
     dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 = dependencyValues.booleanChild[0];
+  } else if (dependencyValues.textListChild.length > 0) {
+    dependenciesForEvaluateLogic.textListChildrenByCode.comp2 = dependencyValues.textListChild[0];
+  } else if (dependencyValues.mathListChild.length > 0) {
+    dependenciesForEvaluateLogic.mathListChildrenByCode.comp2 = dependencyValues.mathListChild[0];
+  } else if (dependencyValues.booleanListChild.length > 0) {
+    dependenciesForEvaluateLogic.booleanListChildrenByCode.comp2 = dependencyValues.booleanListChild[0];
   }
 
   let answerValue = dependencyValues.answerInput.stateValues.immediateValue;

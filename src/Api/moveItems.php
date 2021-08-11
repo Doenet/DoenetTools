@@ -48,14 +48,21 @@ if ($success){
   $result = $conn->query($sql); 
   $canMoveSource = FALSE;
   if ($result->num_rows > 0){
-  $row = $result->fetch_assoc();
-  $canMoveSource = $row["canMoveItemsAndFolders"];
+    $row = $result->fetch_assoc();
+    $canMoveSource = $row["canMoveItemsAndFolders"];
+    if (!$canMoveSource){
+      $success = FALSE;
+      $message = "You don't have permission to move the items from the source";
+      http_response_code(403); //User if forbidden from operation
+    }
+  } else {
+    //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+    http_response_code(401); //User has bad auth
+    $success = false;
+    $message = 'Database rejected update';
   }
-  if (!$canMoveSource){
-    $success = FALSE;
-    $message = "You don't have permission to move the items from the source";
-  }
-
+} else {
+  http_response_code(400); //Request is missing a field
 }
 
 //Test if user has permission to move to destination
@@ -69,17 +76,20 @@ if ($success){
   $result = $conn->query($sql); 
   $canAddDesination = FALSE;
   if ($result->num_rows > 0){
-  $row = $result->fetch_assoc();
-  $canAddDesination = $row["canAddItemsAndFolders"];
-  }
-  if (!$canAddDesination){
-    $success = FALSE;
-    $message = "You don't have permission to move the items into this location";
+    $row = $result->fetch_assoc();
+    $canAddDesination = $row["canAddItemsAndFolders"];
+    if (!$canAddDesination){
+      $success = FALSE;
+      $message = "You don't have permission to move the items into this location";
+      http_response_code(403); //User if forbidden from operation
+    }
+  } else {
+    //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+    http_response_code(401); //User has bad auth
+    $success = false;
+    $message = 'Database rejected update';
   }
 }
-
-
-  
 
 
 if ($success){
