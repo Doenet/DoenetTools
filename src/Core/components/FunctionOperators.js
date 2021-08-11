@@ -257,13 +257,7 @@ export class Derivative extends FunctionBaseOperator {
         return dependencies;
       },
       definition({ dependencyValues }) {
-        if (dependencyValues.functionChild.length > 0) {
-          return {
-            newValues: {
-              nInputs: dependencyValues.functionChild[0].stateValues.nInputs
-            }
-          }
-        } else if (dependencyValues.nInputsAttr !== null) {
+        if (dependencyValues.nInputsAttr !== null) {
           let nInputs = dependencyValues.nInputsAttr.stateValues.value;
           if (!(nInputs >= 0)) {
             nInputs = 1;
@@ -271,7 +265,13 @@ export class Derivative extends FunctionBaseOperator {
           return { newValues: { nInputs } };
         } else if (dependencyValues.variablesAttr !== null) {
           return { newValues: { nInputs: dependencyValues.variablesAttr.stateValues.nComponents } }
-        } else if (!dependencyValues.haveFunctionChild && dependencyValues.derivVariablesAttr !== null) {
+        } else if (dependencyValues.functionChild.length > 0) {
+          return {
+            newValues: {
+              nInputs: dependencyValues.functionChild[0].stateValues.nInputs
+            }
+          }
+        } else if (dependencyValues.derivVariablesAttr !== null) {
 
           let nUniqueDerivVariables = [
             ... new Set(
@@ -350,23 +350,20 @@ export class Derivative extends FunctionBaseOperator {
         return { globalDependencies, dependenciesByKey }
       },
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arraySize, arrayKeys, usedDefault }) {
-        if (globalDependencyValues.haveFunctionChild) {
-          if (globalDependencyValues.variablesAttr !== null) {
-            console.warn("Variable for function is ignored when it has a function child")
-          }
-          let variables = {};
-          for (let arrayKey of arrayKeys) {
-            variables[arrayKey] = dependencyValuesByKey[arrayKey].functionChild[0]
-              .stateValues["variable" + (Number(arrayKey) + 1)];
-          }
-          return { newValues: { variables } }
-        } else if (globalDependencyValues.variablesAttr !== null) {
+        if (globalDependencyValues.variablesAttr !== null) {
           let variablesSpecified = globalDependencyValues.variablesAttr.stateValues.variables;
           return {
             newValues: {
               variables: returnNVariables(arraySize[0], variablesSpecified)
             }
           }
+        } else if (globalDependencyValues.haveFunctionChild) {
+          let variables = {};
+          for (let arrayKey of arrayKeys) {
+            variables[arrayKey] = dependencyValuesByKey[arrayKey].functionChild[0]
+              .stateValues["variable" + (Number(arrayKey) + 1)];
+          }
+          return { newValues: { variables } }
         } else if (globalDependencyValues.derivVariablesAttr !== null) {
 
           let variablesSpecified = [];
@@ -475,24 +472,15 @@ export class Derivative extends FunctionBaseOperator {
         derivVariables: {
           dependencyType: "stateVariable",
           variableName: "derivVariables",
-        },
-        variables: {
-          dependencyType: "stateVariable",
-          variableName: "variables",
         }
       }),
       definition({ dependencyValues }) {
-        let variableList = dependencyValues.variables.map(x => x.subscripts_to_strings().tree)
         return {
           newValues: {
             formulaOperator: function (formula) {
               let value = formula.subscripts_to_strings();
               for (let variable of dependencyValues.derivVariables) {
-                let varTrans = variable.subscripts_to_strings().tree;
-                if (!variableList.includes(varTrans)) {
-                  return me.fromAst(0);
-                }
-                value = value.derivative(varTrans)
+                value = value.derivative(variable.subscripts_to_strings().tree)
               }
               return value.strings_to_subscripts();
             }

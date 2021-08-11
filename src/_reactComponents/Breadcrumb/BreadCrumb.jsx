@@ -115,7 +115,7 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path }) {
+export default function BreadCrumb({ path, tool }) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -132,7 +132,10 @@ export default function BreadCrumb({ path }) {
     (driveId, folderId) => {
       clearSelections();
       setPageToolView((was) => ({
-        ...was,
+        // ...was,
+        page:was.page,
+        tool:'navigation',
+        view:'',
         params: {
           path: `${driveId}:${folderId}:${folderId}:Folder`,
         },
@@ -144,6 +147,55 @@ export default function BreadCrumb({ path }) {
   //Don't show up if not in a drive
   if (driveId === '') {
     return null;
+  }
+
+  let courseTitle = items[items.length - 1].label;
+
+  let returnToToolHead = null;
+  if (tool){
+    let toolName = '';
+    let params = {
+      path: `${driveId}:${driveId}:${driveId}:Drive`,
+    }
+    if (tool === 'Content'){
+      toolName = 'navigation';
+    }else if (tool === 'Enrollment'){
+      toolName = 'enrollment';
+      params = {driveId}
+    }else if (tool === 'Gradebook'){
+      toolName = 'gradebook';
+      params = {driveId}
+    }
+
+    returnToToolHead = 
+      (
+        <BreadcrumbItem>
+          <BreadcrumbSpan
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setPageToolView((was) => ({ 
+                  page:was.page,
+                  tool:toolName,
+                  view:'',
+                  params,}));
+              }
+            }}
+            onClick={() => {
+              setPageToolView((was) => ({ 
+                page:was.page,
+                tool:toolName,
+                view:'',
+                params,}));
+            }}
+          >
+            {tool}
+          </BreadcrumbSpan>
+        </BreadcrumbItem>
+        
+      )
+    
   }
 
   const returnToCourseChooser = (
@@ -163,31 +215,46 @@ export default function BreadCrumb({ path }) {
         <FontAwesomeIcon icon={faTh} />
       </BreadcrumbSpan>
     </BreadcrumbItem>
-    
   );
 
   const returnToDashboard = (
-    <span
-      role="button"
-      tabIndex="0"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          setPageToolView((was) => ({
-            ...was,
-            tool: 'dashboard',
-            view: '',
-          }));
-        }
-      }}
-      onClick={() => {
-        setPageToolView((was) => ({ ...was, tool: 'dashboard', view: '' }));
-      }}
-    >
-      {'Dashboard / '}
-    </span>
+    <BreadcrumbItem>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setPageToolView((was) => ({ 
+              page:was.page,
+              tool:'dashboard',
+              view:'',
+              params: {
+                path: `${driveId}:${driveId}:${driveId}:Drive`,
+              },}));
+          }
+        }}
+        onClick={() => {
+          setPageToolView((was) => ({ 
+            page:was.page,
+            tool:'dashboard',
+            view:'',
+            params: {
+              path: `${driveId}:${driveId}:${driveId}:Drive`,
+            },}));
+        }}
+      >
+        {courseTitle}
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+    
   );
 
-  const children = [...items].reverse().map((item) => (
+  let children = null;
+
+  if (tool){
+    let folders = [...items];
+    folders.pop(); //First one is already covered with returnToToolHead
+    children = [...folders].reverse().map((item) => (
     <BreadcrumbItem>
       <BreadcrumbSpan
         role="button"
@@ -207,10 +274,11 @@ export default function BreadCrumb({ path }) {
       </BreadcrumbSpan>
     </BreadcrumbItem>
   ));
+      }
 
   return (
     <Breadcrumb>
-      {returnToCourseChooser} {children}
+      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children}
     </Breadcrumb>
   );
 }

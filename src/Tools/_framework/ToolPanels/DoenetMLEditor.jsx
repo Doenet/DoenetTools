@@ -158,7 +158,7 @@ export default function DoenetMLEditor(props){
     key = "codemirror"
       editorRef = {editorRef}
       setInternalValue = {updateInternalValue}
-      // readOnly = {!isCurrentDraft}
+      readOnly = {!isCurrentDraft}
       // value={editorDoenetML} 
       onBeforeChange={(value) => {
         if (isCurrentDraft) { //No timers when active version history

@@ -451,8 +451,8 @@ describe('Parameterized Curve Tag Tests', function () {
     <mathinput prefill="2"/>
     <graph>
     <curve>
-    <function variables="t" formula='t$_mathinput1+1' />
-    <function variables="t" formula='t^3-$_mathinput1' />
+    <function variables="t">t$_mathinput1+1</function>
+    <function variables="t">t^3-$_mathinput1</function>
     </curve>
     </graph>
     `}, "*");
@@ -569,8 +569,8 @@ describe('Parameterized Curve Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <setup>
-      <function variables="t" formula="100 cos(t)" name="f" />
-      <function variables="t" formula="0.1 sin(t)" name="g" />
+      <function variables="t" name="f">100 cos(t)</function>
+      <function variables="t" name="g">0.1 sin(t)</function>
     </setup>
 
     <graph xmin="-110" xmax="110" ymin="-0.11" ymax="0.11">

@@ -36,7 +36,7 @@ describe('FunctionIterates Tag Tests', function () {
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x" symbolic simplify expand formula="$fformula" /><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" tname="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" tname="fis"  name="iterates" /></p>
   
 
   `}, "*");
@@ -160,7 +160,7 @@ describe('FunctionIterates Tag Tests', function () {
   </map>
   </ul>
 
-  <p hide><function name="f" variables="$x" formula="$fformula" /><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" tname="fis"  name="iterates" /></p>
+  <p hide><function name="f" variables="$x">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="$n" name="fis" /><copy prop="iterates" tname="fis"  name="iterates" /></p>
   
 
   `}, "*");
@@ -274,7 +274,7 @@ describe('FunctionIterates Tag Tests', function () {
   <text>a</text>
   <p>variables: <mathinput name="x" prefill="x" /> and <mathinput name="y" prefill="y" />.
   <m>a = </m> <mathinput name="a" prefill="3" />, <m>b = </m> <mathinput name="b" prefill="-2" />, <m>c = </m> <mathinput name="c" prefill="1" />, <m>d = </m> <mathinput name="d" prefill="4" />.
-  <m>f($x, $y) =</m> <function name="f" simplify variables="$x $y" formula="($a$x+$b$y, $c$x+$d$y)" />
+  <m>f($x, $y) =</m> <function name="f" simplify variables="$x $y">($a$x+$b$y, $c$x+$d$y)</function>
   <m>u = </m> <mathinput name="u" prefill="(2,1)" /> <m>n=</m> <mathinput name="n" prefill="3" /></p>
 
   <functionIterates function="$f" initialValue="$u" nIterates="$n" name="fis" />
@@ -341,7 +341,7 @@ describe('FunctionIterates Tag Tests', function () {
   <p>Iterates: <aslist><copy prop="iterates" tname="fis" name="iterates" /></aslist></p>
 
 
-  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic simplify expand formula="$fformula" /><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
+  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" symbolic simplify expand>$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
   
 
   `}, "*");
@@ -470,7 +470,7 @@ describe('FunctionIterates Tag Tests', function () {
   <p>Iterates: <aslist><copy prop="iterates" tname="fis" name="iterates" /></aslist></p>
 
 
-  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList" formula="$fformula" /><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
+  <p hide><mathlist mergeMathLists name="varList">$vars</mathlist><function name="f" variables="$varList">$fformula</function><functioniterates function="$f" initialValue="$u" nIterates="3" name="fis" /></p>
   
 
   `}, "*");

@@ -14,13 +14,16 @@ import SearchBar from "../../_reactComponents/PanelHeaderComponents/SearchBar.js
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton.jsx';
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.jsx";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.jsx";
-import TextField from '../../_reactComponents/PanelHeaderComponents/TextField.jsx';
+import Form from '../../_reactComponents/PanelHeaderComponents/Form.jsx';
+import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.jsx';
 import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
 import { faCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
+import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
+
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -208,6 +211,37 @@ export default function attempt() {
       ]
     },
     {
+      name: 'DropdownMenu',
+      id: 'dropdownmenu',
+      code: DropdownMenu,
+      codePreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]}/>',
+      req_props: {items: [[1, "one"], [2, "two"]]},
+      req_children: null,
+      use: 'This is used for selecting one option out of multiple',
+      props: [
+        {name: 'Items',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"], [3, "three"]]} />',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]]},
+        description: 'Sets options'},
+        {name: 'defaultValue',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} defaultValue="Choose your favorite number"/>',
+        propCode: {items: [[1, "one"], [2, "two"], [3, "three"]], defaultValue: "Choose your favorite number"},
+        description: 'Sets default text'},
+        {name: 'Width - Menu Panel',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} width="menu" />',
+        propCode: {items: [[1, "one"], [2, "two"]], width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Width - Custom',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} width="500px" />',
+        propCode: {items: [[1, "one"], [2, "two"]], width: '500px'},
+        description: 'Sets width to custom dimensions'},
+        {name: 'onChange',
+        propPreview: '<DropdownMenu items = {[[1, "one"], [2, "two"]]} onChange={(({ value }) => console.log(">>>", value)} />',
+        propCode: {items: [[1, "one"], [2, "two"]], onChange: ({ value }) => console.log(">>>", value)},
+        description: 'Function called when data changes'},
+      ]
+    },
+    {
       name: 'Increment',
       id: 'increment',
       code: Increment,
@@ -313,42 +347,89 @@ export default function attempt() {
       ]
     },
     {
-      name: 'TextField',
+      name: 'Textfield',
       id: 'textfield',
-      code: TextField,
-      codePreview: '<TextField/>',
+      code: Textfield,
+      codePreview: '<Textfield/>',
       req_props: null,
       req_children: null,
       use: 'This is where you can enter text.',
       props: [
         {name: 'Width - Menu Panel',
-        propPreview: '<TextField width="menu" />',
+        propPreview: '<Textfield width="menu" />',
         propCode: {width: 'menu'},
         description: 'Sets width to fill menu panel width'},
         {name: 'Value',
-        propPreview: '<TextField value="Enter cat names"/>',
+        propPreview: '<Textfield value="Enter cat names"/>',
         propCode: {value: 'Enter cat names'},
         description: 'Changes the text'},
         {name: 'Label',
-            propPreview: '<TextField label="What: "/>',
+            propPreview: '<Textfield label="What: "/>',
             propCode: {label: 'What: '},
             description: 'Adds label to componenet'},
             {name: 'Vertical Label',
-            propPreview: '<TextField label="What: " vertical/>',
+            propPreview: '<Textfield label="What: " vertical/>',
             propCode: {label: 'What: ', vertical},
             description: 'Adds label to component on top'},
         {name: 'Alert',
-        propPreview: '<TextField alert/>',
+        propPreview: '<Textfield alert/>',
         propCode: {alert},
         description: 'Changes to alert mode (border is red)'},
         {name: 'onChange',
-        propPreview: '<TextField onChange={(data) => console.log(data)} />',
+        propPreview: '<Textfield onChange={(data) => console.log(data)} />',
         propCode: {onChange: (data) => console.log(data)},
         description: 'Function called when data changes'},
         {name: 'Disabled',
-            propPreview: '<TextField disabled />',
+            propPreview: '<Textfield disabled />',
             propCode: {disabled},
-            description: 'Makes TextField not able to be used.'},
+            description: 'Makes Textf dield not able to be used.'},
+        ]
+      },
+    {
+      name: 'Form',
+      id: 'form',
+      code: Form,
+      codePreview: '<Form/>',
+      req_props: null,
+      req_children: null,
+      use: 'This is where you can enter text.',
+      props: [
+        {name: 'Width - Menu Panel',
+        propPreview: '<Form width="menu" />',
+        propCode: {width: 'menu'},
+        description: 'Sets width to fill menu panel width'},
+        {name: 'Submit Button Text',
+        propPreview: '<Form submitButton="add Text" />',
+        propCode: {submitButton:"add Text"},
+        description: 'Changes the button text'},
+        {name: 'Value',
+        propPreview: '<Form value="Enter cat names"/>',
+        propCode: {value: 'Enter cat names'},
+        description: 'Changes the text'},
+        {name: 'Label',
+            propPreview: '<Form label="What: "/>',
+            propCode: {label: 'What: '},
+            description: 'Adds label to componenet'},
+            {name: 'Vertical Label',
+            propPreview: '<Form label="What: " vertical/>',
+            propCode: {label: 'What: ', vertical},
+            description: 'Adds label to component on top'},
+        {name: 'Alert',
+        propPreview: '<Form alert/>',
+        propCode: {alert},
+        description: 'Changes to alert mode (border is red)'},
+        {name: 'onChange',
+        propPreview: '<Form onChange={(data) => console.log(data)} />',
+        propCode: {onChange: (data) => console.log(data)},
+        description: 'Function called when data changes'},
+        {name: 'onClick',
+        propPreview: '<Form onClick={() => console.log("clicked")} />',
+        propCode: {onClick: () => console.log("clicked")},
+        description: 'Function called when form button is clicked'},
+        {name: 'Disabled',
+            propPreview: '<Form disabled />',
+            propCode: {disabled},
+            description: 'Makes Form not able to be used.'},
         ]
       },
     {
@@ -381,7 +462,7 @@ export default function attempt() {
         propCode: {label: 'What: '},
         description: 'Adds label to button'},
         {name: 'Vertical Label',
-          propPreview: '<TextField label="What: " vertical/>',
+          propPreview: '<Textfield label="What: " vertical/>',
           propCode: {label: 'What: ', vertical},
           description: 'Adds label to component on top'},
         {name: 'Icon',
@@ -413,7 +494,7 @@ export default function attempt() {
       codePreview: '<UnitMenu units={["EM", "PT", "PX"]}/>',
       req_props: {units: ['EM', 'PT', 'PX']},
       req_children: null,
-      use: 'TextField with attached menu. Current application is displaying and changing units of values',
+      use: 'Textfield with attached menu. Current application is displaying and changing units of values',
       props: [
         {name: 'Units',
         propPreview: '<UnitMenu units={["EM", "PT", "PX"]}/>',

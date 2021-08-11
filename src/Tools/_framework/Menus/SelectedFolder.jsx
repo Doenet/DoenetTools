@@ -37,6 +37,11 @@ export default function SelectedFolder() {
       newLabel: newLabel,
     });
   };
+
+  
+  if (!item){
+    return null;
+  }
   return (
     <>
       <h2 data-cy="infoPanelItemLabel">

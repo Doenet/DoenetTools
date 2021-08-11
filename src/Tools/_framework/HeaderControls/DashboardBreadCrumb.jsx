@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import BreadCrumb from '../../../_reactComponents/Breadcrumb/BreadCrumb';
 import { searchParamAtomFamily } from '../NewToolRoot';
 
-export default function NavigationBreadCrumb() {
+export default function DashboardBreadCrumb() {
   const path = useRecoilValue(searchParamAtomFamily('path'));
 
   return (
@@ -11,7 +11,7 @@ export default function NavigationBreadCrumb() {
       <div style={{ 
         margin: '-9px 0px 0px -25px', 
         maxWidth: '850px' }}>
-        <BreadCrumb path={path} tool='Content'/>
+        <BreadCrumb path={path} />
       </div>
     </Suspense>
   );
