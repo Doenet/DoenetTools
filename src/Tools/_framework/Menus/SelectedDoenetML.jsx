@@ -1,11 +1,13 @@
 import {
   faCode,
-  faFolder,
-  faObjectGroup,
+  // faFolder,
+  // faObjectGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState,useEffect } from 'react';
 import {atom, selector,useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import axios from 'axios';
+
 import {
   folderDictionaryFilterSelector,
   globalSelectedNodesAtom,
@@ -15,10 +17,9 @@ import IncrementMenu from '../../../_reactComponents/PanelHeaderComponents/Incre
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
 import { itemHistoryAtom,assignmentDictionarySelector } from '../ToolHandlers/CourseToolHandler';
-import { useAssignment } from '../../../Tools/course/CourseActions';
+import { useAssignment } from '../../_framework/ToolHandlers/CourseToolHandler';
 import {useAssignmentCallbacks} from '../../../_reactComponents/Drive/DriveActions';
 import { useToast } from '../Toast';
-import axios from 'axios';
 import Switch from '../../_framework/Switch';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
