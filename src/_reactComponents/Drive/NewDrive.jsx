@@ -1576,7 +1576,6 @@ function Folder(props) {
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
                 isViewOnly={props.isViewOnly}
-
               />,
             );
             break;
@@ -1620,6 +1619,7 @@ function Folder(props) {
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
                 indentLevel={props.indentLevel + 1}
+                isViewOnly={props.isViewOnly}
               />,
             );
             break;
@@ -2163,43 +2163,44 @@ export const DoenetML = React.memo(function DoenetML(props) {
       }
     };
     // make DoenetML draggable
-    if (!props.isViewOnly){
-    let draggableClassName = '';
-    doenetMLJSX = (
-      <Draggable
-        key={`dnode${props.driveInstanceId}${props.item.itemId}`}
-        id={props.item.itemId}
-        className={draggableClassName}
-        onDragStart={({ ev }) =>
-          onDragStart({
-            ev,
-            nodeId: props.item.itemId,
-            driveId: props.driveId,
-            onDragStartCallback,
-          })
-        }
-        onDrag={onDrag}
-        onDragEnd={onDragEnd}
-        ghostElement={renderDragGhost(props.item.itemId, doenetMLJSX)}
-      >
-        {doenetMLJSX}
-      </Draggable>
-    );
+    if (!props.isViewOnly) {
+      let draggableClassName = '';
+      doenetMLJSX = (
+        <Draggable
+          key={`dnode${props.driveInstanceId}${props.item.itemId}`}
+          id={props.item.itemId}
+          className={draggableClassName}
+          onDragStart={({ ev }) =>
+            onDragStart({
+              ev,
+              nodeId: props.item.itemId,
+              driveId: props.driveId,
+              onDragStartCallback,
+            })
+          }
+          onDrag={onDrag}
+          onDragEnd={onDragEnd}
+          ghostElement={renderDragGhost(props.item.itemId, doenetMLJSX)}
+        >
+          {doenetMLJSX}
+        </Draggable>
+      );
 
-    // attach dropTarget to enable drag-reordering
-    doenetMLJSX = (
-      <WithDropTarget
-        key={`wdtnode${props.driveInstanceId}${props.item.itemId}`}
-        id={props.item.itemId}
-        registerDropTarget={registerDropTarget}
-        unregisterDropTarget={unregisterDropTarget}
-        dropCallbacks={{
-          onDragOver: onDragOver,
-        }}
-      >
-        {doenetMLJSX}
-      </WithDropTarget>
-    );}
+      // attach dropTarget to enable drag-reordering
+      doenetMLJSX = (
+        <WithDropTarget
+          key={`wdtnode${props.driveInstanceId}${props.item.itemId}`}
+          id={props.item.itemId}
+          registerDropTarget={registerDropTarget}
+          unregisterDropTarget={unregisterDropTarget}
+          dropCallbacks={{
+            onDragOver: onDragOver,
+          }}
+        >
+          {doenetMLJSX}
+        </WithDropTarget>
+      );
+    }
   }
   return doenetMLJSX;
 });

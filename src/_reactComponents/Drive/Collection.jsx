@@ -430,7 +430,7 @@ function Collection(props) {
 
   // make folder draggable and droppable
   let draggableClassName = '';
-  if (!props.isNav) {
+  if (!props.isNav && !props.isViewOnly) {
     const onDragStartCallback = () => {
       console.log(globalSelectedNodes.length === 0, !isSelected);
       if (globalSelectedNodes.length === 0 || !isSelected) {
