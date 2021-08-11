@@ -130,6 +130,7 @@ export default function NavigationPanel(props) {
               urlClickBehavior="select"
               clickCallback={clickCallback}
               doubleClickCallback={doubleClickCallback}
+              isViewOnly
             />
           </Container>
         </Suspense>
