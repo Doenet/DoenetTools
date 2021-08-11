@@ -300,6 +300,22 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
         }
       }
 
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkworkComponent = <>
+          {checkworkComponent}
+          <span>
+            (no attempts remaining)
+          </span>
+        </>
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+
+        checkworkComponent = <>
+          {checkworkComponent}
+          <span>
+            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
+          </span>
+        </>
+      }
 
       let inputKey = this.componentName;
       let listStyle = {
