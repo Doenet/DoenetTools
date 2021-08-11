@@ -115,6 +115,8 @@ export default function ToolRoot(){
     SignIn:lazy(() => import('./ToolPanels/SignIn')),
     SignOut:lazy(() => import('./ToolPanels/SignOut')),
     NavigationPanel:lazy(() => import('./ToolPanels/NavigationPanel')),
+    Dashboard: lazy(() => import('./ToolPanels/Dashboard')),
+    Gradebook: lazy(() => import('./ToolPanels/Gradebook')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
@@ -124,6 +126,9 @@ export default function ToolRoot(){
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
+    EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
+    GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
  
@@ -299,6 +304,26 @@ let navigationObj = {
       menusInitOpen:[true,false],
       onLeave:"CourseChooserLeave",
     },
+    dashboard: {
+      pageName: "Dashboards",
+      currentMainPanel: "Dashboard",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["DashboardBreadCrumb"],
+      headerControlsPositions: ["Left"],
+      onLeave:"DashboardLeave",
+    },
+    gradebook: {
+      pageName: "Gradebook",
+      currentMainPanel: "Gradebook",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+      // onLeave:"",
+    },
     navigation:{ //allFilesInCourse
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
@@ -346,8 +371,10 @@ let navigationObj = {
       supportPanelOptions:[],
       supportPanelTitles:[],
       supportPanelIndex:0,
-      headerControls: ["BackButton"],
-      headerControlsPositions: ["Right"]
+      headerControls: ["EnrollmentBreadCrumb"],
+      headerControlsPositions: ["Left"]
+      // headerControls: ["BackButton"],
+      // headerControlsPositions: ["Right"]
     }
   },
   home:{
@@ -446,6 +473,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     const LazyEnterLeaveObj = useRef({
       NavigationLeave:lazy(() => import('./EnterLeave/NavigationLeave')),
       CourseChooserLeave:lazy(() => import('./EnterLeave/CourseChooserLeave')),
+      DashboardLeave:lazy(() => import('./EnterLeave/DashboardLeave')),
     }).current;
 
     if (leaveComponentStr){

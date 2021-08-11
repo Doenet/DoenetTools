@@ -11639,7 +11639,7 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc("#/_answer20_incorrect")).should('be.visible');
 
 
-      cy.log('Type to submit ccorrect answers again')
+      cy.log('Type to submit correct answers again')
 
       // the 2nd and 4th input should be disabled,
       // but this isn't working yet.
@@ -11696,6 +11696,273 @@ describe('Answer Tag Tests', function () {
       cy.get(cesc('#' + inputNames[17]) + "_incorrect").should('be.visible');
       cy.get(cesc("#/_answer19_correct")).should('be.visible');
       cy.get(cesc("#/_answer20_incorrect")).should('be.visible');
+
+    })
+  });
+
+  it('disable after correct', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer>x</answer></p>
+  <p><answer disableAfterCorrect>x</answer></p>
+  <p><answer forceFullCheckworkButton>x</answer></p>
+  <p><answer forceFullCheckworkButton disableAfterCorrect>x</answer></p>
+  
+  <p><answer type="text">hello</answer></p>
+  <p><answer type="text" disableAfterCorrect>hello</answer></p>
+  <p><answer type="text" forceFullCheckworkButton>hello</answer></p>
+  <p><answer type="text" forceFullCheckworkButton disableAfterCorrect>hello</answer></p>
+    
+  <p><answer>
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer forceFullCheckworkButton>
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer forceFullCheckworkButton disableAfterCorrect>
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  
+  <p><answer>
+    <choiceinput inline>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer disableAfterCorrect>
+    <choiceinput inline>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer forceFullCheckworkButton>
+    <choiceinput inline>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer forceFullCheckworkButton disableAfterCorrect>
+    <choiceinput inline>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+
+  <p><answer type="boolean">true</answer></p>
+  <p><answer type="boolean" disableAfterCorrect>true</answer></p>
+  <p><answer type="boolean" forceFullCheckworkButton>true</answer></p>
+  <p><answer type="boolean" forceFullCheckworkButton disableAfterCorrect>true</answer></p>
+   `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+
+      let inputNames = [...Array(20).keys()].map(n => components[`/_answer${n + 1}`].stateValues.inputChildren[0].componentName);
+
+      cy.log('Submit incorrect answers')
+      cy.get(cesc('#' + inputNames[0]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[1]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[2]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[3]) + " textarea").type('y{enter}', { force: true })
+      cy.get(cesc("#/_answer3_submit")).click();
+      cy.get(cesc("#/_answer4_submit")).click();
+      cy.get(cesc('#' + inputNames[0]) + "_incorrect").should('be.visible');
+      cy.get(cesc('#' + inputNames[1]) + "_incorrect").should('be.visible');
+      cy.get(cesc("#/_answer3_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer4_incorrect")).should('be.visible');
+
+      cy.get(cesc('#' + inputNames[4]) + "_input").type('bye{enter}')
+      cy.get(cesc('#' + inputNames[5]) + "_input").type('bye{enter}')
+      cy.get(cesc('#' + inputNames[6]) + "_input").type('bye{enter}')
+      cy.get(cesc('#' + inputNames[7]) + "_input").type('bye{enter}')
+      cy.get(cesc("#/_answer7_submit")).click();
+      cy.get(cesc("#/_answer8_submit")).click();
+      cy.get(cesc('#' + inputNames[4]) + "_incorrect").should('be.visible');
+      cy.get(cesc('#' + inputNames[5]) + "_incorrect").should('be.visible');
+      cy.get(cesc("#/_answer7_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer8_incorrect")).should('be.visible');
+
+      cy.get(cesc('#/_choiceinput1')).contains("no").click({ force: true });
+      cy.get(cesc('#/_choiceinput2')).contains("no").click({ force: true });
+      cy.get(cesc('#/_choiceinput3')).contains("no").click({ force: true });
+      cy.get(cesc('#/_choiceinput4')).contains("no").click({ force: true });
+      cy.get(cesc("#/_choiceinput1_submit")).click();
+      cy.get(cesc("#/_choiceinput2_submit")).click();
+      cy.get(cesc("#/_answer11_submit")).click();
+      cy.get(cesc("#/_answer12_submit")).click();
+      cy.get(cesc("#/_choiceinput1_incorrect")).should('be.visible');
+      cy.get(cesc("#/_choiceinput2_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer11_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer12_incorrect")).should('be.visible');
+
+      cy.get('#\\/_choiceinput5').select(`no`);
+      cy.get('#\\/_choiceinput6').select(`no`);
+      cy.get('#\\/_choiceinput7').select(`no`);
+      cy.get('#\\/_choiceinput8').select(`no`);
+      cy.get(cesc("#/_choiceinput5_submit")).click();
+      cy.get(cesc("#/_choiceinput6_submit")).click();
+      cy.get(cesc("#/_answer15_submit")).click();
+      cy.get(cesc("#/_answer16_submit")).click();
+      cy.get(cesc("#/_choiceinput5_incorrect")).should('be.visible');
+      cy.get(cesc("#/_choiceinput6_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer15_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer16_incorrect")).should('be.visible');
+
+      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc('#' + inputNames[17]) + "_submit").click();
+      cy.get(cesc("#/_answer19_submit")).click();
+      cy.get(cesc("#/_answer20_submit")).click();
+      cy.get(cesc('#' + inputNames[16]) + "_incorrect").should('be.visible');
+      cy.get(cesc('#' + inputNames[17]) + "_incorrect").should('be.visible');
+      cy.get(cesc("#/_answer19_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer20_incorrect")).should('be.visible');
+
+
+
+
+      cy.log("Submit correct answers")
+      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}x{enter}', { force: true })
+      cy.get(cesc("#/_answer3_submit")).click();
+      cy.get(cesc("#/_answer4_submit")).click();
+      cy.get(cesc('#' + inputNames[0]) + "_correct").should('be.visible');
+      cy.get(cesc('#' + inputNames[1]) + "_correct").should('be.visible');
+      cy.get(cesc("#/_answer3_correct")).should('be.visible');
+      cy.get(cesc("#/_answer4_correct")).should('be.visible');
+
+      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('hello{enter}')
+      cy.get(cesc('#' + inputNames[5]) + "_input").clear().type('hello{enter}')
+      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('hello{enter}')
+      cy.get(cesc('#' + inputNames[7]) + "_input").clear().type('hello{enter}')
+      cy.get(cesc("#/_answer7_submit")).click();
+      cy.get(cesc("#/_answer8_submit")).click();
+      cy.get(cesc('#' + inputNames[4]) + "_correct").should('be.visible');
+      cy.get(cesc('#' + inputNames[5]) + "_correct").should('be.visible');
+      cy.get(cesc("#/_answer7_correct")).should('be.visible');
+      cy.get(cesc("#/_answer8_correct")).should('be.visible');
+
+      cy.get(cesc('#/_choiceinput1')).contains("yes").click({ force: true });
+      cy.get(cesc('#/_choiceinput2')).contains("yes").click({ force: true });
+      cy.get(cesc('#/_choiceinput3')).contains("yes").click({ force: true });
+      cy.get(cesc('#/_choiceinput4')).contains("yes").click({ force: true });
+      cy.get(cesc("#/_choiceinput1_submit")).click();
+      cy.get(cesc("#/_choiceinput2_submit")).click();
+      cy.get(cesc("#/_answer11_submit")).click();
+      cy.get(cesc("#/_answer12_submit")).click();
+      cy.get(cesc("#/_choiceinput1_correct")).should('be.visible');
+      cy.get(cesc("#/_choiceinput2_correct")).should('be.visible');
+      cy.get(cesc("#/_answer11_correct")).should('be.visible');
+      cy.get(cesc("#/_answer12_correct")).should('be.visible');
+
+      cy.get('#\\/_choiceinput5').select(`yes`);
+      cy.get('#\\/_choiceinput6').select(`yes`);
+      cy.get('#\\/_choiceinput7').select(`yes`);
+      cy.get('#\\/_choiceinput8').select(`yes`);
+      cy.get(cesc("#/_choiceinput5_submit")).click();
+      cy.get(cesc("#/_choiceinput6_submit")).click();
+      cy.get(cesc("#/_answer15_submit")).click();
+      cy.get(cesc("#/_answer16_submit")).click();
+      cy.get(cesc("#/_choiceinput5_correct")).should('be.visible');
+      cy.get(cesc("#/_choiceinput6_correct")).should('be.visible');
+      cy.get(cesc("#/_answer15_correct")).should('be.visible');
+      cy.get(cesc("#/_answer16_correct")).should('be.visible');
+
+      cy.get(cesc('#' + inputNames[16]) + "_input").click();
+      cy.get(cesc('#' + inputNames[17]) + "_input").click();
+      cy.get(cesc('#' + inputNames[18]) + "_input").click();
+      cy.get(cesc('#' + inputNames[19]) + "_input").click();
+      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc('#' + inputNames[17]) + "_submit").click();
+      cy.get(cesc("#/_answer19_submit")).click();
+      cy.get(cesc("#/_answer20_submit")).click();
+      cy.get(cesc('#' + inputNames[16]) + "_correct").should('be.visible');
+      cy.get(cesc('#' + inputNames[17]) + "_correct").should('be.visible');
+      cy.get(cesc("#/_answer19_correct")).should('be.visible');
+      cy.get(cesc("#/_answer20_correct")).should('be.visible');
+
+
+
+      cy.log('Type to submit incorrect answers again')
+
+      // the 2nd and 4th input should be disabled,
+      // but this isn't working yet.
+      // For now, best we can do is make sure button still say incorrect
+      cy.get(cesc('#' + inputNames[0]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[1]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[2]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
+      cy.get(cesc('#' + inputNames[3]) + " textarea").type('{end}{backspace}y{enter}', { force: true })
+      cy.get(cesc("#/_answer3_submit")).click();
+      cy.get(cesc('#' + inputNames[0]) + "_incorrect").should('be.visible');
+      cy.get(cesc('#' + inputNames[1]) + "_correct").should('be.visible');
+      cy.get(cesc("#/_answer3_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer4_correct")).should('be.visible');
+
+      cy.get(cesc('#' + inputNames[4]) + "_input").clear().type('bye{enter}')
+      cy.get(cesc('#' + inputNames[5]) + "_input").should('be.disabled');
+      cy.get(cesc('#' + inputNames[6]) + "_input").clear().type('bye{enter}')
+      cy.get(cesc('#' + inputNames[7]) + "_input").should('be.disabled');
+      cy.get(cesc("#/_answer7_submit")).click();
+      cy.get(cesc('#' + inputNames[4]) + "_incorrect").should('be.visible');
+      cy.get(cesc('#' + inputNames[5]) + "_correct").should('be.visible');
+      cy.get(cesc("#/_answer7_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer8_correct")).should('be.visible');
+
+      cy.get(cesc('#/_choiceinput1')).contains("no").click({ force: true });
+      cy.get(cesc('#/_choiceinput2')).contains("no").click({ force: true });
+      cy.get(cesc('#/_choiceinput3')).contains("no").click({ force: true });
+      cy.get(cesc('#/_choiceinput4')).contains("no").click({ force: true });
+      cy.get(cesc("#/_choiceinput1_submit")).click();
+      cy.get(cesc("#/_answer11_submit")).click();
+      cy.get(cesc("#/_choiceinput1_incorrect")).should('be.visible');
+      cy.get(cesc("#/_choiceinput2_correct")).should('be.visible');
+      cy.get(cesc("#/_answer11_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer12_correct")).should('be.visible');
+
+      cy.get('#\\/_choiceinput5').select(`no`);
+      cy.get('#\\/_choiceinput6').should('be.disabled')
+      cy.get('#\\/_choiceinput7').select(`no`);
+      cy.get('#\\/_choiceinput8').should('be.disabled')
+      cy.get(cesc("#/_choiceinput5_submit")).click();
+      cy.get(cesc("#/_answer15_submit")).click();
+      cy.get(cesc("#/_choiceinput5_incorrect")).should('be.visible');
+      cy.get(cesc("#/_choiceinput6_correct")).should('be.visible');
+      cy.get(cesc("#/_answer15_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer16_correct")).should('be.visible');
+
+      cy.get(cesc('#' + inputNames[16]) + "_input").click();
+      cy.get(cesc('#' + inputNames[17]) + "_input").should('be.disabled')
+      cy.get(cesc('#' + inputNames[18]) + "_input").click();
+      cy.get(cesc('#' + inputNames[19]) + "_input").should('be.disabled')
+      cy.get(cesc('#' + inputNames[16]) + "_submit").click();
+      cy.get(cesc("#/_answer19_submit")).click();
+      cy.get(cesc('#' + inputNames[16]) + "_incorrect").should('be.visible');
+      cy.get(cesc('#' + inputNames[17]) + "_correct").should('be.visible');
+      cy.get(cesc("#/_answer19_incorrect")).should('be.visible');
+      cy.get(cesc("#/_answer20_correct")).should('be.visible');
 
     })
   });

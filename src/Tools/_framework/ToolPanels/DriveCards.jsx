@@ -252,7 +252,7 @@ const DriveCardWrapper = (props) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setDrivecardSelection([]); //TODO: on leave instead
-                  setPageToolView({page:'course',tool:'navigation',view:'',params:{path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`}})
+                  setPageToolView({page:'course',tool:'dashboard',view:'',params:{path:`${item.driveId}:${item.driveId}:${item.driveId}:Drive`}})
                 }}
               >
                   <DriveCard
