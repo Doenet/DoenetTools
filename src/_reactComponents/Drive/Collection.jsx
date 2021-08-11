@@ -41,10 +41,10 @@ function Collection(props) {
     folderInfoSelector({
       driveId: props.driveId,
       instanceId: props.driveInstanceId,
-      folderId: props.folderId,
+      folderId: itemId,
     }),
   );
-  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:props.folderId}))
+  // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:itemId}))
 
   const {
     onDragStart,
@@ -58,7 +58,7 @@ function Collection(props) {
   } = useDnDCallbacks();
   const { dropState } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
-  // const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:props.folderId}))
+  // const [folderCacheDirty, setFolderCacheDirty] = useRecoilState(folderCacheDirtyAtom({driveId:props.driveId, folderId:itemId}))
 
   const parentFolderSortOrder = useRecoilValue(
     folderSortOrderAtom({
@@ -79,7 +79,7 @@ function Collection(props) {
   const { deleteItem } = useSockets('drive');
   const deleteItemCallback = (itemId) => {
     deleteItem({
-      driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
+      driveIdFolderId: { driveId: props.driveId, folderId: itemId },
       driveInstanceId: props.driveInstanceId,
       itemId,
     });
@@ -158,7 +158,7 @@ function Collection(props) {
   // Cache invalidation when folder is dirty
   // useEffect(() => {
   //   if (folderCacheDirty) {
-  //     invalidateSortCache({driveId: props.driveId, folderId: props.folderId});
+  //     invalidateSortCache({driveId: props.driveId, folderId: itemId});
   //     setFolderCacheDirty(false);
   //   }
   // }, [folderCacheDirty])
@@ -214,7 +214,7 @@ function Collection(props) {
       driveIdInstanceIdFolderId: {
         driveInstanceId: props.driveInstanceId,
         driveId: props.driveId,
-        folderId: props.folderId,
+        folderId: itemId,
       },
       sortKey: sortKey,
     });
@@ -252,7 +252,10 @@ function Collection(props) {
       if (cursorArea < 0.5) {
         // insert shadow to top of current dropTarget
         insertDragShadow({
-          driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
+          driveIdFolderId: {
+            driveId: props.driveId,
+            folderId: props.item.parentFolderId,
+          },
           position: 'beforeCurrent',
           itemId,
           parentId: props.item?.parentFolderId,
@@ -260,7 +263,7 @@ function Collection(props) {
       } else if (cursorArea < 1.0) {
         // insert shadow to bottom of current dropTarget
         insertDragShadow({
-          driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
+          driveIdFolderId: { driveId: props.driveId, folderId: itemId },
           position: 'afterCurrent',
           itemId,
           parentId: props.item?.parentFolderId,
@@ -282,16 +285,15 @@ function Collection(props) {
     }
 
     insertDragShadow({
-      driveIdFolderId: { driveId: props.driveId, folderId: props.folderId },
-      parentId: props.folderId,
+      driveIdFolderId: { driveId: props.driveId, folderId: itemId },
+      parentId: itemId,
       position: 'intoCurrent',
     });
   };
 
   const onDrop = () => {};
 
-  const onDragEndCb = (info) => {
-    console.log(info);
+  const onDragEndCb = () => {
     onDragEnd();
   };
 
@@ -537,6 +539,7 @@ function Collection(props) {
           );
           break;
         case 'DragShadow':
+          console.log(`dragShadow${itemId}${props.driveInstanceId}`);
           items.push(
             <DragShadow
               key={`dragShadow${itemId}${props.driveInstanceId}`}

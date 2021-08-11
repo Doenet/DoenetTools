@@ -1607,6 +1607,7 @@ function Folder(props) {
             items.push(
               <Collection
                 driveId={props.driveId}
+                driveInstanceId={props.driveInstanceId}
                 key={`item${itemId}${props.driveInstanceId}`}
                 item={item}
                 clickCallback={props.clickCallback}
