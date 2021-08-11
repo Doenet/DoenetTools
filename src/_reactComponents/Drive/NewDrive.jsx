@@ -357,6 +357,7 @@ export default function Drive(props) {
           doubleClickCallback={props.doubleClickCallback}
           numColumns={numColumns}
           columnTypes={columnTypes}
+          isViewOnly={props.isViewOnly}
         />
         <WithDropTarget
           key={DropTargetsConstant.INVALID_DROP_AREA_ID}
@@ -1444,7 +1445,7 @@ function Folder(props) {
 
   // make folder draggable and droppable
   let draggableClassName = '';
-  if (!props.isNav) {
+  if (!props.isNav && !props.isViewOnly) {
     const onDragStartCallback = () => {
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
@@ -1546,6 +1547,7 @@ function Folder(props) {
               parentFolderId={props.folderId}
               hideUnpublished={props.hideUnpublished}
               foldersOnly={props.foldersOnly}
+              isViewOnly={props.isViewOnly}
             />,
           );
         }
@@ -1572,6 +1574,8 @@ function Folder(props) {
                 doubleClickCallback={props.doubleClickCallback}
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
+                isViewOnly={props.isViewOnly}
+
               />,
             );
             break;
@@ -1591,6 +1595,7 @@ function Folder(props) {
                 deleteItem={deleteItemCallback}
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
+                isViewOnly={props.isViewOnly}
               />,
             );
             break;
@@ -2266,6 +2271,7 @@ const DoenetML = React.memo(function DoenetML(props) {
       }
     };
     // make DoenetML draggable
+    if (!props.isViewOnly){
     let draggableClassName = '';
     doenetMLJSX = (
       <Draggable
@@ -2301,7 +2307,7 @@ const DoenetML = React.memo(function DoenetML(props) {
       >
         {doenetMLJSX}
       </WithDropTarget>
-    );
+    );}
   }
   return doenetMLJSX;
 });
