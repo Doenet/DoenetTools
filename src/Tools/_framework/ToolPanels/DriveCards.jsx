@@ -8,7 +8,7 @@ import { drivecardSelectedNodesAtom} from '../ToolHandlers/CourseToolHandler'
 import { pageToolViewAtom } from '../NewToolRoot';
 // import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
-import { useMenuPanelController } from '../Panels/MenuPanel';
+// import { useMenuPanelController } from '../Panels/MenuPanel';
 import { drivePathSyncFamily, loadDriveInfoQuery , fetchDrivesSelector,fetchDrivesQuery} from '../../../_reactComponents/Drive/NewDrive';
 import Measure from 'react-measure';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
@@ -60,7 +60,7 @@ const DriveCardWrapper = (props) => {
   const { isOneDriveSelect ,driveInfo, drivePathSyncKey, types} = props;
  
   const [drivecardSelectedValue,setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom)
-  const setOpenMenuPanel = useMenuPanelController();
+  // const setOpenMenuPanel = useMenuPanelController();
   // const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
   const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
   // console.log(" columnJSX drivesInfo",drivecardInfo)
@@ -123,7 +123,7 @@ const DriveCardWrapper = (props) => {
   const drivecardselection = (e,item) =>{
    e.preventDefault();
    e.stopPropagation();
-   setOpenMenuPanel(0);
+  //  setOpenMenuPanel(0);
    if(isOneDriveSelect){
     if (!e.shiftKey && !e.metaKey){          // one item
       setDrivecardSelection((old) => [item]);

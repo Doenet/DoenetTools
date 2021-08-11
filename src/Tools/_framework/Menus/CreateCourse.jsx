@@ -5,10 +5,9 @@ import axios from "axios";
 import { useToast, toastType } from '@Toast';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useRecoilCallback } from 'recoil';
-// import { driveColors, driveImages } from '../../_reactComponents/Drive/util';
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 
 
 const CreateCourse = (props) =>{

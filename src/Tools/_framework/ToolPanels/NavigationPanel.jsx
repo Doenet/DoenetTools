@@ -19,7 +19,7 @@ import Drive, {
   clearDriveAndItemSelections,
 } from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
-import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb';
+import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 // import { useToast, toastType } from '../Toast';

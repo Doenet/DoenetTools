@@ -13,15 +13,15 @@ import axios from 'axios';
 import { nanoid } from 'nanoid';
 import Measure from 'react-measure';
 import {
-  faLink,
+  // faLink,
   faCode,
   faFolder,
   faChevronRight,
   faChevronDown,
-  faUsersSlash,
-  faUsers,
+  // faUsersSlash,
+  // faUsers,
   faCheck,
-  faUserEdit,
+  // faUserEdit,
   faBookOpen,
   faChalkboard,
   faLayerGroup,
@@ -43,20 +43,35 @@ import {
 /**
  * Internal dependencies
  */
+import '../../_utils/util.css';
+import getSortOrder from '../../_utils/sort/LexicographicalRankingSort';
+import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
+
 import {
   DropTargetsContext,
   DropTargetsConstant,
   WithDropTarget,
 } from '../DropTarget';
 import Draggable from '../Draggable';
-import getSortOrder from '../../_utils/sort/LexicographicalRankingSort';
-import { BreadcrumbContext } from '../Breadcrumb';
 import { drivecardSelectedNodesAtom } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
-import '../../_utils/util.css';
 import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
-import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
-import { loadAssignmentSelector } from '../../Tools/course/Course';
+
 import useSockets from '../Sockets';
+// import { BreadcrumbContext } from '../Breadcrumb';
+import { BreadcrumbContext } from '../Breadcrumb/BreadcrumbProvider';
+
+
+export const loadAssignmentSelector = selectorFamily({
+  key: 'loadAssignmentSelector',
+  get:
+    (doenetId) =>
+    async ({ get, set }) => {
+      const { data } = await axios.get(
+        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
+      );
+      return data;
+    },
+});
 
 export const itemType = Object.freeze({
   DOENETML: 'DoenetML',
