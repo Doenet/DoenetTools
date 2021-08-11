@@ -1989,4 +1989,133 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('copy of template source maintained when withheld', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Number of points: <mathinput name="n" /></p>
+
+    <graph name='g1'>
+      <map name="map1" assignNames="t1 t2">
+        <template newNamespace>
+          <point name="A" x="$(i{prop='value' link='false'})" y='1'/>
+        </template>
+        <sources alias="i"><sequence from="1" to="$n" /></sources>
+      </map>
+    </graph>
+    
+    <p><m name="m1">A_1 = <copy tname="t1/A" displayDigits="3" /></m></p>
+    <p><m name="m2">A_2 = <copy tname="t2/A" displayDigits="3" /></m></p>
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+    cy.log('Add point')
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(1,1)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Move point')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/t1/A"].movePoint({ x: -3, y: 7 })
+    })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Remove point')
+    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Remember coordinates when restore point since copy was maintained')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Add second point')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=(2,1)')
+    })
+
+
+    cy.log('Move second point')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/t2/A"].movePoint({ x: 5, y: -4 })
+    })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=(5,−4)')
+    })
+
+
+    cy.log('Remove both points')
+    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Remember coordinates of both points')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=(5,−4)')
+    })
+
+
+  });
+
 });
