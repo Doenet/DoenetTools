@@ -134,7 +134,7 @@ export default function NavigationPanel(props) {
               urlClickBehavior="select"
               clickCallback={clickCallback}
               doubleClickCallback={doubleClickCallback}
-              isViewOnly={view === 'student'} //Update for better compatabilty with roles/views
+              isViewOnly={view === 'student'} //TODO: Update for better compatabilty with roles/views
             />
           </Container>
         </Suspense>
