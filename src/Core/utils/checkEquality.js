@@ -449,12 +449,30 @@ export default function checkEquality({
     // don't have math expression, just see if have an array of objects
     if (Array.isArray(object1)) {
       if (!Array.isArray(object2)) {
-        // convert to array of one element
-        object2 = [object2];
+        // if object1 is an array of strings with no commas
+        // and object2 is a string,
+        // split object2 by commas
+        if (typeof object2 === "string" && object1.every(x =>
+          typeof x === "string" && !x.includes(",")
+        )) {
+          object2 = object2.split(",").map(x => x.trim());
+        } else {
+          // otherwise convert object2 to array of one element
+          object2 = [object2];
+        }
       }
     } else if (Array.isArray(object2)) {
-      // convert to array of one element
-      object1 = [object1];
+      // if object2 is an array of strings with no commas
+      // and object1 is a string,
+      // split object1 by commas
+      if (typeof object1 === "string" && object2.every(x =>
+        typeof x === "string" && !x.includes(",")
+      )) {
+        object1 = object1.split(",").map(x => x.trim());
+      } else {
+        // otherwise convert object1 to array of one element
+        object1 = [object1];
+      }
     } else {
       // non-array.  Just return if same object
       return check_equality(object1, object2);

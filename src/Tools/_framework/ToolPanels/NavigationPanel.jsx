@@ -2,7 +2,12 @@
  * External dependencies
  */
 import React, { Suspense, useCallback, useEffect } from 'react';
-import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import {
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil';
 /**
  * Internal dependencies
  */
@@ -20,10 +25,9 @@ import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 // import { useToast, toastType } from '../Toast';
 
 export default function NavigationPanel(props) {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
-
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
@@ -130,6 +134,7 @@ export default function NavigationPanel(props) {
               urlClickBehavior="select"
               clickCallback={clickCallback}
               doubleClickCallback={doubleClickCallback}
+              isViewOnly={view === 'student'} //TODO: Update for better compatabilty with roles/views
             />
           </Container>
         </Suspense>
