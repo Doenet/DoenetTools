@@ -38,7 +38,6 @@ export default function SelectedDoenetML() {
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
-  const pageToolView = useRecoilValue(pageToolViewAtom);
   const [label, setLabel] = useState(selection[0]?.label ?? '');
   const { deleteItem, renameItem } = useSockets('drive');
   const {
@@ -101,7 +100,7 @@ export default function SelectedDoenetML() {
     <>
       {versionHistory.contents.named.map((item, i) => (
         <>
-          {item.isReleased == 1 ? (
+          {item.isReleased == '1' ? (
             <label key={i} value={item.versionId}>
               {item.isAssigned == '1' ? '(Assigned)' : ''}
               {item.title}
@@ -117,127 +116,121 @@ export default function SelectedDoenetML() {
   // make assignment for released versions
 
   makeAssignmentforReleasedButton = (
-    <ButtonGroup vertical>
-      <Button
-        value="Make Assignment"
-        onClick={async () => {
-          setIsAssigned(true);
-          let isAssigned = 1;
+    <Button
+      value="Make Assignment"
+      onClick={async () => {
+        setIsAssigned(true);
+        let isAssigned = 1;
 
-          const versionResult = await updateVersionHistory(
-            item?.doenetId,
-            versionId,
-            isAssigned,
-          );
+        const versionResult = await updateVersionHistory(
+          item?.doenetId,
+          versionId,
+          isAssigned,
+        );
 
-          const result = await addContentAssignment({
-            driveIditemIddoenetIdparentFolderId: {
-              driveId: item?.driveId,
-              folderId: item?.parentFolderId,
-              itemId: item?.itemId,
-              doenetId: item?.doenetId,
-              contentId: contentId,
-              versionId: versionId,
-            },
-            doenetId: item?.doenetId,
-            contentId: contentId,
-            versionId: versionId,
-          });
-          let payload = {
-            // ...aInfo,
-            itemId: item?.itemId,
-            isAssigned: '1',
-            doenetId: item?.doenetId,
-            contentId: contentId,
+        const result = await addContentAssignment({
+          driveIditemIddoenetIdparentFolderId: {
             driveId: item?.driveId,
-            versionId: versionId,
-          };
-          //TODO update drive actions
-          makeAssignment({
-            driveIdFolderId: {
-              driveId: item?.driveId,
-              folderId: item?.parentFolderId,
-            },
+            folderId: item?.parentFolderId,
             itemId: item?.itemId,
-            payload: payload,
-          });
-          try {
-            if (result.success && versionResult) {
-              addToast(`Add new assignment`);
-            } else {
-              onAssignmentError({ errorMessage: result.message });
-            }
-          } catch (e) {
-            onAssignmentError({ errorMessage: e });
+            doenetId: item?.doenetId,
+            contentId: contentId,
+            versionId: versionId,
+          },
+          doenetId: item?.doenetId,
+          contentId: contentId,
+          versionId: versionId,
+        });
+        let payload = {
+          // ...aInfo,
+          itemId: item?.itemId,
+          isAssigned: '1',
+          doenetId: item?.doenetId,
+          contentId: contentId,
+          driveId: item?.driveId,
+          versionId: versionId,
+        };
+        //TODO update drive actions
+        makeAssignment({
+          driveIdFolderId: {
+            driveId: item?.driveId,
+            folderId: item?.parentFolderId,
+          },
+          itemId: item?.itemId,
+          payload: payload,
+        });
+        try {
+          if (result.success && versionResult) {
+            addToast(`Add new assignment`);
+          } else {
+            onAssignmentError({ errorMessage: result.message });
           }
-        }}
-      />
-    </ButtonGroup>
+        } catch (e) {
+          onAssignmentError({ errorMessage: e });
+        }
+      }}
+    />
   );
 
   // unassign
   let unAssignButton = '';
 
   unAssignButton = (
-    <ButtonGroup vertical>
-      <Button
-        value="Unassign"
-        onClick={async () => {
-          let isAssigned = 0;
-          const versionResult = await updateVersionHistory(
-            item?.doenetId,
-            versionId,
-            isAssigned,
-          );
+    <Button
+      value="Unassign"
+      onClick={async () => {
+        let isAssigned = 0;
+        const versionResult = await updateVersionHistory(
+          item?.doenetId,
+          versionId,
+          isAssigned,
+        );
 
-          assignmentToContent({
-            driveIditemIddoenetIdparentFolderId: {
-              driveId: item?.driveId,
-              folderId: item?.parentFolderId,
-              itemId: item?.itemId,
-              doenetId: item?.doenetId,
-              contentId: contentId,
-              versionId: versionId,
-            },
-            doenetId: item?.doenetId,
-            contentId: contentId,
-            versionId: versionId,
-          });
-          //TODO update drive actions
-
-          convertAssignmentToContent({
-            driveIdFolderId: {
-              driveId: item?.driveId,
-              folderId: item?.parentFolderId,
-            },
+        assignmentToContent({
+          driveIditemIddoenetIdparentFolderId: {
+            driveId: item?.driveId,
+            folderId: item?.parentFolderId,
             itemId: item?.itemId,
             doenetId: item?.doenetId,
             contentId: contentId,
             versionId: versionId,
-          });
+          },
+          doenetId: item?.doenetId,
+          contentId: contentId,
+          versionId: versionId,
+        });
+        //TODO update drive actions
 
-          const result = axios.post(`/api/handleMakeContent.php`, {
-            itemId: item?.itemId,
-            doenetId: item?.doenetId,
-            contentId: contentId,
-            versionId: versionId,
+        convertAssignmentToContent({
+          driveIdFolderId: {
+            driveId: item?.driveId,
+            folderId: item?.parentFolderId,
+          },
+          itemId: item?.itemId,
+          doenetId: item?.doenetId,
+          contentId: contentId,
+          versionId: versionId,
+        });
+
+        const result = axios.post(`/api/handleMakeContent.php`, {
+          itemId: item?.itemId,
+          doenetId: item?.doenetId,
+          contentId: contentId,
+          versionId: versionId,
+        });
+        result
+          .then((resp) => {
+            if (resp.data.success) {
+              addToast(`'UnAssigned ''`);
+            } else {
+              onAssignmentError({ errorMessage: resp.data.message });
+            }
+          })
+          .catch((e) => {
+            onAssignmentError({ errorMessage: e.message });
           });
-          result
-            .then((resp) => {
-              if (resp.data.success) {
-                addToast(`'UnAssigned ''`);
-              } else {
-                onAssignmentError({ errorMessage: resp.data.message });
-              }
-            })
-            .catch((e) => {
-              onAssignmentError({ errorMessage: e.message });
-            });
-        }}
-      />
-      <br />
-      <br />
-    </ButtonGroup>
+      }}
+    />
   );
 
   return (
@@ -300,44 +293,14 @@ export default function SelectedDoenetML() {
             });
           }}
         />
-        <Button
-          value="Edit DoenetML"
-          onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
-              params: {
-                doenetId: item.doenetId,
-                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
-              },
-            });
-          }}
-        />
-        <Button
-          data-cy="deleteDoenetMLButton"
-          value="Delete DoenetML"
-          onClick={() => {
-            deleteItem({
-              driveIdFolderId: {
-                driveId: item.driveId,
-                folderId: item.parentFolderId,
-              },
-              itemId: item.itemId,
-              driveInstanceId: item.driveInstanceId,
-              label: item.label,
-            });
-          }}
-        />
       </ButtonGroup>
       {assigned}
-      <br />
-      {item?.isAssigned === '0' &&
-        item?.isReleased === '1' &&
-        makeAssignmentforReleasedButton}
-      <br />
-      {item?.isAssigned == '1' && item?.isReleased === '1' && unAssignButton}
-      <br />
+      <ButtonGroup vertical>
+        {item?.isAssigned === '0' &&
+          item?.isReleased === '1' &&
+          makeAssignmentforReleasedButton}
+        {item?.isAssigned == '1' && item?.isReleased === '1' && unAssignButton}
+      </ButtonGroup>
       {item?.isAssigned == '1' && item?.isReleased === '1' && (
         <AssignmentForm
           selection={item}

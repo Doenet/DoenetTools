@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import {
   atomFamily,
   useRecoilCallback,
@@ -21,6 +21,7 @@ export default function CollectionEditor(props) {
   const [driveId, , itemId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');
+  const [entries, setEntries] = useState([]);
 
   const folderInfoObj = useRecoilValueLoadable(
     folderDictionaryFilterSelector({
@@ -29,7 +30,7 @@ export default function CollectionEditor(props) {
     }),
   ).getValue();
 
-  const initDoenetML = useRecoilCallback(
+  const initEntryByDoenetId = useRecoilCallback(
     ({ snapshot, set }) =>
       async (doenetId) => {
         const release = snapshot.retain();
@@ -56,6 +57,24 @@ export default function CollectionEditor(props) {
     [],
   );
 
+  useEffect(() => {
+    const entries = [];
+    for (let key in folderInfoObj.contentsDictionary) {
+      initEntryByDoenetId(folderInfoObj.contentsDictionary[key].doenetId);
+      entries.push(
+        <Suspense key={key}>
+          <CollectionEntry
+            label={folderInfoObj.contentsDictionary[key].label}
+            doenetId={folderInfoObj.contentsDictionary[key].doenetId}
+            addVariant={(e) => {}}
+            removeVariant={(e) => {}}
+          />
+        </Suspense>,
+      );
+    }
+    setEntries(entries);
+  }, [folderInfoObj.contentsDictionary, initEntryByDoenetId]);
+
   return (
     <div
       style={{
@@ -67,19 +86,7 @@ export default function CollectionEditor(props) {
       }}
     >
       <div style={{ height: '10px', background: 'black' }}></div>
-      {Object.keys(folderInfoObj.contentsDictionary).map((key) => {
-        initDoenetML(folderInfoObj.contentsDictionary[key].doenetId);
-        return (
-          <Suspense key={key}>
-            <CollectionEntry
-              label={folderInfoObj.contentsDictionary[key].label}
-              doenetId={folderInfoObj.contentsDictionary[key].doenetId}
-              addVariant={(e) => {}}
-              removeVariant={(e) => {}}
-            />
-          </Suspense>
-        );
-      })}
+      {entries}
     </div>
   );
 }
@@ -119,7 +126,7 @@ function CollectionEntry({ doenetId, label }) {
 
   return (
     <>
-      <CollectionDisplayLine
+      <CollectionEntryDisplayLine
         key={doenetId}
         label={label}
         addVariant={(e) => {}}
@@ -136,7 +143,7 @@ function CollectionEntry({ doenetId, label }) {
 }
 
 //key off of doenet Id a variant display element (active variants?)
-function CollectionDisplayLine({ label, addVariant, removeVariant }) {
+function CollectionEntryDisplayLine({ label, addVariant, removeVariant }) {
   return (
     <div
       style={{

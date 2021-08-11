@@ -2281,7 +2281,6 @@ export function useDnDCallbacks() {
       const copyMode = dragState.copyMode || draggingAcrossDrives;
 
       if (copyMode) {
-        console.log('COOOOOOPPPY!', globalSelectedNodes, targetDriveId);
         copyItems({
           items: globalSelectedNodes,
           targetDriveId,
