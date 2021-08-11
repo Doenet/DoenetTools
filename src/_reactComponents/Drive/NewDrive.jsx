@@ -1445,7 +1445,7 @@ function Folder(props) {
 
   // make folder draggable and droppable
   let draggableClassName = '';
-  if (!props.isNav || !props.isViewOnly) {
+  if (!props.isNav && !props.isViewOnly) {
     const onDragStartCallback = () => {
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
@@ -1547,6 +1547,7 @@ function Folder(props) {
               parentFolderId={props.folderId}
               hideUnpublished={props.hideUnpublished}
               foldersOnly={props.foldersOnly}
+              isViewOnly={props.isViewOnly}
             />,
           );
         }
