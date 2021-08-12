@@ -13,15 +13,15 @@ import axios from 'axios';
 import { nanoid } from 'nanoid';
 import Measure from 'react-measure';
 import {
-  faLink,
+  // faLink,
   faCode,
   faFolder,
   faChevronRight,
   faChevronDown,
-  faUsersSlash,
-  faUsers,
+  // faUsersSlash,
+  // faUsers,
   faCheck,
-  faUserEdit,
+  // faUserEdit,
   faBookOpen,
   faChalkboard,
   faLayerGroup,
@@ -43,20 +43,35 @@ import {
 /**
  * Internal dependencies
  */
+import '../../_utils/util.css';
+import getSortOrder from '../../_utils/sort/LexicographicalRankingSort';
+import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
+
 import {
   DropTargetsContext,
   DropTargetsConstant,
   WithDropTarget,
 } from '../DropTarget';
 import Draggable from '../Draggable';
-import getSortOrder from '../../_utils/sort/LexicographicalRankingSort';
-import { BreadcrumbContext } from '../Breadcrumb';
 import { drivecardSelectedNodesAtom } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
-import '../../_utils/util.css';
 import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
-import useKeyPressedListener from '../KeyPressedListener/useKeyPressedListener';
-import { loadAssignmentSelector } from '../../Tools/course/Course';
+
 import useSockets from '../Sockets';
+// import { BreadcrumbContext } from '../Breadcrumb';
+import { BreadcrumbContext } from '../Breadcrumb/BreadcrumbProvider';
+
+
+export const loadAssignmentSelector = selectorFamily({
+  key: 'loadAssignmentSelector',
+  get:
+    (doenetId) =>
+    async ({ get, set }) => {
+      const { data } = await axios.get(
+        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
+      );
+      return data;
+    },
+});
 
 export const itemType = Object.freeze({
   DOENETML: 'DoenetML',
@@ -357,6 +372,7 @@ export default function Drive(props) {
           doubleClickCallback={props.doubleClickCallback}
           numColumns={numColumns}
           columnTypes={columnTypes}
+          isViewOnly={props.isViewOnly}
         />
         <WithDropTarget
           key={DropTargetsConstant.INVALID_DROP_AREA_ID}
@@ -1444,7 +1460,7 @@ function Folder(props) {
 
   // make folder draggable and droppable
   let draggableClassName = '';
-  if (!props.isNav) {
+  if (!props.isNav && !props.isViewOnly) {
     const onDragStartCallback = () => {
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
@@ -1546,6 +1562,7 @@ function Folder(props) {
               parentFolderId={props.folderId}
               hideUnpublished={props.hideUnpublished}
               foldersOnly={props.foldersOnly}
+              isViewOnly={props.isViewOnly}
             />,
           );
         }
@@ -1572,6 +1589,8 @@ function Folder(props) {
                 doubleClickCallback={props.doubleClickCallback}
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
+                isViewOnly={props.isViewOnly}
+
               />,
             );
             break;
@@ -1591,6 +1610,7 @@ function Folder(props) {
                 deleteItem={deleteItemCallback}
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
+                isViewOnly={props.isViewOnly}
               />,
             );
             break;
@@ -2266,6 +2286,7 @@ const DoenetML = React.memo(function DoenetML(props) {
       }
     };
     // make DoenetML draggable
+    if (!props.isViewOnly){
     let draggableClassName = '';
     doenetMLJSX = (
       <Draggable
@@ -2301,7 +2322,7 @@ const DoenetML = React.memo(function DoenetML(props) {
       >
         {doenetMLJSX}
       </WithDropTarget>
-    );
+    );}
   }
   return doenetMLJSX;
 });
