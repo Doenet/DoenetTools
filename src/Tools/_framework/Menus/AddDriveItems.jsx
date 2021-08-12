@@ -12,7 +12,6 @@ export default function AddDriveItems(props) {
   ).split(':');
   const { addItem } = useSockets('drive');
   return (
-    // <div style={props.style}>
     <ButtonGroup vertical>
       <Button
         width="menu"
@@ -26,9 +25,7 @@ export default function AddDriveItems(props) {
       >
         Add Folder
       </Button>
-      {/* </div>
-      <div> */}
-      {/* {' '} */}
+
       <Button
         width="menu"
         onClick={() =>
@@ -52,6 +49,6 @@ export default function AddDriveItems(props) {
         value="Add Collection"
       />
     </ButtonGroup>
-    // </div>
+    
   );
 }
