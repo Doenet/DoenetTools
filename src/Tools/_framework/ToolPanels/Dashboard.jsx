@@ -6,6 +6,8 @@ import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
+  const pageToolView = useRecoilValue(pageToolViewAtom) 
+  const role = pageToolView.view;
   const driveId = path.split(':')[0];
 
   return (
@@ -17,6 +19,7 @@ export default function Dashboard(props) {
           setPageToolView((was) => ({ ...was, tool: 'navigation' }));
         }}
       />
+      {role !== 'student' ?
       <Button
         value="Enrollment"
         onClick={() =>
@@ -28,6 +31,7 @@ export default function Dashboard(props) {
           })
         }
       />
+      : null }
       <Button value="GradeBook" 
         onClick={() => 
         setPageToolView({
