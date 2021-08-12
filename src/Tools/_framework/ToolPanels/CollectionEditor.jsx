@@ -65,7 +65,6 @@ export default function CollectionEditor(props) {
 
   useEffect(() => {
     const entries = [];
-    console.log(folderInfoObj.folderInfo.doenetId);
     for (let key in folderInfoObj.contentsDictionary) {
       const { doenetId, label } = folderInfoObj.contentsDictionary[key];
       initEntryByDoenetId(doenetId);
