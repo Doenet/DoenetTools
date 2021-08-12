@@ -7,7 +7,7 @@ import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownM
 
 
 ReactDOM.render(
-  <DropdownMenu width = "200px" title = "test" items = {[[1, "one"], [2, "two"]]} callBack = { ({ value }) => console.log(">>>", value)}/>,
+  <DropdownMenu width = "200px" defaultIndex = {'1'} title = "test" items = {[[1, "one"], [2, "two"]]} callBack = { ({ value }) => console.log(">>>", value)}/>,
   document.getElementById('root'),
 );
 

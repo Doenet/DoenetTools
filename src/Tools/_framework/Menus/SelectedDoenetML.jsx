@@ -23,7 +23,6 @@ import {
 import { useAssignment } from '../../../Tools/course/CourseActions';
 import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
 import { useToast } from '../Toast';
-import axios from 'axios';
 import Switch from '../../_framework/Switch';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
