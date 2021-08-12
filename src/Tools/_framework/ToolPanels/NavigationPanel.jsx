@@ -115,6 +115,7 @@ export default function NavigationPanel(props) {
             tool: 'collection',
             view: '',
             params: {
+              doenetId: info.item.doenetId,
               path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
             },
           });

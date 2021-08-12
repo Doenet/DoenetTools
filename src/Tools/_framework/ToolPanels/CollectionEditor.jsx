@@ -10,6 +10,7 @@ import {
 } from 'recoil';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { nanoid } from 'nanoid';
 import { folderDictionaryFilterSelector } from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
@@ -19,6 +20,8 @@ import {
   fileByContentId,
   itemHistoryAtom,
 } from '../ToolHandlers/CourseToolHandler';
+import axios from 'axios';
+import { get } from 'js-cookie';
 
 export default function CollectionEditor(props) {
   const [driveId, , itemId] = useRecoilValue(
@@ -106,9 +109,29 @@ const entriesSelectedForAssignmentAtom = atom({
   key: 'entriesSelectedForAssignmentAtom',
   default: selector({
     key: 'entriesSelectedForAssignmentAtom/Default',
-    get: () => {
-      //TODO: get from DB
-      return [];
+    get: async ({ get }) => {
+      const doenetId = get(searchParamAtomFamily('doenetId'));
+      const resp = await axios.get('/api/loadCollection.php', {
+        params: { doenetId },
+      });
+      const entries = [];
+      if (resp.status == 200) {
+        for (let idx in resp.data.entries) {
+          entries.push(
+            <Suspense key={resp.data.entries[idx].entryId}>
+              <CollectionEntry
+                doenetId={doenetId}
+                label={resp.data.entries[idx].label}
+                variant={resp.data.entries[idx].variant}
+                assigned
+                removeEntryFromAssignment={() => {}}
+              />
+            </Suspense>,
+          );
+        }
+        console.log('geting from db', resp.data.entries, 'entires', entries);
+      }
+      return entries;
     },
   }),
 });
@@ -166,6 +189,12 @@ function CollectionEntry({ doenetId, label, assigned }) {
         label={label}
         assigned={assigned}
         addEntryVariant={() => {
+          axios.post('/api/addCollectionEntry.php', {
+            doenetId,
+            label,
+            entryId: nanoid(),
+            variant: variants.name,
+          });
           setSelectedEntries((was) => [
             ...was,
             <Suspense key={`${doenetId}`}>
