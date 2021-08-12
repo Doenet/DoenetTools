@@ -1,0 +1,10 @@
+<select>
+  <option><p>cat</p></option>
+  <option><p>dog</p></option>
+  <option><p>monkey</p></option>
+</select>
+<select>
+  <option tname='wolf'><p>wolf</p></option>
+  <option><p>sheep</p></option>
+  <option><p>dragon</p></option>
+</select>

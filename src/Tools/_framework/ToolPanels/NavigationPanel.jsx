@@ -110,6 +110,15 @@ export default function NavigationPanel(props) {
           });
           break;
         case itemType.COLLECTION:
+          setPageToolView({
+            page: 'course',
+            tool: 'collection',
+            view: '',
+            params: {
+              doenetId: info.item.doenetId,
+              path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
+            },
+          });
           break;
         default:
           throw new Error('NavigationPanel doubleClick info type not defined');

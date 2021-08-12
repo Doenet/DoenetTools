@@ -57,8 +57,8 @@ import { drivecardSelectedNodesAtom } from '../../Tools/_framework/ToolHandlers/
 import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
 
 import useSockets from '../Sockets';
-// import { BreadcrumbContext } from '../Breadcrumb';
 import { BreadcrumbContext } from '../Breadcrumb/BreadcrumbProvider';
+import Collection from './Collection';
 
 
 export const loadAssignmentSelector = selectorFamily({
@@ -908,7 +908,7 @@ export const folderOpenAtom = atomFamily({
   default: false,
 });
 
-const folderOpenSelector = selectorFamily({
+export const folderOpenSelector = selectorFamily({
   key: 'folderOpenSelector',
   get:
     (driveInstanceIdItemId) =>
@@ -1590,7 +1590,6 @@ function Folder(props) {
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
                 isViewOnly={props.isViewOnly}
-
               />,
             );
             break;
@@ -1625,12 +1624,16 @@ function Folder(props) {
           case 'Collection':
             items.push(
               <Collection
+                driveId={props.driveId}
+                driveInstanceId={props.driveInstanceId}
                 key={`item${itemId}${props.driveInstanceId}`}
                 item={item}
                 clickCallback={props.clickCallback}
                 doubleClickCallback={props.doubleClickCallback}
                 numColumns={props.numColumns}
                 columnTypes={props.columnTypes}
+                indentLevel={props.indentLevel + 1}
+                isViewOnly={props.isViewOnly}
               />,
             );
             break;
@@ -1653,122 +1656,7 @@ function Folder(props) {
   );
 }
 
-const Collection = React.memo(function Collection(props) {
-  const indentPx = 30;
-
-  let woIndent = 250 - props.indentLevel * indentPx;
-
-  let columns = `${woIndent}px repeat(4,1fr)`; //5 columns
-  if (props.numColumns === 4) {
-    columns = `${woIndent}px repeat(3,1fr)`;
-  } else if (props.numColumns === 3) {
-    columns = `${woIndent}px 1fr 1fr`;
-  } else if (props.numColumns === 2) {
-    columns = `${woIndent}px 1fr`;
-  } else if (props.numColumns === 1) {
-    columns = '100%';
-  }
-
-  let bgcolor = '#ffffff';
-  let borderSide = '0px 0px 0px 0px';
-  let widthSize = 'auto';
-  let marginSize = '0';
-
-  let column2 = columnJSX(props.columnTypes[0], props.item);
-  let column3 = columnJSX(props.columnTypes[1], props.item);
-  let column4 = columnJSX(props.columnTypes[2], props.item);
-  let column5 = columnJSX(props.columnTypes[3], props.item);
-
-  let label = props.item?.label;
-  return (
-    <div
-      role="button"
-      data-doenet-driveinstanceid={props.driveInstanceId}
-      data-cy="driveItem"
-      tabIndex={0}
-      className="noselect nooutline"
-      style={{
-        cursor: 'pointer',
-        padding: '8px',
-        border: '0px',
-        borderBottom: '2px solid black',
-        backgroundColor: bgcolor,
-        width: widthSize,
-        // boxShadow: borderSide,
-        marginLeft: marginSize,
-      }}
-      onKeyDown={(e) => {}}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!e.shiftKey && !e.metaKey) {
-          props?.clickCallback?.({
-            driveId: props.driveId,
-            parentFolderId: props.item.parentFolderId,
-            itemId: props.item.itemId,
-            driveInstanceId: props.driveInstanceId,
-            type: 'Collection',
-            instructionType: 'one item',
-          });
-        } else if (e.shiftKey && !e.metaKey) {
-          props?.clickCallback?.({
-            driveId: props.driveId,
-            parentFolderId: props.item.parentFolderId,
-            itemId: props.item.itemId,
-            driveInstanceId: props.driveInstanceId,
-            type: 'Collection',
-            instructionType: 'range to item',
-          });
-        } else if (!e.shiftKey && e.metaKey) {
-          props?.clickCallback?.({
-            driveId: props.driveId,
-            parentFolderId: props.item.parentFolderId,
-            itemId: props.item.itemId,
-            driveInstanceId: props.driveInstanceId,
-            type: 'Collection',
-            instructionType: 'add item',
-          });
-        }
-      }}
-      onDoubleClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        props?.doubleClickCallback?.({
-          driveId: props.driveId,
-          item: props.item,
-          driveInstanceId: props.driveInstanceId,
-          route: props.route,
-          isNav: props.isNav,
-          pathItemId: props.pathItemId,
-          type: 'Collection',
-        });
-      }}
-    >
-      <div
-        style={{
-          marginLeft: `${props.indentLevel * indentPx}px`,
-          display: 'grid',
-          gridTemplateColumns: columns,
-          gridTemplateRows: '1fr',
-          alignContent: 'center',
-        }}
-      >
-        <p style={{ display: 'inline', margin: '0px' }}>
-          <span data-cy="doenetMLIcon">
-            <FontAwesomeIcon icon={faLayerGroup} />
-          </span>
-          <span data-cy="doenetMLLabel">{label} </span>
-        </p>
-        {props.numColumns >= 2 ? column2 : null}
-        {props.numColumns >= 3 ? column3 : null}
-        {props.numColumns >= 4 ? column4 : null}
-        {props.numColumns >= 5 ? column5 : null}
-      </div>
-    </div>
-  );
-});
-
-const EmptyNode = React.memo(function Node() {
+export const EmptyNode = React.memo(function Node() {
   return (
     <div
       style={{
@@ -1784,7 +1672,7 @@ const EmptyNode = React.memo(function Node() {
   );
 });
 
-const DragShadow = React.memo(function Node(props) {
+export const DragShadow = React.memo(function Node(props) {
   const indentPx = 30;
   return (
     <div
@@ -1835,7 +1723,7 @@ export const clearDriveAndItemSelections = selector({
 });
 
 //key: driveInstanceId
-const driveInstanceParentFolderIdAtom = atomFamily({
+export const driveInstanceParentFolderIdAtom = atomFamily({
   key: 'driveInstanceParentFolderIdAtom',
   default: selectorFamily({
     key: 'driveInstanceParentFolderIdAtom/Default',
@@ -2034,7 +1922,7 @@ export const selectedDriveItems = selectorFamily({
     },
 });
 
-function columnJSX(columnType, item) {
+export function ColumnJSX(columnType, item) {
   let courseRole = '';
 
   // console.log(">>>columnType,item",columnType,item)
@@ -2072,7 +1960,7 @@ function columnJSX(columnType, item) {
   return <span></span>;
 }
 
-const DoenetML = React.memo(function DoenetML(props) {
+export const DoenetML = React.memo(function DoenetML(props) {
   // console.log(`=== 📜 DoenetML`)
 
   const isSelected = useRecoilValue(
@@ -2130,10 +2018,10 @@ const DoenetML = React.memo(function DoenetML(props) {
   let widthSize = 'auto';
   let marginSize = '0';
 
-  let column2 = columnJSX(props.columnTypes[0], props.item);
-  let column3 = columnJSX(props.columnTypes[1], props.item);
-  let column4 = columnJSX(props.columnTypes[2], props.item);
-  let column5 = columnJSX(props.columnTypes[3], props.item);
+  let column2 = ColumnJSX(props.columnTypes[0], props.item);
+  let column3 = ColumnJSX(props.columnTypes[1], props.item);
+  let column4 = ColumnJSX(props.columnTypes[2], props.item);
+  let column5 = ColumnJSX(props.columnTypes[3], props.item);
 
   let label = props.item?.label;
 
@@ -2279,55 +2167,59 @@ const DoenetML = React.memo(function DoenetML(props) {
           type: itemType.DOENETML,
         });
         props?.clickCallback?.({
-          instructionType: 'one item',
+          driveId: props.driveId,
           parentFolderId: props.item.parentFolderId,
+          itemId: props.item.itemId,
+          driveInstanceId: props.driveInstanceId,
+          instructionType: 'one item',
           type: itemType.DOENETML,
         });
       }
     };
     // make DoenetML draggable
-    if (!props.isViewOnly){
-    let draggableClassName = '';
-    doenetMLJSX = (
-      <Draggable
-        key={`dnode${props.driveInstanceId}${props.item.itemId}`}
-        id={props.item.itemId}
-        className={draggableClassName}
-        onDragStart={({ ev }) =>
-          onDragStart({
-            ev,
-            nodeId: props.item.itemId,
-            driveId: props.driveId,
-            onDragStartCallback,
-          })
-        }
-        onDrag={onDrag}
-        onDragEnd={onDragEnd}
-        ghostElement={renderDragGhost(props.item.itemId, doenetMLJSX)}
-      >
-        {doenetMLJSX}
-      </Draggable>
-    );
+    if (!props.isViewOnly) {
+      let draggableClassName = '';
+      doenetMLJSX = (
+        <Draggable
+          key={`dnode${props.driveInstanceId}${props.item.itemId}`}
+          id={props.item.itemId}
+          className={draggableClassName}
+          onDragStart={({ ev }) =>
+            onDragStart({
+              ev,
+              nodeId: props.item.itemId,
+              driveId: props.driveId,
+              onDragStartCallback,
+            })
+          }
+          onDrag={onDrag}
+          onDragEnd={onDragEnd}
+          ghostElement={renderDragGhost(props.item.itemId, doenetMLJSX)}
+        >
+          {doenetMLJSX}
+        </Draggable>
+      );
 
-    // attach dropTarget to enable drag-reordering
-    doenetMLJSX = (
-      <WithDropTarget
-        key={`wdtnode${props.driveInstanceId}${props.item.itemId}`}
-        id={props.item.itemId}
-        registerDropTarget={registerDropTarget}
-        unregisterDropTarget={unregisterDropTarget}
-        dropCallbacks={{
-          onDragOver: onDragOver,
-        }}
-      >
-        {doenetMLJSX}
-      </WithDropTarget>
-    );}
+      // attach dropTarget to enable drag-reordering
+      doenetMLJSX = (
+        <WithDropTarget
+          key={`wdtnode${props.driveInstanceId}${props.item.itemId}`}
+          id={props.item.itemId}
+          registerDropTarget={registerDropTarget}
+          unregisterDropTarget={unregisterDropTarget}
+          dropCallbacks={{
+            onDragOver: onDragOver,
+          }}
+        >
+          {doenetMLJSX}
+        </WithDropTarget>
+      );
+    }
   }
   return doenetMLJSX;
 });
 
-function useDnDCallbacks() {
+export function useDnDCallbacks() {
   const { dropState, dropActions } = useContext(DropTargetsContext);
   const [dragState, setDragState] = useRecoilState(dragStateAtom);
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
