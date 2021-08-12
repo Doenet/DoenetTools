@@ -19,8 +19,8 @@ import { pageToolViewAtom } from '../NewToolRoot';
 import {
   itemHistoryAtom,
   assignmentDictionarySelector,
+  useAssignment,
 } from '../ToolHandlers/CourseToolHandler';
-import { useAssignment } from '../../../Tools/course/CourseActions';
 import { useAssignmentCallbacks } from '../../../_reactComponents/Drive/DriveActions';
 import { useToast } from '../Toast';
 import Switch from '../../_framework/Switch';
