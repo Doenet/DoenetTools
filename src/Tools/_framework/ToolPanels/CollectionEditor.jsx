@@ -21,7 +21,6 @@ import {
   itemHistoryAtom,
 } from '../ToolHandlers/CourseToolHandler';
 import axios from 'axios';
-import { get } from 'js-cookie';
 
 export default function CollectionEditor(props) {
   const [driveId, , itemId] = useRecoilValue(
@@ -66,17 +65,22 @@ export default function CollectionEditor(props) {
 
   useEffect(() => {
     const entries = [];
+    console.log(folderInfoObj.folderInfo.doenetId);
     for (let key in folderInfoObj.contentsDictionary) {
       const { doenetId, label } = folderInfoObj.contentsDictionary[key];
       initEntryByDoenetId(doenetId);
       entries.push(
         <Suspense key={key}>
-          <CollectionEntry label={label} doenetId={doenetId} />
+          <CollectionEntry
+            label={label}
+            doenetId={doenetId}
+            collectionDoenetId={folderInfoObj.folderInfo.doenetId}
+          />
         </Suspense>,
       );
     }
     setEntries(entries);
-  }, [folderInfoObj.contentsDictionary, initEntryByDoenetId]);
+  }, [folderInfoObj, initEntryByDoenetId]);
 
   return (
     <div
@@ -117,28 +121,29 @@ const entriesSelectedForAssignmentAtom = atom({
       const entries = [];
       if (resp.status == 200) {
         for (let idx in resp.data.entries) {
+          let entry = resp.data.entries[idx];
           entries.push(
-            <Suspense key={resp.data.entries[idx].entryId}>
+            <Suspense key={entry.entryId}>
               <CollectionEntry
-                doenetId={doenetId}
-                label={resp.data.entries[idx].label}
-                variant={resp.data.entries[idx].variant}
+                collectionDoenetId={doenetId}
+                doenetId={entry.entryDoenetId}
+                label={entry.label}
+                variant={entry.variant}
                 assigned
                 removeEntryFromAssignment={() => {}}
               />
             </Suspense>,
           );
         }
-        console.log('geting from db', resp.data.entries, 'entires', entries);
       }
       return entries;
     },
   }),
 });
 
-function CollectionEntry({ doenetId, label, assigned }) {
+function CollectionEntry({ collectionDoenetId, doenetId, label, assigned }) {
   const setAvailableVariants = useRecoilCallback(
-    ({ set, snapshot }) =>
+    ({ set }) =>
       (generatedVariantInfo, allPossibleVariants) => {
         // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
         const cleanGeneratedVariant = JSON.parse(
@@ -150,7 +155,7 @@ function CollectionEntry({ doenetId, label, assigned }) {
           name: cleanGeneratedVariant.name,
           allPossibleVariants,
         });
-        setHiddenDoenetViewer(null);
+        // setHiddenDoenetViewer(null);
         // setVariantPanel({
         //   index:cleanGeneratedVariant.index,
         //   name:cleanGeneratedVariant.name,
@@ -169,7 +174,7 @@ function CollectionEntry({ doenetId, label, assigned }) {
   const setSelectedEntries = useSetRecoilState(
     entriesSelectedForAssignmentAtom,
   );
-  const [hiddenDoenetViewer, setHiddenDoenetViewer] = useState(() =>
+  const [hiddenDoenetViewer] = useState(() =>
     assigned ? (
       <div style={{ display: 'none' }}>
         <DoenetViewer
@@ -180,8 +185,10 @@ function CollectionEntry({ doenetId, label, assigned }) {
     ) : null,
   );
 
-  const variants = useRecoilValue(variantsByEntryAtomFamily(doenetId));
-  console.log('dId', doenetId, variants);
+  const variants = useRecoilValueLoadable(
+    variantsByEntryAtomFamily(doenetId),
+  ).getValue();
+  // console.log('dId', doenetId, variants);
 
   return (
     <>
@@ -190,10 +197,11 @@ function CollectionEntry({ doenetId, label, assigned }) {
         assigned={assigned}
         addEntryVariant={() => {
           axios.post('/api/addCollectionEntry.php', {
-            doenetId,
+            collectionDoenetId,
+            entryDoenetId: doenetId,
             label,
             entryId: nanoid(),
-            variant: variants.name,
+            variant: variants.name ?? 1,
           });
           setSelectedEntries((was) => [
             ...was,

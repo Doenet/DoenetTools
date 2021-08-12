@@ -1,7 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: access');
-header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
@@ -12,26 +12,33 @@ $userId = $jwtArray['userId'];
 
 $success = true;
 
+//required unless data is passed in application/x-www-form-urlencoded or multipart/form-data
+$_POST = json_decode(file_get_contents('php://input'), true);
+
 //TODO: verify should be a util method
 if (!array_key_exists('entryId', $_POST)) {
     $success = false;
-    $message = 'Missing entryId';
+    $message = json_encode($_POST);
 } elseif (!array_key_exists('variant', $_POST)) {
     $success = false;
     $message = 'Missing variant';
 } elseif (!array_key_exists('label', $_POST)) {
     $success = false;
     $message = 'Missing label';
-} elseif (!array_key_exists('doenetId', $_POST)) {
+} elseif (!array_key_exists('entryDoenetId', $_POST)) {
     $success = false;
-    $message = 'Missing doenetId';
+    $message = 'Missing entryDoenetId';
+} elseif (!array_key_exists('collectionDoenetId', $_POST)) {
+    $success = false;
+    $message = 'Missing collectionDoenetId';
 }
 
 if ($success) {
-    $doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
-    $entryId = mysqli_real_escape_string($conn, $_REQUEST['entryId']);
-    $variant = mysqli_real_escape_string($conn, $_REQUEST['variant']);
-    $label = mysqli_real_escape_string($conn, $_REQUEST['label']);
+    $doenetId = mysqli_real_escape_string($conn, $_POST['collectionDoenetId']);
+    $entryDoenetId = mysqli_real_escape_string($conn, $_POST['entryDoenetId']);
+    $entryId = mysqli_real_escape_string($conn, $_POST['entryId']);
+    $variant = mysqli_real_escape_string($conn, $_POST['variant']);
+    $label = mysqli_real_escape_string($conn, $_POST['label']);
 
     //get driveId from doenetId
     //TODO: should be a sql join query with userId
@@ -79,9 +86,9 @@ if ($success) {
 
     if ($success) {
         $sql = "
-            INSERT INTO 'collection'
-            (doenetId, entryId, variant, label)
-            VALUES ('$doentId','$entryId','$variant','$label')
+            INSERT INTO collection
+            (collectionDoenetId, entryDoenetId, entryId, variant, label)
+            VALUES ('$doenetId', '$entryDoenetId','$entryId','$variant','$label')
         ";
         $result = $conn->query($sql);
 

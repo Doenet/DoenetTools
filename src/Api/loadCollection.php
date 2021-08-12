@@ -60,9 +60,9 @@ if (array_key_exists('doenetId', $_REQUEST)) {
 
     if ($success) {
         $sql = "
-            SELECT entryId, variant, label
-            FROM `collection`
-            WHERE doenetId = '$doenetId'
+            SELECT collectionDoenetId, entryDoenetId, entryId, variant, label
+            FROM collection
+            WHERE collectionDoenetId = '$doenetId'
         ";
         $result = $conn->query($sql);
 
@@ -70,6 +70,8 @@ if (array_key_exists('doenetId', $_REQUEST)) {
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 array_push($entry_arr, [
+                    'collectionDoenetId' => $row['collectionDoenetId'],
+                    'entryDoenetId' => $row['entryDoenetId'],
                     'entryId' => $row['entryId'],
                     'variant' => $row['variant'],
                     'label' => $row['label'],
