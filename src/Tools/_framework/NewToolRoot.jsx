@@ -310,8 +310,8 @@ let navigationObj = {
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: ["DashboardBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      headerControls: ["DashboardBreadCrumb","RoleDropdown"],
+      headerControlsPositions: ["Left","Right"],
       onLeave:"DashboardLeave",
     },
     gradebook: {
@@ -341,9 +341,9 @@ let navigationObj = {
       onLeave:"NavigationLeave",
       views:{
         instructor:{
-          currentMenus:["AddDriveItems","EnrollStudents"],
-          menusTitles:["Add Items","Enrollment"],
-          menusInitOpen:[true,false],
+          currentMenus:["AddDriveItems"],
+          menusTitles:["Add Items"],
+          menusInitOpen:[true],
         },
         student:{
         }
