@@ -18,7 +18,7 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 //TODO: verify should be a util method
 if (!array_key_exists('entryId', $_POST)) {
     $success = false;
-    $message = json_encode($_POST);
+    $message = 'Missing entryId';
 } elseif (!array_key_exists('variant', $_POST)) {
     $success = false;
     $message = 'Missing variant';

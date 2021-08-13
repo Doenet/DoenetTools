@@ -210,6 +210,7 @@ function CollectionEntry({
         assigned={assigned}
         selectOptions={selectOptions}
         addEntryToAssignment={() => {
+          //TODO: failure toast??
           const entryId = nanoid();
           axios
             .post('/api/addCollectionEntry.php', {
@@ -217,6 +218,7 @@ function CollectionEntry({
               entryDoenetId: doenetId,
               label,
               entryId,
+              //TODO: ref the selected option;
               variant: variants.name ?? 1,
             })
             .then((resp) => {
@@ -236,10 +238,16 @@ function CollectionEntry({
             });
         }}
         removeEntryFromAssignment={() => {
-          //axios update
-          setAssignedEntries((was) => {
-            return was.filter((entryJSX) => entryJSX.key !== entryId);
-          });
+          axios
+            .post('/api/removeCollectionEntry.php', { entryId })
+            .then((resp) => {
+              //TODO: failure toast??
+              if (resp.status === 200) {
+                setAssignedEntries((was) =>
+                  was.filter((entryJSX) => entryJSX.entryId !== entryId),
+                );
+              }
+            });
         }}
       />
       {!assigned ? hiddenViewer : null}
