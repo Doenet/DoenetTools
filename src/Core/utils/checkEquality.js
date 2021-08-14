@@ -5,7 +5,7 @@ import { normalizeMathExpression } from './math';
 
 export default function checkEquality({
   object1, object2, isUnordered = false, partialMatches = false,
-  matchExactLocations = false,
+  matchByExactPositions = false,
   symbolicEquality = false,
   simplify = "none", expand = false,
   allowedErrorInNumbers = 0,
@@ -271,7 +271,7 @@ export default function checkEquality({
         object1 = [object1.tree];
       }
     } else if (object1_operator === "interval") {
-      matchExactLocations = true;
+      matchByExactPositions = true;
 
       let closedInfo = object1.tree[2];
       let leftClosed = closedInfo[1];
@@ -316,7 +316,7 @@ export default function checkEquality({
 
     } else if (object2_operator === "interval") {
 
-      matchExactLocations = true;
+      matchByExactPositions = true;
 
       let closedInfo = object2.tree[2];
       let leftClosed = closedInfo[1];
@@ -485,7 +485,7 @@ export default function checkEquality({
 
   let results = { fraction_equal: 0 };
 
-  if (matchExactLocations) {
+  if (matchByExactPositions) {
     isUnordered = false;
   }
 
@@ -500,7 +500,7 @@ export default function checkEquality({
       let sub_results = checkEquality({
         object1: me.fromAst(object1[i]), object2: me.fromAst(object2[i]),
         isUnordered: false, partialMatches: false,
-        matchExactLocations: false,
+        matchByExactPositions: false,
         symbolicEquality,
         simplify, expand,
         allowedErrorInNumbers,
@@ -523,7 +523,7 @@ export default function checkEquality({
 
     // if match_exact locations, get partial credit only
     // from matching entries in same locations
-    if (matchExactLocations) {
+    if (matchByExactPositions) {
       results["fraction_equal"] = n_matches / Math.max(nelts1, nelts2);
       return results;
     }
@@ -545,7 +545,7 @@ export default function checkEquality({
         let sub_results = checkEquality({
           object1: me.fromAst(object1[i]), object2: me.fromAst(object2[j]),
           isUnordered: false, partialMatches: false,
-          matchExactLocations: false,
+          matchByExactPositions: false,
           symbolicEquality,
           simplify, expand,
           allowedErrorInNumbers,
@@ -585,7 +585,7 @@ export default function checkEquality({
       let sub_results = checkEquality({
         object1: me.fromAst(expr1), object2: me.fromAst(expr2),
         isUnordered: false, partialMatches: false,
-        matchExactLocations: false,
+        matchByExactPositions: false,
         symbolicEquality,
         simplify, expand,
         allowedErrorInNumbers,
