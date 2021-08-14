@@ -159,14 +159,12 @@ const LoadingFallback = styled.div`
 
 export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
 console.log(">>>===MenuPanel")
-console.log(">>>menuPanelCap",menuPanelCap)
+// console.log(">>>menuPanelCap",menuPanelCap)
+// console.log(">>>currentMenus",currentMenus)
 
   //These maintain the panels' state
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
-  let toolMenus = useRef([]);
-  let lastToolMenus = useRef([]);
-  let toolMenusDictionary = useRef({}); 
-  // const [userPanels,setUserPanels] = useState(null)
+  let menusArray = [];
 
   // const profilePicName = profile.profilePicture;
   const LazyMenuPanelCapObj = useRef({
@@ -214,20 +212,7 @@ console.log(">>>menuPanelCap",menuPanelCap)
     </MenuPanelsCapComponent>;
 
   }
-  
 
-
-  function buildMenu({key,type,title,visible,initOpen}){
-    let hideStyle = null;
-    if (!visible){
-      hideStyle = 'none';
-    }
-    
-    return <div key={key} style={{display:hideStyle}} ><Menu title={title} isInitOpen={initOpen} >
-      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyMenuObj[type],{key})}
-    </Suspense></Menu></div>
-  } 
 
 
   //TODO: 
@@ -237,37 +222,19 @@ console.log(">>>menuPanelCap",menuPanelCap)
 
 
   //Show menus
-  for (let [i,menuName] of Object.entries(currentMenus)){
-    if (!lastToolMenus.current.includes(menuName)){
-        const mKey = `${menuName}`;
-        const isOpen = initOpen[i]
-        const title = menusTitles[i]
-      if (toolMenusDictionary.current[mKey]){
-          //Show index
-          let menuIndex = toolMenusDictionary.current[mKey].index
-          toolMenus.current[menuIndex] = buildMenu({key:mKey,type:menuName,title,visible:true,initOpen:isOpen})
+  for (let [i,type] of Object.entries(currentMenus)){
+    console.log(">>>menu",type)
+    const mKey = `${type}`;
+    const title = menusTitles[i]
+    let isOpen = initOpen[i]
 
-      }else{
-          //Make a new visible menu
-          toolMenus.current.push(buildMenu({key:mKey,type:menuName,title,visible:true,initOpen:isOpen}))
-          toolMenusDictionary.current[mKey] = {index:toolMenus.current.length - 1,title}
-      }
-    }
+
+     menusArray.push(<Menu key={mKey} title={title} isInitOpen={isOpen} >
+      <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
+    {React.createElement(LazyMenuObj[type],{mKey})}
+    </Suspense></Menu>)
+
   }
-
-  //Hide menus
-  for (let menuName of lastToolMenus.current){
-    if (!currentMenus.includes(menuName)){
-      //Hide menu
-      const mKey = `${menuName}`;
-
-      let menuIndex = toolMenusDictionary.current[mKey].index
-      toolMenus.current[menuIndex] = buildMenu({key:mKey,type:menuName,title:"",visible:false,initOpen:false})
-
-    }
-  }
-
-    lastToolMenus.current = currentMenus;
 
 
   return (
@@ -291,12 +258,7 @@ console.log(">>>menuPanelCap",menuPanelCap)
       {menuPanelCapComponent}
 
     {selectionPanel}
-    <div>{toolMenus.current}</div>
-   {/* {toolMenus.current} */}
-    {/* {userPanels} */}
-    {/* <div style={{display:"flex",justifyContent:"center",alignItems:"center",width:"240px",paddingTop:"8px"}}>
-      <EditMenuPanels onClick={()=>console.log('>>>edit menu panels')}>+</EditMenuPanels>
-    </div> */}
+    <div>{menusArray}</div>
 
     </MenuPanelsWrapper>
   );

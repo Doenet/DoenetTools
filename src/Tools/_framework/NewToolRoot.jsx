@@ -94,16 +94,13 @@ export default function ToolRoot(){
     headerControls:[],
     headerControlsPositions:[]
   });
-  const mainPanelArray = useRef([])
-  const lastMainPanelKey = useRef(null)
-  const mainPanelDictionary = useRef({}) //key -> {index, type}
+  let mainPanel = null;
+  let supportPanel = <SupportPanel hide={true} >null</SupportPanel>;
+
   const supportPanelArray = useRef([])
   const lastSupportPanelKey = useRef(null)
   const supportPanelDictionary = useRef({}) //key -> {index, type}
-  // const [supportContentObj,setSupportContentObj] = useState({})
   const [menusOpen,setMenusOpen] = useState(true)
-
-  
 
   const LazyPanelObj = useRef({
     Empty:lazy(() => import('./ToolPanels/Empty')),
@@ -147,13 +144,23 @@ export default function ToolRoot(){
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
 
-   if (!mainPanelDictionary.current[MainPanelKey]){
-     let type = toolRootMenusAndPanels.currentMainPanel;
-     console.log(">>>NEW MAIN PANEL!!!",type)
-    //Doesn't exist so make new Main Panel
-    mainPanelArray.current.push(buildPanel({key:MainPanelKey,type,visible:true}))
-    mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type, visible:true}
-  }
+   mainPanel = <Suspense key={MainPanelKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+   {React.createElement(LazyPanelObj[toolRootMenusAndPanels.currentMainPanel],{MainPanelKey})}
+   </Suspense>
+
+if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.supportPanelOptions.length > 0 ){
+  const spType = toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex];
+    const SupportPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex]}-${toolRootMenusAndPanels.supportPanelIndex}`;
+    supportPanel = <SupportPanel 
+    hide={false} 
+    panelTitles={toolRootMenusAndPanels.supportPanelTitles} 
+    panelIndex={toolRootMenusAndPanels.supportPanelIndex}
+    >
+    <Suspense key={SupportPanelKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      {React.createElement(LazyPanelObj[spType],{SupportPanelKey})}
+    </Suspense>
+  </SupportPanel>
+}
 
   let headerControls = null;
   let headerControlsPositions = null;
@@ -174,59 +181,6 @@ export default function ToolRoot(){
     }
   }
    
-   //Show current panel and hide last panel
-   if (lastMainPanelKey.current !== null && lastMainPanelKey.current !== MainPanelKey){
-    const mpObj = mainPanelDictionary.current[MainPanelKey];
-    const lastObj = mainPanelDictionary.current[lastMainPanelKey.current];
-
-    //Show current if not visible
-    if (!mpObj.visible){
-      mainPanelArray.current[mpObj.index] = buildPanel({key:MainPanelKey,type:mpObj.type,visible:true})
-      mpObj.visible = true;
-    }
-    //Hide last if visible
-    if (lastObj.visible){
-      mainPanelArray.current[lastObj.index] = buildPanel({key:lastMainPanelKey.current,type:lastObj.type,visible:false})
-      lastObj.visible = false;
-    }
-   }
-
-   lastMainPanelKey.current = MainPanelKey;
-    
-
-  //  let supportPanel = <SupportPanel hide={false} />;
-   let supportPanel = <SupportPanel hide={true} >{supportPanelArray.current}</SupportPanel>;
-
-
-   if (toolRootMenusAndPanels.supportPanelOptions && toolRootMenusAndPanels.supportPanelOptions.length > 0){
-    const SupportPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex]}-${toolRootMenusAndPanels.supportPanelIndex}`;
-    if (!supportPanelDictionary.current[SupportPanelKey]){
-     //Doesn't exist so make new Support Panel
-     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex],visible:true}))
-     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex], visible:true}
-    }
-    
-    //Show current panel and hide last panel
-    if (lastSupportPanelKey.current !== null && lastSupportPanelKey.current !== SupportPanelKey){
-     const spObj = supportPanelDictionary.current[SupportPanelKey];
-     const lastObj = supportPanelDictionary.current[lastSupportPanelKey.current];
- 
-     //Show current if not visible
-     if (!spObj.visible){
-       supportPanelArray.current[spObj.index] = buildPanel({key:SupportPanelKey,type:spObj.type,visible:true})
-       spObj.visible = true;
-     }
-     //Hide last if visible
-     if (lastObj.visible){
-       supportPanelArray.current[lastObj.index] = buildPanel({key:lastSupportPanelKey.current,type:lastObj.type,visible:false})
-       lastObj.visible = false;
-     }
-    }
- 
-    lastSupportPanelKey.current = SupportPanelKey;
-    
-    supportPanel = <SupportPanel hide={false} panelTitles={toolRootMenusAndPanels.supportPanelTitles} panelIndex={toolRootMenusAndPanels.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
-  }
 
   let menus = <MenuPanel key='menuPanel' hide={true} />;
   if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel){
@@ -249,7 +203,7 @@ export default function ToolRoot(){
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanel}</MainPanel>} 
       support={supportPanel}
       />
     
