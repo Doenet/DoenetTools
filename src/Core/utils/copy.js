@@ -3,7 +3,7 @@ import { applyMacros, componentFromAttribute } from "./serializedStateProcessing
 
 export function postProcessCopy({ serializedComponents, componentName,
   addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
-  unlinkExternalCopies = false, copiesByFullTName = {}, componentNamesFound = [], assignNamesFound = [],
+  unlinkExternalCopies = false, copiesByFullTName = {}, componentNamesFound = [], assignNamesFound = [], activeAliases = [],
   init = true
 }) {
 
@@ -32,6 +32,9 @@ export function postProcessCopy({ serializedComponents, componentName,
             assignNamesFound.push(originalNamespace + "/" + cName);
           }
         }
+        if (component.attributes && component.attributes.alias) {
+          activeAliases.push(component.attributes.alias.primitive);
+        }
       }
 
       // preserializedNamesFound[component.originalName] = component;
@@ -57,33 +60,45 @@ export function postProcessCopy({ serializedComponents, componentName,
         component.downstreamDependencies = downDep;
       }
 
-      if (component.componentType === "copy" && unlinkExternalCopies) {
-        let fullTName = component.doenetAttributes.fullTName;
-        if (!fullTName) {
-          if (!component.attributes.uri) {
-            throw Error('we need to create a fullTName here, then.')
-          }
-        } else {
-          if (copiesByFullTName[fullTName] === undefined) {
-            copiesByFullTName[fullTName] = [];
-          }
-          copiesByFullTName[fullTName].push(component);
-        }
-
-      }
 
     } else {
       uniqueIdentifierBase = identifierPrefix + component.componentType + "|shadowUnnamed";
     }
 
-    component.uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+    if (component.componentType === "copy" && unlinkExternalCopies) {
+      let fullTName = component.doenetAttributes.fullTName;
+      if (!fullTName) {
+        if (!component.attributes.uri) {
+          throw Error('we need to create a fullTName here, then.')
+        }
+      } else {
+        // don't create if matches an alias
+        if (!activeAliases.includes(component.doenetAttributes.tName)) {
+          if (copiesByFullTName[fullTName] === undefined) {
+            copiesByFullTName[fullTName] = [];
+          }
+          copiesByFullTName[fullTName].push(component);
+        }
+      }
 
-    // recursion
+    }
+
+    component.uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+  }
+
+
+  // recurse after processing all components
+  // so that first gather all active aliases
+
+  for (let ind in serializedComponents) {
+    let component = serializedComponents[ind];
+
     postProcessCopy({
       serializedComponents: component.children,
       componentName,
       addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
       unlinkExternalCopies, copiesByFullTName, componentNamesFound, assignNamesFound,
+      activeAliases: [...activeAliases],  // don't add values from children
       init: false
     });
 
@@ -96,6 +111,7 @@ export function postProcessCopy({ serializedComponents, componentName,
             componentName,
             addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
             unlinkExternalCopies, copiesByFullTName, componentNamesFound, assignNamesFound,
+            activeAliases: [...activeAliases],  // don't add values from children
             init: false,
           })[0];
       }
@@ -107,6 +123,7 @@ export function postProcessCopy({ serializedComponents, componentName,
         componentName,
         addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
         unlinkExternalCopies, copiesByFullTName, componentNamesFound, assignNamesFound,
+        activeAliases: [...activeAliases],  // don't add values from children
         init: false
       });
     }
@@ -117,10 +134,10 @@ export function postProcessCopy({ serializedComponents, componentName,
     for (let fullTName in copiesByFullTName) {
       if (!componentNamesFound.includes(fullTName)) {
         let foundMatchViaAssignNames = false;
-        for(let cName of assignNamesFound) {
+        for (let cName of assignNamesFound) {
           let namespace = cName + "/";
           let nSpaceLen = namespace.length;
-          if(fullTName.substring(0,nSpaceLen) === namespace) {
+          if (fullTName.substring(0, nSpaceLen) === namespace) {
             foundMatchViaAssignNames = true;
             break;
           }

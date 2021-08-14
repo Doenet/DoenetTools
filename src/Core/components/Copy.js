@@ -1579,6 +1579,7 @@ export default class Copy extends CompositeComponent {
             break;
           } else if (
             !component.stateValues.effectivePropNameBySource[sourceNum]
+            && currentReplacement.shadows
             && currentReplacement.shadows.componentName !== component.stateValues.replacementSourceIdentities[sourceNum].componentName
           ) {
             needToRecreate = true;

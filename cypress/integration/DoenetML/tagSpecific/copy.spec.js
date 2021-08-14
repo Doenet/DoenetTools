@@ -1945,6 +1945,110 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('copy group, no link, copy to external inside attribute', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <textinput name="external" prefill="bye" />
+
+    <group name="g" newNamespace>
+      <copy tname="/external" prop="value" assignNames="w" />
+      <point label="$(/external)" name="P">(a,b)</point>
+      <copy prop="label" tname="P" assignNames="Plabel" />
+    </group>
+    
+    <copy tname="g" assignNames="g2" link="false" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/g/w')).should('have.text', 'bye')
+    cy.get(cesc('#/g/Plabel')).should('have.text', 'bye')
+    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/P"].stateValues.label).eq('bye')
+      expect(components["/g2/P"].stateValues.label).eq('bye')
+
+    })
+
+    cy.get(cesc('#/external_input')).clear().type('hi{enter}')
+
+    cy.get(cesc('#/g/w')).should('have.text', 'hi')
+    cy.get(cesc('#/g/Plabel')).should('have.text', 'hi')
+    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/P"].stateValues.label).eq('hi')
+      expect(components["/g2/P"].stateValues.label).eq('bye')
+    })
+
+  });
+
+  it('copy group, no link, internal copy to source alias is linked', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <group name="g" newNamespace>
+      <textinput name="ti" prefill="hello" />
+      <map assignNames="a">
+        <template newNamespace>
+          <copy tname="x" assignNames="w" />
+          <point label="$x" name="P">(a,b)</point>
+          <copy prop="label" tname="P" assignNames="Plabel" />
+
+
+        </template>
+        <sources alias="x">
+          $ti
+        </sources>
+      </map>
+    </group>
+    
+    <copy tname="g" assignNames="g2" link="false" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/g/a/w')).should('have.text', 'hello')
+    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'hello')
+    cy.get(cesc('#/g2/a/w')).should('have.text', 'hello')
+    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'hello')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/a/P"].stateValues.label).eq('hello')
+      expect(components["/g2/a/P"].stateValues.label).eq('hello')
+
+    })
+
+    cy.get(cesc('#/g/ti_input')).clear().type('one{enter}')
+    cy.get(cesc('#/g2/ti_input')).clear().type('two{enter}')
+
+    cy.get(cesc('#/g/a/w')).should('have.text', 'one')
+    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'one')
+    cy.get(cesc('#/g2/a/w')).should('have.text', 'two')
+    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'two')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/a/P"].stateValues.label).eq('one')
+      expect(components["/g2/a/P"].stateValues.label).eq('two')
+    })
+
+  });
+
   it('external content cannot reach outside namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
