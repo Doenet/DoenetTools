@@ -27,17 +27,6 @@ export default function CollectionEditor(props) {
   ).split(':');
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const [availableEntries, setAvailableEntries] = useState([]);
-  const [assignedEntries, setAssignedEntries] = useState([]);
-
-  const databaseInfo = useRecoilValueLoadable(
-    assignedEntiresQuery(doenetId),
-  ).getValue();
-  const folderInfoObj = useRecoilValueLoadable(
-    folderDictionaryFilterSelector({
-      driveId,
-      folderId: itemId,
-    }),
-  ).getValue();
 
   const initEntryByDoenetId = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -87,6 +76,18 @@ export default function CollectionEditor(props) {
     [],
   );
 
+  const assignedEntries = useRecoilValueLoadable(
+    assignedEntiresQuery(doenetId),
+  ).getValue();
+  console.log('assigned Entries', assignedEntries);
+
+  const folderInfoObj = useRecoilValueLoadable(
+    folderDictionaryFilterSelector({
+      driveId,
+      folderId: itemId,
+    }),
+  ).getValue();
+
   useEffect(() => {
     const entries = [];
     for (let key in folderInfoObj.contentsDictionary) {
@@ -103,26 +104,6 @@ export default function CollectionEditor(props) {
     }
     setAvailableEntries(entries);
   }, [folderInfoObj, initEntryByDoenetId]);
-
-  useEffect(() => {
-    const entries = [];
-    for (let key in databaseInfo) {
-      const { collectionDoenetId, entryDoenetId, entryId, variant } =
-        databaseInfo[key];
-      entries.push(
-        <Suspense key={entryId}>
-          <CollectionEntry
-            collectionDoenetId={collectionDoenetId}
-            doenetId={entryDoenetId}
-            entryId={entryId}
-            variant={variant}
-            assigned
-          />
-        </Suspense>,
-      );
-    }
-    setAssignedEntries(entries);
-  }, [databaseInfo]);
 
   return (
     <div
@@ -151,7 +132,7 @@ const possibleVariantsByDoenetId = atomFamily({
   default: {},
 });
 
-const itemInfoByDoenetId = atomFamily({
+const entryInfoByDoenetId = atomFamily({
   key: 'itemInfoByDoenetId',
   default: selectorFamily({
     key: 'itemInfoByDoenetId/Default',
@@ -188,7 +169,25 @@ const assignedEntiresQuery = atomFamily({
         const resp = await axios.get('/api/loadCollection.php', {
           params: { doenetId },
         });
-        return resp.status === 200 ? resp.data.entries : [];
+        const entries = [];
+        if (resp.status === 200) {
+          for (let key in resp.data.entries) {
+            const { collectionDoenetId, entryDoenetId, entryId, variant } =
+              resp.data.entries[key];
+            entries.push(
+              <Suspense key={entryId}>
+                <CollectionEntry
+                  collectionDoenetId={collectionDoenetId}
+                  doenetId={entryDoenetId}
+                  entryId={entryId}
+                  variant={variant}
+                  assigned
+                />
+              </Suspense>,
+            );
+          }
+        }
+        return entries;
       } catch (error) {
         console.error(error);
         return [];
@@ -197,14 +196,15 @@ const assignedEntiresQuery = atomFamily({
   }),
 });
 
-function CollectionEntry({ collectionDoenetId, doenetId, assigned, entryId }) {
+function CollectionEntry({ collectionDoenetId, doenetId, entryId, assigned }) {
   const hiddenViewer = useRecoilValue(hiddenViewerByDoenetId(doenetId));
   //TODO: should be a socket interaction
+  console.log(collectionDoenetId);
   const setAssignedEntries = useSetRecoilState(
     assignedEntiresQuery(collectionDoenetId),
   );
-  const itemInfo = useRecoilValueLoadable(
-    itemInfoByDoenetId(doenetId),
+  const entryInfo = useRecoilValueLoadable(
+    entryInfoByDoenetId(doenetId),
   ).getValue();
 
   const variants = useRecoilValueLoadable(
@@ -216,7 +216,10 @@ function CollectionEntry({ collectionDoenetId, doenetId, assigned, entryId }) {
     const options = [];
     for (let key in variants.allPossibleVariants) {
       options.push(
-        <option value={variants.allPossibleVariants[key]}>
+        <option
+          key={variants.allPossibleVariants[key]}
+          value={variants.allPossibleVariants[key]}
+        >
           {variants.allPossibleVariants[key]}
         </option>,
       );
@@ -227,7 +230,7 @@ function CollectionEntry({ collectionDoenetId, doenetId, assigned, entryId }) {
   return (
     <>
       <CollectionEntryDisplayLine
-        label={itemInfo.label}
+        label={entryInfo.label}
         assigned={assigned}
         selectOptions={selectOptions}
         addEntryToAssignment={() => {
@@ -237,7 +240,7 @@ function CollectionEntry({ collectionDoenetId, doenetId, assigned, entryId }) {
             .post('/api/addCollectionEntry.php', {
               collectionDoenetId,
               entryDoenetId: doenetId,
-              label: itemInfo.label,
+              label: entryInfo.label,
               entryId,
               //TODO: ref the selected option;
               variant: variants.name ?? 1,
@@ -250,7 +253,8 @@ function CollectionEntry({ collectionDoenetId, doenetId, assigned, entryId }) {
                     <CollectionEntry
                       collectionDoenetId={collectionDoenetId}
                       doenetId={doenetId}
-                      label={itemInfo?.label}
+                      entryId={entryId}
+                      label={entryInfo?.label}
                       assigned
                     />
                   </Suspense>,
@@ -265,7 +269,7 @@ function CollectionEntry({ collectionDoenetId, doenetId, assigned, entryId }) {
               //TODO: failure toast??
               if (resp.status === 200) {
                 setAssignedEntries((was) =>
-                  was.filter((entryJSX) => entryJSX.entryId !== entryId),
+                  was.filter((entryJSX) => entryJSX.key !== entryId),
                 );
               }
             });
@@ -298,7 +302,13 @@ function CollectionEntryDisplayLine({
       <ButtonGroup>
         {assigned ? (
           <>
-            <select>{selectOptions}</select>
+            <select
+              onBlur={(e) => {
+                console.log('hello', e);
+              }}
+            >
+              {selectOptions}
+            </select>
             <Button
               value={<FontAwesomeIcon icon={faMinus} />}
               onClick={(e) => {
