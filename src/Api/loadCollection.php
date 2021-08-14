@@ -26,33 +26,33 @@ if (array_key_exists('doenetId', $_REQUEST)) {
         $row = $result->fetch_assoc();
         $driveId = $row['driveId'];
     }
+
+    if (array_key_exists('driveId', get_defined_vars())) {
+        //check user has permission to edit drive
+        $sql = "
+            SELECT canChangeAllDriveSettings
+            FROM drive_user
+            WHERE userId = '$userId'
+            AND driveId = '$driveId'
+        ";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $allowed = $row['canChangeAllDriveSettings'];
+            if (!$allowed) {
+                http_response_code(403); //User if forbidden from operation
+            }
+        } else {
+            //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+            http_response_code(401); //User has bad auth
+        }
+    } else {
+        //bad doenetId
+        http_response_code(400);
+    }
 } else {
     http_response_code(400);
     echo json_encode(['message' => 'Missing DoenetId']);
-}
-
-if (array_key_exists('driveId', get_defined_vars())) {
-    //check user has permission to edit drive
-    $sql = "
-        SELECT canChangeAllDriveSettings
-        FROM drive_user
-        WHERE userId = '$userId'
-        AND driveId = '$driveId'
-    ";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $allowed = $row['canChangeAllDriveSettings'];
-        if (!$allowed) {
-            http_response_code(403); //User if forbidden from operation
-        }
-    } else {
-        //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
-        http_response_code(401); //User has bad auth
-    }
-} else {
-    //bad doenetId
-    http_response_code(400);
 }
 
 if ($allowed) {
