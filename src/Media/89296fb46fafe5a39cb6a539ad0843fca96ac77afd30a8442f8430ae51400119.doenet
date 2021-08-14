@@ -20,9 +20,10 @@
     <customAttribute componentType="number" attribute="initialConditionWeight" defaultValue="1" assignNames="initialConditionWeight" />
     <customAttribute componentType="number" attribute="cobwebbingWeight" defaultValue="1" assignNames="cobwebbingWeight" />
     <customAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
+    <customAttribute componentType="text" attribute="grid" defaultValue="none" assignNames="grid" />
   </setup>
 
-  <copy uri="doenet:contentId=1cfd2969a6eebc99d8e9d86568488556538aca783982470e392c2b9cfe497628&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" />
+  <copy uri="doenet:contentId=70eb7863060d5f92e2387fdfb845245f738a47686ff4cad9e0fd5c377072b0cc&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" grid="$grid" />
 
   <conditionalContent condition="$checkInitialCondition">
     <p>Initial condition:
