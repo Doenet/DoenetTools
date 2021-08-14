@@ -15,13 +15,14 @@
     <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
     <customAttribute componentType="number" attribute="attractThreshold" defaultValue="0.5" assignNames="attractThreshold" />
     <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="variable" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
     <customAttribute componentType="boolean" attribute="checkInitialCondition" defaultValue="true" assignNames="checkInitialCondition" />
     <customAttribute componentType="number" attribute="initialConditionWeight" defaultValue="1" assignNames="initialConditionWeight" />
     <customAttribute componentType="number" attribute="cobwebbingWeight" defaultValue="1" assignNames="cobwebbingWeight" />
     <customAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
   </setup>
 
-  <copy uri="doenet:contentId=ae0c1fd4bcbd822740cdd5a28efed48c825d516aa1744ba5f2fbc15de9776bbd" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" showCalculatedValues="$showCalculatedValues" />
+  <copy uri="doenet:contentId=1cfd2969a6eebc99d8e9d86568488556538aca783982470e392c2b9cfe497628&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" />
 
   <conditionalContent condition="$checkInitialCondition">
     <p>Initial condition:

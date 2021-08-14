@@ -15,6 +15,7 @@
     <customAttribute componentType="boolean" attribute="showNavigation" defaultValue="true" assignNames="showNavigation" />
     <customAttribute componentType="number" attribute="attractThreshold" defaultValue="0.5" assignNames="attractThreshold" />
     <customAttribute componentType="variable" attribute="variable" defaultValue="x" assignNames="variable" />
+    <customAttribute componentType="variable" attribute="timeVariable" defaultValue="n" assignNames="timeVariable" />
     <customAttribute componentType="boolean" attribute="showCalculatedValues" defaultValue="true" assignNames="showCalculatedValues" />
   </setup>
 
@@ -34,7 +35,7 @@
   <updateValue label="Add line" name="addLine" tname="nPoints" newValue="$nPoints+1" type="number" />
   <updateValue label="Delete line" name="deleteLine" tname="nPoints" newValue="$nPoints-1" type="number" disabled="$nPoints <= 1" />
 
-  <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_n" ylabel="$(variable)_{n+1}" showNavigation="$showNavigation" identicalAxisScales >
+  <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_$timeVariable" ylabel="$(variable)_{$timeVariable+1}" showNavigation="$showNavigation" identicalAxisScales >
     <cobwebpolyline function="$f" nPoints="$nPoints" name="cobwebPolyline" initialPoint="$initialPoint" nIterationsRequired="$nIterationsRequired" attractThreshold="$attractThreshold" variable="$variable" />
   </graph>
 
