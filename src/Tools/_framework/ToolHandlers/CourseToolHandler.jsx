@@ -440,17 +440,6 @@ export const drivecardSelectedNodesAtom = atom({
   default:[]
 })
 
-export const fetchDrivesQuery = atom({
-  key:"fetchDrivesQuery",
-  default: selector({
-    key:"fetchDrivesQuery/Default",
-    get: async ()=>{
-      const { data } = await axios.get(`/api/loadAvailableDrives.php`);
-      return data
-    },
-  })
-})
-
 export const fetchDrivesSelector = selector({
   key:"fetchDrivesSelector",
   get:({get})=>{
