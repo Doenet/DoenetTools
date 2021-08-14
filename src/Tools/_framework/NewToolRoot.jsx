@@ -262,6 +262,7 @@ let navigationObj = {
     dashboard: {
       pageName: "Dashboards",
       currentMainPanel: "Dashboard",
+      menuPanelCap:"DriveInfoCap",
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
@@ -273,6 +274,7 @@ let navigationObj = {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
       currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
       menusTitles:[],
       menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
@@ -325,6 +327,7 @@ let navigationObj = {
     enrollment:{ //allStudentsInCourse
       pageName:"Enrollment",
       currentMenus:["LoadEnrollment","ManualEnrollment"],
+      menuPanelCap:"DriveInfoCap",
       menusTitles:["Load","Manual"],
       menusInitOpen:[false,false],
       currentMainPanel:"Enrollment",
