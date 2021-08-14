@@ -1,7 +1,7 @@
 import React, { useEffect ,useState} from 'react';
-import axios from "axios";
+// import axios from "axios";
 // import { useHistory } from 'react-router';
-import Button from '../temp/Button'
+// import Button from '../temp/Button'
 import { useRecoilCallback,selector, useRecoilValue, useSetRecoilState, useRecoilState,useRecoilValueLoadable } from 'recoil';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom} from '../ToolHandlers/CourseToolHandler'
@@ -22,12 +22,12 @@ export default function DriveCardsNew(props){
     driveIdsAndLabelsInfo = driveInfo.contents.driveIdsAndLabels;
   }
   // console.log(">>>===DriveCards");
-  const selectedDrivesList = useRecoilValue(drivecardSelectedNodesAtom);
+  // const selectedDrivesList = useRecoilValue(drivecardSelectedNodesAtom);
   
-  const setSelectedCourse = useRecoilCallback(({set})=>(driveIds)=>{
-    set(drivecardSelectedNodesAtom,driveIds)
-    set(selectedMenuPanelAtom,"SelectedCourse");
-  },[])
+  // const setSelectedCourse = useRecoilCallback(({set})=>(driveIds)=>{
+  //   set(drivecardSelectedNodesAtom,driveIds)
+  //   set(selectedMenuPanelAtom,"SelectedCourse");
+  // },[])
 
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
 
@@ -62,7 +62,7 @@ const DriveCardWrapper = (props) => {
   const [drivecardSelectedValue,setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom)
   // const setOpenMenuPanel = useMenuPanelController();
   // const [driveCardPath, setDrivecardPath] = useRecoilState(drivePathSyncFamily(drivePathSyncKey))
-  const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
+  // const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId))
   // console.log(" columnJSX drivesInfo",drivecardInfo)
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
@@ -96,10 +96,6 @@ const DriveCardWrapper = (props) => {
     set(selectedMenuPanelAtom,"SelectedCourse");
     });
 
-
-  // if(driveCardPath.driveId !== ""){
-  //   return null;
-  // }
 
   const handleKeyDown = (e, item) => {
     if (e.key === "Enter") {
