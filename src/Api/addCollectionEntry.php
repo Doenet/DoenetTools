@@ -22,9 +22,6 @@ if (!array_key_exists('entryId', $_POST)) {
 } elseif (!array_key_exists('variant', $_POST)) {
     $success = false;
     $message = 'Missing variant';
-} elseif (!array_key_exists('label', $_POST)) {
-    $success = false;
-    $message = 'Missing label';
 } elseif (!array_key_exists('entryDoenetId', $_POST)) {
     $success = false;
     $message = 'Missing entryDoenetId';
@@ -38,7 +35,6 @@ if ($success) {
     $entryDoenetId = mysqli_real_escape_string($conn, $_POST['entryDoenetId']);
     $entryId = mysqli_real_escape_string($conn, $_POST['entryId']);
     $variant = mysqli_real_escape_string($conn, $_POST['variant']);
-    $label = mysqli_real_escape_string($conn, $_POST['label']);
 
     //get driveId from doenetId
     //TODO: should be a sql join query with userId
@@ -87,8 +83,8 @@ if ($success) {
     if ($success) {
         $sql = "
             INSERT INTO collection
-            (collectionDoenetId, entryDoenetId, entryId, variant, label)
-            VALUES ('$doenetId', '$entryDoenetId','$entryId','$variant','$label')
+            (collectionDoenetId, entryDoenetId, entryId, variant)
+            VALUES ('$doenetId', '$entryDoenetId','$entryId','$variant')
         ";
         $result = $conn->query($sql);
 

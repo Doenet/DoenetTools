@@ -42,7 +42,7 @@ if (array_key_exists('doenetId', get_defined_vars())) {
     //TODO: should be a sql join query with userId
     $sql = "
         SELECT driveId
-        FROM `drive_content`
+        FROM drive_content
         WHERE doenetId = '$doenetId'
     ";
     $result = $conn->query($sql);

@@ -1,8 +1,6 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import {
-  atom,
   atomFamily,
-  selector,
   selectorFamily,
   useRecoilCallback,
   useRecoilValue,
@@ -92,12 +90,11 @@ export default function CollectionEditor(props) {
   useEffect(() => {
     const entries = [];
     for (let key in folderInfoObj.contentsDictionary) {
-      const { doenetId, label } = folderInfoObj.contentsDictionary[key];
+      const { doenetId } = folderInfoObj.contentsDictionary[key];
       initEntryByDoenetId(doenetId);
       entries.push(
         <Suspense key={key}>
           <CollectionEntry
-            label={label}
             doenetId={doenetId}
             collectionDoenetId={folderInfoObj.folderInfo.doenetId}
           />
@@ -110,7 +107,7 @@ export default function CollectionEditor(props) {
   useEffect(() => {
     const entries = [];
     for (let key in databaseInfo) {
-      const { collectionDoenetId, entryDoenetId, entryId, label, variant } =
+      const { collectionDoenetId, entryDoenetId, entryId, variant } =
         databaseInfo[key];
       entries.push(
         <Suspense key={entryId}>
@@ -118,7 +115,6 @@ export default function CollectionEditor(props) {
             collectionDoenetId={collectionDoenetId}
             doenetId={entryDoenetId}
             entryId={entryId}
-            label={label}
             variant={variant}
             assigned
           />
@@ -155,6 +151,34 @@ const possibleVariantsByDoenetId = atomFamily({
   default: {},
 });
 
+const itemInfoByDoenetId = atomFamily({
+  key: 'itemInfoByDoenetId',
+  default: selectorFamily({
+    key: 'itemInfoByDoenetId/Default',
+    get:
+      (doenetId) =>
+      async ({ get }) => {
+        try {
+          const resp = await axios.get('/api/findDriveIdFolderId.php', {
+            params: { doenetId },
+          });
+          if (resp.status === 200) {
+            const folderInfo = await get(
+              folderDictionaryFilterSelector({
+                driveId: resp.data.driveId,
+                folderId: resp.data.parentFolderId,
+              }),
+            );
+            return folderInfo.contentsDictionaryByDoenetId[doenetId];
+          }
+        } catch (error) {
+          console.error(error);
+          return {};
+        }
+      },
+  }),
+});
+
 const assignedEntiresQuery = atomFamily({
   key: 'assignedEntiresQuery',
   default: selectorFamily({
@@ -173,18 +197,15 @@ const assignedEntiresQuery = atomFamily({
   }),
 });
 
-function CollectionEntry({
-  collectionDoenetId,
-  doenetId,
-  label,
-  assigned,
-  entryId,
-}) {
+function CollectionEntry({ collectionDoenetId, doenetId, assigned, entryId }) {
   const hiddenViewer = useRecoilValue(hiddenViewerByDoenetId(doenetId));
   //TODO: should be a socket interaction
   const setAssignedEntries = useSetRecoilState(
     assignedEntiresQuery(collectionDoenetId),
   );
+  const itemInfo = useRecoilValueLoadable(
+    itemInfoByDoenetId(doenetId),
+  ).getValue();
 
   const variants = useRecoilValueLoadable(
     possibleVariantsByDoenetId(doenetId),
@@ -206,7 +227,7 @@ function CollectionEntry({
   return (
     <>
       <CollectionEntryDisplayLine
-        label={label}
+        label={itemInfo.label}
         assigned={assigned}
         selectOptions={selectOptions}
         addEntryToAssignment={() => {
@@ -216,7 +237,7 @@ function CollectionEntry({
             .post('/api/addCollectionEntry.php', {
               collectionDoenetId,
               entryDoenetId: doenetId,
-              label,
+              label: itemInfo.label,
               entryId,
               //TODO: ref the selected option;
               variant: variants.name ?? 1,
@@ -229,7 +250,7 @@ function CollectionEntry({
                     <CollectionEntry
                       collectionDoenetId={collectionDoenetId}
                       doenetId={doenetId}
-                      label={label}
+                      label={itemInfo?.label}
                       assigned
                     />
                   </Suspense>,
