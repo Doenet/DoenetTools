@@ -79,7 +79,6 @@ export default function CollectionEditor(props) {
   const assignedEntries = useRecoilValueLoadable(
     assignedEntiresQuery(doenetId),
   ).getValue();
-  console.log('assigned Entries', assignedEntries);
 
   const folderInfoObj = useRecoilValueLoadable(
     folderDictionaryFilterSelector({
@@ -196,10 +195,16 @@ const assignedEntiresQuery = atomFamily({
   }),
 });
 
-function CollectionEntry({ collectionDoenetId, doenetId, entryId, assigned }) {
+function CollectionEntry({
+  collectionDoenetId,
+  doenetId,
+  entryId,
+  assigned,
+  variant,
+}) {
   const hiddenViewer = useRecoilValue(hiddenViewerByDoenetId(doenetId));
+  const [selectedVariant, setSelectedVariant] = useState(variant);
   //TODO: should be a socket interaction
-  console.log(collectionDoenetId);
   const setAssignedEntries = useSetRecoilState(
     assignedEntiresQuery(collectionDoenetId),
   );
@@ -233,6 +238,7 @@ function CollectionEntry({ collectionDoenetId, doenetId, entryId, assigned }) {
         label={entryInfo.label}
         assigned={assigned}
         selectOptions={selectOptions}
+        selectedVariant={selectedVariant}
         addEntryToAssignment={() => {
           //TODO: failure toast??
           const entryId = nanoid();
@@ -243,7 +249,7 @@ function CollectionEntry({ collectionDoenetId, doenetId, entryId, assigned }) {
               label: entryInfo.label,
               entryId,
               //TODO: ref the selected option;
-              variant: variants.name ?? 1,
+              variant: variants.allPossibleVariants[0],
             })
             .then((resp) => {
               if (resp.status === 200) {
@@ -255,6 +261,7 @@ function CollectionEntry({ collectionDoenetId, doenetId, entryId, assigned }) {
                       doenetId={doenetId}
                       entryId={entryId}
                       label={entryInfo?.label}
+                      variant={variants.allPossibleVariants[0]}
                       assigned
                     />
                   </Suspense>,
@@ -274,6 +281,20 @@ function CollectionEntry({ collectionDoenetId, doenetId, entryId, assigned }) {
               }
             });
         }}
+        onVariantSelect={(newSelectedVariant) => {
+          axios
+            .post('/api/updateCollectionEntryVariant.php', {
+              entryId,
+              variant: newSelectedVariant,
+            })
+            .then((resp) => {
+              if (resp.status === 200) {
+                setSelectedVariant(newSelectedVariant);
+              }
+              //TODO: pass the value back down
+            })
+            .catch((error) => console.error(error));
+        }}
       />
       {!assigned ? hiddenViewer : null}
     </>
@@ -286,7 +307,9 @@ function CollectionEntryDisplayLine({
   addEntryToAssignment,
   removeEntryFromAssignment,
   assigned,
+  selectedVariant,
   selectOptions,
+  onVariantSelect,
 }) {
   return (
     <div
@@ -303,8 +326,10 @@ function CollectionEntryDisplayLine({
         {assigned ? (
           <>
             <select
+              value={selectedVariant}
               onBlur={(e) => {
-                console.log('hello', e);
+                e.stopPropagation();
+                onVariantSelect?.(e.target.value);
               }}
             >
               {selectOptions}
@@ -313,7 +338,7 @@ function CollectionEntryDisplayLine({
               value={<FontAwesomeIcon icon={faMinus} />}
               onClick={(e) => {
                 e.stopPropagation();
-                removeEntryFromAssignment();
+                removeEntryFromAssignment?.();
               }}
             />
           </>
@@ -322,7 +347,7 @@ function CollectionEntryDisplayLine({
             value={<FontAwesomeIcon icon={faPlus} />}
             onClick={(e) => {
               e.stopPropagation();
-              addEntryToAssignment();
+              addEntryToAssignment?.();
             }}
           />
         )}
