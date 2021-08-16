@@ -502,7 +502,7 @@ export default class Spreadsheet extends BlockComponent {
       }),
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "evaluatedCell") {
-          // accept two formats: cellB1 or cell(1,2)
+          // accept two formats: evaluatedCellB1 or evaluatedCell(1,2)
           // (accept letters in second format: (A, 2), (1, B), or (A,B))
 
           let rowNum, colNum;
@@ -813,11 +813,11 @@ export default class Spreadsheet extends BlockComponent {
         let dependenciesByKey = {};
 
         for (let arrayKey of arrayKeys) {
-          let varEnding = arrayKey.split(',').map(x => Number(x) + 1).join('_');
+          let varEnding = arrayKey.split(',').map(x => Number(x) + 1).join(',');
           dependenciesByKey[arrayKey] = {
             cellText: {
               dependencyType: "stateVariable",
-              variableName: `evaluatedCell${varEnding}`,
+              variableName: `evaluatedCell(${varEnding})`,
               variablesOptional: true,
             }
           }

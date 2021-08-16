@@ -1,8 +1,8 @@
 import { roundForDisplay } from '../utils/math';
-import BaseComponent from './abstract/BaseComponent';
+import BlockComponent from './abstract/BlockComponent';
 
 
-export default class DiscreteSimulationResultList extends BaseComponent {
+export default class DiscreteSimulationResultList extends BlockComponent {
   static componentType = "DiscreteSimulationResultList";
   static rendererType = "spreadsheet";
 
