@@ -45,7 +45,6 @@ export default class Core {
     this.cancelAnimationFrame = this.cancelAnimationFrame.bind(this);
     this.calculateScoredItemNumberOfContainer = this.calculateScoredItemNumberOfContainer.bind(this);
 
-    this.expandDoenetMLsToFullSerializedComponents = this.expandDoenetMLsToFullSerializedComponents.bind(this);
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
     this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
@@ -151,10 +150,14 @@ export default class Core {
     this.parameterStack.parameters.rngClass = prng_alea;
 
     let contentId = Hex.stringify(sha256(doenetML));
-    this.expandDoenetMLsToFullSerializedComponents({
+    serializeFunctions.expandDoenetMLsToFullSerializedComponents({
       contentIds: [contentId],
       doenetMLs: [doenetML],
-      callBack: this.finishCoreConstruction
+      callBack: this.finishCoreConstruction,
+      componentInfoObjects: this.componentInfoObjects,
+      componentTypeLowerCaseMapping: this.componentTypeLowerCaseMapping,
+      flags: this.flags,
+      contentIdsToDoenetMLs: this.externalFunctions.contentIdsToDoenetMLs
     })
   }
 
@@ -265,133 +268,6 @@ export default class Core {
 
   }
 
-  expandDoenetMLsToFullSerializedComponents({ contentIds, doenetMLs, callBack }) {
-
-    let arrayOfSerializedComponents = [];
-    let contentIdComponents = {};
-
-    for (let doenetML of doenetMLs) {
-
-      let serializedComponents = serializeFunctions.doenetMLToSerializedComponents(doenetML);
-
-      serializeFunctions.correctComponentTypeCapitalization(serializedComponents, this.componentTypeLowerCaseMapping);
-
-      serializeFunctions.createAttributesFromProps(serializedComponents, this.componentInfoObjects, this.flags);
-
-      serializedComponents = serializeFunctions.applyMacros(serializedComponents, this.componentInfoObjects, this.flags);
-
-      // remove blank string children after applying macros,
-      // as applying macros could create additional blank string children
-      serializeFunctions.removeBlankStringChildren(serializedComponents, this.componentInfoObjects)
-
-      serializeFunctions.decodeXMLEntities(serializedComponents);
-
-      serializeFunctions.applySugar({ serializedComponents, componentInfoObjects: this.componentInfoObjects });
-
-      arrayOfSerializedComponents.push(serializedComponents);
-
-      let newContentComponents = serializeFunctions.findContentCopies({ serializedComponents });
-
-      for (let contentId in newContentComponents.contentIdComponents) {
-        if (contentIdComponents[contentId] === undefined) {
-          contentIdComponents[contentId] = []
-        }
-        contentIdComponents[contentId].push(...newContentComponents.contentIdComponents[contentId])
-      }
-    }
-
-    let contentIdList = Object.keys(contentIdComponents);
-    if (contentIdList.length > 0) {
-      // found copies with contentIds 
-      // so look up those contentIds
-      // convert to doenetMLs, and recurse on those doenetMLs
-
-      let mergeContentIdNameSerializedComponentsIntoCopy = function ({
-        fullSerializedComponents
-      }) {
-
-        for (let [ind, contentId] of contentIdList.entries()) {
-          let serializedComponentsForContentId = fullSerializedComponents[ind];
-
-          for (let originalCopyWithUri of contentIdComponents[contentId]) {
-            if (originalCopyWithUri.children === undefined) {
-              originalCopyWithUri.children = [];
-            }
-            originalCopyWithUri.children.push({
-              componentType: "externalContent",
-              children: JSON.parse(JSON.stringify(serializedComponentsForContentId)),
-              attributes: { newNamespace: { primitive: true } },
-              doenetAttributes: { createUniqueName: true }
-            });
-          }
-        }
-
-
-        // Note: this is the callback from the enclosing expandDoenetMLsToFullSerializedComponents
-        // so we call it with the contentIds and serializedComponents from that context
-        // This callBack will either be this.finishCoreConstruction
-        // or mergeContentIdNameSerializedComponentsIntoCopy
-        callBack({
-          contentIds,
-          fullSerializedComponents: arrayOfSerializedComponents,
-          calledAsynchronously: true,
-        })
-      }.bind(this);
-
-      let recurseToAdditionalDoenetMLs = function ({ newDoenetMLs, newContentIds, success, message }) {
-
-        if (!success) {
-          console.warn(message);
-        }
-
-        // check to see if got the contentIds requested
-        for (let [ind, contentId] of contentIdList.entries()) {
-          if (newContentIds[ind] && newContentIds[ind].substring(0, contentId.length) !== contentId) {
-            throw Error(`Requested contentId ${contentId} but got back ${newContentIds[ind]}!`)
-          }
-        }
-
-        // check to see if the doenetMLs hash to the contentIds
-        let expectedN = contentIdList.length;
-        for (let ind = 0; ind < expectedN; ind++) {
-          let contentId = newContentIds[ind];
-          if (contentId) {
-            let doenetML = newDoenetMLs[ind];
-            let calculatedContentId = Hex.stringify(sha256(doenetML));
-            if (contentId !== calculatedContentId) {
-              throw Error(`Incorrect DoenetML returned for contentId: ${contentId}`)
-            }
-          } else {
-            // wasn't able to retrieve content
-            console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
-            newDoenetMLs[ind] = "";
-          }
-        }
-
-        this.expandDoenetMLsToFullSerializedComponents({
-          doenetMLs: newDoenetMLs,
-          contentIds: newContentIds,
-          callBack: mergeContentIdNameSerializedComponentsIntoCopy,
-        });
-      }.bind(this);
-
-      this.externalFunctions.contentIdsToDoenetMLs({
-        contentIds: contentIdList,
-        callBack: recurseToAdditionalDoenetMLs
-      });
-
-    } else {
-      // end recursion when don't find additional refs with contentIds
-      // Note: this callBack will either be this.finishCoreConstruction
-      // or mergeContentIdNameSerializedComponentsIntoCopy
-      callBack({
-        contentIds,
-        fullSerializedComponents: arrayOfSerializedComponents,
-        calledAsynchronously: false,
-      });
-    }
-
-  }
 
   addComponents({ serializedComponents, parentName,
     indexOfDefiningChildren, initialAdd = false,

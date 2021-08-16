@@ -473,8 +473,9 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.evaluatedCells = {
       isArray: true,
-      // entryPrefixes: ["cell", "row", "column", "range"],
-      entryPrefixes: ["evaluatedCell"],
+      public: true,
+      componentType: "cell",
+      entryPrefixes: ["evaluatedCell", "evaluatedRow", "evaluatedColumn", "evaluatedRange"],
       nDimensions: 2,
       defaultEntryValue: null,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
@@ -499,6 +500,129 @@ export default class Spreadsheet extends BlockComponent {
           }
         }
       }),
+      getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
+        if (arrayEntryPrefix === "evaluatedCell") {
+          // accept two formats: cellB1 or cell(1,2)
+          // (accept letters in second format: (A, 2), (1, B), or (A,B))
+
+          let rowNum, colNum;
+
+          let letterNumStyle = /^([a-zA-Z]+)([1-9]\d*)$/;
+          let result = varEnding.match(letterNumStyle);
+          if (result) {
+            colNum = result[1];
+            rowNum = result[2]
+          } else {
+            let tupleStyle = /^\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\)$/;
+            result = varEnding.match(tupleStyle);
+            if (result) {
+              rowNum = result[1];
+              colNum = result[2];
+            } else {
+              return []; // invalid
+            }
+          }
+
+          let rowIndex = normalizeIndex(rowNum);
+          let colIndex = normalizeIndex(colNum);
+
+          if (!(rowIndex >= 0 && rowIndex < arraySize[0] && colIndex >= 0 && colIndex < arraySize[1])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          return [String(rowIndex) + "," + String(colIndex)]
+
+        } else if (arrayEntryPrefix === "evaluatedRow") {
+          // evaluatedRow2 or evaluatedRowB
+
+          let rowIndex = normalizeIndex(varEnding);
+          if (!(rowIndex >= 0 && rowIndex < arraySize[0])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          let arrayKeys = [];
+          let arrayKeyBegin = String(rowIndex) + ",";
+          for (let i = 0; i < arraySize[1]; i++) {
+            arrayKeys.push(arrayKeyBegin + i);
+          }
+
+          return arrayKeys;
+
+        } else if (arrayEntryPrefix === "evaluatedColumn") {
+          // evaluatedColumn2 or evaluatedColumnB
+
+          let colIndex = normalizeIndex(varEnding);
+          if (!(colIndex >= 0 && colIndex < arraySize[1])) {
+            // invalid index or index of out range
+            return [];
+          }
+
+          let arrayKeys = [];
+          let arrayKeyEnd = "," + String(colIndex);
+          for (let i = 0; i < arraySize[0]; i++) {
+            arrayKeys.push(i + arrayKeyEnd);
+          }
+
+          return arrayKeys;
+
+        } else {
+          // range
+          // accept two formats: evaluatedRangeB1D5 or evaluatedRange((1,2),(5,4))
+
+          let fromRow, fromCol, toRow, toCol;
+
+          let letterNumStyle = /^([a-zA-Z]+)([1-9]\d*)([a-zA-Z]+)([1-9]\d*)$/;
+          let result = varEnding.match(letterNumStyle);
+          if (result) {
+            fromCol = normalizeIndex(result[1]);
+            fromRow = normalizeIndex(result[2]);
+            toCol = normalizeIndex(result[3]);
+            toRow = normalizeIndex(result[4]);
+          } else {
+            let tupleStyle = /^\(\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\),\(([a-zA-Z]+|\d+),([a-zA-Z]+|\d+)\)\)$/;
+            result = varEnding.match(tupleStyle);
+            if (result) {
+              fromRow = normalizeIndex(result[1]);
+              fromCol = normalizeIndex(result[2]);
+              toRow = normalizeIndex(result[3]);
+              toCol = normalizeIndex(result[4]);
+            } else {
+              return [];  //invalid
+            }
+          }
+
+
+          if (!(fromRow >= 0 && toRow >= 0 && fromCol >= 0 && toCol >= 0)) {
+            // invalid range
+            return [];
+          }
+
+          let row1 = Math.min(Math.min(fromRow, toRow), arraySize[0] - 1);
+          let row2 = Math.min(Math.max(fromRow, toRow), arraySize[0] - 1);
+          let col1 = Math.min(Math.min(fromCol, toCol), arraySize[1] - 1);
+          let col2 = Math.min(Math.max(fromCol, toCol), arraySize[1] - 1);
+
+          let arrayKeys = [];
+
+          for (let rowIndex = row1; rowIndex <= row2; rowIndex++) {
+            let rowKeys = [];
+            let arrayKeyBegin = String(rowIndex) + ",";
+            for (let colIndex = col1; colIndex <= col2; colIndex++) {
+              rowKeys.push(arrayKeyBegin + colIndex);
+            }
+            arrayKeys.push(rowKeys);
+          }
+
+          return arrayKeys;
+
+        }
+
+      },
+      arrayVarNameFromArrayKey(arrayKey) {
+        return "evaluatedCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
+      },
       arrayDefinitionByKey({ globalDependencyValues }) {
 
         // console.log(`array definition of evaluatedCells`)

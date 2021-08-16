@@ -18,7 +18,7 @@ module.exports = {
     // 'src/Tools/library': '/library',
     // 'src/Tools/signin': '/signin',
     // 'src/Tools/signout': '/signout',
-    // 'src/Tools/temp': '/temp',
+    'src/Tools/temp': '/temp',
     // 'src/Tools/chat': '/chat',
     // 'src/Tools/new': '/new',
     // 'src/Home': '/',
