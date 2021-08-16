@@ -111,7 +111,7 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path, tool }) {
+export default function BreadCrumb({ path, tool, tool2, doenetId }) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -161,14 +161,12 @@ export default function BreadCrumb({ path, tool }) {
     }else if (tool === 'Gradebook'){
       toolName = 'gradebook';
       params = {driveId}
-    }else if (tool === 'Editor'){
-      toolName = 'editor';
-      params = {driveId}
     }else if (tool === 'CourseChooser'){
       toolName = 'courseChooser';
       params = {}
     }
 
+    
     returnToToolHead = 
       (
         <BreadcrumbItem>
@@ -285,9 +283,48 @@ export default function BreadCrumb({ path, tool }) {
   ));
       }
 
+ 
+    let returnToToolHead2 = null;
+
+
+    if (tool2 === 'Editor'){
+      let toolName2 = 'editor';
+      let params2 = {doenetId,path}
+      returnToToolHead2 = 
+      (
+        <BreadcrumbItem>
+          <BreadcrumbSpan
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setPageToolView((was) => ({ 
+                  page:was.page,
+                  tool:toolName2,
+                  view:'',
+                  params:params2,}));
+              }
+            }}
+            onClick={() => {
+              setPageToolView((was) => ({ 
+                page:was.page,
+                tool:toolName2,
+                view:'',
+                params:params2,}));
+            }}
+          >
+            {tool2}
+          </BreadcrumbSpan>
+        </BreadcrumbItem>
+        
+      )
+    }
+
+
+
   return (
     <Breadcrumb>
-      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children}
+      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children} {returnToToolHead2}
     </Breadcrumb>
   );
 }
