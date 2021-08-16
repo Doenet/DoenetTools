@@ -251,6 +251,19 @@ let navigationObj = {
     default:{
       defaultTool:'courseChooser'
     },
+    assignment: {
+      pageName:"Assignment",
+      menuPanelCap:"EditorInfoCap",
+      currentMainPanel:"EditorViewer",
+      currentMenus:[], 
+      menusTitles:[],
+      menusInitOpen:[],
+      // supportPanelOptions:["DoenetMLEditor"],
+      // supportPanelTitles:["DoenetML Editor"],
+      // supportPanelIndex:0,
+      headerControls: ["EditorBreadCrumb"],
+      headerControlsPositions: ["Left"],
+    },
     courseChooser:{ //allCourses
       pageName:"Course",
       currentMainPanel:"DriveCards",
