@@ -78,6 +78,13 @@ export default class Answer extends InlineComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.matchByExactPositions = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchByExactPositions",
+      defaultValue: false,
+      public: true,
+      propagateToDescendants: true,
+    };
     attributes.nAwardsCredited = {
       createComponentOfType: "integer",
       createStateVariable: "nAwardsCredited",

@@ -38,7 +38,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
     attributes.seriesNumber = {
       createComponentOfType: "number",
       createStateVariable: "seriesNumber",
-      defaultValue: 1,
+      defaultValue: null,
     }
 
     return attributes;
@@ -229,7 +229,11 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
 
         for (let ind = 0; ind < arraySize[0]; ind++) {
           vertices[`${ind},0`] = me.fromAst(ind);
-          vertices[`${ind},1`] = globalDependencyValues.allIterates[ind].get_component(globalDependencyValues.seriesNumber - 1)
+          let val = globalDependencyValues.allIterates[ind];
+          if(globalDependencyValues.seriesNumber !== null) {
+            val = val.get_component(globalDependencyValues.seriesNumber - 1);
+          }
+          vertices[`${ind},1`] = val;
         }
 
         return { newValues: { vertices } }

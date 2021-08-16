@@ -77,12 +77,12 @@ export default class CobwebPolyline extends DoenetRenderer {
 
 
     if (!this.doenetSvData.draggable) {
-      jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+      this.jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
     }
 
     this.jsxPointAttributes = {
       fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      visible: !this.doenetSvData.hidden && validCoords,
+      visible: !this.doenetSvData.hidden && validCoords && this.doenetSvData.draggable,
       withLabel: true,
       name: "A",
       layer: 10 * this.doenetSvData.layer + 9,
@@ -239,8 +239,10 @@ export default class CobwebPolyline extends DoenetRenderer {
         this.pointsJXG[i].visPropCalc["visible"] = false;
       }
       if (this.doenetSvData.nPoints > 0) {
-        this.pointsJXG[this.doenetSvData.nPoints - 1].visProp["visible"] = visible;
-        this.pointsJXG[this.doenetSvData.nPoints - 1].visPropCalc["visible"] = visible;
+        if (this.doenetSvData.draggable) {
+          this.pointsJXG[this.doenetSvData.nPoints - 1].visProp["visible"] = visible;
+          this.pointsJXG[this.doenetSvData.nPoints - 1].visPropCalc["visible"] = visible;
+        }
       }
     }
     else {

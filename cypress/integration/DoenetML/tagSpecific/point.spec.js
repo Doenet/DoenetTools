@@ -1236,7 +1236,6 @@ describe('Point Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', "true")
   });
 
-
   it('three points with one constrained to grid', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -7541,5 +7540,41 @@ describe('Point Tag Tests', function () {
 
     })
   })
+
+  it('label positioning', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g">
+      <point labelPosition="$labelPos" label="$label">(1,2)</point>
+    </graph>
+
+    <p>label: <textinput name="label" prefill="A" /></p>
+    <p>position:
+    <choiceinput inline preselectChoice="1" name="labelPos">
+      <choice>upperRight</choice>
+      <choice>upperLeft</choice>
+      <choice>lowerRight</choice>
+      <choice>lowerLeft</choice>
+    </choiceinput>
+    </p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+
+    cy.get('#\\/label_input').clear().type("B{enter}")
+
+    cy.get('#\\/labelPos').select("upperLeft")
+    cy.get('#\\/labelPos').select("lowerRight")
+    cy.get('#\\/labelPos').select("lowerLeft")
+
+  });
+
 
 })
