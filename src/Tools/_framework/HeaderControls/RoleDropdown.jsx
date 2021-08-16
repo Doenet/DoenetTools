@@ -8,7 +8,7 @@ import {
 import { pageToolViewAtom } from '../NewToolRoot';
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { fetchDrivesQuery } from '../ToolHandlers/CourseToolHandler';
+import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
 
 
 export default function RoleDropdown(){

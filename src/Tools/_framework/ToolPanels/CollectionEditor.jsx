@@ -1,8 +1,7 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import {
-  atom,
   atomFamily,
-  selector,
+  selectorFamily,
   useRecoilCallback,
   useRecoilValue,
   useRecoilValueLoadable,
@@ -22,19 +21,12 @@ import {
 } from '../ToolHandlers/CourseToolHandler';
 import axios from 'axios';
 
-export default function CollectionEditor(props) {
+export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');
-  const [entries, setEntries] = useState([]);
-  const assignmentEntries = useRecoilValue(entriesSelectedForAssignmentAtom);
-
-  const folderInfoObj = useRecoilValueLoadable(
-    folderDictionaryFilterSelector({
-      driveId,
-      folderId: itemId,
-    }),
-  ).getValue();
+  const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const [availableEntries, setAvailableEntries] = useState([]);
 
   const initEntryByDoenetId = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -55,7 +47,28 @@ export default function CollectionEditor(props) {
           if (typeof response === 'object') {
             response = response.data;
           }
-          set(hiddenViwersDoenetMLAtomFamily(doenetId), response);
+          set(
+            hiddenViewerByDoenetId(doenetId),
+            <div style={{ display: 'none' }}>
+              <DoenetViewer
+                doenetML={response}
+                generatedVariantCallback={(
+                  generatedVariantInfo,
+                  allPossibleVariants,
+                ) => {
+                  const cleanGeneratedVariant = JSON.parse(
+                    JSON.stringify(generatedVariantInfo),
+                  );
+                  cleanGeneratedVariant.lastUpdatedIndexOrName = null;
+                  set(possibleVariantsByDoenetId(doenetId), {
+                    index: cleanGeneratedVariant.index,
+                    name: cleanGeneratedVariant.name,
+                    allPossibleVariants,
+                  });
+                }}
+              />
+            </div>,
+          );
         } finally {
           release();
         }
@@ -63,164 +76,224 @@ export default function CollectionEditor(props) {
     [],
   );
 
+  const assignedEntries = useRecoilValueLoadable(
+    assignedEntiresQuery(doenetId),
+  ).getValue();
+
+  const folderInfoObj = useRecoilValueLoadable(
+    folderDictionaryFilterSelector({
+      driveId,
+      folderId: itemId,
+    }),
+  ).getValue();
+
   useEffect(() => {
     const entries = [];
     for (let key in folderInfoObj.contentsDictionary) {
-      const { doenetId, label } = folderInfoObj.contentsDictionary[key];
+      const { doenetId } = folderInfoObj.contentsDictionary[key];
       initEntryByDoenetId(doenetId);
       entries.push(
         <Suspense key={key}>
           <CollectionEntry
-            label={label}
             doenetId={doenetId}
             collectionDoenetId={folderInfoObj.folderInfo.doenetId}
           />
         </Suspense>,
       );
     }
-    setEntries(entries);
+    setAvailableEntries(entries);
   }, [folderInfoObj, initEntryByDoenetId]);
 
   return (
     <div
       style={{
-        display: props?.style?.display ?? 'flex',
+        display: 'flex',
         flexDirection: 'column',
         rowGap: '4px',
         maxWidth: '850px',
         margin: '10px 20px',
       }}
     >
-      {assignmentEntries}
+      {assignedEntries}
       <div style={{ height: '10px', background: 'black' }}></div>
-      {entries}
+      {availableEntries}
     </div>
   );
 }
 
-const hiddenViwersDoenetMLAtomFamily = atomFamily({
-  key: 'hiddenViwerDoenetMLAtomFamily',
-  default: '',
+const hiddenViewerByDoenetId = atomFamily({
+  key: 'hiddenViewerByDoenetId',
+  default: null,
 });
 
-const variantsByEntryAtomFamily = atomFamily({
-  key: 'variantsByEntryAtomFamily',
+const possibleVariantsByDoenetId = atomFamily({
+  key: 'possibleVariantsByDoenetId',
   default: {},
 });
 
-const entriesSelectedForAssignmentAtom = atom({
-  key: 'entriesSelectedForAssignmentAtom',
-  default: selector({
-    key: 'entriesSelectedForAssignmentAtom/Default',
-    get: async ({ get }) => {
-      const doenetId = get(searchParamAtomFamily('doenetId'));
-      const resp = await axios.get('/api/loadCollection.php', {
-        params: { doenetId },
-      });
-      const entries = [];
-      if (resp.status == 200) {
-        for (let idx in resp.data.entries) {
-          let entry = resp.data.entries[idx];
-          entries.push(
-            <Suspense key={entry.entryId}>
-              <CollectionEntry
-                collectionDoenetId={doenetId}
-                doenetId={entry.entryDoenetId}
-                label={entry.label}
-                variant={entry.variant}
-                assigned
-                removeEntryFromAssignment={() => {}}
-              />
-            </Suspense>,
-          );
+const entryInfoByDoenetId = atomFamily({
+  key: 'itemInfoByDoenetId',
+  default: selectorFamily({
+    key: 'itemInfoByDoenetId/Default',
+    get:
+      (doenetId) =>
+      async ({ get }) => {
+        try {
+          const resp = await axios.get('/api/findDriveIdFolderId.php', {
+            params: { doenetId },
+          });
+          if (resp.status === 200) {
+            const folderInfo = await get(
+              folderDictionaryFilterSelector({
+                driveId: resp.data.driveId,
+                folderId: resp.data.parentFolderId,
+              }),
+            );
+            return folderInfo.contentsDictionaryByDoenetId[doenetId];
+          }
+        } catch (error) {
+          console.error(error);
+          return {};
         }
+      },
+  }),
+});
+
+const assignedEntiresQuery = atomFamily({
+  key: 'assignedEntiresQuery',
+  default: selectorFamily({
+    key: 'assignedEntiresQuery/Default',
+    get: (doenetId) => async () => {
+      try {
+        const resp = await axios.get('/api/loadCollection.php', {
+          params: { doenetId },
+        });
+        const entries = [];
+        if (resp.status === 200) {
+          for (let key in resp.data.entries) {
+            const { collectionDoenetId, entryDoenetId, entryId, variant } =
+              resp.data.entries[key];
+            entries.push(
+              <Suspense key={entryId}>
+                <CollectionEntry
+                  collectionDoenetId={collectionDoenetId}
+                  doenetId={entryDoenetId}
+                  entryId={entryId}
+                  variant={variant}
+                  assigned
+                />
+              </Suspense>,
+            );
+          }
+        }
+        return entries;
+      } catch (error) {
+        console.error(error);
+        return [];
       }
-      return entries;
     },
   }),
 });
 
-function CollectionEntry({ collectionDoenetId, doenetId, label, assigned }) {
-  const setAvailableVariants = useRecoilCallback(
-    ({ set }) =>
-      (generatedVariantInfo, allPossibleVariants) => {
-        // console.log(">>>variantCallback",generatedVariantInfo,allPossibleVariants)
-        const cleanGeneratedVariant = JSON.parse(
-          JSON.stringify(generatedVariantInfo),
-        );
-        cleanGeneratedVariant.lastUpdatedIndexOrName = null;
-        set(variantsByEntryAtomFamily(doenetId), {
-          index: cleanGeneratedVariant.index,
-          name: cleanGeneratedVariant.name,
-          allPossibleVariants,
-        });
-        // setHiddenDoenetViewer(null);
-        // setVariantPanel({
-        //   index:cleanGeneratedVariant.index,
-        //   name:cleanGeneratedVariant.name,
-        //   allPossibleVariants
-        // });
-        // setVariantInfo((was)=>{
-        //   let newObj = {...was}
-        //   Object.assign(newObj,cleanGeneratedVariant)
-        //   return newObj;
-        // });
-      },
-    [doenetId],
-  );
-  const doenetML = useRecoilValue(hiddenViwersDoenetMLAtomFamily(doenetId));
+function CollectionEntry({
+  collectionDoenetId,
+  doenetId,
+  entryId,
+  assigned,
+  variant,
+}) {
+  const hiddenViewer = useRecoilValue(hiddenViewerByDoenetId(doenetId));
+  const [selectedVariant, setSelectedVariant] = useState(variant);
   //TODO: should be a socket interaction
-  const setSelectedEntries = useSetRecoilState(
-    entriesSelectedForAssignmentAtom,
+  const setAssignedEntries = useSetRecoilState(
+    assignedEntiresQuery(collectionDoenetId),
   );
-  const [hiddenDoenetViewer] = useState(() =>
-    assigned ? (
-      <div style={{ display: 'none' }}>
-        <DoenetViewer
-          doenetML={doenetML}
-          generatedVariantCallback={setAvailableVariants}
-        />
-      </div>
-    ) : null,
-  );
+  const entryInfo = useRecoilValueLoadable(
+    entryInfoByDoenetId(doenetId),
+  ).getValue();
 
   const variants = useRecoilValueLoadable(
-    variantsByEntryAtomFamily(doenetId),
+    possibleVariantsByDoenetId(doenetId),
   ).getValue();
-  // console.log('dId', doenetId, variants);
+  const [selectOptions, setSelectOptions] = useState([]);
+
+  useEffect(() => {
+    const options = [];
+    for (let key in variants.allPossibleVariants) {
+      options.push(
+        <option
+          key={variants.allPossibleVariants[key]}
+          value={variants.allPossibleVariants[key]}
+        >
+          {variants.allPossibleVariants[key]}
+        </option>,
+      );
+    }
+    setSelectOptions(options);
+  }, [variants.allPossibleVariants]);
 
   return (
     <>
       <CollectionEntryDisplayLine
-        label={label}
+        label={entryInfo.label}
         assigned={assigned}
-        addEntryVariant={() => {
-          axios.post('/api/addCollectionEntry.php', {
-            collectionDoenetId,
-            entryDoenetId: doenetId,
-            label,
-            entryId: nanoid(),
-            variant: variants.name ?? 1,
-          });
-          setSelectedEntries((was) => [
-            ...was,
-            <Suspense key={`${doenetId}`}>
-              <CollectionEntry
-                doenetId={doenetId}
-                label={label}
-                assigned
-                removeEntryFromAssignment={() => {}}
-              />
-            </Suspense>,
-          ]);
+        selectOptions={selectOptions}
+        selectedVariant={selectedVariant}
+        addEntryToAssignment={() => {
+          //TODO: failure toast??
+          const entryId = nanoid();
+          axios
+            .post('/api/addCollectionEntry.php', {
+              collectionDoenetId,
+              entryDoenetId: doenetId,
+              label: entryInfo.label,
+              entryId,
+              //TODO: ref the selected option;
+              variant: variants.allPossibleVariants[0],
+            })
+            .then((resp) => {
+              if (resp.status === 200) {
+                setAssignedEntries((was) => [
+                  ...was,
+                  <Suspense key={entryId}>
+                    <CollectionEntry
+                      collectionDoenetId={collectionDoenetId}
+                      doenetId={doenetId}
+                      entryId={entryId}
+                      label={entryInfo?.label}
+                      variant={variants.allPossibleVariants[0]}
+                      assigned
+                    />
+                  </Suspense>,
+                ]);
+              }
+            });
         }}
-        removeEntryVariant={() => {
-          setSelectedEntries((was) =>
-            was.filter((entry) => entry.key !== doenetId),
-          );
+        removeEntryFromAssignment={() => {
+          axios
+            .post('/api/removeCollectionEntry.php', { entryId })
+            .then((resp) => {
+              //TODO: failure toast??
+              if (resp.status === 200) {
+                setAssignedEntries((was) =>
+                  was.filter((entryJSX) => entryJSX.key !== entryId),
+                );
+              }
+            });
+        }}
+        onVariantSelect={(newSelectedVariant) => {
+          axios
+            .post('/api/updateCollectionEntryVariant.php', {
+              entryId,
+              variant: newSelectedVariant,
+            })
+            .then(() => {
+              setSelectedVariant(newSelectedVariant);
+            })
+            .catch((error) => console.error(error));
         }}
       />
-      {hiddenDoenetViewer}
+      {!assigned ? hiddenViewer : null}
     </>
   );
 }
@@ -228,9 +301,12 @@ function CollectionEntry({ collectionDoenetId, doenetId, label, assigned }) {
 //key off of doenet Id a variant display element (active variants?)
 function CollectionEntryDisplayLine({
   label,
-  addEntryVariant,
-  removeEntryVariant,
+  addEntryToAssignment,
+  removeEntryFromAssignment,
   assigned,
+  selectedVariant,
+  selectOptions,
+  onVariantSelect,
 }) {
   return (
     <div
@@ -245,19 +321,30 @@ function CollectionEntryDisplayLine({
       <span style={{ flexGrow: 1 }}>{label}</span>
       <ButtonGroup>
         {assigned ? (
-          <Button
-            value={<FontAwesomeIcon icon={faMinus} />}
-            onClick={(e) => {
-              e.stopPropagation();
-              removeEntryVariant();
-            }}
-          />
+          <>
+            <select
+              value={selectedVariant}
+              onChange={(e) => {
+                e.stopPropagation();
+                onVariantSelect?.(e.target.value);
+              }}
+            >
+              {selectOptions}
+            </select>
+            <Button
+              value={<FontAwesomeIcon icon={faMinus} />}
+              onClick={(e) => {
+                e.stopPropagation();
+                removeEntryFromAssignment?.();
+              }}
+            />
+          </>
         ) : (
           <Button
             value={<FontAwesomeIcon icon={faPlus} />}
             onClick={(e) => {
               e.stopPropagation();
-              addEntryVariant();
+              addEntryToAssignment?.();
             }}
           />
         )}

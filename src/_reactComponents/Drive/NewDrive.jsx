@@ -60,7 +60,6 @@ import useSockets from '../Sockets';
 import { BreadcrumbContext } from '../Breadcrumb/BreadcrumbProvider';
 import Collection from './Collection';
 
-
 export const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
   get:
@@ -452,12 +451,14 @@ export const folderDictionary = atomFamily({
         const driveInfo = get(loadDriveInfoQuery(driveIdFolderId.driveId));
         let defaultOrder = [];
         let contentsDictionary = {};
+        const contentsDictionaryByDoenetId = {};
         let contentIds = {};
         let folderInfo = {};
         for (let item of driveInfo.results) {
           if (item.parentFolderId === driveIdFolderId.folderId) {
             defaultOrder.push(item.itemId);
             contentsDictionary[item.itemId] = item;
+            contentsDictionaryByDoenetId[item.doenetId] = item;
           }
           if (item.itemId === driveIdFolderId.folderId) {
             folderInfo = item;
@@ -469,7 +470,12 @@ export const folderDictionary = atomFamily({
           defaultFolderChildrenIds: defaultOrder,
         });
         contentIds[sortOptions.DEFAULT] = defaultOrder;
-        return { folderInfo, contentsDictionary, contentIds };
+        return {
+          folderInfo,
+          contentsDictionary,
+          contentIds,
+          contentsDictionaryByDoenetId,
+        };
       },
   }),
 });

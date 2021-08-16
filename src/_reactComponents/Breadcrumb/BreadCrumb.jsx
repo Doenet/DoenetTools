@@ -264,7 +264,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
     let folders = [...items];
     folders.pop(); //First one is already covered with returnToToolHead
     children = [...folders].reverse().map((item) => (
-    <BreadcrumbItem>
+    <BreadcrumbItem key={item.folderId}>
       <BreadcrumbSpan
         role="button"
         tabIndex="0"
