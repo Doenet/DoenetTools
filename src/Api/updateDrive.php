@@ -17,69 +17,79 @@ if (
     array_key_exists('label', $_REQUEST) &&
     array_key_exists('type', $_REQUEST)
 ) {
-    $driveId = $_REQUEST['driveId']; //why is this not like the others?
-    // $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+    $driveIds = $_REQUEST['driveId'];
     $label = mysqli_real_escape_string($conn, $_REQUEST['label']);
     $type = mysqli_real_escape_string($conn, $_REQUEST['type']);
-    //check user has permission to edit drive
-    $sql = "
-      SELECT canDeleteDrive
-      FROM drive_user
-      WHERE userId = '$userId'
-      AND driveId = '$driveId'
-    ";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $allowed = $row['canDeleteDrive'];
-    } else {
-        //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
-        http_response_code(401); //User has bad auth
-    }
 
-    if ($allowed) {
-        if ($type == 'update drive label') {
-            $sql = "
+    switch ($type) {
+        case 'update drive label':
+            for ($k = 0; $k < count($driveIds); $k++) {
+                //check user has permission to delete drive
+                $sql = "
+              SELECT canChangeAllDriveSettings
+              FROM drive_user
+              WHERE userId = '$userId'
+              AND driveId = '$driveId'
+            ";
+                $result = $conn->query($sql);
+                if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    $allowed = $row['canChangeAllDriveSettings'];
+                } else {
+                    //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+                    http_response_code(401); //User has bad auth
+                }
+                if ($allowed) {
+                    $sql = "
               UPDATE drive
               SET label='$label'
               WHERE driveId = '$driveId'
-              ";
-            $result = $conn->query($sql);
-        }
-        if ($type == 'delete drive') {
-            //   $sql = "
-            //   UPDATE drive
-            //   SET isDeleted='1'
-            //   WHERE driveId = '$driveId'
-            //   ";
-            // $result = $conn->query($sql);
-            // }
-            for ($k = 0; $k < count($driveId); $k++) {
-                $driveData = $driveId[$k];
-                $sql = "
-                  UPDATE drive
-                  SET isDeleted='1'
-                  WHERE driveId = '$driveData'
-                  ";
-                $result = $conn->query($sql);
+            ";
+                    $result = $conn->query($sql);
+                } else {
+                    http_response_code(403); //User if forbidden from operation
+                    break;
+                }
+                //TODO: should check for db success from result object
+                http_response_code(202);
             }
-        }
-        //   for($k = 0; $k < count($driveId); $k++){
+            break;
+        case 'delete drive':
+            for ($k = 0; $k < count($driveIds); $k++) {
+                $driveId = $driveIds[$k];
+                //check user has permission to delete drive
+                $sql = "
+                  SELECT canDeleteDrive
+                  FROM drive_user
+                  WHERE userId = '$userId'
+                  AND driveId = '$driveId'
+                ";
+                $result = $conn->query($sql);
+                if ($result->num_rows > 0) {
+                    $row = $result->fetch_assoc();
+                    $allowed = $row['canDeleteDrive'];
+                } else {
+                    //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+                    http_response_code(401); //User has bad auth
+                }
 
-        //     $driveData = $driveId[$k];
-        //     $sql = "
-        //     UPDATE drive
-        //     SET isDeleted='1'
-        //     WHERE driveId = '$driveData'
-        //     ";
-        //     $result = $conn->query($sql);
-        //   }
-
-        // }
-        //should check for db success from result object
-        http_response_code(202);
-    } else {
-        http_response_code(403); //User if forbidden from operation
+                if ($allowed) {
+                    $sql = "
+                      UPDATE drive
+                      SET isDeleted='1'
+                      WHERE driveId = '$driveId'
+                    ";
+                    $result = $conn->query($sql);
+                } else {
+                    http_response_code(403); //User if forbidden from operation
+                    break;
+                }
+                //TODO: should check for db success from result object
+                http_response_code(202);
+            }
+            break;
+        default:
+            http_response_code(400);
     }
 } else {
     http_response_code(400);
