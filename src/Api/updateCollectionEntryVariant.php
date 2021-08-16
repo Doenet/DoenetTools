@@ -15,7 +15,10 @@ $allowed = false;
 //required unless data is passed in application/x-www-form-urlencoded or multipart/form-data
 $_POST = json_decode(file_get_contents('php://input'), true);
 
-if (array_key_exists('entryId') && array_key_exists('variant')) {
+if (
+    array_key_exists('entryId', $_POST) &&
+    array_key_exists('variant', $_POST)
+) {
     $entryId = mysqli_real_escape_string($conn, $_POST['entryId']);
     $variant = mysqli_real_escape_string($conn, $_POST['variant']);
 
@@ -29,7 +32,7 @@ if (array_key_exists('entryId') && array_key_exists('variant')) {
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $doenetId = $row['$doenetId'];
+        $doenetId = $row['collectionDoenetId'];
     }
 
     if (array_key_exists('doenetId', get_defined_vars())) {
@@ -37,7 +40,7 @@ if (array_key_exists('entryId') && array_key_exists('variant')) {
         //TODO: should be a sql join query with userId
         $sql = "
             SELECT driveId
-            FROM `drive_content`
+            FROM drive_content
             WHERE doenetId = '$doenetId'
         ";
         $result = $conn->query($sql);
@@ -70,8 +73,8 @@ if (array_key_exists('entryId') && array_key_exists('variant')) {
                     WHERE entryId ='$entryId'
                 ";
                 $result = $conn->query($sql);
+                //should check for db success from result object
                 http_response_code(202);
-                echo json_encode($result);
             } else {
                 http_response_code(403); //User if forbidden from operation
             }

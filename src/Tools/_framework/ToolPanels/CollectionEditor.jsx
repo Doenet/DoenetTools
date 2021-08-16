@@ -287,11 +287,8 @@ function CollectionEntry({
               entryId,
               variant: newSelectedVariant,
             })
-            .then((resp) => {
-              if (resp.status === 200) {
-                setSelectedVariant(newSelectedVariant);
-              }
-              //TODO: pass the value back down
+            .then(() => {
+              setSelectedVariant(newSelectedVariant);
             })
             .catch((error) => console.error(error));
         }}
@@ -327,7 +324,7 @@ function CollectionEntryDisplayLine({
           <>
             <select
               value={selectedVariant}
-              onBlur={(e) => {
+              onChange={(e) => {
                 e.stopPropagation();
                 onVariantSelect?.(e.target.value);
               }}
