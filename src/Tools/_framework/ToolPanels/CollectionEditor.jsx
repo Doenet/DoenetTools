@@ -21,7 +21,7 @@ import {
 } from '../ToolHandlers/CourseToolHandler';
 import axios from 'axios';
 
-export default function CollectionEditor(props) {
+export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');
@@ -107,7 +107,7 @@ export default function CollectionEditor(props) {
   return (
     <div
       style={{
-        display: props?.style?.display ?? 'flex',
+        display: 'flex',
         flexDirection: 'column',
         rowGap: '4px',
         maxWidth: '850px',
