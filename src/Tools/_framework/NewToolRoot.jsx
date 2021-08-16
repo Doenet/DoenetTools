@@ -126,6 +126,7 @@ export default function ToolRoot(){
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
+    EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
@@ -316,7 +317,7 @@ let navigationObj = {
       supportPanelOptions:["DoenetMLEditor"],
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
-      headerControls: ["BackButton","ViewerUpdateButton",],
+      headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
       headerControlsPositions: ["Left","Left"],
     },
     collection: {
