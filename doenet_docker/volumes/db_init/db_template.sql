@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-12 14:52:58 +0000
+# Generation Time: 2021-08-16 18:43:44 +0000
 # ************************************************************
 
 
@@ -194,6 +194,7 @@ CREATE TABLE `drive_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `canEditContent` tinyint(1) DEFAULT '0',
   `canViewDrive` tinyint(1) DEFAULT '0',
   `canDeleteDrive` tinyint(1) DEFAULT '0',
   `canShareDrive` tinyint(1) DEFAULT '0',
