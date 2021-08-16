@@ -124,6 +124,7 @@ export default function ToolRoot(){
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
@@ -132,16 +133,16 @@ export default function ToolRoot(){
   }).current;
  
 
-  function buildPanel({key,type,visible}){
-    let hideStyle = null;
-    if (!visible){
-      hideStyle = 'none';
-    }
+  // function buildPanel({key,type,visible}){
+  //   let hideStyle = null;
+  //   if (!visible){
+  //     hideStyle = 'none';
+  //   }
     
-    return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
-    </Suspense>
-  } 
+  //   return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+  //   {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
+  //   </Suspense>
+  // } 
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
 
@@ -258,6 +259,8 @@ let navigationObj = {
       // currentMenus:["CreateCourse","CourseEnroll"],
       // menusTitles:["Create Course","Enroll"],
       menusInitOpen:[true,false],
+      headerControls: ["ChooserBreadCrumb"],
+      headerControlsPositions: ["Left"],
       onLeave:"CourseChooserLeave",
     },
     dashboard: {

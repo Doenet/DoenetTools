@@ -141,11 +141,11 @@ export default function BreadCrumb({ path, tool }) {
   );
 
   //Don't show up if not in a drive
-  if (driveId === '') {
-    return null;
-  }
+  // if (driveId === '') {
+  //   return null;
+  // }
 
-  let courseTitle = items[items.length - 1].label;
+  let courseTitle = items[items.length - 1]?.label;
 
   let returnToToolHead = null;
   if (tool){
@@ -161,6 +161,12 @@ export default function BreadCrumb({ path, tool }) {
     }else if (tool === 'Gradebook'){
       toolName = 'gradebook';
       params = {driveId}
+    }else if (tool === 'Editor'){
+      toolName = 'editor';
+      params = {driveId}
+    }else if (tool === 'CourseChooser'){
+      toolName = 'courseChooser';
+      params = {}
     }
 
     returnToToolHead = 
@@ -216,6 +222,11 @@ export default function BreadCrumb({ path, tool }) {
       </BreadcrumbSpan>
     </BreadcrumbItem>
   );
+
+  if (tool === 'CourseChooser'){
+    return <Breadcrumb>{returnToCourseChooser} <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan>
+  </BreadcrumbItem></Breadcrumb>
+  }
 
   const returnToDashboard = (
     <BreadcrumbItem>
