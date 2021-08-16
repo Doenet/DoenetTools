@@ -67,6 +67,20 @@ export default class DiscreteSimulationResultList extends BaseComponent {
       public: true,
       forRenderer: true,
     };
+    attributes.hiddenColumns = {
+      createComponentOfType: "numberList",
+      createStateVariable: "hiddenColumns",
+      defaultValue: [],
+      public: true,
+      forRenderer: true,
+    };
+    attributes.hiddenRows = {
+      createComponentOfType: "numberList",
+      createStateVariable: "hiddenRows",
+      defaultValue: [],
+      public: true,
+      forRenderer: true,
+    };
     attributes.allIterates = {
       createComponentOfType: "mathList",
       createStateVariable: "allIterates",
@@ -136,13 +150,15 @@ export default class DiscreteSimulationResultList extends BaseComponent {
       definition({ dependencyValues, usedDefault }) {
         let cells = [];
 
-        let nComponents = 0;
+        let nComponents = 1;
+        let haveVector = false;
 
         if (dependencyValues.allIterates.length > 0 &&
           Array.isArray(dependencyValues.allIterates[0].tree) &&
           ["vector", "tuple"].includes(dependencyValues.allIterates[0].tree[0])
         ) {
           nComponents = dependencyValues.allIterates[0].tree.length - 1;
+          haveVector = true;
         }
 
         if(dependencyValues.headerRow) {
@@ -158,8 +174,12 @@ export default class DiscreteSimulationResultList extends BaseComponent {
         for (let [ind, iter] of dependencyValues.allIterates.entries()) {
           let cell = [ind.toString()];
           for(let comp =0; comp < nComponents; comp++) {
+            let val = iter;
+            if(haveVector) {
+              val = val.get_component(comp);
+            }
             let rounded = roundForDisplay({
-              value: iter.get_component(comp),
+              value: val,
               dependencyValues, usedDefault
             });
             cell.push(rounded.toString());

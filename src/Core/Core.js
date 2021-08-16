@@ -2381,7 +2381,8 @@ export default class Core {
 
           attributeValue = validateAttributeValue({
             value: attributeValue,
-            attributeSpecification, attrName
+            attributeSpecification,
+            attribute: attrName
           })
 
           // if mergeArrays specified and both ancetor prop and child value
@@ -2486,7 +2487,8 @@ export default class Core {
 
           attributeValue = validateAttributeValue({
             value: attributeValue,
-            attributeSpecification, attrName
+            attributeSpecification,
+            attribute: attrName
           })
 
           if (attributeSpecification.mergeArrayWithDefault && Array.isArray(attributeValue)) {
@@ -8907,7 +8909,7 @@ function validateAttributeValue({ value, attributeSpecification, attribute }) {
     } else if (value > attributeSpecification.clamp[1]) {
       value = attributeSpecification.clamp[1];
     } else if (!Number.isFinite(value)) {
-      value = attribute.defaultValue;
+      value = attributeSpecification.defaultValue;
     }
   }
 

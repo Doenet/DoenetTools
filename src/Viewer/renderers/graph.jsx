@@ -21,7 +21,6 @@ export default class Graph extends DoenetRenderer {
 
   drawBoard() {
 
-    window.JXG.Options.axis.ticks.majorHeight = 20;
 
     let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
 
@@ -60,6 +59,17 @@ export default class Graph extends DoenetRenderer {
         },
         minorTicks: 4,
         precision: 4,
+      }
+
+      if(this.doenetSvData.grid === "dense") {
+        xaxisOptions.ticks.majorHeight = -1;
+        xaxisOptions.ticks.minorHeight = -1;
+      } else if(this.doenetSvData.grid === "medium") {
+        xaxisOptions.ticks.majorHeight = -1;
+        xaxisOptions.ticks.minorHeight = 10;
+      } else {
+        xaxisOptions.ticks.majorHeight = 20;
+        xaxisOptions.ticks.minorHeight = 10;
       }
 
       if (!this.doenetSvData.displayYAxis) {
@@ -102,6 +112,17 @@ export default class Graph extends DoenetRenderer {
         precision: 4,
       }
 
+      if(this.doenetSvData.grid === "dense") {
+        yaxisOptions.ticks.majorHeight = -1;
+        yaxisOptions.ticks.minorHeight = -1;
+      } else if(this.doenetSvData.grid === "medium") {
+        yaxisOptions.ticks.majorHeight = -1;
+        yaxisOptions.ticks.minorHeight = 10;
+      } else {
+        yaxisOptions.ticks.majorHeight = 20;
+        yaxisOptions.ticks.minorHeight = 10;
+      }
+
       if (!this.doenetSvData.displayXAxis) {
         yaxisOptions.ticks.drawZero = true;
       }
@@ -138,6 +159,23 @@ export default class Graph extends DoenetRenderer {
   }
 
   update() {
+
+    if (this.doenetSvData.grid === "dense") {
+      this.xaxis.defaultTicks.setAttribute({ majorHeight: -1 });
+      this.xaxis.defaultTicks.setAttribute({ minorHeight: -1 });
+      this.yaxis.defaultTicks.setAttribute({ majorHeight: -1 });
+      this.yaxis.defaultTicks.setAttribute({ minorHeight: -1 });
+    } else if (this.doenetSvData.grid === "medium") {
+      this.xaxis.defaultTicks.setAttribute({ majorHeight: -1 });
+      this.xaxis.defaultTicks.setAttribute({ minorHeight: 10 });
+      this.yaxis.defaultTicks.setAttribute({ majorHeight: -1 });
+      this.yaxis.defaultTicks.setAttribute({ minorHeight: 10 });
+    } else {
+      this.xaxis.defaultTicks.setAttribute({ majorHeight: 20 });
+      this.xaxis.defaultTicks.setAttribute({ minorHeight: 10 });
+      this.yaxis.defaultTicks.setAttribute({ majorHeight: 20 });
+      this.yaxis.defaultTicks.setAttribute({ minorHeight: 10 });
+    }
 
     if (this.doenetSvData.displayXAxis) {
       this.xaxis.name = this.doenetSvData.xlabel;

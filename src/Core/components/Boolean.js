@@ -46,6 +46,13 @@ export default class BooleanComponent extends InlineComponent {
       public: true,
       ignorePropagationFromAncestors: true,
     };
+    attributes.matchByExactPositions = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchByExactPositions",
+      defaultValue: false,
+      public: true,
+      ignorePropagationFromAncestors: true,
+    }
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
@@ -235,6 +242,10 @@ export default class BooleanComponent extends InlineComponent {
         unorderedCompare: {
           dependencyType: "stateVariable",
           variableName: "unorderedCompare",
+        },
+        matchByExactPositions: {
+          dependencyType: "stateVariable",
+          variableName: "matchByExactPositions"
         },
         allowedErrorInNumbers: {
           dependencyType: "stateVariable",
