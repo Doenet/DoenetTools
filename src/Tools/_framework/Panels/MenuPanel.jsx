@@ -54,7 +54,7 @@ export default function MenuPanel({ children, isInitOpen }) {
   );
   const [panels, setPanels] = useState([]);
 
-  // console.log(">>>Loading Menu w/ Child");
+  console.log(">>>Loading Menu children",children);
 
   useEffect(() => {
     setPanels(children.map((panel) => panel)); //swap this to only render buttons once (store in state)

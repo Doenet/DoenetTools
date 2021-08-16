@@ -140,10 +140,6 @@ export default function DoenetMLEditor(props){
     }
   },[isCurrentDraft])
 
-  if (props.style.display === 'none'){
-    //TODO: handle unmount
-    return <div style={props.style}></div>
-  }
 
   if (paramDoenetId !== initilizedDoenetId){
     //DoenetML is changing to another DoenetID
