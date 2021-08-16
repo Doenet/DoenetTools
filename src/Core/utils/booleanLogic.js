@@ -357,6 +357,7 @@ export function evaluateLogic({ logicTree,
           object2: x,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
+          matchByExactPositions: dependencyValues.matchByExactPositions,
         }));
 
         // return average of fraction_equal
@@ -369,6 +370,7 @@ export function evaluateLogic({ logicTree,
             object2: x,
             isUnordered: unorderedCompare,
             partialMatches: dependencyValues.matchPartial,
+            matchByExactPositions: dependencyValues.matchByExactPositions,
           }
         ).fraction_equal === 1) ? 1 : 0;
       }
@@ -383,6 +385,7 @@ export function evaluateLogic({ logicTree,
           object2: operands[1],
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
+          matchByExactPositions: dependencyValues.matchByExactPositions,
         }
       ).fraction_equal;
 
@@ -455,6 +458,7 @@ export function evaluateLogic({ logicTree,
           object2: x,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
+          matchByExactPositions: dependencyValues.matchByExactPositions,
         }));
 
         // return average of fraction_equal
@@ -467,6 +471,7 @@ export function evaluateLogic({ logicTree,
             object2: x,
             isUnordered: unorderedCompare,
             partialMatches: dependencyValues.matchPartial,
+            matchByExactPositions: dependencyValues.matchByExactPositions,
           }
         ).fraction_equal === 1) ? 1 : 0;
       }
@@ -482,6 +487,7 @@ export function evaluateLogic({ logicTree,
           object2: operands[1],
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
+          matchByExactPositions: dependencyValues.matchByExactPositions,
         }
       ).fraction_equal;
 
@@ -571,6 +577,7 @@ export function evaluateLogic({ logicTree,
         object2: x,
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
+        matchByExactPositions: dependencyValues.matchByExactPositions,
         symbolicEquality: dependencyValues.symbolicEquality,
         simplify: dependencyValues.simplifyOnCompare,
         expand: dependencyValues.expandOnCompare,
@@ -590,6 +597,7 @@ export function evaluateLogic({ logicTree,
           object2: x,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
+          matchByExactPositions: dependencyValues.matchByExactPositions,
           symbolicEquality: dependencyValues.symbolicEquality,
           simplify: dependencyValues.simplifyOnCompare,
           expand: dependencyValues.expandOnCompare,
@@ -609,6 +617,7 @@ export function evaluateLogic({ logicTree,
         object2: mathOperands[1],
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
+        matchByExactPositions: dependencyValues.matchByExactPositions,
         symbolicEquality: dependencyValues.symbolicEquality,
         simplify: dependencyValues.simplifyOnCompare,
         expand: dependencyValues.expandOnCompare,
@@ -638,6 +647,7 @@ export function evaluateLogic({ logicTree,
         object2: me.fromAst(x),
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
+        matchByExactPositions: dependencyValues.matchByExactPositions,
         symbolicEquality: dependencyValues.symbolicEquality,
         simplify: dependencyValues.simplifyOnCompare,
         expand: dependencyValues.expandOnCompare,
@@ -661,6 +671,7 @@ export function evaluateLogic({ logicTree,
         object2: me.fromAst(x),
         isUnordered: unorderedCompare,
         partialMatches: dependencyValues.matchPartial,
+        matchByExactPositions: dependencyValues.matchByExactPositions,
         symbolicEquality: dependencyValues.symbolicEquality,
         simplify: dependencyValues.simplifyOnCompare,
         expand: dependencyValues.expandOnCompare,

@@ -782,5 +782,82 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('show grid', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g1">
+    </graph>
+    <p>Graph 1 has grid: <copy prop="grid" tname="g1" assignNames="sg1" /></p>
+
+    <graph name="g2" grid="none">
+    </graph>
+    <p>Graph 2 has grid: <copy prop="grid" tname="g2" assignNames="sg2" /></p>
+
+    <graph name="g3" grid>
+    </graph>
+    <p>Graph 3 has grid: <copy prop="grid" tname="g3" assignNames="sg3" /></p>
+
+    <graph name="g4" grid="medium">
+    </graph>
+    <p>Graph 4 has grid: <copy prop="grid" tname="g4" assignNames="sg4" /></p>
+
+    <graph name="g5" grid="dense">
+    </graph>
+    <p>Graph 5 has grid: <copy prop="grid" tname="g5" assignNames="sg5" /></p>
+
+
+    <p>Show grid: <booleanInput name="bi" /></p>
+    <graph name="g6" grid="$bi">
+    </graph>
+    <p>Graph 6 has grid: <copy prop="grid" tname="g6" assignNames="sg6" /></p>
+
+
+    <p>Show grid: <textinput name="ti" /></p>
+    <graph name="g7" grid="$ti">
+    </graph>
+    <p>Graph 7 has grid: <copy prop="grid" tname="g7" assignNames="sg7" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    cy.get('#\\/sg1').should('have.text', 'none')
+    cy.get('#\\/sg2').should('have.text', 'none')
+    cy.get('#\\/sg3').should('have.text', 'medium')
+    cy.get('#\\/sg4').should('have.text', 'medium')
+    cy.get('#\\/sg5').should('have.text', 'dense')
+    cy.get('#\\/sg6').should('have.text', 'none')
+    cy.get('#\\/sg7').should('have.text', 'none')
+
+    cy.get('#\\/bi_input').click();
+    cy.get('#\\/sg6').should('have.text', 'medium')
+
+    cy.get('#\\/ti_input').type('true{enter}')
+    cy.get('#\\/sg7').should('have.text', 'medium')
+
+    cy.get('#\\/ti_input').clear().type('false{enter}')
+    cy.get('#\\/sg7').should('have.text', 'none')
+
+    cy.get('#\\/ti_input').clear().type('dense{enter}')
+    cy.get('#\\/sg7').should('have.text', 'dense')
+
+    cy.get('#\\/ti_input').clear().type('hello{enter}')
+    cy.get('#\\/sg7').should('have.text', 'none')
+
+    cy.get('#\\/ti_input').clear().type('medium{enter}')
+    cy.get('#\\/sg7').should('have.text', 'medium')
+
+    cy.get('#\\/ti_input').clear().type('none{enter}')
+    cy.get('#\\/sg7').should('have.text', 'none')
+
+
+
+  });
+
 
 });

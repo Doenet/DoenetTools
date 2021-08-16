@@ -1368,44 +1368,53 @@ export default class Copy extends CompositeComponent {
 
     if (!component.stateValues.targetComponent || !component.stateValues.replacementSourceIdentities) {
 
-      let replacementChanges = [];
 
-      if (component.replacements.length > 0) {
-        let replacementInstruction = {
-          changeType: "delete",
-          changeTopLevelReplacements: true,
-          firstReplacementInd: 0,
-          numberReplacementsToDelete: component.replacements.length,
-        }
-        replacementChanges.push(replacementInstruction);
-      }
-
-      let previousZeroSourceNames = workspace.sourceNames.length === 0;
-
-      workspace.sourceNames = [];
-      workspace.numReplacementsBySource = [];
-      workspace.numNonStringReplacementsBySource = [];
-      workspace.propVariablesCopiedBySource = [];
-
-
-      let verificationResult = this.verifyReplacementsMatchSpecifiedType({
-        component,
-        replacementChanges,
-        workspace, componentInfoObjects, compositeAttributesObj
-      });
-
-      // Note: this has to run after verify,
-      // as verify has side effects of setting workspace variables,
-      // such as numReplacementsBySource
-      if (previousZeroSourceNames) {
-        // didn't have sources before and still don't have sources.
-        // we're just getting filler components being recreated.
-        // Don't actually make those changes
+      if (component.stateValues.targetSources) {
+        // if have targetSources, then we're in a template instance
+        // that will be withheld
+        // Don't change replacements so that maintain replacement
+        // if the template instance is later no longer withheld
         return [];
+
+      } else {
+        let replacementChanges = [];
+
+        if (component.replacements.length > 0) {
+          let replacementInstruction = {
+            changeType: "delete",
+            changeTopLevelReplacements: true,
+            firstReplacementInd: 0,
+            numberReplacementsToDelete: component.replacements.length,
+          }
+          replacementChanges.push(replacementInstruction);
+        }
+
+        let previousZeroSourceNames = workspace.sourceNames.length === 0;
+
+        workspace.sourceNames = [];
+        workspace.numReplacementsBySource = [];
+        workspace.numNonStringReplacementsBySource = [];
+        workspace.propVariablesCopiedBySource = [];
+
+
+        let verificationResult = this.verifyReplacementsMatchSpecifiedType({
+          component,
+          replacementChanges,
+          workspace, componentInfoObjects, compositeAttributesObj
+        });
+
+        // Note: this has to run after verify,
+        // as verify has side effects of setting workspace variables,
+        // such as numReplacementsBySource
+        if (previousZeroSourceNames) {
+          // didn't have sources before and still don't have sources.
+          // we're just getting filler components being recreated.
+          // Don't actually make those changes
+          return [];
+        }
+
+        return verificationResult.replacementChanges;
       }
-
-      return verificationResult.replacementChanges;
-
     }
 
     if (component.stateValues.targetInactive) {
@@ -1570,6 +1579,7 @@ export default class Copy extends CompositeComponent {
             break;
           } else if (
             !component.stateValues.effectivePropNameBySource[sourceNum]
+            && currentReplacement.shadows
             && currentReplacement.shadows.componentName !== component.stateValues.replacementSourceIdentities[sourceNum].componentName
           ) {
             needToRecreate = true;
@@ -1963,7 +1973,7 @@ export function replacementFromProp({ component, components,
             propStateValue = propStateValue[ind2];
           }
 
-          if(propStateValue === undefined || propStateValue  === null) {
+          if (propStateValue === undefined || propStateValue === null) {
             continue;
           }
 

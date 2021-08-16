@@ -49,6 +49,12 @@ export default class CobwebPolyline extends Polyline {
       createComponentOfType: "function"
     }
 
+    attributes.lockToSolution = {
+      createComponentOfType: "boolean",
+      createStateVariable: "lockToSolution",
+      defaultValue: false,
+    }
+
     return attributes;
 
   }
@@ -271,12 +277,12 @@ export default class CobwebPolyline extends Polyline {
             get defaultValue() {
               if (globalDependencyValues.graphAncestor) {
                 if (arrayIndices[1] === 0) {
-                  let xmin=globalDependencyValues.graphAncestor.stateValues.xmin;
-                  let xmax=globalDependencyValues.graphAncestor.stateValues.xmax;
+                  let xmin = globalDependencyValues.graphAncestor.stateValues.xmin;
+                  let xmax = globalDependencyValues.graphAncestor.stateValues.xmax;
                   return me.fromAst((xmin + xmax) / 2);
                 } else if (arrayIndices[1] === 1) {
-                  let ymin=globalDependencyValues.graphAncestor.stateValues.ymin;
-                  let ymax=globalDependencyValues.graphAncestor.stateValues.ymax;
+                  let ymin = globalDependencyValues.graphAncestor.stateValues.ymin;
+                  let ymax = globalDependencyValues.graphAncestor.stateValues.ymax;
                   return me.fromAst((ymin + ymax) / 2);
                 }
               }
@@ -364,6 +370,10 @@ export default class CobwebPolyline extends Polyline {
         attractThreshold: {
           dependencyType: "stateVariable",
           variableName: "attractThreshold"
+        },
+        lockToSolution: {
+          dependencyType: "stateVariable",
+          variableName: "lockToSolution",
         }
       }
 
@@ -461,7 +471,9 @@ export default class CobwebPolyline extends Polyline {
           let distance2FromAttractor = Math.pow(originalVertex[0] - attractPoint[0], 2)
             + Math.pow(originalVertex[1] - attractPoint[1], 2);
 
-          if (distance2FromAttractor < globalDependencyValues.attractThreshold * globalDependencyValues.attractThreshold) {
+          if (distance2FromAttractor < globalDependencyValues.attractThreshold * globalDependencyValues.attractThreshold
+            || globalDependencyValues.lockToSolution
+          ) {
             vertices[pointInd + ",0"] = me.fromAst(attractPoint[0]);
             vertices[pointInd + ",1"] = me.fromAst(attractPoint[1]);
             prelimCorrectVertices[pointInd + ",0"] = true;

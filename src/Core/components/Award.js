@@ -54,6 +54,13 @@ export default class Award extends BaseComponent {
       public: true,
       propagateToDescendants: true,
     };
+    attributes.matchByExactPositions = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchByExactPositions",
+      defaultValue: false,
+      public: true,
+      propagateToDescendants: true,
+    };
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
@@ -288,6 +295,10 @@ export default class Award extends BaseComponent {
         unorderedCompare: {
           dependencyType: "stateVariable",
           variableName: "unorderedCompare",
+        },
+        matchByExactPositions: {
+          dependencyType: "stateVariable",
+          variableName: "matchByExactPositions",
         },
         allowedErrorInNumbers: {
           dependencyType: "stateVariable",
