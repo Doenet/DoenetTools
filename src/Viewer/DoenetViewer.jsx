@@ -586,14 +586,14 @@ class DoenetViewerChild extends Component {
       if (this.contentId !== this.state.contentId) {
         this.needNewCoreFlag = true;
         //Try to load doenetML from local storage
-        this.doenetML = localStorage.getItem(this.contentId);
-        if (!this.doenetML) {
+        // this.doenetML = localStorage.getItem(this.contentId);
+        // if (!this.doenetML) {
           try {
             //Load the doenetML from the server
             axios.get(`/media/${this.contentId}.doenet`)
               .then(resp => {
                 this.doenetML = resp.data;
-                localStorage.setItem(this.contentId, this.doenetML)
+                // localStorage.setItem(this.contentId, this.doenetML)
                 this.forceUpdate();
               })
           } catch (err) {
@@ -602,7 +602,7 @@ class DoenetViewerChild extends Component {
           }
           return null;
 
-        }
+        // }
 
       }
 

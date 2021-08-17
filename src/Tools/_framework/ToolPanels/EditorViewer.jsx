@@ -14,7 +14,7 @@ import {
   variantInfoAtom, 
   variantPanelAtom,
  } from '../ToolHandlers/CourseToolHandler';
- import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
+//  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 
 export const viewerDoenetMLAtom = atom({
   key:"viewerDoenetMLAtom",
@@ -38,24 +38,26 @@ export const editorDoenetIdInitAtom = atom({
 })
 
 export default function EditorViewer(props){
-  // console.log(">>>===EditorViewer")
-  // console.log("=== DoenetViewer Panel")
+  console.log(">>>===EditorViewer")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
+  // const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
   const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
   const [variantInfo,setVariantInfo] = useRecoilState(variantInfoAtom);
   const setVariantPanel = useSetRecoilState(variantPanelAtom);
+  const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
 
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     const contentId = versionHistory.draft.contentId;
-    
+    console.log(">>>>init contentId",contentId)
     let response = await snapshot.getPromise(fileByContentId(contentId));
+    console.log(">>>>response",response)
     if (typeof response === "object"){
       response = response.data;
     }
     const doenetML = response;
+    console.log(`>>>>init doenetML '${doenetML}'`)
 
     set(updateTextEditorDoenetMLAtom,doenetML);
     set(textEditorDoenetMLAtom,doenetML)
@@ -63,12 +65,18 @@ export default function EditorViewer(props){
     set(editorDoenetIdInitAtom,doenetId);
   },[])
 
+
   useEffect(() => {
-    initDoenetML(paramDoenetId)
+      console.log(`>>>>MOUNTED paramDoenetId '${paramDoenetId}'`)
+      if (paramDoenetId !== ''){
+        initDoenetML(paramDoenetId)
+      }
     return () => {
-      // setEditorInit(false);
+      console.log(`>>>>UNMOUNTED paramDoenetId '${paramDoenetId}'`)
+
+      setEditorInit("");
     }
-}, [paramDoenetId]);
+  }, [paramDoenetId]);
 
  
   if (paramDoenetId !== initilizedDoenetId){

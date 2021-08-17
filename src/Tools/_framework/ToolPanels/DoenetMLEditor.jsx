@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { editorDoenetIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
 import { 
+  atom,
   useRecoilValue, 
   // useRecoilState,
   useSetRecoilState,
@@ -16,6 +17,11 @@ import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import axios from "axios";
 import { nanoid } from 'nanoid';
+
+export const editorSaveTimestamp = atom({
+  key:"",
+  default:null
+})
 
 
 const getSHAofContent = (doenetML)=>{
@@ -41,6 +47,7 @@ function buildTimestamp(){
 
 export default function DoenetMLEditor(props){
   console.log(">>>===DoenetMLEditor")
+
   // const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
@@ -53,12 +60,11 @@ export default function DoenetMLEditor(props){
   let autosavetimeout = useRef(null);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    //Only save if editing current draft
-    const currentDraftIsSelected = await snapshot.getPromise(currentDraftSelectedAtom);
-    if (currentDraftIsSelected){
+    console.log(">>>>saveDraft ")
 
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+
       let newDraft = {...oldVersions.draft};
   
       const contentId = getSHAofContent(doenetML);
@@ -74,23 +80,29 @@ export default function DoenetMLEditor(props){
       set(fileByContentId(contentId),doenetML)
   
       //Save in localStorage
-      localStorage.setItem(contentId,doenetML)
+      // localStorage.setItem(contentId,doenetML)
   
       let newDBVersion = {...newDraft,
         doenetML,
         doenetId
       }
-  
-         axios.post("/api/saveNewVersion.php",newDBVersion)
-        // .then((resp)=>{console.log(">>>resp saveNewVersion",resp.data)})  
-    }
+
+      try {
+        const resp = await axios.post("/api/saveNewVersion.php",newDBVersion)
+        if (resp.data.success){
+          set(editorSaveTimestamp,new Date());
+        }else{
+          //TODO: Toast here
+          console.log(">>>>ERROR",resp.data.message)
+        }
+      } catch (error) {
+        console.log(">>>>ERROR",error)
+      }
     
   });
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    //Only save if editing current draft
-    const currentDraftIsSelected = await snapshot.getPromise(currentDraftSelectedAtom);
-    if (currentDraftIsSelected){
+    console.log(">>>>autoSave ")
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
     const timestamp = buildTimestamp();
@@ -116,34 +128,45 @@ export default function DoenetMLEditor(props){
       set(itemHistoryAtom(doenetId),newVersions)
       set(fileByContentId(contentId),doenetML);
   
-      axios.post("/api/saveNewVersion.php",newDBVersion)
-        .then((resp)=>{console.log(">>>resp autoSave",resp.data)})
-
-  }
+    try {
+      const resp = await axios.post("/api/saveNewVersion.php",newDBVersion)
+      if (resp.data.success){
+        set(editorSaveTimestamp,new Date());
+      }else{
+        //TODO: Toast here
+        console.log(">>>>ERROR",resp.data.message)
+      }
+    } catch (error) {
+      console.log(">>>>ERROR",error)
+    }
   
   });
 
   useEffect(()=>{
-    if (!isCurrentDraft){
-      console.log(">>>READ ONLY! STOP TIMERS!")
-  // console.log(`>>>updateInternalValue-${updateInternalValue}-`)
-      
-      if (timeout.current !== null){
+
+    return ()=>{
+      console.log(">>>>UNMOUNT TEXT EDITOR isCurrentDraft",isCurrentDraft,"initilizedDoenetId",initilizedDoenetId)
+      if (isCurrentDraft && initilizedDoenetId !== ""){
+        // save and stop timers
+        saveDraft(initilizedDoenetId)
+        if (timeout.current !== null){
         clearTimeout(timeout.current)
         timeout.current = null;
-      }
+        }
       if (autosavetimeout.current !== null){
         clearTimeout(autosavetimeout.current)
       }
       autosavetimeout.current = null;
       timeout.current = null;
+
+      }
     }
-  },[isCurrentDraft])
+  },[isCurrentDraft,initilizedDoenetId])
 
 
   if (paramDoenetId !== initilizedDoenetId){
     //DoenetML is changing to another DoenetID
-    return <div style={props.style}></div>
+    return null;
   }
   
   // console.log(`>>>Show CodeMirror with value -${updateInternalValue}-`)
@@ -159,7 +182,7 @@ export default function DoenetMLEditor(props){
       onBeforeChange={(value) => {
         if (isCurrentDraft) { //No timers when active version history
           setEditorDoenetML(value);
-          console.log(`>>>set to value -${value}-`)
+          // console.log(`>>>set to value -${value}-`)
           //Start just one timer
           if (timeout.current === null){
             timeout.current = setTimeout(function(){
