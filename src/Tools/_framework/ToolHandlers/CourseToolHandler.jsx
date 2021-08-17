@@ -440,17 +440,6 @@ export const drivecardSelectedNodesAtom = atom({
   default:[]
 })
 
-export const fetchDrivesQuery = atom({
-  key:"fetchDrivesQuery",
-  default: selector({
-    key:"fetchDrivesQuery/Default",
-    get: async ()=>{
-      const { data } = await axios.get(`/api/loadAvailableDrives.php`);
-      return data
-    },
-  })
-})
-
 export const fetchDrivesSelector = selector({
   key:"fetchDrivesSelector",
   get:({get})=>{
@@ -663,8 +652,11 @@ export const getSHAofContent = (doenetML)=>{
 
 export function ClipboardLinkButtons(props){
   const addToast = useToast();
+  let link = `http://localhost/#/content?contentId=${props.contentId}`
 
-
+  if (props.doenetId){
+    link = `http://localhost/#/content?doenetId=${props.doenetId}`
+  }
 
   // if (!props.contentId){
   //   console.error("Component only handles contentId at this point")
@@ -672,7 +664,7 @@ export function ClipboardLinkButtons(props){
   // }
   
 
-  const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
+  // const link = `http://${window.location.host}/content/#/?contentId=${props.contentId}`
   return <div> 
     <ButtonGroup>
   <CopyToClipboard onCopy={()=>addToast('Link copied to clipboard!', toastType.SUCCESS)} text={link}>

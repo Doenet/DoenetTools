@@ -110,6 +110,16 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true
     };
+    attributes.grid = {
+      createComponentOfType: "text",
+      createStateVariable: "grid",
+      defaultValue: "none",
+      public: true,
+      forRenderer: true,
+      toLowerCase: true,
+      valueTransformations: { "true": "medium", "false": "none" },
+      validValues: ["none", "medium", "dense"]
+    };
     return attributes;
   }
 

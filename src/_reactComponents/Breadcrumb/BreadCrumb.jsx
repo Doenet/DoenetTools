@@ -13,69 +13,65 @@ import {
   useSetRecoilState,
 } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const Breadcrumb = styled.ul`
   list-style: none;
-  overflow: hidden;
-  
- ;
-`
+  overflow: hidden; ;
+`;
 
 const BreadcrumbItem = styled.li`
   float: left;
-  &:last-of-type span{
+  &:last-of-type span {
     border-radius: 0px 15px 15px 0px;
     padding: 0px 25px 0px 45px;
-    background: hsl(209,54%,82%);
+    background: hsl(209, 54%, 82%);
     color: black;
   }
-  &:first-of-type span{
+  &:first-of-type span {
     padding: 0px 0px 0px 30px;
   }
- ;
-`
+`;
 
 const BreadcrumbSpan = styled.span`
   padding: 0px 0px 0px 45px;
-  position: relative; 
+  position: relative;
   display: block;
   float: left;
   color: white;
-  background: #1A5A99;
+  background: #1a5a99;
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
   &::after {
-    content: " "; 
-    display: block; 
-    width: 0; 
+    content: ' ';
+    display: block;
+    width: 0;
     height: 0;
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
-    border-left: 30px solid #1A5A99;
+    border-left: 30px solid #1a5a99;
     position: absolute;
     top: 50%;
-    margin-top: -50px; 
+    margin-top: -50px;
     left: 100%;
-    z-index: 2; 
+    z-index: 2;
   }
   &::before {
-    content: " "; 
-    display: block; 
-    width: 0; 
+    content: ' ';
+    display: block;
+    width: 0;
     height: 0;
-    border-top: 50px solid transparent;       
+    border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
     border-left: 30px solid white;
     position: absolute;
     top: 50%;
-    margin-top: -50px; 
+    margin-top: -50px;
     margin-left: 1px;
     left: 100%;
-    z-index: 1; 
+    z-index: 1;
   }
- ;
-`
+`;
 
 const breadcrumbItemAtomFamily = atomFamily({
   key: 'breadcrumbItemAtomFamily',
@@ -115,7 +111,7 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path, tool }) {
+export default function BreadCrumb({ path, tool, tool2, doenetId }) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -145,11 +141,11 @@ export default function BreadCrumb({ path, tool }) {
   );
 
   //Don't show up if not in a drive
-  if (driveId === '') {
-    return null;
-  }
+  // if (driveId === '') {
+  //   return null;
+  // }
 
-  let courseTitle = items[items.length - 1].label;
+  let courseTitle = items[items.length - 1]?.label;
 
   let returnToToolHead = null;
   if (tool){
@@ -165,8 +161,12 @@ export default function BreadCrumb({ path, tool }) {
     }else if (tool === 'Gradebook'){
       toolName = 'gradebook';
       params = {driveId}
+    }else if (tool === 'CourseChooser'){
+      toolName = 'courseChooser';
+      params = {}
     }
 
+    
     returnToToolHead = 
       (
         <BreadcrumbItem>
@@ -205,7 +205,11 @@ export default function BreadCrumb({ path, tool }) {
         tabIndex="0"
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
+            setPageToolView({
+              page: 'course',
+              tool: 'courseChooser',
+              view: '',
+            });
           }
         }}
         onClick={() => {
@@ -216,6 +220,11 @@ export default function BreadCrumb({ path, tool }) {
       </BreadcrumbSpan>
     </BreadcrumbItem>
   );
+
+  if (tool === 'CourseChooser'){
+    return <Breadcrumb>{returnToCourseChooser} <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan>
+  </BreadcrumbItem></Breadcrumb>
+  }
 
   const returnToDashboard = (
     <BreadcrumbItem>
@@ -255,11 +264,10 @@ export default function BreadCrumb({ path, tool }) {
     let folders = [...items];
     folders.pop(); //First one is already covered with returnToToolHead
     children = [...folders].reverse().map((item) => (
-    <BreadcrumbItem>
+    <BreadcrumbItem key={item.folderId}>
       <BreadcrumbSpan
         role="button"
         tabIndex="0"
-        key={item.folderId}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             goToFolder(driveId, item.folderId);
@@ -269,16 +277,61 @@ export default function BreadCrumb({ path, tool }) {
           goToFolder(driveId, item.folderId);
         }}
       >
-        {item.label} 
-        {/* /{' '} */}
+        {item.label}
       </BreadcrumbSpan>
     </BreadcrumbItem>
   ));
       }
 
+ 
+    let returnToToolHead2 = null;
+    let tool2name = '';
+    let params2 = {};
+
+    if (tool2 === 'Assignment'){
+      tool2name = 'assignment';
+      params2 = {doenetId}
+    }else if (tool2 === 'Editor'){
+      tool2name = 'editor';
+      params2 = {doenetId,path}
+    }
+    if (tool2){
+      returnToToolHead2 = 
+      (
+        <BreadcrumbItem>
+          <BreadcrumbSpan
+            role="button"
+            tabIndex="0"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                setPageToolView((was) => ({ 
+                  page:was.page,
+                  tool:tool2name,
+                  view:'',
+                  params:params2,}));
+              }
+            }}
+            onClick={() => {
+              setPageToolView((was) => ({ 
+                page:was.page,
+                tool:tool2name,
+                view:'',
+                params:params2,}));
+            }}
+          >
+            {tool2}
+          </BreadcrumbSpan>
+        </BreadcrumbItem>
+        
+      )
+        }
+    
+
+
+
   return (
     <Breadcrumb>
-      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children}
+      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children} {returnToToolHead2}
     </Breadcrumb>
   );
 }

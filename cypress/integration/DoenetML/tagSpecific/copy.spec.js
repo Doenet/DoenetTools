@@ -1945,6 +1945,110 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('copy group, no link, copy to external inside attribute', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <textinput name="external" prefill="bye" />
+
+    <group name="g" newNamespace>
+      <copy tname="/external" prop="value" assignNames="w" />
+      <point label="$(/external)" name="P">(a,b)</point>
+      <copy prop="label" tname="P" assignNames="Plabel" />
+    </group>
+    
+    <copy tname="g" assignNames="g2" link="false" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/g/w')).should('have.text', 'bye')
+    cy.get(cesc('#/g/Plabel')).should('have.text', 'bye')
+    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/P"].stateValues.label).eq('bye')
+      expect(components["/g2/P"].stateValues.label).eq('bye')
+
+    })
+
+    cy.get(cesc('#/external_input')).clear().type('hi{enter}')
+
+    cy.get(cesc('#/g/w')).should('have.text', 'hi')
+    cy.get(cesc('#/g/Plabel')).should('have.text', 'hi')
+    cy.get(cesc('#/g2/w')).should('have.text', 'bye')
+    cy.get(cesc('#/g2/Plabel')).should('have.text', 'bye')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/P"].stateValues.label).eq('hi')
+      expect(components["/g2/P"].stateValues.label).eq('bye')
+    })
+
+  });
+
+  it('copy group, no link, internal copy to source alias is linked', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <group name="g" newNamespace>
+      <textinput name="ti" prefill="hello" />
+      <map assignNames="a">
+        <template newNamespace>
+          <copy tname="x" assignNames="w" />
+          <point label="$x" name="P">(a,b)</point>
+          <copy prop="label" tname="P" assignNames="Plabel" />
+
+
+        </template>
+        <sources alias="x">
+          $ti
+        </sources>
+      </map>
+    </group>
+    
+    <copy tname="g" assignNames="g2" link="false" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/g/a/w')).should('have.text', 'hello')
+    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'hello')
+    cy.get(cesc('#/g2/a/w')).should('have.text', 'hello')
+    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'hello')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/a/P"].stateValues.label).eq('hello')
+      expect(components["/g2/a/P"].stateValues.label).eq('hello')
+
+    })
+
+    cy.get(cesc('#/g/ti_input')).clear().type('one{enter}')
+    cy.get(cesc('#/g2/ti_input')).clear().type('two{enter}')
+
+    cy.get(cesc('#/g/a/w')).should('have.text', 'one')
+    cy.get(cesc('#/g/a/Plabel')).should('have.text', 'one')
+    cy.get(cesc('#/g2/a/w')).should('have.text', 'two')
+    cy.get(cesc('#/g2/a/Plabel')).should('have.text', 'two')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components["/g/a/P"].stateValues.label).eq('one')
+      expect(components["/g2/a/P"].stateValues.label).eq('two')
+    })
+
+  });
+
   it('external content cannot reach outside namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
@@ -1986,6 +2090,135 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/greetings/s/s/c4')).should('have.text', 'Hello');
     cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
     cy.get(cesc('#/greetings/s/s/c5')).should('have.text', 'Hello');
+
+  });
+
+  it('copy of template source maintained when withheld', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Number of points: <mathinput name="n" /></p>
+
+    <graph name='g1'>
+      <map name="map1" assignNames="t1 t2">
+        <template newNamespace>
+          <point name="A" x="$(i{prop='value' link='false'})" y='1'/>
+        </template>
+        <sources alias="i"><sequence from="1" to="$n" /></sources>
+      </map>
+    </graph>
+    
+    <p><m name="m1">A_1 = <copy tname="t1/A" displayDigits="3" /></m></p>
+    <p><m name="m2">A_2 = <copy tname="t2/A" displayDigits="3" /></m></p>
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+    cy.log('Add point')
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(1,1)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Move point')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/t1/A"].movePoint({ x: -3, y: 7 })
+    })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Remove point')
+    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Remember coordinates when restore point since copy was maintained')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Add second point')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=(2,1)')
+    })
+
+
+    cy.log('Move second point')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/t2/A"].movePoint({ x: 5, y: -4 })
+    })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=(5,−4)')
+    })
+
+
+    cy.log('Remove both points')
+    cy.get('#\\/n textarea').type("{end}{backspace}0{enter}", { force: true })
+
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=')
+    })
+
+
+    cy.log('Remember coordinates of both points')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A1=(−3,7)')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('A2=(5,−4)')
+    })
+
 
   });
 

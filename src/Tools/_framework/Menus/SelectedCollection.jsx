@@ -10,7 +10,6 @@ import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
-
 export default function SelectedCollection() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
@@ -46,7 +45,6 @@ export default function SelectedCollection() {
       <h2 data-cy="infoPanelItemLabel">
         {dIcon} {item.label}
       </h2>
-
       <label>
         Collection Label
         <input
@@ -71,39 +69,37 @@ export default function SelectedCollection() {
         />
       </label>
       <br />
-      <br />
-      <Button
-        value="Edit Collection"
-        onClick={() => {
-          setPageToolView({
-            page: 'course',
-            tool: 'editor',
-            view: '',
-            params: {
-              doenetId: item.doenetId,
-              path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
-            },
-          });
-        }}
-      />
-      {/* <br /> */}
-      <Button
-        data-cy="deleteDoenetMLButton"
-        value="Delete Collection"
-        onClick={() => {
-          deleteItem({
-            driveIdFolderId: {
-              driveId: item.driveId,
-              folderId: item.parentFolderId,
-            },
-            itemId: item.itemId,
-            driveInstanceId: item.driveInstanceId,
-            label: item.label,
-          });
-        }}
-      />
-      {/* </ButtonGroup> */}
-      
+      <ButtonGroup vertical>
+        <Button
+          value="Edit Collection"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                doenetId: item.doenetId,
+                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:Collection`,
+              },
+            });
+          }}
+        />
+        <Button
+          data-cy="deleteDoenetMLButton"
+          value="Delete Collection"
+          onClick={() => {
+            deleteItem({
+              driveIdFolderId: {
+                driveId: item.driveId,
+                folderId: item.parentFolderId,
+              },
+              itemId: item.itemId,
+              driveInstanceId: item.driveInstanceId,
+              label: item.label,
+            });
+          }}
+        />
+      </ButtonGroup>
     </>
   );
 }

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-06-07 21:53:45 +0000
+# Generation Time: 2021-08-16 18:43:44 +0000
 # ************************************************************
 
 
@@ -58,6 +58,23 @@ VALUES
 
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table collection
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `collection`;
+
+CREATE TABLE `collection` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `collectionDoenetId` char(21) DEFAULT '',
+  `entryDoenetId` char(21) NOT NULL DEFAULT '',
+  `entryId` char(21) NOT NULL DEFAULT '',
+  `variant` varchar(255) NOT NULL DEFAULT '',
+  `label` char(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 
 # Dump of table content
@@ -177,6 +194,7 @@ CREATE TABLE `drive_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `canEditContent` tinyint(1) DEFAULT '0',
   `canViewDrive` tinyint(1) DEFAULT '0',
   `canDeleteDrive` tinyint(1) DEFAULT '0',
   `canShareDrive` tinyint(1) DEFAULT '0',
@@ -188,7 +206,7 @@ CREATE TABLE `drive_user` (
   `canViewUnreleasedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canViewUnassignedItemsAndFolders` tinyint(1) DEFAULT '0',
   `canChangeAllDriveSettings` tinyint(1) DEFAULT '0',
-    `role` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `role` char(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

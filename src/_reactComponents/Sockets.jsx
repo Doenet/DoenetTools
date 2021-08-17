@@ -1,7 +1,7 @@
 /**
  * External deps
  */
-import React, { useCallback, useEffect, useState } from 'react';
+// import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { nanoid } from 'nanoid';
 import {
@@ -9,7 +9,7 @@ import {
   selector,
   atomFamily,
   selectorFamily,
-  useRecoilValue,
+  // useRecoilValue,
   useRecoilCallback,
 } from 'recoil';
 import { Manager } from 'socket.io-client';
@@ -589,75 +589,80 @@ export default function useSockets(nsp) {
           promises.push(result);
         }
 
-        Promise.allSettled(promises).then(([result]) => {
-          if (result.value?.data?.success) {
-            // Update destination folder
-            set(
-              folderDictionary({
-                driveId: targetDriveId,
-                folderId: targetFolderId,
-              }),
-              newDestinationFolderObj,
-            );
+        Promise.allSettled(promises)
+          .then(([result]) => {
+            if (result.value?.data?.success) {
+              // Update destination folder
+              set(
+                folderDictionary({
+                  driveId: targetDriveId,
+                  folderId: targetFolderId,
+                }),
+                newDestinationFolderObj,
+              );
 
-            // Add new cloned items into folderDictionary
-            for (let newItemId of Object.keys(globalDictionary)) {
-              let newItem = globalDictionary[newItemId];
-              if (newItem.itemType === 'Folder') {
-                // BFS tree-walk to iterate through tree nodes
-                let queue = [newItemId];
-                while (queue.length) {
-                  const size = queue.length;
-                  for (let i = 0; i < size; i++) {
-                    const currentItemId = queue.shift();
-                    const currentItem = globalDictionary[currentItemId];
-                    if (currentItem.itemType !== 'Folder') continue;
+              // Add new cloned items into folderDictionary
+              for (let newItemId of Object.keys(globalDictionary)) {
+                let newItem = globalDictionary[newItemId];
+                if (newItem.itemType === 'Folder') {
+                  // BFS tree-walk to iterate through tree nodes
+                  let queue = [newItemId];
+                  while (queue.length) {
+                    const size = queue.length;
+                    for (let i = 0; i < size; i++) {
+                      const currentItemId = queue.shift();
+                      const currentItem = globalDictionary[currentItemId];
+                      if (currentItem.itemType !== 'Folder') continue;
 
-                    // Build contentsDictionary
-                    let contentsDictionary = {};
-                    for (let childContentId of globalContentIds[
-                      currentItemId
-                    ]) {
-                      contentsDictionary = {
-                        ...contentsDictionary,
-                        [childContentId]: globalDictionary[childContentId],
+                      // Build contentsDictionary
+                      let contentsDictionary = {};
+                      for (let childContentId of globalContentIds[
+                        currentItemId
+                      ]) {
+                        contentsDictionary = {
+                          ...contentsDictionary,
+                          [childContentId]: globalDictionary[childContentId],
+                        };
+                      }
+
+                      // Build folder info object
+                      const currentFolderInfoObj = {
+                        folderInfo: currentItem,
+                        contentsDictionary,
+                        contentIds: {
+                          [sortOptions.DEFAULT]:
+                            globalContentIds[currentItemId],
+                        },
                       };
+
+                      // Add current folder into folderDictionary
+                      set(
+                        folderDictionary({
+                          driveId: targetDriveId,
+                          folderId: currentItemId,
+                        }),
+                        currentFolderInfoObj,
+                      );
+
+                      queue = [...queue, ...globalContentIds[currentItemId]];
                     }
-
-                    // Build folder info object
-                    const currentFolderInfoObj = {
-                      folderInfo: currentItem,
-                      contentsDictionary,
-                      contentIds: {
-                        [sortOptions.DEFAULT]: globalContentIds[currentItemId],
-                      },
-                    };
-
-                    // Add current folder into folderDictionary
-                    set(
-                      folderDictionary({
-                        driveId: targetDriveId,
-                        folderId: currentItemId,
-                      }),
-                      currentFolderInfoObj,
-                    );
-
-                    queue = [...queue, ...globalContentIds[currentItemId]];
                   }
                 }
               }
-            }
 
-            // Mark current folder as dirty
-            set(
-              folderCacheDirtyAtom({
-                driveId: targetDriveId,
-                folderId: targetFolderId,
-              }),
-              true,
-            );
-          }
-        });
+              // Mark current folder as dirty
+              set(
+                folderCacheDirtyAtom({
+                  driveId: targetDriveId,
+                  folderId: targetFolderId,
+                }),
+                true,
+              );
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+          });
 
         const result = await Promise.allSettled(promises);
         return result;

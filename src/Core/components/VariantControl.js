@@ -10,14 +10,14 @@ export default class VariantControl extends BaseComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.nVariants = {
-      createComponentOfType: "integer",
+      createPrimitiveOfType: "integer",
       createStateVariable: "nVariants",
       defaultValue: 100,
       clamp: [1, 999],
       public: true,
     };
     attributes.uniqueVariants = {
-      createComponentOfType: "boolean",
+      createPrimitiveOfType: "boolean",
       createStateVariable: "uniqueVariants",
       defaultValue: false,
       public: true,

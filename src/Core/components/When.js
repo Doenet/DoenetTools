@@ -20,7 +20,7 @@ export default class When extends BooleanComponent {
     };
 
     for (let attrName of ["symbolicEquality", "expandOnCompare",
-      "simplifyOnCompare", "unorderedCompare",
+      "simplifyOnCompare", "unorderedCompare", "matchByExactPositions",
       "allowedErrorInNumbers", "includeErrorInNumberExponents",
       "allowedErrorIsAbsolute",
       "nSignErrorsMatched"
@@ -37,7 +37,7 @@ export default class When extends BooleanComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    // conditional satisfied is just an alias to value
+    // condition satisfied is just an alias to value
     stateVariableDefinitions.value = {
       additionalStateVariablesDefined: [
         "fractionSatisfied", "conditionSatisfied"
@@ -62,6 +62,10 @@ export default class When extends BooleanComponent {
         unorderedCompare: {
           dependencyType: "stateVariable",
           variableName: "unorderedCompare",
+        },
+        matchByExactPositions: {
+          dependencyType: "stateVariable",
+          variableName: "matchByExactPositions"
         },
         allowedErrorInNumbers: {
           dependencyType: "stateVariable",

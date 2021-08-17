@@ -99,23 +99,45 @@ export default function NavigationPanel(props) {
           }));
           break;
         case itemType.DOENETML:
+          if (view === 'student'){
+            //TODO: VariantIndex params
+            setPageToolView({
+              page: 'course',
+              tool: 'assignment',
+              view: '',
+              params: {
+                doenetId: info.item.doenetId,
+              },
+            });
+          }else if (view === 'instructor'){
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                doenetId: info.item.doenetId,
+                path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
+              },
+            });
+          }
+          
+          break;
+        case itemType.COLLECTION:
           setPageToolView({
             page: 'course',
-            tool: 'editor',
+            tool: 'collection',
             view: '',
             params: {
               doenetId: info.item.doenetId,
-              path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
+              path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
             },
           });
-          break;
-        case itemType.COLLECTION:
           break;
         default:
           throw new Error('NavigationPanel doubleClick info type not defined');
       }
     },
-    [setPageToolView],
+    [setPageToolView,view],
   );
 
   if (props.style?.display === 'none') {

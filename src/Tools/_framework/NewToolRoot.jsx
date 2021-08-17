@@ -13,7 +13,6 @@ import Toast from './Toast';
 import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
-// import GlobalFont from '../../_utils/GlobalFont';
 import MainPanel from './Panels/NewMainPanel';
 import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
@@ -94,16 +93,13 @@ export default function ToolRoot(){
     headerControls:[],
     headerControlsPositions:[]
   });
-  const mainPanelArray = useRef([])
-  const lastMainPanelKey = useRef(null)
-  const mainPanelDictionary = useRef({}) //key -> {index, type}
+  let mainPanel = null;
+  let supportPanel = <SupportPanel hide={true} >null</SupportPanel>;
+
   const supportPanelArray = useRef([])
   const lastSupportPanelKey = useRef(null)
   const supportPanelDictionary = useRef({}) //key -> {index, type}
-  // const [supportContentObj,setSupportContentObj] = useState({})
   const [menusOpen,setMenusOpen] = useState(true)
-
-  
 
   const LazyPanelObj = useRef({
     Empty:lazy(() => import('./ToolPanels/Empty')),
@@ -118,41 +114,56 @@ export default function ToolRoot(){
     Dashboard: lazy(() => import('./ToolPanels/Dashboard')),
     Gradebook: lazy(() => import('./ToolPanels/Gradebook')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
+    AssignmentViewer:lazy(() => import('./ToolPanels/AssignmentViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
+    CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
   }).current;
 
   const LazyControlObj = useRef({
     BackButton:lazy(() => import('./HeaderControls/BackButton')),
     ViewerUpdateButton:lazy(() => import('./HeaderControls/ViewerUpdateButton')),
     NavigationBreadCrumb: lazy(() => import('./HeaderControls/NavigationBreadCrumb')),
+    ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() => import('./HeaderControls/DashboardBreadCrumb')),
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
+    EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
+    AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
  
 
-  function buildPanel({key,type,visible}){
-    let hideStyle = null;
-    if (!visible){
-      hideStyle = 'none';
-    }
+  // function buildPanel({key,type,visible}){
+  //   let hideStyle = null;
+  //   if (!visible){
+  //     hideStyle = 'none';
+  //   }
     
-    return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-    {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
-    </Suspense>
-  } 
+  //   return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+  //   {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
+  //   </Suspense>
+  // } 
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
 
-   if (!mainPanelDictionary.current[MainPanelKey]){
-     let type = toolRootMenusAndPanels.currentMainPanel;
-     console.log(">>>NEW MAIN PANEL!!!",type)
-    //Doesn't exist so make new Main Panel
-    mainPanelArray.current.push(buildPanel({key:MainPanelKey,type,visible:true}))
-    mainPanelDictionary.current[MainPanelKey] = {index:mainPanelArray.current.length - 1, type, visible:true}
-  }
+   mainPanel = <Suspense key={MainPanelKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+   {React.createElement(LazyPanelObj[toolRootMenusAndPanels.currentMainPanel],{MainPanelKey})}
+   </Suspense>
+
+if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.supportPanelOptions.length > 0 ){
+  const spType = toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex];
+    const SupportPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex]}-${toolRootMenusAndPanels.supportPanelIndex}`;
+    supportPanel = <SupportPanel 
+    hide={false} 
+    panelTitles={toolRootMenusAndPanels.supportPanelTitles} 
+    panelIndex={toolRootMenusAndPanels.supportPanelIndex}
+    >
+    <Suspense key={SupportPanelKey} fallback={<LoadingFallback>loading...</LoadingFallback>}>
+      {React.createElement(LazyPanelObj[spType],{SupportPanelKey})}
+    </Suspense>
+  </SupportPanel>
+}
 
   let headerControls = null;
   let headerControlsPositions = null;
@@ -173,59 +184,6 @@ export default function ToolRoot(){
     }
   }
    
-   //Show current panel and hide last panel
-   if (lastMainPanelKey.current !== null && lastMainPanelKey.current !== MainPanelKey){
-    const mpObj = mainPanelDictionary.current[MainPanelKey];
-    const lastObj = mainPanelDictionary.current[lastMainPanelKey.current];
-
-    //Show current if not visible
-    if (!mpObj.visible){
-      mainPanelArray.current[mpObj.index] = buildPanel({key:MainPanelKey,type:mpObj.type,visible:true})
-      mpObj.visible = true;
-    }
-    //Hide last if visible
-    if (lastObj.visible){
-      mainPanelArray.current[lastObj.index] = buildPanel({key:lastMainPanelKey.current,type:lastObj.type,visible:false})
-      lastObj.visible = false;
-    }
-   }
-
-   lastMainPanelKey.current = MainPanelKey;
-    
-
-  //  let supportPanel = <SupportPanel hide={false} />;
-   let supportPanel = <SupportPanel hide={true} >{supportPanelArray.current}</SupportPanel>;
-
-
-   if (toolRootMenusAndPanels.supportPanelOptions && toolRootMenusAndPanels.supportPanelOptions.length > 0){
-    const SupportPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex]}-${toolRootMenusAndPanels.supportPanelIndex}`;
-    if (!supportPanelDictionary.current[SupportPanelKey]){
-     //Doesn't exist so make new Support Panel
-     supportPanelArray.current.push(buildPanel({key:SupportPanelKey,type:toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex],visible:true}))
-     supportPanelDictionary.current[SupportPanelKey] = {index:supportPanelArray.current.length - 1, type:toolRootMenusAndPanels.supportPanelOptions[toolRootMenusAndPanels.supportPanelIndex], visible:true}
-    }
-    
-    //Show current panel and hide last panel
-    if (lastSupportPanelKey.current !== null && lastSupportPanelKey.current !== SupportPanelKey){
-     const spObj = supportPanelDictionary.current[SupportPanelKey];
-     const lastObj = supportPanelDictionary.current[lastSupportPanelKey.current];
- 
-     //Show current if not visible
-     if (!spObj.visible){
-       supportPanelArray.current[spObj.index] = buildPanel({key:SupportPanelKey,type:spObj.type,visible:true})
-       spObj.visible = true;
-     }
-     //Hide last if visible
-     if (lastObj.visible){
-       supportPanelArray.current[lastObj.index] = buildPanel({key:lastSupportPanelKey.current,type:lastObj.type,visible:false})
-       lastObj.visible = false;
-     }
-    }
- 
-    lastSupportPanelKey.current = SupportPanelKey;
-    
-    supportPanel = <SupportPanel hide={false} panelTitles={toolRootMenusAndPanels.supportPanelTitles} panelIndex={toolRootMenusAndPanels.supportPanelIndex}>{supportPanelArray.current}</SupportPanel>
-  }
 
   let menus = <MenuPanel key='menuPanel' hide={true} />;
   if (menusOpen && !toolRootMenusAndPanels.hasNoMenuPanel){
@@ -248,7 +206,7 @@ export default function ToolRoot(){
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanelArray.current}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanel}</MainPanel>} 
       support={supportPanel}
       />
     
@@ -294,6 +252,16 @@ let navigationObj = {
     default:{
       defaultTool:'courseChooser'
     },
+    assignment: {
+      pageName:"Assignment",
+      menuPanelCap:"AssignmentInfoCap",
+      currentMainPanel:"AssignmentViewer",
+      currentMenus:[], 
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["AssignmentBreadCrumb"],
+      headerControlsPositions: ["Left"],
+    },
     courseChooser:{ //allCourses
       pageName:"Course",
       currentMainPanel:"DriveCards",
@@ -302,22 +270,26 @@ let navigationObj = {
       // currentMenus:["CreateCourse","CourseEnroll"],
       // menusTitles:["Create Course","Enroll"],
       menusInitOpen:[true,false],
+      headerControls: ["ChooserBreadCrumb"],
+      headerControlsPositions: ["Left"],
       onLeave:"CourseChooserLeave",
     },
     dashboard: {
       pageName: "Dashboards",
       currentMainPanel: "Dashboard",
+      menuPanelCap:"DriveInfoCap",
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: ["DashboardBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      headerControls: ["DashboardBreadCrumb","RoleDropdown"],
+      headerControlsPositions: ["Left","Right"],
       onLeave:"DashboardLeave",
     },
     gradebook: {
       pageName: "Gradebook",
       currentMainPanel: "Gradebook",
       currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
       menusTitles:[],
       menusInitOpen:[],
       headerControls: ["GradebookBreadCrumb"],
@@ -341,9 +313,9 @@ let navigationObj = {
       onLeave:"NavigationLeave",
       views:{
         instructor:{
-          currentMenus:["AddDriveItems","EnrollStudents"],
-          menusTitles:["Add Items","Enrollment"],
-          menusInitOpen:[true,false],
+          currentMenus:["AddDriveItems"],
+          menusTitles:["Add Items"],
+          menusInitOpen:[true],
         },
         student:{
         }
@@ -353,18 +325,24 @@ let navigationObj = {
       pageName:"Course",
       menuPanelCap:"EditorInfoCap",
       currentMainPanel:"EditorViewer",
-      currentMenus:["VersionHistory","DoenetMLSettings","Variant"], 
-      menusTitles:["Version History","Document Settings","Variant"],
-      menusInitOpen:[true,false,false],
+      currentMenus:["VersionHistory","Variant"], 
+      menusTitles:["Version History","Variant"],
+      menusInitOpen:[false,false],
       supportPanelOptions:["DoenetMLEditor"],
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
-      headerControls: ["BackButton","ViewerUpdateButton",],
+      headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
       headerControlsPositions: ["Left","Left"],
+    },
+    collection: {
+      currentMainPanel:"CollectionEditor",
+      headerControls: ["NavigationBreadCrumb"],
+      headerControlsPositions: ["Left"],
     },
     enrollment:{ //allStudentsInCourse
       pageName:"Enrollment",
       currentMenus:["LoadEnrollment","ManualEnrollment"],
+      menuPanelCap:"DriveInfoCap",
       menusTitles:["Load","Manual"],
       menusInitOpen:[false,false],
       currentMainPanel:"Enrollment",
