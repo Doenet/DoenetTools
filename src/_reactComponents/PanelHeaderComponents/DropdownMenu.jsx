@@ -57,7 +57,7 @@ const DropdownMenu = (props) => {
     console.log(options.length)
     return (
         <Select
-        defaultValue = {options[props.defaultIndex]}
+        defaultValue = {options[props.defaultIndex - 1]}
         styles={customStyles}
         width = {width}
         isSearchable = {false}
@@ -65,7 +65,7 @@ const DropdownMenu = (props) => {
         onChange={props.onChange}
         options={options}
         placeholder = {props.title}
-        closeMenuOnSelect = {false}
+        closeMenuOnSelect = {true}
         isMulti = {props.isMulti ? props.isMulti : false}
       />
     )
