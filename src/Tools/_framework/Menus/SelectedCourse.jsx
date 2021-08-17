@@ -10,8 +10,6 @@ import {
 } from '../../../_reactComponents/Drive/NewDrive';
 import {
   faChalkboard,
-  faCode,
-  faFolder,
   faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,7 +20,7 @@ import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
 import { useToast } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
-export default function SelectedCourse(props) {
+export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
@@ -53,10 +51,10 @@ export default function SelectedCourse(props) {
       <>
         <h2> {selection.length} Courses Selected</h2>
         <ButtonGroup vertical>
-          <Button width="menu" value="Make Copy(Soon)" onClick={(e)=>{
+          <Button width="menu" value="Duplicate (Soon)" onClick={(e)=>{
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log(">> made copy of courses")
+                    console.log(">>>This will Duplicate courses")
           }}/>
           <Button width="menu" value="Delete Course" alert onClick={(e)=>{
             e.preventDefault();
@@ -125,10 +123,6 @@ const DriveInfoPanel = function (props) {
     isOwner = true;
   }
   let dIcon = <FontAwesomeIcon icon={faChalkboard} />;
-
-  let admins = [];
-  let owners = [];
-  let buttons = [];
 
   let addOwners = null;
 
@@ -237,7 +231,7 @@ const DriveInfoPanel = function (props) {
       />
       <Button
         width="menu"
-        data-doenet-removeButton={selectedOwner}
+        data-doenet-removebutton={selectedOwner}
         value="Remove"
         onClick={(e) => {
           e.preventDefault();
@@ -286,7 +280,7 @@ const DriveInfoPanel = function (props) {
       />
       <Button
         width="menu"
-        data-doenet-removeButton={selectedAdmin}
+        data-doenet-removebutton={selectedAdmin}
         value="Remove"
         onClick={(e) => {
           e.preventDefault();
