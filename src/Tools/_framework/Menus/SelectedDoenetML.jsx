@@ -6,6 +6,7 @@ import {
   selector,
   useRecoilValue,
   useRecoilValueLoadable,
+  useRecoilState,
   useSetRecoilState,
 } from 'recoil';
 import {
@@ -13,6 +14,8 @@ import {
   globalSelectedNodesAtom,
 } from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import IncrementMenu from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
@@ -33,7 +36,8 @@ export const selectedVersionAtom = atom({
 });
 
 export default function SelectedDoenetML() {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [pageToolView,setPageToolView] = useRecoilState(pageToolViewAtom);
+  const role = pageToolView.view;
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
@@ -93,6 +97,61 @@ export default function SelectedDoenetML() {
   if (versionHistory.state === 'hasValue') {
     contentId = versionHistory?.contents?.named[0]?.contentId;
     versionId = versionHistory?.contents?.named[0]?.versionId;
+  }
+
+  let doenetMLActions = <ActionButtonGroup vertical >
+    <ActionButton 
+    width="menu" 
+    value="Edit DoenetML"
+    onClick={() => {
+      setPageToolView({
+        page: 'course',
+        tool: 'editor',
+        view: '',
+        params: {
+          doenetId: item.doenetId,
+          path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
+        },
+      });
+    }}
+    />
+    <ActionButton 
+    width="menu"
+    value="Take Assignment"
+    onClick={() => {
+      setPageToolView({
+        page: 'course',
+        tool: 'assignment',
+        view: '',
+        params: {
+          doenetId: item.doenetId,
+        },
+      });
+    }}
+    />
+  </ActionButtonGroup>
+  
+
+  if (role === 'student'){
+    return <>
+    <h2 data-cy="infoPanelItemLabel">
+      {dIcon} {item.label}
+    </h2>
+    <ActionButton 
+    width="menu"
+    value="Take Assignment"
+    onClick={() => {
+      setPageToolView({
+        page: 'course',
+        tool: 'assignment',
+        view: '',
+        params: {
+          doenetId: item.doenetId,
+        },
+      });
+    }}
+    />
+  </>
   }
 
   let assigned = (
@@ -172,7 +231,7 @@ export default function SelectedDoenetML() {
   );
 
   // unassign
-  let unAssignButton = '';
+  let unAssignButton = null;
 
   unAssignButton = (
     <Button
@@ -237,7 +296,8 @@ export default function SelectedDoenetML() {
       <h2 data-cy="infoPanelItemLabel">
         {dIcon} {item.label}
       </h2>
-      {/* {pageToolView?.view == 'instructor' ? */}
+      {doenetMLActions}
+    <br />
       <label>
         DoenetML Label
         <input
@@ -262,22 +322,11 @@ export default function SelectedDoenetML() {
         />
       </label>
       <br />
-      <ButtonGroup vertical>
-        <Button
-          value="Edit DoenetML"
-          onClick={() => {
-            setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
-              params: {
-                doenetId: item.doenetId,
-                path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
-              },
-            });
-          }}
-        />
-        <Button
+    <br />
+        
+        <Button 
+          alert
+          width="menu"
           data-cy="deleteDoenetMLButton"
           value="Delete DoenetML"
           onClick={() => {
@@ -292,7 +341,7 @@ export default function SelectedDoenetML() {
             });
           }}
         />
-      </ButtonGroup>
+
       {assigned}
       <ButtonGroup vertical>
         {item?.isAssigned === '0' &&

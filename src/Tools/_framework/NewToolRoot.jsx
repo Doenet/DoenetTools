@@ -115,6 +115,7 @@ export default function ToolRoot(){
     Dashboard: lazy(() => import('./ToolPanels/Dashboard')),
     Gradebook: lazy(() => import('./ToolPanels/Gradebook')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
+    AssignmentViewer:lazy(() => import('./ToolPanels/AssignmentViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
@@ -129,6 +130,7 @@ export default function ToolRoot(){
     EnrollmentBreadCrumb: lazy(() => import('./HeaderControls/EnrollmentBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
+    AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
  
@@ -250,6 +252,16 @@ let navigationObj = {
   course:{
     default:{
       defaultTool:'courseChooser'
+    },
+    assignment: {
+      pageName:"Assignment",
+      menuPanelCap:"AssignmentInfoCap",
+      currentMainPanel:"AssignmentViewer",
+      currentMenus:[], 
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["AssignmentBreadCrumb"],
+      headerControlsPositions: ["Left"],
     },
     courseChooser:{ //allCourses
       pageName:"Course",

@@ -285,11 +285,17 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
 
  
     let returnToToolHead2 = null;
+    let tool2name = '';
+    let params2 = {};
 
-
-    if (tool2 === 'Editor'){
-      let toolName2 = 'editor';
-      let params2 = {doenetId,path}
+    if (tool2 === 'Assignment'){
+      tool2name = 'assignment';
+      params2 = {doenetId}
+    }else if (tool2 === 'Editor'){
+      tool2name = 'editor';
+      params2 = {doenetId,path}
+    }
+    if (tool2){
       returnToToolHead2 = 
       (
         <BreadcrumbItem>
@@ -300,7 +306,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
               if (e.key === 'Enter') {
                 setPageToolView((was) => ({ 
                   page:was.page,
-                  tool:toolName2,
+                  tool:tool2name,
                   view:'',
                   params:params2,}));
               }
@@ -308,7 +314,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
             onClick={() => {
               setPageToolView((was) => ({ 
                 page:was.page,
-                tool:toolName2,
+                tool:tool2name,
                 view:'',
                 params:params2,}));
             }}
@@ -318,7 +324,8 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
         </BreadcrumbItem>
         
       )
-    }
+        }
+    
 
 
 

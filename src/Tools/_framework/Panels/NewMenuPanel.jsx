@@ -170,6 +170,7 @@ console.log(">>>===MenuPanel")
   const LazyMenuPanelCapObj = useRef({
     DriveInfoCap:lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
     EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
+    AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
   }).current;
 
   const LazyMenuObj = useRef({
