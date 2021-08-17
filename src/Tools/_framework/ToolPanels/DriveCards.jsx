@@ -216,7 +216,7 @@ const DriveCardWrapper = (props) => {
           let isSelected = getSelectedCard(item);
           return (
             <div
-              key={index}
+              key={`div${item.driveId}`}
               className={`adiv ${isSelected ? "borderselection" : ""}`}
               style={{
                 width:250,
@@ -227,6 +227,7 @@ const DriveCardWrapper = (props) => {
             >
               <div
                 role="button"
+                key={`divbutton${item.driveId}`}
                 style={{ height: "100%" ,outline:"none"}}
                 tabIndex={index + 1}
                 onClick={(e) => {
@@ -244,6 +245,7 @@ const DriveCardWrapper = (props) => {
                 }}
               >
                   <DriveCard
+                    key={`dcard${item.driveId}`}
                     image={item.image}
                     color={item.color}
                     label={item.label}
