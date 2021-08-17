@@ -421,8 +421,8 @@ export const fileByContentId = atomFamily({
       if (!contentId){
         return "";
       }
-      const local = localStorage.getItem(contentId);
-      if (local){ return local}
+      // const local = localStorage.getItem(contentId);
+      // if (local){ return local}
       try {
         const server = await axios.get(`/media/${contentId}.doenet`); 
         return server.data;

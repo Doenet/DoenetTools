@@ -334,7 +334,7 @@ console.log(">>>===VersionHistory")
           set(fileByContentId(textEditorContentId),textEditorDoenetML)
 
           //Save in localStorage
-          localStorage.setItem(textEditorContentId,textEditorDoenetML)
+          // localStorage.setItem(textEditorContentId,textEditorDoenetML)
 
           let newDBVersion = {...newDraft,
             doenetML:textEditorDoenetML,

@@ -75,7 +75,7 @@ export default function DoenetMLEditor(props){
       set(fileByContentId(contentId),doenetML)
   
       //Save in localStorage
-      localStorage.setItem(contentId,doenetML)
+      // localStorage.setItem(contentId,doenetML)
   
       let newDBVersion = {...newDraft,
         doenetML,
