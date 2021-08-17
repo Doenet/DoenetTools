@@ -41,6 +41,7 @@ function buildTimestamp(){
 
 export default function DoenetMLEditor(props){
   console.log(">>>===DoenetMLEditor")
+
   // const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
@@ -159,7 +160,7 @@ export default function DoenetMLEditor(props){
       onBeforeChange={(value) => {
         if (isCurrentDraft) { //No timers when active version history
           setEditorDoenetML(value);
-          console.log(`>>>set to value -${value}-`)
+          // console.log(`>>>set to value -${value}-`)
           //Start just one timer
           if (timeout.current === null){
             timeout.current = setTimeout(function(){

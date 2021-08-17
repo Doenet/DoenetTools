@@ -96,9 +96,6 @@ export default function ToolRoot(){
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true} >null</SupportPanel>;
 
-  const supportPanelArray = useRef([])
-  const lastSupportPanelKey = useRef(null)
-  const supportPanelDictionary = useRef({}) //key -> {index, type}
   const [menusOpen,setMenusOpen] = useState(true)
 
   const LazyPanelObj = useRef({
@@ -132,18 +129,6 @@ export default function ToolRoot(){
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
- 
-
-  // function buildPanel({key,type,visible}){
-  //   let hideStyle = null;
-  //   if (!visible){
-  //     hideStyle = 'none';
-  //   }
-    
-  //   return <Suspense key={key} fallback={<LoadingFallback>loading...</LoadingFallback>}>
-  //   {React.createElement(LazyPanelObj[type],{key,style:{display:hideStyle}})}
-  //   </Suspense>
-  // } 
 
    let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
 
@@ -482,14 +467,14 @@ let encodeParams = p => Object.entries(p).map(kv =>
     //Only set atom if parameter has changed
     for (const [key,value] of Object.entries(paramObj)){
       if (lastSearchObj.current[key] !== value){
-        // console.log(`>>>CHANGED so SET key: ${key} value: ${value}  **********`)
+        // console.log(`>>>>CHANGED key '${key}' value '${value}'`)
         set(searchParamAtomFamily(key),value)
       }
     }
     //If not defined then clear atom
     for (const key of Object.keys(lastSearchObj.current)){
       if (!paramObj[key]){
-        // console.log(`>>>clear!!!  -${key}- **********`)
+        // console.log(`>>>>clear!!! key '${key}' **********`)
         set(searchParamAtomFamily(key),"") 
       }
     }

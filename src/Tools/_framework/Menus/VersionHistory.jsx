@@ -319,9 +319,13 @@ if (initializedDoenetId !== doenetId){
 }
 
 
-// console.log(">>>versionHistory.contents",versionHistory.contents)
+console.log(">>>versionHistory.contents",versionHistory.contents)
 // console.log(">>>initializedDoenetId",initializedDoenetId)
 // console.log(">>>path",path)
+
+    if (!versionHistory.contents.named){
+      return null;
+    }
 
     let options = [];
     let versionsObj = {}
@@ -329,7 +333,7 @@ if (initializedDoenetId !== doenetId){
   // if (versionHistory.contents?.named?.length > 0){
      let inUseVersionId = selectedVersionId; //Only select history save if current isn't selected
   
-
+  
   for (let version of versionHistory.contents.named){
     // console.log(">>>version",version)
     versionsObj[version.versionId] = version;
