@@ -394,7 +394,6 @@ if (initializedDoenetId !== doenetId){
 
 
   const version = versionsObj[inUseVersionId];
-  console.log(">>>version",version)
   let releaseButtonText = "Release";
   if (version?.isReleased === '1'){
     releaseButtonText = "Retract"
