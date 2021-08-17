@@ -65,7 +65,7 @@ export default class Line extends DoenetRenderer {
       highlightFillColor: 'lightgray',
       layer: 10 * this.doenetSvData.layer + 9,
     });
-    if ((!this.doenetSvData.draggable || this.doenetSvData.fixed) && !this.doenetSvData.hidden && validCoords) {
+    if (!this.doenetSvData.draggable || this.doenetSvData.fixed || this.doenetSvData.hidden || !validCoords) {
       this.jsxPointAttributes.visible = false;
     }
 
@@ -193,9 +193,11 @@ export default class Line extends DoenetRenderer {
       this.polylineJXG.visPropCalc["visible"] = visible;
       // this.polylineJXG.setAttribute({visible: visible})
 
+      let pointsVisible = visible && this.doenetSvData.draggable && !this.doenetSvData.fixed;
+
       for (let i = 0; i < this.doenetSvData.nVertices; i++) {
-        this.pointsJXG[i].visProp["visible"] = visible;
-        this.pointsJXG[i].visPropCalc["visible"] = visible;
+        this.pointsJXG[i].visProp["visible"] = pointsVisible;
+        this.pointsJXG[i].visPropCalc["visible"] = pointsVisible;
       }
     }
     else {
