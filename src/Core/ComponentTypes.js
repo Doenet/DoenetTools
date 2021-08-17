@@ -139,6 +139,7 @@ import Footnote from './components/Footnote';
 import Caption from './components/Caption';
 import Endpoint from './components/Endpoint';
 import Sort from './components/Sort';
+import SolveEquations from './components/SolveEquations';
 
 
 //Extended
@@ -275,6 +276,7 @@ const componentTypeArray = [
   Caption,
   Endpoint,
   Sort,
+  SolveEquations,
 
   BaseComponent,
   InlineComponent,
