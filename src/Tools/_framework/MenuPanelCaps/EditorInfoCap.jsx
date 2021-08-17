@@ -2,7 +2,7 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { ClipboardLinkButtons } from '../ToolHandlers/CourseToolHandler';
+// import { ClipboardLinkButtons } from '../ToolHandlers/CourseToolHandler';
 
 export default function EditorInfoCap(){
   let path = useRecoilValue(searchParamAtomFamily('path'));
@@ -19,7 +19,7 @@ export default function EditorInfoCap(){
   return <div style={{padding:"4px"}}>
     <div>{docInfo.label}</div>
     <div>{status} </div>
-    <ClipboardLinkButtons doenetId={doenetId}/>
+    {/* <ClipboardLinkButtons doenetId={doenetId}/> */}
     {/* <div>Last saved (comming soon)</div> */}
   </div>
 }
