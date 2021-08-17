@@ -50,8 +50,9 @@ export default function EditorViewer(props){
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     const contentId = versionHistory.draft.contentId;
-    
+    console.log(">>>>init contentId",contentId)
     let response = await snapshot.getPromise(fileByContentId(contentId));
+    console.log(">>>>response",response)
     if (typeof response === "object"){
       response = response.data;
     }
