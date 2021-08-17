@@ -14,7 +14,7 @@ import {
   variantInfoAtom, 
   variantPanelAtom,
  } from '../ToolHandlers/CourseToolHandler';
- import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
+//  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 
 export const viewerDoenetMLAtom = atom({
   key:"viewerDoenetMLAtom",
