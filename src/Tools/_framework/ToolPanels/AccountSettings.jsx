@@ -10,7 +10,6 @@ import InfiniteSlider from '../temp/InfiniteSlider'
 import "../doenet.css";
 import Textinput from "../Textinput";
 import Switch from "../Switch";
-// import GlobalFont from '../../_utils/GlobalFont';
 import axios from "axios";
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 
