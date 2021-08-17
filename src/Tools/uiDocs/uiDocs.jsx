@@ -5,7 +5,6 @@ import {
   Route 
 } from 'react-router-dom';
 import styled from 'styled-components';
-// import GlobalFont from "../../_utils/GlobalFont.js";
 
 //=== COMPONENT IMPORTS ===
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.jsx";
@@ -652,7 +651,6 @@ export default function attempt() {
   return (
     <Router>
       <div>
-        {/* <GlobalFont/> */}
 
         <NavBar>
           <div style={{marginLeft: '10px'}}>

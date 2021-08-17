@@ -13,7 +13,6 @@ import Toast from './Toast';
 import ContentPanel from './Panels/NewContentPanel';
 import axios from 'axios';
 // import { GlobalStyle } from "../../Tools/DoenetStyle";
-// import GlobalFont from '../../_utils/GlobalFont';
 import MainPanel from './Panels/NewMainPanel';
 import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
