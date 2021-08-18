@@ -2687,6 +2687,51 @@ describe('Spreadsheet Tag Tests', function () {
 
   })
 
+  it('references to cells where not adapted', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+<spreadsheet minNumRows="4" minNumColumns="4" name="s">
+  <cell>1</cell><cell>2</cell>
+</spreadsheet>
+
+<copy prop="cellB1" tname="s" assignNames="c1" />
+<copy prop="cellA1" tname="s" assignNames="c2" />
+
+<tabular>
+  <row>
+    <copy prop="cellB1" tname="s" />
+    <cell>Hello</cell>
+    <copy prop="cellB2" tname="s" />
+  </row>
+  <row>
+    <cell>Bye</cell>
+    <copy tname="s" prop="cellA1" />
+  </row>
+</tabular>
+
+  `}, "*");
+    });
+
+    cy.log('check initial cell values')
+
+    cy.get('#\\/c1').should('have.text', '2');
+    cy.get('#\\/c2').should('have.text', '1');
+    cy.get('#\\/_row1').should('have.text', '2Hello');
+    cy.get('#\\/_row2').should('have.text', 'Bye1');
+
+    cy.log("change cells")
+    enterSpreadsheetText({ id: "\\/s", column: 1, row: 1, text: "A" });
+    enterSpreadsheetText({ id: "\\/s", column: 2, row: 1, text: "B" });
+    enterSpreadsheetText({ id: "\\/s", column: 2, row: 2, text: "C" });
+
+    cy.get('#\\/c1').should('have.text', 'B');
+    cy.get('#\\/c2').should('have.text', 'A');
+    cy.get('#\\/_row1').should('have.text', 'BHelloC');
+    cy.get('#\\/_row2').should('have.text', 'ByeA');
+
+  })
+
   it.skip('references to cells within other cells math', () => {
     cy.window().then((win) => {
       win.postMessage({

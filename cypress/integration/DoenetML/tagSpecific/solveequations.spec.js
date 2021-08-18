@@ -459,7 +459,7 @@ describe('SolveEquations Tag Tests', function () {
       expect(components['/solve'].stateValues.solutions[0].tree).closeTo(-0.0301, 1E-5)
       expect(components['/solve'].stateValues.solutions[1].tree).closeTo(-0.03, 1E-5)
     })
-  
+
     cy.get('#\\/equation textarea').type("{end}{backspace}-0.1{enter}", { force: true, delay: 0 })
 
     cy.get("#\\/num").should('have.text', 0);
@@ -493,7 +493,114 @@ describe('SolveEquations Tag Tests', function () {
       expect(components['/solve'].stateValues.solutions[3].tree).closeTo(8.58263, 1E-4)
     })
 
+    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pi b) + 1=0{enter}", { force: true, delay: 0 })
 
+    cy.get("#\\/num").should('have.text', 10);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(10);
+      for (let i = 0; i < 10; i++) {
+        expect(components['/solve'].stateValues.solutions[i].tree).closeTo(2 * i - 9, 1E-3)
+      }
+    })
+
+    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}cos(pib) = 1{enter}", { force: true, delay: 0 })
+  
+    cy.get("#\\/num").should('have.text', 11);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(11);
+      for (let i = 0; i < 11; i++) {
+        expect(components['/solve'].stateValues.solutions[i].tree).closeTo(2 * i - 10, 1E-3)
+      }
+    })
+
+    cy.get('#\\/minvar textarea').type("{end}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 11);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(11);
+      for (let i = 0; i < 11; i++) {
+        expect(components['/solve'].stateValues.solutions[i].tree).closeTo(2 * i - 10, 1E-3)
+      }
+    })
+
+    cy.get('#\\/maxvar textarea').type("{end}{backspace}{backspace}{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 11);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(11);
+      for (let i = 0; i < 11; i++) {
+        expect(components['/solve'].stateValues.solutions[i].tree).closeTo(2 * i - 10, 1E-3)
+      }
+    })
+
+    cy.get('#\\/minvar textarea').type("{end}.0001{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 11);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(11);
+      for (let i = 0; i < 11; i++) {
+        expect(components['/solve'].stateValues.solutions[i].tree).closeTo(2 * i - 10, 1E-3)
+      }
+    })
+
+    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtb-pi{rightArrow}=0{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 1);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(1);
+      expect(components['/solve'].stateValues.solutions[0].tree).closeTo(Math.PI, 1E-3)
+    })
+
+    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtb^2{rightArrow}-pi^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 2);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(2);
+      expect(components['/solve'].stateValues.solutions[0].tree).closeTo(-Math.PI, 1E-3)
+      expect(components['/solve'].stateValues.solutions[1].tree).closeTo(Math.PI, 1E-3)
+    })
+
+    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 2);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(2);
+      expect(components['/solve'].stateValues.solutions[0].tree).closeTo(-Math.PI, 1E-3)
+      expect(components['/solve'].stateValues.solutions[1].tree).closeTo(Math.PI, 1E-3)
+    })
+
+
+    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}10000000000sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 2);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(2);
+      expect(components['/solve'].stateValues.solutions[0].tree).closeTo(-Math.PI, 1E-3)
+      expect(components['/solve'].stateValues.solutions[1].tree).closeTo(Math.PI, 1E-3)
+    })
+
+
+    cy.get('#\\/equation textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}0.00000000000000000001sqrtpi^2{rightArrow}-b^2{rightArrow}{rightArrow}=0{enter}", { force: true, delay: 0 })
+
+    cy.get("#\\/num").should('have.text', 2);
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      expect(components['/solve'].stateValues.numberSolutions).eq(2);
+      expect(components['/solve'].stateValues.solutions[0].tree).closeTo(-Math.PI, 1E-3)
+      expect(components['/solve'].stateValues.solutions[1].tree).closeTo(Math.PI, 1E-3)
+    })
+
+
+    
   })
 
 
