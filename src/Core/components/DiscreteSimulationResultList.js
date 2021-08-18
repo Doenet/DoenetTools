@@ -113,7 +113,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
       defaultValue: 0,
       public: true,
     };
-    
+
     return attributes;
   }
 
@@ -161,10 +161,10 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           haveVector = true;
         }
 
-        if(dependencyValues.headerRow) {
+        if (dependencyValues.headerRow) {
           let headerRow = [];
-          let headerLen = Math.min(dependencyValues.headerRow.length, nComponents+1);
-          for(let comp =0; comp < headerLen; comp++) {
+          let headerLen = Math.min(dependencyValues.headerRow.length, nComponents + 1);
+          for (let comp = 0; comp < headerLen; comp++) {
             headerRow.push(dependencyValues.headerRow[comp]);
           }
           cells.push(headerRow)
@@ -173,21 +173,27 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
         for (let [ind, iter] of dependencyValues.allIterates.entries()) {
           let cell = [ind.toString()];
-          for(let comp =0; comp < nComponents; comp++) {
+          for (let comp = 0; comp < nComponents; comp++) {
             let val = iter;
-            if(haveVector) {
+            if (haveVector) {
               val = val.get_component(comp);
             }
             let rounded = roundForDisplay({
               value: val,
               dependencyValues, usedDefault
             });
-            cell.push(rounded.toString());
+            // catch exceptions until math-expressions can handle
+            // complex numbers
+            try {
+              cell.push(rounded.toString());
+            } catch (e) {
+              cell.push("");
+            }
           }
           cells.push(cell)
         }
 
-        return {newValues: {cells}};
+        return { newValues: { cells } };
       }
     }
 
