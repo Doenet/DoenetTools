@@ -22,7 +22,7 @@ import {
  } from '@fortawesome/free-regular-svg-icons';
 
 import { nanoid } from 'nanoid';
-import {folderDictionaryFilterSelector} from '../../../_reactComponents/Drive/NewDrive';
+import {folderDictionaryFilterSelector, fetchDrivesQuery} from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
