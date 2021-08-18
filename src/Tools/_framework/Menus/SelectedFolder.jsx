@@ -74,6 +74,8 @@ export default function SelectedFolder() {
       <br />
       <ButtonGroup vertical>
         <Button
+          alert
+          width="menu"
           data-cy="deleteDoenetMLButton"
           value="Delete Folder"
           onClick={() => {

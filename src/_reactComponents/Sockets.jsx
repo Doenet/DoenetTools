@@ -1028,7 +1028,7 @@ function useAcceptBindings() {
           set(
             folderDictionary({
               driveId,
-              itemId,
+              folderId:itemId,
             }),
             (old) => {
               let newFolderInfo = { ...old };
