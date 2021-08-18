@@ -10,8 +10,6 @@ import {
 } from "../../_reactComponents/Drive/NewDrive.js";
 import {
   faChalkboard,
-  faCode,
-  faFolder,
   faUserCircle
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
@@ -21,7 +19,7 @@ import DoenetDriveCardMenu from "../../_reactComponents/Drive/DoenetDriveCardMen
 import {driveColors, driveImages} from "../../_reactComponents/Drive/util.js";
 import {useToast} from "../Toast.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
-export default function SelectedCourse(props) {
+export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
@@ -43,11 +41,11 @@ export default function SelectedCourse(props) {
       vertical: true
     }, /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
-      value: "Make Copy(Soon)",
+      value: "Duplicate (Soon)",
       onClick: (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log(">> made copy of courses");
+        console.log(">>>This will Duplicate courses");
       }
     }), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
@@ -105,9 +103,6 @@ const DriveInfoPanel = function(props) {
   let dIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChalkboard
   });
-  let admins = [];
-  let owners = [];
-  let buttons = [];
   let addOwners = null;
   addOwners = /* @__PURE__ */ React.createElement(NewUser, {
     driveId,
@@ -198,7 +193,7 @@ const DriveInfoPanel = function(props) {
     }
   }), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removeButton": selectedOwner,
+    "data-doenet-removebutton": selectedOwner,
     value: "Remove",
     onClick: (e) => {
       e.preventDefault();
@@ -239,7 +234,7 @@ const DriveInfoPanel = function(props) {
     }
   }), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removeButton": selectedAdmin,
+    "data-doenet-removebutton": selectedAdmin,
     value: "Remove",
     onClick: (e) => {
       e.preventDefault();

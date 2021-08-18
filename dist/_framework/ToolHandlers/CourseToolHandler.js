@@ -19,7 +19,7 @@ import {
   faClipboard
 } from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
-import {folderDictionaryFilterSelector, fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
+import {fetchDrivesQuery, folderDictionaryFilterSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 const formatDate = (dt) => {
