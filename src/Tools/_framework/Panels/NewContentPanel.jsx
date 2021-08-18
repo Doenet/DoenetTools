@@ -9,7 +9,6 @@ import {
 } from 'recoil';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGripLinesVertical } from '@fortawesome/free-solid-svg-icons';
-// import { clearDriveAndItemSelections } from '../../../_reactComponents/Drive/Drive';
 
 const Wrapper = styled.div`
   grid-area: contentPanel;

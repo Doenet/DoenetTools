@@ -32,7 +32,7 @@ export default class BooleanInput extends DoenetRenderer {
       return null;
     }
     this.updateValidationState();
-    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+    let disabled = this.doenetSvData.disabled;
     const inputKey = this.componentName + "_input";
     let checkWorkStyle = {
       position: "relative",
@@ -49,10 +49,15 @@ export default class BooleanInput extends DoenetRenderer {
     let checkWorkButton = null;
     if (this.doenetSvData.includeCheckWork) {
       if (this.validationState === "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        if (disabled) {
+          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        } else {
+          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        }
         checkWorkButton = /* @__PURE__ */ React.createElement("button", {
           id: this.componentName + "_submit",
           tabIndex: "0",
+          disabled,
           ref: (c) => {
             this.target = c && ReactDOM.findDOMNode(c);
           },

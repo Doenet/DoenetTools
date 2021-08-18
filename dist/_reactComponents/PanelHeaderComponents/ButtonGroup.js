@@ -1,16 +1,26 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import styled, {ThemeProvider} from "../../_snowpack/pkg/styled-components.js";
+const Container = styled.div`
+  display: ${(props) => props.vertical ? "static" : "flex"};
+  // margin: 2px 0px 2px 0px
+ ;
+`;
 export default function ButtonGroup(props) {
   const buttonGroup = {
     margin: "0px 2px 0px 2px",
     borderRadius: "0",
     padding: "0px 12px 0px 10px"
   };
+  const verticalButtonGroup = {
+    margin: "2px 0px 2px 0px",
+    borderRadius: "0",
+    padding: "0px 10px 0px 10px"
+  };
   let elem = React.Children.toArray(props.children);
-  return /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex"}
+  return /* @__PURE__ */ React.createElement(Container, {
+    vertical: props.vertical
   }, /* @__PURE__ */ React.createElement(ThemeProvider, {
-    theme: buttonGroup
+    theme: props.vertical ? verticalButtonGroup : buttonGroup
   }, elem));
 }

@@ -7,7 +7,7 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
-import {fetchDrivesQuery} from "../ToolHandlers/CourseToolHandler.js";
+import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 export default function RoleDropdown() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const paramPath = useRecoilValue(searchParamAtomFamily("path"));

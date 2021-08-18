@@ -10,7 +10,11 @@ export default function Textfield(props) {
     fontFamily: "Arial",
     borderRadius: "5px",
     color: "#000",
-    value: "Enter text here"
+    value: "Enter text here",
+    resize: "none",
+    whiteSpace: "nowrap",
+    padding: "0px 10px 0px 10px;",
+    lineHeight: "24px"
   };
   var label = {
     value: "Label:",

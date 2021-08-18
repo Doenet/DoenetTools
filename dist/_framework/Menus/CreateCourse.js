@@ -5,6 +5,7 @@ import {useToast, toastType} from "../Toast.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
 import {driveColors, driveImages} from "../../_reactComponents/Drive/util.js";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 const CreateCourse = (props) => {
   const toast = useToast();
@@ -45,6 +46,8 @@ const CreateCourse = (props) => {
   });
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
+  }, /* @__PURE__ */ React.createElement(ButtonGroup, {
+    vertical: true
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Create New Course",
@@ -65,6 +68,6 @@ const CreateCourse = (props) => {
         onError({errorMessage: e.message});
       });
     }
-  }, "Create New Course"));
+  }, "Create New Course")));
 };
 export default CreateCourse;

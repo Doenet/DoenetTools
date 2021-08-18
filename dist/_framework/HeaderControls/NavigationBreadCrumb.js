@@ -7,8 +7,12 @@ export default function NavigationBreadCrumb() {
   return /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
   }, /* @__PURE__ */ React.createElement("div", {
-    style: {margin: "10px 20px", maxWidth: "850px"}
+    style: {
+      margin: "-9px 0px 0px -25px",
+      maxWidth: "850px"
+    }
   }, /* @__PURE__ */ React.createElement(BreadCrumb, {
-    path
+    path,
+    tool: "Content"
   })));
 }
