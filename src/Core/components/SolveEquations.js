@@ -312,12 +312,69 @@ export default class SolveEquations extends InlineComponent {
 
         }
 
+        // add extra point to beginning and end
+        // to better estimate behavior at boundary
+        let newFirst = 2 * testPoints[0] - testPoints[1];
+        let newLast = 2 * testPoints[testPoints.length - 1] - testPoints[testPoints.length - 2];
+        testPoints = [newFirst, ...testPoints, newLast];
+
+
         let f_points = testPoints.map(f_or_symbolic);
+
+        // look for points where switches between finite and non-finite
+        // and find location of switch more precisely to add a point there
+        let lastX = testPoints[0];
+        let lastF = f_points[0];
+
+        for (let ind = 0; ind < testPoints.length; ind++) {
+          let thisX = testPoints[ind];
+          let thisF = f_points[ind];
+
+          if (!Number.isFinite(thisF) || !Number.isFinite(lastF)) {
+            let finiteX, nonFiniteX;
+            if (Number.isFinite(thisF)) {
+              finiteX = thisX;
+              nonFiniteX = lastX;
+            } else if (Number.isFinite(lastF)) {
+              finiteX = lastX;
+              nonFiniteX = thisX;
+            }
+
+            if (finiteX !== undefined) {
+              // use bisection algorithm to find point where switches
+              // continue bisection method until we've exhausted machine precision
+              // to increase the likelihood we'll find a zero
+
+              while (true) {
+                let midX = (finiteX + nonFiniteX) / 2;
+                if (midX === finiteX || midX === nonFiniteX) {
+                  break;
+                }
+                if (Number.isFinite(f_or_nan(midX))) {
+                  finiteX = midX;
+                } else {
+                  nonFiniteX = midX;
+                }
+              }
+
+              if (![thisX, lastX].includes(finiteX)) {
+                testPoints.splice(ind, 0, finiteX);
+                f_points.splice(ind, 0, f_or_nan(finiteX))
+              }
+
+            }
+
+          }
+
+          lastX = thisX;
+          lastF = thisF;
+        }
+
 
         numericalSolutions = [];
 
-        let lastX = testPoints[0];
-        let lastF = f_points[0];
+        lastX = testPoints[0];
+        lastF = f_points[0];
 
         if (lastF === 0) {
           numericalSolutions.push(lastX);
@@ -353,7 +410,7 @@ export default class SolveEquations extends InlineComponent {
                     // now switches signs,
                     // which means it switches signs again when get to original interval
                     if (lastF * originalLastF < 0) {
-                      numericalSolutions.push(numerics.fzero(f, [originalLastX, lastX]));
+                      numericalSolutions.push(numerics.fzero(f_or_nan, [originalLastX, lastX]));
                       numericalSolutions.push(thisX);
                     } else {
                       if (!numericalSolutions.includes(thisX)) {
@@ -378,37 +435,50 @@ export default class SolveEquations extends InlineComponent {
             }
 
           } else if (thisF * lastF < 0) {
-            numericalSolutions.push(numerics.fzero(f, [lastX, thisX]));
+            numericalSolutions.push(numerics.fzero(f_or_nan, [lastX, thisX]));
           } else if (lastF !== 0) {
 
             // if not last point, check if is a local min or max
+            // that could cross zero if large enough
             if (ind < testPoints.length - 1) {
               let nextX = testPoints[ind + 1];
               let nextF = f_points[ind + 1];
 
-              if ((lastF - thisF) * (nextF - thisF) > 0) {
+              if ((lastF - thisF) * (nextF - thisF) > 0 && (
+                (thisF > 0 && lastF > thisF) || (thisF < 0 && lastF < thisF)
+              )) {
 
                 // get better estimate of local extremum
                 let fFlip;
                 if (lastF > thisF) {
-                  fFlip = f;
+                  fFlip = f_or_nan;
                 } else {
-                  fFlip = x => -f(x);
-                }
-                let extremumX = numerics.fminbr(fFlip, [lastX, nextX]).x;
-                let extremumF = f(extremumX);
-
-                if (extremumF * lastF < 0) {
-                  // we now flipped signs
-                  numericalSolutions.push(numerics.fzero(f, [lastX, extremumX]));
-
-                  // use the extremum values of x
-                  // for the current x so that will find zero on next loop
-                  thisX = extremumX;
-                  thisF = extremumF;
-
+                  fFlip = x => -f_or_nan(x);
                 }
 
+                // use high precision to find minimum
+                // to increase likelihood we'll hit zero
+                let res = numerics.fminbr(fFlip, [lastX, nextX], undefined, 1E-10);
+
+                if (res.success) {
+
+                  let extremumX = res.x;
+                  let extremumF = f_or_nan(extremumX);
+
+
+                  if (extremumF * lastF < 0) {
+                    // we now flipped signs
+                    numericalSolutions.push(numerics.fzero(f_or_nan, [lastX, extremumX]));
+
+                    // use the extremum values of x
+                    // for the current x so that will find zero on next loop
+                    thisX = extremumX;
+                    thisF = extremumF;
+
+                  } else if (extremumF === 0) {
+                    numericalSolutions.push(extremumX);
+                  }
+                }
 
               }
 
@@ -421,6 +491,10 @@ export default class SolveEquations extends InlineComponent {
 
 
         }
+
+
+        // since added extra points outside range, filter out any extra solutions
+        numericalSolutions = numericalSolutions.filter(x => x >= minVar && x <= maxVar);
 
         let allSolutions = numericalSolutions.map(x => me.fromAst(x))
         // allSolutions.push(...nonNumericalSolutions)
