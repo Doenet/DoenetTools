@@ -27,7 +27,7 @@ export default function DriveInfoCap(){
  
  return <>
     <div style={{position: 'relative', paddingBottom: '100px'}}>
-    <img style={{position: "absolute", clip: "rect(0, 240px, 100px, 0)" }} src={imageURL} alt={`${label} course`} width='240px' />
+    <img style={{position: "absolute", height: "100px", objectFit: 'cover'}} src={imageURL} alt={`${label} course`} width='240px' />
     </div>
  {/* <div style={{position: 'relative', paddingBottom: '100px'}}>
     <img style={{position: "absolute", clip: "rect(0, 240px, 100px, 0)" }} src={imageURL} alt={`${label} course`} height='100px' />
