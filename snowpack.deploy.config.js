@@ -1,6 +1,5 @@
 module.exports = {
   alias: {
-    '@ToolRoot': './src/Tools/_framework/ToolRoot',
     '@Tool': './src/Tools/_framework/Tool',
     '@Toast': './src/Tools/_framework/Toast',
     'solid-svg': '@fortawesome/free-solid-svg-icons',

@@ -11,6 +11,7 @@ import "../doenet.css.proxy.js";
 import Textinput from "../Textinput.js";
 import Switch from "../Switch.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
 let SectionHeader = styled.h2`
   margin-top: 2em;
   margin-bottom: 2em;
@@ -102,57 +103,36 @@ export default function DoenetProfile(props) {
     return /* @__PURE__ */ React.createElement(Content, null, /* @__PURE__ */ React.createElement(Image, {
       style: {backgroundImage: css, borderRadius: "50%"}
     }));
-  })), /* @__PURE__ */ React.createElement(Textinput, {
+  })), /* @__PURE__ */ React.createElement(Textfield, {
+    label: "Screen Name",
     style: {width: "300px"},
     id: "screen name",
-    label: "Screen Name",
     value: profile.screenName,
     onChange: (e) => {
-    },
-    onBlur: (e) => {
-      let data = {...profile};
-      data.screenName = e.target.value;
-      setProfile(data);
-    },
-    onKeyDown: (e) => {
       if (e.key === "Enter") {
         let data = {...profile};
         data.screenName = e.target.value;
         setProfile(data);
       }
     }
-  }), /* @__PURE__ */ React.createElement(Textinput, {
+  }), /* @__PURE__ */ React.createElement(Textfield, {
+    label: "First Name",
     style: {width: "300px"},
     id: "firstName",
-    label: "First Name",
     value: profile.firstName,
     onChange: (e) => {
-    },
-    onBlur: (e) => {
-      let data = {...profile};
-      data.firstName = e.target.value;
-      setProfile(data);
-    },
-    onKeyDown: (e) => {
       if (e.key === "Enter") {
         let data = {...profile};
         data.firstName = e.target.value;
         setProfile(data);
       }
     }
-  }), /* @__PURE__ */ React.createElement(Textinput, {
+  }), /* @__PURE__ */ React.createElement(Textfield, {
+    label: "Last Name",
     style: {width: "300px"},
     id: "lastName",
-    label: "Last Name",
     value: profile.lastName,
     onChange: (e) => {
-    },
-    onBlur: (e) => {
-      let data = {...profile};
-      data.lastName = e.target.value;
-      setProfile(data);
-    },
-    onKeyDown: (e) => {
       if (e.key === "Enter") {
         let data = {...profile};
         data.lastName = e.target.value;

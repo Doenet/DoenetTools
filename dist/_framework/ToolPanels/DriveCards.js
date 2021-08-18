@@ -1,13 +1,10 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
-import axios from "../../_snowpack/pkg/axios.js";
-import Button from "../temp/Button.js";
-import {useRecoilCallback, selector, useRecoilValue, useSetRecoilState, useRecoilState, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilCallback, useSetRecoilState, useRecoilState, useRecoilValueLoadable} from "../../_snowpack/pkg/recoil.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {drivecardSelectedNodesAtom} from "../ToolHandlers/CourseToolHandler.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import DriveCard from "../../_reactComponents/Drive/DoenetDriveCard.js";
-import {useMenuPanelController} from "../Panels/MenuPanel.js";
-import {drivePathSyncFamily, loadDriveInfoQuery, fetchDrivesSelector, fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
+import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 import Measure from "../../_snowpack/pkg/react-measure.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 export default function DriveCardsNew(props) {
@@ -17,18 +14,16 @@ export default function DriveCardsNew(props) {
   if (driveInfo.state == "hasValue") {
     driveIdsAndLabelsInfo = driveInfo.contents.driveIdsAndLabels;
   }
-  const selectedDrivesList = useRecoilValue(drivecardSelectedNodesAtom);
-  const setSelectedCourse = useRecoilCallback(({set}) => (driveIds) => {
-    set(drivecardSelectedNodesAtom, driveIds);
-    set(selectedMenuPanelAtom, "SelectedCourse");
-  }, []);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
       {atom: selectedMenuPanelAtom, value: null}
     ]);
-    return setMainPanelClear((was) => was.filter((obj) => obj.atom !== selectedMenuPanelAtom));
+    return setMainPanelClear((was) => [
+      ...was,
+      {atom: selectedMenuPanelAtom, value: null}
+    ]);
   }, [setMainPanelClear]);
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
@@ -42,8 +37,6 @@ export default function DriveCardsNew(props) {
 const DriveCardWrapper = (props) => {
   const {isOneDriveSelect, driveInfo, drivePathSyncKey, types} = props;
   const [drivecardSelectedValue, setDrivecardSelection] = useRecoilState(drivecardSelectedNodesAtom);
-  const setOpenMenuPanel = useMenuPanelController();
-  const drivecardInfo = useRecoilValueLoadable(loadDriveInfoQuery(driveInfo.driveId));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let driveCardItems = [];
   let heights = [];
@@ -93,7 +86,6 @@ const DriveCardWrapper = (props) => {
   const drivecardselection = (e, item) => {
     e.preventDefault();
     e.stopPropagation();
-    setOpenMenuPanel(0);
     if (isOneDriveSelect) {
       if (!e.shiftKey && !e.metaKey) {
         setDrivecardSelection((old) => [item]);
@@ -173,7 +165,7 @@ const DriveCardWrapper = (props) => {
     item["drivePathSyncKey"] = drivePathSyncKey;
     let isSelected = getSelectedCard(item);
     return /* @__PURE__ */ React.createElement("div", {
-      key: index,
+      key: `div${item.driveId}`,
       className: `adiv ${isSelected ? "borderselection" : ""}`,
       style: {
         width: 250,
@@ -183,6 +175,7 @@ const DriveCardWrapper = (props) => {
       }
     }, /* @__PURE__ */ React.createElement("div", {
       role: "button",
+      key: `divbutton${item.driveId}`,
       style: {height: "100%", outline: "none"},
       tabIndex: index + 1,
       onClick: (e) => {
@@ -196,9 +189,10 @@ const DriveCardWrapper = (props) => {
         e.preventDefault();
         e.stopPropagation();
         setDrivecardSelection([]);
-        setPageToolView({page: "course", tool: "navigation", view: "", params: {path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`}});
+        setPageToolView({page: "course", tool: "dashboard", view: "", params: {path: `${item.driveId}:${item.driveId}:${item.driveId}:Drive`}});
       }
     }, /* @__PURE__ */ React.createElement(DriveCard, {
+      key: `dcard${item.driveId}`,
       image: item.image,
       color: item.color,
       label: item.label,

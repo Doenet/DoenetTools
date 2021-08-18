@@ -1,4 +1,3 @@
-import React, {useCallback, useEffect, useState} from "../_snowpack/pkg/react.js";
 import axios from "../_snowpack/pkg/axios.js";
 import {nanoid} from "../_snowpack/pkg/nanoid.js";
 import {
@@ -6,7 +5,6 @@ import {
   selector,
   atomFamily,
   selectorFamily,
-  useRecoilValue,
   useRecoilCallback
 } from "../_snowpack/pkg/recoil.js";
 import {Manager} from "../_snowpack/pkg/socket.io-client.js";
@@ -48,7 +46,8 @@ const sockets = atomFamily({
 export const itemType = Object.freeze({
   FOLDER: "Folder",
   DOENETML: "DoenetML",
-  URL: "Url"
+  URL: "Url",
+  COLLECTION: "Collection"
 });
 export default function useSockets(nsp) {
   const addToast = useToast();
@@ -60,7 +59,6 @@ export default function useSockets(nsp) {
     const itemId = nanoid();
     const doenetId = nanoid();
     const versionId = nanoid();
-    console.log(driveIdFolderId);
     const fInfo = await snapshot.getPromise(folderDictionary(driveIdFolderId));
     let newObj = JSON.parse(JSON.stringify(fInfo));
     let newDefaultOrder = [...newObj.contentIds[sortOptions.DEFAULT]];
@@ -368,6 +366,8 @@ export default function useSockets(nsp) {
           folderId: targetFolderId
         }), true);
       }
+    }).catch((err) => {
+      console.error(err);
     });
     const result = await Promise.allSettled(promises);
     return result;
@@ -498,7 +498,7 @@ function useAcceptBindings() {
     addToast(`Add new item 'Untitled'`, toastType.SUCCESS);
   }, [addToast]);
   const acceptDeleteItem = useRecoilCallback(({snapshot, set}) => async ({driveId, parentFolderId, itemId, driveInstanceId, label}) => {
-    const fInfo = await snapshot.getPromise(folderDictionary({driveId, parentFolderId}));
+    const fInfo = await snapshot.getPromise(folderDictionary({driveId, folderId: parentFolderId}));
     const globalSelectedNodes = await snapshot.getPromise(globalSelectedNodesAtom);
     const item = {
       driveId,
@@ -528,7 +528,7 @@ function useAcceptBindings() {
     newFInfo.contentIds[sortOptions.DEFAULT].splice(index, 1);
     set(folderDictionary({
       driveId,
-      parentFolderId
+      folderId: parentFolderId
     }), newFInfo);
     addToast(`Deleted item '${label}'`, toastType.SUCCESS);
   });

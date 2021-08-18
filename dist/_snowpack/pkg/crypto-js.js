@@ -1,5 +1,5 @@
 import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-b3efd043.js';
-import { c as core, s as sha256 } from './common/sha256-bbfcefa4.js';
+import { c as core, s as sha256 } from './common/sha256-6496f025.js';
 
 var x64Core = createCommonjsModule(function (module, exports) {
 (function (root, factory) {
@@ -642,6 +642,141 @@ var encBase64 = createCommonjsModule(function (module, exports) {
 
 
 	return CryptoJS.enc.Base64;
+
+}));
+});
+
+var encBase64url = createCommonjsModule(function (module, exports) {
+(function (root, factory) {
+	{
+		// CommonJS
+		module.exports = factory(core);
+	}
+}(commonjsGlobal, function (CryptoJS) {
+
+	(function () {
+	    // Shortcuts
+	    var C = CryptoJS;
+	    var C_lib = C.lib;
+	    var WordArray = C_lib.WordArray;
+	    var C_enc = C.enc;
+
+	    /**
+	     * Base64url encoding strategy.
+	     */
+	    var Base64url = C_enc.Base64url = {
+	        /**
+	         * Converts a word array to a Base64url string.
+	         *
+	         * @param {WordArray} wordArray The word array.
+	         *
+	         * @param {boolean} urlSafe Whether to use url safe
+	         *
+	         * @return {string} The Base64url string.
+	         *
+	         * @static
+	         *
+	         * @example
+	         *
+	         *     var base64String = CryptoJS.enc.Base64url.stringify(wordArray);
+	         */
+	        stringify: function (wordArray, urlSafe=true) {
+	            // Shortcuts
+	            var words = wordArray.words;
+	            var sigBytes = wordArray.sigBytes;
+	            var map = urlSafe ? this._safe_map : this._map;
+
+	            // Clamp excess bits
+	            wordArray.clamp();
+
+	            // Convert
+	            var base64Chars = [];
+	            for (var i = 0; i < sigBytes; i += 3) {
+	                var byte1 = (words[i >>> 2]       >>> (24 - (i % 4) * 8))       & 0xff;
+	                var byte2 = (words[(i + 1) >>> 2] >>> (24 - ((i + 1) % 4) * 8)) & 0xff;
+	                var byte3 = (words[(i + 2) >>> 2] >>> (24 - ((i + 2) % 4) * 8)) & 0xff;
+
+	                var triplet = (byte1 << 16) | (byte2 << 8) | byte3;
+
+	                for (var j = 0; (j < 4) && (i + j * 0.75 < sigBytes); j++) {
+	                    base64Chars.push(map.charAt((triplet >>> (6 * (3 - j))) & 0x3f));
+	                }
+	            }
+
+	            // Add padding
+	            var paddingChar = map.charAt(64);
+	            if (paddingChar) {
+	                while (base64Chars.length % 4) {
+	                    base64Chars.push(paddingChar);
+	                }
+	            }
+
+	            return base64Chars.join('');
+	        },
+
+	        /**
+	         * Converts a Base64url string to a word array.
+	         *
+	         * @param {string} base64Str The Base64url string.
+	         *
+	         * @param {boolean} urlSafe Whether to use url safe
+	         *
+	         * @return {WordArray} The word array.
+	         *
+	         * @static
+	         *
+	         * @example
+	         *
+	         *     var wordArray = CryptoJS.enc.Base64url.parse(base64String);
+	         */
+	        parse: function (base64Str, urlSafe=true) {
+	            // Shortcuts
+	            var base64StrLength = base64Str.length;
+	            var map = urlSafe ? this._safe_map : this._map;
+	            var reverseMap = this._reverseMap;
+
+	            if (!reverseMap) {
+	                reverseMap = this._reverseMap = [];
+	                for (var j = 0; j < map.length; j++) {
+	                    reverseMap[map.charCodeAt(j)] = j;
+	                }
+	            }
+
+	            // Ignore padding
+	            var paddingChar = map.charAt(64);
+	            if (paddingChar) {
+	                var paddingIndex = base64Str.indexOf(paddingChar);
+	                if (paddingIndex !== -1) {
+	                    base64StrLength = paddingIndex;
+	                }
+	            }
+
+	            // Convert
+	            return parseLoop(base64Str, base64StrLength, reverseMap);
+
+	        },
+
+	        _map: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+	        _safe_map: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_',
+	    };
+
+	    function parseLoop(base64Str, base64StrLength, reverseMap) {
+	        var words = [];
+	        var nBytes = 0;
+	        for (var i = 0; i < base64StrLength; i++) {
+	            if (i % 4) {
+	                var bits1 = reverseMap[base64Str.charCodeAt(i - 1)] << ((i % 4) * 2);
+	                var bits2 = reverseMap[base64Str.charCodeAt(i)] >>> (6 - (i % 4) * 2);
+	                var bitsCombined = bits1 | bits2;
+	                words[nBytes >>> 2] |= bitsCombined << (24 - (nBytes % 4) * 8);
+	                nBytes++;
+	            }
+	        }
+	        return WordArray.create(words, nBytes);
+	    }
+	}());
+
+	return CryptoJS.enc.Base64url;
 
 }));
 });
@@ -5485,7 +5620,7 @@ var cryptoJs = createCommonjsModule(function (module, exports) {
 (function (root, factory, undef) {
 	{
 		// CommonJS
-		module.exports = factory(core, x64Core, libTypedarrays, encUtf16, encBase64, md5, sha1, sha256, sha224, sha512, sha384, sha3, ripemd160, hmac, pbkdf2, evpkdf, cipherCore, modeCfb, modeCtr, modeCtrGladman, modeOfb, modeEcb, padAnsix923, padIso10126, padIso97971, padZeropadding, padNopadding, formatHex, aes, tripledes, rc4, rabbit, rabbitLegacy);
+		module.exports = factory(core, x64Core, libTypedarrays, encUtf16, encBase64, encBase64url, md5, sha1, sha256, sha224, sha512, sha384, sha3, ripemd160, hmac, pbkdf2, evpkdf, cipherCore, modeCfb, modeCtr, modeCtrGladman, modeOfb, modeEcb, padAnsix923, padIso10126, padIso97971, padZeropadding, padNopadding, formatHex, aes, tripledes, rc4, rabbit, rabbitLegacy);
 	}
 }(commonjsGlobal, function (CryptoJS) {
 

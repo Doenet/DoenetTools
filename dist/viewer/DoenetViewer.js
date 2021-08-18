@@ -53,9 +53,8 @@ class DoenetViewerChild extends Component {
     };
   }
   createCore({stateVariables, variant}) {
-    if (stateVariables === void 0) {
-      console.error(`error loading state variables`);
-      this.cumulativeStateVariableChanges = null;
+    if (!stateVariables) {
+      this.cumulativeStateVariableChanges = {};
       variant = null;
     } else {
       this.cumulativeStateVariableChanges = JSON.parse(stateVariables, serializedComponentsReviver);
@@ -79,7 +78,8 @@ class DoenetViewerChild extends Component {
           contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
-        requestedVariant: this.requestedVariant
+        requestedVariant: this.requestedVariant,
+        stateVariableChanges: this.cumulativeStateVariableChanges
       });
     } else {
       new Core({
@@ -95,7 +95,8 @@ class DoenetViewerChild extends Component {
           contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
         },
         flags: this.props.flags,
-        requestedVariant: this.requestedVariant
+        requestedVariant: this.requestedVariant,
+        stateVariableChanges: this.cumulativeStateVariableChanges
       });
     }
   }
@@ -105,20 +106,6 @@ class DoenetViewerChild extends Component {
     this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
     if (this.props.generatedVariantCallback) {
       this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
-    }
-    if (this.cumulativeStateVariableChanges) {
-      let nFailures = Infinity;
-      while (nFailures > 0) {
-        let result = core.executeUpdateStateVariables({
-          newStateVariableValues: this.cumulativeStateVariableChanges
-        });
-        if (!(result.nFailures && result.nFailures < nFailures)) {
-          break;
-        }
-        nFailures = result.nFailures;
-      }
-    } else {
-      this.cumulativeStateVariableChanges = {};
     }
     let renderPromises = [];
     let rendererClassNames = [];
@@ -385,19 +372,15 @@ class DoenetViewerChild extends Component {
       this.contentId = this.props.contentId;
       if (this.contentId !== this.state.contentId) {
         this.needNewCoreFlag = true;
-        this.doenetML = localStorage.getItem(this.contentId);
-        if (!this.doenetML) {
-          try {
-            axios.get(`/media/${this.contentId}.doenet`).then((resp) => {
-              this.doenetML = resp.data;
-              localStorage.setItem(this.contentId, this.doenetML);
-              this.forceUpdate();
-            });
-          } catch (err) {
-            return "Error Loading";
-          }
-          return null;
+        try {
+          axios.get(`/media/${this.contentId}.doenet`).then((resp) => {
+            this.doenetML = resp.data;
+            this.forceUpdate();
+          });
+        } catch (err) {
+          return "Error Loading";
         }
+        return null;
       }
     } else if (this.props.doenetML && this.props.contentId) {
       this.doenetML = this.props.doenetML;

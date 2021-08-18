@@ -6,7 +6,6 @@ import { useRecoilCallback, useSetRecoilState, useRecoilState,useRecoilValueLoad
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom} from '../ToolHandlers/CourseToolHandler'
 import { pageToolViewAtom } from '../NewToolRoot';
-// import DriveCards from '../../../_reactComponents/Drive/DriveCards';
 import DriveCard from '../../../_reactComponents/Drive/DoenetDriveCard';
 // import { useMenuPanelController } from '../Panels/MenuPanel';
 import { fetchDrivesQuery} from '../../../_reactComponents/Drive/NewDrive';

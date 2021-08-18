@@ -1,5 +1,5 @@
-import { c as createBrowserHistory, R as Router, b as createHashHistory, d as context, i as invariant, e as createLocation, m as matchPath } from './common/react-router-6dd27fb9.js';
-export { f as Route, S as Switch, u as useHistory, a as useLocation } from './common/react-router-6dd27fb9.js';
+import { c as createBrowserHistory, R as Router, b as createHashHistory, d as context, i as invariant, e as createLocation, m as matchPath } from './common/react-router-7e00dcf5.js';
+export { u as useHistory, a as useLocation } from './common/react-router-7e00dcf5.js';
 import { _ as _inheritsLoose } from './common/inheritsLoose-90c3012b.js';
 import { r as react } from './common/index-61a7c514.js';
 import './common/index-01840a39.js';
@@ -249,4 +249,4 @@ var NavLink = forwardRef$1(function (_ref, forwardedRef) {
   });
 });
 
-export { BrowserRouter, HashRouter, Link };
+export { HashRouter, Link };

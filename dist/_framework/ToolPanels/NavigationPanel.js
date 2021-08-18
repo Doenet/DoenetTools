@@ -1,5 +1,10 @@
 import React, {Suspense, useCallback, useEffect} from "../../_snowpack/pkg/react.js";
-import {useRecoilCallback, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState
+} from "../../_snowpack/pkg/recoil.js";
 import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import Drive, {
   selectedDriveAtom,
@@ -8,11 +13,11 @@ import Drive, {
   clearDriveAndItemSelections
 } from "../../_reactComponents/Drive/NewDrive.js";
 import {DropTargetsProvider} from "../../_reactComponents/DropTarget/index.js";
-import {BreadcrumbProvider} from "../../_reactComponents/Breadcrumb/index.js";
+import {BreadcrumbProvider} from "../../_reactComponents/Breadcrumb/BreadcrumbProvider.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 export default function NavigationPanel(props) {
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [{view}, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily("path"));
   useEffect(() => {
@@ -60,22 +65,42 @@ export default function NavigationPanel(props) {
         }));
         break;
       case itemType.DOENETML:
+        if (view === "student") {
+          setPageToolView({
+            page: "course",
+            tool: "assignment",
+            view: "",
+            params: {
+              doenetId: info.item.doenetId
+            }
+          });
+        } else if (view === "instructor") {
+          setPageToolView({
+            page: "course",
+            tool: "editor",
+            view: "",
+            params: {
+              doenetId: info.item.doenetId,
+              path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`
+            }
+          });
+        }
+        break;
+      case itemType.COLLECTION:
         setPageToolView({
           page: "course",
-          tool: "editor",
+          tool: "collection",
           view: "",
           params: {
             doenetId: info.item.doenetId,
-            path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`
+            path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`
           }
         });
-        break;
-      case itemType.COLLECTION:
         break;
       default:
         throw new Error("NavigationPanel doubleClick info type not defined");
     }
-  }, [setPageToolView]);
+  }, [setPageToolView, view]);
   if (props.style?.display === "none") {
     return /* @__PURE__ */ React.createElement("div", {
       style: props.style
@@ -89,7 +114,8 @@ export default function NavigationPanel(props) {
     columnTypes: ["Released", "Public"],
     urlClickBehavior: "select",
     clickCallback,
-    doubleClickCallback
+    doubleClickCallback,
+    isViewOnly: view === "student"
   })))));
 }
 function Container(props) {
