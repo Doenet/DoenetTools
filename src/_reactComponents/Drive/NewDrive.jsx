@@ -24,7 +24,7 @@ import {
   // faUserEdit,
   faBookOpen,
   faChalkboard,
-  faLayerGroup,
+  // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
@@ -283,7 +283,7 @@ export const dragStateAtom = atom({
   },
 });
 
-const dragShadowId = 'dragShadow';
+// const dragShadowId = 'dragShadow';
 
 export default function Drive(props) {
   // console.log("=== Drive")
@@ -357,6 +357,7 @@ export default function Drive(props) {
         <Folder
           driveId={driveId}
           folderId={rootFolderId}
+          filterCallback={props.filterCallback}
           indentLevel={0}
           driveObj={driveObj}
           rootCollapsible={props.rootCollapsible}
@@ -776,68 +777,68 @@ export const fetchDrivesSelector = selector({
       color: labelTypeDriveIdColorImage.color,
     };
     let newDrive;
-    function duplicateFolder({
-      sourceFolderId,
-      sourceDriveId,
-      destDriveId,
-      destFolderId,
-      destParentFolderId,
-    }) {
-      let contentObjs = {};
-      // const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));
-      const sourceFolder = get(
-        folderDictionaryFilterSelector({
-          driveId: sourceDriveId,
-          folderId: sourceFolderId,
-        }),
-      );
-      if (destFolderId === undefined) {
-        destFolderId = destDriveId; //Root Folder of drive
-        destParentFolderId = destDriveId; //Root Folder of drive
-      }
+    // function duplicateFolder({
+    //   sourceFolderId,
+    //   sourceDriveId,
+    //   destDriveId,
+    //   destFolderId,
+    //   destParentFolderId,
+    // }) {
+    //   let contentObjs = {};
+    //   // const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));
+    //   const sourceFolder = get(
+    //     folderDictionaryFilterSelector({
+    //       driveId: sourceDriveId,
+    //       folderId: sourceFolderId,
+    //     }),
+    //   );
+    //   if (destFolderId === undefined) {
+    //     destFolderId = destDriveId; //Root Folder of drive
+    //     destParentFolderId = destDriveId; //Root Folder of drive
+    //   }
 
-      let contentIds = { defaultOrder: [] };
-      let contentsDictionary = {};
-      let folderInfo = { ...sourceFolder.folderInfo };
-      folderInfo.folderId = destFolderId;
-      folderInfo.parentFolderId = destParentFolderId;
+    //   let contentIds = { defaultOrder: [] };
+    //   let contentsDictionary = {};
+    //   let folderInfo = { ...sourceFolder.folderInfo };
+    //   folderInfo.folderId = destFolderId;
+    //   folderInfo.parentFolderId = destParentFolderId;
 
-      for (let sourceItemId of sourceFolder.contentIds.defaultOrder) {
-        const destItemId = nanoid();
-        contentIds.defaultOrder.push(destItemId);
-        let sourceItem = sourceFolder.contentsDictionary[sourceItemId];
-        contentsDictionary[destItemId] = { ...sourceItem };
-        contentsDictionary[destItemId].parentFolderId = destFolderId;
-        contentsDictionary[destItemId].itemId = destItemId;
-        if (sourceItem.itemType === 'Folder') {
-          let childContentObjs = duplicateFolder({
-            sourceFolderId: sourceItemId,
-            sourceDriveId,
-            destDriveId,
-            destFolderId: destItemId,
-            destParentFolderId: destFolderId,
-          });
-          contentObjs = { ...contentObjs, ...childContentObjs };
-        } else if (sourceItem.itemType === 'DoenetML') {
-          let destDoenetId = nanoid();
-          contentsDictionary[destItemId].sourceDoenetId = sourceItem.doenetId;
-          contentsDictionary[destItemId].doenetId = destDoenetId;
-        } else if (sourceItem.itemType === 'URL') {
-          let desturlId = nanoid();
-          contentsDictionary[destItemId].urlId = desturlId;
-        } else {
-          console.log(`!!! Unsupported type ${sourceItem.itemType}`);
-        }
-        contentObjs[destItemId] = contentsDictionary[destItemId];
-      }
-      const destFolderObj = { contentIds, contentsDictionary, folderInfo };
-      // console.log({destFolderObj})
-      set(
-        folderDictionary({ driveId: destDriveId, folderId: destFolderId }),
-        destFolderObj,
-      );
-      return contentObjs;
-    }
+    //   for (let sourceItemId of sourceFolder.contentIds.defaultOrder) {
+    //     const destItemId = nanoid();
+    //     contentIds.defaultOrder.push(destItemId);
+    //     let sourceItem = sourceFolder.contentsDictionary[sourceItemId];
+    //     contentsDictionary[destItemId] = { ...sourceItem };
+    //     contentsDictionary[destItemId].parentFolderId = destFolderId;
+    //     contentsDictionary[destItemId].itemId = destItemId;
+    //     if (sourceItem.itemType === 'Folder') {
+    //       let childContentObjs = duplicateFolder({
+    //         sourceFolderId: sourceItemId,
+    //         sourceDriveId,
+    //         destDriveId,
+    //         destFolderId: destItemId,
+    //         destParentFolderId: destFolderId,
+    //       });
+    //       contentObjs = { ...contentObjs, ...childContentObjs };
+    //     } else if (sourceItem.itemType === 'DoenetML') {
+    //       let destDoenetId = nanoid();
+    //       contentsDictionary[destItemId].sourceDoenetId = sourceItem.doenetId;
+    //       contentsDictionary[destItemId].doenetId = destDoenetId;
+    //     } else if (sourceItem.itemType === 'URL') {
+    //       let desturlId = nanoid();
+    //       contentsDictionary[destItemId].urlId = desturlId;
+    //     } else {
+    //       console.log(`!!! Unsupported type ${sourceItem.itemType}`);
+    //     }
+    //     contentObjs[destItemId] = contentsDictionary[destItemId];
+    //   }
+    //   const destFolderObj = { contentIds, contentsDictionary, folderInfo };
+    //   // console.log({destFolderObj})
+    //   set(
+    //     folderDictionary({ driveId: destDriveId, folderId: destFolderId }),
+    //     destFolderObj,
+    //   );
+    //   return contentObjs;
+    // }
     if (labelTypeDriveIdColorImage.type === 'new content drive') {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -1143,21 +1144,21 @@ function Folder(props) {
     </button>
   );
 
-  const sortHandler = ({ sortKey }) => {
-    const result = sortFolder({
-      driveIdInstanceIdFolderId: {
-        driveInstanceId: props.driveInstanceId,
-        driveId: props.driveId,
-        folderId: props.folderId,
-      },
-      sortKey: sortKey,
-    });
-    result
-      .then((resp) => {})
-      .catch((e) => {
-        onSortFolderError({ errorMessage: e.message });
-      });
-  };
+  // const sortHandler = ({ sortKey }) => {
+  //   const result = sortFolder({
+  //     driveIdInstanceIdFolderId: {
+  //       driveInstanceId: props.driveInstanceId,
+  //       driveId: props.driveId,
+  //       folderId: props.folderId,
+  //     },
+  //     sortKey: sortKey,
+  //   });
+  //   result
+  //     .then((resp) => {})
+  //     .catch((e) => {
+  //       onSortFolderError({ errorMessage: e.message });
+  //     });
+  // };
 
   const markFolderDraggedOpened = () => {
     setDragState((old) => {
@@ -1343,21 +1344,21 @@ function Folder(props) {
           });
           // toggleOpen();
         }}
-        onBlur={(e) => {
-          //Don't clear on navigation changes
-          if (!props.isNav) {
-            //Only clear if focus goes outside of this node group
-            // if (e.relatedTarget === null ||
-            //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            //   !e.relatedTarget.dataset.doenetDriveStayselected)
-            //   ){
-            //     setSelected({instructionType:"clear all"})
-            // }
-            // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
-            //   setSelected({instructionType:"clear all"});
-            // }
-          }
-        }}
+        // onBlur={(e) => {
+        //   //Don't clear on navigation changes
+        //   if (!props.isNav) {
+        //     //Only clear if focus goes outside of this node group
+        //     // if (e.relatedTarget === null ||
+        //     //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+        //     //   !e.relatedTarget.dataset.doenetDriveStayselected)
+        //     //   ){
+        //     //     setSelected({instructionType:"clear all"})
+        //     // }
+        //     // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+        //     //   setSelected({instructionType:"clear all"});
+        //     // }
+        //   }
+        // }}
       >
         <div
           className="noselect"
@@ -1544,7 +1545,12 @@ function Folder(props) {
     for (let itemId of contentIdsArr) {
       let item = dictionary[itemId];
       if (!item) continue;
-      // console.log(">>>item",item)
+      if (props.filterCallback){
+        if (!props.filterCallback(item)){
+          continue;
+        }
+      }
+      // console.log(">>>>item",item)
       if (props.hideUnpublished && item.isPublished === '0') {
         //hide item
         if (item.assignment_isPublished != '1') continue;
