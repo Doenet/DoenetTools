@@ -31,6 +31,12 @@ const BreadcrumbItem = styled.li`
   &:first-of-type span {
     padding: 0px 0px 0px 30px;
   }
+  &:only-child span {
+    border-radius: 15px;
+    padding: 0px 30px 0px 30px;
+    background: hsl(209, 54%, 82%);
+    color: black;
+  }
 `;
 
 const BreadcrumbSpan = styled.span`
@@ -222,8 +228,9 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
   );
 
   if (tool === 'CourseChooser'){
-    return <Breadcrumb>{returnToCourseChooser} <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan>
-  </BreadcrumbItem></Breadcrumb>
+    return <Breadcrumb>{returnToCourseChooser} 
+    {/* <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan></BreadcrumbItem> */}
+    </Breadcrumb>
   }
 
   const returnToDashboard = (
