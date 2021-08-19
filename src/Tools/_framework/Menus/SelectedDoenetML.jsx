@@ -16,7 +16,7 @@ import {
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
-import IncrementMenu from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
+import Increment from '../../../_reactComponents/PanelHeaderComponents/IncrementMenu';
 import useSockets from '../../../_reactComponents/Sockets';
 import { pageToolViewAtom } from '../NewToolRoot';
 import {
@@ -530,7 +530,12 @@ const AssignmentForm = (props) => {
           </div>
           <div>
             <label>Number Of Attempts:</label>
-            <IncrementMenu range={[0, 20]} />
+            <Increment
+            key={`numAtt${aInfo?.doenetId}`}
+             value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''} 
+             range={[0, 20]} 
+            //  onChange={handleChange}
+             />
             <input
               required
               type="number"

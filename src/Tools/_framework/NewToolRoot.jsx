@@ -336,10 +336,8 @@ let navigationObj = {
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-      // headerControls: ["NavigationBreadCrumb","RoleDropdown"],
-      // headerControlsPositions: ["Left","Right"],
-      headerControls: ["RoleDropdown"],
-      headerControlsPositions: ["Right"],
+      headerControls: ["NavigationBreadCrumb","RoleDropdown"],
+      headerControlsPositions: ["Left","Right"],
       onLeave:"NavigationLeave",
       views:{
         instructor:{
