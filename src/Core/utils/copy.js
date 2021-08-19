@@ -148,6 +148,7 @@ export function postProcessCopy({ serializedComponents, componentName,
               copyComponent.attributes = {};
             }
             copyComponent.attributes.link = { primitive: false }
+            copyComponent.doenetAttributes.tName = copyComponent.doenetAttributes.fullTName;
           }
         }
       }

@@ -2049,6 +2049,41 @@ describe('Copy Tag Tests', function () {
 
   });
 
+
+  it('copy no link containing external copies use absolute tName', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <number name="n">2</number>
+    <number name="m">2$n</number>
+    
+    <group newNamespace name="g">
+      <p>m = <copy tname="../m" assignNames="m1" /></p>
+      <p>m = <copy tname="../m" assignNames="m2" link="false" /></p>
+    </group>
+    
+    <copy tname="g" assignNames="g2" />
+    <copy tname="g" link="false" assignNames="g3" />
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/n')).should('have.text', '2')
+    cy.get(cesc('#/m')).should('have.text', '4')
+    cy.get(cesc('#/g/m1')).should('have.text', '4')
+    cy.get(cesc('#/g/m2')).should('have.text', '4')
+    cy.get(cesc('#/g2/m1')).should('have.text', '4')
+    cy.get(cesc('#/g2/m2')).should('have.text', '4')
+    cy.get(cesc('#/g3/m1')).should('have.text', '4')
+    cy.get(cesc('#/g3/m2')).should('have.text', '4')
+
+  });
+
+
   it('external content cannot reach outside namespace', () => {
     cy.window().then((win) => {
       win.postMessage({
