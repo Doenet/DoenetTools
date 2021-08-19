@@ -130,7 +130,7 @@ function Menu(props) {
   }, /* @__PURE__ */ React.createElement("h3", null, props.title)), /* @__PURE__ */ React.createElement("div", {
     style: {
       display: hideShowStyle,
-      paddingBottom: "4px",
+      paddingBottom: "1px",
       paddingLeft: "4px",
       paddingRight: "4px",
       backgroundColor: "white"
@@ -149,14 +149,12 @@ const LoadingFallback = styled.div`
 `;
 export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, menuPanelsOpen}) {
   console.log(">>>===MenuPanel");
-  console.log(">>>menuPanelCap", menuPanelCap);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
-  let toolMenus = useRef([]);
-  let lastToolMenus = useRef([]);
-  let toolMenusDictionary = useRef({});
+  let menusArray = [];
   const LazyMenuPanelCapObj = useRef({
     DriveInfoCap: lazy(() => import("../MenuPanelCaps/DriveInfoCap.js")),
-    EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap.js"))
+    EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap.js")),
+    AssignmentInfoCap: lazy(() => import("../MenuPanelCaps/AssignmentInfoCap.js"))
   }).current;
   const LazyMenuObj = useRef({
     SelectedCourse: lazy(() => import("../Menus/SelectedCourse.js")),
@@ -193,43 +191,19 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
     }, React.createElement(LazyMenuPanelCapObj[menuPanelCap])));
   }
-  function buildMenu({key, type, title, visible, initOpen: initOpen2}) {
-    let hideStyle = null;
-    if (!visible) {
-      hideStyle = "none";
-    }
-    return /* @__PURE__ */ React.createElement("div", {
-      key,
-      style: {display: hideStyle}
-    }, /* @__PURE__ */ React.createElement(Menu, {
+  for (let [i, type] of Object.entries(currentMenus)) {
+    console.log(">>>menu", type);
+    const mKey = `${type}`;
+    const title = menusTitles[i];
+    let isOpen = initOpen[i];
+    menusArray.push(/* @__PURE__ */ React.createElement(Menu, {
+      key: mKey,
       title,
-      isInitOpen: initOpen2
+      isInitOpen: isOpen
     }, /* @__PURE__ */ React.createElement(Suspense, {
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
-    }, React.createElement(LazyMenuObj[type], {key}))));
+    }, React.createElement(LazyMenuObj[type], {mKey}))));
   }
-  for (let [i, menuName] of Object.entries(currentMenus)) {
-    if (!lastToolMenus.current.includes(menuName)) {
-      const mKey = `${menuName}`;
-      const isOpen = initOpen[i];
-      const title = menusTitles[i];
-      if (toolMenusDictionary.current[mKey]) {
-        let menuIndex = toolMenusDictionary.current[mKey].index;
-        toolMenus.current[menuIndex] = buildMenu({key: mKey, type: menuName, title, visible: true, initOpen: isOpen});
-      } else {
-        toolMenus.current.push(buildMenu({key: mKey, type: menuName, title, visible: true, initOpen: isOpen}));
-        toolMenusDictionary.current[mKey] = {index: toolMenus.current.length - 1, title};
-      }
-    }
-  }
-  for (let menuName of lastToolMenus.current) {
-    if (!currentMenus.includes(menuName)) {
-      const mKey = `${menuName}`;
-      let menuIndex = toolMenusDictionary.current[mKey].index;
-      toolMenus.current[menuIndex] = buildMenu({key: mKey, type: menuName, title: "", visible: false, initOpen: false});
-    }
-  }
-  lastToolMenus.current = currentMenus;
   return /* @__PURE__ */ React.createElement(MenuPanelsWrapper, {
     hide
   }, /* @__PURE__ */ React.createElement(MenuPanelsCap, {
@@ -242,5 +216,5 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     onClick: () => setMenusOpen(false)
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronLeft
-  })))), menuPanelCapComponent, selectionPanel, /* @__PURE__ */ React.createElement("div", null, toolMenus.current));
+  })))), menuPanelCapComponent, selectionPanel, /* @__PURE__ */ React.createElement("div", null, menusArray));
 }

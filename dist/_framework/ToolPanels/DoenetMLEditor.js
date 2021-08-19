@@ -1,6 +1,7 @@
 import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
 import {editorDoenetIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom} from "./EditorViewer.js";
 import {
+  atom,
   useRecoilValue,
   useSetRecoilState,
   useRecoilCallback
@@ -13,6 +14,10 @@ import sha256 from "../../_snowpack/pkg/crypto-js/sha256.js";
 import CryptoJS from "../../_snowpack/pkg/crypto-js.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
+export const editorSaveTimestamp = atom({
+  key: "",
+  default: null
+});
 const getSHAofContent = (doenetML) => {
   if (doenetML === void 0) {
     return;
@@ -35,81 +40,88 @@ export default function DoenetMLEditor(props) {
   let timeout = useRef(null);
   let autosavetimeout = useRef(null);
   const saveDraft = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
-    const currentDraftIsSelected = await snapshot.getPromise(currentDraftSelectedAtom);
-    if (currentDraftIsSelected) {
-      const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-      const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-      let newDraft = {...oldVersions.draft};
-      const contentId = getSHAofContent(doenetML);
-      newDraft.contentId = contentId;
-      newDraft.timestamp = buildTimestamp();
-      let oldVersionsReplacement = {...oldVersions};
-      oldVersionsReplacement.draft = newDraft;
-      set(itemHistoryAtom(doenetId), oldVersionsReplacement);
-      set(fileByContentId(contentId), doenetML);
-      localStorage.setItem(contentId, doenetML);
-      let newDBVersion = {
-        ...newDraft,
-        doenetML,
-        doenetId
-      };
-      axios.post("/api/saveNewVersion.php", newDBVersion);
+    console.log(">>>>saveDraft ");
+    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    let newDraft = {...oldVersions.draft};
+    const contentId = getSHAofContent(doenetML);
+    newDraft.contentId = contentId;
+    newDraft.timestamp = buildTimestamp();
+    let oldVersionsReplacement = {...oldVersions};
+    oldVersionsReplacement.draft = newDraft;
+    set(itemHistoryAtom(doenetId), oldVersionsReplacement);
+    set(fileByContentId(contentId), doenetML);
+    let newDBVersion = {
+      ...newDraft,
+      doenetML,
+      doenetId
+    };
+    try {
+      const resp = await axios.post("/api/saveNewVersion.php", newDBVersion);
+      if (resp.data.success) {
+        set(editorSaveTimestamp, new Date());
+      } else {
+        console.log(">>>>ERROR", resp.data.message);
+      }
+    } catch (error) {
+      console.log(">>>>ERROR", error);
     }
   });
   const autoSave = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
-    const currentDraftIsSelected = await snapshot.getPromise(currentDraftSelectedAtom);
-    if (currentDraftIsSelected) {
-      const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-      const contentId = getSHAofContent(doenetML);
-      const timestamp = buildTimestamp();
-      const versionId = nanoid();
-      let newVersion = {
-        contentId,
-        versionId,
-        timestamp,
-        isDraft: "0",
-        isNamed: "0",
-        isReleased: "0",
-        title: "Autosave"
-      };
-      let newDBVersion = {
-        ...newVersion,
-        doenetML,
-        doenetId
-      };
-      const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-      let newVersions = {...oldVersions};
-      newVersions.autoSaves = [newVersion, ...oldVersions.autoSaves];
-      set(itemHistoryAtom(doenetId), newVersions);
-      set(fileByContentId(contentId), doenetML);
-      axios.post("/api/saveNewVersion.php", newDBVersion).then((resp) => {
-        console.log(">>>resp autoSave", resp.data);
-      });
+    console.log(">>>>autoSave ");
+    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+    const contentId = getSHAofContent(doenetML);
+    const timestamp = buildTimestamp();
+    const versionId = nanoid();
+    let newVersion = {
+      contentId,
+      versionId,
+      timestamp,
+      isDraft: "0",
+      isNamed: "0",
+      isReleased: "0",
+      title: "Autosave"
+    };
+    let newDBVersion = {
+      ...newVersion,
+      doenetML,
+      doenetId
+    };
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+    let newVersions = {...oldVersions};
+    newVersions.autoSaves = [newVersion, ...oldVersions.autoSaves];
+    set(itemHistoryAtom(doenetId), newVersions);
+    set(fileByContentId(contentId), doenetML);
+    try {
+      const resp = await axios.post("/api/saveNewVersion.php", newDBVersion);
+      if (resp.data.success) {
+        set(editorSaveTimestamp, new Date());
+      } else {
+        console.log(">>>>ERROR", resp.data.message);
+      }
+    } catch (error) {
+      console.log(">>>>ERROR", error);
     }
   });
   useEffect(() => {
-    if (!isCurrentDraft) {
-      console.log(">>>READ ONLY! STOP TIMERS!");
-      if (timeout.current !== null) {
-        clearTimeout(timeout.current);
+    return () => {
+      console.log(">>>>UNMOUNT TEXT EDITOR isCurrentDraft", isCurrentDraft, "initilizedDoenetId", initilizedDoenetId);
+      if (isCurrentDraft && initilizedDoenetId !== "") {
+        saveDraft(initilizedDoenetId);
+        if (timeout.current !== null) {
+          clearTimeout(timeout.current);
+          timeout.current = null;
+        }
+        if (autosavetimeout.current !== null) {
+          clearTimeout(autosavetimeout.current);
+        }
+        autosavetimeout.current = null;
         timeout.current = null;
       }
-      if (autosavetimeout.current !== null) {
-        clearTimeout(autosavetimeout.current);
-      }
-      autosavetimeout.current = null;
-      timeout.current = null;
-    }
-  }, [isCurrentDraft]);
-  if (props.style.display === "none") {
-    return /* @__PURE__ */ React.createElement("div", {
-      style: props.style
-    });
-  }
+    };
+  }, [isCurrentDraft, initilizedDoenetId]);
   if (paramDoenetId !== initilizedDoenetId) {
-    return /* @__PURE__ */ React.createElement("div", {
-      style: props.style
-    });
+    return null;
   }
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
@@ -117,10 +129,10 @@ export default function DoenetMLEditor(props) {
     key: "codemirror",
     editorRef,
     setInternalValue: updateInternalValue,
+    readOnly: !isCurrentDraft,
     onBeforeChange: (value) => {
       if (isCurrentDraft) {
         setEditorDoenetML(value);
-        console.log(`>>>set to value -${value}-`);
         if (timeout.current === null) {
           timeout.current = setTimeout(function() {
             saveDraft(initilizedDoenetId);

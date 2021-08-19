@@ -6983,7 +6983,7 @@ var domMessages = {
 function _injectProductInfo(key, element) {
   var hasValidType = !isEmpty(key);
   var isNonCommercial = typeof key === "string" && key.toLowerCase() === "non-commercial-and-evaluation";
-  var hotVersion = "9.0.1";
+  var hotVersion = "9.0.2";
   var keyValidityDate;
   var consoleMessageState = "invalid";
   var domMessageState = "invalid";
@@ -6991,7 +6991,7 @@ function _injectProductInfo(key, element) {
   var schemaValidity = _checkKeySchema(key);
   if (hasValidType || isNonCommercial || schemaValidity) {
     if (schemaValidity) {
-      var releaseDate = hooks("17/06/2021", "DD/MM/YYYY");
+      var releaseDate = hooks("28/07/2021", "DD/MM/YYYY");
       var releaseDays = Math.floor(releaseDate.toDate().getTime() / 864e5);
       var keyValidityDays = _extractTime(key);
       keyValidityDate = hooks((keyValidityDays + 1) * 864e5, "x").format("MMMM DD, YYYY");
@@ -10608,7 +10608,7 @@ function _arrayLikeToArray$1(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -14000,7 +14000,7 @@ function _arrayLikeToArray$2(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$1(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -14836,33 +14836,25 @@ var Event$1 = /* @__PURE__ */ function() {
 }();
 
 var KEY_CODES = {
-  MOUSE_LEFT: 1,
-  MOUSE_RIGHT: 3,
-  MOUSE_MIDDLE: 2,
+  ALT: 18,
+  ARROW_DOWN: 40,
+  ARROW_LEFT: 37,
+  ARROW_RIGHT: 39,
+  ARROW_UP: 38,
+  AUDIO_DOWN: isFirefox() ? 182 : 174,
+  AUDIO_MUTE: isFirefox() ? 181 : 173,
+  AUDIO_UP: isFirefox() ? 183 : 175,
   BACKSPACE: 8,
+  CAPS_LOCK: 20,
   COMMA: 188,
-  INSERT: 45,
+  COMMAND_LEFT: 91,
+  COMMAND_RIGHT: 93,
+  COMMAND_FIREFOX: 224,
+  CONTROL: 17,
   DELETE: 46,
   END: 35,
   ENTER: 13,
   ESCAPE: 27,
-  CONTROL: 17,
-  COMMAND_LEFT: 91,
-  COMMAND_RIGHT: 93,
-  COMMAND_FIREFOX: 224,
-  ALT: 18,
-  HOME: 36,
-  PAGE_DOWN: 34,
-  PAGE_UP: 33,
-  PERIOD: 190,
-  SPACE: 32,
-  SHIFT: 16,
-  CAPS_LOCK: 20,
-  TAB: 9,
-  ARROW_RIGHT: 39,
-  ARROW_LEFT: 37,
-  ARROW_UP: 38,
-  ARROW_DOWN: 40,
   F1: 112,
   F2: 113,
   F3: 114,
@@ -14875,6 +14867,29 @@ var KEY_CODES = {
   F10: 121,
   F11: 122,
   F12: 123,
+  F13: 124,
+  F14: 125,
+  F15: 126,
+  F16: 127,
+  F17: 128,
+  F18: 129,
+  F19: 130,
+  HOME: 36,
+  INSERT: 45,
+  MEDIA_NEXT: 176,
+  MEDIA_PLAY_PAUSE: 179,
+  MEDIA_PREV: 177,
+  MEDIA_STOP: 178,
+  NULL: 0,
+  NUM_LOCK: 144,
+  PAGE_DOWN: 34,
+  PAGE_UP: 33,
+  PAUSE: 19,
+  PERIOD: 190,
+  SCROLL_LOCK: 145,
+  SHIFT: 16,
+  SPACE: 32,
+  TAB: 9,
   A: 65,
   C: 67,
   D: 68,
@@ -14884,18 +14899,20 @@ var KEY_CODES = {
   P: 80,
   S: 83,
   V: 86,
-  X: 88
+  X: 88,
+  Y: 89,
+  Z: 90
 };
+var FUNCTION_KEYS = [KEY_CODES.ALT, KEY_CODES.ARROW_DOWN, KEY_CODES.ARROW_LEFT, KEY_CODES.ARROW_RIGHT, KEY_CODES.ARROW_UP, KEY_CODES.AUDIO_DOWN, KEY_CODES.AUDIO_MUTE, KEY_CODES.AUDIO_UP, KEY_CODES.BACKSPACE, KEY_CODES.CAPS_LOCK, KEY_CODES.DELETE, KEY_CODES.END, KEY_CODES.ENTER, KEY_CODES.ESCAPE, KEY_CODES.F1, KEY_CODES.F2, KEY_CODES.F3, KEY_CODES.F4, KEY_CODES.F5, KEY_CODES.F6, KEY_CODES.F7, KEY_CODES.F8, KEY_CODES.F9, KEY_CODES.F10, KEY_CODES.F11, KEY_CODES.F12, KEY_CODES.F13, KEY_CODES.F14, KEY_CODES.F15, KEY_CODES.F16, KEY_CODES.F17, KEY_CODES.F18, KEY_CODES.F19, KEY_CODES.HOME, KEY_CODES.INSERT, KEY_CODES.MEDIA_NEXT, KEY_CODES.MEDIA_PLAY_PAUSE, KEY_CODES.MEDIA_PREV, KEY_CODES.MEDIA_STOP, KEY_CODES.NULL, KEY_CODES.NUM_LOCK, KEY_CODES.PAGE_DOWN, KEY_CODES.PAGE_UP, KEY_CODES.PAUSE, KEY_CODES.SCROLL_LOCK, KEY_CODES.SHIFT, KEY_CODES.TAB];
 function isPrintableChar(keyCode) {
   return keyCode === 32 || keyCode >= 48 && keyCode <= 57 || keyCode >= 96 && keyCode <= 111 || keyCode >= 186 && keyCode <= 192 || keyCode >= 219 && keyCode <= 222 || keyCode >= 226 || keyCode >= 65 && keyCode <= 90;
 }
-function isMetaKey(keyCode) {
-  var metaKeys = [KEY_CODES.ARROW_DOWN, KEY_CODES.ARROW_UP, KEY_CODES.ARROW_LEFT, KEY_CODES.ARROW_RIGHT, KEY_CODES.HOME, KEY_CODES.END, KEY_CODES.DELETE, KEY_CODES.BACKSPACE, KEY_CODES.F1, KEY_CODES.F2, KEY_CODES.F3, KEY_CODES.F4, KEY_CODES.F5, KEY_CODES.F6, KEY_CODES.F7, KEY_CODES.F8, KEY_CODES.F9, KEY_CODES.F10, KEY_CODES.F11, KEY_CODES.F12, KEY_CODES.TAB, KEY_CODES.PAGE_DOWN, KEY_CODES.PAGE_UP, KEY_CODES.ENTER, KEY_CODES.ESCAPE, KEY_CODES.SHIFT, KEY_CODES.CAPS_LOCK, KEY_CODES.ALT];
-  return metaKeys.indexOf(keyCode) !== -1;
+function isFunctionKey(keyCode) {
+  return FUNCTION_KEYS.includes(keyCode);
 }
 function isCtrlKey(keyCode) {
   var keys = [];
-  if (navigator.platform.includes("Mac")) {
+  if (isMacOS()) {
     keys.push(KEY_CODES.COMMAND_LEFT, KEY_CODES.COMMAND_RIGHT, KEY_CODES.COMMAND_FIREFOX);
   } else {
     keys.push(KEY_CODES.CONTROL);
@@ -14921,7 +14938,7 @@ var unicodeHelpers = /*#__PURE__*/Object.freeze({
   __proto__: null,
   KEY_CODES: KEY_CODES,
   isPrintableChar: isPrintableChar,
-  isMetaKey: isMetaKey,
+  isFunctionKey: isFunctionKey,
   isCtrlKey: isCtrlKey,
   isCtrlMetaKey: isCtrlMetaKey,
   isKey: isKey
@@ -16289,7 +16306,7 @@ function _arrayLikeToArray$3(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$2(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -17174,7 +17191,7 @@ function _arrayLikeToArray$5(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$3(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -17601,7 +17618,7 @@ function _arrayLikeToArray$6(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$4(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -17844,19 +17861,20 @@ var EditorManager = /* @__PURE__ */ function() {
         return;
       }
       this.instance.runHooks("beforeKeyDown", event2);
-      if (this.destroyed || event2.keyCode === 229) {
+      var keyCode = event2.keyCode;
+      if (this.destroyed || keyCode === 229) {
         return;
       }
       if (isImmediatePropagationStopped(event2)) {
         return;
       }
-      this.lastKeyCode = event2.keyCode;
+      this.lastKeyCode = keyCode;
       if (!this.selection.isSelected()) {
         return;
       }
       var isCtrlPressed = (event2.ctrlKey || event2.metaKey) && !event2.altKey;
       if (this.activeEditor && !this.activeEditor.isWaiting()) {
-        if (!isMetaKey(event2.keyCode) && !isCtrlMetaKey(event2.keyCode) && !isCtrlPressed && !this.isEditorOpened()) {
+        if (!isFunctionKey(keyCode) && !isCtrlMetaKey(keyCode) && !isCtrlPressed && !this.isEditorOpened()) {
           this.openEditor("", event2);
           return;
         }
@@ -17864,7 +17882,7 @@ var EditorManager = /* @__PURE__ */ function() {
       var isShiftPressed = event2.shiftKey;
       var rangeModifier = isShiftPressed ? this.selection.setRangeEnd : this.selection.setRangeStart;
       var tabMoves;
-      switch (event2.keyCode) {
+      switch (keyCode) {
         case KEY_CODES.A:
           if (!this.isEditorOpened() && isCtrlPressed) {
             this.instance.selectAll();
@@ -18173,7 +18191,7 @@ function instanceToHTML(instance) {
         cell = "<th>".concat(instance.getRowHeader(row - columnModifier), "</th>");
       } else {
         var cellData = data[row][column];
-        var _instance$getCellMeta = instance.getCellMeta(row - rowModifier, column - columnModifier), hidden = _instance$getCellMeta.hidden, rowspan = _instance$getCellMeta.rowspan, colspan = _instance$getCellMeta.colspan;
+        var _instance$getCellMeta = instance.getCellMeta(row - columnModifier, column - rowModifier), hidden = _instance$getCellMeta.hidden, rowspan = _instance$getCellMeta.rowspan, colspan = _instance$getCellMeta.colspan;
         if (!hidden) {
           var attrs = [];
           if (rowspan) {
@@ -18472,7 +18490,7 @@ function _arrayLikeToArray$8(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$5(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -18583,7 +18601,7 @@ function _arrayLikeToArray$9(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$6(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -18723,7 +18741,7 @@ function _nonIterableRest$7() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 function _iterableToArrayLimit$7(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -18973,7 +18991,7 @@ function _nonIterableRest$8() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 function _iterableToArrayLimit$8(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -22644,7 +22662,7 @@ function _arrayLikeToArray$h(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$9(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -23962,7 +23980,7 @@ function _arrayLikeToArray$j(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$a(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -24177,7 +24195,7 @@ function _arrayLikeToArray$k(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$b(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -26223,7 +26241,7 @@ function _nonIterableRest$c() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 function _iterableToArrayLimit$c(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -27563,6 +27581,7 @@ function Core(rootElement, userSettings) {
       instance.forceFullRender = true;
       editorManager.lockEditor();
       instance._refreshBorders(null);
+      instance.view.wt.wtOverlays.adjustElementsSize();
       editorManager.unlockEditor();
     }
     if (!init && instance.view && (currentHeight === "" || height === "" || height === void 0) && currentHeight !== height) {
@@ -29003,8 +29022,8 @@ Handsontable.Core = function(rootElement) {
   return new Core(rootElement, userSettings, rootInstanceSymbol);
 };
 Handsontable.packageName = "handsontable";
-Handsontable.buildDate = "17/06/2021 09:14:07";
-Handsontable.version = "9.0.1";
+Handsontable.buildDate = "28/07/2021 09:12:07";
+Handsontable.version = "9.0.2";
 Handsontable.languages = {
   dictionaryKeys,
   getLanguageDictionary,
@@ -29079,7 +29098,7 @@ function _arrayLikeToArray$n(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$d(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -31863,9 +31882,9 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       var offset = this.TD.getBoundingClientRect();
       var dateFormat = this.cellProperties.dateFormat || this.defaultDateFormat;
       var datePickerConfig = this.$datePicker.config();
-      var dateStr;
       var isMouseDown = this.instance.view.isMouseDown();
-      var isMeta = event ? isMetaKey(event.keyCode) : false;
+      var isMeta = event ? isFunctionKey(event.keyCode) : false;
+      var dateStr;
       this.datePickerStyle.top = "".concat(this.hot.rootWindow.pageYOffset + offset.top + outerHeight(this.TD), "px");
       this.datePickerStyle.left = "".concat(this.hot.rootWindow.pageXOffset + offset.left, "px");
       this.$datePicker._onInputFocus = function() {
@@ -33316,7 +33335,7 @@ function _arrayLikeToArray$o(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$e(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -34020,7 +34039,7 @@ function _arrayLikeToArray$p(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$f(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -34730,7 +34749,7 @@ function _arrayLikeToArray$q(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$g(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -35799,7 +35818,7 @@ function _arrayLikeToArray$r(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$h(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -36388,7 +36407,7 @@ function _arrayLikeToArray$s(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$i(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -39369,7 +39388,7 @@ function _arrayLikeToArray$v(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$j(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -39470,7 +39489,7 @@ function _arrayLikeToArray$w(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$k(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -41129,7 +41148,7 @@ function _arrayLikeToArray$x(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$l(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -41944,7 +41963,7 @@ function _arrayLikeToArray$y(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$m(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -42865,7 +42884,7 @@ function _arrayLikeToArray$z(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$n(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -42951,7 +42970,7 @@ function _arrayLikeToArray$A(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$o(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -46205,7 +46224,7 @@ function _arrayLikeToArray$C(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$p(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -46750,7 +46769,7 @@ function _nonIterableRest$r() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 function _iterableToArrayLimit$q(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -49169,7 +49188,7 @@ function _arrayLikeToArray$G(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$r(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -51503,7 +51522,7 @@ function _arrayLikeToArray$I(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$s(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52263,7 +52282,7 @@ function _arrayLikeToArray$J(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$t(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52343,7 +52362,7 @@ function _arrayLikeToArray$K(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$u(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52417,7 +52436,7 @@ function _arrayLikeToArray$L(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$v(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52491,7 +52510,7 @@ function _arrayLikeToArray$M(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$w(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52565,7 +52584,7 @@ function _arrayLikeToArray$N(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$x(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52639,7 +52658,7 @@ function _arrayLikeToArray$O(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$y(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52714,7 +52733,7 @@ function _arrayLikeToArray$P(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$z(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52789,7 +52808,7 @@ function _arrayLikeToArray$Q(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$A(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52881,7 +52900,7 @@ function _arrayLikeToArray$R(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$B(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -52951,7 +52970,7 @@ function _arrayLikeToArray$S(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$C(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -53021,7 +53040,7 @@ function _arrayLikeToArray$T(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$D(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -53211,7 +53230,7 @@ function _arrayLikeToArray$U(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$E(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -55365,7 +55384,7 @@ function _arrayLikeToArray$X(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$F(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -55869,7 +55888,7 @@ function _arrayLikeToArray$Y(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$G(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -56371,7 +56390,7 @@ function _arrayLikeToArray$Z(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$H(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -57518,7 +57537,7 @@ function _arrayLikeToArray$_(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$I(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -58893,7 +58912,7 @@ function _arrayLikeToArray$11(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$J(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -59657,7 +59676,7 @@ var StateManager = /* @__PURE__ */ function() {
         return columnIndex;
       }
       var stepBackColumn = columnIndex - 1;
-      do {
+      while (stepBackColumn >= 0) {
         var _this$getHeaderSettin2;
         var _ref3 = (_this$getHeaderSettin2 = this.getHeaderSettings(headerLevel, stepBackColumn)) !== null && _this$getHeaderSettin2 !== void 0 ? _this$getHeaderSettin2 : {
           isRoot: true
@@ -59666,7 +59685,7 @@ var StateManager = /* @__PURE__ */ function() {
           break;
         }
         stepBackColumn -= 1;
-      } while (columnIndex >= 0);
+      }
       return stepBackColumn;
     }
   }, {
@@ -59762,7 +59781,9 @@ var GhostTable$1 = /* @__PURE__ */ function() {
               }
             }
             fastInnerHTML(td, headerObj.label);
-            td.colSpan = headerObj.colspan;
+            if (headerObj.colspan !== void 0) {
+              td.colSpan = headerObj.colspan;
+            }
             tr.appendChild(td);
           }
         }
@@ -60255,16 +60276,21 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onAfterViewportColumnCalculatorOverride",
     value: function onAfterViewportColumnCalculatorOverride(calc) {
+      var headerLayersCount = _classPrivateFieldGet$6(this, _stateManager).getLayersCount();
       var newStartColumn = calc.startColumn;
-      for (var headerLayer = 0; headerLayer < _classPrivateFieldGet$6(this, _stateManager).getLayersCount(); headerLayer++) {
+      var nonRenderable = !!headerLayersCount;
+      for (var headerLayer = 0; headerLayer < headerLayersCount; headerLayer++) {
         var startColumn = _classPrivateFieldGet$6(this, _stateManager).findLeftMostColumnIndex(headerLayer, calc.startColumn);
         var renderedStartColumn = this.hot.columnIndexMapper.getRenderableFromVisualIndex(startColumn);
-        if (renderedStartColumn < calc.startColumn) {
+        if (startColumn >= 0) {
+          nonRenderable = false;
+        }
+        if (isNumeric(renderedStartColumn) && renderedStartColumn < calc.startColumn) {
           newStartColumn = renderedStartColumn;
           break;
         }
       }
-      calc.startColumn = newStartColumn;
+      calc.startColumn = nonRenderable ? _classPrivateFieldGet$6(this, _stateManager).getHeaderTreeNodeData(0, newStartColumn).columnIndex : newStartColumn;
     }
   }, {
     key: "onModifyColWidth",
@@ -62587,6 +62613,7 @@ function _getPrototypeOf$1i(o) {
 var PLUGIN_KEY$u = "nestedRows";
 var PLUGIN_PRIORITY$s = 300;
 var privatePool$l = new WeakMap();
+var WRONG_DATA_TYPE_ERROR = "The Nested Rows plugin requires an Array of Objects as a dataset to be provided. The plugin has been disabled.";
 var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
   _inherits$1i(NestedRows2, _BasePlugin);
   var _super = _createSuper$1i(NestedRows2);
@@ -62862,6 +62889,11 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onBeforeLoadData",
     value: function onBeforeLoadData(data) {
+      if (!isArrayOfObjects(data)) {
+        error(WRONG_DATA_TYPE_ERROR);
+        this.disablePlugin();
+        return;
+      }
       this.dataManager.setData(data);
       this.dataManager.rewriteCache();
     }
@@ -62907,7 +62939,7 @@ function _arrayLikeToArray$17(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$K(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -63576,7 +63608,7 @@ function _arrayLikeToArray$19(arr, len) {
   return arr2;
 }
 function _iterableToArrayLimit$L(arr, i) {
-  var _i = arr && (typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]);
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
   var _arr = [];
@@ -64807,6 +64839,11 @@ var bulkComponentContainer = null;
 
 var AUTOSIZE_WARNING = 'Your `HotTable` configuration includes `autoRowSize`/`autoColumnSize` options, which are not compatible with ' + ' the component-based renderers`. Disable `autoRowSize` and `autoColumnSize` to prevent row and column misalignment.';
 /**
+ * Message for the warning thrown if the Handsontable instance has been destroyed.
+ */
+
+var HOT_DESTROYED_WARNING = 'The Handsontable instance bound to this component was destroyed and cannot be' + ' used properly.';
+/**
  * Default classname given to the wrapper container.
  */
 
@@ -65289,7 +65326,7 @@ var PortalManager = /*#__PURE__*/function (_React$Component) {
   return PortalManager;
 }(react.Component);
 
-var version="9.0.1";
+var version="9.0.2";
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -65722,10 +65759,11 @@ var HotTable = /*#__PURE__*/function (_React$Component) {
     /**
      * Reference to the Handsontable instance.
      *
+     * @private
      * @type {Object}
      */
 
-    _this.hotInstance = null;
+    _this.__hotInstance = null;
     /**
      * Reference to the main Handsontable DOM element.
      *
@@ -65796,14 +65834,37 @@ var HotTable = /*#__PURE__*/function (_React$Component) {
 
 
   _createClass$2y(HotTable, [{
-    key: "getRenderedCellCache",
-    value:
+    key: "hotInstance",
+    get:
+    /**
+     * Getter for the property storing the Handsontable instance.
+     */
+    function get() {
+      if (!this.__hotInstance || this.__hotInstance && !this.__hotInstance.isDestroyed) {
+        // Will return the Handsontable instance or `null` if it's not yet been created.
+        return this.__hotInstance;
+      } else {
+        console.warn(HOT_DESTROYED_WARNING);
+        return null;
+      }
+    }
+    /**
+     * Setter for the property storing the Handsontable instance.
+     * @param {Handsontable} hotInstance The Handsontable instance.
+     */
+    ,
+    set: function set(hotInstance) {
+      this.__hotInstance = hotInstance;
+    }
     /**
      * Get the rendered table cell cache.
      *
      * @returns {Map}
      */
-    function getRenderedCellCache() {
+
+  }, {
+    key: "getRenderedCellCache",
+    value: function getRenderedCellCache() {
       return this.renderedCellCache;
     }
     /**
@@ -66076,7 +66137,7 @@ var HotTable = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "displayAutoSizeWarning",
     value: function displayAutoSizeWarning(newGlobalSettings) {
-      if (this.hotInstance.getPlugin('autoRowSize').enabled || this.hotInstance.getPlugin('autoColumnSize').enabled) {
+      if (this.hotInstance && (this.hotInstance.getPlugin('autoRowSize').enabled || this.hotInstance.getPlugin('autoColumnSize').enabled)) {
         if (this.componentRendererColumns.size > 0) {
           warn$2(AUTOSIZE_WARNING);
         }
@@ -66129,7 +66190,9 @@ var HotTable = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "updateHot",
     value: function updateHot(newSettings) {
-      this.hotInstance.updateSettings(newSettings, false);
+      if (this.hotInstance) {
+        this.hotInstance.updateSettings(newSettings, false);
+      }
     }
     /**
      * Set the portal manager ref.
@@ -66207,7 +66270,10 @@ var HotTable = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "componentWillUnmount",
     value: function componentWillUnmount() {
-      this.hotInstance.destroy();
+      if (this.hotInstance) {
+        this.hotInstance.destroy();
+      }
+
       removeEditorContainers(this.getOwnerDocument());
     }
     /**

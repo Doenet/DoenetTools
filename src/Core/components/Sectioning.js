@@ -81,7 +81,11 @@ export class Aside extends SectioningComponent {
       public: true,
       forRenderer: true,
     }
-
+    attributes.startOpen = {
+      createComponentOfType: "boolean",
+      createStateVariable: "startOpen",
+      defaultValue: false,
+    }
     return attributes;
   }
 
@@ -91,7 +95,21 @@ export class Aside extends SectioningComponent {
 
     delete stateVariableDefinitions.collapsible;
 
-    stateVariableDefinitions.open.defaultValue = false;
+    stateVariableDefinitions.open.returnDependencies = () => ({
+      startOpen: {
+        dependencyType: "stateVariable",
+        variableName: "startOpen"
+      }
+    })
+
+    stateVariableDefinitions.open.definition = ({ dependencyValues }) => ({
+      useEssentialOrDefaultValue: {
+        open: {
+          defaultValue: dependencyValues.startOpen,
+          variablesToCheck: ["open"]
+        }
+      }
+    })
 
     stateVariableDefinitions.level.definition = () => ({
       newValues: { level: 3 }

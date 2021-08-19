@@ -2,14 +2,19 @@ import { faFolder } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { useRecoilValueLoadable, useSetRecoilState } from 'recoil';
+import { useRecoilValueLoadable, useSetRecoilState, useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import useSockets from '../../../_reactComponents/Sockets';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { selectedInformation } from './SelectedDoenetML';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+import { pageToolViewAtom } from '../NewToolRoot';
+
 
 export default function SelectedFolder() {
+  const pageToolView = useRecoilValue(pageToolViewAtom);
+  const role = pageToolView.view;
+  // console.log(">>>>SelectedFolder role",role)
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);
@@ -42,13 +47,10 @@ export default function SelectedFolder() {
   if (!item){
     return null;
   }
-  return (
-    <>
-      <h2 data-cy="infoPanelItemLabel">
-        {dIcon} {item.label}
-      </h2>
-
-      <label>
+  let modControl = null;
+  if (role === 'instructor'){
+    modControl = <>
+     <label>
         {item.itemType} Label
         <input
           type="text"
@@ -74,6 +76,8 @@ export default function SelectedFolder() {
       <br />
       <ButtonGroup vertical>
         <Button
+          alert
+          width="menu"
           data-cy="deleteDoenetMLButton"
           value="Delete Folder"
           onClick={() => {
@@ -89,6 +93,14 @@ export default function SelectedFolder() {
           }}
         />
       </ButtonGroup>
+    </>
+  }
+  return (
+    <>
+      <h2 data-cy="infoPanelItemLabel">
+        {dIcon} {item.label}
+      </h2>
+      {modControl}
     </>
   );
 }

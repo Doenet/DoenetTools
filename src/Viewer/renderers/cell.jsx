@@ -38,10 +38,16 @@ export default class Cell extends DoenetRenderer {
       }
     }
 
+    let content = this.children;
+
+    if(content.length === 0) {
+      content = this.doenetSvData.text;
+    }
+
     if(this.doenetSvData.inHeader) {
-      return <th id={this.componentName} {...props}>{this.children}</th>
+      return <th id={this.componentName} {...props}>{content}</th>
     } else {
-      return <td id={this.componentName} {...props}>{this.children}</td>
+      return <td id={this.componentName} {...props}>{content}</td>
     }
   }
 }

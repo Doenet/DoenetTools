@@ -7,7 +7,7 @@ export default class Answer extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
-    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+    let disabled = this.doenetSvData.disabled;
     let submitAnswer = this.actions.submitAnswer;
     if (this.doenetSvData.submitAllAnswersAtAncestor) {
       submitAnswer = this.actions.submitAllAnswers;

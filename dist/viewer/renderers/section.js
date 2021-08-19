@@ -39,27 +39,33 @@ export default class Section extends DoenetRenderer {
     }
     if (this.doenetSvData.level === 0) {
       heading = /* @__PURE__ */ React.createElement("h1", {
-        id
+        id,
+        style: {fontSize: "2em"}
       }, title);
     } else if (this.doenetSvData.level === 1) {
       heading = /* @__PURE__ */ React.createElement("h2", {
-        id
+        id,
+        style: {fontSize: "1.5em"}
       }, title);
     } else if (this.doenetSvData.level === 2) {
       heading = /* @__PURE__ */ React.createElement("h3", {
-        id
+        id,
+        style: {fontSize: "1.17em"}
       }, title);
     } else if (this.doenetSvData.level === 3) {
       heading = /* @__PURE__ */ React.createElement("h4", {
-        id
+        id,
+        style: {fontSize: "1em"}
       }, title);
     } else if (this.doenetSvData.level === 4) {
       heading = /* @__PURE__ */ React.createElement("h5", {
-        id
+        id,
+        style: {fontSize: ".83em"}
       }, title);
     } else if (this.doenetSvData.level === 5) {
       heading = /* @__PURE__ */ React.createElement("h6", {
-        id
+        id,
+        style: {fontSize: ".67em"}
       }, title);
     }
     let checkworkComponent = null;
@@ -148,9 +154,6 @@ export default class Section extends DoenetRenderer {
         }), /* @__PURE__ */ React.createElement("span", {
           style: {
             display: "block",
-            margin: "4px 4px 0px 4px",
-            padding: "6px",
-            border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           },
@@ -160,9 +163,6 @@ export default class Section extends DoenetRenderer {
         }), heading), /* @__PURE__ */ React.createElement("span", {
           style: {
             display: "block",
-            margin: "0px 4px 4px 4px",
-            padding: "6px",
-            border: "1px solid #C9C9C9",
             backgroundColor: "white"
           }
         }, childrenToRender, checkworkComponent));
@@ -172,9 +172,6 @@ export default class Section extends DoenetRenderer {
         }), /* @__PURE__ */ React.createElement("span", {
           style: {
             display: "block",
-            margin: "4px 4px 0px 4px",
-            padding: "6px",
-            border: "1px solid #C9C9C9",
             backgroundColor: "#ebebeb",
             cursor: "pointer"
           },

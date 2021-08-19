@@ -108,8 +108,6 @@ function finishReturnAllPossibleVariants({
 }, { callback, componentInfoObjects }) {
 
 
-  
-  let contentId = contentIds[0];
 
   let serializedComponents = fullSerializedComponents[0];
 
@@ -139,12 +137,10 @@ function finishReturnAllPossibleVariants({
     }
   }
 
-  let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
-    serializedComponents: document.children,
-    componentInfoObjects,
-  });
 
   let nVariants = 100;
+  let allPossibleVariants;
+
 
   if (variantControlChild !== undefined) {
 
@@ -182,19 +178,21 @@ function finishReturnAllPossibleVariants({
 
     }
 
-
-    callback({ allPossibleVariants: variantNames })
-
+    allPossibleVariants = variantNames;
 
   } else {
 
-    let allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
-
-    callback({ allPossibleVariants })
+    allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
 
   }
 
 
+
+  if (calledAsynchronously) {
+    callback({ allPossibleVariants })
+  } else {
+    setTimeout(() => callback({ allPossibleVariants }), 0)
+  }
 }
 
 
