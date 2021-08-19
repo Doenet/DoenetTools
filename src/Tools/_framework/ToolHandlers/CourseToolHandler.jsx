@@ -23,7 +23,7 @@ import {
 
 import { nanoid } from 'nanoid';
 
-import {fetchDrivesQuery, folderDictionaryFilterSelector} from '../../../_reactComponents/Drive/NewDrive';
+import {fetchDrivesQuery, folderDictionaryFilterSelector, loadAssignmentSelector} from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
@@ -589,17 +589,7 @@ export const fetchDrivesSelector = selector({
     }
   }
 })
-export const loadAssignmentSelector = selectorFamily({
-  key: 'loadAssignmentSelector',
-  get:
-    (doenetId) =>
-    async ({ get, set }) => {
-      const { data } = await axios.get(
-        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
-      );
-      return data;
-    },
-});
+
 export const assignmentDictionary = atomFamily({
   key: 'assignmentDictionary',
   default: selectorFamily({
@@ -611,13 +601,13 @@ export const assignmentDictionary = atomFamily({
           driveId: driveIditemIddoenetIdparentFolderId.driveId,
           folderId: driveIditemIddoenetIdparentFolderId.folderId,
         };
-        let folderInfo = get(
-          folderDictionaryFilterSelector(folderInfoQueryKey),
-        );
-        const itemObj =
-          folderInfo?.contentsDictionary?.[
-            driveIditemIddoenetIdparentFolderId.itemId
-          ];
+        // let folderInfo = get(
+        //   folderDictionaryFilterSelector(folderInfoQueryKey),
+        // );
+        // const itemObj =
+        //   folderInfo?.contentsDictionary?.[
+        //     driveIditemIddoenetIdparentFolderId.itemId
+        //   ];
         if (driveIditemIddoenetIdparentFolderId.doenetId) {
           const aInfo = await get(
             loadAssignmentSelector(
@@ -625,7 +615,7 @@ export const assignmentDictionary = atomFamily({
             ),
           );
           if (aInfo) {
-            return aInfo?.assignments[0];
+            return aInfo;
           } else return null;
         } else return null;
       },
