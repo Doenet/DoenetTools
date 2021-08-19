@@ -117,7 +117,7 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path, tool, tool2, doenetId }) {
+export default function BreadCrumb({ path, tool, tool2, doenetId, label }) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -326,7 +326,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
                 params:params2,}));
             }}
           >
-            {tool2}
+            {label}
           </BreadcrumbSpan>
         </BreadcrumbItem>
         
