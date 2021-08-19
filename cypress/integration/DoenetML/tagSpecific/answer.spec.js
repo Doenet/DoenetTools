@@ -12440,4 +12440,20 @@ describe('Answer Tag Tests', function () {
 
   });
 
+  it('justSubmitted with expression containing NaN', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <answer><mathinput name="mi" /><award><math><number>0/0</number>+1</math></award></answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi textarea').type("x{enter}", { force: true })
+    cy.get('#\\/mi_incorrect').should('be.visible')
+
+  });
+
 })
