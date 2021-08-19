@@ -1,3 +1,4 @@
+import { findFiniteNumericalValue } from '../utils/math';
 import ConstraintComponent from './abstract/ConstraintComponent';
 
 export default class AttractTo extends ConstraintComponent {
@@ -10,6 +11,12 @@ export default class AttractTo extends ConstraintComponent {
       createComponentOfType: "number",
       createStateVariable: "threshold",
       defaultValue: 0.5,
+      public: true,
+    }
+    attributes.thresholdRelativeToGraph = {
+      createComponentOfType: "boolean",
+      createStateVariable: "thresholdRelativeToGraph",
+      defaultValue: false,
       public: true,
     }
     return attributes;
@@ -55,72 +62,109 @@ export default class AttractTo extends ConstraintComponent {
     }
 
     stateVariableDefinitions.applyConstraint = {
-      returnDependencies: () => ({
-        nearestPointFunctions: {
-          dependencyType: "stateVariable",
-          variableName: "nearestPointFunctions"
-        },
-        threshold: {
-          dependencyType: "stateVariable",
-          variableName: "threshold"
+      stateVariablesDeterminingDependencies: ["thresholdRelativeToGraph"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          nearestPointFunctions: {
+            dependencyType: "stateVariable",
+            variableName: "nearestPointFunctions"
+          },
+          threshold: {
+            dependencyType: "stateVariable",
+            variableName: "threshold"
+          },
+          thresholdRelativeToGraph: {
+            dependencyType: "stateVariable",
+            variableName: "thresholdRelativeToGraph"
+          }
         }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          applyConstraint: function (variables) {
 
-            let closestDistance2 = Infinity;
-            let closestPoint = {}
+        if (stateValues.thresholdRelativeToGraph) {
+          dependencies.graphAncestor = {
+            dependencyType: "ancestor",
+            componentType: "graph",
+            variableNames: ["xscale", "yscale"]
+          }
+        }
 
-            for (let nearestPointFunction of dependencyValues.nearestPointFunctions) {
+        return dependencies;
 
-              let nearestPoint = nearestPointFunction(variables);
+      },
+      definition({ dependencyValues }) {
 
-              if (nearestPoint === undefined) {
-                continue;
-              }
+        let xscale = 1, yscale = 1;
 
-              let constrainedVariables = {};
-              let distance2 = 0;
-
-              if (variables.x1 !== undefined) {
-                if (nearestPoint.x1 === undefined) {
-                  continue;
-                }
-                constrainedVariables.x1 = nearestPoint.x1;
-                distance2 += Math.pow(variables.x1 - nearestPoint.x1, 2);
-              }
-              if (variables.x2 !== undefined) {
-                if (nearestPoint.x2 === undefined) {
-                  continue;
-                }
-                constrainedVariables.x2 = nearestPoint.x2;
-                distance2 += Math.pow(variables.x2 - nearestPoint.x2, 2);
-              }
-              if (variables.x3 !== undefined) {
-                if (nearestPoint.x3 === undefined) {
-                  continue;
-                }
-                constrainedVariables.x3 = nearestPoint.x3;
-                distance2 += Math.pow(variables.x3 - nearestPoint.x3, 2);
-              }
-
-              if (distance2 < closestDistance2) {
-                closestPoint = constrainedVariables;
-                closestDistance2 = distance2;
-              }
-
-            }
-
-            if (closestDistance2 > dependencyValues.threshold * dependencyValues.threshold) {
-              return {};
-            }
-
-            return { constrained: true, variables: closestPoint };
+        if (dependencyValues.thresholdRelativeToGraph) {
+          if (dependencyValues.graphAncestor) {
+            xscale = dependencyValues.graphAncestor.stateValues.xscale;
+            yscale = dependencyValues.graphAncestor.stateValues.yscale;
 
           }
         }
-      })
+
+        return {
+          newValues: {
+            applyConstraint: function (variables) {
+
+
+              let closestDistance2 = Infinity;
+              let closestPoint = {}
+
+              let numericalVariables = {};
+              for(let varName in variables) {
+                numericalVariables[varName] = findFiniteNumericalValue(variables[varName]);
+              }
+
+              for (let nearestPointFunction of dependencyValues.nearestPointFunctions) {
+
+                let nearestPoint = nearestPointFunction(variables);
+
+                if (nearestPoint === undefined) {
+                  continue;
+                }
+
+                let constrainedVariables = {};
+                let distance2 = 0;
+
+                if (numericalVariables.x1 !== undefined) {
+                  if (nearestPoint.x1 === undefined) {
+                    continue;
+                  }
+                  constrainedVariables.x1 = nearestPoint.x1;
+                  distance2 += Math.pow((numericalVariables.x1 - nearestPoint.x1) / xscale, 2);
+                }
+                if (numericalVariables.x2 !== undefined) {
+                  if (nearestPoint.x2 === undefined) {
+                    continue;
+                  }
+                  constrainedVariables.x2 = nearestPoint.x2;
+                  distance2 += Math.pow((numericalVariables.x2 - nearestPoint.x2) / yscale, 2);
+                }
+                if (numericalVariables.x3 !== undefined) {
+                  if (nearestPoint.x3 === undefined) {
+                    continue;
+                  }
+                  constrainedVariables.x3 = nearestPoint.x3;
+                  distance2 += Math.pow(numericalVariables.x3 - nearestPoint.x3, 2);
+                }
+
+                if (distance2 < closestDistance2) {
+                  closestPoint = constrainedVariables;
+                  closestDistance2 = distance2;
+                }
+
+              }
+
+              if (closestDistance2 > dependencyValues.threshold * dependencyValues.threshold) {
+                return {};
+              }
+
+              return { constrained: true, variables: closestPoint };
+
+            }
+          }
+        }
+      }
     }
 
     return stateVariableDefinitions;
