@@ -60,7 +60,6 @@ export default function DoenetMLEditor(props){
   let autosavetimeout = useRef(null);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    console.log(">>>>saveDraft ")
 
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
@@ -93,16 +92,15 @@ export default function DoenetMLEditor(props){
           set(editorSaveTimestamp,new Date());
         }else{
           //TODO: Toast here
-          console.log(">>>>ERROR",resp.data.message)
+          console.log("ERROR",resp.data.message)
         }
       } catch (error) {
-        console.log(">>>>ERROR",error)
+        console.log("ERROR",error)
       }
     
   });
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    console.log(">>>>autoSave ")
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
     const timestamp = buildTimestamp();
@@ -134,10 +132,10 @@ export default function DoenetMLEditor(props){
         set(editorSaveTimestamp,new Date());
       }else{
         //TODO: Toast here
-        console.log(">>>>ERROR",resp.data.message)
+        console.log("ERROR",resp.data.message)
       }
     } catch (error) {
-      console.log(">>>>ERROR",error)
+      console.log("ERROR",error)
     }
   
   });
@@ -145,7 +143,6 @@ export default function DoenetMLEditor(props){
   useEffect(()=>{
 
     return ()=>{
-      console.log(">>>>UNMOUNT TEXT EDITOR isCurrentDraft",isCurrentDraft,"initilizedDoenetId",initilizedDoenetId)
       if (isCurrentDraft && initilizedDoenetId !== ""){
         // save and stop timers
         saveDraft(initilizedDoenetId)
