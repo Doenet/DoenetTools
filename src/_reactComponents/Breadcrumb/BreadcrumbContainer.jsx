@@ -1,7 +1,7 @@
 import React from 'react'
 import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { drivePathSyncFamily, folderDictionary, fetchDrivesQuery } from '../Drive/Drive';
+import { drivePathSyncFamily, folderDictionary, fetchDrivesQuery } from '../Drive/NewDrive';
 import { useRecoilValue, useRecoilState, atomFamily, selectorFamily } from 'recoil';
 
 const breadcrumbItemAtomFamily = atomFamily({

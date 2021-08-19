@@ -5,7 +5,11 @@ export default class AsList extends DoenetRenderer {
     if (this.doenetSvData.hidden) {
       return null;
     }
-    let children = this.children.filter((x) => !x.props.componentInstructions.stateValues.hidden);
+    let children = this.children;
+    if (this.doenetSvData.nChildrenToDisplay !== void 0) {
+      children = children.slice(0, this.doenetSvData.nChildrenToDisplay);
+    }
+    children = children.filter((x) => !x.props.componentInstructions.stateValues.hidden);
     if (children.length === 0) {
       return /* @__PURE__ */ React.createElement(React.Fragment, {
         key: this.componentName

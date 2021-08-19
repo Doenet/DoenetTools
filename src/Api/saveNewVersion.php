@@ -91,8 +91,16 @@ if ($isDraft == '1' and $isSetAsCurrent != '1'){
     AND doenetId='$doenetId'
     ";
 
-    $result = $conn->query($sql);
-    saveDoenetML($contentId,$dangerousDoenetML);
+    if (!$result = $conn->query($sql)) {
+      $success = FALSE;
+      $message = $conn->error;
+    }else{
+     $saveError = saveDoenetML($contentId,$dangerousDoenetML);
+     if ($saveError != NULL){
+      $success = FALSE;
+      $message = $saveError;
+     }
+    }
 
 }elseif($isSetAsCurrent == '1'){
 
@@ -261,7 +269,10 @@ function saveDoenetML($fileName,$dangerousDoenetML){
     // if ($isDraft){$fileName = $doenetId;}
     //TODO: Config file needed for server
     $newfile = fopen("../media/$fileName.doenet", "w") or die("Unable to open file!");
-    fwrite($newfile, $dangerousDoenetML);
+    $status = fwrite($newfile, $dangerousDoenetML);
+    if ($status === false){
+      return "Didn't save to file";
+    }
     fclose($newfile);
 }
 

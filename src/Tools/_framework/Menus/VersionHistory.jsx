@@ -25,6 +25,7 @@ import { nanoid } from 'nanoid';
 import axios from "axios";
 import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
+import { faPassport } from '@fortawesome/free-solid-svg-icons';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -256,8 +257,55 @@ console.log(">>>===VersionHistory")
           addToast('Version NOT Saved!', toastType.ERROR);
 
         })
-    
-    
+  })
+
+  const saveAndReleaseCurrent = useRecoilCallback(({snapshot,set}) => 
+    async ({doenetId,driveId,folderId,itemId}) => {
+      const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+      const timestamp = buildTimestamp();
+      const contentId = getSHAofContent(doenetML);
+      const versionId = nanoid();
+      const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
+      let newVersions = {...oldVersions};
+
+      const title = `Save ${oldVersions.named.length+1}`
+
+      let newVersion = {
+        title,
+        versionId,
+        timestamp,
+        isReleased:'0',
+        isDraft:'0',
+        isNamed:'1',
+        contentId
+      }
+      let newDBVersion = {...newVersion,
+        doenetML,
+        doenetId
+      }
+      
+      newVersions.named = [newVersion,...oldVersions.named];
+
+      set(itemHistoryAtom(doenetId),newVersions)
+      set(fileByContentId(contentId),doenetML);
+      
+      //TODO: Errors don't seem to fire when offline
+      axios.post("/api/saveNewVersion.php",newDBVersion)
+        .then((resp)=>{
+          //  console.log(">>>resp saveVersion",resp.data)
+            if (resp?.data?.success){
+              addToast('New Version Saved!', toastType.SUCCESS)
+            }else{
+              addToast('Version NOT Saved!', toastType.ERROR);
+            }
+          })
+          .catch((err)=>{
+            // console.log(">>>err",err)
+            addToast('Version NOT Saved!', toastType.ERROR);
+
+          })
+      setReleaseNamed({doenetId,versionId,driveId,folderId,itemId});
+
   })
 
   const setSelectedVersionId = useRecoilCallback(({snapshot,set})=> async ({doenetId,versionId,isCurrentDraft})=>{
@@ -286,7 +334,7 @@ console.log(">>>===VersionHistory")
           set(fileByContentId(textEditorContentId),textEditorDoenetML)
 
           //Save in localStorage
-          localStorage.setItem(textEditorContentId,textEditorDoenetML)
+          // localStorage.setItem(textEditorContentId,textEditorDoenetML)
 
           let newDBVersion = {...newDraft,
             doenetML:textEditorDoenetML,
@@ -319,9 +367,13 @@ if (initializedDoenetId !== doenetId){
 }
 
 
-// console.log(">>>versionHistory.contents",versionHistory.contents)
+console.log(">>>versionHistory.contents",versionHistory.contents)
 // console.log(">>>initializedDoenetId",initializedDoenetId)
 // console.log(">>>path",path)
+
+    if (!versionHistory.contents.named){
+      return null;
+    }
 
     let options = [];
     let versionsObj = {}
@@ -329,7 +381,7 @@ if (initializedDoenetId !== doenetId){
   // if (versionHistory.contents?.named?.length > 0){
      let inUseVersionId = selectedVersionId; //Only select history save if current isn't selected
   
-
+  
   for (let version of versionHistory.contents.named){
     // console.log(">>>version",version)
     versionsObj[version.versionId] = version;
@@ -351,6 +403,7 @@ if (initializedDoenetId !== doenetId){
     releaseButtonText = "Retract"
   }
 
+
   // console.log(">>>currentDraftSelected",currentDraftSelected)
      
   return <div  style={props.style}>
@@ -366,7 +419,9 @@ if (initializedDoenetId !== doenetId){
   </select>
 
     <div style={{margin:"6px 0px 6px 0px"}}>
-    <Button value="Release Current (soon)" disabled onClick={()=>console.log(">>>release current")} />
+    <Button disabled={!currentDraftSelected} value="Release Current" onClick={()=> {
+      saveAndReleaseCurrent({doenetId,driveId,folderId,itemId});
+    }}/>
     </div>
     <div>History</div>
   <select 

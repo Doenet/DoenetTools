@@ -39,7 +39,7 @@ export default class Solution extends DoenetRenderer {
 
     return <aside id={this.componentName}>
       <a name={this.componentName} />
-      <span style={{
+      <span id={this.componentName + "_button"} style={{
         display: "block",
         margin: "4px 4px 0px 4px",
         padding: "6px", border: "1px solid #ebebeb",

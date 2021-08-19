@@ -1,27 +1,31 @@
-import {
-  faCode,
-  faFolder,
-  faObjectGroup
-} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faLayerGroup} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useState} from "../../_snowpack/pkg/react.js";
-import {selector, useRecoilValueLoadable, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
-import {
-  folderDictionaryFilterSelector,
-  globalSelectedNodesAtom
-} from "../../_reactComponents/Drive/NewDrive.js";
+import {useEffect} from "../../_snowpack/pkg/react.js";
+import {useRecoilValueLoadable, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
+import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {selectedInformation} from "./SelectedDoenetML.js";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 export default function SelectedCollection() {
-  const selection = useRecoilValueLoadable(selectedInformation).getValue() ?? [];
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
+  const selection = useRecoilValueLoadable(selectedInformation).getValue();
+  const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? "");
   const {deleteItem, renameItem} = useSockets("drive");
-  const item = selection[0];
+  useEffect(() => {
+    if (!selection[0]) {
+      setSelectedMenu("");
+    } else {
+      setItem(selection[0]);
+      setLabel(selection[0]?.label);
+    }
+  }, [selection, setSelectedMenu]);
   const dIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: faFolder
+    icon: faLayerGroup
   });
   const renameItemCallback = (newLabel) => {
     renameItem({
@@ -36,7 +40,7 @@ export default function SelectedCollection() {
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
     "data-cy": "infoPanelItemLabel"
-  }, dIcon, " ", item.label), /* @__PURE__ */ React.createElement("label", null, "DoenetML Label", /* @__PURE__ */ React.createElement("input", {
+  }, dIcon, " ", item.label), /* @__PURE__ */ React.createElement("label", null, "Collection Label", /* @__PURE__ */ React.createElement("input", {
     type: "text",
     "data-cy": "infoPanelItemLabelInput",
     value: label,
@@ -53,8 +57,10 @@ export default function SelectedCollection() {
         renameItemCallback(label);
       }
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
-    value: "Edit DoenetML",
+  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ButtonGroup, {
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(Button, {
+    value: "Edit Collection",
     onClick: () => {
       setPageToolView({
         page: "course",
@@ -62,13 +68,13 @@ export default function SelectedCollection() {
         view: "",
         params: {
           doenetId: item.doenetId,
-          path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`
+          path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:Collection`
         }
       });
     }
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement(Button, {
     "data-cy": "deleteDoenetMLButton",
-    value: "Delete DoenetML",
+    value: "Delete Collection",
     onClick: () => {
       deleteItem({
         driveIdFolderId: {
@@ -80,5 +86,5 @@ export default function SelectedCollection() {
         label: item.label
       });
     }
-  }));
+  })));
 }

@@ -1,6 +1,5 @@
 module.exports = {
   alias: {
-    '@ToolRoot': './src/Tools/_framework/ToolRoot',
     '@Tool': './src/Tools/_framework/Tool',
     '@Toast': './src/Tools/_framework/Toast',
     'solid-svg': '@fortawesome/free-solid-svg-icons',
@@ -8,24 +7,24 @@ module.exports = {
   },
   mount: {
     // 'src/Tools/accountSettings': '/accountSettings',
-    'src/Tools/content': '/content',
+    // 'src/Tools/content': '/content',
     // 'src/Tools/course': '/course',
     // 'src/Tools/docs': '/docs',
     // 'src/Tools/gradebook': '/gradebook',
     // 'src/Tools/library': '/library',
     // 'src/Tools/signin': '/signin',
     // 'src/Tools/signout': '/signout',
+    // 'src/Tools/new': '/new',
+    'src/Viewer': '/viewer',
     'src/Tools/_framework': '/_framework',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
     'src/Parser': '/parser',
     'src/Api': '/api',
     'src/Tools/singlepage': '/',
-    'src/Viewer': '/viewer',
     'src/_reactComponents': '/_reactComponents',
     'src/_sharedRecoil': '/_sharedRecoil',
     'src/_utils': '/_utils',
-    'src/Tools/new': '/new',
 
   },
   plugins: [

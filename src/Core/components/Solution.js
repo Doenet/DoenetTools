@@ -19,6 +19,32 @@ export default class Solution extends BlockComponent {
     }
     return attributes;
   }
+
+
+  static returnSugarInstructions() {
+    let sugarInstructions = super.returnSugarInstructions();
+
+    let wrapWithContainer = function ({ matchedChildren }) {
+
+      return {
+        success: true,
+        newChildren: [{
+          componentType: "_solutionContainer",
+          children: matchedChildren
+        }],
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: wrapWithContainer
+    });
+
+    return sugarInstructions;
+
+  }
+
+
   static returnChildGroups() {
 
     return [{

@@ -4816,4 +4816,4 @@ var io = /*@__PURE__*/getDefaultExportFromCjs(build);
 const Manager = io.Manager;
 const Socket$1 = io.Socket;
 
-export { Manager, io };
+export { Manager };

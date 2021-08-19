@@ -230,7 +230,9 @@ function isEqual(a, b) {
 const each = (obj, fn) => obj.forEach(fn);
 function eachProp(obj, fn, ctx) {
   for (const key in obj) {
-    fn.call(ctx, obj[key], key);
+    if (obj.hasOwnProperty(key)) {
+      fn.call(ctx, obj[key], key);
+    }
   }
 }
 const toArray = a => is.und(a) ? [] : is.arr(a) ? a : [a];
@@ -3177,8 +3179,11 @@ function useSprings(length, props, deps) {
   const ctrls = react.useRef([...state.ctrls]);
   const updates = [];
   const prevLength = usePrev(length) || 0;
-  const oldCtrls = ctrls.current.slice(length, prevLength);
   react.useMemo(() => {
+    each(ctrls.current.slice(length, prevLength), ctrl => {
+      detachRefs(ctrl, ref);
+      ctrl.stop(true);
+    });
     ctrls.current.length = length;
     declareUpdates(prevLength, length);
   }, [length]);
@@ -3213,10 +3218,6 @@ function useSprings(length, props, deps) {
       each(queue, cb => cb());
     }
 
-    each(oldCtrls, ctrl => {
-      detachRefs(ctrl, ref);
-      ctrl.stop(true);
-    });
     each(ctrls.current, (ctrl, i) => {
       ref == null ? void 0 : ref.add(ctrl);
 
@@ -3389,6 +3390,7 @@ function useTransition(data, props, deps) {
     const payload = _extends$2({}, defaultProps, {
       delay: propsDelay + delay,
       ref: propsRef,
+      immediate: p.immediate,
       reset: false
     }, to);
 
@@ -3698,7 +3700,8 @@ function applyAnimatedValues(instance, props) {
   for (let name in style) {
     if (style.hasOwnProperty(name)) {
       const value = dangerousStyleValue(name, style[name]);
-      if (name === 'float') name = 'cssFloat';else if (isCustomPropRE.test(name)) {
+
+      if (isCustomPropRE.test(name)) {
         instance.style.setProperty(name, value);
       } else {
         instance.style[name] = value;

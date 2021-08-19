@@ -17,7 +17,16 @@ export default class MathInput extends DoenetRenderer {
     this.handleFocus = this.handleFocus.bind(this);
     this.onChangeHandler = this.onChangeHandler.bind(this);
     this.mathExpression = this.doenetSvData.valueForDisplay;
-    this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+    if (this.doenetSvData.rawRendererValue !== null) {
+      this.latexValue = this.doenetSvData.rawRendererValue;
+    } else {
+      this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      });
+    }
+    this.latexValueSetInRender = true;
     this.valueToRevertTo = this.doenetSvData.value;
     this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
     if (this.latexValue === "＿") {
@@ -32,7 +41,8 @@ export default class MathInput extends DoenetRenderer {
     text = substituteUnicodeInLatexString(text);
     text = text.replace(/\^(\d)/g, "^{$1}");
     let fromLatex = getFromLatex({
-      functionSymbols: this.doenetSvData.functionSymbols
+      functionSymbols: this.doenetSvData.functionSymbols,
+      splitSymbols: this.doenetSvData.splitSymbols
     });
     try {
       expression = fromLatex(text);
@@ -44,13 +54,22 @@ export default class MathInput extends DoenetRenderer {
   updateImmediateValueFromLatex(text) {
     let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
     let newMathExpression = this.calculateMathExpressionFromLatex(text);
+    let rawValueChanged = text !== this.latexValue || this.latexValueSetFromValueForDisplay;
+    let transientForRaw = !this.latexValueSetInRender;
     let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized) || !this.latexValueSetInRender && text !== this.latexValue;
     this.latexValue = text;
     this.latexValueSetInRender = false;
+    this.latexValueSetFromValueForDisplay = false;
     if (actuallyUpdate) {
       this.mathExpression = newMathExpression;
       this.actions.updateImmediateValue({
-        mathExpression: newMathExpression
+        mathExpression: newMathExpression,
+        rawRendererValue: this.latexValue
+      });
+    } else if (rawValueChanged) {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: transientForRaw
       });
     }
   }
@@ -71,6 +90,11 @@ export default class MathInput extends DoenetRenderer {
     this.valueForDisplayToRevertTo = this.mathExpression;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
+    } else {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      });
     }
     if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
       this.actions.submitAnswer();
@@ -87,6 +111,11 @@ export default class MathInput extends DoenetRenderer {
     this.valueForDisplayToRevertTo = this.mathExpression;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
       this.actions.updateValue();
+    } else {
+      this.actions.updateRawValue({
+        rawRendererValue: this.latexValue,
+        transient: false
+      });
     }
     this.forceUpdate();
   }
@@ -99,7 +128,7 @@ export default class MathInput extends DoenetRenderer {
       return null;
     }
     this.updateValidationState();
-    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+    let disabled = this.doenetSvData.disabled;
     let surroundingBorderColor = "#efefef";
     if (this.focused) {
       surroundingBorderColor = "#82a5ff";
@@ -111,6 +140,7 @@ export default class MathInput extends DoenetRenderer {
         this.latexValue = "";
       }
       this.latexValueSetInRender = true;
+      this.latexValueSetFromValueForDisplay = true;
       this.valueToRevertTo = this.doenetSvData.value;
       this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
     }
@@ -130,10 +160,15 @@ export default class MathInput extends DoenetRenderer {
     let checkWorkButton = null;
     if (this.doenetSvData.includeCheckWork) {
       if (this.validationState === "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        if (disabled) {
+          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        } else {
+          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        }
         checkWorkButton = /* @__PURE__ */ React.createElement("button", {
           id: this.componentName + "_submit",
           tabIndex: "0",
+          disabled,
           ref: (c) => {
             this.target = c && ReactDOM.findDOMNode(c);
           },
@@ -287,11 +322,20 @@ var appliedFunctionSymbols = [
   "count",
   "mod"
 ];
-function getFromLatex({functionSymbols}) {
-  return (x) => me.fromAst(new me.converters.latexToAstObj({
-    appliedFunctionSymbols,
-    functionSymbols
-  }).convert(x));
+function getFromLatex({functionSymbols, splitSymbols}) {
+  if (splitSymbols) {
+    return (x) => me.fromAst(new me.converters.latexToAstObj({
+      appliedFunctionSymbols,
+      functionSymbols,
+      splitSymbols
+    }).convert(wrapWordIncludingNumberWithVar(x)));
+  } else {
+    return (x) => me.fromAst(new me.converters.latexToAstObj({
+      appliedFunctionSymbols,
+      functionSymbols,
+      splitSymbols
+    }).convert(wrapWordWithVar(x)));
+  }
 }
 function substituteUnicodeInLatexString(latexString) {
   let substitutions = [
@@ -349,4 +393,76 @@ function substituteUnicodeInLatexString(latexString) {
     latexString = latexString.replaceAll(sub[0], sub[1]);
   }
   return latexString;
+}
+function wrapWordWithVar(string) {
+  let newString = "";
+  let regex = /\\var\s*{[^{}]*}/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString += wrapWordWithVarSub(string);
+  return newString;
+}
+function wrapWordWithVarSub(string) {
+  let newString = "";
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]+)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+    match = string.match(regex);
+  }
+  newString += string;
+  return newString;
+}
+function wrapWordIncludingNumberWithVar(string) {
+  let newString = "";
+  let regex = /\\var\s*{[^{}]*}/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length;
+    newString += wrapWordIncludingNumberWithVarSub(string.substring(0, beginMatch));
+    newString += string.substring(beginMatch, endMatch);
+    string = string.substring(endMatch);
+    match = string.match(regex);
+  }
+  newString += wrapWordIncludingNumberWithVarSub(string);
+  return newString;
+}
+function wrapWordIncludingNumberWithVarSub(string) {
+  let newString = "";
+  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let match = string.match(regex);
+  while (match) {
+    let beginMatch = match.index;
+    let endMatch = beginMatch + match[0].length - match[3].length;
+    if (match[1] === "\\") {
+      newString += string.substring(0, endMatch);
+      string = string.substring(endMatch);
+    } else {
+      let beginWord = beginMatch + match[1].length;
+      newString += string.substring(0, beginWord);
+      newString += `\\var{${match[2]}}`;
+      string = string.substring(endMatch);
+    }
+    match = string.match(regex);
+  }
+  newString += string;
+  return newString;
 }

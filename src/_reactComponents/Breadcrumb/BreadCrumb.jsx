@@ -31,6 +31,12 @@ const BreadcrumbItem = styled.li`
   &:first-of-type span {
     padding: 0px 0px 0px 30px;
   }
+  &:only-child span {
+    border-radius: 15px;
+    padding: 0px 30px 0px 30px;
+    background: hsl(209, 54%, 82%);
+    color: black;
+  }
 `;
 
 const BreadcrumbSpan = styled.span`
@@ -111,7 +117,7 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path, tool, tool2, doenetId }) {
+export default function BreadCrumb({ path, tool, tool2, doenetId, label }) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -131,7 +137,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
         // ...was,
         page:was.page,
         tool:'navigation',
-        view:'',
+        view:was.view,
         params: {
           path: `${driveId}:${folderId}:${folderId}:Folder`,
         },
@@ -222,8 +228,9 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
   );
 
   if (tool === 'CourseChooser'){
-    return <Breadcrumb>{returnToCourseChooser} <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan>
-  </BreadcrumbItem></Breadcrumb>
+    return <Breadcrumb>{returnToCourseChooser} 
+    {/* <BreadcrumbItem><BreadcrumbSpan></BreadcrumbSpan></BreadcrumbItem> */}
+    </Breadcrumb>
   }
 
   const returnToDashboard = (
@@ -319,7 +326,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
                 params:params2,}));
             }}
           >
-            {tool2}
+            {label}
           </BreadcrumbSpan>
         </BreadcrumbItem>
         

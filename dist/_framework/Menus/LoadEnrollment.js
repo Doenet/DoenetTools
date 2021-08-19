@@ -9,6 +9,7 @@ import {
 import {processAtom, headersAtom, entriesAtom, enrollmentTableDataAtom} from "../ToolPanels/Enrollment.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {nanoid} from "../../_snowpack/pkg/nanoid.js";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 export default function LoadEnrollment(props) {
   const process = useRecoilValue(processAtom);
   const setProcess = useSetRecoilState(processAtom);
@@ -182,7 +183,9 @@ export default function LoadEnrollment(props) {
     ...getRootProps()
   }, /* @__PURE__ */ React.createElement("input", {
     ...getInputProps()
-  }), isDragActive ? /* @__PURE__ */ React.createElement("p", null, "Drop the files here") : /* @__PURE__ */ React.createElement(Button, {
+  }), isDragActive ? /* @__PURE__ */ React.createElement("p", null, "Drop the files here") : /* @__PURE__ */ React.createElement(ButtonGroup, {
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(Button, {
     value: "Enroll Learners"
-  })));
+  }))));
 }

@@ -1,46 +1,72 @@
-import {
-  faCode,
-  faFolder,
-  faObjectGroup
-} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {faCode} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
-import {atom, selector, useRecoilValueLoadable, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {
+  atom,
+  selector,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useRecoilState,
+  useSetRecoilState
+} from "../../_snowpack/pkg/recoil.js";
 import {
   folderDictionaryFilterSelector,
   globalSelectedNodesAtom
 } from "../../_reactComponents/Drive/NewDrive.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import IncrementMenu from "../../_reactComponents/PanelHeaderComponents/IncrementMenu.js";
 import useSockets from "../../_reactComponents/Sockets.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
-import {itemHistoryAtom, assignmentDictionarySelector} from "../ToolHandlers/CourseToolHandler.js";
-import {useAssignment} from "../../course/CourseActions.js";
+import {
+  itemHistoryAtom,
+  assignmentDictionarySelector,
+  useAssignment
+} from "../ToolHandlers/CourseToolHandler.js";
 import {useAssignmentCallbacks} from "../../_reactComponents/Drive/DriveActions.js";
 import {useToast} from "../Toast.js";
-import axios from "../../_snowpack/pkg/axios.js";
 import Switch from "../Switch.js";
+import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
 export const selectedVersionAtom = atom({
   key: "selectedVersionAtom",
   default: ""
 });
 export default function SelectedDoenetML() {
-  const selection = useRecoilValueLoadable(selectedInformation).getValue() ?? [];
-  const setPageToolView = useSetRecoilState(pageToolViewAtom);
+  const [pageToolView, setPageToolView] = useRecoilState(pageToolViewAtom);
+  const role = pageToolView.view;
+  const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
+  const selection = useRecoilValueLoadable(selectedInformation).getValue();
+  const [item, setItem] = useState(selection[0]);
   const [label, setLabel] = useState(selection[0]?.label ?? "");
   const {deleteItem, renameItem} = useSockets("drive");
-  const item = selection[0];
-  const dIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: faCode
-  });
-  useEffect(() => {
-    setLabel(selection[0]?.label);
-  }, [selection]);
-  let makeAssignmentforReleasedButton = null;
-  const {addContentAssignment, changeSettings, updateVersionHistory, saveSettings, assignmentToContent, loadAvailableAssignment, publishContentAssignment, onAssignmentError} = useAssignment();
+  const {
+    addContentAssignment,
+    changeSettings,
+    updateVersionHistory,
+    saveSettings,
+    assignmentToContent,
+    loadAvailableAssignment,
+    publishContentAssignment,
+    onAssignmentError
+  } = useAssignment();
   const {makeAssignment, convertAssignmentToContent} = useAssignmentCallbacks();
   const [checkIsAssigned, setIsAssigned] = useState(false);
   const addToast = useToast();
+  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(item?.doenetId));
+  useEffect(() => {
+    if (!selection[0]) {
+      setSelectedMenu("");
+    } else {
+      setItem(selection[0]);
+      setLabel(selection[0]?.label);
+    }
+  }, [selection, setSelectedMenu]);
+  const dIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+    icon: faCode
+  });
+  let makeAssignmentforReleasedButton = null;
   const renameItemCallback = (newLabel) => {
     renameItem({
       driveIdFolderId: {
@@ -52,7 +78,6 @@ export default function SelectedDoenetML() {
       newLabel
     });
   };
-  const versionHistory = useRecoilValueLoadable(itemHistoryAtom(selection[0]?.doenetId));
   let contentId = "";
   let versionId = "";
   if (versionHistory.state === "loading") {
@@ -66,43 +91,91 @@ export default function SelectedDoenetML() {
     contentId = versionHistory?.contents?.named[0]?.contentId;
     versionId = versionHistory?.contents?.named[0]?.versionId;
   }
-  let assigned = /* @__PURE__ */ React.createElement(React.Fragment, null, versionHistory.contents.named.map((item2, i) => /* @__PURE__ */ React.createElement(React.Fragment, null, item2.isReleased == 1 ? /* @__PURE__ */ React.createElement("label", {
+  let doenetMLActions = /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(ActionButton, {
+    width: "menu",
+    value: "Edit DoenetML",
+    onClick: () => {
+      setPageToolView({
+        page: "course",
+        tool: "editor",
+        view: "",
+        params: {
+          doenetId: item.doenetId,
+          path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`
+        }
+      });
+    }
+  }), /* @__PURE__ */ React.createElement(ActionButton, {
+    width: "menu",
+    value: "Take Assignment",
+    onClick: () => {
+      setPageToolView({
+        page: "course",
+        tool: "assignment",
+        view: "",
+        params: {
+          doenetId: item.doenetId
+        }
+      });
+    }
+  }));
+  if (role === "student") {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
+      "data-cy": "infoPanelItemLabel"
+    }, dIcon, " ", item.label), /* @__PURE__ */ React.createElement(ActionButton, {
+      width: "menu",
+      value: "Take Assignment",
+      onClick: () => {
+        setPageToolView({
+          page: "course",
+          tool: "assignment",
+          view: "",
+          params: {
+            doenetId: item.doenetId
+          }
+        });
+      }
+    }));
+  }
+  let assigned = /* @__PURE__ */ React.createElement(React.Fragment, null, versionHistory.contents.named.map((item2, i) => /* @__PURE__ */ React.createElement(React.Fragment, null, item2.isReleased == "1" ? /* @__PURE__ */ React.createElement("label", {
     key: i,
     value: item2.versionId
   }, item2.isAssigned == "1" ? "(Assigned)" : "", item2.title) : "")));
-  makeAssignmentforReleasedButton = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+  makeAssignmentforReleasedButton = /* @__PURE__ */ React.createElement(Button, {
     value: "Make Assignment",
     onClick: async () => {
       setIsAssigned(true);
       let isAssigned = 1;
-      const versionResult = await updateVersionHistory(selection[0].doenetId, versionId, isAssigned);
+      const versionResult = await updateVersionHistory(item?.doenetId, versionId, isAssigned);
       const result = await addContentAssignment({
         driveIditemIddoenetIdparentFolderId: {
-          driveId: selection[0].driveId,
-          folderId: selection[0].parentFolderId,
-          itemId: selection[0].itemId,
-          doenetId: selection[0].doenetId,
+          driveId: item?.driveId,
+          folderId: item?.parentFolderId,
+          itemId: item?.itemId,
+          doenetId: item?.doenetId,
           contentId,
           versionId
         },
-        doenetId: selection[0].doenetId,
+        doenetId: item?.doenetId,
         contentId,
         versionId
       });
       let payload = {
-        itemId: selection[0].itemId,
+        itemId: item?.itemId,
         isAssigned: "1",
-        doenetId: selection[0].doenetId,
+        doenetId: item?.doenetId,
         contentId,
-        driveId: selection[0].driveId,
+        driveId: item?.driveId,
         versionId
       };
       makeAssignment({
         driveIdFolderId: {
-          driveId: selection[0].driveId,
-          folderId: selection[0].parentFolderId
+          driveId: item?.driveId,
+          folderId: item?.parentFolderId
         },
-        itemId: selection[0].itemId,
+        itemId: item?.itemId,
         payload
       });
       try {
@@ -115,39 +188,39 @@ export default function SelectedDoenetML() {
         onAssignmentError({errorMessage: e});
       }
     }
-  }), /* @__PURE__ */ React.createElement("br", null));
-  let unAssignButton = "";
-  unAssignButton = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+  });
+  let unAssignButton = null;
+  unAssignButton = /* @__PURE__ */ React.createElement(Button, {
     value: "Unassign",
     onClick: async () => {
       let isAssigned = 0;
-      const versionResult = await updateVersionHistory(selection[0].doenetId, versionId, isAssigned);
+      const versionResult = await updateVersionHistory(item?.doenetId, versionId, isAssigned);
       assignmentToContent({
         driveIditemIddoenetIdparentFolderId: {
-          driveId: selection[0].driveId,
-          folderId: selection[0].parentFolderId,
-          itemId: selection[0].itemId,
-          doenetId: selection[0].doenetId,
+          driveId: item?.driveId,
+          folderId: item?.parentFolderId,
+          itemId: item?.itemId,
+          doenetId: item?.doenetId,
           contentId,
           versionId
         },
-        doenetId: selection[0].doenetId,
+        doenetId: item?.doenetId,
         contentId,
         versionId
       });
       convertAssignmentToContent({
         driveIdFolderId: {
-          driveId: selection[0].driveId,
-          folderId: selection[0].parentFolderId
+          driveId: item?.driveId,
+          folderId: item?.parentFolderId
         },
-        itemId: selection[0].itemId,
-        doenetId: selection[0].doenetId,
+        itemId: item?.itemId,
+        doenetId: item?.doenetId,
         contentId,
         versionId
       });
       const result = axios.post(`/api/handleMakeContent.php`, {
-        itemId: selection[0].itemId,
-        doenetId: selection[0].doenetId,
+        itemId: item?.itemId,
+        doenetId: item?.doenetId,
         contentId,
         versionId
       });
@@ -161,10 +234,10 @@ export default function SelectedDoenetML() {
         onAssignmentError({errorMessage: e.message});
       });
     }
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null));
+  });
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
     "data-cy": "infoPanelItemLabel"
-  }, dIcon, " ", item.label), /* @__PURE__ */ React.createElement("label", null, "DoenetML Label", /* @__PURE__ */ React.createElement("input", {
+  }, dIcon, " ", item.label), doenetMLActions, /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("label", null, "DoenetML Label", /* @__PURE__ */ React.createElement("input", {
     type: "text",
     "data-cy": "infoPanelItemLabelInput",
     value: label,
@@ -182,19 +255,8 @@ export default function SelectedDoenetML() {
       }
     }
   })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
-    value: "Edit DoenetML",
-    onClick: () => {
-      setPageToolView({
-        page: "course",
-        tool: "editor",
-        view: "",
-        params: {
-          doenetId: item.doenetId,
-          path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`
-        }
-      });
-    }
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+    alert: true,
+    width: "menu",
     "data-cy": "deleteDoenetMLButton",
     value: "Delete DoenetML",
     onClick: () => {
@@ -208,8 +270,10 @@ export default function SelectedDoenetML() {
         label: item.label
       });
     }
-  }), /* @__PURE__ */ React.createElement("br", null), assigned, /* @__PURE__ */ React.createElement("br", null), selection[0].isAssigned === "0" && selection[0].isReleased === "1" && makeAssignmentforReleasedButton, /* @__PURE__ */ React.createElement("br", null), selection[0].isAssigned == "1" && selection[0].isReleased === "1" && unAssignButton, /* @__PURE__ */ React.createElement("br", null), selection[0].isAssigned == "1" && selection[0].isReleased === "1" && /* @__PURE__ */ React.createElement(AssignmentForm, {
-    selection,
+  }), assigned, /* @__PURE__ */ React.createElement(ButtonGroup, {
+    vertical: true
+  }, item?.isAssigned === "0" && item?.isReleased === "1" && makeAssignmentforReleasedButton, item?.isAssigned == "1" && item?.isReleased === "1" && unAssignButton), item?.isAssigned == "1" && item?.isReleased === "1" && /* @__PURE__ */ React.createElement(AssignmentForm, {
+    selection: item,
     versionId,
     contentId
   }));
@@ -240,12 +304,13 @@ const AssignmentForm = (props) => {
   const {changeSettings, saveSettings, onAssignmentError} = useAssignment();
   const {updateAssignmentTitle} = useAssignmentCallbacks();
   const addToast = useToast();
+  const pageToolView = useRecoilValue(pageToolViewAtom);
   const [oldValue, setoldValue] = useState();
   const assignmentInfoSettings = useRecoilValueLoadable(assignmentDictionarySelector({
-    driveId: props.selection[0]?.driveId,
-    folderId: props.selection[0]?.parentFolderId,
-    itemId: props.selection[0]?.itemId,
-    doenetId: props.selection[0]?.doenetId,
+    driveId: props.selection?.driveId,
+    folderId: props.selection?.parentFolderId,
+    itemId: props.selection?.itemId,
+    doenetId: props.selection?.doenetId,
     versionId: props.versionId,
     contentId: props.contentId
   }));
@@ -261,30 +326,30 @@ const AssignmentForm = (props) => {
       const result = saveSettings({
         [name]: value,
         driveIditemIddoenetIdparentFolderId: {
-          driveId: props.selection[0]?.driveId,
-          folderId: props.selection[0]?.parentFolderId,
-          itemId: props.selection[0]?.itemId,
-          doenetId: props.selection[0]?.doenetId,
+          driveId: props.selection?.driveId,
+          folderId: props.selection?.parentFolderId,
+          itemId: props.selection?.itemId,
+          doenetId: props.selection?.doenetId,
           versionId: props.versionId,
           contentId: props.contentId
         }
       });
       let payload = {
         ...aInfo,
-        itemId: props.selection[0]?.itemId,
+        itemId: props.selection?.itemId,
         isAssigned: "1",
         [name]: value,
-        doenetId: props.selection[0]?.doenetId,
+        doenetId: props.selection?.doenetId,
         contentId: props.contentId
       };
       updateAssignmentTitle({
         driveIdFolderId: {
-          driveId: props.selection[0]?.driveId,
-          folderId: props.selection[0]?.parentFolderId
+          driveId: props.selection?.driveId,
+          folderId: props.selection?.parentFolderId
         },
-        itemId: props.selection[0]?.itemId,
+        itemId: props.selection?.itemId,
         payloadAssignment: payload,
-        doenetId: props.selection[0]?.doenetId,
+        doenetId: props.selection?.doenetId,
         contentId: props.contentId
       });
       result.then((resp) => {
@@ -305,10 +370,10 @@ const AssignmentForm = (props) => {
     const result = changeSettings({
       [name]: value,
       driveIditemIddoenetIdparentFolderId: {
-        driveId: props.selection[0]?.driveId,
-        folderId: props.selection[0]?.parentFolderId,
-        itemId: props.selection[0]?.itemId,
-        doenetId: props.selection[0]?.doenetId,
+        driveId: props.selection?.driveId,
+        folderId: props.selection?.parentFolderId,
+        itemId: props.selection?.itemId,
+        doenetId: props.selection?.doenetId,
         versionId: props.versionId,
         contentId: props.contentId
       }
@@ -411,5 +476,6 @@ const AssignmentForm = (props) => {
     onChange: handleOnBlur,
     checked: aInfo ? aInfo?.proctorMakesAvailable : false
   })), /* @__PURE__ */ React.createElement("br", null)));
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, assignmentForm);
+  let studentAInfo = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, "Due: ", aInfo?.dueDate), /* @__PURE__ */ React.createElement("p", null, "Time Limit: ", aInfo?.timeLimit), /* @__PURE__ */ React.createElement("p", null, "Number of Attempts Allowed: ", aInfo?.numberOfAttemptsAllowed), /* @__PURE__ */ React.createElement("p", null, "Points: ", aInfo?.totalPointsOrPercent)));
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, pageToolView?.view == "student" ? /* @__PURE__ */ React.createElement(React.Fragment, null, studentAInfo) : "", pageToolView?.view == "instructor" ? /* @__PURE__ */ React.createElement(React.Fragment, null, assignmentForm) : " ");
 };

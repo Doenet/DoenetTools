@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import {faTh} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {drivePathSyncFamily, folderDictionary, fetchDrivesQuery} from "../Drive/Drive.js";
+import {drivePathSyncFamily, folderDictionary, fetchDrivesQuery} from "../Drive/NewDrive.js";
 import {useRecoilValue, useRecoilState, atomFamily, selectorFamily} from "../../_snowpack/pkg/recoil.js";
 const breadcrumbItemAtomFamily = atomFamily({
   key: "breadcrumbItemAtomFamily",

@@ -226,15 +226,16 @@
    * - tol: the tolerance used in computing the minimum
    **/
 
-  fminbr(f, x0, context) {
+  fminbr(f, x0, context, eps_override) {
+    let eps = eps_override !== undefined ? eps_override : this.eps;
     var a, b, x, v, w,
       fx, fv, fw,
       range, middle_range, tol_act, new_step,
       p, q, t, ft,
       // Golden section ratio
       r = (3.0 - Math.sqrt(5.0)) * 0.5,
-      tol = this.eps,
-      sqrteps = this.eps, //Math.sqrt(Mat.eps),
+      tol = eps,
+      sqrteps = eps, //Math.sqrt(Mat.eps),
       maxiter = this.maxIterationsMinimize,
       niter = 0,
       nfev = 0;

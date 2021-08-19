@@ -10,8 +10,6 @@ import {
 } from "../../_reactComponents/Drive/NewDrive.js";
 import {
   faChalkboard,
-  faCode,
-  faFolder,
   faUserCircle
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
@@ -20,7 +18,8 @@ import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import DoenetDriveCardMenu from "../../_reactComponents/Drive/DoenetDriveCardMenu.js";
 import {driveColors, driveImages} from "../../_reactComponents/Drive/util.js";
 import {useToast} from "../Toast.js";
-export default function SelectedCourse(props) {
+import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
+export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
@@ -38,15 +37,17 @@ export default function SelectedCourse(props) {
     });
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, dIcon, " ", selection[0].label));
   } else if (selection.length > 1 && selection[0].role[0] === "Owner") {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, " ", selection.length, " Courses Selected"), /* @__PURE__ */ React.createElement(Button, {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", null, " ", selection.length, " Courses Selected"), /* @__PURE__ */ React.createElement(ButtonGroup, {
+      vertical: true
+    }, /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
-      value: "Make Copy(Soon)",
+      value: "Duplicate (Soon)",
       onClick: (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log(">> made copy of courses");
+        console.log(">>>This will Duplicate courses");
       }
-    }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+    }), /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       value: "Delete Course",
       alert: true,
@@ -66,6 +67,15 @@ export default function SelectedCourse(props) {
         });
         setDrivecardSelection([]);
       }
+    })));
+  } else if (selection.length === 1 && selection[0]?.role[0] === "Administrator") {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(DriveInfoPanel, {
+      key: `DriveInfoPanel${selection[0].driveId}`,
+      label: selection[0].label,
+      color: selection[0].color,
+      image: selection[0].image,
+      driveId: selection[0].driveId,
+      role: "Administrator"
     }));
   } else {
     return "";
@@ -93,9 +103,6 @@ const DriveInfoPanel = function(props) {
   let dIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChalkboard
   });
-  let admins = [];
-  let owners = [];
-  let buttons = [];
   let addOwners = null;
   addOwners = /* @__PURE__ */ React.createElement(NewUser, {
     driveId,
@@ -112,7 +119,9 @@ const DriveInfoPanel = function(props) {
   let selectedAdmin = [];
   let deleteCourseButton = null;
   if (isOwner) {
-    deleteCourseButton = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+    deleteCourseButton = /* @__PURE__ */ React.createElement(ButtonGroup, {
+      vertical: true
+    }, /* @__PURE__ */ React.createElement(Button, {
       width: "menu",
       value: "Delete Course",
       alert: true,
@@ -166,7 +175,9 @@ const DriveInfoPanel = function(props) {
       email: item.email
     });
   })) : "";
-  let ownerPerms = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+  let ownerPerms = /* @__PURE__ */ React.createElement(ButtonGroup, {
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     "data-doenet-removebutton": selectedOwner,
     value: "Demote to Admin",
@@ -180,9 +191,9 @@ const DriveInfoPanel = function(props) {
         userRole: "owner"
       });
     }
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removeButton": selectedOwner,
+    "data-doenet-removebutton": selectedOwner,
     value: "Remove",
     onClick: (e) => {
       e.preventDefault();
@@ -205,7 +216,9 @@ const DriveInfoPanel = function(props) {
       value: item.userId
     }, item.email);
   })) : "";
-  let adminPerms = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Button, {
+  let adminPerms = /* @__PURE__ */ React.createElement(ButtonGroup, {
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     "data-doenet-removebutton": selectedAdmin,
     value: "Promote to Owner",
@@ -219,9 +232,9 @@ const DriveInfoPanel = function(props) {
         userRole: "admin"
       });
     }
-  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
-    "data-doenet-removeButton": selectedAdmin,
+    "data-doenet-removebutton": selectedAdmin,
     value: "Remove",
     onClick: (e) => {
       e.preventDefault();
@@ -236,7 +249,7 @@ const DriveInfoPanel = function(props) {
   }));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
     "data-cy": "infoPanelItemLabel"
-  }, dIcon, " ", panelDriveLabel), /* @__PURE__ */ React.createElement("label", null, "Name :", " ", /* @__PURE__ */ React.createElement("input", {
+  }, dIcon, " ", panelDriveLabel), props.role == "Administrator" ? /* @__PURE__ */ React.createElement(React.Fragment, null, addAdmins, "  ", adminsList) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("label", null, "Name :", " ", /* @__PURE__ */ React.createElement("input", {
     type: "text",
     value: driveLabel,
     onChange: (e) => setDriveLabel(e.target.value),
@@ -275,7 +288,7 @@ const DriveInfoPanel = function(props) {
         type: "update drive color"
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), addOwners, ownersList, /* @__PURE__ */ React.createElement("br", null), ownerPerms, /* @__PURE__ */ React.createElement("br", null), addAdmins, /* @__PURE__ */ React.createElement("br", null), adminsList, adminPerms, /* @__PURE__ */ React.createElement("br", null), deleteCourseButton);
+  })), /* @__PURE__ */ React.createElement("br", null), addOwners, ownersList, /* @__PURE__ */ React.createElement("br", null), ownerPerms, /* @__PURE__ */ React.createElement("br", null), addAdmins, /* @__PURE__ */ React.createElement("br", null), adminsList, adminPerms, deleteCourseButton));
 };
 function NewUser(props) {
   const [email, setEmail] = useState("");

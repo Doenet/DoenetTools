@@ -54,7 +54,7 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       return null;
     }
     this.updateValidationState();
-    let disabled = this.doenetSvData.disabled || this.doenetSvData.numberOfAttemptsLeft < 1;
+    let disabled = this.doenetSvData.disabled;
     if (this.doenetSvData.inline) {
       let checkWorkStyle = {
         position: "relative",
@@ -71,9 +71,14 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
       let checkWorkButton = null;
       if (this.doenetSvData.includeCheckWork) {
         if (this.validationState === "unvalidated") {
-          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+          if (disabled) {
+            checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+          } else {
+            checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+          }
           checkWorkButton = /* @__PURE__ */ React.createElement("button", {
             id: this.componentName + "_submit",
+            disabled,
             tabIndex: "0",
             ref: (c) => {
               this.target = c && ReactDOM.findDOMNode(c);
@@ -193,9 +198,13 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
           if (!this.doenetSvData.showCorrectness) {
             checkWorkText = "Submit Response";
           }
+          if (disabled) {
+            checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+          }
           checkworkComponent = /* @__PURE__ */ React.createElement("button", {
             id: this.componentName + "_submit",
             tabIndex: "0",
+            disabled,
             style: checkWorkStyle,
             onClick: this.actions.submitAnswer,
             onKeyPress: (e) => {
@@ -244,6 +253,11 @@ export default class ChoiceinputRenderer extends DoenetRenderer {
             }), "  Response Saved");
           }
         }
+      }
+      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
+        checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
+        checkworkComponent = /* @__PURE__ */ React.createElement(React.Fragment, null, checkworkComponent, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
       }
       let inputKey = this.componentName;
       let listStyle = {

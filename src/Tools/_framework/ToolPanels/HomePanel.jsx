@@ -37,28 +37,28 @@ const CloudColorSection = styled(CloudColor)`
   text-align: center;
 `;
 
-const ChoclateColor = styled.div`
-background-color: #6d4445;
-color:#e3d2d2;
+const LightBlueColor = styled.div`
+background-color: hsl(209,54%,82%);
+color:black;
 `;
-const ChoclateColorSection = styled(ChoclateColor)`
+const LightBlueColorSection = styled(LightBlueColor)`
   padding: 20px 10px 60px 10px;
   margin: 0px;
   justify-content: center;
   align-items: center;
   text-align: center;
 `;
-const ShadowColor = styled.div`
-  background-color: #e3d2d2;
-  color: #333333;
-`;
-const ShadowColorSection = styled(ShadowColor)`
-  padding: 20px 10px 60px 10px;
-  margin: 0px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-`;
+// const ShadowColor = styled.div`
+//   background-color: #e3d2d2;
+//   color: #333333;
+// `;
+// const ShadowColorSection = styled(ShadowColor)`
+//   padding: 20px 10px 60px 10px;
+//   margin: 0px;
+//   justify-content: center;
+//   align-items: center;
+//   text-align: center;
+// `;
 const SectionText = styled.div`
   text-align: center;
   max-width: 800px;
@@ -108,6 +108,7 @@ export default function HomePage(props){
             <h4 style={{ marginTop: '0px' }}>
               The free and open data-driven educational technology platform
             </h4>
+            {isSignedIn ? <div style={{display: "flex", justifyContent: "center"}}><Button size = "medium"  onClick={()=>history.push('/course')} value = "Go to Course" /></div> : <div style={{display: "flex", justifyContent: "center"}}><Button onClick={()=>history.push('/SignIn')} size = "medium" value = "Sign In" /></div>}
             <ParagraphTags>
               The Distributed Open Education Network (Doenet) is, at its core, a
               mechanism for measuring and sharing student interactions with web
@@ -138,11 +139,10 @@ export default function HomePage(props){
               
             </ParagraphTags>
           </SectionText>
- {isSignedIn ? <div ><Button size = "medium"  onClick={()=>history.push('/course')} value = "Go to Course" /></div> : <div ><Button onClick={()=>history.push('/SignIn')} size = "medium" value = "Sign In" /></div>}
 
         </CloudColorSection>
 
-        <ChoclateColorSection>
+        <LightBlueColorSection>
           <SectionText>
             <Headings className="section-headline">Introducing DoenetML</Headings>
             <ParagraphTags>
@@ -159,8 +159,8 @@ export default function HomePage(props){
               We expect to release examples of DoenetML soon.
             </ParagraphTags>
           </SectionText>
-        </ChoclateColorSection>
-        <ShadowColorSection>
+        </LightBlueColorSection>
+        <CloudColorSection>
           <SectionText>
             <Headings className="section-headline">Timeline</Headings>
             <ParagraphTags>
@@ -175,7 +175,7 @@ export default function HomePage(props){
               instructors at other institutions on a limited basis.
             </ParagraphTags>
           </SectionText>
-        </ShadowColorSection>
+        </CloudColorSection>
         <Footer>
           <SectionText>
           <div>

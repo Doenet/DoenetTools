@@ -26,6 +26,7 @@ import {nanoid} from "../../_snowpack/pkg/nanoid.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {useToast, toastType} from "../Toast.js";
 import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
+import {faPassport} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 export const currentDraftSelectedAtom = atom({
   key: "currentDraftSelectedAtom",
   default: true
@@ -187,6 +188,42 @@ export default function VersionHistory(props) {
       addToast("Version NOT Saved!", toastType.ERROR);
     });
   });
+  const saveAndReleaseCurrent = useRecoilCallback(({snapshot, set}) => async ({doenetId: doenetId2, driveId: driveId2, folderId: folderId2, itemId: itemId2}) => {
+    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+    const timestamp = buildTimestamp();
+    const contentId = getSHAofContent(doenetML);
+    const versionId = nanoid();
+    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId2));
+    let newVersions = {...oldVersions};
+    const title = `Save ${oldVersions.named.length + 1}`;
+    let newVersion = {
+      title,
+      versionId,
+      timestamp,
+      isReleased: "0",
+      isDraft: "0",
+      isNamed: "1",
+      contentId
+    };
+    let newDBVersion = {
+      ...newVersion,
+      doenetML,
+      doenetId: doenetId2
+    };
+    newVersions.named = [newVersion, ...oldVersions.named];
+    set(itemHistoryAtom(doenetId2), newVersions);
+    set(fileByContentId(contentId), doenetML);
+    axios.post("/api/saveNewVersion.php", newDBVersion).then((resp) => {
+      if (resp?.data?.success) {
+        addToast("New Version Saved!", toastType.SUCCESS);
+      } else {
+        addToast("Version NOT Saved!", toastType.ERROR);
+      }
+    }).catch((err) => {
+      addToast("Version NOT Saved!", toastType.ERROR);
+    });
+    setReleaseNamed({doenetId: doenetId2, versionId, driveId: driveId2, folderId: folderId2, itemId: itemId2});
+  });
   const setSelectedVersionId = useRecoilCallback(({snapshot, set}) => async ({doenetId: doenetId2, versionId, isCurrentDraft}) => {
     set(selectedVersionIdAtom, versionId);
     set(currentDraftSelectedAtom, isCurrentDraft);
@@ -205,7 +242,6 @@ export default function VersionHistory(props) {
           oldVersionsReplacement.draft = newDraft;
           set(itemHistoryAtom(doenetId2), oldVersionsReplacement);
           set(fileByContentId(textEditorContentId), textEditorDoenetML);
-          localStorage.setItem(textEditorContentId, textEditorDoenetML);
           let newDBVersion = {
             ...newDraft,
             doenetML: textEditorDoenetML,
@@ -229,6 +265,10 @@ export default function VersionHistory(props) {
     return /* @__PURE__ */ React.createElement("div", {
       style: props.style
     });
+  }
+  console.log(">>>versionHistory.contents", versionHistory.contents);
+  if (!versionHistory.contents.named) {
+    return null;
   }
   let options = [];
   let versionsObj = {};
@@ -274,9 +314,11 @@ export default function VersionHistory(props) {
   }, "Current Draft")), /* @__PURE__ */ React.createElement("div", {
     style: {margin: "6px 0px 6px 0px"}
   }, /* @__PURE__ */ React.createElement(Button, {
-    value: "Release Current (soon)",
-    disabled: true,
-    onClick: () => console.log(">>>release current")
+    disabled: !currentDraftSelected,
+    value: "Release Current",
+    onClick: () => {
+      saveAndReleaseCurrent({doenetId, driveId, folderId, itemId});
+    }
   })), /* @__PURE__ */ React.createElement("div", null, "History"), /* @__PURE__ */ React.createElement("select", {
     size: "8",
     style: {width: "230px"},

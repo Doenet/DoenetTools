@@ -38,6 +38,7 @@ export const selectedVersionAtom = atom({
 export default function SelectedDoenetML() {
   const [pageToolView,setPageToolView] = useRecoilState(pageToolViewAtom);
   const role = pageToolView.view;
+  // console.log(">>>>SelectedDoenetML role",role)
   const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
   const selection = useRecoilValueLoadable(selectedInformation).getValue();
   const [item, setItem] = useState(selection[0]);

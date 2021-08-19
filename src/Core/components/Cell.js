@@ -102,7 +102,7 @@ export default class Cell extends BaseComponent {
             halign = "left";
           }
           return { newValues: { halign } }
-        } else if (!usedDefault.parentHalign && dependencyValues.parentHalign !== null) {
+        } else if (!usedDefault.parentHalign && dependencyValues.parentHalign) {
           return { newValues: { halign: dependencyValues.parentHalign } }
         } else if (!usedDefault.tabularHalign && dependencyValues.tabularHalign) {
           return { newValues: { halign: dependencyValues.tabularHalign.stateValues.halign } }
@@ -141,7 +141,7 @@ export default class Cell extends BaseComponent {
             bottom = "none";
           }
           return { newValues: { bottom } }
-        } else if (!usedDefault.parentBottom && dependencyValues.parentBottom !== undefined) {
+        } else if (!usedDefault.parentBottom && dependencyValues.parentBottom) {
           return { newValues: { bottom: dependencyValues.parentBottom } }
         } else if (!usedDefault.tabularBottom && dependencyValues.tabularBottom) {
           return { newValues: { bottom: dependencyValues.tabularBottom.stateValues.bottom } }
@@ -224,6 +224,7 @@ export default class Cell extends BaseComponent {
       public: true,
       componentType: "text",
       defaultValue: "",
+      forRenderer: true,
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
