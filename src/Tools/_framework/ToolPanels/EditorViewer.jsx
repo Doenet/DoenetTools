@@ -50,14 +50,11 @@ export default function EditorViewer(props){
   let initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
     const contentId = versionHistory.draft.contentId;
-    console.log(">>>>init contentId",contentId)
     let response = await snapshot.getPromise(fileByContentId(contentId));
-    console.log(">>>>response",response)
     if (typeof response === "object"){
       response = response.data;
     }
     const doenetML = response;
-    console.log(`>>>>init doenetML '${doenetML}'`)
 
     set(updateTextEditorDoenetMLAtom,doenetML);
     set(textEditorDoenetMLAtom,doenetML)
@@ -67,13 +64,10 @@ export default function EditorViewer(props){
 
 
   useEffect(() => {
-      console.log(`>>>>MOUNTED paramDoenetId '${paramDoenetId}'`)
       if (paramDoenetId !== ''){
         initDoenetML(paramDoenetId)
       }
     return () => {
-      console.log(`>>>>UNMOUNTED paramDoenetId '${paramDoenetId}'`)
-
       setEditorInit("");
     }
   }, [paramDoenetId]);

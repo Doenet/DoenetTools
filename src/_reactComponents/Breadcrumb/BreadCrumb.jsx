@@ -131,7 +131,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
         // ...was,
         page:was.page,
         tool:'navigation',
-        view:'',
+        view:was.view,
         params: {
           path: `${driveId}:${folderId}:${folderId}:Folder`,
         },
