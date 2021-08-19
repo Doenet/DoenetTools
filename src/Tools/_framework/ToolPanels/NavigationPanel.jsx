@@ -52,7 +52,6 @@ export default function NavigationPanel(props) {
   //   }
   // }, [path, toast, setPageToolView]);
 
-  const filter = useCallback((item) => item.released === '1', []);
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
@@ -140,9 +139,15 @@ export default function NavigationPanel(props) {
     [setPageToolView,view],
   );
 
-  if (props.style?.display === 'none') {
-    return <div style={props.style}></div>;
+  let filterCallback = useCallback((item) => true, []);
+  const studentFilter = useCallback((item) => item.isReleased === '1' || item.itemType === 'Folder', []);
+  let columnTypes = ['Released','Assigned', 'Public']
+  if (view === 'student'){
+    columnTypes = ['Due Date']
+    filterCallback = studentFilter;
   }
+
+
 
   return (
     <BreadcrumbProvider>
@@ -151,8 +156,8 @@ export default function NavigationPanel(props) {
           <Container>
             <Drive
               path={path}
-              filter={filter}
-              columnTypes={['Released', 'Public']}
+              filterCallback={filterCallback}
+              columnTypes={columnTypes}
               urlClickBehavior="select"
               clickCallback={clickCallback}
               doubleClickCallback={doubleClickCallback}
