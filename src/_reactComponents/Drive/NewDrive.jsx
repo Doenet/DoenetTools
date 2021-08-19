@@ -62,13 +62,14 @@ import Collection from './Collection';
 
 export const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
-  get:
-    (doenetId) =>
-    async ({ get, set }) => {
+  get: (doenetId) => async () => {
+      const payload = { doenetId }
       const { data } = await axios.get(
-        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
+        "/api/getAllAssignmentSettings.php", {
+          params: payload,
+        }
       );
-      return data;
+      return data.assignment;
     },
 });
 
@@ -1942,9 +1943,9 @@ export function ColumnJSX(columnType, item) {
   const assignmentInfoSettings = useRecoilValueLoadable(
     loadAssignmentSelector(item.doenetId),
   );
-  let aInfo = '';
+  let aInfo = {};
   if (assignmentInfoSettings?.state === 'hasValue') {
-    aInfo = assignmentInfoSettings?.contents?.assignments[0];
+    aInfo = assignmentInfoSettings?.contents;
   }
 
   if (columnType === 'Released' && item.isReleased === '1') {
