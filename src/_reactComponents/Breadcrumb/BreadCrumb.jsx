@@ -11,9 +11,12 @@ import {
   atomFamily,
   selectorFamily,
   useSetRecoilState,
+  useRecoilValueLoadable,
 } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import styled from 'styled-components';
+
+import { assignmentData, studentData } from "../../Tools/_framework/ToolPanels/Gradebook"
 
 const Breadcrumb = styled.ul`
   list-style: none;
@@ -111,7 +114,7 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path, tool, tool2, doenetId }) {
+export default function BreadCrumb({ path, tool, tool2, doenetId, userId, attemptNumber, source}) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -148,6 +151,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
   let courseTitle = items[items.length - 1]?.label;
 
   let returnToToolHead = null;
+
   if (tool){
     let toolName = '';
     let params = {
@@ -255,7 +259,6 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
         {courseTitle}
       </BreadcrumbSpan>
     </BreadcrumbItem>
-    
   );
 
   let children = null;
@@ -327,11 +330,157 @@ export default function BreadCrumb({ path, tool, tool2, doenetId }) {
         }
     
 
+  let returnToAssignmentView = null
+  let assignments = useRecoilValueLoadable(assignmentData);
+
+  if (tool === 'Gradebook' && doenetId !== null && doenetId !== '' && assignments.state === 'hasValue'){
+    returnToAssignmentView = (
+      <BreadcrumbItem key={doenetId}>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setPageToolView(() => ({ 
+              page:'course',
+              tool:'gradebookAssignment',
+              view:'',
+              params:{ driveId, doenetId },}));
+          }
+        }}
+        onClick={() => {
+          setPageToolView(() => ({ 
+            page:'course',
+            tool:'gradebookAssignment',
+            view:'',
+            params:{ driveId, doenetId },}));
+        }}
+      >
+        {assignments.contents[doenetId]}
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+    )
+  }
+
+  let returnToStudentView = null
+  let students = useRecoilValueLoadable(studentData);
+
+  if (tool === 'Gradebook' && userId !== null && userId !== '' && students.state === 'hasValue'){
+    console.log(">>>> bc userid: ", userId)
+    returnToStudentView = (
+      <BreadcrumbItem key={userId+"*"}>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setPageToolView(() => ({ 
+              page:'course',
+              tool:'gradebookStudent',
+              view:'',
+              params:{ driveId, userId },}));
+          }
+        }}
+        onClick={() => {
+          setPageToolView(() => ({ 
+            page:'course',
+            tool:'gradebookStudent',
+            view:'',
+            params:{ driveId, userId },}));
+        }}
+      >
+        {students.contents[userId].firstName + " " + students.contents[userId].lastName}
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+    )
+  }
+
+  let returnToAttemptView = null
+
+  if (tool === 'Gradebook' && doenetId !== null && doenetId !== '' && userId !== null && userId !== '' && attemptNumber !== null && attemptNumber !== ''){
+    console.log(">>>>", {doenetId, userId, attemptNumber, })
+    
+    returnToAttemptView = (
+    <BreadcrumbItem key={userId+"_"+attemptNumber}>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setPageToolView(() => ({ 
+              page:'course',
+              tool:'gradebookAttempt',
+              view:'',
+              params:{ driveId, doenetId, userId, attemptNumber, source },}));
+          }
+        }}
+        onClick={() => {
+          setPageToolView(() => ({ 
+            page:'course',
+            tool:'gradebookAttempt',
+            view:'',
+            params:{ driveId, doenetId, userId, attemptNumber, source },}));
+        }}
+      >
+        {"Attempt " + attemptNumber}
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+    )
+  }
+
+
+  let returnToIndividualView = null
+
+  if(source === null || source === ''){
+    if(returnToAssignmentView){
+      returnToIndividualView = returnToAssignmentView
+    }
+    else{
+      returnToIndividualView = returnToStudentView
+    }
+  }else if (source === 'assignment'){
+    returnToIndividualView = returnToAssignmentView
+  }else if (source === 'student'){
+    returnToIndividualView = returnToStudentView
+  }
+
+
+  let returnToMixedView = null
+
+  if (tool === 'Gradebook' && doenetId !== null && doenetId !== '' && userId !== null && userId !== '' && students.state === 'hasValue' && assignments.state === 'hasValue'){
+    
+    returnToMixedView = (
+    <BreadcrumbItem key={userId+"_"+doenetId}>
+      <BreadcrumbSpan
+        role="button"
+        tabIndex="0"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setPageToolView(() => ({ 
+              page:'course',
+              tool:'gradebookStudentAssignment',
+              view:'',
+              params:{ driveId, doenetId, userId, source },}));
+          }
+        }}
+        onClick={() => {
+          setPageToolView(() => ({ 
+            page:'course',
+            tool:'gradebookStudentAssignment',
+            view:'',
+            params:{ driveId, doenetId, userId, source},}));
+        }}
+      >
+        {source === 'student' ? assignments.contents[doenetId] : students.contents[userId].firstName + " " + students.contents[userId].lastName}
+      </BreadcrumbSpan>
+    </BreadcrumbItem>
+    )
+  }
 
 
   return (
     <Breadcrumb>
-      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children} {returnToToolHead2}
+      {returnToCourseChooser} {returnToDashboard} {returnToToolHead} {children} {returnToToolHead2} {returnToIndividualView} {returnToMixedView} {returnToAttemptView}
     </Breadcrumb>
   );
 }
