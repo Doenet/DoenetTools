@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom'
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
-import logo from '../../../Media/Doenet_Logo_Frontpage.png';
 import styled from 'styled-components';
 import './homepage.css' ;
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -100,7 +99,7 @@ export default function HomePage(props){
 
   return <div style = {props.style}>
         <DoenetLogo>
-          <DoenetImage src={logo} />
+          <DoenetImage src={'/media/Doenet_Logo_Frontpage.png'} />
         </DoenetLogo>
         <CloudColorSection>
           <SectionText>
