@@ -14,12 +14,12 @@ import { folderDictionaryFilterSelector } from '../../../_reactComponents/Drive/
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
 import {
   fileByContentId,
   itemHistoryAtom,
 } from '../ToolHandlers/CourseToolHandler';
 import axios from 'axios';
+import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants';
 
 export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
@@ -47,28 +47,14 @@ export default function CollectionEditor() {
           if (typeof response === 'object') {
             response = response.data;
           }
-          set(
-            hiddenViewerByDoenetId(doenetId),
-            <div style={{ display: 'none' }}>
-              <DoenetViewer
-                doenetML={response}
-                generatedVariantCallback={(
-                  generatedVariantInfo,
-                  allPossibleVariants,
-                ) => {
-                  const cleanGeneratedVariant = JSON.parse(
-                    JSON.stringify(generatedVariantInfo),
-                  );
-                  cleanGeneratedVariant.lastUpdatedIndexOrName = null;
-                  set(possibleVariantsByDoenetId(doenetId), {
-                    index: cleanGeneratedVariant.index,
-                    name: cleanGeneratedVariant.name,
-                    allPossibleVariants,
-                  });
-                }}
-              />
-            </div>,
-          );
+          returnAllPossibleVariants({
+            doenetML: response,
+            callback: ({ allPossibleVariants }) => {
+              set(possibleVariantsByDoenetId(doenetId), {
+                allPossibleVariants,
+              });
+            },
+          });
         } finally {
           release();
         }
