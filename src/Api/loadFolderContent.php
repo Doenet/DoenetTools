@@ -133,7 +133,8 @@ if ($success && $init == 'true'){
     "isPublic"=>$row['isPublic'],
     "itemType"=>$row['itemType'],
     "doenetId"=>$row['doenetId'],
-    "sortOrder"=>$row['sortOrder']
+    "sortOrder"=>$row['sortOrder'],
+    "driveId"=>$driveId
   );
   array_push($results_arr,$item);
   }

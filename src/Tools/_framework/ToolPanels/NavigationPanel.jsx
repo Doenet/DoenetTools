@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { Suspense, useCallback, useEffect } from 'react';
+import React, { useState, Suspense, useCallback, useEffect } from 'react';
 import {
   useRecoilCallback,
   useRecoilState,
@@ -17,17 +17,19 @@ import Drive, {
   selectedDriveItems,
   itemType,
   clearDriveAndItemSelections,
+  folderDictionary,
 } from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
-// import { useToast, toastType } from '../Toast';
 
-export default function NavigationPanel(props) {
+export default function NavigationPanel() {
   const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
+  const [columnTypes, setColumnTypes] = useState([]);
+
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
@@ -43,14 +45,17 @@ export default function NavigationPanel(props) {
     );
   }, [setMainPanelClear]);
 
-  // const toast = useToast();
-
-  // useEffect(() => {
-  //   if (path === '') {
-  //     toast('Missing drive path data, please select a course', toastType.ERROR);
-  //     setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
-  //   }
-  // }, [path, toast, setPageToolView]);
+  useEffect(() => {
+    switch (view) {
+      case 'instructor':
+        setColumnTypes(['Released', 'Assigned', 'Public']);
+        break;
+      case 'student':
+        setColumnTypes(['Due Date']);
+        break;
+      default:
+    }
+  }, [view]);
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
@@ -142,16 +147,37 @@ export default function NavigationPanel(props) {
     [setPageToolView, view],
   );
 
-  let filterCallback = useCallback((item) => true, []);
-  const studentFilter = useCallback(
-    (item) => item.isReleased === '1' || item.itemType === 'Folder',
-    [],
+  const filterCallback = useRecoilCallback(
+    ({ snapshot }) =>
+      (item) => {
+        switch (view) {
+          case 'student':
+            if (item.itemType === itemType.FOLDER) {
+              const folderContents = snapshot
+                .getLoadable(
+                  folderDictionary({
+                    driveId: item.driveId,
+                    folderId: item.itemId,
+                  }),
+                )
+                .getValue()['contentsDictionary'];
+              for (const key in folderContents) {
+                if (folderContents[key].isReleased === '1') {
+                  return true;
+                }
+              }
+              return false;
+            } else {
+              return item.isReleased === '1';
+            }
+          case 'instructor':
+            return true;
+          default:
+            console.warn('No view selected');
+        }
+      },
+    [view],
   );
-  let columnTypes = ['Released', 'Assigned', 'Public'];
-  if (view === 'student') {
-    columnTypes = ['Due Date'];
-    filterCallback = studentFilter;
-  }
 
   return (
     <BreadcrumbProvider>
