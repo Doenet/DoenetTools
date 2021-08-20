@@ -98,7 +98,7 @@ export default function DoenetMLEditor(props){
         console.log("ERROR",error)
       }
     
-  });
+  },[]);
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
@@ -158,7 +158,7 @@ export default function DoenetMLEditor(props){
 
       }
     }
-  },[isCurrentDraft,initilizedDoenetId])
+  },[isCurrentDraft,initilizedDoenetId, saveDraft])
 
 
   if (paramDoenetId !== initilizedDoenetId){

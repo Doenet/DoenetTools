@@ -250,6 +250,7 @@ console.log(">>>===VersionHistory")
             addToast('New Version Saved!', toastType.SUCCESS)
           }else{
             addToast('Version NOT Saved!', toastType.ERROR);
+            console.error(resp.data?.message);
           }
         })
         .catch((err)=>{
