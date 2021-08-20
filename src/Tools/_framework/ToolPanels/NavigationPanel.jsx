@@ -86,10 +86,11 @@ export default function NavigationPanel(props) {
     [],
   );
 
-  const doubleClickCallback = useCallback(
-    (info) => {
+  const doubleClickCallback = useRecoilCallback(
+    ({set}) => (info) => {
       switch (info.type) {
         case itemType.FOLDER:
+          set(clearDriveAndItemSelections, null);
           setPageToolView((was) => ({
             ...was,
             params: {
