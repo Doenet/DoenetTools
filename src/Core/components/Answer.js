@@ -1103,10 +1103,19 @@ export default class Answer extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let foundChange = !deepCompare(
-          dependencyValues.currentCreditAchievedDependencies,
-          dependencyValues.creditAchievedDependenciesAtSubmit
-        )
+        let foundChange = true;
+
+        // let foundChange = !deepCompare(
+        //   dependencyValues.currentCreditAchievedDependencies,
+        //   dependencyValues.creditAchievedDependenciesAtSubmit
+        // )
+
+        // use JSON.stringify rather than deepCompare
+        // so that NaNs will be equal to each other
+        if(dependencyValues.creditAchievedDependenciesAtSubmit) {
+          foundChange = JSON.stringify(dependencyValues.currentCreditAchievedDependencies) 
+          !== JSON.stringify(dependencyValues.creditAchievedDependenciesAtSubmit)
+        }
 
         if (foundChange) {
           return {

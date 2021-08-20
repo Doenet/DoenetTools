@@ -13,7 +13,7 @@ export default class Sort extends CompositeComponent {
 
     return [{
       group: "mathNumbers",
-      componentTypes: ["number", "math", "numberList", "mathList"]
+      componentTypes: ["number", "math", "numberList", "mathList", "point"]
     }]
 
   }
@@ -53,10 +53,10 @@ export default class Sort extends CompositeComponent {
         let dependencies = {};
         for (let [ind, cName] of stateValues.componentNamesForValues.entries()) {
           dependencies[`component${ind}`] = {
-            dependencyType: "stateVariable",
+            dependencyType: "multipleStateVariables",
             componentName: cName,
-            variableName: "value",
-            returnAsComponentObject: true,
+            variableNames: ["value", "xs"],
+            variablesOptional: true,
           }
         }
         return dependencies;
@@ -82,6 +82,23 @@ export default class Sort extends CompositeComponent {
           })) {
             let numericalValue = component.stateValues.value.evaluate_to_constant();
             if (numericalValue === null) {
+              numericalValue = NaN;
+            }
+            allValues.push({
+              componentName: component.componentName,
+              numericalValue,
+            })
+          } else if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: component.componentType,
+            baseComponentType: "point"
+          })) {
+            let numericalValue;
+            if (component.stateValues.xs.length > 0) {
+              numericalValue = component.stateValues.xs[0].evaluate_to_constant();
+              if (numericalValue === null) {
+                numericalValue = NaN;
+              }
+            } else {
               numericalValue = NaN;
             }
             allValues.push({
