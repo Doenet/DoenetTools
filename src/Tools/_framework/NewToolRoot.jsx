@@ -619,15 +619,35 @@ let encodeParams = p => Object.entries(p).map(kv =>
       //Also causes refresh as useState will see it as a new object in root
       nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
     }
-    // console.log(">>>isURLChange",isURLChange,"isRecoilChange",isRecoilChange)
-    // console.log(">>>page",isPageChange,"Tool",isToolChange,"view",isViewChange)
+
+
+    let searchObj = {}
+
+    //Update recoil isURLChange
+    if (isURLChange){
+      searchObj = Object.fromEntries(new URLSearchParams(location.search))
+      setSearchParamAtom(searchObj)
+      nextPageToolView['params'] = {...searchObj};
+      delete nextPageToolView['params'].tool;
+      // console.log(">>>isURLChange nextPageToolView",nextPageToolView) //Changed this to keep params
+
+      setRecoilPageToolView(nextPageToolView);
+    }
+
+    // console.log("\n>>>>isURLChange",isURLChange,"isRecoilChange",isRecoilChange)
+    // console.log(">>>>page",isPageChange,"Tool",isToolChange,"view",isViewChange)
     // console.log(">>>>nextPageToolView",nextPageToolView)
+    // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
     let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view]
-    // console.log(">>>viewOverrides",viewOverrides)
-    // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
+    
 
     //Have view Override the next menu and panels
-    if (isViewChange && typeof viewOverrides === 'object' && viewOverrides !== null){
+    if (typeof viewOverrides === 'object' && viewOverrides !== null){
+      // console.log(">>>>IMPLEMENTING OVERRIDES!!!!!!")
+      // console.log(">>>>viewOverrides",viewOverrides)
+      // console.log(">>>>nextPageToolView.view",nextPageToolView.view)
+      nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
+
       for (let key of Object.keys(viewOverrides)){
         nextMenusAndPanels[key] = viewOverrides[key];
       }
@@ -650,18 +670,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }
 
 
-    let searchObj = {}
-
-    //Update recoil isURLChange
-    if (isURLChange){
-      searchObj = Object.fromEntries(new URLSearchParams(location.search))
-      setSearchParamAtom(searchObj)
-      nextPageToolView['params'] = {...searchObj};
-      delete nextPageToolView['params'].tool;
-      // console.log(">>>isURLChange nextPageToolView",nextPageToolView) //Changed this to keep params
-
-      setRecoilPageToolView(nextPageToolView);
-    }
+    
 
    
 
@@ -717,6 +726,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
       }
     }
     // console.log(">>>>AT THE END nextPageToolView",nextPageToolView)
+    // console.log(">>>>AT THE END nextMenusAndPanels",nextMenusAndPanels)
 
     lastSearchObj.current = searchObj;
     lastLocationStr.current = locationStr;
