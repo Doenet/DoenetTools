@@ -188,7 +188,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
                 setPageToolView((was) => ({ 
                   page:was.page,
                   tool:toolName,
-                  view:'',
+                  view:was.view,
                   params,}));
               }
             }}
@@ -196,7 +196,7 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
               setPageToolView((was) => ({ 
                 page:was.page,
                 tool:toolName,
-                view:'',
+                view:was.view,
                 params,}));
             }}
           >
