@@ -52,7 +52,6 @@ export default function NavigationPanel(props) {
   //   }
   // }, [path, toast, setPageToolView]);
 
-
   const clickCallback = useRecoilCallback(
     ({ set }) =>
       (info) => {
@@ -86,68 +85,73 @@ export default function NavigationPanel(props) {
     [],
   );
 
-  const doubleClickCallback = useCallback(
-    (info) => {
-      switch (info.type) {
-        case itemType.FOLDER:
-          setPageToolView((was) => ({
-            ...was,
-            params: {
-              path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
-            },
-          }));
-          break;
-        case itemType.DOENETML:
-          if (view === 'student'){
-            //TODO: VariantIndex params
+  const doubleClickCallback = useRecoilCallback(
+    ({ set }) =>
+      (info) => {
+        switch (info.type) {
+          case itemType.FOLDER:
+            set(clearDriveAndItemSelections, null);
+            setPageToolView((was) => ({
+              ...was,
+              params: {
+                path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
+              },
+            }));
+            break;
+          case itemType.DOENETML:
+            if (view === 'student') {
+              //TODO: VariantIndex params
+              setPageToolView({
+                page: 'course',
+                tool: 'assignment',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                },
+              });
+            } else if (view === 'instructor') {
+              setPageToolView({
+                page: 'course',
+                tool: 'editor',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                  path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
+                },
+              });
+            }
+
+            break;
+          case itemType.COLLECTION:
             setPageToolView({
               page: 'course',
-              tool: 'assignment',
+              tool: 'collection',
               view: '',
               params: {
                 doenetId: info.item.doenetId,
+                path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
               },
             });
-          }else if (view === 'instructor'){
-            setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
-              params: {
-                doenetId: info.item.doenetId,
-                path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
-              },
-            });
-          }
-          
-          break;
-        case itemType.COLLECTION:
-          setPageToolView({
-            page: 'course',
-            tool: 'collection',
-            view: '',
-            params: {
-              doenetId: info.item.doenetId,
-              path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
-            },
-          });
-          break;
-        default:
-          throw new Error('NavigationPanel doubleClick info type not defined');
-      }
-    },
-    [setPageToolView,view],
+            break;
+          default:
+            throw new Error(
+              'NavigationPanel doubleClick info type not defined',
+            );
+        }
+      },
+    [setPageToolView, view],
   );
 
   let filterCallback = useCallback((item) => true, []);
-  const studentFilter = useCallback((item) => item.isReleased === '1' || item.itemType === 'Folder', []);
-  let columnTypes = ['Released','Assigned', 'Public']
-  if (view === 'student'){
-    columnTypes = ['Due Date']
+  const studentFilter = useCallback(
+    (item) => item.isReleased === '1' || item.itemType === 'Folder',
+    [],
+  );
+  let columnTypes = ['Released', 'Assigned', 'Public'];
+  if (view === 'student') {
+    columnTypes = ['Due Date'];
     filterCallback = studentFilter;
   }
-
-
 
   return (
     <BreadcrumbProvider>
