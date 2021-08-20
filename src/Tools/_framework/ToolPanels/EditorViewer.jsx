@@ -38,7 +38,7 @@ export const editorDoenetIdInitAtom = atom({
 })
 
 export default function EditorViewer(props){
-  console.log(">>>===EditorViewer")
+  // console.log(">>>>===EditorViewer")
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   // const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
   const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
@@ -72,7 +72,6 @@ export default function EditorViewer(props){
     }
   }, [paramDoenetId]);
 
- 
   if (paramDoenetId !== initilizedDoenetId){
     //DoenetML is changing to another DoenetID
     return <div style={props.style}></div>

@@ -361,6 +361,7 @@ let navigationObj = {
       supportPanelIndex:0,
       headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
       headerControlsPositions: ["Left","Left"],
+      // onLeave:"",
     },
     collection: {
       currentMainPanel:"CollectionEditor",
