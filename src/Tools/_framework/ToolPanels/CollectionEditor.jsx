@@ -27,6 +27,7 @@ export default function CollectionEditor() {
   ).split(':');
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const [availableEntries, setAvailableEntries] = useState([]);
+  const [assignedEntries, setAssignedEntries] = useState([]);
 
   const initEntryByDoenetId = useRecoilCallback(
     ({ snapshot, set }) =>
@@ -50,9 +51,7 @@ export default function CollectionEditor() {
           returnAllPossibleVariants({
             doenetML: response,
             callback: ({ allPossibleVariants }) => {
-              set(possibleVariantsByDoenetId(doenetId), {
-                allPossibleVariants,
-              });
+              set(possibleVariantsByDoenetId(doenetId), allPossibleVariants);
             },
           });
         } finally {
@@ -62,9 +61,30 @@ export default function CollectionEditor() {
     [],
   );
 
-  const assignedEntries = useRecoilValueLoadable(
-    assignedEntiresQuery(doenetId),
+  const assignedEntriesData = useRecoilValueLoadable(
+    assignedEntiresInfo(doenetId),
   ).getValue();
+
+  useEffect(() => {
+    const entries = [];
+    for (let key in assignedEntriesData) {
+      const { collectionDoenetId, entryDoenetId, entryId, variant } =
+        assignedEntriesData[key];
+      console.log(variant);
+      entries.push(
+        <Suspense key={entryId}>
+          <CollectionEntry
+            collectionDoenetId={collectionDoenetId}
+            doenetId={entryDoenetId}
+            entryId={entryId}
+            variant={variant}
+            assigned
+          />
+        </Suspense>,
+      );
+    }
+    setAssignedEntries(entries);
+  }, [assignedEntriesData]);
 
   const folderInfoObj = useRecoilValueLoadable(
     folderDictionaryFilterSelector({
@@ -107,14 +127,9 @@ export default function CollectionEditor() {
   );
 }
 
-const hiddenViewerByDoenetId = atomFamily({
-  key: 'hiddenViewerByDoenetId',
-  default: null,
-});
-
 const possibleVariantsByDoenetId = atomFamily({
   key: 'possibleVariantsByDoenetId',
-  default: {},
+  default: [],
 });
 
 const entryInfoByDoenetId = atomFamily({
@@ -145,34 +160,16 @@ const entryInfoByDoenetId = atomFamily({
   }),
 });
 
-const assignedEntiresQuery = atomFamily({
-  key: 'assignedEntiresQuery',
+const assignedEntiresInfo = atomFamily({
+  key: 'assignedEntiresInfo',
   default: selectorFamily({
-    key: 'assignedEntiresQuery/Default',
+    key: 'assignedEntiresInfo/Default',
     get: (doenetId) => async () => {
       try {
         const resp = await axios.get('/api/loadCollection.php', {
           params: { doenetId },
         });
-        const entries = [];
-        if (resp.status === 200) {
-          for (let key in resp.data.entries) {
-            const { collectionDoenetId, entryDoenetId, entryId, variant } =
-              resp.data.entries[key];
-            entries.push(
-              <Suspense key={entryId}>
-                <CollectionEntry
-                  collectionDoenetId={collectionDoenetId}
-                  doenetId={entryDoenetId}
-                  entryId={entryId}
-                  variant={variant}
-                  assigned
-                />
-              </Suspense>,
-            );
-          }
-        }
-        return entries;
+        return resp.data.entries;
       } catch (error) {
         console.error(error);
         return [];
@@ -188,11 +185,9 @@ function CollectionEntry({
   assigned,
   variant,
 }) {
-  const hiddenViewer = useRecoilValue(hiddenViewerByDoenetId(doenetId));
-  const [selectedVariant, setSelectedVariant] = useState(variant);
   //TODO: should be a socket interaction
   const setAssignedEntries = useSetRecoilState(
-    assignedEntiresQuery(collectionDoenetId),
+    assignedEntiresInfo(collectionDoenetId),
   );
   const entryInfo = useRecoilValueLoadable(
     entryInfoByDoenetId(doenetId),
@@ -205,18 +200,15 @@ function CollectionEntry({
 
   useEffect(() => {
     const options = [];
-    for (let key in variants.allPossibleVariants) {
+    for (let key in variants) {
       options.push(
-        <option
-          key={variants.allPossibleVariants[key]}
-          value={variants.allPossibleVariants[key]}
-        >
-          {variants.allPossibleVariants[key]}
+        <option key={variants[key]} value={variants[key]}>
+          {variants[key]}
         </option>,
       );
     }
     setSelectOptions(options);
-  }, [variants.allPossibleVariants]);
+  }, [variants]);
 
   return (
     <>
@@ -224,7 +216,7 @@ function CollectionEntry({
         label={entryInfo.label}
         assigned={assigned}
         selectOptions={selectOptions}
-        selectedVariant={selectedVariant}
+        selectedVariant={variant}
         addEntryToAssignment={() => {
           //TODO: failure toast??
           const entryId = nanoid();
@@ -235,22 +227,18 @@ function CollectionEntry({
               label: entryInfo.label,
               entryId,
               //TODO: ref the selected option;
-              variant: variants.allPossibleVariants[0],
+              variant: variants[0],
             })
             .then((resp) => {
               if (resp.status === 200) {
                 setAssignedEntries((was) => [
                   ...was,
-                  <Suspense key={entryId}>
-                    <CollectionEntry
-                      collectionDoenetId={collectionDoenetId}
-                      doenetId={doenetId}
-                      entryId={entryId}
-                      label={entryInfo?.label}
-                      variant={variants.allPossibleVariants[0]}
-                      assigned
-                    />
-                  </Suspense>,
+                  {
+                    collectionDoenetId,
+                    entryDoenetId: doenetId,
+                    entryId,
+                    variant: variants[0],
+                  },
                 ]);
               }
             });
@@ -262,7 +250,7 @@ function CollectionEntry({
               //TODO: failure toast??
               if (resp.status === 200) {
                 setAssignedEntries((was) =>
-                  was.filter((entryJSX) => entryJSX.key !== entryId),
+                  was.filter((entry) => entry.entryId !== entryId),
                 );
               }
             });
@@ -274,12 +262,19 @@ function CollectionEntry({
               variant: newSelectedVariant,
             })
             .then(() => {
-              setSelectedVariant(newSelectedVariant);
+              setAssignedEntries((was) =>
+                was.map((entry) => {
+                  if (entry.entryId === entryId) {
+                    return { ...entry, variant: newSelectedVariant };
+                  } else {
+                    return entry;
+                  }
+                }),
+              );
             })
             .catch((error) => console.error(error));
         }}
       />
-      {!assigned ? hiddenViewer : null}
     </>
   );
 }
