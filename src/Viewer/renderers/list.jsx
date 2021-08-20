@@ -11,7 +11,7 @@ export default class List extends DoenetRenderer {
 
     // TODO: incorporate label
     if (this.doenetSvData.item) {
-      return <li id={this.componentName}><a name={this.componentName} />{this.children}</li>;
+      return <><a name={this.componentName} /><li id={this.componentName}>{this.children}</li></>;
     } else if (this.doenetSvData.numbered) {
       return <ol id={this.componentName}><a name={this.componentName} />{this.children}</ol>;
     } else {
