@@ -71,7 +71,6 @@ CREATE TABLE `collection` (
   `entryDoenetId` char(21) NOT NULL DEFAULT '',
   `entryId` char(21) NOT NULL DEFAULT '',
   `variant` varchar(255) NOT NULL DEFAULT '',
-  `label` char(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
