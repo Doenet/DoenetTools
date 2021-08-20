@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useState, Suspense, useEffect } from 'react';
+import React, { useState, Suspense, useEffect, useLayoutEffect } from 'react';
 import {
   useRecoilCallback,
   useRecoilState,
@@ -45,7 +45,7 @@ export default function NavigationPanel() {
     );
   }, [setMainPanelClear]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     switch (view) {
       case 'instructor':
         setColumnTypes(['Released', 'Assigned', 'Public']);
