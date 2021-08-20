@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useState, Suspense, useCallback, useEffect } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import {
   useRecoilCallback,
   useRecoilState,
