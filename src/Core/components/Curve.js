@@ -746,6 +746,27 @@ export default class Curve extends GraphicalComponent {
 
     }
 
+    stateVariableDefinitions.bezierControlsAlwaysVisible = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        controlChild: {
+          dependencyType: "child",
+          childGroups: ["bezierControls"],
+          variableNames: ["alwaysVisible"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            bezierControlsAlwaysVisible: dependencyValues.controlChild.length > 0
+              && dependencyValues.controlChild[0].stateValues.alwaysVisible
+          }
+        }
+      }
+
+    }
+
+
     stateVariableDefinitions.vectorControlDirections = {
       public: true,
       componentType: "text",
