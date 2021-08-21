@@ -9,6 +9,20 @@ export default class BezierControls extends BaseComponent {
   static get stateVariablesShadowedForReference() { return ["controls"] };
 
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.alwaysVisible = {
+      createComponentOfType: "boolean",
+      createStateVariable: "alwaysVisible",
+      defaultValue: false,
+      public: true,
+    };
+
+    return attributes;
+  }
+
+
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 

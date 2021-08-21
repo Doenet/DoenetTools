@@ -134,6 +134,11 @@ export default class FunctionCurve extends DoenetRenderer {
 
       this.createControls();
 
+      if (this.doenetSvData.bezierControlsAlwaysVisible) {
+        this.makeThroughPointsAlwaysVisible()
+        this.showAllControls();
+      }
+
       this.props.board.updateRenderer();
 
       this.previousNumberOfPoints = this.doenetSvData.numericalThroughPoints.length;
@@ -293,11 +298,17 @@ export default class FunctionCurve extends DoenetRenderer {
     this.vectorControlsVisible = [];
   }
 
+  showAllControls() {
+    for (let ind in this.controlPointsJXG) {
+      this.makeVectorControlVisible(ind);
+    }
+  }
+
   upBoard() {
     if (!this.doenetSvData.draggable) {
       return;
     }
-    if (this.hitObject !== true) {
+    if (this.hitObject !== true && !this.doenetSvData.bezierControlsAlwaysVisible) {
       this.makeThroughPointsHoverVisible();
       this.hideAllControls();
       this.props.board.updateRenderer();
