@@ -76,7 +76,9 @@ export default class FunctionCurve extends DoenetRenderer {
 
     if (this.doenetSvData.curveType === "bezier") {
 
-      this.props.board.on('up', this.upBoard);
+      if (!this.props.board.eventHandlers.up) {
+        this.props.board.on('up', this.upBoard);
+      }
       this.curveJXG.on('down', this.downOther);
 
       this.segmentAttributes = {
@@ -149,6 +151,12 @@ export default class FunctionCurve extends DoenetRenderer {
     this.throughPointsJXG = [];
     this.controlPointsJXG = [];
     this.segmentsJXG = [];
+
+    let downTP = this.downThroughPoint;
+    let dragTP = this.dragThroughPoint;
+    let dragCP = this.dragControlPoint;
+    let downO = this.downOther;
+
     for (let i = 0; i < this.doenetSvData.numericalThroughPoints.length; i++) {
       // middle through points have two controls
       let tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[i]], this.throughPointAttributes);
@@ -159,17 +167,17 @@ export default class FunctionCurve extends DoenetRenderer {
       let seg1 = this.props.board.create('segment', [tp, cp1], this.segmentAttributes);
       let seg2 = this.props.board.create('segment', [tp, cp2], this.segmentAttributes);
       this.segmentsJXG.push([seg1, seg2]);
-      tp.on('drag', e => this.dragThroughPoint(i, true, e));
-      tp.on('down', e => this.downThroughPoint(i, e));
-      tp.on('up', e => this.dragThroughPoint(i, false, e));
-      cp1.on('drag', e => this.dragControlPoint(i, 0, true, e));
-      cp2.on('drag', e => this.dragControlPoint(i, 1, true, e));
-      cp1.on('down', this.downOther);
-      cp2.on('down', this.downOther);
-      seg1.on('down', this.downOther);
-      seg1.on('down', this.downOther);
-      cp1.on('up', e => this.dragControlPoint(i, 0, false, e));
-      cp2.on('up', e => this.dragControlPoint(i, 1, false, e));
+      tp.on('drag', e => dragTP(i, true, e));
+      tp.on('down', e => downTP(i, e));
+      tp.on('up', e => dragTP(i, false, e));
+      cp1.on('drag', e => dragCP(i, 0, true, e));
+      cp2.on('drag', e => dragCP(i, 1, true, e));
+      cp1.on('down', downO);
+      cp2.on('down', downO);
+      seg1.on('down', downO);
+      seg1.on('down', downO);
+      cp1.on('up', e => dragCP(i, 0, false, e));
+      cp2.on('up', e => dragCP(i, 1, false, e));
     }
 
     this.vectorControlsVisible = [];
@@ -180,11 +188,11 @@ export default class FunctionCurve extends DoenetRenderer {
   deleteControls() {
     if (this.segmentsJXG) {
       this.segmentsJXG.forEach(x => x.forEach(y => { if (y) { this.props.board.removeObject(y) } }));
-      delete this.segmentsJXG;
+      this.segmentsJXG = [];
       this.controlPointsJXG.forEach(x => x.forEach(y => { if (y) { this.props.board.removeObject(y) } }));
-      delete this.controlPointsJXG;
+      this.controlPointsJXG = [];
       this.throughPointsJXG.forEach(x => this.props.board.removeObject(x));
-      delete this.throughPointsJXG;
+      this.throughPointsJXG = [];
     }
   }
 
@@ -475,13 +483,27 @@ export default class FunctionCurve extends DoenetRenderer {
       return;
     }
 
+    let downTP = this.downThroughPoint;
+    let dragTP = this.dragThroughPoint;
+    let dragCP = this.dragControlPoint;
+    let downO = this.downOther;
 
     // add or delete segments and points if number changed
     if (this.doenetSvData.numericalThroughPoints.length > this.previousNumberOfPoints) {
+
+      let iPreviousLast = this.previousNumberOfPoints - 1;
+
+      let attributesForNewThroughPoints = Object.assign({}, this.throughPointAttributes)
+      if (this.throughPointsJXG[iPreviousLast].visProp.fillcolor
+        === this.throughPointAlwaysVisible.fillcolor
+      ) {
+        Object.assign(attributesForNewThroughPoints, this.throughPointAlwaysVisible)
+      }
+
       for (let i = this.previousNumberOfPoints; i < this.doenetSvData.numericalThroughPoints.length; i++) {
 
         // add point and its controls
-        let tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[i]], this.throughPointAttributes);
+        let tp = this.props.board.create('point', [...this.doenetSvData.numericalThroughPoints[i]], attributesForNewThroughPoints);
         this.throughPointsJXG.push(tp);
         let cp1 = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[i][0]], this.controlPointAttributes);
         let cp2 = this.props.board.create('point', [...this.doenetSvData.numericalControlPoints[i][1]], this.controlPointAttributes);
@@ -495,18 +517,26 @@ export default class FunctionCurve extends DoenetRenderer {
         cp2.visProp.visible = false;
         seg2.visProp.visible = false;
 
-        tp.on('drag', e => this.dragThroughpoint(i, true, e));
-        tp.on('down', e => this.downThroughpoint(i, e));
-        tp.on('up', e => this.dragThroughpoint(i, false, e));
-        cp1.on('drag', e => this.dragControlPoint(i, 0, true, e));
-        cp1.on('down', this.downOther);
-        cp1.on('up', e => this.dragControlPoint(i, 0, false, e));
-        cp2.on('drag', e => this.dragControlPoint(i, 1, true, e));
-        cp2.on('down', this.downOther);
-        cp2.on('up', e => this.dragControlPoint(i, 1, false, e));
-        seg1.on('down', this.downOther);
-        seg2.on('down', this.downOther);
 
+        tp.on('drag', e => dragTP(i, true, e));
+        tp.on('down', e => downTP(i, e));
+        tp.on('up', e => dragTP(i, false, e));
+        cp1.on('drag', e => dragCP(i, 0, true, e));
+        cp1.on('down', downO);
+        cp1.on('up', e => dragCP(i, 0, false, e));
+        cp2.on('drag', e => dragCP(i, 1, true, e));
+        cp2.on('down', downO);
+        cp2.on('up', e => dragCP(i, 1, false, e));
+        seg1.on('down', downO);
+        seg2.on('down', downO);
+
+      }
+
+      if (this.vectorControlsVisible[iPreviousLast]) {
+        // since added new point on one side of previous last point
+        // (at least if not extrapolating)
+        // refresh visibility to add extra handle
+        this.makeVectorControlVisible(iPreviousLast);
       }
     } else if (this.doenetSvData.numericalThroughPoints.length < this.previousNumberOfPoints) {
       for (let i = this.previousNumberOfPoints - 1; i >= this.doenetSvData.numericalThroughPoints.length; i--) {
@@ -521,6 +551,12 @@ export default class FunctionCurve extends DoenetRenderer {
 
         this.props.board.removeObject(this.throughPointsJXG.pop());
       }
+
+      let iNewLast = this.doenetSvData.numericalThroughPoints.length - 1
+      if (this.vectorControlsVisible[iNewLast]) {
+        this.makeVectorControlVisible(iNewLast);
+      }
+
     }
 
     // move old points

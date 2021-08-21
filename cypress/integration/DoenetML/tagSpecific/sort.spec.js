@@ -341,7 +341,7 @@ describe('Sort Tag Tests', function () {
 
   })
 
-  it.only('sort points', () => {
+  it('sort points', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
