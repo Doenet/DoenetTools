@@ -26,7 +26,7 @@ const assignmentDoenetMLContentIdAtom = atom({
 
 
 //key is doenetId
-const variantsAndAttemptsByDoenetId = atomFamily({
+export const variantsAndAttemptsByDoenetId = atomFamily({
   key:'variantsAndAttemptsByDoenetId',
   default: {
     assignedContentId:null,
@@ -45,7 +45,7 @@ export default function AssignmentViewer(props){
   let variantOfCurrentAttempt = variantAttemptInfo.usersVariantAttempts?.[variantAttemptInfo.numberOfCompletedAttempts];
   let attemptNumber = variantAttemptInfo.numberOfCompletedAttempts + 1;
   let stage = useRef('Start');
-  // console.log(">>>>variantAttemptInfo",variantAttemptInfo)
+  // console.log(">>>>AssignmentViewer variantAttemptInfo",variantAttemptInfo)
   // console.log(">>>>variantOfCurrentAttempt",variantOfCurrentAttempt)
   // console.log(">>>>attemptNumber",attemptNumber)
 
@@ -90,7 +90,7 @@ export default function AssignmentViewer(props){
   //Randomly pick next variant
   //If all were picked then start random picks over
   function pushRandomVariantOfRemaining({previous,from}){
-    let usersVariantAttempts = []
+    let usersVariantAttempts = [...previous]
     let possible = [];
     let numRemaining = previous.length % from.length;
     
@@ -110,6 +110,7 @@ export default function AssignmentViewer(props){
     const was = await snapshot.getPromise((variantsAndAttemptsByDoenetId(paramDoenetId)));
     let newObj = {...was}
     newObj.assignedContentId = contentId;
+    newObj.variantsFromDoenetMLDictionary = {...was.variantsFromDoenetMLDictionary}
     newObj.variantsFromDoenetMLDictionary[contentId] = [...allPossibleVariants];
     newObj.usersVariantAttempts = pushRandomVariantOfRemaining({previous:newObj.usersVariantAttempts,from:newObj.variantsFromDoenetMLDictionary[contentId]});
     set(variantsAndAttemptsByDoenetId(paramDoenetId),newObj)
@@ -119,20 +120,17 @@ export default function AssignmentViewer(props){
   },[paramDoenetId,contentId]);
 
   //Define usersVariantAttempts, assignedContentId and variantsFromDoenetMLDictionary for contentId
-  const updateVariantInfo = useRecoilCallback(({snapshot,set})=> async (doenetId,contentId,doenetML)=>{
+  const updateVariantInfo = useRecoilCallback(({snapshot})=> async (doenetId,contentId,doenetML)=>{
     const variantAttemptInfo = await snapshot.getPromise((variantsAndAttemptsByDoenetId(doenetId)));
     if (!variantAttemptInfo.variantsFromDoenetMLDictionary[contentId]){
       returnAllPossibleVariants({doenetML,callback:setVariantsFromDoenetML})
     }else{
-      set(variantsAndAttemptsByDoenetId(doenetId),(was)=>{
-        let newObj = {...was}
-        newObj.assignedContentId = contentId;
-        return newObj;
-      })
+      const allPossibleVariants = variantAttemptInfo.variantsFromDoenetMLDictionary[variantAttemptInfo.assignedContentId]
+      setVariantsFromDoenetML({allPossibleVariants})
     }
   },[setVariantsFromDoenetML]);
 
-  console.log(">>>>stage",stage.current)
+  // console.log(`>>>>stage [[${stage.current}]]`)
 
   if (stage.current === 'Start'){
     stage.current = 'Wait for paramDoenetId'
@@ -152,16 +150,19 @@ export default function AssignmentViewer(props){
       }
     return null;
   }else if (stage.current === 'Wait for Variant'){
+
     if (variantOfCurrentAttempt){
-      stage.current === 'Wait for New Attempt'
+      stage.current = 'Wait for New Attempt'
     }else{
-      return null;
+        return null;
     }
   }else if (stage.current === 'Wait for New Attempt'){
     if (!variantOfCurrentAttempt){
       stage.current = 'Wait for Variant'
       updateVariantInfo(paramDoenetId,contentId,doenetML)
     }
+    return null;
+
   }
 
   let solutionDisplayMode = "button";
@@ -180,7 +181,7 @@ export default function AssignmentViewer(props){
       showFeedback: true,
       showHints: true,
     }}
-    // attemptNumber={attemptNumber}
+    attemptNumber={attemptNumber}
     // allowLoadPageState={false} 
     // allowSavePageState={false}
     allowLoadPageState={true} 

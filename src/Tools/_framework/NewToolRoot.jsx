@@ -131,6 +131,7 @@ export default function ToolRoot(){
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
+    AssignmentNewAttempt: lazy(() => import('./HeaderControls/AssignmentNewAttempt')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
 
@@ -248,8 +249,8 @@ let navigationObj = {
       currentMenus:[], 
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: ["AssignmentBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
+      headerControlsPositions: ["Left","Right"],
     },
     courseChooser:{ //allCourses
       pageName:"Course",
