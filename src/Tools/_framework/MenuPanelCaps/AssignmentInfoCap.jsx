@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-import { folderDictionary,fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import { folderDictionary, fetchDrivesQuery, loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import axios from 'axios';
+import { variantsAndAttemptsByDoenetId } from '../ToolPanels/AssignmentViewer';
 
 export default function AssignmentInfoCap(){
   let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
+  const assignmentSettings = useRecoilValue(loadAssignmentSelector(doenetId));
+  const attemptsAllowed = assignmentSettings.numberOfAttemptsAllowed;
+  const userAttempts = useRecoilValue(variantsAndAttemptsByDoenetId(doenetId));
+  const userAttemptNumber = userAttempts.numberOfCompletedAttempts + 1;
   let [driveId,setDriveId] = useState("");
   let [folderId,setFolderId] = useState("");
 
@@ -41,5 +46,6 @@ export default function AssignmentInfoCap(){
     </div>
     <div>{driveLabel}</div>
     <div>{docInfo.label}</div>
+    <div>{userAttemptNumber}/{attemptsAllowed} Attempts</div>
   </div>
 }

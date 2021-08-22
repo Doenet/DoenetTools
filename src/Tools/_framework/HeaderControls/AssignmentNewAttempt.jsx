@@ -19,7 +19,7 @@ export default function AssignmentNewAttempt() {
     // console.log(">>>>attemptsAllowed",attemptsAllowed)
     if (userAttemptNumber + 1  >= attemptsAllowed){
       setButtonEnabled(false);
-      console.log(">>>>OUT OF ATTEMPTS")
+      // console.log(">>>>OUT OF ATTEMPTS")
      
     }
       let newUserAttempts = {...userAttempts}
