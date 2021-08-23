@@ -189,6 +189,7 @@ onClick={()=>assignUnassign(item.doenetId)}
 //For item we just need label and doenetId
 export function AssignmentSettings({role, item}) {
   
+  //Consider getValue() but need Suspense
   const aLoadable = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId))
   const aInfo = aLoadable.contents;
   const addToast = useToast();
