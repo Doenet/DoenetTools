@@ -16,9 +16,14 @@ $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $requestedVariant = mysqli_real_escape_string($conn,$_POST["requestedVariant"]);
 $generatedVariant = mysqli_real_escape_string($conn,$_POST["generatedVariant"]);
+
 $weights = array_map(function($item) use($conn) {
     return mysqli_real_escape_string($conn, $item);
   }, $_POST['weights']);
+
+$itemVariants = array_map(function($item) use($conn) {
+    return mysqli_real_escape_string($conn, $item);
+  }, $_POST['itemVariantInfo']);
 
 $success = TRUE;
 $message = "";
@@ -96,21 +101,18 @@ if ($result->num_rows < 1){
   for ($itemNumber = 1; $itemNumber < count($weights) + 1; $itemNumber++){
     //Store Item  weights
     $weight = $weights[($itemNumber -1)];
+    $itemVariant = $itemVariants[($itemNumber -1)];
     $sql = "INSERT INTO user_assignment_attempt_item 
-    (userId,doenetId,contentId,attemptNumber,itemNumber,weight)
+    (userId,doenetId,contentId,attemptNumber,itemNumber,weight,generatedVariant)
     values
-    ('$userId','$doenetId','$contentId','$attemptNumber','$itemNumber','$weight')
+    ('$userId','$doenetId','$contentId','$attemptNumber','$itemNumber','$weight','$itemVariant')
     ";
   $result = $conn->query($sql);
 
   }
 
 }
-
-
-
 }
-
 
 
 $response_arr = array(

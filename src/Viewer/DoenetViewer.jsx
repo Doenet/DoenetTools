@@ -141,6 +141,8 @@ class DoenetViewerChild extends Component {
     this.core = core;
 
     this.generatedVariant = core.document.stateValues.generatedVariantInfo;
+    this.itemVariantInfo = core.document.stateValues.itemVariantInfo;
+    
     this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
 
     if (this.props.generatedVariantCallback) {
@@ -232,6 +234,7 @@ class DoenetViewerChild extends Component {
           contentId:this.contentId,
           requestedVariant:JSON.stringify(this.requestedVariant,serializedComponentsReplacer),
           generatedVariant:JSON.stringify(this.generatedVariant,serializedComponentsReplacer),
+          itemVariantInfo:this.itemVariantInfo.map(x=>JSON.stringify(x,serializedComponentsReplacer)),
       }).then((resp)=>{
         // console.log(">>>>resp",resp.data)
 
