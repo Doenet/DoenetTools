@@ -60,9 +60,11 @@ import useSockets from '../Sockets';
 import { BreadcrumbContext } from '../Breadcrumb/BreadcrumbProvider';
 import Collection from './Collection';
 
-export const loadAssignmentSelector = selectorFamily({
-  key: 'loadAssignmentSelector',
-  get: (doenetId) => async () => {
+const loadAssignmentAtomFamily = atomFamily({
+  key: 'loadAssignmentAtomFamily',
+  default: selectorFamily({
+    key: 'loadAssignmentAtomFamily/Default',
+    get: (doenetId) => async () => {
       const payload = { doenetId }
       const { data } = await axios.get(
         "/api/getAllAssignmentSettings.php", {
@@ -71,6 +73,18 @@ export const loadAssignmentSelector = selectorFamily({
       );
       return data.assignment;
     },
+  }),
+});
+
+
+export const loadAssignmentSelector = selectorFamily({
+  key: 'loadAssignmentSelector',
+  get: (doenetId) => async ({get}) => {
+    return await get(loadAssignmentAtomFamily(doenetId))
+    },
+  set: (doenetId) => ({set},newValue)=>{
+    set(loadAssignmentAtomFamily(doenetId),newValue);
+  }
 });
 
 export const itemType = Object.freeze({

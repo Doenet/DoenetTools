@@ -5,15 +5,15 @@ import {
   atom,
   atomFamily,
   useRecoilCallback,
-  useRecoilState,
-  useSetRecoilState,
+  // useRecoilState,
+  // useSetRecoilState,
 } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { 
   itemHistoryAtom, 
   fileByContentId, 
-  variantInfoAtom, 
-  variantPanelAtom,
+  // variantInfoAtom, 
+  // variantPanelAtom,
  } from '../ToolHandlers/CourseToolHandler';
 //  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
  import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants';

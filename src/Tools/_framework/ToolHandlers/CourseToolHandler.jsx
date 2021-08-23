@@ -80,7 +80,7 @@ export const useAssignment = () => {
         showFeedback: '1',
         showHints: '1',
         showSolution: '1',
-        timeLimit: '10:10',
+        timeLimit: null,
         totalPointsOrPercent: '00.00',
         assignment_isPublished: '0',
         subType: 'Administrator',
