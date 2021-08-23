@@ -1600,5 +1600,132 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
+  it('selectfromsequences defaults to fixed', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <booleaninput name='f1' prefill="false" label="Fix first select" />
+    <booleaninput name='f2' prefill="true" label="Fix second select" />
+    <p>
+      <selectfromsequence assignnames="a" type="letters" from="a" to="e"/>
+      <selectfromsequence assignnames="b" fixed="$f1" type="letters" from="a" to="e"/>
+      <selectfromsequence assignnames="c" fixed="$f2" type="letters" from="a" to="e"/>
+    </p>
+    <p>
+      <copy tname="a" assignNames="a2" /> 
+      <copy tname="b" assignNames="b2" />
+      <copy tname="c" assignNames="c2" />
+    </p>
+    <p>
+      <textinput name="a3" bindValueTo="$a" />
+      <textinput name="b3" bindValueTo="$b" />
+      <textinput name="c3" bindValueTo="$c" />
+    </p>
+    <p>
+      <textinput name="a4" bindValueTo="$a2" />
+      <textinput name="b4" bindValueTo="$b2" />
+      <textinput name="c4" bindValueTo="$c2" />
+    </p>
+    <p>
+      <copy prop="fixed" tname="a" assignNames="af" />
+      <copy prop="fixed" tname="b" assignNames="bf" />
+      <copy prop="fixed" tname="c" assignNames="cf" />
+    </p>
+    <p>
+      <copy prop="fixed" tname="a2" assignNames="a2f" />
+      <copy prop="fixed" tname="b2" assignNames="b2f" />
+      <copy prop="fixed" tname="c2" assignNames="c2f" />
+    </p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let a = components['/a'].stateValues.value;
+      let b = components['/b'].stateValues.value;
+      let c = components['/c'].stateValues.value;
+      expect(["a", "b", "c", "d", "e"].includes(a)).eq(true);
+      expect(["a", "b", "c", "d", "e"].includes(b)).eq(true);
+      expect(["a", "b", "c", "d", "e"].includes(c)).eq(true);
+
+      cy.get('#\\/a').should('have.text', a)
+      cy.get('#\\/b').should('have.text', b)
+      cy.get('#\\/c').should('have.text', c)
+      cy.get('#\\/a2').should('have.text', a)
+      cy.get('#\\/b2').should('have.text', b)
+      cy.get('#\\/c2').should('have.text', c)
+
+      cy.get('#\\/af').should('have.text', "true")
+      cy.get('#\\/bf').should('have.text', "false")
+      cy.get('#\\/cf').should('have.text', "true")
+      cy.get('#\\/a2f').should('have.text', "true")
+      cy.get('#\\/b2f').should('have.text', "false")
+      cy.get('#\\/c2f').should('have.text', "true")
+
+
+      cy.get('#\\/a3_input').clear().type("f{enter}")
+      cy.get('#\\/b3_input').clear().type("g{enter}")
+      cy.get('#\\/c3_input').clear().type("h{enter}")
+      
+      cy.get('#\\/a').should('have.text', a)
+      cy.get('#\\/b').should('have.text', "g")
+      cy.get('#\\/c').should('have.text', c)
+      cy.get('#\\/a2').should('have.text', a)
+      cy.get('#\\/b2').should('have.text', "g")
+      cy.get('#\\/c2').should('have.text', c)
+
+      cy.get('#\\/a4_input').clear().type("i{enter}")
+      cy.get('#\\/b4_input').clear().type("j{enter}")
+      cy.get('#\\/c4_input').clear().type("k{enter}")
+      
+      cy.get('#\\/a').should('have.text', a)
+      cy.get('#\\/b').should('have.text', "j")
+      cy.get('#\\/c').should('have.text', c)
+      cy.get('#\\/a2').should('have.text', a)
+      cy.get('#\\/b2').should('have.text', "j")
+      cy.get('#\\/c2').should('have.text', c)
+
+      cy.get('#\\/f1_input').click();
+      cy.get('#\\/f2_input').click();
+
+      cy.get('#\\/af').should('have.text', "true")
+      cy.get('#\\/bf').should('have.text', "true")
+      cy.get('#\\/cf').should('have.text', "false")
+      cy.get('#\\/a2f').should('have.text', "true")
+      cy.get('#\\/b2f').should('have.text', "true")
+      cy.get('#\\/c2f').should('have.text', "false")
+
+      cy.get('#\\/a3_input').clear().type("l{enter}")
+      cy.get('#\\/b3_input').clear().type("m{enter}")
+      cy.get('#\\/c3_input').clear().type("n{enter}")
+      
+      cy.get('#\\/a').should('have.text', a)
+      cy.get('#\\/b').should('have.text', "j")
+      cy.get('#\\/c').should('have.text', "n")
+      cy.get('#\\/a2').should('have.text', a)
+      cy.get('#\\/b2').should('have.text', "j")
+      cy.get('#\\/c2').should('have.text', "n")
+
+
+      cy.get('#\\/a4_input').clear().type("o{enter}")
+      cy.get('#\\/b4_input').clear().type("p{enter}")
+      cy.get('#\\/c4_input').clear().type("q{enter}")
+      
+      cy.get('#\\/a').should('have.text', a)
+      cy.get('#\\/b').should('have.text', "j")
+      cy.get('#\\/c').should('have.text', "q")
+      cy.get('#\\/a2').should('have.text', a)
+      cy.get('#\\/b2').should('have.text', "j")
+      cy.get('#\\/c2').should('have.text', "q")
+
+
+    })
+  });
+
 
 })

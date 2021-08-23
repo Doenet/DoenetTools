@@ -60,10 +60,8 @@ export default function DoenetMLEditor(props){
   let autosavetimeout = useRef(null);
 
   const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-
       let newDraft = {...oldVersions.draft};
   
       const contentId = getSHAofContent(doenetML);
@@ -71,13 +69,14 @@ export default function DoenetMLEditor(props){
       newDraft.contentId = contentId;
       newDraft.timestamp = buildTimestamp();
   
-      let oldVersionsReplacement = {...oldVersions};
-  
-      oldVersionsReplacement.draft = newDraft;
-  
-      set(itemHistoryAtom(doenetId),oldVersionsReplacement)
+      set(itemHistoryAtom(doenetId),(was)=>{
+        let asyncDraft = {...was.draft}
+        asyncDraft.contentId = contentId;
+        asyncDraft.timestamp = newDraft.timestamp;
+        let asyncReplacement = {...was}
+        asyncReplacement.draft = asyncDraft;
+        return asyncReplacement})
       set(fileByContentId(contentId),doenetML)
-  
       //Save in localStorage
       // localStorage.setItem(contentId,doenetML)
   
@@ -98,7 +97,7 @@ export default function DoenetMLEditor(props){
         console.log("ERROR",error)
       }
     
-  });
+  },[]);
 
   const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
@@ -119,11 +118,13 @@ export default function DoenetMLEditor(props){
       doenetML,
       doenetId
     }
+      set(itemHistoryAtom(doenetId),
+        (was)=>{
+        let newVersions = {...was}
+        newVersions.autoSaves = [newVersion,...was.autoSaves]
+          return newVersions
+        })
 
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let newVersions = {...oldVersions}
-    newVersions.autoSaves = [newVersion,...oldVersions.autoSaves]
-      set(itemHistoryAtom(doenetId),newVersions)
       set(fileByContentId(contentId),doenetML);
   
     try {
@@ -143,14 +144,15 @@ export default function DoenetMLEditor(props){
   useEffect(()=>{
 
     return ()=>{
-      if (isCurrentDraft && initilizedDoenetId !== ""){
-        // save and stop timers
-        saveDraft(initilizedDoenetId)
-        if (timeout.current !== null){
-        clearTimeout(timeout.current)
-        timeout.current = null;
-        }
+
+      if (initilizedDoenetId !== ""){
+    // save and stop timers
+      saveDraft(initilizedDoenetId) //Always save on leave
+      if (timeout.current !== null){
+      clearTimeout(timeout.current)
+      }
       if (autosavetimeout.current !== null){
+        autoSave(initilizedDoenetId);
         clearTimeout(autosavetimeout.current)
       }
       autosavetimeout.current = null;
@@ -158,8 +160,7 @@ export default function DoenetMLEditor(props){
 
       }
     }
-  },[isCurrentDraft,initilizedDoenetId])
-
+  },[initilizedDoenetId, saveDraft, autoSave])
 
   if (paramDoenetId !== initilizedDoenetId){
     //DoenetML is changing to another DoenetID
@@ -177,15 +178,14 @@ export default function DoenetMLEditor(props){
       readOnly = {!isCurrentDraft}
       // value={editorDoenetML} 
       onBeforeChange={(value) => {
-        if (isCurrentDraft) { //No timers when active version history
+        // if (isCurrentDraft) { //READ ONLY SHOULD STOP TIMERS
           setEditorDoenetML(value);
-          // console.log(`>>>set to value -${value}-`)
           //Start just one timer
           if (timeout.current === null){
             timeout.current = setTimeout(function(){
               saveDraft(initilizedDoenetId);
               timeout.current = null;
-            },3000)
+            },3000)//3 seconds
           }
           if (autosavetimeout.current === null){
             autosavetimeout.current = setTimeout(function(){
@@ -193,7 +193,7 @@ export default function DoenetMLEditor(props){
               autosavetimeout.current = null;
           },60000) //1 minute
           }
-        }
+        // }
       }}
     />
   </div>

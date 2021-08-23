@@ -20,8 +20,11 @@ export default function Dashboard(props) {
         <Button
           value="Content"
           onClick={() => {
-            setPageToolView((was) => ({ ...was, tool: 'navigation' }));
-          }}
+            setPageToolView((was) => {
+              // console.log(">>>>was",was);
+            return { ...was, tool: 'navigation' }
+          })}}
+          
         />
         <Button
           value="Enrollment"
@@ -36,12 +39,12 @@ export default function Dashboard(props) {
         />
         <Button value="GradeBook" 
           onClick={() => 
-          setPageToolView({
+          setPageToolView((was)=>{return {
             page: 'course',
             tool: 'gradebook',
-            view: '',
+            view: was.view,
             params: { driveId },
-            })
+            }})
           } 
         />
         </ButtonGroup>

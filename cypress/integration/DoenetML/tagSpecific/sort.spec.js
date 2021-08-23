@@ -341,6 +341,152 @@ describe('Sort Tag Tests', function () {
 
   })
 
+  it('sort points', () => {
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="A">(0,1)</point>
+    <point name="B">(-2,1)</point>
+    <point name="C">(7,1)</point>
+    <point name="D">(3,1)</point>
+    <point name="E">(5,1)</point>
+  </graph>
+
+  <sort assignNames="P1 P2 P3 P4 P5">$A$B$C$D$E</sort>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,1)')
+    })
+    cy.get('#\\/P2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(0,1)')
+    })
+    cy.get('#\\/P3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)')
+    })
+    cy.get('#\\/P4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/P5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,1)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/A"].movePoint({x:-8, y:9})
+    })
+
+
+    cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−8,9)')
+    })
+    cy.get('#\\/P2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,1)')
+    })
+    cy.get('#\\/P3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)')
+    })
+    cy.get('#\\/P4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/P5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,1)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/B"].movePoint({x:8, y:-3})
+    })
+
+    cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−8,9)')
+    })
+    cy.get('#\\/P2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)')
+    })
+    cy.get('#\\/P3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/P4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,1)')
+    })
+    cy.get('#\\/P5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(8,−3)')
+    })
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/C"].movePoint({x:4, y:5})
+    })
+
+    cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−8,9)')
+    })
+    cy.get('#\\/P2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,1)')
+    })
+    cy.get('#\\/P3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,5)')
+    })
+    cy.get('#\\/P4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/P5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(8,−3)')
+    })
+
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/D"].movePoint({x:-9, y:0})
+    })
+
+    cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9,0)')
+    })
+    cy.get('#\\/P2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−8,9)')
+    })
+    cy.get('#\\/P3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,5)')
+    })
+    cy.get('#\\/P4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(5,1)')
+    })
+    cy.get('#\\/P5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(8,−3)')
+    })
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      components["/E"].movePoint({x:-2, y:-1})
+    })
+
+    cy.get('#\\/P1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9,0)')
+    })
+    cy.get('#\\/P2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−8,9)')
+    })
+    cy.get('#\\/P3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−2,−1)')
+    })
+    cy.get('#\\/P4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,5)')
+    })
+    cy.get('#\\/P5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(8,−3)')
+    })
+
+
+
+  })
+
 
 })
 

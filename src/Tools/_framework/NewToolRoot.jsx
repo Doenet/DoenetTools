@@ -110,6 +110,10 @@ export default function ToolRoot(){
     NavigationPanel:lazy(() => import('./ToolPanels/NavigationPanel')),
     Dashboard: lazy(() => import('./ToolPanels/Dashboard')),
     Gradebook: lazy(() => import('./ToolPanels/Gradebook')),
+    GradebookAssignment: lazy(() => import('./ToolPanels/GradebookAssignment')),
+    GradebookStudent: lazy(() => import('./ToolPanels/GradebookStudent')),
+    GradebookStudentAssignment: lazy(() => import('./ToolPanels/GradebookStudentAssignment')),
+    GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer:lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer:lazy(() => import('./ToolPanels/AssignmentViewer')),
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
@@ -127,6 +131,7 @@ export default function ToolRoot(){
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
+    AssignmentNewAttempt: lazy(() => import('./HeaderControls/AssignmentNewAttempt')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
 
@@ -244,8 +249,8 @@ let navigationObj = {
       currentMenus:[], 
       menusTitles:[],
       menusInitOpen:[],
-      headerControls: ["AssignmentBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
+      headerControlsPositions: ["Left","Right"],
     },
     courseChooser:{ //allCourses
       pageName:"Course",
@@ -281,6 +286,50 @@ let navigationObj = {
       headerControlsPositions: ["Left"]
       // onLeave:"",
     },
+    gradebookAssignment: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookAssignment",
+      currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+      // onLeave:"",
+    },
+    gradebookStudent: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookStudent",
+      currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+      // onLeave:"",
+    },
+    gradebookStudentAssignment: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookStudentAssignment",
+      currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+      // onLeave:"",
+    },
+    gradebookAttempt: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookAttempt",
+      currentMenus:[],
+      menuPanelCap:"DriveInfoCap",
+      menusTitles:[],
+      menusInitOpen:[],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+      // onLeave:"",
+    },
     navigation:{ //allFilesInCourse
       pageName:"Course",
       currentMainPanel:"NavigationPanel",
@@ -288,7 +337,6 @@ let navigationObj = {
       currentMenus:[],
       menusTitles:[],
       menusInitOpen:[],
-
       headerControls: ["NavigationBreadCrumb","RoleDropdown"],
       headerControlsPositions: ["Left","Right"],
       onLeave:"NavigationLeave",
@@ -314,6 +362,7 @@ let navigationObj = {
       supportPanelIndex:0,
       headerControls: ["EditorBreadCrumb","ViewerUpdateButton",],
       headerControlsPositions: ["Left","Left"],
+      // onLeave:"",
     },
     collection: {
       currentMainPanel:"CollectionEditor",
@@ -572,15 +621,35 @@ let encodeParams = p => Object.entries(p).map(kv =>
       //Also causes refresh as useState will see it as a new object in root
       nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
     }
-    // console.log(">>>isURLChange",isURLChange,"isRecoilChange",isRecoilChange)
-    // console.log(">>>page",isPageChange,"Tool",isToolChange,"view",isViewChange)
+
+
+    let searchObj = {}
+
+    //Update recoil isURLChange
+    if (isURLChange){
+      searchObj = Object.fromEntries(new URLSearchParams(location.search))
+      setSearchParamAtom(searchObj)
+      nextPageToolView['params'] = {...searchObj};
+      delete nextPageToolView['params'].tool;
+      // console.log(">>>isURLChange nextPageToolView",nextPageToolView) //Changed this to keep params
+
+      setRecoilPageToolView(nextPageToolView);
+    }
+
+    // console.log("\n>>>>isURLChange",isURLChange,"isRecoilChange",isRecoilChange)
+    // console.log(">>>>page",isPageChange,"Tool",isToolChange,"view",isViewChange)
     // console.log(">>>>nextPageToolView",nextPageToolView)
+    // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
     let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view]
-    // console.log(">>>viewOverrides",viewOverrides)
-    // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
+    
 
     //Have view Override the next menu and panels
-    if (isViewChange && typeof viewOverrides === 'object' && viewOverrides !== null){
+    if (typeof viewOverrides === 'object' && viewOverrides !== null){
+      // console.log(">>>>IMPLEMENTING OVERRIDES!!!!!!")
+      // console.log(">>>>viewOverrides",viewOverrides)
+      // console.log(">>>>nextPageToolView.view",nextPageToolView.view)
+      nextMenusAndPanels = {... navigationObj[nextPageToolView.page][nextPageToolView.tool]};
+
       for (let key of Object.keys(viewOverrides)){
         nextMenusAndPanels[key] = viewOverrides[key];
       }
@@ -603,18 +672,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }
 
 
-    let searchObj = {}
-
-    //Update recoil isURLChange
-    if (isURLChange){
-      searchObj = Object.fromEntries(new URLSearchParams(location.search))
-      setSearchParamAtom(searchObj)
-      nextPageToolView['params'] = {...searchObj};
-      delete nextPageToolView['params'].tool;
-      // console.log(">>>isURLChange nextPageToolView",nextPageToolView) //Changed this to keep params
-
-      setRecoilPageToolView(nextPageToolView);
-    }
+    
 
    
 
@@ -670,6 +728,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
       }
     }
     // console.log(">>>>AT THE END nextPageToolView",nextPageToolView)
+    // console.log(">>>>AT THE END nextMenusAndPanels",nextMenusAndPanels)
 
     lastSearchObj.current = searchObj;
     lastLocationStr.current = locationStr;

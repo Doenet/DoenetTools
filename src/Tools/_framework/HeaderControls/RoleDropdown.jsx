@@ -37,12 +37,12 @@ export default function RoleDropdown(){
       }
     }
     set(driveRole,role);
-
     set(pageToolViewAtom,
       (was)=>{
         let newObj = {...was}
         newObj.view = role
-        return newObj
+      // console.log(">>>>initilizeView set pageToolViewAtom to",newObj)
+      return newObj
       })
 
   });

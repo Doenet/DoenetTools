@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { Suspense, useCallback, useEffect } from 'react';
+import React, { useState, Suspense, useEffect, useLayoutEffect } from 'react';
 import {
   useRecoilCallback,
   useRecoilState,
@@ -17,17 +17,19 @@ import Drive, {
   selectedDriveItems,
   itemType,
   clearDriveAndItemSelections,
+  folderDictionary,
 } from '../../../_reactComponents/Drive/NewDrive';
 import { DropTargetsProvider } from '../../../_reactComponents/DropTarget';
 import { BreadcrumbProvider } from '../../../_reactComponents/Breadcrumb/BreadcrumbProvider';
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
-// import { useToast, toastType } from '../Toast';
 
-export default function NavigationPanel(props) {
+export default function NavigationPanel() {
   const [{ view }, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily('path'));
+  const [columnTypes, setColumnTypes] = useState([]);
+
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
@@ -43,16 +45,17 @@ export default function NavigationPanel(props) {
     );
   }, [setMainPanelClear]);
 
-  // const toast = useToast();
-
-  // useEffect(() => {
-  //   if (path === '') {
-  //     toast('Missing drive path data, please select a course', toastType.ERROR);
-  //     setPageToolView({ page: 'course', tool: 'courseChooser', view: '' });
-  //   }
-  // }, [path, toast, setPageToolView]);
-
-  const filter = useCallback((item) => item.released === '1', []);
+  useLayoutEffect(() => {
+    switch (view) {
+      case 'instructor':
+        setColumnTypes(['Released', 'Assigned', 'Public']);
+        break;
+      case 'student':
+        setColumnTypes(['Due Date']);
+        break;
+      default:
+    }
+  }, [view]);
 
   const clickCallback = useRecoilCallback(
     ({ set }) =>
@@ -87,62 +90,94 @@ export default function NavigationPanel(props) {
     [],
   );
 
-  const doubleClickCallback = useCallback(
-    (info) => {
-      switch (info.type) {
-        case itemType.FOLDER:
-          setPageToolView((was) => ({
-            ...was,
-            params: {
-              path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
-            },
-          }));
-          break;
-        case itemType.DOENETML:
-          if (view === 'student'){
-            //TODO: VariantIndex params
+  const doubleClickCallback = useRecoilCallback(
+    ({ set }) =>
+      (info) => {
+        switch (info.type) {
+          case itemType.FOLDER:
+            set(clearDriveAndItemSelections, null);
+            setPageToolView((was) => ({
+              ...was,
+              params: {
+                path: `${info.driveId}:${info.parentFolderId}:${info.parentFolderId}:Folder`,
+              },
+            }));
+            break;
+          case itemType.DOENETML:
+            if (view === 'student') {
+              //TODO: VariantIndex params
+              setPageToolView({
+                page: 'course',
+                tool: 'assignment',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                },
+              });
+            } else if (view === 'instructor') {
+              setPageToolView({
+                page: 'course',
+                tool: 'editor',
+                view: '',
+                params: {
+                  doenetId: info.item.doenetId,
+                  path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
+                },
+              });
+            }
+
+            break;
+          case itemType.COLLECTION:
             setPageToolView({
               page: 'course',
-              tool: 'assignment',
+              tool: 'collection',
               view: '',
               params: {
                 doenetId: info.item.doenetId,
+                path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
               },
             });
-          }else if (view === 'instructor'){
-            setPageToolView({
-              page: 'course',
-              tool: 'editor',
-              view: '',
-              params: {
-                doenetId: info.item.doenetId,
-                path: `${info.driveId}:${info.item.parentFolderId}:${info.item.itemId}:DoenetML`,
-              },
-            });
-          }
-          
-          break;
-        case itemType.COLLECTION:
-          setPageToolView({
-            page: 'course',
-            tool: 'collection',
-            view: '',
-            params: {
-              doenetId: info.item.doenetId,
-              path: `${info.driveId}:${info.item.itemId}:${info.item.itemId}:Collection`,
-            },
-          });
-          break;
-        default:
-          throw new Error('NavigationPanel doubleClick info type not defined');
-      }
-    },
-    [setPageToolView,view],
+            break;
+          default:
+            throw new Error(
+              'NavigationPanel doubleClick info type not defined',
+            );
+        }
+      },
+    [setPageToolView, view],
   );
 
-  if (props.style?.display === 'none') {
-    return <div style={props.style}></div>;
-  }
+  const filterCallback = useRecoilCallback(
+    ({ snapshot }) =>
+      (item) => {
+        switch (view) {
+          case 'student':
+            if (item.itemType === itemType.FOLDER) {
+              const folderContents = snapshot
+                .getLoadable(
+                  folderDictionary({
+                    driveId: item.driveId,
+                    folderId: item.itemId,
+                  }),
+                )
+                .getValue()['contentsDictionary'];
+              for (const key in folderContents) {
+                if (folderContents[key].isReleased === '1') {
+                  return true;
+                }
+              }
+              return false;
+            } else {
+              return item.isReleased === '1';
+            }
+          case 'instructor':
+            return true;
+          default:
+            console.warn('No view selected');
+        }
+      },
+    [view],
+  );
 
   return (
     <BreadcrumbProvider>
@@ -151,8 +186,8 @@ export default function NavigationPanel(props) {
           <Container>
             <Drive
               path={path}
-              filter={filter}
-              columnTypes={['Released', 'Public']}
+              filterCallback={filterCallback}
+              columnTypes={columnTypes}
               urlClickBehavior="select"
               clickCallback={clickCallback}
               doubleClickCallback={doubleClickCallback}

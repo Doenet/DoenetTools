@@ -10,10 +10,35 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+$allowed = false;
+
+if (array_key_exists('driveId', get_defined_vars())) {
+	$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+	//check user has permission to edit drive
+	$sql = "
+		SELECT canChangeAllDriveSettings
+		FROM drive_user
+		WHERE userId = '$userId'
+		AND driveId = '$driveId'
+	";
+	$result = $conn->query($sql);
+	if ($result->num_rows > 0) {
+		$row = $result->fetch_assoc();
+		$allowed = $row['canChangeAllDriveSettings'];
+		if (!$allowed) {
+			http_response_code(403); //User if forbidden from operation
+		}
+	} else {
+		//Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+		http_response_code(401); //User has bad auth
+	}
+} else {
+	//bad driveId
+	http_response_code(400);
+}
 
 
-$sql = "
+if($allowed){$sql = "
 SELECT userId,
 firstName,
 lastName,
@@ -50,7 +75,7 @@ $response_arr = array(
  http_response_code(200);
 
  // make it json format
- echo json_encode($response_arr);
+ echo json_encode($response_arr);}
 
 $conn->close();
 

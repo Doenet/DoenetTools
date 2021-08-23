@@ -23,7 +23,7 @@ import {
 
 import { nanoid } from 'nanoid';
 
-import {fetchDrivesQuery, folderDictionaryFilterSelector} from '../../../_reactComponents/Drive/NewDrive';
+import {fetchDrivesQuery, folderDictionaryFilterSelector, loadAssignmentSelector} from '../../../_reactComponents/Drive/NewDrive';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
@@ -80,7 +80,7 @@ export const useAssignment = () => {
         showFeedback: '1',
         showHints: '1',
         showSolution: '1',
-        timeLimit: '10:10',
+        timeLimit: null,
         totalPointsOrPercent: '00.00',
         assignment_isPublished: '0',
         subType: 'Administrator',
@@ -461,145 +461,6 @@ export const drivecardSelectedNodesAtom = atom({
   default:[]
 })
 
-export const fetchDrivesSelector = selector({
-  key:"fetchDrivesSelector",
-  get:({get})=>{
-    return get(fetchDrivesQuery);
-  },
-  set:({get,set},labelTypeDriveIdColorImage)=>{
-    let driveData = get(fetchDrivesQuery)
-    // let selectedDrives = get(selectedDriveInformation);
-    let newDriveData = {...driveData};
-    newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
-    let params = {
-      driveId:labelTypeDriveIdColorImage.newDriveId,
-      label:labelTypeDriveIdColorImage.label,
-      type:labelTypeDriveIdColorImage.type,
-      image:labelTypeDriveIdColorImage.image,
-      color:labelTypeDriveIdColorImage.color,
-    }
-    let newDrive;
-    function duplicateFolder({sourceFolderId,sourceDriveId,destDriveId,destFolderId,destParentFolderId}){
-      let contentObjs = {};
-      // const sourceFolder = get(folderDictionary({driveId:sourceDriveId,folderId:sourceFolderId}));  
-      const sourceFolder = get(folderDictionaryFilterSelector({driveId:sourceDriveId,folderId:sourceFolderId}));
-      if (destFolderId === undefined){
-        destFolderId = destDriveId;  //Root Folder of drive
-        destParentFolderId = destDriveId;  //Root Folder of drive
-      }
-
-      let contentIds = {defaultOrder:[]};
-      let contentsDictionary = {}
-      let folderInfo = {...sourceFolder.folderInfo}
-      folderInfo.folderId = destFolderId;
-      folderInfo.parentFolderId = destParentFolderId;
-
-      for (let sourceItemId of sourceFolder.contentIds.defaultOrder){
-        const destItemId = nanoid();
-        contentIds.defaultOrder.push(destItemId);
-        let sourceItem = sourceFolder.contentsDictionary[sourceItemId]
-        contentsDictionary[destItemId] = {...sourceItem}
-        contentsDictionary[destItemId].parentFolderId = destFolderId;
-        contentsDictionary[destItemId].itemId = destItemId;
-        if (sourceItem.itemType === 'Folder'){
-         let childContentObjs = duplicateFolder({sourceFolderId:sourceItemId,sourceDriveId,destDriveId,destFolderId:destItemId,destParentFolderId:destFolderId})
-          contentObjs = {...contentObjs,...childContentObjs};
-        }else if (sourceItem.itemType === 'DoenetML'){
-          let destDoenetId = nanoid();
-          contentsDictionary[destItemId].sourceDoenetId = sourceItem.doenetId;
-          contentsDictionary[destItemId].doenetId = destDoenetId;
-        }else if (sourceItem.itemType === 'URL'){
-          let desturlId = nanoid();
-          contentsDictionary[destItemId].urlId = desturlId;
-        }else{
-          console.log(`!!! Unsupported type ${sourceItem.itemType}`)
-        }
-        contentObjs[destItemId] = contentsDictionary[destItemId];
-      }
-      const destFolderObj = {contentIds,contentsDictionary,folderInfo}
-      // console.log({destFolderObj})
-      set(folderDictionary({driveId:destDriveId,folderId:destFolderId}),destFolderObj)
-      return contentObjs;
-    }
-    if (labelTypeDriveIdColorImage.type === "new content drive"){
-      newDrive = {
-        driveId:labelTypeDriveIdColorImage.newDriveId,
-        isShared:"0",
-        label:labelTypeDriveIdColorImage.label,
-        type: "content"
-      }
-      newDriveData.driveIdsAndLabels.unshift(newDrive)
-    set(fetchDrivesQuery,newDriveData)
-
-    const payload = { params }
-    axios.get("/api/addDrive.php", payload)
-  // .then((resp)=>console.log(">>>resp",resp.data))
-    }else if (labelTypeDriveIdColorImage.type === "new course drive"){
-      newDrive = {
-        driveId:labelTypeDriveIdColorImage.newDriveId,
-        isShared:"0",
-        label:labelTypeDriveIdColorImage.label,
-        type: "course",
-        image:labelTypeDriveIdColorImage.image,
-        color:labelTypeDriveIdColorImage.color,
-        subType:"Administrator"
-      }
-      newDriveData.driveIdsAndLabels.unshift(newDrive)
-    set(fetchDrivesQuery,newDriveData)
-
-    const payload = { params }
-    axios.get("/api/addDrive.php", payload)
-  // .then((resp)=>console.log(">>>resp",resp.data))
-    
-    }else if (labelTypeDriveIdColorImage.type === "update drive label"){
-      //Find matching drive and update label
-      for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
-        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId ){
-          let newDrive = {...drive};
-          newDrive.label = labelTypeDriveIdColorImage.label
-          newDriveData.driveIdsAndLabels[i] = newDrive;
-          break;
-        }
-      }
-      //Set drive
-    set(fetchDrivesQuery,newDriveData)
-      //Save to db
-      const payload = { params }
-      axios.get("/api/updateDrive.php", payload)
-    }else if (labelTypeDriveIdColorImage.type === "update drive color"){
-    //TODO: implement      
-
-    }else if (labelTypeDriveIdColorImage.type === "delete drive"){
-      //Find matching drive and update label
-      let driveIdsAndLabelsLength = newDriveData.driveIdsAndLabels;
-      // for (let [i,drive] of newDriveData.driveIdsAndLabels.entries()){
-        for(let i = 0; i< driveIdsAndLabelsLength.length; i++){
-        for(let x=0; x<labelTypeDriveIdColorImage.newDriveId.length ;x++){
-          if (driveIdsAndLabelsLength[i].driveId === labelTypeDriveIdColorImage.newDriveId[x] ){
-            newDriveData.driveIdsAndLabels.splice(i,1);
-            i = (i==0) ? i : i-1;
-          }
-        }
-      }
-      //Set drive
-      set(fetchDrivesQuery,newDriveData)
-        //Save to db
-        const payload = { params }
-        axios.get("/api/updateDrive.php", payload)
-    }
-  }
-})
-export const loadAssignmentSelector = selectorFamily({
-  key: 'loadAssignmentSelector',
-  get:
-    (doenetId) =>
-    async ({ get, set }) => {
-      const { data } = await axios.get(
-        `/api/getAllAssignmentSettings.php?doenetId=${doenetId}`,
-      );
-      return data;
-    },
-});
 export const assignmentDictionary = atomFamily({
   key: 'assignmentDictionary',
   default: selectorFamily({
@@ -611,13 +472,13 @@ export const assignmentDictionary = atomFamily({
           driveId: driveIditemIddoenetIdparentFolderId.driveId,
           folderId: driveIditemIddoenetIdparentFolderId.folderId,
         };
-        let folderInfo = get(
-          folderDictionaryFilterSelector(folderInfoQueryKey),
-        );
-        const itemObj =
-          folderInfo?.contentsDictionary?.[
-            driveIditemIddoenetIdparentFolderId.itemId
-          ];
+        // let folderInfo = get(
+        //   folderDictionaryFilterSelector(folderInfoQueryKey),
+        // );
+        // const itemObj =
+        //   folderInfo?.contentsDictionary?.[
+        //     driveIditemIddoenetIdparentFolderId.itemId
+        //   ];
         if (driveIditemIddoenetIdparentFolderId.doenetId) {
           const aInfo = await get(
             loadAssignmentSelector(
@@ -625,7 +486,7 @@ export const assignmentDictionary = atomFamily({
             ),
           );
           if (aInfo) {
-            return aInfo?.assignments[0];
+            return aInfo;
           } else return null;
         } else return null;
       },

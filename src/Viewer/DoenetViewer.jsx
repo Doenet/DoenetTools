@@ -96,7 +96,6 @@ class DoenetViewerChild extends Component {
 
     this.coreId = nanoid();
     // console.log(">>>CREATE core this.coreId!!!",this.coreId)  
-
     if (this.props.core) {
       new this.props.core({
         coreId: this.coreId,
@@ -373,8 +372,6 @@ class DoenetViewerChild extends Component {
     callBack,
   }) {
 
-    // console.log(">>>submit itemNumber:",itemNumber)
-
     if (this.allowSaveSubmissions && this.props.doenetId) {
 
 
@@ -467,7 +464,6 @@ class DoenetViewerChild extends Component {
 
   }
 
-
   contentIdsToDoenetMLs({ contentIds, callBack }) {
     let promises = [];
     let newDoenetMLs = {};
@@ -521,7 +517,6 @@ class DoenetViewerChild extends Component {
 
   }
 
-
   render() {
 
     if (this.state.errMsg !== null) {
@@ -561,6 +556,7 @@ class DoenetViewerChild extends Component {
       adjustedRequestedVariantFromProp = { index: this.attemptNumber };
     }
 
+
     // TODO: should we be giving viewer both attemptNumber and requestedVariant?
     // for now, attemptNumber is used for requestedVariant if not specified
 
@@ -569,8 +565,8 @@ class DoenetViewerChild extends Component {
     ) {
       this.needNewCoreFlag = true;
     }
-    this.requestedVariant = adjustedRequestedVariantFromProp;
 
+    this.requestedVariant = adjustedRequestedVariantFromProp;
 
     if (this.props.doenetML && !this.props.contentId) {
       //*** Define this.contentId if not prop
