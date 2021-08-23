@@ -275,6 +275,49 @@ export default class Document extends BaseComponent {
 
     }
 
+
+    stateVariableDefinitions.itemVariantInfo = {
+      isArray: true,
+      returnArraySizeDependencies: () => ({
+        nScoredDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "nScoredDescendants"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nScoredDescendants];
+      },
+      stateVariablesDeterminingDependencies: ["scoredDescendants"],
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let descendant = stateValues.scoredDescendants[arrayKey];
+          if (descendant) {
+            dependenciesByKey[arrayKey] = {
+              generatedVariantInfo: {
+                dependencyType: "stateVariable",
+                componentName: descendant.componentName,
+                variableName: "generatedVariantInfo"
+              }
+            }
+          }
+        }
+
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let itemVariantInfo = {};
+
+        for (let arrayKey of arrayKeys) {
+          itemVariantInfo[arrayKey] = dependencyValuesByKey[arrayKey].generatedVariantInfo;
+        }
+
+        return { newValues: { itemVariantInfo } }
+
+      }
+
+    }
+
     stateVariableDefinitions.answerDescendants = {
       returnDependencies: () => ({
         answerDescendants: {

@@ -131,7 +131,7 @@ function findNextTag(text) {
   return { tagString: tagString, tagType: tagType, tagIndex: tagIndex, tagProps: tagProps };
 }
 
-export function expandDoenetMLsToFullSerializedComponents({ 
+export function expandDoenetMLsToFullSerializedComponents({
   contentIds, doenetMLs, callBack,
   componentInfoObjects, componentTypeLowerCaseMapping, flags, contentIdsToDoenetMLs
 }) {
@@ -1647,7 +1647,6 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         originalAssignNames = serializedComponent.doenetAttributes.originalAssignNames;
       }
 
-      let assignNames = serializedComponent.doenetAttributes.assignNames = [];
       let longNameIdBase = componentName + "|createUniqueName|assignNames|";
 
       let namespace = '';
@@ -1663,21 +1662,12 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         oldNamespace = serializedComponent.originalName + '/';
       }
 
+      let newAssignNames = createNewAssignNamesAndRenameMatchingTNames({
+        originalAssignNames, longNameIdBase,
+        namespace, oldNamespace, doenetAttributesByFullTName
+      });
 
-      for (let [ind, originalName] of originalAssignNames.entries()) {
-        let longNameId = longNameIdBase + ind;
-        let newName = createUniqueName("fromAssignNames", longNameId);
-        assignNames.push(newName);
-
-        let infoForRenaming = {
-          componentName: namespace + newName,
-          originalName: oldNamespace + originalName
-        }
-
-        renameMatchingTNames(infoForRenaming, doenetAttributesByFullTName, true);
-
-
-      }
+      assignNames = serializedComponent.doenetAttributes.assignNames = newAssignNames;
 
     }
 
@@ -1799,6 +1789,43 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
 }
 
+
+function createNewAssignNamesAndRenameMatchingTNames({
+  originalAssignNames, longNameIdBase,
+  namespace, oldNamespace, doenetAttributesByFullTName
+}) {
+
+  let assignNames = [];
+
+  for (let [ind, originalName] of originalAssignNames.entries()) {
+
+    if (Array.isArray(originalName)) {
+      // recurse to next level
+      let assignNamesSub = createNewAssignNamesAndRenameMatchingTNames({
+        originalAssignNames: originalName,
+        longNameIdBase: longNameIdBase + ind + "_",
+        namespace, oldNamespace, doenetAttributesByFullTName
+      })
+      assignNames.push(assignNamesSub);
+    } else {
+
+      let longNameId = longNameIdBase + ind;
+      let newName = createUniqueName("fromAssignNames", longNameId);
+      assignNames.push(newName);
+
+      let infoForRenaming = {
+        componentName: namespace + newName,
+        originalName: oldNamespace + originalName
+      };
+
+      renameMatchingTNames(infoForRenaming, doenetAttributesByFullTName, true);
+    }
+
+  }
+
+  return assignNames;
+
+}
 
 export function convertComponentTarget({
   tName,

@@ -128,6 +128,10 @@ export class Problem extends SectioningComponent {
   static componentType = "problem";
   static rendererType = "section";
 
+  static createsVariants = true;
+
+  static alwaysSetUpVariant = true;
+
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.aggregateScores.defaultValue = true;
