@@ -44,6 +44,10 @@ export default class Select extends CompositeComponent {
       createStateVariable: "skipOptionsInAssignNames",
       defaultValue: false
     }
+    attributes.componentType = {
+      createPrimitiveOfType: "string",
+      createStateVariable: "componentType"
+    };
 
     return attributes;
   }
