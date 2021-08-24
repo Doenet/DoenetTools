@@ -20,7 +20,6 @@ $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
-$itemNumber = $itemNumber + 1;
 
 //TODO: check if this is too many tries 
 //TODO: check if attempt is older than given attempt

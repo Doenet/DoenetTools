@@ -1112,9 +1112,9 @@ export default class Answer extends InlineComponent {
 
         // use JSON.stringify rather than deepCompare
         // so that NaNs will be equal to each other
-        if(dependencyValues.creditAchievedDependenciesAtSubmit) {
-          foundChange = JSON.stringify(dependencyValues.currentCreditAchievedDependencies) 
-          !== JSON.stringify(dependencyValues.creditAchievedDependenciesAtSubmit)
+        if (dependencyValues.creditAchievedDependenciesAtSubmit) {
+          foundChange = JSON.stringify(dependencyValues.currentCreditAchievedDependencies)
+            !== JSON.stringify(dependencyValues.creditAchievedDependenciesAtSubmit)
         }
 
         if (foundChange) {
@@ -1340,6 +1340,26 @@ export default class Answer extends InlineComponent {
       }
     }
 
+
+    stateVariableDefinitions.inItemNumber = {
+      returnDependencies: () => ({
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document",
+          variableNames: ["itemNumberByAnswerName"]
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+        return {
+          newValues: {
+            inItemNumber:
+              dependencyValues.documentAncestor.stateValues.itemNumberByAnswerName[componentName]
+          }
+        }
+
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -1438,6 +1458,13 @@ export default class Answer extends InlineComponent {
         value: awarded
       });
     }
+
+
+    instructions.push({
+      updateType: "recordItemSubmission",
+      itemNumber: this.stateValues.inItemNumber
+    })
+
 
     let responseText = [];
     for (let response of this.stateValues.currentResponses) {
