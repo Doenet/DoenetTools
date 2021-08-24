@@ -21,9 +21,9 @@ $weights = array_map(function($item) use($conn) {
     return mysqli_real_escape_string($conn, $item);
   }, $_POST['weights']);
 
-$itemVariants = array_map(function($item) use($conn) {
-    return mysqli_real_escape_string($conn, $item);
-  }, $_POST['itemVariantInfo']);
+// $itemVariants = array_map(function($item) use($conn) {
+//     return mysqli_real_escape_string($conn, $item);
+//   }, $_POST['itemVariantInfo']);
 
 $success = TRUE;
 $message = "";
@@ -101,7 +101,8 @@ if ($result->num_rows < 1){
   for ($itemNumber = 1; $itemNumber < count($weights) + 1; $itemNumber++){
     //Store Item  weights
     $weight = $weights[($itemNumber -1)];
-    $itemVariant = $itemVariants[($itemNumber -1)];
+    // $itemVariant = $itemVariants[($itemNumber -1)];
+    $itemVariant = $itemNumber; //TODO remove
     $sql = "INSERT INTO user_assignment_attempt_item 
     (userId,doenetId,contentId,attemptNumber,itemNumber,weight,generatedVariant)
     values
