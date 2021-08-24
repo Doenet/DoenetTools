@@ -45,6 +45,7 @@ export default function AssignmentViewer(props){
   let variantOfCurrentAttempt = variantAttemptInfo.usersVariantAttempts?.[variantAttemptInfo.numberOfCompletedAttempts];
   let attemptNumber = variantAttemptInfo.numberOfCompletedAttempts + 1;
   let stage = useRef('Start');
+  let doenetIdOfdoenetML = useRef('');
   const assignmentSettings = useRecoilValue(loadAssignmentSelector(paramDoenetId));
     // console.log(">>>>assignmentSettings",assignmentSettings)
   // console.log(">>>>AssignmentViewer variantAttemptInfo",variantAttemptInfo)
@@ -53,6 +54,7 @@ export default function AssignmentViewer(props){
 
   const initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
     const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
+
     //Find Assigned ContentId 
     //Use isReleased as isAssigned for now 
     //TODO: refactor isReleased to isAssigned
@@ -72,7 +74,7 @@ export default function AssignmentViewer(props){
     }
     const doenetML = response;
     set(assignmentDoenetMLContentIdAtom,{isAssigned,doenetML,contentId})
-
+    doenetIdOfdoenetML.current = doenetId;
   },[])
 
   // const updateAssignmentSettings = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
@@ -83,7 +85,6 @@ export default function AssignmentViewer(props){
   //   //Find usersVariantAttempts
   // },[]);
 
-  // console.log(">>>>test",pushRandomVariantOfRemaining({was:['a','b','c','d','a','b','c','d','a'],from:['a','b','c','d']}))
   function randomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -132,7 +133,8 @@ export default function AssignmentViewer(props){
     }
   },[setVariantsFromDoenetML]);
 
-  // console.log(`>>>>stage [[${stage.current}]]`)
+  // console.log(`>>>>stage -${stage.current}-`)
+  // console.log(`>>>>paramDoenetId |${paramDoenetId}|`)
 
   if (stage.current === 'Start'){
     stage.current = 'Wait for paramDoenetId'
@@ -140,31 +142,40 @@ export default function AssignmentViewer(props){
   }else if (stage.current === 'Wait for paramDoenetId'){
     if (paramDoenetId !== ''){
       stage.current = 'Wait for DoenetML'
-      initDoenetML(paramDoenetId)
+    initDoenetML(paramDoenetId)
     }
     return null;
   }else if (stage.current === 'Wait for DoenetML'){
-      if (!isAssigned){
-        return <h1>Content is Not Assigned.</h1>
-      }else{
+      if (isAssigned){
         stage.current = 'Wait for Variant'
-        updateVariantInfo(paramDoenetId,contentId,doenetML)
+    updateVariantInfo(paramDoenetId,contentId,doenetML)
       }
     return null;
   }else if (stage.current === 'Wait for Variant'){
 
     if (variantOfCurrentAttempt){
       stage.current = 'Wait for New Attempt'
-    }else{
+  }else{
         return null;
     }
   }else if (stage.current === 'Wait for New Attempt'){
     if (!variantOfCurrentAttempt){
       stage.current = 'Wait for Variant'
       updateVariantInfo(paramDoenetId,contentId,doenetML)
+      return null;
     }
-    return null;
+  }
 
+  if (!isAssigned){
+    return <h1>Content is Not Assigned.</h1>
+  }
+
+
+  //Wait for paramDoenetId update
+  if (doenetIdOfdoenetML.current !== paramDoenetId){
+    // console.log(`>>>>pd |${paramDoenetId}|`)
+    // console.log(`>>>>dd |${doenetIdOfdoenetML.current}|`)
+    return null;
   }
 
   let solutionDisplayMode = "button";
