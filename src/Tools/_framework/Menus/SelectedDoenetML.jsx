@@ -197,7 +197,7 @@ export function AssignmentSettings({role, doenetId}) {
   //Note if aLoadable is not loaded then these will default to undefined
   let [assignedDate,setAssignedDate] = useState('')
   let [dueDate,setDueDate] = useState('')
-  let [multipleAttempts,setMultipleAttempts] = useState(true)
+  let [limitAttempts,setLimitAttempts] = useState(true)
   let [numberOfAttemptsAllowed,setNumberOfAttemptsAllowed] = useState(1)
   let [attemptAggregation,setAttemptAggregation] = useState('')
   let [totalPointsOrPercent,setTotalPointsOrPercent] = useState(100)
@@ -235,7 +235,7 @@ export function AssignmentSettings({role, doenetId}) {
   useEffect(()=>{
       setAssignedDate(aInfo?.assignedDate)
       setDueDate(aInfo?.dueDate)
-      setMultipleAttempts(aInfo?.multipleAttempts)
+      setLimitAttempts(aInfo?.numberOfAttemptsAllowed !== null)
       setNumberOfAttemptsAllowed(aInfo?.numberOfAttemptsAllowed)
       setAttemptAggregation(aInfo?.attemptAggregation)
       setTotalPointsOrPercent(aInfo?.totalPointsOrPercent)
@@ -246,7 +246,6 @@ export function AssignmentSettings({role, doenetId}) {
       setShowHints(aInfo?.showHints)
       setShowCorrectness(aInfo?.showCorrectness)
       setProctorMakesAvailable(aInfo?.proctorMakesAvailable)
-      // console.log(">>>>aInfo?.multipleAttempts",aInfo?.multipleAttempts)
   },[aInfo])
 
   if (aLoadable.state === "loading"){ return null;}
@@ -331,34 +330,30 @@ export function AssignmentSettings({role, doenetId}) {
 />
 </label>
 </div> */}
-{/* <div>aInfo = {aInfo?.multipleAttempts ? 'true' : 'false'}</div>
-<div>multipleAttempts = {multipleAttempts ? 'true' : 'false'}</div> */}
+{/* <div>aInfo = {aInfo?.limitAttempts ? 'true' : 'false'}</div>
+<div>limitAttempts = {limitAttempts ? 'true' : 'false'}</div> */}
 <div>
-  <label>Multiple Attempts 
+  <label>Limit Attempts 
   <Switch
-    name="multipleAttempts"
+    name="limitAttempts"
     onChange={(e)=>{
-      let valueDescription = 'False';
+      let valueDescription = 'Not Limited';
+      let value = null;
       if (e.currentTarget.checked){
-        valueDescription = 'True'
-        //TODO: Set Number of Attempts allowed to 1 ???
+        valueDescription = '1';
+        value = '1';
       }
-      updateAssignment({doenetId,keyToUpdate:'multipleAttempts',value:e.currentTarget.checked,description:'Multiple Attempts',valueDescription})
+       
+      updateAssignment({doenetId,keyToUpdate:'numberOfAttemptsAllowed',value,description:'Attempts Allowed ',valueDescription})
       }}
-    checked={multipleAttempts}
+    checked={limitAttempts}
   ></Switch>
   </label>
 </div>
+{limitAttempts ? 
 <div>
   <label>Number of Attempts Allowed
-  {/* <Increment
-  key={`numAtt${aInfo?.doenetId}`}
-    value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''} 
-    range={[0, 20]} 
-  //  onChange={handleChange}
-    /> */}
   <input
-    required
     type="number"
     name="numberOfAttemptsAllowed"
     value={numberOfAttemptsAllowed}
@@ -374,8 +369,17 @@ export function AssignmentSettings({role, doenetId}) {
     }}
     onChange={(e)=>setNumberOfAttemptsAllowed(e.currentTarget.value)}
   />
+    {/* <Increment
+  key={`numAtt${aInfo?.doenetId}`}
+    value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''} 
+    range={[0, 20]} 
+    //Would be great if we could set the minimum range={[0,]} and max range={[,10]}
+  //  onChange={handleChange}
+    /> */}
   </label>
+  
 </div>
+: null }
 <div>
 <label>Attempt Aggregation 
   {/* {attemptAggregation} */}
