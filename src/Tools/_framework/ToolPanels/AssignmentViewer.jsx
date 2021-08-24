@@ -45,6 +45,8 @@ export default function AssignmentViewer(props){
   let variantOfCurrentAttempt = variantAttemptInfo.usersVariantAttempts?.[variantAttemptInfo.numberOfCompletedAttempts];
   let attemptNumber = variantAttemptInfo.numberOfCompletedAttempts + 1;
   let stage = useRef('Start');
+  const assignmentSettings = useRecoilValue(loadAssignmentSelector(paramDoenetId));
+    // console.log(">>>>assignmentSettings",assignmentSettings)
   // console.log(">>>>AssignmentViewer variantAttemptInfo",variantAttemptInfo)
   // console.log(">>>>variantOfCurrentAttempt",variantOfCurrentAttempt)
   // console.log(">>>>attemptNumber",attemptNumber)
@@ -73,13 +75,13 @@ export default function AssignmentViewer(props){
 
   },[])
 
-  const updateAssignmentSettings = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    console.log(">>>>updateAssignmentSettings",doenetId)
-    const assignmentSettings = await snapshot.getPromise((loadAssignmentSelector(doenetId)));
-    console.log(">>>>assignmentSettings",assignmentSettings)
-    //Find numberOfCompletedAttempts
-    //Find usersVariantAttempts
-  },[]);
+  // const updateAssignmentSettings = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
+  //   console.log(">>>>updateAssignmentSettings",doenetId)
+  //   const assignmentSettings = await snapshot.getPromise((loadAssignmentSelector(doenetId)));
+  //   console.log(">>>>assignmentSettings",assignmentSettings)
+  //   //Find numberOfCompletedAttempts
+  //   //Find usersVariantAttempts
+  // },[]);
 
   // console.log(">>>>test",pushRandomVariantOfRemaining({was:['a','b','c','d','a','b','c','d','a'],from:['a','b','c','d']}))
   function randomInt(min, max) {
@@ -166,24 +168,25 @@ export default function AssignmentViewer(props){
   }
 
   let solutionDisplayMode = "button";
+  if (!assignmentSettings.showSolution){
+    solutionDisplayMode = "none";
+  }
 
   const requestedVariant = {name: variantOfCurrentAttempt}
-  console.log(">>>>assignment variant",requestedVariant)
   return <div style={props.style}>
     <DoenetViewer
     key={"doenetviewer"}
     doenetML={doenetML}
     doenetId={paramDoenetId}
     flags={{
-      showCorrectness: true,
+      showCorrectness: assignmentSettings.showCorrectness,
       readOnly: false,
       solutionDisplayMode: solutionDisplayMode,
-      showFeedback: true,
-      showHints: true,
+      showFeedback: assignmentSettings.showFeedback,
+      showHints: assignmentSettings.showHints,
+      isAssignment: true,
     }}
     attemptNumber={attemptNumber}
-    // allowLoadPageState={false} 
-    // allowSavePageState={false}
     allowLoadPageState={true} 
     allowSavePageState={true}
     allowLocalPageState={false} //Still working out localStorage kinks
