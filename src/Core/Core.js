@@ -133,7 +133,6 @@ export default class Core {
       deletedStateVariables: {},
       deletedComponents: {},
       recreatedComponents: {},
-      itemScoreChanges: new Set(),
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
       stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
@@ -5738,12 +5737,6 @@ export default class Core {
         }
       }
 
-      if (result.itemScoreChanged) {
-        for (let itemNumber of result.itemScoreChanged.itemNumbers) {
-          this.updateInfo.itemScoreChanges.add(itemNumber)
-        }
-      }
-
     }
 
     for (let vName in varsChanged) {
@@ -6152,12 +6145,6 @@ export default class Core {
             if (result.updateDependencies) {
               for (let vName of result.updateDependencies) {
                 component.state[vName].needDependenciesUpdated = true;
-              }
-            }
-
-            if (result.itemScoreChanged) {
-              for (let itemNumber of result.itemScoreChanged.itemNumbers) {
-                this.updateInfo.itemScoreChanges.add(itemNumber)
               }
             }
 
@@ -7586,6 +7573,7 @@ export default class Core {
     let newStateVariableValues = {};
     let sourceInformation = {};
     let workspace = {};
+    let recordItemSubmissions = [];
 
     for (let instruction of updateInstructions) {
 
@@ -7639,6 +7627,8 @@ export default class Core {
           newStateVariableValues,
           preliminary: true,
         });
+      } else if (instruction.updateType === "recordItemSubmission") {
+        recordItemSubmissions.push(instruction.itemNumber)
       }
 
     }
@@ -7679,7 +7669,8 @@ export default class Core {
     //   }
     // });
 
-    if (this.updateInfo.itemScoreChanges.size > 0) {
+    if (recordItemSubmissions.length > 0) {
+      recordItemSubmissions = [...new Set(recordItemSubmissions)];
       if (event) {
         if (!event.context) {
           event.context = {};
@@ -7689,16 +7680,16 @@ export default class Core {
         }
         event.context.documentCreditAchieved = this.document.stateValues.creditAchieved;
       }
-      for (let itemNumber of this.updateInfo.itemScoreChanges) {
+      for (let itemNumber of recordItemSubmissions) {
         if (this.externalFunctions.submitResponse) {
           this.externalFunctions.submitResponse({
             itemNumber,
-            itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber],
+            itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber-1],
             callBack: this.submitResponseCallBack,
           });
         }
         if (event) {
-          event.context.itemCreditAchieved[Number(itemNumber) + 1] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
         }
       }
     }

@@ -52,13 +52,13 @@ export default class Document extends BaseComponent {
     return [{
       group: "variantControl",
       componentTypes: ["variantControl"]
-    },{
+    }, {
       group: "title",
       componentTypes: ["title"]
-    },{
+    }, {
       group: "description",
       componentTypes: ["description"]
-    },{
+    }, {
       group: "anything",
       componentTypes: ["_base"]
     }]
@@ -246,31 +246,49 @@ export default class Document extends BaseComponent {
 
         return { newValues: { itemCreditAchieved } }
 
+      }
+
+    }
+
+    stateVariableDefinitions.itemNumberByAnswerName = {
+      stateVariablesDeterminingDependencies: ["scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          scoredDescendants: {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+        };
+        for (let ind in stateValues.scoredDescendants) {
+          let descendant = stateValues.scoredDescendants[ind];
+          dependencies[`descendantsOf${ind}`] = {
+            dependencyType: "descendant",
+            ancestorName: descendant.componentName,
+            componentTypes: ["answer"],
+            recurseToMatchedChildren: false,
+          }
+        }
+
+        return dependencies;
       },
-      markStaleByKey({ arrayKeys, changes }) {
+      definition({ dependencyValues, componentInfoObjects }) {
+        let itemNumberByAnswerName = {};
 
-        if (changes.__array_size || changes.__array_keys) {
-          return {
-            itemScoreChanged: {
-              itemNumbers: arrayKeys
-            }
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let itemNumber = ind + 1;
+          for (let answerDescendant of dependencyValues[`descendantsOf${ind}`]) {
+            itemNumberByAnswerName[answerDescendant.componentName] = itemNumber;
+          }
+          if(componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: component.componentType,
+            baseComponentType: "answer"
+          })) {
+            itemNumberByAnswerName[component.componentName] = itemNumber;
           }
         }
 
-        let findArrayKeyRegex = /^__(\d+)_/;
+        return { newValues: { itemNumberByAnswerName } }
 
-        let itemNumbers = [];
-
-        for (let changeName in changes) {
-          let match = findArrayKeyRegex.exec(changeName);
-          if (match) {
-            itemNumbers.push(match[1])
-          }
-        }
-
-        return {
-          itemScoreChanged: { itemNumbers }
-        }
       }
 
     }
