@@ -5,6 +5,8 @@ export default class PaginatorPage extends Template {
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
+  static assignNamesSkipOver = true;
+
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
@@ -24,11 +26,29 @@ export default class PaginatorPage extends Template {
     stateVariableDefinitions.pageNumber = {
       public: true,
       componentType: "integer",
-      defaultValue: 1,
-      returnDependencies: () => ({}),
-      definition: () => ({
-        useEssentialOrDefaultValue: { pageNumber: { variablesToCheck: ["pageNumber"] } }
-      })
+      returnDependencies: () => ({
+        paginatorPageDescendants: {
+          dependencyType: "sourceCompositeStateVariable",
+          compositeComponentType: "paginator",
+          variableName: "pageDescendants"
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let pageNumber = null;
+
+        if (dependencyValues.paginatorPageDescendants) {
+          let ind = dependencyValues.paginatorPageDescendants
+            .map(x => x.componentName).indexOf(componentName);
+          if (ind !== -1) {
+            pageNumber = Math.floor(ind / 2) + 1;
+          }
+        }
+
+        return { newValues: { pageNumber } }
+
+
+      }
     }
 
     stateVariableDefinitions.sectionPlaceholder = {
@@ -54,7 +74,7 @@ export default class PaginatorPage extends Template {
         },
         paginatorCurrentPage: {
           dependencyType: "sourceCompositeStateVariable",
-          parentComponentType: "paginator",
+          compositeComponentType: "paginator",
           variableName: "currentPage"
         }
       }),

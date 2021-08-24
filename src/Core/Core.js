@@ -963,6 +963,15 @@ export default class Core {
         }
       }
 
+      if (!setUpVariant && componentClass.setUpVariantUnlessAttributePrimitive) {
+        let attribute = componentClass.setUpVariantUnlessAttributePrimitive;
+
+        if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
+          && serializedComponent.attributes[attribute].primitive)) {
+          setUpVariant = true;
+        }
+      }
+
       if (setUpVariant) {
 
         let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
@@ -1331,8 +1340,8 @@ export default class Core {
     // allChildrenOrder contains same children as allChildren,
     // but retaining an order that we can use for counters.
     // If defining children are replaced my composite replacements or adapters,
-    // those children come immediately after the corresponding defining child
-    parent.allChildrenOrdered = parent.activeChildren.filter(x => x.componentName).map(x => x.componentName)
+    // those children will come immediately after the corresponding defining child
+    parent.allChildrenOrdered = parent.activeChildren.map(x => x.componentName)
 
     // if any of activeChildren are expanded compositeComponents
     // replace with new components given by the composite component
@@ -1598,7 +1607,8 @@ export default class Core {
       newSerializedChild = {
         componentType:
           this.allComponentClasses[originalChild.componentType]
-            .getAdapterComponentType(n, this.publicStateVariableInfo)
+            .getAdapterComponentType(n, this.publicStateVariableInfo),
+        placeholderInd: originalChild.placeholderInd + "adapt"
       }
     }
 
@@ -1635,6 +1645,10 @@ export default class Core {
     // Replace originalChild with its adapter in activeChildren
     parent.activeChildren.splice(childInd, 1, adapter);
 
+    // TODO: if originalChild is a placeholder, we lose track of it
+    // (other than through adaptedFrom of adapted)
+    // once we splice it out of activeChildren.  Is that a problem?
+
     // Update allChildren to show that originalChild is no longer active
     // and that adapter is now an active child
     if (originalChild.componentName) {
@@ -1651,6 +1665,10 @@ export default class Core {
     if (originalChild.componentName) {
       let originalInd = parent.allChildrenOrdered.indexOf(originalChild.componentName)
       parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
+    } else {
+      // adapter of placeholder
+      let originalInd = parent.allChildrenOrdered.indexOf(originalChild.placeholderInd)
+      parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.placeholderInd)
     }
 
 
@@ -1910,6 +1928,8 @@ export default class Core {
     delete parent.placeholderActiveChildrenIndices;
     delete parent.placeholderActiveChildrenIndicesByComposite;
 
+    let nPlaceholdersAdded = 0;
+
     for (let childInd = 0; childInd < parent.activeChildren.length; childInd++) {
       let child = parent.activeChildren[childInd];
 
@@ -1952,8 +1972,10 @@ export default class Core {
           for (let i = 0; i < nComponents; i++) {
             replacements.push({
               componentType,
-              fromComposite: child.componentName
+              fromComposite: child.componentName,
+              placeholderInd: nPlaceholdersAdded
             })
+            nPlaceholdersAdded++;
           }
 
           parent.hasPlaceholderActiveChildren = true;
@@ -2001,7 +2023,7 @@ export default class Core {
         // and place replacements immediately afterward
         let ind2 = parent.allChildrenOrdered.indexOf(child.componentName)
         parent.allChildrenOrdered.splice(ind2 + 1, 0,
-          ...replacements.filter(x => x.componentName).map(x => x.componentName))
+          ...replacements.map(x => x.componentName ? x.componentName : x.placeholderInd))
 
         if (replacements.length !== 1) {
           // if replaced composite with anything other than one replacement

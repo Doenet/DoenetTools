@@ -20,7 +20,7 @@ export default class SelectFromSequence extends Sequence {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.numberToSelect = {
-      createComponentOfType: "number",
+      createPrimitiveOfType: "number",
       createStateVariable: "numberToSelect",
       defaultValue: 1,
       public: true,

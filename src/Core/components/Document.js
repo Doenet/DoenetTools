@@ -482,7 +482,6 @@ export default class Document extends BaseComponent {
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
-          definingChildrenFirst: true,
         },
         variants: {
           dependencyType: "variants",
