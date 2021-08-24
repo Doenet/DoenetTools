@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../../../Media/Doenet_Logo_Frontpage.png';
 import axios from 'axios';
+import { useSetRecoilState } from 'recoil';
+import { pageToolViewAtom } from '../NewToolRoot';
+import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 
-export default function SignOut(props) {
+export default function SignOut() {
   const [signOutAttempted, setSignOutAttempted] = useState(false);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   useEffect(() => {
     localStorage.clear(); //Clear out the profile
@@ -23,7 +26,7 @@ export default function SignOut(props) {
 
   if (vanillaCookies.length === 1 && vanillaCookies[0] === '') {
     return (
-      <div style={props.style}>
+      <div>
         <div
           style={{
             position: 'absolute',
@@ -38,13 +41,14 @@ export default function SignOut(props) {
         >
           <img
             style={{ width: '250px', height: '250px' }}
-            src={logo}
+            src={'/media/Doenet_Logo_Frontpage.png'}
             alt={
               'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
             }
           />
-          <div>
+          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <h2>You are Signed Out!</h2>
+            <Button value="Homepage" onClick={() => {setPageToolView({page: 'home', tool: '', view: ''})}}/>
           </div>
         </div>
       </div>
@@ -53,7 +57,7 @@ export default function SignOut(props) {
 
   if (signOutAttempted) {
     return (
-      <div style={props.style}>
+      <div>
         <div
           style={{
             position: 'absolute',
@@ -68,7 +72,7 @@ export default function SignOut(props) {
         >
           <img
             style={{ width: '250px', height: '250px' }}
-            src={logo}
+            src={'/media/Doenet_Logo_Frontpage.png'}
             alt={
               'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
             }
@@ -84,7 +88,7 @@ export default function SignOut(props) {
 
 
   return (
-    <div style={props.style}>
+    <div>
       <div
         style={{
           position: 'absolute',
@@ -99,7 +103,7 @@ export default function SignOut(props) {
       >
         <img
           style={{ width: '250px', height: '250px' }}
-          src={logo}
+          src={'/media/Doenet_Logo_Frontpage.png'}
           alt={
             'Chocolate glazed donut on a white cartoon cloud, sitting on a sky blue circle background'
           }
