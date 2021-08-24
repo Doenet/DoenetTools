@@ -129,7 +129,7 @@ export default function useSockets(nsp) {
         defaultFolderChildrenIds: newDefaultOrder,
       });
 
-      const payload = {
+      let payload = {
         driveId: driveIdFolderId.driveId,
         parentFolderId: driveIdFolderId.folderId,
         doenetId,
@@ -143,8 +143,31 @@ export default function useSockets(nsp) {
         url,
       };
 
-      const resp = await axios.get('/api/addItem.php', { params: payload });
+      if (type === 'DoenetML'){
+        payload = {...payload,
+          assignedDate: creationDate,
+          attemptAggregation: 'm',
+          dueDate: creationDate,
+          gradeCategory: 'l',
+          individualize: false,
+          isAssigned: '1',
+          isPublished: '0',
+          contentId:'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+          multipleAttempts: true,
+          numberOfAttemptsAllowed: '2',  //TODO: Update to null
+          proctorMakesAvailable: false,
+          showCorrectness: true,
+          showFeedback: true,
+          showHints: true,
+          showSolution: true,
+          timeLimit: '60', //TODO: Update to null
+          totalPointsOrPercent: '100',
+          assignment_isPublished: '0',
+        };
 
+      }
+
+      const resp = await axios.post('/api/addItem.php', payload );
       if (resp.data.success) {
         acceptAddItem(payload);
       } else {
