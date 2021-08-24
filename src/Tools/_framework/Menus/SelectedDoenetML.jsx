@@ -246,7 +246,7 @@ export function AssignmentSettings({role, doenetId}) {
       setShowHints(aInfo?.showHints)
       setShowCorrectness(aInfo?.showCorrectness)
       setProctorMakesAvailable(aInfo?.proctorMakesAvailable)
-      console.log(">>>>aInfo?.multipleAttempts",aInfo?.multipleAttempts)
+      // console.log(">>>>aInfo?.multipleAttempts",aInfo?.multipleAttempts)
   },[aInfo])
 
   if (aLoadable.state === "loading"){ return null;}
