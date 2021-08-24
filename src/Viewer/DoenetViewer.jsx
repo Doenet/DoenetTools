@@ -413,12 +413,12 @@ class DoenetViewerChild extends Component {
         credit: itemCreditAchieved,
         itemNumber,
       }
-      // console.log(">>>saveCreditForItem payload",payload)
+      console.log(">>>>payload",payload)
       axios.post('/api/saveCreditForItem.php', payload)
-      // .then(resp => {
-      //   console.log('saveCreditForItem-->>>',resp.data);
+      .then(resp => {
+        console.log('resp>>>>',resp.data);
 
-      // });
+      });
     }
 
     callBack("submitResponse callback parameter");

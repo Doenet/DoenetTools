@@ -36,7 +36,7 @@ $row = $result->fetch_assoc();
 $attemptAggregation = $row['attemptAggregation'];
 
 //**Insert user_assignment_attempt_item row if doesn't exist
-$sql = "SELECT credit
+$sql = "SELECT credit, viewedSolution
         FROM user_assignment_attempt_item
         WHERE userId = '$userId'
         AND doenetId = '$doenetId'
@@ -45,7 +45,16 @@ $sql = "SELECT credit
         AND itemNumber = '$itemNumber'
         ";
 $result = $conn->query($sql);
+$row = $result->fetch_assoc();
+
 $previousCredit = $row['credit'];
+$valid = FALSE;
+if ($row['viewedSolution'] == '0'){
+    $valid = TRUE;
+}
+echo "itemNumber $itemNumber";
+var_dump($row);
+var_dump($valid);
 
 if ($attemptAggregation == 'm'){
 // Find previous credit if maximizing scores
@@ -55,27 +64,32 @@ $credit_to_store = MAX($previousCredit,$credit);
     $credit_to_store = $credit;
 }
 
-if ($result->num_rows < 1){
-    $sql = "INSERT INTO user_assignment_attempt_item
-    (doenetId,contentId,userId,attemptNumber,itemNumber,credit)
-    VALUES
-    ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_to_store')
-    ";
-$result = $conn->query($sql);
+// if ($result->num_rows < 1){
+//     //Store credit for item that was not initiated
+//     $sql = "INSERT INTO user_assignment_attempt_item
+//     (doenetId,contentId,userId,attemptNumber,itemNumber,credit)
+//     VALUES
+//     ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_to_store')
+//     ";
+// $result = $conn->query($sql);
 
-}else{
+// }else{
 
+if ($valid){
     // Store credit in user_assignment_attempt_item
-$sql = "UPDATE user_assignment_attempt_item
-        SET credit='$credit_to_store'
-        WHERE userId = '$userId'
-        AND doenetId = '$doenetId'
-        AND contentId = '$contentId'
-        AND attemptNumber = '$attemptNumber'
-        AND itemNumber = '$itemNumber'
-        ";
-$result = $conn->query($sql);
+    $sql = "UPDATE user_assignment_attempt_item
+    SET credit='$credit_to_store'
+    WHERE userId = '$userId'
+    AND doenetId = '$doenetId'
+    AND contentId = '$contentId'
+    AND attemptNumber = '$attemptNumber'
+    AND itemNumber = '$itemNumber'
+    ";
+    $result = $conn->query($sql);
 }
+
+
+// }
 
 //Find submissionNumber
 $sql = "
@@ -98,13 +112,14 @@ $submissionNumber++;
 //Insert item submission
 $sql = "
 INSERT INTO user_assignment_attempt_item_submission
-(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,credit,submittedDate)
+(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,credit,submittedDate,valid)
 VALUES
-('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit_to_store',NOW())
+('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit_to_store',NOW(),'$valid')
 ";
 $result = $conn->query($sql);
 
 
+if ($valid){
 
 // //**update user_assignment_attempt for the content
 
@@ -180,8 +195,8 @@ $USER_ASSIGNMENT_HAS_AN_ENTRY = TRUE;
 if ($result->num_rows < 1){
     $USER_ASSIGNMENT_HAS_AN_ENTRY = FALSE;
 }
-echo "USER_ASSIGNMENT_HAS_AN_ENTRY $USER_ASSIGNMENT_HAS_AN_ENTRY\n";
-var_dump($USER_ASSIGNMENT_HAS_AN_ENTRY);
+// echo "USER_ASSIGNMENT_HAS_AN_ENTRY $USER_ASSIGNMENT_HAS_AN_ENTRY\n";
+// var_dump($USER_ASSIGNMENT_HAS_AN_ENTRY);
 //**update user_assignment with new score
 if ($attemptAggregation == 'm'){
 
@@ -240,6 +255,7 @@ $result = $conn->query($sql);
 }
 }
 
+}//Close valid test
 
 
 
