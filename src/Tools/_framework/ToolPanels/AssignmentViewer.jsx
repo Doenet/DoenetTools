@@ -167,7 +167,7 @@ export default function AssignmentViewer(props){
 
   let solutionDisplayMode = "button";
 
-  const requestedVariant = {index: attemptNumber, name: variantOfCurrentAttempt}
+  const requestedVariant = {name: variantOfCurrentAttempt}
   console.log(">>>>assignment variant",requestedVariant)
   return <div style={props.style}>
     <DoenetViewer

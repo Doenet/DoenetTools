@@ -866,6 +866,103 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.hiddenControls = {
+      public: true,
+      componentType: "boolean",
+      isArray: true,
+      entryPrefixes: ["hiddenControl"],
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        nThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nThroughPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nThroughPoints];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            controlChild: {
+              dependencyType: "child",
+              childGroups: ["bezierControls"],
+              variableNames: ["hiddenControl" + (Number(arrayKey) + 1)],
+            }
+          }
+        }
+
+        let globalDependencies = {
+          haveBezierControls: {
+            dependencyType: "stateVariable",
+            variableName: "haveBezierControls"
+          }
+        }
+
+        return { dependenciesByKey, globalDependencies }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let hiddenControls = {};
+
+        for (let arrayKey of arrayKeys) {
+
+          let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+
+          if (controlChild && controlChild.length > 0) {
+            hiddenControls[arrayKey] = controlChild[0].stateValues["hiddenControl" + (Number(arrayKey) + 1)];
+          } else {
+            hiddenControls[arrayKey] = false;
+          }
+        }
+
+        return {
+          newValues: { hiddenControls },
+        }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyNamesByKey, dependencyValuesByKey, globalDependencyValues
+      }) {
+
+        if (!globalDependencyValues.haveBezierControls) {
+          return { success: false }
+        }
+
+        let instructions = [];
+        let newHiddenControls = {};
+        for (let arrayKey in desiredStateVariableValues.hiddenControls) {
+          let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+
+          if (controlChild && controlChild.length > 0) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].controlChild,
+              desiredValue: desiredStateVariableValues.hiddenControls[arrayKey],
+              childIndex: 0,
+              variableIndex: 0
+            })
+
+          } else {
+            newHiddenControls[arrayKey] = desiredStateVariableValues.hiddenControls[arrayKey]
+          }
+
+        }
+
+        if (Object.keys(newHiddenControls).length > 0) {
+          instructions.push({
+            setStateVariable: "hiddenControls",
+            value: newHiddenControls
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+    }
+
     stateVariableDefinitions.controlVectors = {
       isArray: true,
       public: true,

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-16 18:43:44 +0000
+# Generation Time: 2021-08-23 23:09:33 +0000
 # ************************************************************
 
 
@@ -32,7 +32,7 @@ CREATE TABLE `assignment` (
   `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
-  `timeLimit` time DEFAULT NULL COMMENT 'NULL means it''s not timed',
+  `timeLimit` int(11) DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
   `sortOrder` int(11) DEFAULT NULL,
   `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -54,7 +54,7 @@ LOCK TABLES `assignment` WRITE;
 
 INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showFeedback`, `showHints`, `showCorrectness`, `proctorMakesAvailable`, `examCoverHTML`)
 VALUES
-	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07','10:10:00',2,NULL,'m',0,'l',0,0,1,1,1,1,0,NULL);
+	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,0,NULL);
 
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -70,7 +70,7 @@ CREATE TABLE `collection` (
   `collectionDoenetId` char(21) DEFAULT '',
   `entryDoenetId` char(21) NOT NULL DEFAULT '',
   `entryId` char(21) NOT NULL DEFAULT '',
-  `variant` varchar(255) NOT NULL DEFAULT '',
+  `variant` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -290,6 +290,7 @@ CREATE TABLE `event` (
   `timestored` timestamp NULL DEFAULT NULL,
   `version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `valid` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -388,8 +389,8 @@ CREATE TABLE `user_assignment_attempt` (
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
   `credit` float DEFAULT NULL,
   `creditOverride` float DEFAULT NULL,
-  `assignedVariant` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
-  `generatedVariant` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Based on code',
+  `assignedVariant` text COLLATE utf8_unicode_ci COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
+  `generatedVariant` text COLLATE utf8_unicode_ci COMMENT 'Based on code',
   `began` datetime DEFAULT NULL,
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -413,7 +414,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `credit` float DEFAULT NULL COMMENT 'maximum credit',
   `creditOverride` float DEFAULT NULL,
   `weight` float NOT NULL DEFAULT '1' COMMENT 'Weight comes from Doenet code.',
-  `generatedVariant` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
+  `generatedVariant` text COLLATE utf8_unicode_ci,
   `viewedSolution` tinyint(1) DEFAULT '0',
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),

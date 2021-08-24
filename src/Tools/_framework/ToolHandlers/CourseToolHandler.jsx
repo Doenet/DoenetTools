@@ -103,10 +103,9 @@ export const useAssignment = () => {
         showFeedback: true,
         showHints: true,
         showSolution: true,
-        timeLimit: '10:10',
-        totalPointsOrPercent: '00.00',
+        timeLimit: null,
+        totalPointsOrPercent: '100',
         assignment_isPublished: '0',
-        subType: 'Administrator',
       };
 
       let payload = {

@@ -32,17 +32,19 @@ export default function Switch(props) {
     propsChecked = true;
   }
   // Section: states
-  let [checked, setChecked] = useState(propsChecked || false); // will be undefined if not specified which will show up like an empty string.
-  useEffect(() => {
-    if (
-      props.checked === true ||
-      props.checked === "true" ||
-      props.checked === "1" ||
-      props.checked === 1
-    ){
-      setChecked(true)
-    }
-  }, [props.checked])
+//   let [checked, setChecked] = useState(propsChecked || false); // will be undefined if not specified which will show up like an empty string.
+// console.log(">>>>checked",checked)
+// console.log(">>>>propsChecked",propsChecked)
+//   useEffect(() => {
+//     if (
+//       props.checked === true ||
+//       props.checked === "true" ||
+//       props.checked === "1" ||
+//       props.checked === 1
+//     ){
+//       setChecked(true)
+//     }
+//   }, [props.checked])
 
   return (
     <div className={(props.className || "") + " switch"} key={id + "container"}>
@@ -50,13 +52,14 @@ export default function Switch(props) {
         <input
           type="checkbox"
           onChange={(e) => {
-            setChecked(e.target.checked);
+            // setChecked(e.target.checked);
             props.onChange(e);
           }}
           id={id}
           name={props.name}
           key={id}
-          checked={checked}
+          // checked={checked}
+          checked={propsChecked}
         />
         <span className={"switch-visual"} />
         <span className={"switch-text"}>{props.children}</span>

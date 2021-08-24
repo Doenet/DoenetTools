@@ -6,7 +6,7 @@ import useSockets, { itemType } from '../../../_reactComponents/Sockets';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
-export default function AddDriveItems(props) {
+export default function AddDriveItems() {
   const [driveId, parentFolderId] = useRecoilValue(
     searchParamAtomFamily('path'),
   ).split(':');

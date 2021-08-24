@@ -189,6 +189,8 @@ console.log(">>>===MenuPanel")
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
+    AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
+    
   }).current;
 
   let selectionPanel = null;
