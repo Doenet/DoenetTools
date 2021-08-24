@@ -143,8 +143,9 @@ export default function useSockets(nsp) {
         url,
       };
 
-      if (type === 'DoenetML'){
-        payload = {...payload,
+      if (type === 'DoenetML') {
+        payload = {
+          ...payload,
           assignedDate: creationDate,
           attemptAggregation: 'm',
           dueDate: creationDate,
@@ -152,9 +153,10 @@ export default function useSockets(nsp) {
           individualize: false,
           isAssigned: '1',
           isPublished: '0',
-          contentId:'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+          contentId:
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
           multipleAttempts: true,
-          numberOfAttemptsAllowed: '2',  //TODO: Update to null
+          numberOfAttemptsAllowed: '2', //TODO: Update to null
           proctorMakesAvailable: false,
           showCorrectness: true,
           showFeedback: true,
@@ -164,14 +166,16 @@ export default function useSockets(nsp) {
           totalPointsOrPercent: '100',
           assignment_isPublished: '0',
         };
-
       }
-
-      const resp = await axios.post('/api/addItem.php', payload );
-      if (resp.data.success) {
-        acceptAddItem(payload);
-      } else {
-        addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+      try {
+        const resp = await axios.post('/api/addItem.php', payload);
+        if (resp.data.success) {
+          acceptAddItem(payload);
+        } else {
+          addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+        }
+      } catch (error) {
+        console.error(error);
       }
 
       // realtime upgrade
@@ -198,15 +202,21 @@ export default function useSockets(nsp) {
           label,
           driveInstanceId,
         };
+        try {
+          const resp = await axios.get('/api/deleteItem.php', {
+            params: payload,
+          });
 
-        const resp = await axios.get('/api/deleteItem.php', {
-          params: payload,
-        });
-
-        if (resp.data.success) {
-          acceptDeleteItem(payload);
-        } else {
-          addToast(`Delete item error: ${resp.data.message}`, toastType.ERROR);
+          if (resp.data.success) {
+            acceptDeleteItem(payload);
+          } else {
+            addToast(
+              `Delete item error: ${resp.data.message}`,
+              toastType.ERROR,
+            );
+          }
+        } catch (error) {
+          console.log(error);
         }
 
         // realtime upgrade
@@ -436,12 +446,16 @@ export default function useSockets(nsp) {
         //   destinationFolderObj.folderInfo.parentFolderId,
       };
 
-      const resp = await axios.post('/api/moveItems.php', payload);
+      try {
+        const resp = await axios.post('/api/moveItems.php', payload);
 
-      if (resp.data.success) {
-        acceptMoveItems(payload, newDestinationFolderObj, editedCache);
-      } else {
-        addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
+        if (resp.data.success) {
+          acceptMoveItems(payload, newDestinationFolderObj, editedCache);
+        } else {
+          addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
+        }
+      } catch (error) {
+        console.log(error);
       }
 
       // realtime upgrade
@@ -473,14 +487,21 @@ export default function useSockets(nsp) {
           type: itemType,
         };
 
-        const resp = await axios.get('/api/updateItem.php', {
-          params: payload,
-        });
+        try {
+          const resp = await axios.get('/api/updateItem.php', {
+            params: payload,
+          });
 
-        if (resp.data.success) {
-          acceptRenameItem(payload);
-        } else {
-          addToast(`Rename item error: ${resp.data.message}`, toastType.ERROR);
+          if (resp.data.success) {
+            acceptRenameItem(payload);
+          } else {
+            addToast(
+              `Rename item error: ${resp.data.message}`,
+              toastType.ERROR,
+            );
+          }
+        } catch (error) {
+          console.log(error);
         }
 
         // realtime upgrade
@@ -1051,7 +1072,7 @@ function useAcceptBindings() {
           set(
             folderDictionary({
               driveId,
-              folderId:itemId,
+              folderId: itemId,
             }),
             (old) => {
               let newFolderInfo = { ...old };
