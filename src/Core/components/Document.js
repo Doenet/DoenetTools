@@ -297,7 +297,8 @@ export default class Document extends BaseComponent {
               generatedVariantInfo: {
                 dependencyType: "stateVariable",
                 componentName: descendant.componentName,
-                variableName: "generatedVariantInfo"
+                variableName: "generatedVariantInfo",
+                variablesOptional: true,
               }
             }
           }
