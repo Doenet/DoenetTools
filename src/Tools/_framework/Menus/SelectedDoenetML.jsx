@@ -162,7 +162,7 @@ onClick={()=>assignUnassign(item.doenetId)}
 />
 
 <br />
-<AssignmentSettings role={role} item={item} />
+<AssignmentSettings role={role} doenetId={item.doenetId} />
 <br />
 <br />
 <Button 
@@ -187,28 +187,43 @@ onClick={()=>assignUnassign(item.doenetId)}
 }
 
 //For item we just need label and doenetId
-export function AssignmentSettings({role, item}) {
+export function AssignmentSettings({role, doenetId}) {
   
   //Consider getValue() but need Suspense
-  const aLoadable = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId))
+  const aLoadable = useRecoilValueLoadable(loadAssignmentSelector(doenetId))
   const aInfo = aLoadable.contents;
   const addToast = useToast();
 
   //Note if aLoadable is not loaded then these will default to undefined
   let [assignedDate,setAssignedDate] = useState('')
   let [dueDate,setDueDate] = useState('')
+  let [multipleAttempts,setMultipleAttempts] = useState(true)
   let [numberOfAttemptsAllowed,setNumberOfAttemptsAllowed] = useState(1)
+  let [attemptAggregation,setAttemptAggregation] = useState('')
+  let [totalPointsOrPercent,setTotalPointsOrPercent] = useState(100)
+  let [gradeCategory,setGradeCategory] = useState('')
+  let [individualize,setIndividualize] = useState(true)
+  let [showSolution,setShowSolution] = useState(true)
+  let [showFeedback,setShowFeedback] = useState(true)
+  let [showHints,setShowHints] = useState(true)
+  let [showCorrectness,setShowCorrectness] = useState(true)
+  let [proctorMakesAvailable,setProctorMakesAvailable] = useState(true)
   
 
-  const updateAssignment = useRecoilCallback(({set,snapshot})=> async (doenetId,keyToUpdate,value)=>{
+  const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null})=>{
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId))
     let newAInfo = {...oldAInfo,[keyToUpdate]:value}
     set(loadAssignmentSelector(doenetId),newAInfo);
 
     const resp = await axios.post('/api/saveAssignmentToDraft.php', newAInfo)
-    
+
     if (resp.data.success){
-      addToast(`Updated ${keyToUpdate} to ${value}`)
+      if (valueDescription){
+        addToast(`Updated ${description} to ${valueDescription}`)
+
+      }else{
+        addToast(`Updated ${description} to ${value}`)
+      }
     }
     // set(loadAssignmentSelector(doenetId),(was)=>{
     //   return {...was,[keyToUpdate]:value}
@@ -220,7 +235,18 @@ export function AssignmentSettings({role, item}) {
   useEffect(()=>{
       setAssignedDate(aInfo?.assignedDate)
       setDueDate(aInfo?.dueDate)
+      setMultipleAttempts(aInfo?.multipleAttempts)
       setNumberOfAttemptsAllowed(aInfo?.numberOfAttemptsAllowed)
+      setAttemptAggregation(aInfo?.attemptAggregation)
+      setTotalPointsOrPercent(aInfo?.totalPointsOrPercent)
+      setGradeCategory(aInfo?.gradeCategory)
+      setIndividualize(aInfo?.individualize)
+      setShowSolution(aInfo?.showSolution)
+      setShowFeedback(aInfo?.showFeedback)
+      setShowHints(aInfo?.showHints)
+      setShowCorrectness(aInfo?.showCorrectness)
+      setProctorMakesAvailable(aInfo?.proctorMakesAvailable)
+      // console.log(">>>>aInfo?.multipleAttempts",aInfo?.multipleAttempts)
   },[aInfo])
 
   if (aLoadable.state === "loading"){ return null;}
@@ -259,12 +285,12 @@ export function AssignmentSettings({role, item}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.assignedDate !== assignedDate){
-      updateAssignment(item.doenetId,'assignedDate',assignedDate)
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }}}
   onChange={(e)=>setAssignedDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.assignedDate !== assignedDate){
-      updateAssignment(item.doenetId,'assignedDate',assignedDate)
+      updateAssignment({doenetId,keyToUpdate:'assignedDate',value:assignedDate,description:'Assigned Date'})
     }
   }}
 />
@@ -282,12 +308,12 @@ export function AssignmentSettings({role, item}) {
   // placeholder="0001-01-01 01:01:01 "
   onBlur={()=>{
     if (aInfo.dueDate !== dueDate){
-      updateAssignment(item.doenetId,'dueDate',dueDate)
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }}}
   onChange={(e)=>setDueDate(e.currentTarget.value)}
   onKeyDown={(e)=>{
     if (e.key === 'Enter' && aInfo.dueDate !== dueDate){
-      updateAssignment(item.doenetId,'dueDate',dueDate)
+      updateAssignment({doenetId,keyToUpdate:'dueDate',value:dueDate,description:'Due Date'})
     }
   }}
 />
@@ -300,12 +326,29 @@ export function AssignmentSettings({role, item}) {
   type="number"
   name="timeLimit"
   value={timeLimit}
-  // placeholder="01:01:01"
   // onBlur={}
   // onChange={}
 />
 </label>
 </div> */}
+{/* <div>aInfo = {aInfo?.multipleAttempts ? 'true' : 'false'}</div>
+<div>multipleAttempts = {multipleAttempts ? 'true' : 'false'}</div> */}
+<div>
+  <label>Multiple Attempts 
+  <Switch
+    name="multipleAttempts"
+    onChange={(e)=>{
+      let valueDescription = 'False';
+      if (e.currentTarget.checked){
+        valueDescription = 'True'
+        //TODO: Set Number of Attempts allowed to 1 ???
+      }
+      updateAssignment({doenetId,keyToUpdate:'multipleAttempts',value:e.currentTarget.checked,description:'Multiple Attempts',valueDescription})
+      }}
+    checked={multipleAttempts}
+  ></Switch>
+  </label>
+</div>
 <div>
   <label>Number of Attempts Allowed
   {/* <Increment
@@ -321,451 +364,188 @@ export function AssignmentSettings({role, item}) {
     value={numberOfAttemptsAllowed}
     onBlur={()=>{
       if (aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed){
-        updateAssignment(item.doenetId,'numberOfAttemptsAllowed',numberOfAttemptsAllowed)
+        updateAssignment({doenetId,keyToUpdate:'numberOfAttemptsAllowed',value:numberOfAttemptsAllowed,description:'Attempts Allowed'})
       }
     }}
     onKeyDown={(e)=>{
       if (e.key === 'Enter' && aInfo.numberOfAttemptsAllowed !== numberOfAttemptsAllowed){
-        updateAssignment(item.doenetId,'numberOfAttemptsAllowed',numberOfAttemptsAllowed)
+        updateAssignment({doenetId,keyToUpdate:'numberOfAttemptsAllowed',value:numberOfAttemptsAllowed,description:'Attempts Allowed'})
       }
     }}
     onChange={(e)=>setNumberOfAttemptsAllowed(e.currentTarget.value)}
   />
   </label>
 </div>
-         {/*  <div>
-            <label>Attempt Aggregation :</label>
-            <select name="attemptAggregation" onChange={handleOnBlur}>
-              <option
-                value="m"
-                selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}
-              >
-                Maximum
-              </option>
-              <option
-                value="l"
-                selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}
-              >
-                Last Attempt
-              </option>
-            </select>
-          </div>
-          <div>
-            <label>Total Points Or Percent: </label>
-            <input
-              required
-              type="number"
-              name="totalPointsOrPercent"
-              value={aInfo ? aInfo?.totalPointsOrPercent : ''}
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Grade Category: </label>
-            <input
-              required
-              type="select"
-              name="gradeCategory"
-              value={aInfo ? aInfo?.gradeCategory : ''}
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Individualize: </label>
-            <Switch
-              name="individualize"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.individualize : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Multiple Attempts: </label>
-            <Switch
-              name="multipleAttempts"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.multipleAttempts : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show solution: </label>
-            <Switch
-              name="showSolution"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showSolution : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show feedback: </label>
-            <Switch
-              name="showFeedback"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showFeedback : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show hints: </label>
-            <Switch
-              name="showHints"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showHints : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show correctness: </label>
-            <Switch
-              name="showCorrectness"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showCorrectness : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Proctor make available: </label>
-            <Switch
-              name="proctorMakesAvailable"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.proctorMakesAvailable : false}
-            ></Switch>
-          </div> */}
+<div>
+<label>Attempt Aggregation 
+  {/* {attemptAggregation} */}
+<select name="attemptAggregation" value={attemptAggregation} onChange={(e)=>{
+  let valueDescription = 'Maximum';
+  if (e.currentTarget.value === 'l'){
+    valueDescription = 'Last Attempt'
+  }
+  updateAssignment({doenetId,keyToUpdate:'attemptAggregation',value:e.currentTarget.value,description:'Attempt Aggregation',valueDescription})
+}}>
+  <option
+    value="m"
+  >
+    Maximum
+  </option>
+  <option
+    value="l"
+  >
+    Last Attempt
+  </option>
+</select>
+</label>
+</div>
+
+      
+<div>
+  <label>Total Points Or Percent: 
+  <input
+    required
+    type="number"
+    name="totalPointsOrPercent"
+    value={totalPointsOrPercent}
+    onBlur={()=>{
+      if (aInfo.totalPointsOrPercent !== totalPointsOrPercent){
+        updateAssignment({doenetId,keyToUpdate:'totalPointsOrPercent',value:totalPointsOrPercent,description:'Total Points Or Percent'})
+      }
+    }}
+    onKeyDown={(e)=>{
+      if (e.key === 'Enter' && aInfo.totalPointsOrPercent !== totalPointsOrPercent){
+        updateAssignment({doenetId,keyToUpdate:'totalPointsOrPercent',value:totalPointsOrPercent,description:'Total Points Or Percent'})
+      }
+    }}
+    onChange={(e)=>setTotalPointsOrPercent(e.currentTarget.value)}
+  />
+  </label>
+</div>
+
+              
+<div>
+  <label>Grade Category
+  <input
+    required
+    type="select"
+    name="gradeCategory"
+    value={gradeCategory}
+    onBlur={()=>{
+      if (aInfo.gradeCategory !== gradeCategory){
+        updateAssignment({doenetId,keyToUpdate:'gradeCategory',value:gradeCategory,description:'Grade Category'})
+      }
+    }}
+    onKeyDown={(e)=>{
+      if (e.key === 'Enter' && aInfo.gradeCategory !== gradeCategory){
+        updateAssignment({doenetId,keyToUpdate:'gradeCategory',value:gradeCategory,description:'Grade Category'})
+      }
+    }}
+    onChange={(e)=>setGradeCategory(e.currentTarget.value)}
+  />
+  </label>
+</div>
+          
+<div>
+  <label>Individualize
+  <Switch
+    name="individualize"
+    onChange={(e)=>{
+      let valueDescription = 'False';
+      if (e.currentTarget.checked){
+        valueDescription = 'True'
+      }
+      updateAssignment({doenetId,keyToUpdate:'individualize',value:e.currentTarget.checked,description:'Individualize',valueDescription})
+     }}
+    checked={individualize}
+  ></Switch>
+</label>
+</div>
+          
+
+<div>
+  <label>Show Solution
+  <Switch
+    name="showSolution"
+    onChange={(e)=>{
+      let valueDescription = 'False';
+      if (e.currentTarget.checked){
+        valueDescription = 'True'
+      }
+      updateAssignment({doenetId,keyToUpdate:'showSolution',value:e.currentTarget.checked,description:'Show Solution',valueDescription})
+      }}
+    checked={showSolution}
+  ></Switch>
+  </label>
+</div>
+
+<div>
+  <label>Show Feedback
+  <Switch
+    name="showFeedback"
+    onChange={(e)=>{
+      let valueDescription = 'False';
+      if (e.currentTarget.checked){
+        valueDescription = 'True'
+      }
+      updateAssignment({doenetId,keyToUpdate:'showFeedback',value:e.currentTarget.checked,description:'Show Feedback',valueDescription})
+      }}
+    checked={showFeedback}
+  ></Switch>
+  </label>
+</div>
+
+<div>
+  <label>Show Hints
+  <Switch
+    name="showHints"
+    onChange={(e)=>{
+      let valueDescription = 'False';
+      if (e.currentTarget.checked){
+        valueDescription = 'True'
+      }
+      updateAssignment({doenetId,keyToUpdate:'showHints',value:e.currentTarget.checked,description:'Show Hints',valueDescription})
+      }}
+    checked={showHints}
+  ></Switch>
+  </label>
+</div>
+
+<div>
+  <label>Show Correctness
+  <Switch
+    name="showCorrectness"
+    onChange={(e)=>{
+      let valueDescription = 'False';
+      if (e.currentTarget.checked){
+        valueDescription = 'True'
+      }
+      updateAssignment({doenetId,keyToUpdate:'showCorrectness',value:e.currentTarget.checked,description:'Show Correctness',valueDescription})
+      }}
+    checked={showCorrectness}
+  ></Switch>
+  </label>
+</div>
+
+<div>
+  <label>Proctor Makes Available
+  <Switch
+    name="proctorMakesAvailable"
+    onChange={(e)=>{
+      let valueDescription = 'False';
+      if (e.currentTarget.checked){
+        valueDescription = 'True'
+      }
+      updateAssignment({doenetId,keyToUpdate:'proctorMakesAvailable',value:e.currentTarget.checked,description:'Proctor Makes Available',valueDescription})
+      }}
+    checked={proctorMakesAvailable}
+  ></Switch>
+  </label>
+</div>
 
 </>
 }
 
-
-export  function SelectedDoenetML2() {
-  const [pageToolView,setPageToolView] = useRecoilState(pageToolViewAtom);
-  const role = pageToolView.view;
-  // const setSelectedMenu = useSetRecoilState(selectedMenuPanelAtom);
-  const selection = useRecoilValueLoadable(selectedInformation).getValue();
-  const item = selection[0];
-  // console.log(">>>>SelectedDoenetML selection",selection)
-  // const [item, setItem] = useState(selection[0]); 
-  const [label, setLabel] = useState(item?.label ?? '');
-  console.log(">>>>SelectedDoenetML role",role)
-  console.log(">>>>SelectedDoenetML item",item)
-  console.log(">>>>SelectedDoenetML label",label)
-
-  const { deleteItem, renameItem } = useSockets('drive');
-  const {
-    addContentAssignment,
-    // changeSettings,
-    updateVersionHistory,
-    // saveSettings,
-    assignmentToContent,
-    // loadAvailableAssignment,
-    // publishContentAssignment,
-    onAssignmentError,
-  } = useAssignment();
-  const { 
-    makeAssignment, 
-    convertAssignmentToContent } = useAssignmentCallbacks();
-  const [checkIsAssigned, setIsAssigned] = useState(false);
-  const addToast = useToast();
-  const versionHistory = useRecoilValueLoadable(
-    itemHistoryAtom(item?.doenetId),
-  );
-
-  // useEffect(() => {
-  //   if (!selection[0]) {
-  //     setSelectedMenu('');
-  //   } else {
-  //     setItem(selection[0]);
-  //     setLabel(selection[0]?.label);
-  //   }
-  // }, [selection, setSelectedMenu]);
-
-  let contentId = '';
-  let versionId = '';
-  if (versionHistory.state === 'loading') {
-    return null;
-  }
-  if (versionHistory.state === 'hasError') {
-    console.error(versionHistory.contents);
-    return null;
-  }
-  if (versionHistory.state === 'hasValue') {
-    contentId = versionHistory?.contents?.named[0]?.contentId;
-    versionId = versionHistory?.contents?.named[0]?.versionId;
-  }
-
-  const dIcon = <FontAwesomeIcon icon={faCode} />;
-  let makeAssignmentforReleasedButton = null;
-
-  const renameItemCallback = (newLabel) => {
-    renameItem({
-      driveIdFolderId: {
-        driveId: item.driveId,
-        folderId: item.parentFolderId,
-      },
-      itemId: item.itemId,
-      itemType: item.itemType,
-      newLabel: newLabel,
-    });
-  };
-
-  let doenetMLActions = <ActionButtonGroup vertical >
-    <ActionButton 
-    width="menu" 
-    value="Edit DoenetML"
-    onClick={() => {
-      setPageToolView({
-        page: 'course',
-        tool: 'editor',
-        view: '',
-        params: {
-          doenetId: item.doenetId,
-          path: `${item.driveId}:${item.parentFolderId}:${item.itemId}:DoenetML`,
-        },
-      });
-    }}
-    />
-    <ActionButton 
-    width="menu"
-    value="Take Assignment"
-    onClick={() => {
-      setPageToolView({
-        page: 'course',
-        tool: 'assignment',
-        view: '',
-        params: {
-          doenetId: item.doenetId,
-        },
-      });
-    }}
-    />
-  </ActionButtonGroup>
-  
-
-  if (role === 'student'){
-    return <>
-    <h2 data-cy="infoPanelItemLabel">
-      {dIcon} {item.label}
-    </h2>
-    <ActionButton 
-    width="menu"
-    value="Take Assignment"
-    onClick={() => {
-      setPageToolView({
-        page: 'course',
-        tool: 'assignment',
-        view: '',
-        params: {
-          doenetId: item.doenetId,
-        },
-      });
-    }}
-    />
-  </>
-  }
-
-  let assigned = (
-    <>
-      {versionHistory.contents.named.map((item, i) => (
-        <>
-          {item.isReleased == '1' ? (
-            <label key={i} value={item.versionId}>
-              {item.isAssigned == '1' ? '(Assigned)' : ''}
-              {item.title}
-            </label>
-          ) : (
-            ''
-          )}
-        </>
-      ))}
-    </>
-  );
-
-  // make assignment for released versions
-
-  makeAssignmentforReleasedButton = (
-    <Button
-      value="Make Assignment"
-      onClick={async () => {
-        setIsAssigned(true);
-        let isAssigned = 1;
-
-        const versionResult = await updateVersionHistory(
-          item?.doenetId,
-          versionId,
-          isAssigned,
-        );
-
-        const result = await addContentAssignment({
-          driveIditemIddoenetIdparentFolderId: {
-            driveId: item?.driveId,
-            folderId: item?.parentFolderId,
-            itemId: item?.itemId,
-            doenetId: item?.doenetId,
-            contentId: contentId,
-            versionId: versionId,
-          },
-          doenetId: item?.doenetId,
-          contentId: contentId,
-          versionId: versionId,
-        });
-        let payload = {
-          // ...aInfo,
-          itemId: item?.itemId,
-          isAssigned: '1',
-          doenetId: item?.doenetId,
-          contentId: contentId,
-          driveId: item?.driveId,
-          versionId: versionId,
-        };
-        //TODO update drive actions
-        makeAssignment({
-          driveIdFolderId: {
-            driveId: item?.driveId,
-            folderId: item?.parentFolderId,
-          },
-          itemId: item?.itemId,
-          payload: payload,
-        });
-        try {
-          if (result.success && versionResult) {
-            addToast(`Add new assignment`);
-          } else {
-            onAssignmentError({ errorMessage: result.message });
-          }
-        } catch (e) {
-          onAssignmentError({ errorMessage: e });
-        }
-      }}
-    />
-  );
-
-  // unassign
-  let unAssignButton = null;
-
-  unAssignButton = (
-    <Button
-      value="Unassign"
-      onClick={async () => {
-        let isAssigned = 0;
-        const versionResult = await updateVersionHistory(
-          item?.doenetId,
-          versionId,
-          isAssigned,
-        );
-
-        assignmentToContent({
-          driveIditemIddoenetIdparentFolderId: {
-            driveId: item?.driveId,
-            folderId: item?.parentFolderId,
-            itemId: item?.itemId,
-            doenetId: item?.doenetId,
-            contentId: contentId,
-            versionId: versionId,
-          },
-          doenetId: item?.doenetId,
-          contentId: contentId,
-          versionId: versionId,
-        });
-        //TODO update drive actions
-
-        convertAssignmentToContent({
-          driveIdFolderId: {
-            driveId: item?.driveId,
-            folderId: item?.parentFolderId,
-          },
-          itemId: item?.itemId,
-          doenetId: item?.doenetId,
-          contentId: contentId,
-          versionId: versionId,
-        });
-
-        const result = axios.post(`/api/handleMakeContent.php`, {
-          itemId: item?.itemId,
-          doenetId: item?.doenetId,
-          contentId: contentId,
-          versionId: versionId,
-        });
-        result
-          .then((resp) => {
-            if (resp.data.success) {
-              addToast(`'UnAssigned ''`);
-            } else {
-              onAssignmentError({ errorMessage: resp.data.message });
-            }
-          })
-          .catch((e) => {
-            onAssignmentError({ errorMessage: e.message });
-          });
-      }}
-    />
-  );
-
-  return (
-    <>
-      <h2 data-cy="infoPanelItemLabel">
-        {dIcon} {item.label}
-      </h2>
-      {doenetMLActions}
-    <br />
-      <label>
-        DoenetML Label
-        <input
-          type="text"
-          data-cy="infoPanelItemLabelInput"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              //Only rename if label has changed
-              if (item.label !== label) {
-                renameItemCallback(label);
-              }
-            }
-          }}
-          onBlur={() => {
-            //Only rename if label has changed
-            if (item.label !== label) {
-              renameItemCallback(label);
-            }
-          }}
-        />
-      </label>
-      <br />
-    <br />
-        
-        <Button 
-          alert
-          width="menu"
-          data-cy="deleteDoenetMLButton"
-          value="Delete DoenetML"
-          onClick={() => {
-            deleteItem({
-              driveIdFolderId: {
-                driveId: item.driveId,
-                folderId: item.parentFolderId,
-              },
-              itemId: item.itemId,
-              driveInstanceId: item.driveInstanceId,
-              label: item.label,
-            });
-          }}
-        />
-
-      {assigned}
-      <ButtonGroup vertical>
-        {item?.isAssigned === '0' &&
-          item?.isReleased === '1' &&
-          makeAssignmentforReleasedButton}
-        {item?.isAssigned == '1' && item?.isReleased === '1' && unAssignButton}
-      </ButtonGroup>
-      {item?.isAssigned == '1' && item?.isReleased === '1' && (
-        <AssignmentForm
-          selection={item}
-          versionId={versionId}
-          contentId={contentId}
-        />
-      )}
-    </>
-  );
-}
 
 export const selectedInformation = selector({
   key: 'selectedInformation',
@@ -792,285 +572,4 @@ export const selectedInformation = selector({
   },
 });
 
-const AssignmentForm2 = (props) => {
-  const { changeSettings, saveSettings, onAssignmentError } = useAssignment();
-  const { updateAssignmentTitle } = useAssignmentCallbacks();
-  const addToast = useToast();
-  const pageToolView = useRecoilValue(pageToolViewAtom);
-  console.log(">>>>pageToolView?.view",pageToolView?.view)
 
-  const [oldValue, setoldValue] = useState();
-
-  const assignmentInfoSettings = useRecoilValueLoadable(
-    assignmentDictionarySelector({
-      driveId: props.selection?.driveId,
-      folderId: props.selection?.parentFolderId,
-      itemId: props.selection?.itemId,
-      doenetId: props.selection?.doenetId,
-      versionId: props.versionId,
-      contentId: props.contentId,
-    }),
-  );
-
-  let aInfo = '';
-
-  if (assignmentInfoSettings?.state === 'hasValue') {
-    aInfo = assignmentInfoSettings?.contents;
-  }
-  // form update functions
-  const handleOnBlur = (e) => {
-    e.preventDefault();
-    let name = e.target.name;
-    let value = e.target.value;
-    if (value !== oldValue) {
-      const result = saveSettings({
-        [name]: value,
-        driveIditemIddoenetIdparentFolderId: {
-          driveId: props.selection?.driveId,
-          folderId: props.selection?.parentFolderId,
-          itemId: props.selection?.itemId,
-          doenetId: props.selection?.doenetId,
-          versionId: props.versionId,
-          contentId: props.contentId,
-        },
-      });
-      let payload = {
-        ...aInfo,
-        itemId: props.selection?.itemId,
-        isAssigned: '1',
-        [name]: value,
-        doenetId: props.selection?.doenetId,
-        contentId: props.contentId,
-      };
-      updateAssignmentTitle({
-        driveIdFolderId: {
-          driveId: props.selection?.driveId,
-          folderId: props.selection?.parentFolderId,
-        },
-        itemId: props.selection?.itemId,
-        payloadAssignment: payload,
-        doenetId: props.selection?.doenetId,
-        contentId: props.contentId,
-      });
-
-      result
-        .then((resp) => {
-          if (resp.data.success) {
-            addToast(`Updated '${name}' to '${value}'`);
-          } else {
-            onAssignmentError({ errorMessage: resp.data.message });
-          }
-        })
-        .catch((e) => {
-          onAssignmentError({ errorMessage: e.message });
-        });
-    }
-  };
-
-  const handleChange = (event) => {
-    event.preventDefault();
-    let name = event.target.name;
-    let value = event.target.value;
-    const result = changeSettings({
-      [name]: value,
-      driveIditemIddoenetIdparentFolderId: {
-        driveId: props.selection?.driveId,
-        folderId: props.selection?.parentFolderId,
-        itemId: props.selection?.itemId,
-        doenetId: props.selection?.doenetId,
-        versionId: props.versionId,
-        contentId: props.contentId,
-      },
-    });
-  };
-
-  const handleOnfocus = (event) => {
-    event.preventDefault();
-    let name = event.target.name;
-    let value = event.target.value;
-    setoldValue(event.target.value);
-  };
-
-  // Assignment Info
-  let assignmentForm = (
-    <>
-      {
-        <>
-          <h3>Assignment Info</h3>
-          <div>
-            <label>Assigned Date:</label>
-            <input
-              required
-              type="text"
-              name="assignedDate"
-              value={aInfo ? aInfo?.assignedDate : ''}
-              placeholder="0001-01-01 01:01:01 "
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Due date: </label>
-            <input
-              required
-              type="text"
-              name="dueDate"
-              value={aInfo ? aInfo?.dueDate : ''}
-              placeholder="0001-01-01 01:01:01"
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Time Limit:</label>
-            <input
-              required
-              type="time"
-              name="timeLimit"
-              value={aInfo ? aInfo?.timeLimit : ''}
-              placeholder="01:01:01"
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Number Of Attempts:</label>
-            <Increment
-            key={`numAtt${aInfo?.doenetId}`}
-             value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''} 
-             range={[0, 20]} 
-            //  onChange={handleChange}
-             />
-            <input
-              required
-              type="number"
-              name="numberOfAttemptsAllowed"
-              value={aInfo ? aInfo?.numberOfAttemptsAllowed : ''}
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Attempt Aggregation :</label>
-            <select name="attemptAggregation" onChange={handleOnBlur}>
-              <option
-                value="m"
-                selected={aInfo?.attemptAggregation === 'm' ? 'selected' : ''}
-              >
-                Maximum
-              </option>
-              <option
-                value="l"
-                selected={aInfo?.attemptAggregation === 'l' ? 'selected' : ''}
-              >
-                Last Attempt
-              </option>
-            </select>
-          </div>
-          <div>
-            <label>Total Points Or Percent: </label>
-            <input
-              required
-              type="number"
-              name="totalPointsOrPercent"
-              value={aInfo ? aInfo?.totalPointsOrPercent : ''}
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Grade Category: </label>
-            <input
-              required
-              type="select"
-              name="gradeCategory"
-              value={aInfo ? aInfo?.gradeCategory : ''}
-              onBlur={handleOnBlur}
-              onChange={handleChange}
-              onFocus={handleOnfocus}
-            />
-          </div>
-          <div>
-            <label>Individualize: </label>
-            <Switch
-              name="individualize"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.individualize : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Multiple Attempts: </label>
-            <Switch
-              name="multipleAttempts"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.multipleAttempts : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show solution: </label>
-            <Switch
-              name="showSolution"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showSolution : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show feedback: </label>
-            <Switch
-              name="showFeedback"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showFeedback : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show hints: </label>
-            <Switch
-              name="showHints"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showHints : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Show correctness: </label>
-            <Switch
-              name="showCorrectness"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.showCorrectness : false}
-            ></Switch>
-          </div>
-          <div>
-            <label>Proctor make available: </label>
-            <Switch
-              name="proctorMakesAvailable"
-              onChange={handleOnBlur}
-              checked={aInfo ? aInfo?.proctorMakesAvailable : false}
-            ></Switch>
-          </div>
-          <br />
-        </>
-      }
-    </>
-  );
-  let studentAInfo = (
-    <>
-      <div>
-        <p>Due: {aInfo?.dueDate}</p>
-        <p>Time Limit: {aInfo?.timeLimit}</p>
-        <p>Number of Attempts Allowed: {aInfo?.numberOfAttemptsAllowed}</p>
-        <p>Points: {aInfo?.totalPointsOrPercent}</p>
-      </div>
-    </>
-  );
-
-  return (
-    <>
-      {pageToolView?.view == 'student' ? <>{studentAInfo}</> : ''}
-      {pageToolView?.view == 'instructor' ? <>{assignmentForm}</> : ' '}
-    </>
-  );
-};

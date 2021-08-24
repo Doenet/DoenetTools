@@ -141,6 +141,9 @@ class DoenetViewerChild extends Component {
     this.core = core;
 
     this.generatedVariant = core.document.stateValues.generatedVariantInfo;
+    this.itemVariantInfo = core.document.stateValues.itemVariantInfo;
+    console.log(">>>>HERE core.document.stateValues",core.document.stateValues)
+    
     this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
 
     if (this.props.generatedVariantCallback) {
@@ -225,6 +228,7 @@ class DoenetViewerChild extends Component {
       this.savedUserAssignmentAttemptNumber !== this.attemptNumber
       ){
       // console.log(">>>>savedUserAssignmentAttemptNumber!!!")
+      console.log(">>>>this.itemVariantInfo",this.itemVariantInfo)
       axios.post('/api/initAssignmentAttempt.php', {
           doenetId:this.props.doenetId,
           weights: this.core.scoredItemWeights,
@@ -232,6 +236,7 @@ class DoenetViewerChild extends Component {
           contentId:this.contentId,
           requestedVariant:JSON.stringify(this.requestedVariant,serializedComponentsReplacer),
           generatedVariant:JSON.stringify(this.generatedVariant,serializedComponentsReplacer),
+          // itemVariantInfo:this.itemVariantInfo.map(x=>JSON.stringify(x,serializedComponentsReplacer)),
       }).then((resp)=>{
         // console.log(">>>>resp",resp.data)
 
