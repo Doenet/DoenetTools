@@ -445,6 +445,10 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.suppressAutomaticVariants = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { suppressAutomaticVariants: true } })
+    }
 
     stateVariableDefinitions.generatedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
@@ -473,18 +477,22 @@ export default class SectioningComponent extends BlockComponent {
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
-          definingChildrenFirst: true,
         },
         variants: {
           dependencyType: "variants",
         },
+        suppressAutomaticVariants: {
+          dependencyType: "stateVariable",
+          variableName: "suppressAutomaticVariants"
+        }
+
       }),
       definition({ dependencyValues, componentName }) {
 
         let generatedVariantInfo = {};
 
         if (dependencyValues.variantControlChild.length === 0) {
-          if (dependencyValues.variantIndex === undefined) {
+          if (dependencyValues.suppressAutomaticVariants) {
             return {
               newValues: {
                 generatedVariantInfo: null,

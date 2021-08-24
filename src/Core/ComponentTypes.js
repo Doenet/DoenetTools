@@ -372,6 +372,7 @@ export function componentTypeWithPotentialVariants() {
   for (let ct of componentTypeArray) {
     if (ct.createsVariants ||
       ct.setUpVariantIfVariantControlChild ||
+      ct.setUpVariantUnlessAttributePrimitive ||
       ct.alwaysSetUpVariant
     ) {
       let newComponentType = ct.componentType;

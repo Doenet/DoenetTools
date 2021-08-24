@@ -14,7 +14,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     delete attributes.numberOfSamples;
 
     attributes.numberToSelect = {
-      createComponentOfType: "number",
+      createPrimitiveOfType: "number",
       createStateVariable: "numberToSelect",
       defaultValue: 1,
       public: true,

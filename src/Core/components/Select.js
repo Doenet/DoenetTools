@@ -25,7 +25,7 @@ export default class Select extends CompositeComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
     attributes.numberToSelect = {
-      createComponentOfType: "number",
+      createPrimitiveOfType: "number",
       createStateVariable: "numberToSelect",
       defaultValue: 1,
       public: true,
@@ -440,7 +440,6 @@ export default class Select extends CompositeComponent {
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
-          definingChildrenFirst: true,
         }
       }),
       definition({ dependencyValues, componentName }) {

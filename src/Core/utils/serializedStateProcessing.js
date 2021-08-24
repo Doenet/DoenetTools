@@ -1943,6 +1943,24 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
       variantComponents.push(serializedComponent);
       continue;
     }
+    // if class has have setUpVariantUnlessAttributePrimitive
+    // component doesn't have the attribute set to true
+    // is a variant component
+    if (componentInfoObjects.allComponentClasses[serializedComponent.componentType]
+      .setUpVariantUnlessAttributePrimitive) {
+      let attribute = componentInfoObjects.allComponentClasses[serializedComponent.componentType]
+        .setUpVariantUnlessAttributePrimitive;
+
+      if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
+        && serializedComponent.attributes[attribute].primitive)) {
+        serializedComponent.variants = {
+          isVariantComponent: true
+        }
+        variantComponents.push(serializedComponent);
+        continue;
+      }
+
+    }
 
     // recurse on children
 
@@ -2156,6 +2174,12 @@ export function processAssignNames({
         originalNamespace = component.originalName.substring(0, lastSlash);
       }
 
+    }
+
+    if (componentInfoObjects.allComponentClasses[
+      component.componentType].assignNamesSkipOver
+    ) {
+      name = [name];
     }
 
     if (Array.isArray(name)) {
