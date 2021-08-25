@@ -1,6 +1,7 @@
 import Template from './Template';
+import BlockComponent from './abstract/BlockComponent';
 
-export default class Paginator extends Template {
+export class Paginator extends Template {
   static componentType = "paginator";
   static renderedDefault = true;
   static includeBlankStringChildren = false;
@@ -26,30 +27,6 @@ export default class Paginator extends Template {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    // // only include sectioning children
-    // stateVariableDefinitions.serializedChildren = {
-    //   returnDependencies: () => ({
-    //     serializedChildren: {
-    //       dependencyType: "serializedChildren",
-    //       doNotProxy: true
-    //     },
-    //   }),
-    //   definition({ dependencyValues, componentInfoObjects }) {
-    //     let serializedChildren = dependencyValues.serializedChildren.filter(child =>
-    //       componentInfoObjects.isInheritedComponentType({
-    //         inheritedComponentType: child.componentType,
-    //         baseComponentType: "_sectioningComponent"
-    //       })
-    //       || child.attributes && child.attributes.componentType &&
-    //       componentInfoObjects.isInheritedComponentType({
-    //         inheritedComponentType: child.attributes.componentType.primitive,
-    //         baseComponentType: "_sectioningComponent"
-    //       })
-    //     );
-
-    //     return { newValues: { serializedChildren } }
-    //   }
-    // }
 
     stateVariableDefinitions.nPages = {
       public: true,
@@ -159,11 +136,11 @@ export default class Paginator extends Template {
       }
     }
 
-    stateVariableDefinitions.pageDescendants = {
+    stateVariableDefinitions.pageSetDescendants = {
       returnDependencies: () => ({
-        pageDescendants: {
+        pageSetDescendants: {
           dependencyType: "descendant",
-          componentTypes: ["paginatorPage"],
+          componentTypes: ["paginatorPageSet"],
           useReplacementsForComposites: true,
           includeNonActiveChildren: true,
         }
@@ -171,14 +148,14 @@ export default class Paginator extends Template {
       definition({ dependencyValues }) {
         return {
           newValues: {
-            pageDescendants: dependencyValues.pageDescendants
+            pageSetDescendants: dependencyValues.pageSetDescendants
           }
         }
       }
     }
 
-    stateVariableDefinitions.pageSections = {
-      stateVariablesDeterminingDependencies: ["pageDescendants"],
+    stateVariableDefinitions.sectionsByPageSet = {
+      stateVariablesDeterminingDependencies: ["pageSetDescendants"],
       returnDependencies({ stateValues }) {
         let dependencies = {
           nPages: {
@@ -187,24 +164,26 @@ export default class Paginator extends Template {
           }
         };
 
-        for (let [ind, paginatorPage] of stateValues.pageDescendants.entries()) {
+        for (let [ind, paginatorPageSet] of stateValues.pageSetDescendants.entries()) {
           dependencies[ind] = {
             dependencyType: "replacement",
-            compositeName: paginatorPage.componentName,
-            variableNames: ["creditAchieved", "percentCreditAchieved"]
+            compositeName: paginatorPageSet.componentName,
+            variableNames: ["creditAchieved", "percentCreditAchieved"],
+            recursive: true,
+            recurseNonStandardComposites: true,
           }
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-        let pageSections = [];
+        let sectionsByPageSet = [];
 
-        for (let ind = 0; ind < 2 * dependencyValues.nPages; ind++) {
-          pageSections.push(dependencyValues[ind][0])
+        for (let ind = 0; ind < dependencyValues.nPages; ind++) {
+          sectionsByPageSet.push(dependencyValues[ind])
         }
         return {
           newValues: {
-            pageSections
+            sectionsByPageSet
           }
         }
       }
@@ -218,9 +197,8 @@ export default class Paginator extends Template {
     let sectionReplacements = super.createSerializedReplacements({ component, componentInfoObjects }).replacements;
 
 
-    let insertPaginators = function (serializedReplacements, requestedSubvariants) {
+    let insertPageSets = function (serializedReplacements) {
       let newReplacements = [];
-      let nSubvariantsSoFar = 0;
       for (let replacement of serializedReplacements) {
         if (componentInfoObjects.isInheritedComponentType({
           inheritedComponentType: replacement.componentType,
@@ -235,63 +213,63 @@ export default class Paginator extends Template {
             replacement.state.aggregateScores = true;
           }
           newReplacements.push({
-            componentType: "paginatorPage",
+            componentType: "paginatorPageSet",
             children: [replacement],
           })
 
-          let placeholderAttributes = {};
-          if (replacement.attributes) {
-            placeholderAttributes = replacement.attributes;
-          }
-
-          // let isSubvariantComponent = false;
-          // if (componentInfoObjects.allComponentClasses[
-          //   replacement.componentType].alwaysSetUpVariant
-          // ) {
-          //   isSubvariantComponent = true;
+          // let placeholderAttributes = {};
+          // if (replacement.attributes) {
+          //   placeholderAttributes = replacement.attributes;
           // }
 
+          // // let isSubvariantComponent = false;
+          // // if (componentInfoObjects.allComponentClasses[
+          // //   replacement.componentType].alwaysSetUpVariant
+          // // ) {
+          // //   isSubvariantComponent = true;
+          // // }
 
-          let placeholderVariants;
-          console.log(replacement.variants)
-          console.log(replacement)
-          if (replacement.variants) {
-            placeholderVariants = replacement.variants
-            console.log(`variants`)
-            console.log(JSON.parse(JSON.stringify(replacement.variants)))
-          }
 
-          let placeholderChildren = [];
-          for (let child of replacement.children) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "variantControl"
-            })) {
-              placeholderChildren = [JSON.parse(JSON.stringify(child))]
-            }
-          }
-
-          // if (replacement.componentType === "problem") {
-          //   placeholderAttributes.suppresssAutomaticVariants = { primitive: true };
+          // let placeholderVariants;
+          // console.log(replacement.variants)
+          // console.log(replacement)
+          // if (replacement.variants) {
+          //   placeholderVariants = replacement.variants
+          //   console.log(`variants`)
+          //   console.log(JSON.parse(JSON.stringify(replacement.variants)))
           // }
 
-          newReplacements.push({
-            componentType: "paginatorPage",
-            children: [{
-              componentType: replacement.componentType,
-              attributes: placeholderAttributes,
-              variants: placeholderVariants,
-              state: {
-                hide: true,
-                aggregateScores: component.stateValues.preserveScores,
-                sectionPlaceholder: true,
-              },
-              children: placeholderChildren,
-            }],
-            state: {
-              sectionPlaceholder: true,
-            }
-          })
+          // let placeholderChildren = [];
+          // for (let child of replacement.children) {
+          //   if (componentInfoObjects.isInheritedComponentType({
+          //     inheritedComponentType: child.componentType,
+          //     baseComponentType: "variantControl"
+          //   })) {
+          //     placeholderChildren = [JSON.parse(JSON.stringify(child))]
+          //   }
+          // }
+
+          // // if (replacement.componentType === "problem") {
+          // //   placeholderAttributes.suppresssAutomaticVariants = { primitive: true };
+          // // }
+
+          // newReplacements.push({
+          //   componentType: "paginatorPage",
+          //   children: [{
+          //     componentType: replacement.componentType,
+          //     attributes: placeholderAttributes,
+          //     variants: placeholderVariants,
+          //     state: {
+          //       hide: true,
+          //       aggregateScores: component.stateValues.preserveScores,
+          //       sectionPlaceholder: true,
+          //     },
+          //     children: placeholderChildren,
+          //   }],
+          //   state: {
+          //     sectionPlaceholder: true,
+          //   }
+          // })
 
 
         } else if (componentInfoObjects.isInheritedComponentType({
@@ -299,18 +277,13 @@ export default class Paginator extends Template {
           baseComponentType: "select"
         })) {
 
-          console.log(`variants on select`)
-          console.log(replacement.variants)
-
-
-
 
           if (replacement.children) {
             for (let child of replacement.children) {
               if (child.componentType === "option") {
                 if (child.children) {
 
-                  child.children = insertPaginators(child.children);
+                  child.children = insertPageSets(child.children);
 
                 }
               }
@@ -325,7 +298,7 @@ export default class Paginator extends Template {
       return newReplacements;
     }
 
-    let replacements = insertPaginators(sectionReplacements);
+    let replacements = insertPageSets(sectionReplacements);
 
 
     return { replacements };
@@ -352,25 +325,28 @@ export default class Paginator extends Template {
     }];
 
     if (this.stateValues.preserveScores) {
-      let sectionToBeWithheld = this.stateValues.pageSections[2 * (currentPageNumber - 1)];
-      let sectionCreditAchieved = sectionToBeWithheld.stateValues.creditAchieved;
-      let sectionPercentCreditAchieved = sectionToBeWithheld.stateValues.percentCreditAchieved;
 
-      let placeholderSectionName = this.stateValues.pageSections[2 * currentPageNumber - 1].componentName;
+      let sections = this.stateValues.sectionsByPageSet[currentPageNumber - 1];
+      if (sections.length === 2) {
+        let sectionToBeWithheld = sections[0];
+        let sectionCreditAchieved = sectionToBeWithheld.stateValues.creditAchieved;
+        let sectionPercentCreditAchieved = sectionToBeWithheld.stateValues.percentCreditAchieved;
 
-      updateInstructions.push({
-        updateType: "updateValue",
-        componentName: placeholderSectionName,
-        stateVariable: "creditAchieved",
-        value: sectionCreditAchieved
-      })
-      updateInstructions.push({
-        updateType: "updateValue",
-        componentName: placeholderSectionName,
-        stateVariable: "percentCreditAchieved",
-        value: sectionPercentCreditAchieved
-      })
+        let placeholderSectionName = sections[1].componentName;
 
+        updateInstructions.push({
+          updateType: "updateValue",
+          componentName: placeholderSectionName,
+          stateVariable: "creditAchieved",
+          value: sectionCreditAchieved
+        })
+        updateInstructions.push({
+          updateType: "updateValue",
+          componentName: placeholderSectionName,
+          stateVariable: "percentCreditAchieved",
+          value: sectionPercentCreditAchieved
+        })
+      }
 
     }
 
@@ -396,5 +372,634 @@ export default class Paginator extends Template {
       new Proxy(this, this.readOnlyProxyHandler)
     ),
   };
+
+}
+
+export class PaginatorPageSet extends Template {
+  static componentType = "paginatorPageSet";
+  static renderedDefault = true;
+
+  static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+
+  static assignNamesSkipOver = true;
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.preserveScores = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        paginatorPreserveScores: {
+          dependencyType: "sourceCompositeStateVariable",
+          compositeComponentType: "paginator",
+          variableName: "preserveScores"
+        }
+      }),
+      definition({ dependencyValues }) {
+
+
+        return { newValues: { preserveScores: dependencyValues.paginatorPreserveScores } }
+
+
+      }
+    }
+
+    stateVariableDefinitions.pageNumber = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        paginatorPageSetDescendants: {
+          dependencyType: "sourceCompositeStateVariable",
+          compositeComponentType: "paginator",
+          variableName: "pageSetDescendants"
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let pageNumber = null;
+
+        if (dependencyValues.paginatorPageSetDescendants) {
+          let ind = dependencyValues.paginatorPageSetDescendants
+            .map(x => x.componentName).indexOf(componentName);
+          if (ind !== -1) {
+            pageNumber = ind + 1;
+          }
+        }
+
+        return { newValues: { pageNumber } }
+
+
+      }
+    }
+
+
+    stateVariableDefinitions.renderPage = {
+      public: true,
+      componentType: "boolean",
+      defaultValue: this.renderedDefault,
+      returnDependencies: () => ({
+        pageNumber: {
+          dependencyType: "stateVariable",
+          variableName: "pageNumber"
+        },
+        paginatorCurrentPage: {
+          dependencyType: "sourceCompositeStateVariable",
+          compositeComponentType: "paginator",
+          variableName: "currentPage"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let renderPage = false;
+        if (dependencyValues.paginatorCurrentPage) {
+          renderPage = dependencyValues.paginatorCurrentPage === dependencyValues.pageNumber;
+        }
+
+        return {
+          newValues: { renderPage }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.pageDescendants = {
+      returnDependencies: () => ({
+        pageDescendants: {
+          dependencyType: "descendant",
+          componentTypes: ["paginatorPage"],
+          useReplacementsForComposites: true,
+          includeNonActiveChildren: true,
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            pageDescendants: dependencyValues.pageDescendants
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.readyToExpandWhenResolved = {
+
+      returnDependencies: () => ({
+        renderPage: {
+          dependencyType: "stateVariable",
+          variableName: "renderPage",
+        },
+      }),
+      // when this state variable is marked stale
+      // it indicates we should update replacement
+      // For this to work, must get value in replacement functions
+      // so that the variable is marked fresh
+      markStale: () => ({ updateReplacements: true }),
+      definition: function () {
+        return { newValues: { readyToExpandWhenResolved: true } };
+      },
+    };
+
+    return stateVariableDefinitions;
+  }
+
+  static createSerializedReplacements({ component, componentInfoObjects, workspace }) {
+
+    workspace.renderPage = component.stateValues.renderPage;
+
+    let result = super.createSerializedReplacements({ component, componentInfoObjects });
+
+    if (!result.replacements.length === 1) {
+      return { replacements: [] };
+    }
+
+    let sectionReplacement = result.replacements[0];
+
+    let newReplacements = [{
+      componentType: "paginatorPage",
+      children: [sectionReplacement]
+    }]
+
+    let placeholderAttributes = {};
+    if (sectionReplacement.attributes) {
+      placeholderAttributes = sectionReplacement.attributes;
+    }
+
+
+    let placeholderVariants;
+    if (sectionReplacement.variants) {
+      placeholderVariants = sectionReplacement.variants
+    }
+
+    let placeholderChildren = [];
+    for (let child of sectionReplacement.children) {
+      if (componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: child.componentType,
+        baseComponentType: "variantControl"
+      })) {
+        placeholderChildren = [JSON.parse(JSON.stringify(child))]
+      }
+    }
+
+    // if (replacement.componentType === "problem") {
+    //   placeholderAttributes.suppresssAutomaticVariants = { primitive: true };
+    // }
+
+    newReplacements.push({
+      componentType: "paginatorPage",
+      children: [{
+        componentType: sectionReplacement.componentType,
+        attributes: placeholderAttributes,
+        variants: placeholderVariants,
+        state: {
+          hide: true,
+          aggregateScores: component.stateValues.preserveScores,
+          sectionPlaceholder: true,
+        },
+        children: placeholderChildren,
+      }],
+      state: {
+        sectionPlaceholder: true,
+      }
+    })
+
+    return { replacements: newReplacements }
+
+  }
+
+
+  // static calculateReplacementChanges({ component, workspace, componentInfoObjects }) {
+  //   // console.log(`calculate replacement changes for ${component.componentName}`);
+
+  //   let replacementChanges = [];
+
+  //   if (!component.stateValues.rendered) {
+  //     if (workspace.rendered) {
+  //       workspace.rendered = false;
+
+  //       let replacementInstruction = {
+  //         changeType: "changeReplacementsToWithhold",
+  //         replacementsToWithhold: component.replacements.length,
+  //       };
+  //       replacementChanges.push(replacementInstruction);
+
+  //     }
+
+
+  //   } else if (!workspace.rendered) {
+
+  //     workspace.rendered = true;
+
+  //     if (component.replacementsToWithhold > 0) {
+  //       let replacementInstruction = {
+  //         changeType: "changeReplacementsToWithhold",
+  //         replacementsToWithhold: 0,
+  //       };
+  //       replacementChanges.push(replacementInstruction);
+
+  //     } else {
+  //       let replacements = this.createSerializedReplacements({ component, componentInfoObjects, workspace }).replacements;
+
+  //       let replacementInstruction = {
+  //         changeType: "add",
+  //         changeTopLevelReplacements: true,
+  //         firstReplacementInd: 0,
+  //         serializedReplacements: replacements,
+  //         replacementsToWithhold: 0,
+  //       }
+
+  //       replacementChanges.push(replacementInstruction);
+
+  //     }
+  //   }
+
+  //   return replacementChanges;
+
+  // }
+
+
+}
+
+
+export class PaginatorPage extends Template {
+  static componentType = "paginatorPage";
+
+  static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+
+  static assignNamesSkipOver = true;
+
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+    attributes.rendered = {
+      createComponentOfType: "boolean",
+    };
+    return attributes;
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.pageNumber = {
+      public: true,
+      componentType: "integer",
+      returnDependencies: () => ({
+        pageNumber: {
+          dependencyType: "sourceCompositeStateVariable",
+          compositeComponentType: "paginatorPageSet",
+          variableName: "pageNumber"
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        return { newValues: { pageNumber: dependencyValues.pageNumber } }
+
+      }
+    }
+    stateVariableDefinitions.sectionPlaceholder = {
+      defaultValue: false,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: { sectionPlaceholder: { variablesToCheck: ["sectionPlaceholder"] } }
+      })
+    }
+
+    stateVariableDefinitions.rendered = {
+      public: true,
+      componentType: "boolean",
+      defaultValue: this.renderedDefault,
+      returnDependencies: () => ({
+        pageNumber: {
+          dependencyType: "stateVariable",
+          variableName: "pageNumber"
+        },
+        sectionPlaceholder: {
+          dependencyType: "stateVariable",
+          variableName: "sectionPlaceholder"
+        },
+        paginatorPageSetRenderPage: {
+          dependencyType: "sourceCompositeStateVariable",
+          compositeComponentType: "paginatorPageSet",
+          variableName: "renderPage"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.paginatorPageSetRenderPage === null) {
+          return {
+            useEssentialOrDefaultValue:
+              { rendered: { variablesToCheck: ["rendered"] } }
+          }
+        } else {
+          let rendered = dependencyValues.paginatorPageSetRenderPage;
+          if (dependencyValues.sectionPlaceholder) {
+            rendered = !rendered;
+          }
+          return {
+            newValues: { rendered }
+          }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.mirrorPage = {
+      returnDependencies: () => ({
+        paginatorPageSetPages: {
+          dependencyType: "sourceCompositeStateVariable",
+          compositeComponentType: "paginatorPageSet",
+          variableName: "pageDescendants"
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+        let mirrorPage;
+
+        for (let page of dependencyValues.paginatorPageSetPages) {
+          if (page.componentName !== componentName) {
+            mirrorPage = page;
+            break;
+          }
+        }
+
+        return { newValues: { mirrorPage } }
+
+      }
+    }
+
+    stateVariableDefinitions.mirrorPageReplacements = {
+      stateVariablesDeterminingDependencies: ["mirrorPage"],
+      returnDependencies: ({ stateValues }) => ({
+        mirrorPageReplacements: {
+          dependencyType: "replacement",
+          compositeName: stateValues.mirrorPage.componentName
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { mirrorPageReplacements: dependencyValues.mirrorPageReplacements } }
+      }
+    }
+
+    stateVariableDefinitions.readyToExpandWhenResolved = {
+
+      returnDependencies: () => ({
+        rendered: {
+          dependencyType: "stateVariable",
+          variableName: "rendered",
+        },
+      }),
+      // when this state variable is marked stale
+      // it indicates we should update replacement
+      // For this to work, must get value in replacement functions
+      // so that the variable is marked fresh
+      markStale: () => ({ updateReplacements: true }),
+      definition: function () {
+        return { newValues: { readyToExpandWhenResolved: true } };
+      },
+    };
+
+    return stateVariableDefinitions;
+  }
+
+  static createSerializedReplacements({ component, componentInfoObjects, workspace }) {
+
+    workspace.rendered = component.stateValues.rendered;
+
+    // let alwaysCreateReplacements = component.stateValues.sectionPlaceholder;
+
+    // let result = super.createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements });
+    let result = super.createSerializedReplacements({ component, componentInfoObjects });
+
+    // if (!component.stateValues.rendered && component.stateValues.sectionPlaceholder) {
+    //   result.withholdReplacements = true;
+    // }
+
+    return result;
+
+  }
+
+
+  static calculateReplacementChanges({ component, components, workspace, componentInfoObjects }) {
+    // console.log(`calculate replacement changes for ${component.componentName}`);
+
+    let replacementChanges = [];
+
+    if (!component.stateValues.rendered) {
+      if (workspace.rendered) {
+        workspace.rendered = false;
+
+        let replacementInstruction = {
+          changeType: "changeReplacementsToWithhold",
+          replacementsToWithhold: component.replacements.length,
+        };
+        replacementChanges.push(replacementInstruction);
+
+      }
+
+
+    } else if (!workspace.rendered) {
+
+      workspace.rendered = true;
+
+      if (component.replacementsToWithhold > 0) {
+        let replacementInstruction = {
+          changeType: "changeReplacementsToWithhold",
+          replacementsToWithhold: 0,
+        };
+        replacementChanges.push(replacementInstruction);
+
+      } else {
+        let replacements = this.createSerializedReplacements({ component, componentInfoObjects, workspace }).replacements;
+
+        if (!replacements[0].variants) {
+          replacements[0].variants = {}
+        }
+
+        let mirrorPageReplacement = components[component.stateValues.mirrorPageReplacements[0].componentName]
+        replacements[0].variants.desiredVariant = { index: mirrorPageReplacement.sharedParameters.variantIndex }
+
+
+        if (component.stateValues.sectionPlaceholder) {
+          if (!replacements[0].state) {
+            replacements[0].state = {};
+          }
+          replacements[0].state.creditAchieved = mirrorPageReplacement.stateValues.creditAchieved;
+          replacements[0].state.percentCreditAchieved = mirrorPageReplacement.stateValues.percentCreditAchieved;
+
+        }
+
+        let replacementInstruction = {
+          changeType: "add",
+          changeTopLevelReplacements: true,
+          firstReplacementInd: 0,
+          serializedReplacements: replacements,
+          replacementsToWithhold: 0,
+        }
+
+        replacementChanges.push(replacementInstruction);
+
+      }
+    }
+
+    return replacementChanges;
+
+  }
+
+
+}
+
+
+
+
+export class PaginatorControls extends BlockComponent {
+  static componentType = "paginatorControls";
+  static renderChildren = true;
+
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.previousLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "previousLabel",
+      defaultValue: "Previous",
+      forRenderer: true,
+      public: true,
+    }
+    attributes.nextLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "nextLabel",
+      defaultValue: "Next",
+      forRenderer: true,
+      public: true,
+    }
+    attributes.pageLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "pageLabel",
+      defaultValue: "Page",
+      forRenderer: true,
+      public: true,
+    }
+    attributes.paginatorTname = {
+      createPrimitiveOfType: "string"
+    }
+
+    return attributes;
+
+  }
+
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+
+    stateVariableDefinitions.paginatorTname = {
+      returnDependencies: () => ({
+        paginatorTname: {
+          dependencyType: "attributePrimitive",
+          attributeName: "paginatorTname"
+        },
+      }),
+      definition({ dependencyValues }) {
+        return { newValues: { paginatorTname: dependencyValues.paginatorTname } }
+      }
+    }
+
+
+    stateVariableDefinitions.paginatorFullTname = {
+      stateVariablesDeterminingDependencies: ["paginatorTname"],
+      returnDependencies({ stateValues }) {
+        if (stateValues.paginatorTname) {
+          return {
+            paginatorFullTname: {
+              dependencyType: "expandTargetName",
+              tName: stateValues.paginatorTname
+            }
+          }
+        } else {
+          return {}
+        }
+      },
+      definition({ dependencyValues }) {
+        return { newValues: { paginatorFullTname: dependencyValues.paginatorFullTname } }
+      }
+    }
+
+    stateVariableDefinitions.currentPage = {
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["paginatorFullTname"],
+      returnDependencies({ stateValues }) {
+        if (!stateValues.paginatorFullTname) {
+          return {}
+        } else {
+          return {
+            paginatorPage: {
+              dependencyType: "stateVariable",
+              componentName: stateValues.paginatorFullTname,
+              variableName: "currentPage"
+            }
+          }
+        }
+      },
+      definition({ dependencyValues }) {
+        if ("paginatorPage" in dependencyValues) {
+          return {
+            newValues: { currentPage: dependencyValues.paginatorPage }
+          }
+        } else {
+          return { newValues: { currentPage: 1 } }
+        }
+      }
+    }
+
+    stateVariableDefinitions.nPages = {
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["paginatorFullTname"],
+      returnDependencies({ stateValues }) {
+        if (!stateValues.paginatorFullTname) {
+          return {}
+        } else {
+          return {
+            paginatorNPages: {
+              dependencyType: "stateVariable",
+              componentName: stateValues.paginatorFullTname,
+              variableName: "nPages"
+            }
+          }
+        }
+      },
+      definition({ dependencyValues }) {
+        if ("paginatorNPages" in dependencyValues) {
+          return {
+            newValues: { nPages: dependencyValues.paginatorNPages }
+          }
+        } else {
+          return { newValues: { nPages: 1 } }
+        }
+      }
+    }
+
+    return stateVariableDefinitions;
+
+  }
+
+
+  setPage({ number }) {
+
+    if (this.stateValues.paginatorFullTname) {
+      this.coreFunctions.requestAction({
+        componentName: this.stateValues.paginatorFullTname,
+        actionName: "setPage",
+        args: { number }
+      })
+    }
+
+  }
+
+  actions = {
+    setPage: this.setPage.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+  };
+
 
 }

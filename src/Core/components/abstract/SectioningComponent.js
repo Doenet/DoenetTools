@@ -512,6 +512,7 @@ export default class SectioningComponent extends BlockComponent {
 
 
         let subvariantsSpecified = Boolean(
+          dependencyValues.variants &&
           dependencyValues.variants.desiredVariant &&
           dependencyValues.variants.desiredVariant.subvariants
         );
@@ -729,7 +730,10 @@ export default class SectioningComponent extends BlockComponent {
 
       let variantIndex;
       // check if desiredVariant was specified
-      let desiredVariant = serializedComponent.variants.desiredVariant;
+      let desiredVariant;
+      if (serializedComponent.variants) {
+        desiredVariant = serializedComponent.variants.desiredVariant;
+      }
       if (desiredVariant !== undefined) {
         if (desiredVariant.index !== undefined) {
           let desiredVariantIndex = Number(desiredVariant.index);
@@ -801,8 +805,10 @@ export default class SectioningComponent extends BlockComponent {
     // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants
-    let desiredVariant = serializedComponent.variants.desiredVariant;
-
+    let desiredVariant;
+    if (serializedComponent.variants) {
+      desiredVariant = serializedComponent.variants.desiredVariant;
+    }
     if (desiredVariant === undefined) {
       desiredVariant = {};
     }
