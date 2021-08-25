@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import {
     useRecoilCallback,
     useRecoilValueLoadable,
+    useSetRecoilState,
   } from "recoil";
 import styled from "styled-components";
-import { profileAtom } from '../NewToolRoot';
+import { pageToolViewAtom, profileAtom } from '../NewToolRoot';
 import { a } from '@react-spring/web'
 import InfiniteSlider from '../temp/InfiniteSlider'
 import "../doenet.css";
@@ -12,6 +13,7 @@ import Textinput from "../Textinput";
 import Switch from "../Switch";
 import axios from "axios";
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
+import Button from "../../../_reactComponents/PanelHeaderComponents/Button";
 
 let SectionHeader = styled.h2`
   margin-top: 2em;
@@ -64,6 +66,7 @@ export default function DoenetProfile(props) {
     let profile = loadProfile.contents;
 
     const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
+    const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
 
     // let [editMode, setEditMode] = useState(false);
@@ -276,6 +279,7 @@ export default function DoenetProfile(props) {
                 </p>
 
                 <SectionHeader>Your Roles</SectionHeader>
+                <p>Student</p>
                 <Switch
                   id="student"
                   onChange={e => {
@@ -286,7 +290,7 @@ export default function DoenetProfile(props) {
                   checked={profile.roleStudent}
                 >
                 </Switch>
-                <p>Student</p>
+                <p>Instructor</p>
                 <Switch
                   id="instructor"
                   onChange={e => {
@@ -297,7 +301,7 @@ export default function DoenetProfile(props) {
                   checked={profile.roleInstructor}
                 >
                 </Switch>
-                <p>Instructor</p>
+                <p>Course Designer</p>
                 <Switch
                   id="course_designer"
                   onChange={e => {
@@ -308,7 +312,9 @@ export default function DoenetProfile(props) {
                   checked={profile.roleCourseDesigner}
                 >
                 </Switch>
-                <p>Course Designer</p>
+                <br/>
+                <Button value={"Sign out"} onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
+
               </div>
               </div>
     )

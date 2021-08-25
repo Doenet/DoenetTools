@@ -14,9 +14,9 @@ export default class Ref extends DoenetRenderer {
       linkContent = this.doenetSvData.linkText;
     }
     if (this.doenetSvData.contentId) {
-      return <a target="_blank" id={this.componentName} name={this.componentName} href={`https://www.doenet.org/content/#/?contentId=${this.doenetSvData.contentId}`}>{linkContent}</a>
+      return <a target="_blank" id={this.componentName} name={this.componentName} href={`https://www.doenet.org/#/content/?contentId=${this.doenetSvData.contentId}`}>{linkContent}</a>
     } else if (this.doenetSvData.doenetId) {
-      return <a target="_blank" id={this.componentName} name={this.componentName} href={`https://www.doenet.org/content/#/?doenetId=${this.doenetSvData.doenetId}`}>{linkContent}</a>
+      return <a target="_blank" id={this.componentName} name={this.componentName} href={`https://www.doenet.org/#/content/?doenetId=${this.doenetSvData.doenetId}`}>{linkContent}</a>
     } else if (this.doenetSvData.uri) {
       return <a target="_blank" id={this.componentName} name={this.componentName} href={this.doenetSvData.uri}>{linkContent}</a>
     } else {

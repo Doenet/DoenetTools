@@ -223,6 +223,106 @@ export default class BezierControls extends BaseComponent {
       }
     }
 
+    stateVariableDefinitions.hiddenControls = {
+      isArray: true,
+      entryPrefixes: ["hiddenControl"],
+      defaultEntryValue: false,
+      stateVariablesDeterminingDependencies: ["pointIndMap"],
+      returnArraySizeDependencies: () => ({
+        nControls: {
+          dependencyType: "stateVariable",
+          variableName: "nControls",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nControls];
+      },
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let controlInd = stateValues.pointIndMap[arrayKey];
+          if (controlInd !== undefined) {
+            dependenciesByKey[arrayKey] = {
+              controlChild: {
+                dependencyType: "child",
+                childGroups: ["controlVectors"],
+                variableNames: ["hide"],
+                childIndices: [controlInd],
+              }
+            }
+          }
+        }
+
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let hiddenControls = {};
+        let essentialHiddenControls = {};
+
+        for (let arrayKey of arrayKeys) {
+
+          let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+
+          if (controlChild && controlChild.length === 1) {
+            hiddenControls[arrayKey] = controlChild[0].stateValues.hide;
+          } else {
+            essentialHiddenControls[arrayKey] = {
+              variablesToCheck: [{ variableName: "hiddenControls", arrayIndex: arrayKey }]
+            }
+          }
+
+        }
+
+        return {
+          newValues: { hiddenControls },
+          useEssentialOrDefaultValue: { hiddenControls: essentialHiddenControls }
+        }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyNamesByKey, dependencyValuesByKey,
+        // componentName
+      }) {
+
+        // console.log(`inverse definition of hiddenControls for beziercontrols of ${componentName}`)
+        // console.log(JSON.parse(JSON.stringify(desiredStateVariableValues)));
+        // console.log(JSON.parse(JSON.stringify(dependencyNamesByKey)));
+        // console.log(JSON.parse(JSON.stringify(dependencyValuesByKey)));
+
+        let instructions = [];
+        let newHiddenControlValues = {};
+        for (let arrayKey in desiredStateVariableValues.hiddenControls) {
+          let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+
+          if (controlChild && controlChild.length === 1) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].controlChild,
+              desiredValue: desiredStateVariableValues.hiddenControls[arrayKey],
+              childIndex: 0,
+              variableIndex: 0
+            })
+
+          } else {
+            newHiddenControlValues[arrayKey] = desiredStateVariableValues.hiddenControls[arrayKey]
+          }
+
+        }
+
+        if (Object.keys(newHiddenControlValues).length > 0) {
+          instructions.push({
+            setStateVariable: "hiddenControls",
+            value: newHiddenControlValues
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+    }
+
     stateVariableDefinitions.nDimensions = {
       returnDependencies() {
         return {

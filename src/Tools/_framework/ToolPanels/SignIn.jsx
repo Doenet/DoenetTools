@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import logo from '../../../Media/Doenet_Logo_Frontpage.png';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 
@@ -12,6 +11,7 @@ export default function SignIn(props) {
   let [signInStage, setSignInStage] = useState('beginning');
   let [isSentEmail, setIsSentEmail] = useState(false);
   let [deviceName, setDeviceName] = useState('');
+  console.log(signInStage)
 
   const jwt = Cookies.get();
 
@@ -43,7 +43,7 @@ export default function SignIn(props) {
     .then((resp) => {
       if (resp.data.success === '1') {
         localStorage.setItem("Profile",JSON.stringify(resp.data.profile));
-        location.href = 'new#/course';
+        location.href = '/#/course';
       }else{
         //  Error currently does nothing
       }})
@@ -131,11 +131,11 @@ export default function SignIn(props) {
         }
       })
       .catch((error) => {
-        this.setState({ error: error });
+        console.error(error)
       });
 
     return (
-      <div style={props.style}>
+      <div>
       <div
         style={{
           position: 'absolute',
@@ -164,7 +164,7 @@ export default function SignIn(props) {
         <h2 style={{ textAlign: 'center' }}>Code Expired</h2>
         <button
           onClick={() => {
-            location.href = '/signin';
+            location.href = '/#/signin';
           }}
         >
           Restart Signin
@@ -276,7 +276,7 @@ export default function SignIn(props) {
         <img
           style={{ width: '250px', height: '250px' }}
           alt="Doenet Logo"
-          src={logo}
+          src={'/media/Doenet_Logo_Frontpage.png'}
         />
         <div>
           <p>

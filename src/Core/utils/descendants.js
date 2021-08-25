@@ -2,11 +2,8 @@ export function gatherDescendants({ ancestor, descendantTypes,
   recurseToMatchedChildren = true,
   useReplacementsForComposites = false,
   includeNonActiveChildren = false,
-  // includePropertyChildren = false,
   skipOverAdapters = false,
   ignoreReplacementsOfMatchedComposites = false,
-  definingChildrenFirst = false,
-  namesToIgnore = [],
   init = true,
   componentInfoObjects,
 }) {
@@ -38,67 +35,57 @@ export function gatherDescendants({ ancestor, descendantTypes,
 
   } else {
 
-    if (includeNonActiveChildren && definingChildrenFirst) {
-      // add defining children in order
-      for (let child of ancestor.definingChildren) {
-        childrenToCheck.push(child);
-      }
-    }
 
-
-    // first add active children in order
-    if (ancestor.activeChildren) {
-      for (let [ind, child] of ancestor.activeChildren.entries()) {
-
-        // add a fake componentName to placeholders
-        if (!child.componentName) {
-          child.componentName = `__placeholder_${ind}`;
+    // add children in the order of allChildren ordered
+    for (let childName of ancestor.allChildrenOrdered) {
+      let childObj = ancestor.allChildren[childName];
+      let child;
+      let childIsActive = false;
+      let childIsAdapter = false;
+      if (childObj) {
+        child = childObj.component;
+        if (child.adaptedFrom) {
+          childIsAdapter = true;
+        }
+        if (ancestor.activeChildren.includes(child)) {
+          childIsActive = true;
+        }
+      } else {
+        // must have a placeholder
+        // look in activeChildren
+        // include the placedholders adapted into the activeChildren
+        for (let aChild of ancestor.activeChildren) {
+          if (aChild.placeholderInd === childName) {
+            child = aChild;
+            childIsActive = true;
+            if (typeof childName === "string" &&
+              childName.substring(childName.length - 5, childName.length) === "adapt") {
+              childIsAdapter = true;
+            }
+            break;
+          } else if(aChild.adaptedFrom && achild.adaptedFrom.placeholderInd === childName) {
+            child = aChild.adaptedFrom;
+            break;
+          }
         }
 
-        if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
+      }
+
+      if(child) {
+        if(childIsAdapter && skipOverAdapters) {
+          if(!childrenToCheck.includes(child.adaptedFrom)) {
+            childrenToCheck.push(child.adaptedFrom)
+          }
+        } else if(childIsActive|| includeNonActiveChildren) {
           childrenToCheck.push(child);
         }
-      }
-    }
-
-    if (includeNonActiveChildren) {
-      if (!definingChildrenFirst) {
-        // add any non-active defining children in order
-        for (let child of ancestor.definingChildren) {
-          if (!childrenToCheck.map(x => x.componentName).includes(child.componentName)) {
-            childrenToCheck.push(child);
-          }
-        }
-      }
-
-      // add any other children
-      if (ancestor.allChildren) {
-        for (let childName in ancestor.allChildren) {
-          let childObj = ancestor.allChildren[childName];
-          if (childObj.definingChildrenIndex === undefined && childObj.activeChildrenIndex === undefined) {
-            childrenToCheck.push(childObj.component);
-          }
-        }
-
-        // since placeholders that were adapted are not in allChildren,
-        // check for those separately
-        for (let [ind, child] of ancestor.activeChildren.entries()) {
-          let adapted = child.adaptedFrom
-          if (adapted && !adapted.componentName) {
-            // add fake componentName
-            adapted.componentName = `__placeholder_adapted_${ind}`;
-            if (!childrenToCheck.map(x => x.componentName).includes(adapted.componentName)) {
-              childrenToCheck.push(adapted);
-            }
-          }
-        }
-
       }
     }
   }
 
   if (ignoreReplacementsOfMatchedComposites) {
     // first check if have matched any composites, so can ignore their replacements
+    let namesToIgnore = [];
     for (let child of childrenToCheck) {
       let matchedChild = matchChildToTypes(child);
       if (matchedChild && componentInfoObjects.isInheritedComponentType({
@@ -109,53 +96,19 @@ export function gatherDescendants({ ancestor, descendantTypes,
           ...namesToIgnore,
           ...replacementsForComposites({
             composite: child, componentInfoObjects, includeComposites: true
-          }).map(x => x.componentName)
+          }).map(x => x.componentName ? x.componentName : x.placeholderInd)
         ]
       }
     }
 
-  }
-
-  if (skipOverAdapters) {
-    for (let [ind, child] of childrenToCheck.entries()) {
-      if (child.adaptedFrom && !namesToIgnore.includes(child.componentName)) {
-        // found an adapter
-
-        namesToIgnore = [
-          ...namesToIgnore,
-          child.componentName
-        ];
-
-
-        let adaptedLocation = childrenToCheck.map(x => x.componentName).indexOf(child.adaptedFrom.componentName);
-        if (adaptedLocation === -1) {
-          // if adapted component isn't in childrenToCheck
-          // then replace adapter with adapted component
-          childrenToCheck.splice(ind, 1, child.adaptedFrom);
-        } else {
-          // if both adapter and adapted component are in childrenToCheck, then
-          // as long as the adapted component isn't a defining child
-          // with definingChildrenFirst 
-          // (in which case the adapted component would already be in the right spot)
-          // switch the locations of the adapted component and the adapter
-          // Rationale: the adapter is in the location that one would expect
-
-          if (!(definingChildrenFirst && ancestor.definingChildren
-            .map(x => x.componentName).includes(child.adaptedFrom.componentName)
-          )) {
-            // swap locations
-            childrenToCheck.splice(ind, 1, child.adaptedFrom);
-            childrenToCheck.splice(adaptedLocation, 1, child);
-          }
-        }
-
-      }
+    if (namesToIgnore.length > 0) {
+      childrenToCheck = childrenToCheck.filter(x => !(namesToIgnore.includes(x.componentName) || namesToIgnore.includes(x.placeholderInd)));
     }
+
   }
 
-  if (namesToIgnore.length > 0) {
-    childrenToCheck = childrenToCheck.filter(x => !namesToIgnore.includes(x.componentName));
-  }
+
+
 
   let descendants = [];
   let replacementNamesOfMatchedComposites = [];
@@ -164,13 +117,13 @@ export function gatherDescendants({ ancestor, descendantTypes,
     let matchedChild = matchChildToTypes(child);
     if (matchedChild) {
       descendants.push({
-        componentName: child.componentName,
+        componentName: child.componentName ? child.componentName : child.placeholderInd,
         componentType: child.componentType,
       });
     }
 
     if ((!matchedChild || recurseToMatchedChildren)
-      && child.componentName.slice(0, 13) !== "__placeholder"
+      && child.placeholderInd === undefined
     ) {
       // recurse
       let additionalDescendants = gatherDescendants({
@@ -180,7 +133,6 @@ export function gatherDescendants({ ancestor, descendantTypes,
         includeNonActiveChildren,
         skipOverAdapters,
         ignoreReplacementsOfMatchedComposites,
-        definingChildrenFirst,
         init: false,
         componentInfoObjects,
       });

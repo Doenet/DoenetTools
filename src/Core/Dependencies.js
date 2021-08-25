@@ -1135,9 +1135,12 @@ export class DependencyHandler {
     let allCounterNames = Object.keys(component.counters);
     for (let childName of component.allChildrenOrdered) {
       let child = this._components[childName];
-      for (let counterName in child.counters) {
-        if (!allCounterNames.includes(counterName)) {
-          allCounterNames.push(counterName)
+      if (child) {
+        // skip placeholders
+        for (let counterName in child.counters) {
+          if (!allCounterNames.includes(counterName)) {
+            allCounterNames.push(counterName)
+          }
         }
       }
     }
@@ -1162,9 +1165,12 @@ export class DependencyHandler {
 
       for (let childName of component.allChildrenOrdered) {
         let child = this._components[childName];
-        let childCounters = child.counters[counterName];
-        if (childCounters) {
-          componentList.push(...childCounters.componentList)
+        if (child) {
+          //skip placeholders
+          let childCounters = child.counters[counterName];
+          if (childCounters) {
+            componentList.push(...childCounters.componentList)
+          }
         }
       }
 
@@ -4318,7 +4324,6 @@ class DescendantDependency extends Dependency {
     this.includeAttributeChildren = this.definition.includeAttributeChildren;
     this.skipOverAdapters = this.definition.skipOverAdapters;
     this.ignoreReplacementsOfMatchedComposites = this.definition.ignoreReplacementsOfMatchedComposites;
-    this.definingChildrenFirst = this.definition.definingChildrenFirst;
 
   }
 
@@ -4454,7 +4459,6 @@ class DescendantDependency extends Dependency {
       includeNonActiveChildren: this.includeNonActiveChildren,
       skipOverAdapters: this.skipOverAdapters,
       ignoreReplacementsOfMatchedComposites: this.ignoreReplacementsOfMatchedComposites,
-      definingChildrenFirst: this.definingChildrenFirst,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
 
@@ -5510,6 +5514,10 @@ class SourceCompositeDependency extends Dependency {
       this.originalDownstreamVariableNames = [this.definition.variableName];
     }
 
+    if (this.definition.compositeComponentType) {
+      this.compositeComponentType = this.definition.compositeComponentType;
+    }
+
     this.returnSingleVariableValue = true;
 
     // for source composite state variable
@@ -5570,6 +5578,23 @@ class SourceCompositeDependency extends Dependency {
     }
 
     let sourceComposite = replacement.replacementOf;
+
+    if (this.compositeComponentType) {
+      while (!this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: sourceComposite.componentType,
+        baseComponentType: this.compositeComponentType,
+      })) {
+        if (sourceComposite.replacementOf) {
+          sourceComposite = sourceComposite.replacementOf
+        } else {
+          return {
+            success: true,
+            downstreamComponentNames: [],
+            downstreamComponentTypes: []
+          }
+        }
+      }
+    }
 
     return {
       success: true,

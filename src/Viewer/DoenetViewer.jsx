@@ -69,7 +69,6 @@ class DoenetViewerChild extends Component {
     }
   }
 
-
   createCore({ stateVariables, variant }) {
 
     if (!stateVariables) {
@@ -142,6 +141,8 @@ class DoenetViewerChild extends Component {
     this.core = core;
 
     this.generatedVariant = core.document.stateValues.generatedVariantInfo;
+    this.itemVariantInfo = core.document.stateValues.itemVariantInfo;
+    
     this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
 
     if (this.props.generatedVariantCallback) {
@@ -214,6 +215,37 @@ class DoenetViewerChild extends Component {
       })
     });
 
+    //Initialize user_assignment tables
+    // console.log(">>>>this.contentId",this.contentId)
+    // console.log(">>>>this.attemptNumber",this.attemptNumber)
+    // console.log(">>>>this.requestedVariant",this.requestedVariant)
+    // console.log(">>>>this.generatedVariant",this.generatedVariant)
+    // console.log(">>>>this.allowSavePageState",this.allowSavePageState)
+    // console.log(">>>>this.allowSavePageState",this.props.allowSavePageState)
+    if (this.allowSavePageState && 
+      Number.isInteger(this.attemptNumber) &&
+      this.savedUserAssignmentAttemptNumber !== this.attemptNumber
+      ){
+      // console.log(">>>>savedUserAssignmentAttemptNumber!!!")
+      axios.post('/api/initAssignmentAttempt.php', {
+          doenetId:this.props.doenetId,
+          weights: this.core.scoredItemWeights,
+          attemptNumber:this.attemptNumber,
+          contentId:this.contentId,
+          requestedVariant:JSON.stringify(this.requestedVariant,serializedComponentsReplacer),
+          generatedVariant:JSON.stringify(this.generatedVariant,serializedComponentsReplacer),
+          itemVariantInfo:this.itemVariantInfo.map(x=>JSON.stringify(x,serializedComponentsReplacer)),
+      }).then((resp)=>{
+        // console.log(">>>>resp",resp.data)
+
+        this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
+      })
+      .catch(errMsg => {
+        this.setState({ errMsg: errMsg.message })
+      })
+      
+    }
+    
     //Let the calling tool know we are ready
     //TODO: Move this to renderer
     if (this.props.onCoreReady) {
@@ -374,37 +406,19 @@ class DoenetViewerChild extends Component {
 
     if (this.allowSaveSubmissions && this.props.doenetId) {
 
-
-      if (!this.weightsStored) {
-        this.weightsStored = true;
-        //TODO: Test if weights dynamically changed then store updates
-        //FOR NOW: Only call once
-        const payload1 = {
-          weights: this.core.scoredItemWeights,
-          contentId: this.contentId,
-          doenetId: this.props.doenetId,
-          attemptNumber: this.attemptNumber
-        }
-
-        axios.post('/api/saveAssignmentWeights.php', payload1)
-        // .then(resp => {
-        // });
-      }
-
-
-      const payload2 = {
+      const payload = {
         doenetId: this.props.doenetId,
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
         itemNumber,
       }
-      // console.log(">>>saveCreditForItem payload",payload2)
-      axios.post('/api/saveCreditForItem.php', payload2)
-      // .then(resp => {
-      //   console.log('saveCreditForItem-->>>',resp.data);
+      console.log(">>>>payload",payload)
+      axios.post('/api/saveCreditForItem.php', payload)
+      .then(resp => {
+        console.log('resp>>>>',resp.data);
 
-      // });
+      });
     }
 
     callBack("submitResponse callback parameter");
@@ -413,7 +427,15 @@ class DoenetViewerChild extends Component {
   // TODO: if assignmentId, then need to record fact that student
   // viewed solution in user_assignment_attempt_item
   recordSolutionView({ itemNumber, scoredComponent, callBack }) {
-
+  axios.post('/api/reportSolutionViewed.php', {
+    doenetId:this.props.doenetId,
+    itemNumber,
+    attemptNumber:this.attemptNumber,
+  })
+  .then(resp => {
+  //       console.log('reportSolutionViewed-->>>>',resp.data);
+    callBack({ allowView: true, message: "", scoredComponent })
+  });
     // console.log(`reveal solution, ${itemNumber}`)
 
     // if (this.assignmentId) {
@@ -433,8 +455,7 @@ class DoenetViewerChild extends Component {
 
     // }
 
-    //Temporary until viewed solution is written
-    callBack({ allowView: true, message: "", scoredComponent })
+  
 
 
   }

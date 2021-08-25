@@ -334,34 +334,35 @@ export default class FunctionCurve extends DoenetRenderer {
   }
 
   makeVectorControlVisible(i) {
+    if (!this.doenetSvData.hiddenControls[i]) {
+      if (this.controlPointsJXG[i][0]) {
+        let isVisible = (i > 0 || this.doenetSvData.extrapolateBackward)
+          && ["symmetric", "both", "previous"].includes(this.doenetSvData.vectorControlDirections[i]);
+        this.controlPointsJXG[i][0].visProp.visible = isVisible;
+        this.controlPointsJXG[i][0].visPropCalc.visible = isVisible;
+        this.controlPointsJXG[i][0].needsUpdate = true;
+        this.controlPointsJXG[i][0].update();
+        this.segmentsJXG[i][0].visProp.visible = isVisible;
+        this.segmentsJXG[i][0].visPropCalc.visible = isVisible;
+        this.segmentsJXG[i][0].needsUpdate = true;
+        this.segmentsJXG[i][0].update();
+      }
 
-    if (this.controlPointsJXG[i][0]) {
-      let isVisible = (i > 0 || this.doenetSvData.extrapolateBackward)
-        && ["symmetric", "both", "previous"].includes(this.doenetSvData.vectorControlDirections[i]);
-      this.controlPointsJXG[i][0].visProp.visible = isVisible;
-      this.controlPointsJXG[i][0].visPropCalc.visible = isVisible;
-      this.controlPointsJXG[i][0].needsUpdate = true;
-      this.controlPointsJXG[i][0].update();
-      this.segmentsJXG[i][0].visProp.visible = isVisible;
-      this.segmentsJXG[i][0].visPropCalc.visible = isVisible;
-      this.segmentsJXG[i][0].needsUpdate = true;
-      this.segmentsJXG[i][0].update();
+      if (this.controlPointsJXG[i][1]) {
+        let isVisible = (i < this.throughPointsJXG.length - 1 || this.doenetSvData.extrapolateForward)
+          && ["symmetric", "both", "next"].includes(this.doenetSvData.vectorControlDirections[i]);
+        this.controlPointsJXG[i][1].visProp.visible = isVisible;
+        this.controlPointsJXG[i][1].visPropCalc.visible = isVisible;
+        this.controlPointsJXG[i][1].needsUpdate = true;
+        this.controlPointsJXG[i][1].update();
+        this.segmentsJXG[i][1].visProp.visible = isVisible;
+        this.segmentsJXG[i][1].visPropCalc.visible = isVisible;
+        this.segmentsJXG[i][1].needsUpdate = true;
+        this.segmentsJXG[i][1].update();
+      }
+
+      this.vectorControlsVisible[i] = true;
     }
-
-    if (this.controlPointsJXG[i][1]) {
-      let isVisible = (i < this.throughPointsJXG.length - 1 || this.doenetSvData.extrapolateForward)
-        && ["symmetric", "both", "next"].includes(this.doenetSvData.vectorControlDirections[i]);
-      this.controlPointsJXG[i][1].visProp.visible = isVisible;
-      this.controlPointsJXG[i][1].visPropCalc.visible = isVisible;
-      this.controlPointsJXG[i][1].needsUpdate = true;
-      this.controlPointsJXG[i][1].update();
-      this.segmentsJXG[i][1].visProp.visible = isVisible;
-      this.segmentsJXG[i][1].visPropCalc.visible = isVisible;
-      this.segmentsJXG[i][1].needsUpdate = true;
-      this.segmentsJXG[i][1].update();
-    }
-
-    this.vectorControlsVisible[i] = true;
   }
 
   downOther() {
