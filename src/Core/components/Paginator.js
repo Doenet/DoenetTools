@@ -324,6 +324,8 @@ export class Paginator extends Template {
       sourceInformation: { fromSetPage: true }
     }];
 
+    let postponeUpdatingPlaceholderCreditAchieved = false;
+
     if (this.stateValues.preserveScores) {
 
       let sections = this.stateValues.sectionsByPageSet[currentPageNumber - 1];
@@ -346,12 +348,23 @@ export class Paginator extends Template {
           stateVariable: "percentCreditAchieved",
           value: sectionPercentCreditAchieved
         })
+      } else {
+        postponeUpdatingPlaceholderCreditAchieved = true;
       }
 
     }
 
+    let callBack;
+
+    if(postponeUpdatingPlaceholderCreditAchieved) {
+      callBack =  () => this.setPlaceholderCredit({
+        number: currentPageNumber,
+      })
+    }
+
     this.coreFunctions.requestUpdate({
       updateInstructions,
+      callBack,
       event: {
         verb: "selected",
         object: {
@@ -367,8 +380,54 @@ export class Paginator extends Template {
 
   }
 
+
+  setPlaceholderCredit({ number }) {
+
+    if (!Number.isInteger(number)) {
+      return;
+    }
+
+    let pageNumber = Math.max(1, Math.min(this.stateValues.nPages, number));
+
+    let updateInstructions = [];
+
+    if (this.stateValues.preserveScores) {
+
+      let sections = this.stateValues.sectionsByPageSet[pageNumber - 1];
+      if (sections.length === 2) {
+        let sectionThatWasWithheld = sections[0];
+        let sectionCreditAchieved = sectionThatWasWithheld.stateValues.creditAchieved;
+        let sectionPercentCreditAchieved = sectionThatWasWithheld.stateValues.percentCreditAchieved;
+
+        let placeholderSectionName = sections[1].componentName;
+
+        updateInstructions.push({
+          updateType: "updateValue",
+          componentName: placeholderSectionName,
+          stateVariable: "creditAchieved",
+          value: sectionCreditAchieved
+        })
+        updateInstructions.push({
+          updateType: "updateValue",
+          componentName: placeholderSectionName,
+          stateVariable: "percentCreditAchieved",
+          value: sectionPercentCreditAchieved
+        })
+      }
+
+    }
+
+    this.coreFunctions.requestUpdate({
+      updateInstructions,
+    });
+
+  }
+
   actions = {
     setPage: this.setPage.bind(
+      new Proxy(this, this.readOnlyProxyHandler)
+    ),
+    setPlaceholderCredit: this.setPlaceholderCredit.bind(
       new Proxy(this, this.readOnlyProxyHandler)
     ),
   };
@@ -810,22 +869,22 @@ export class PaginatorPage extends Template {
       } else {
         let replacements = this.createSerializedReplacements({ component, componentInfoObjects, workspace }).replacements;
 
-        if (!replacements[0].variants) {
-          replacements[0].variants = {}
+        let sectionReplacement = replacements[0];
+        if (!sectionReplacement.variants) {
+          sectionReplacement.variants = {}
         }
 
         let mirrorPageReplacement = components[component.stateValues.mirrorPageReplacements[0].componentName]
-        replacements[0].variants.desiredVariant = { index: mirrorPageReplacement.sharedParameters.variantIndex }
-
-
-        if (component.stateValues.sectionPlaceholder) {
-          if (!replacements[0].state) {
-            replacements[0].state = {};
-          }
-          replacements[0].state.creditAchieved = mirrorPageReplacement.stateValues.creditAchieved;
-          replacements[0].state.percentCreditAchieved = mirrorPageReplacement.stateValues.percentCreditAchieved;
-
+        if (mirrorPageReplacement.variants && mirrorPageReplacement.variants.desiredVariant) {
+          sectionReplacement.variants.desiredVariant = Object.assign({}, mirrorPageReplacement.variants.desiredVariant);
+        } else {
+          sectionReplacement.variants.desiredVariant = {};
         }
+
+        // overwrite index from actual variant, even if index or name specified
+        // in case they aren't valid
+        sectionReplacement.variants.desiredVariant.index = mirrorPageReplacement.sharedParameters.variantIndex;
+
 
         let replacementInstruction = {
           changeType: "add",
