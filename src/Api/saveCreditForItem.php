@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
-//header('Content-Type: application/json');
+header('Content-Type: application/json');
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
@@ -51,11 +51,6 @@ $valid = 0;
 if ($row['viewedSolution'] == '0'){
     $valid = 1;
 }
-echo "itemNumber $itemNumber";
-var_dump($row);
-var_dump($valid);
-if ($valid){ echo 'Valid';}
-if (!$valid){ echo 'NOT Valid';}
 
 if ($attemptAggregation == 'm'){
 // Find previous credit if maximizing scores
@@ -118,7 +113,7 @@ INSERT INTO user_assignment_attempt_item_submission
 VALUES
 ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit',NOW(),'$valid')
 ";
-echo $sql;
+
 $result = $conn->query($sql);
 
 
@@ -201,7 +196,7 @@ if ($result->num_rows < 1){
 // echo "USER_ASSIGNMENT_HAS_AN_ENTRY $USER_ASSIGNMENT_HAS_AN_ENTRY\n";
 // var_dump($USER_ASSIGNMENT_HAS_AN_ENTRY);
 //**update user_assignment with new score
-if ($attemptAggregation == 'm'){
+
 
 //Find maximum credit and maximum creditOverrides on each attempt
 $sql = "SELECT MAX(credit) AS maxCredit,
@@ -235,29 +230,6 @@ $result = $conn->query($sql);
 }
 
 
-}else if ($attemptAggregation == 'l'){
-    //Use last attempt
-if ($USER_ASSIGNMENT_HAS_AN_ENTRY){
-
-    $sql = "
-    UPDATE user_assignment
-    SET credit='$credit_for_attempt'
-    WHERE userId = '$userId'
-    AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
-    ";
-$result = $conn->query($sql);
-}else{
-    $sql = "INSERT INTO user_assignment
-    (doenetId,contentId,userId,credit)
-    VALUES
-    ('$doenetId','$contentId','$userId','$credit_for_attempt')
-    ";
-
-    $result = $conn->query($sql);
-}
-}
-
 }//Close valid test
 
 
@@ -265,7 +237,7 @@ $result = $conn->query($sql);
     // set response code - 200 OK
     http_response_code(200);
 
-//  echo json_encode($response_arr);
+ echo json_encode($response_arr);
 
 $conn->close();
 ?>
