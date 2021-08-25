@@ -9,10 +9,6 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$response_arr = array(
-    "access"=> TRUE
-);
-
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -47,9 +43,12 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
 $previousCredit = $row['credit'];
-$valid = 0;
-if ($row['viewedSolution'] == '0'){
-    $valid = 1;
+
+
+$viewedSolution = $row['viewedSolution'] == '1';
+$valid = 1;
+if ($viewedSolution){
+    $valid = 0;
 }
 
 if ($attemptAggregation == 'm'){
@@ -232,12 +231,16 @@ $result = $conn->query($sql);
 
 }//Close valid test
 
+$response_arr = array(
+    "access"=> TRUE,
+    "viewedSolution"=>$viewedSolution,
+    "valid"=>$valid
+);
 
+// set response code - 200 OK
+http_response_code(200);
 
-    // set response code - 200 OK
-    http_response_code(200);
-
- echo json_encode($response_arr);
+echo json_encode($response_arr);
 
 $conn->close();
 ?>
