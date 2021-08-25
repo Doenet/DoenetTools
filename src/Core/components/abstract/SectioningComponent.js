@@ -484,6 +484,10 @@ export default class SectioningComponent extends BlockComponent {
         suppressAutomaticVariants: {
           dependencyType: "stateVariable",
           variableName: "suppressAutomaticVariants"
+        },
+        sectionPlaceholder: {
+          dependencyType: "stateVariable",
+          variableName: "sectionPlaceholder"
         }
 
       }),
@@ -522,13 +526,22 @@ export default class SectioningComponent extends BlockComponent {
           subvariantsSpecified
         }
 
-        let subvariants = generatedVariantInfo.subvariants = [];
 
-        for (let descendant of dependencyValues.variantDescendants) {
-          if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.generatedVariantInfo)
-          } else if (descendant.stateValues.generatedVariantInfo) {
-            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+        if (dependencyValues.sectionPlaceholder) {
+          // section placeholders don't have the descedants to determine
+          // the variant info
+          // so just give the subvariants specified
+          if (subvariantsSpecified) {
+            generatedVariantInfo.subvariants = dependencyValues.variants.desiredVariant.subvariants
+          }
+        } else {
+          let subvariants = generatedVariantInfo.subvariants = [];
+          for (let descendant of dependencyValues.variantDescendants) {
+            if (descendant.stateValues.isVariantComponent) {
+              subvariants.push(descendant.stateValues.generatedVariantInfo)
+            } else if (descendant.stateValues.generatedVariantInfo) {
+              subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+            }
           }
         }
 
