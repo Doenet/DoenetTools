@@ -32,16 +32,20 @@ export default class Cell extends DoenetRenderer {
         props.style.borderRightWidth = "thick";
       }
     }
+    let content = this.children;
+    if (content.length === 0) {
+      content = this.doenetSvData.text;
+    }
     if (this.doenetSvData.inHeader) {
       return /* @__PURE__ */ React.createElement("th", {
         id: this.componentName,
         ...props
-      }, this.children);
+      }, content);
     } else {
       return /* @__PURE__ */ React.createElement("td", {
         id: this.componentName,
         ...props
-      }, this.children);
+      }, content);
     }
   }
 }

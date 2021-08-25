@@ -103,6 +103,7 @@ class DoenetViewerChild extends Component {
   coreReady(core) {
     this.core = core;
     this.generatedVariant = core.document.stateValues.generatedVariantInfo;
+    this.itemVariantInfo = core.document.stateValues.itemVariantInfo;
     this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
     if (this.props.generatedVariantCallback) {
       this.props.generatedVariantCallback(this.generatedVariant, this.allPossibleVariants);
@@ -131,6 +132,21 @@ class DoenetViewerChild extends Component {
         contentId: this.contentId
       });
     });
+    if (this.allowSavePageState && Number.isInteger(this.attemptNumber) && this.savedUserAssignmentAttemptNumber !== this.attemptNumber) {
+      axios.post("/api/initAssignmentAttempt.php", {
+        doenetId: this.props.doenetId,
+        weights: this.core.scoredItemWeights,
+        attemptNumber: this.attemptNumber,
+        contentId: this.contentId,
+        requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
+        generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
+        itemVariantInfo: this.itemVariantInfo.map((x) => JSON.stringify(x, serializedComponentsReplacer))
+      }).then((resp) => {
+        this.savedUserAssignmentAttemptNumber = this.attemptNumber;
+      }).catch((errMsg) => {
+        this.setState({errMsg: errMsg.message});
+      });
+    }
     if (this.props.onCoreReady) {
       this.props.onCoreReady();
     }
@@ -243,29 +259,28 @@ class DoenetViewerChild extends Component {
     callBack
   }) {
     if (this.allowSaveSubmissions && this.props.doenetId) {
-      if (!this.weightsStored) {
-        this.weightsStored = true;
-        const payload1 = {
-          weights: this.core.scoredItemWeights,
-          contentId: this.contentId,
-          doenetId: this.props.doenetId,
-          attemptNumber: this.attemptNumber
-        };
-        axios.post("/api/saveAssignmentWeights.php", payload1);
-      }
-      const payload2 = {
+      const payload = {
         doenetId: this.props.doenetId,
         contentId: this.contentId,
         attemptNumber: this.attemptNumber,
         credit: itemCreditAchieved,
         itemNumber
       };
-      axios.post("/api/saveCreditForItem.php", payload2);
+      console.log(">>>>payload", payload);
+      axios.post("/api/saveCreditForItem.php", payload).then((resp) => {
+        console.log("resp>>>>", resp.data);
+      });
     }
     callBack("submitResponse callback parameter");
   }
   recordSolutionView({itemNumber, scoredComponent, callBack}) {
-    callBack({allowView: true, message: "", scoredComponent});
+    axios.post("/api/reportSolutionViewed.php", {
+      doenetId: this.props.doenetId,
+      itemNumber,
+      attemptNumber: this.attemptNumber
+    }).then((resp) => {
+      callBack({allowView: true, message: "", scoredComponent});
+    });
   }
   recordEvent(event) {
     if (!this.allowSaveEvents) {

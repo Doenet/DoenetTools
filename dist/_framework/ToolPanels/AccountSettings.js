@@ -1,10 +1,11 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import {
   useRecoilCallback,
-  useRecoilValueLoadable
+  useRecoilValueLoadable,
+  useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {profileAtom} from "../NewToolRoot.js";
+import {pageToolViewAtom, profileAtom} from "../NewToolRoot.js";
 import {a} from "../../_snowpack/pkg/@react-spring/web.js";
 import InfiniteSlider from "../temp/InfiniteSlider.js";
 import "../doenet.css.proxy.js";
@@ -12,6 +13,7 @@ import Textinput from "../Textinput.js";
 import Switch from "../Switch.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import Textfield from "../../_reactComponents/PanelHeaderComponents/Textfield.js";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 let SectionHeader = styled.h2`
   margin-top: 2em;
   margin-bottom: 2em;
@@ -45,6 +47,7 @@ export default function DoenetProfile(props) {
   const loadProfile = useRecoilValueLoadable(profileAtom);
   let profile = loadProfile.contents;
   const [initPhoto, setInitPhoto] = useState(profile.profilePicture);
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
   if (profile.state === "loading") {
     return null;
   }
@@ -147,7 +150,7 @@ export default function DoenetProfile(props) {
       setProfile(data);
     },
     checked: profile.trackingConsent
-  }), /* @__PURE__ */ React.createElement("p", null, "I consent to the use of tracking technologies."), /* @__PURE__ */ React.createElement("p", null, '"I consent to the tracking of my progress and my activity on educational websites which participate in Doenet; my data will be used to provide my instructor with my grades on course assignments, and anonymous data may be provided to content authors to improve the educational effectiveness."', /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("em", null, "Revoking your consent may impact your ability to recieve credit for coursework.")), /* @__PURE__ */ React.createElement(SectionHeader, null, "Your Roles"), /* @__PURE__ */ React.createElement(Switch, {
+  }), /* @__PURE__ */ React.createElement("p", null, "I consent to the use of tracking technologies."), /* @__PURE__ */ React.createElement("p", null, '"I consent to the tracking of my progress and my activity on educational websites which participate in Doenet; my data will be used to provide my instructor with my grades on course assignments, and anonymous data may be provided to content authors to improve the educational effectiveness."', /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("em", null, "Revoking your consent may impact your ability to recieve credit for coursework.")), /* @__PURE__ */ React.createElement(SectionHeader, null, "Your Roles"), /* @__PURE__ */ React.createElement("p", null, "Student"), /* @__PURE__ */ React.createElement(Switch, {
     id: "student",
     onChange: (e) => {
       let data = {...profile};
@@ -155,7 +158,7 @@ export default function DoenetProfile(props) {
       setProfile(data);
     },
     checked: profile.roleStudent
-  }), /* @__PURE__ */ React.createElement("p", null, "Student"), /* @__PURE__ */ React.createElement(Switch, {
+  }), /* @__PURE__ */ React.createElement("p", null, "Instructor"), /* @__PURE__ */ React.createElement(Switch, {
     id: "instructor",
     onChange: (e) => {
       let data = {...profile};
@@ -163,7 +166,7 @@ export default function DoenetProfile(props) {
       setProfile(data);
     },
     checked: profile.roleInstructor
-  }), /* @__PURE__ */ React.createElement("p", null, "Instructor"), /* @__PURE__ */ React.createElement(Switch, {
+  }), /* @__PURE__ */ React.createElement("p", null, "Course Designer"), /* @__PURE__ */ React.createElement(Switch, {
     id: "course_designer",
     onChange: (e) => {
       let data = {...profile};
@@ -171,5 +174,10 @@ export default function DoenetProfile(props) {
       setProfile(data);
     },
     checked: profile.roleCourseDesigner
-  }), /* @__PURE__ */ React.createElement("p", null, "Course Designer")));
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(Button, {
+    value: "Sign out",
+    onClick: () => {
+      setPageToolView({page: "signout", tool: "", view: ""});
+    }
+  })));
 }

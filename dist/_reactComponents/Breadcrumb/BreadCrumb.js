@@ -10,7 +10,8 @@ import {
   useRecoilValue,
   atomFamily,
   selectorFamily,
-  useSetRecoilState
+  useSetRecoilState,
+  useRecoilValueLoadable
 } from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
@@ -28,6 +29,12 @@ const BreadcrumbItem = styled.li`
   }
   &:first-of-type span {
     padding: 0px 0px 0px 30px;
+  }
+  &:only-child span {
+    border-radius: 15px;
+    padding: 0px 30px 0px 30px;
+    background: hsl(209, 54%, 82%);
+    color: black;
   }
 `;
 const BreadcrumbSpan = styled.span`
@@ -103,7 +110,7 @@ const breadcrumbItemAtomFamily = atomFamily({
     }
   })
 });
-export default function BreadCrumb({path, tool, tool2, doenetId}) {
+export default function BreadCrumb({path, tool, tool2, doenetId, label, userId, attemptNumber, source, assignments, students}) {
   const [driveId, parentFolderId] = path.split(":");
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -116,7 +123,7 @@ export default function BreadCrumb({path, tool, tool2, doenetId}) {
     setPageToolView((was) => ({
       page: was.page,
       tool: "navigation",
-      view: "",
+      view: was.view,
       params: {
         path: `${driveId2}:${folderId}:${folderId}:Folder`
       }
@@ -149,7 +156,7 @@ export default function BreadCrumb({path, tool, tool2, doenetId}) {
           setPageToolView((was) => ({
             page: was.page,
             tool: toolName,
-            view: "",
+            view: was.view,
             params
           }));
         }
@@ -158,7 +165,7 @@ export default function BreadCrumb({path, tool, tool2, doenetId}) {
         setPageToolView((was) => ({
           page: was.page,
           tool: toolName,
-          view: "",
+          view: was.view,
           params
         }));
       }
@@ -183,7 +190,7 @@ export default function BreadCrumb({path, tool, tool2, doenetId}) {
     icon: faTh
   })));
   if (tool === "CourseChooser") {
-    return /* @__PURE__ */ React.createElement(Breadcrumb, null, returnToCourseChooser, " ", /* @__PURE__ */ React.createElement(BreadcrumbItem, null, /* @__PURE__ */ React.createElement(BreadcrumbSpan, null)));
+    return /* @__PURE__ */ React.createElement(Breadcrumb, null, returnToCourseChooser);
   }
   const returnToDashboard = /* @__PURE__ */ React.createElement(BreadcrumbItem, null, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
     role: "button",
@@ -262,7 +269,129 @@ export default function BreadCrumb({path, tool, tool2, doenetId}) {
           params: params2
         }));
       }
-    }, tool2));
+    }, label));
   }
-  return /* @__PURE__ */ React.createElement(Breadcrumb, null, returnToCourseChooser, " ", returnToDashboard, " ", returnToToolHead, " ", children, " ", returnToToolHead2);
+  let returnToAssignmentView = null;
+  if (tool === "Gradebook" && doenetId !== null && doenetId !== "" && assignments.state === "hasValue") {
+    returnToAssignmentView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+      key: doenetId
+    }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+      role: "button",
+      tabIndex: "0",
+      onKeyDown: (e) => {
+        if (e.key === "Enter") {
+          setPageToolView(() => ({
+            page: "course",
+            tool: "gradebookAssignment",
+            view: "",
+            params: {driveId, doenetId}
+          }));
+        }
+      },
+      onClick: () => {
+        setPageToolView(() => ({
+          page: "course",
+          tool: "gradebookAssignment",
+          view: "",
+          params: {driveId, doenetId}
+        }));
+      }
+    }, assignments.contents[doenetId]));
+  }
+  let returnToStudentView = null;
+  if (tool === "Gradebook" && userId !== null && userId !== "" && students.state === "hasValue") {
+    console.log(">>>> bc userid: ", userId);
+    returnToStudentView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+      key: userId + "*"
+    }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+      role: "button",
+      tabIndex: "0",
+      onKeyDown: (e) => {
+        if (e.key === "Enter") {
+          setPageToolView(() => ({
+            page: "course",
+            tool: "gradebookStudent",
+            view: "",
+            params: {driveId, userId}
+          }));
+        }
+      },
+      onClick: () => {
+        setPageToolView(() => ({
+          page: "course",
+          tool: "gradebookStudent",
+          view: "",
+          params: {driveId, userId}
+        }));
+      }
+    }, students.contents[userId].firstName + " " + students.contents[userId].lastName));
+  }
+  let returnToAttemptView = null;
+  if (tool === "Gradebook" && doenetId !== null && doenetId !== "" && userId !== null && userId !== "" && attemptNumber !== null && attemptNumber !== "") {
+    console.log(">>>>", {doenetId, userId, attemptNumber});
+    returnToAttemptView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+      key: userId + "_" + attemptNumber
+    }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+      role: "button",
+      tabIndex: "0",
+      onKeyDown: (e) => {
+        if (e.key === "Enter") {
+          setPageToolView(() => ({
+            page: "course",
+            tool: "gradebookAttempt",
+            view: "",
+            params: {driveId, doenetId, userId, attemptNumber, source}
+          }));
+        }
+      },
+      onClick: () => {
+        setPageToolView(() => ({
+          page: "course",
+          tool: "gradebookAttempt",
+          view: "",
+          params: {driveId, doenetId, userId, attemptNumber, source}
+        }));
+      }
+    }, "Attempt " + attemptNumber));
+  }
+  let returnToIndividualView = null;
+  if (source === null || source === "") {
+    if (returnToAssignmentView) {
+      returnToIndividualView = returnToAssignmentView;
+    } else {
+      returnToIndividualView = returnToStudentView;
+    }
+  } else if (source === "assignment") {
+    returnToIndividualView = returnToAssignmentView;
+  } else if (source === "student") {
+    returnToIndividualView = returnToStudentView;
+  }
+  let returnToMixedView = null;
+  if (tool === "Gradebook" && doenetId !== null && doenetId !== "" && userId !== null && userId !== "" && students.state === "hasValue" && assignments.state === "hasValue") {
+    returnToMixedView = /* @__PURE__ */ React.createElement(BreadcrumbItem, {
+      key: userId + "_" + doenetId
+    }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+      role: "button",
+      tabIndex: "0",
+      onKeyDown: (e) => {
+        if (e.key === "Enter") {
+          setPageToolView(() => ({
+            page: "course",
+            tool: "gradebookStudentAssignment",
+            view: "",
+            params: {driveId, doenetId, userId, source}
+          }));
+        }
+      },
+      onClick: () => {
+        setPageToolView(() => ({
+          page: "course",
+          tool: "gradebookStudentAssignment",
+          view: "",
+          params: {driveId, doenetId, userId, source}
+        }));
+      }
+    }, source === "student" ? assignments.contents[doenetId] : students.contents[userId].firstName + " " + students.contents[userId].lastName));
+  }
+  return /* @__PURE__ */ React.createElement(Breadcrumb, null, returnToCourseChooser, " ", returnToDashboard, " ", returnToToolHead, " ", children, " ", returnToToolHead2, " ", returnToIndividualView, " ", returnToMixedView, " ", returnToAttemptView);
 }

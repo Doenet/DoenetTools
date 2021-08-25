@@ -18,9 +18,11 @@ export default function Dashboard(props) {
   }, /* @__PURE__ */ React.createElement(Button, {
     value: "Content",
     onClick: () => {
-      setPageToolView((was) => ({...was, tool: "navigation"}));
+      setPageToolView((was) => {
+        return {...was, tool: "navigation"};
+      });
     }
-  }), /* @__PURE__ */ React.createElement(Button, {
+  }), role === "instructor" ? /* @__PURE__ */ React.createElement(Button, {
     value: "Enrollment",
     onClick: () => setPageToolView({
       page: "course",
@@ -28,13 +30,15 @@ export default function Dashboard(props) {
       view: "",
       params: {driveId}
     })
-  }), /* @__PURE__ */ React.createElement(Button, {
+  }) : null, /* @__PURE__ */ React.createElement(Button, {
     value: "GradeBook",
-    onClick: () => setPageToolView({
-      page: "course",
-      tool: "gradebook",
-      view: "",
-      params: {driveId}
+    onClick: () => setPageToolView((was) => {
+      return {
+        page: "course",
+        tool: "gradebook",
+        view: was.view,
+        params: {driveId}
+      };
     })
   }))), /* @__PURE__ */ React.createElement("div", {
     style: {border: "2px solid black", borderRadius: "5px", marginTop: "10px", height: "560px", margin: "10px"}

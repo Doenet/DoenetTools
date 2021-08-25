@@ -130,21 +130,36 @@ export default class Graph extends DoenetRenderer {
     };
   }
   update() {
+    if (!this.board) {
+      return;
+    }
     if (this.doenetSvData.grid === "dense") {
-      this.xaxis.defaultTicks.setAttribute({majorHeight: -1});
-      this.xaxis.defaultTicks.setAttribute({minorHeight: -1});
-      this.yaxis.defaultTicks.setAttribute({majorHeight: -1});
-      this.yaxis.defaultTicks.setAttribute({minorHeight: -1});
+      if (this.xaxis) {
+        this.xaxis.defaultTicks.setAttribute({majorHeight: -1});
+        this.xaxis.defaultTicks.setAttribute({minorHeight: -1});
+      }
+      if (this.yaxis) {
+        this.yaxis.defaultTicks.setAttribute({majorHeight: -1});
+        this.yaxis.defaultTicks.setAttribute({minorHeight: -1});
+      }
     } else if (this.doenetSvData.grid === "medium") {
-      this.xaxis.defaultTicks.setAttribute({majorHeight: -1});
-      this.xaxis.defaultTicks.setAttribute({minorHeight: 10});
-      this.yaxis.defaultTicks.setAttribute({majorHeight: -1});
-      this.yaxis.defaultTicks.setAttribute({minorHeight: 10});
+      if (this.xaxis) {
+        this.xaxis.defaultTicks.setAttribute({majorHeight: -1});
+        this.xaxis.defaultTicks.setAttribute({minorHeight: 10});
+      }
+      if (this.yaxis) {
+        this.yaxis.defaultTicks.setAttribute({majorHeight: -1});
+        this.yaxis.defaultTicks.setAttribute({minorHeight: 10});
+      }
     } else {
-      this.xaxis.defaultTicks.setAttribute({majorHeight: 20});
-      this.xaxis.defaultTicks.setAttribute({minorHeight: 10});
-      this.yaxis.defaultTicks.setAttribute({majorHeight: 20});
-      this.yaxis.defaultTicks.setAttribute({minorHeight: 10});
+      if (this.xaxis) {
+        this.xaxis.defaultTicks.setAttribute({majorHeight: 20});
+        this.xaxis.defaultTicks.setAttribute({minorHeight: 10});
+      }
+      if (this.yaxis) {
+        this.yaxis.defaultTicks.setAttribute({majorHeight: 20});
+        this.yaxis.defaultTicks.setAttribute({minorHeight: 10});
+      }
     }
     if (this.doenetSvData.displayXAxis) {
       this.xaxis.name = this.doenetSvData.xlabel;

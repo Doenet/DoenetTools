@@ -41,6 +41,7 @@
     "react-router-dom": "./react-router-dom.js",
     "react-select": "./react-select.js",
     "react-spring": "./@react-spring/web.js",
+    "react-table": "./react-table.js",
     "react-use-gesture": "./react-use-gesture.js",
     "recoil": "./recoil.js",
     "socket.io-client": "./socket.io-client.js",

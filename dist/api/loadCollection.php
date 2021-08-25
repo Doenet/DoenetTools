@@ -30,7 +30,7 @@ if (array_key_exists('doenetId', $_REQUEST)) {
     if (array_key_exists('driveId', get_defined_vars())) {
         //check user has permission to edit drive
         $sql = "
-            SELECT canChangeAllDriveSettings
+            SELECT canEditContent
             FROM drive_user
             WHERE userId = '$userId'
             AND driveId = '$driveId'
@@ -38,7 +38,7 @@ if (array_key_exists('doenetId', $_REQUEST)) {
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $allowed = $row['canChangeAllDriveSettings'];
+            $allowed = $row['canEditContent'];
             if (!$allowed) {
                 http_response_code(403); //User if forbidden from operation
             }

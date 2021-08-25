@@ -81,7 +81,7 @@ export default function UnitMenu(props) {
   var labelvalue = "Label: ";
   const [unitIndex, setUnitIndex] = useState(-1);
   const [currentUnit, setCurrentUnit] = useState("-");
-  const [currentValue, setCurrentValue] = useState("");
+  const [currentValue, setCurrentValue] = useState(props.value ? props.value : "");
   const [moveCursor, setMoveCursor] = useState(false);
   let initialClickLabelPosition = useRef(null);
   var align = "flex";
