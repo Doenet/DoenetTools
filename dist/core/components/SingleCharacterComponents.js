@@ -1,0 +1,17 @@
+import InlineComponent from './abstract/InlineComponent.js';
+
+export class Ndash extends InlineComponent {
+  static componentType = "ndash";
+}
+
+export class Mdash extends InlineComponent {
+  static componentType = "mdash";
+}
+
+export class NBSP extends InlineComponent {
+  static componentType = "nbsp";
+}
+
+export class Ellipsis extends InlineComponent {
+  static componentType = "ellipsis";
+}

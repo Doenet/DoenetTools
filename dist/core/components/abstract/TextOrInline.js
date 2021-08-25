@@ -1,0 +1,65 @@
+import InlineComponent from './InlineComponent.js';
+
+export default class TextOrInline extends InlineComponent {
+  static componentType = "_textOrInline";
+  static renderChildren = true;
+
+  static includeBlankStringChildren = true;
+
+  static returnChildGroups() {
+
+    return [{
+      group: "inlines",
+      componentTypes: ["_inline"]
+    }]
+
+  }
+
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.value = {
+      public: true,
+      componentType: this.componentType,
+      returnDependencies: () => ({
+        inlineChildren: {
+          dependencyType: "child",
+          childGroups: ["inlines"],
+          variableNames: ["text"],
+          variablesOptional: true,
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        let value = "";
+        for (let comp of dependencyValues.inlineChildren) {
+          if (typeof comp.stateValues.text === "string") {
+            value += comp.stateValues.text;
+          }
+        }
+        return { newValues: { value } };
+      }
+    }
+
+    stateVariableDefinitions.text = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        value: {
+          dependencyType: "stateVariable",
+          variableName: "value"
+        }
+      }),
+      definition: ({ dependencyValues }) => ({
+        newValues: { text: dependencyValues.value }
+      })
+    }
+
+
+    return stateVariableDefinitions;
+
+  }
+
+
+
+}

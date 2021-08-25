@@ -11,7 +11,7 @@ import {
   itemHistoryAtom,
   fileByContentId
 } from "../ToolHandlers/CourseToolHandler.js";
-import {returnAllPossibleVariants} from "../../../Core/utils/returnAllPossibleVariants.js";
+import {returnAllPossibleVariants} from "../../core/utils/returnAllPossibleVariants.js";
 import {loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import axios from "../../_snowpack/pkg/axios.js";
 const assignmentDoenetMLContentIdAtom = atom({
