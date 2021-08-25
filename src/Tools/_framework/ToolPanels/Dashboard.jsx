@@ -26,6 +26,7 @@ export default function Dashboard(props) {
           })}}
           
         />
+        {role === 'instructor' ?
         <Button
           value="Enrollment"
           onClick={() =>
@@ -37,6 +38,7 @@ export default function Dashboard(props) {
             })
           }
         />
+        : null }
         <Button value="GradeBook" 
           onClick={() => 
           setPageToolView((was)=>{return {
