@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import DoenetViewer from '../../../Viewer/DoenetViewer';
+import DoenetViewer, { serializedComponentsReviver } from '../../../Viewer/DoenetViewer';
 import { 
   useRecoilValue, 
   atom,
@@ -18,6 +18,9 @@ import {
 //  import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
  import { returnAllPossibleVariants } from '../../../Core/utils/returnAllPossibleVariants';
  import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
+import axios from 'axios';
+
+
 
 const assignmentDoenetMLContentIdAtom = atom({
   key:"assignmentDoenetMLContentIdAtom",
@@ -110,16 +113,34 @@ export default function AssignmentViewer(props){
   }
 
   const setVariantsFromDoenetML = useRecoilCallback(({snapshot,set})=> async ({allPossibleVariants})=>{
+    
     const was = await snapshot.getPromise((variantsAndAttemptsByDoenetId(paramDoenetId)));
     let newObj = {...was}
     newObj.assignedContentId = contentId;
     newObj.variantsFromDoenetMLDictionary = {...was.variantsFromDoenetMLDictionary}
     newObj.variantsFromDoenetMLDictionary[contentId] = [...allPossibleVariants];
-    newObj.usersVariantAttempts = pushRandomVariantOfRemaining({previous:newObj.usersVariantAttempts,from:newObj.variantsFromDoenetMLDictionary[contentId]});
+    //If no attempts stored load variants of user's past attempts
+
+    if (newObj.usersVariantAttempts.length === 0){
+
+      const { data } = await axios.get('/api/loadTakenVariants.php', {
+        params: { doenetId:paramDoenetId },
+      })
+      for (let variant of data.variants){
+        let obj = JSON.parse(variant, serializedComponentsReviver)
+        newObj.usersVariantAttempts.push(obj.name)
+      }
+      newObj.numberOfCompletedAttempts = newObj.usersVariantAttempts.length - 1;
+      if (newObj.numberOfCompletedAttempts === -1){
+        newObj.numberOfCompletedAttempts = 0;
+      }
+    }
+    let previous = newObj.usersVariantAttempts;
+    if (newObj.numberOfCompletedAttempts > previous.length - 1){
+      newObj.usersVariantAttempts = pushRandomVariantOfRemaining({previous,from:newObj.variantsFromDoenetMLDictionary[contentId]});
+    }
     set(variantsAndAttemptsByDoenetId(paramDoenetId),newObj)
-    //TODO: Save variant in database if viewer doesn't do that
-    // const latestVariantAttempt = 
-    // console.log(">>>>newObj.usersVariantAttempts",newObj.usersVariantAttempts)
+    
   },[paramDoenetId,contentId]);
 
   //Define usersVariantAttempts, assignedContentId and variantsFromDoenetMLDictionary for contentId
