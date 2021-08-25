@@ -2,9 +2,16 @@ import React, {Suspense} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import BreadCrumb from "../../_reactComponents/Breadcrumb/BreadCrumb.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
 export default function EditorBreadCrumb() {
   const path = useRecoilValue(searchParamAtomFamily("path"));
+  let [driveId, folderId] = path.split(":");
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  let folderInfo = useRecoilValue(folderDictionary({driveId, folderId}));
+  const docInfo = folderInfo.contentsDictionaryByDoenetId[doenetId];
+  if (!docInfo) {
+    return null;
+  }
   return /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
   }, /* @__PURE__ */ React.createElement("div", {
@@ -16,6 +23,7 @@ export default function EditorBreadCrumb() {
     tool: "Content",
     tool2: "Editor",
     doenetId,
-    path
+    path,
+    label: docInfo.label
   })));
 }

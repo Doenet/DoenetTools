@@ -37,6 +37,7 @@ export default class Solution extends DoenetRenderer {
     }, /* @__PURE__ */ React.createElement("a", {
       name: this.componentName
     }), /* @__PURE__ */ React.createElement("span", {
+      id: this.componentName + "_button",
       style: {
         display: "block",
         margin: "4px 4px 0px 4px",

@@ -5,7 +5,7 @@ import sha256 from 'crypto-js/sha256';
 import CryptoJS from 'crypto-js';
 import me from 'math-expressions';
 import { nanoid } from 'nanoid';
-
+import { useToast, toastType } from '@Toast';
 
 export function serializedComponentsReplacer(key, value) {
   if (value !== value) {
@@ -413,10 +413,13 @@ class DoenetViewerChild extends Component {
         credit: itemCreditAchieved,
         itemNumber,
       }
-      console.log(">>>>payload",payload)
       axios.post('/api/saveCreditForItem.php', payload)
       .then(resp => {
-        console.log('resp>>>>',resp.data);
+        // console.log('>>>>resp',resp.data);
+
+        if (resp.data.viewedSolution){
+          this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) //TODO: need type warning (red but doesn't hang around)
+        }
 
       });
     }
@@ -686,7 +689,9 @@ class ErrorBoundary extends React.Component {
 }
 
 function DoenetViewer(props) {
-  return <ErrorBoundary><DoenetViewerChild {...props} /></ErrorBoundary>
+  const toast = useToast();
+  let newProps = {...props,toast}
+  return <ErrorBoundary><DoenetViewerChild {...newProps} /></ErrorBoundary>
 }
 
 export default DoenetViewer;
