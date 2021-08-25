@@ -47,20 +47,22 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
 $previousCredit = $row['credit'];
-$valid = FALSE;
+$valid = 0;
 if ($row['viewedSolution'] == '0'){
-    $valid = TRUE;
+    $valid = 1;
 }
 echo "itemNumber $itemNumber";
 var_dump($row);
 var_dump($valid);
+if ($valid){ echo 'Valid';}
+if (!$valid){ echo 'NOT Valid';}
 
 if ($attemptAggregation == 'm'){
 // Find previous credit if maximizing scores
 // Update credit in the database if it's larger
-$credit_to_store = MAX($previousCredit,$credit);
+$credit_for_item = MAX($previousCredit,$credit);
 }else if ($attemptAggregation == 'l'){
-    $credit_to_store = $credit;
+    $credit_for_item = $credit;
 }
 
 // if ($result->num_rows < 1){
@@ -68,7 +70,7 @@ $credit_to_store = MAX($previousCredit,$credit);
 //     $sql = "INSERT INTO user_assignment_attempt_item
 //     (doenetId,contentId,userId,attemptNumber,itemNumber,credit)
 //     VALUES
-//     ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_to_store')
+//     ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_for_item')
 //     ";
 // $result = $conn->query($sql);
 
@@ -77,7 +79,7 @@ $credit_to_store = MAX($previousCredit,$credit);
 if ($valid){
     // Store credit in user_assignment_attempt_item
     $sql = "UPDATE user_assignment_attempt_item
-    SET credit='$credit_to_store'
+    SET credit='$credit_for_item'
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
     AND contentId = '$contentId'
@@ -108,13 +110,15 @@ $submissionNumber = $row['submissionNumber'];
 
 if ($submissionNumber < 1){ $submissionNumber = 0; }
 $submissionNumber++;
-//Insert item submission
+//Insert item submission 
+//Specifically we want to store the credit of that actual submission
 $sql = "
 INSERT INTO user_assignment_attempt_item_submission
 (doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,credit,submittedDate,valid)
 VALUES
-('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit_to_store',NOW(),'$valid')
+('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit',NOW(),'$valid')
 ";
+echo $sql;
 $result = $conn->query($sql);
 
 
@@ -142,7 +146,7 @@ while($row = $result->fetch_assoc()){
     //Not guaranteed for credit to be stored due to async communication with db
     //So use value given here to be careful
     if ($loopItemNumber == $itemNumber){
-        $item_credit = $credit_to_store;
+        $item_credit = $credit_for_item;
     }else{
         $item_credit = $row['credit'];
     }
@@ -166,7 +170,7 @@ if ($result->num_rows < 1){
     $sql = "INSERT INTO user_assignment_attempt
     (doenetId,contentId,userId,attemptNumber,credit)
     VALUES
-    ('$doenetId','$contentId','$userId','$attemptNumber','$credit_to_store')
+    ('$doenetId','$contentId','$userId','$attemptNumber','$credit_for_item')
     ";
 
     $result = $conn->query($sql);
