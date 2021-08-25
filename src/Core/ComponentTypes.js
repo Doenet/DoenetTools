@@ -19,6 +19,8 @@ import * as SideBySide from './components/SideBySide';
 import * as Indexing from './components/Indexing';
 import * as Divisions from './components/Divisions';
 import * as Verbatim from './components/Verbatim';
+import * as Paginator from './components/Paginator';
+
 import Document from './components/Document';
 import StringComponent from './components/StringComponent';
 import Text from './components/Text';
@@ -132,9 +134,6 @@ import FunctionIterates from './components/FunctionIterates';
 import Module from './components/Module';
 import CustomAttribute from './components/CustomAttribute';
 import Setup from './components/Setup';
-import Paginator from './components/Paginator';
-import PaginatorPage from './components/PaginatorPage';
-import PaginatorControls from './components/PaginatorControls';
 import Footnote from './components/Footnote';
 import Caption from './components/Caption';
 import Endpoint from './components/Endpoint';
@@ -184,6 +183,7 @@ const componentTypeArray = [
   ...Object.values(Indexing),
   ...Object.values(Divisions),
   ...Object.values(Verbatim),
+  ...Object.values(Paginator),
   Document,
   StringComponent,
   Text, TextList,
@@ -272,7 +272,6 @@ const componentTypeArray = [
   Module,
   CustomAttribute,
   Setup,
-  Paginator, PaginatorPage, PaginatorControls,
   Footnote,
   Caption,
   Endpoint,
