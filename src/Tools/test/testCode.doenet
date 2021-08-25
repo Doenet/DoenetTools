@@ -1,18 +1,1 @@
-<title>Three Options</title>
-<variantControl nvariants="3" variantNames="one two three"/>
-<section>
-<select>
-  <option selectForVariantNames="one">1 + 1 = <answer>2</answer></option>
-  <option selectForVariantNames="two">1 + 2 = <answer>3</answer></option>
-  <option selectForVariantNames="three">1 + 3 = <answer>4</answer></option>
-</select>
-</section>
-
-<problem>
-<variantControl nvariants="2" variantNames="a b"/>
-  <select>
-  <option selectForVariantNames="a">a</option>
-  <option selectForVariantNames="b">b</option>
-</select>
- <p>1+1 = <answer>2</answer></p>
-</problem>
+<p>Use this to test DoenetML</p>
