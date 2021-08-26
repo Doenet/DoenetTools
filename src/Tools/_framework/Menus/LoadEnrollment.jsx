@@ -1,4 +1,4 @@
-import React, {useState,useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import parse from 'csv-parse';
@@ -9,7 +9,7 @@ import {processAtom,headersAtom,entriesAtom, enrollmentTableDataAtom} from '../T
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { nanoid } from 'nanoid';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-
+import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 
 export default function LoadEnrollment(props){
   // const [process, setProcess] = useState('Loading'); //array containing column names
@@ -190,16 +190,23 @@ export default function LoadEnrollment(props){
   }
 
   return <div style={props.style}>
-    <div>Load Enrollment</div>
     <div key="drop" {...getRootProps()}>
         <input {...getInputProps()} />
         {isDragActive ? (
           <p>Drop the files here</p>
         ) : (
           <ButtonGroup vertical>
-            <Button value="Enroll Learners"></Button>
+            <Button width="menu" value="Import CSV file"></Button>
           </ButtonGroup>
         )}
       </div>
+      <br />
+      <CollapseSection title="Formatting Instructions" collapsed={true} >
+      <p>Your file needs to contain all of the required fields.  The parser will ignore fields which don&#39;t match the handled list.</p>
+      <h3>Required</h3>
+
+      <h3>Handled</h3>
+      </CollapseSection>
+
   </div>
 }
