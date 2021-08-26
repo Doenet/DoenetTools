@@ -248,7 +248,6 @@ export default function useSockets(nsp) {
       const globalSelectedNodes = await snapshot.getPromise(
         globalSelectedNodesAtom,
       );
-
       // Interrupt move action if nothing selected
       if (globalSelectedNodes.length === 0) {
         throw 'No items selected';
@@ -293,6 +292,7 @@ export default function useSockets(nsp) {
             folderId: gItem.parentFolderId,
           }),
         );
+
         let newSourceFInfo = editedCache[gItem.driveId]?.[gItem.parentFolderId];
         if (!newSourceFInfo)
           newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
@@ -316,18 +316,39 @@ export default function useSockets(nsp) {
           // Ensure item removed from cached parent and added to edited cache
           if (!editedCache[gItem.driveId]) editedCache[gItem.driveId] = {};
           editedCache[gItem.driveId][gItem.parentFolderId] = newSourceFInfo;
+
+          // Insert item into contentIds of destination
+          newDestinationFolderObj['contentIds']['defaultOrder'].splice(
+            insertIndex,
+            0,
+            gItem.itemId,
+          );
         } else {
-          // Ensure item not duplicated in destination contentIds
-          newDestinationFolderObj['contentIds']['defaultOrder'] =
-            newDestinationFolderObj['contentIds']['defaultOrder'].filter(
+          //insert index is only vaild for an array before removal, add in temp obj
+          newDestinationFolderObj.contentIds.defaultOrder.splice(
+            insertIndex,
+            0,
+            dragShadowId,
+          );
+          // remove old instances and splice in new one at corrected index
+          newDestinationFolderObj.contentIds.defaultOrder =
+            newDestinationFolderObj.contentIds.defaultOrder.filter(
               (itemId) => itemId !== gItem.itemId,
             );
+          newDestinationFolderObj.contentIds.defaultOrder.splice(
+            newDestinationFolderObj.contentIds.defaultOrder.indexOf(
+              dragShadowId,
+            ),
+            1,
+            gItem.itemId,
+          );
         }
 
         // Generate and update sortOrder
-        const cleanDefaultOrder = newDestinationFolderObj['contentIds'][
-          'defaultOrder'
-        ].filter((itemId) => itemId !== dragShadowId);
+        const cleanDefaultOrder =
+          newDestinationFolderObj.contentIds.defaultOrder.filter(
+            (itemId) => itemId !== dragShadowId,
+          );
         newSortOrder = getLexicographicOrder({
           index: insertIndex,
           nodeObjs: newDestinationFolderObj.contentsDictionary,
@@ -338,13 +359,6 @@ export default function useSockets(nsp) {
         newDestinationFolderObj['contentsDictionary'][
           gItem.itemId
         ].parentFolderId = targetFolderId;
-
-        // Insert item into contentIds of destination
-        newDestinationFolderObj['contentIds']['defaultOrder'].splice(
-          insertIndex,
-          0,
-          gItem.itemId,
-        );
 
         // If moved item is a folder, update folder info
         if (
@@ -1041,7 +1055,9 @@ function useAcceptBindings() {
           }),
           true,
         );
+        // addToast(`Item to '${'te'}'`, toastType.SUCCESS);
       },
+    [],
   );
 
   const acceptRenameItem = useRecoilCallback(

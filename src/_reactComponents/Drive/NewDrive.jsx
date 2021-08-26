@@ -1490,8 +1490,11 @@ function Folder(props) {
           type: itemType.FOLDER,
         });
         props?.clickCallback?.({
+          driveId: props.driveId,
+          parentFolderId: props.item.parentFolderId,
+          itemId: props.item.itemId,
+          driveInstanceId: props.driveInstanceId,
           instructionType: 'one item',
-          parentFolderId: props.parentFolderId,
           type: itemType.FOLDER,
         });
       }
@@ -2328,16 +2331,16 @@ export function useDnDCallbacks() {
         globalSelectedNodes?.[0].driveId !== targetDriveId;
       const copyMode = dragState.copyMode || draggingAcrossDrives;
 
-      if (copyMode) {
-        copyItems({
-          items: globalSelectedNodes,
-          targetDriveId,
-          targetFolderId,
-          index,
-        });
-      } else {
+      // if (copyMode) {
+      //   copyItems({
+      //     items: globalSelectedNodes,
+      //     targetDriveId,
+      //     targetFolderId,
+      //     index,
+      //   });
+      // } else {
         moveItems(replaceDragShadowResp);
-      }
+      // }
     });
 
     cleanUpDragShadow();
