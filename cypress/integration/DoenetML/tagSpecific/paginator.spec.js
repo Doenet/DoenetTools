@@ -1370,7 +1370,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem1/_title1')).should('have.text', 'Problem A')
     cy.get(cesc('#/ca')).should('have.text', '0')
 
-    cy.get(cesc('#/problem1/input1') + " textarea").type('7{enter}', {force: true});
+    cy.get(cesc('#/problem1/input1') + " textarea").type('7{enter}', { force: true });
     cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.1')
 
@@ -1398,7 +1398,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/ca')).should('have.text', '0.1')
 
 
-    cy.get(cesc('#/problem2/input') + " textarea").type('-1{enter}', {force: true});
+    cy.get(cesc('#/problem2/input') + " textarea").type('-1{enter}', { force: true });
     cy.get(cesc('#/problem2/input_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
@@ -1427,11 +1427,11 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
-    cy.get(cesc('#/problem1/input1') + " textarea").type('{end}{backspace}8{enter}', {force: true});
+    cy.get(cesc('#/problem1/input1') + " textarea").type('{end}{backspace}8{enter}', { force: true });
     cy.get(cesc('#/problem1/input1_incorrect')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.2')
 
-    cy.get(cesc('#/problem1/input2') + " textarea").type('8{enter}', {force: true});
+    cy.get(cesc('#/problem1/input2') + " textarea").type('8{enter}', { force: true });
     cy.get(cesc('#/problem1/input2_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
@@ -1466,7 +1466,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem3/_title1')).should('have.text', 'Problem E')
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
-    cy.get(cesc('#/problem3/input') + " textarea").type('x^{enter}', {force: true});
+    cy.get(cesc('#/problem3/input') + " textarea").type('x^{enter}', { force: true });
     cy.get(cesc('#/problem3/input_incorrect')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
@@ -1538,7 +1538,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem4/_title1')).should('have.text', 'Problem G')
     cy.get(cesc('#/ca')).should('have.text', '0.3')
 
-    cy.get(cesc('#/problem4/input') + " textarea").type('504{enter}', {force: true});
+    cy.get(cesc('#/problem4/input') + " textarea").type('504{enter}', { force: true });
     cy.get(cesc('#/problem4/input_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
@@ -1546,7 +1546,7 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/problem5/_title1')).should('have.text', 'Problem H')
     cy.get(cesc('#/ca')).should('have.text', '0.5')
 
-    cy.get(cesc('#/problem5/input_input')).type('fig{enter}', {force: true});
+    cy.get(cesc('#/problem5/input_input')).type('fig{enter}', { force: true });
     cy.get(cesc('#/problem5/input_correct')).should('be.visible');
     cy.get(cesc('#/ca')).should('have.text', '0.7')
 
@@ -1578,6 +1578,174 @@ describe('Paginator Tag Tests', function () {
     cy.get(cesc('#/pcontrols_next')).click()
     cy.get(cesc('#/problem5/_title1')).should('have.text', 'Problem H')
     cy.get(cesc('#/ca')).should('have.text', '0.7')
+
+
+  })
+
+  it('With external and internal copies', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <setup>
+      <problem name="problema" newNamespace>
+        <title>A hard problem</title>
+        <p>What is 1+1? <answer><mathinput /><award>2</award></answer></p>
+      </problem>
+    </setup>
+
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn">
+      <copy assignNames="problem1" uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" />
+      <copy assignNames="problem2" uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" componentType="problem" />
+      <copy assignNames="problem3" tname="problema" componentType="problem" link="false" />
+  
+    </paginator>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariant: {
+          subvariants: [{}, {
+            name: "mouse"
+          }]
+        }
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choices = [...components['/problem1/_choiceinput1'].stateValues.choiceTexts];
+      let mouseInd = choices.indexOf("squeak") + 1;
+      cy.get(cesc(`#/problem1/_choiceinput1_choice${mouseInd}_input`)).click();
+    })
+
+    cy.get(cesc(`#/problem1/_choiceinput1_submit`)).click();
+    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinput2Name = components["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
+
+      let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
+      let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
+
+      cy.get(mathinput2Anchor).type('2x{enter}', { force: true })
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.get(cesc('#/pcontrols_previous')).click();
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+  
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(cesc('#/problem3/_title1')).should('have.text', 'A hard problem')
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+      
+      cy.get(cesc('#/problem3/_mathinput1') + " textarea").type('2{enter}', { force: true })
+      cy.get(cesc('#/problem3/_mathinput1_correct')).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+      
+      cy.get(cesc('#/problem3/_title1')).should('have.text', 'A hard problem')
+      cy.get(cesc('#/problem3/_mathinput1_correct')).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '1')
+  
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+    })
 
 
   })
