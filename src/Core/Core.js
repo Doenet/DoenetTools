@@ -47,7 +47,7 @@ export default class Core {
 
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
-    this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
+    // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = coreUpdatedCallback;
     this.coreReadyCallback = function () {
@@ -7633,17 +7633,6 @@ export default class Core {
 
     }
 
-    //TODO: Inside for loop?
-    if (this.externalFunctions.localStateChanged) {
-      setTimeout(() => this.externalFunctions.localStateChanged({
-        newStateVariableValues,
-        contentId: this.contentId,
-        sourceOfUpdate: {
-          sourceInformation
-        },
-        transient,
-      }), 0)
-    }
 
     let nFailures = Infinity;
     while (nFailures > 0) {
@@ -7669,6 +7658,9 @@ export default class Core {
     //   }
     // });
 
+
+    let itemsWithCreditAchieved = {};
+
     if (recordItemSubmissions.length > 0) {
       recordItemSubmissions = [...new Set(recordItemSubmissions)];
       if (event) {
@@ -7681,18 +7673,35 @@ export default class Core {
         event.context.documentCreditAchieved = this.document.stateValues.creditAchieved;
       }
       for (let itemNumber of recordItemSubmissions) {
-        if (this.externalFunctions.submitResponse) {
-          this.externalFunctions.submitResponse({
-            itemNumber,
-            itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber-1],
-            callBack: this.submitResponseCallBack,
-          });
-        }
+        itemsWithCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1];
+        // if (this.externalFunctions.submitResponse) {
+        //   this.externalFunctions.submitResponse({
+        //     itemNumber,
+        //     itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber - 1],
+        //     callBack: this.submitResponseCallBack,
+        //   });
+        // }
         if (event) {
           event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
         }
       }
     }
+
+
+    //TODO: Inside for loop?
+    if (this.externalFunctions.localStateChanged) {
+      setTimeout(() => this.externalFunctions.localStateChanged({
+        newStateVariableValues,
+        contentId: this.contentId,
+        sourceOfUpdate: {
+          sourceInformation
+        },
+        transient,
+        itemsWithCreditAchieved,
+      }), 0)
+    }
+
+
 
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
@@ -8561,51 +8570,51 @@ export default class Core {
     return;
   }
 
-  submitResponseCallBack(results) {
+  // submitResponseCallBack(results) {
 
-    // console.log(`submit response callback`)
-    // console.log(results);
-    return;
+  //   // console.log(`submit response callback`)
+  //   // console.log(results);
+  //   return;
 
-    if (!results.success) {
-      let errorMessage = "Answer not saved due to a network error. \nEither you are offline or your authentication has timed out.";
-      this.renderer.updateSection({
-        title: this.state.title,
-        viewedSolution: this.state.viewedSolution,
-        isError: true,
-        errorMessage,
-      });
-      alert(errorMessage);
+  //   if (!results.success) {
+  //     let errorMessage = "Answer not saved due to a network error. \nEither you are offline or your authentication has timed out.";
+  //     this.renderer.updateSection({
+  //       title: this.state.title,
+  //       viewedSolution: this.state.viewedSolution,
+  //       isError: true,
+  //       errorMessage,
+  //     });
+  //     alert(errorMessage);
 
-      this.coreFunctions.requestUpdate({
-        updateType: "updateRendererOnly",
-      });
-    } else if (results.viewedSolution) {
-      console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
-      this.coreFunctions.requestUpdate({
-        updateType: "updateValue",
-        updateInstructions: [{
-          componentName: scoredComponent.componentName,
-          variableUpdates: {
-            viewedSolution: { changes: true },
-          }
-        }]
-      })
-    }
+  //     this.coreFunctions.requestUpdate({
+  //       updateType: "updateRendererOnly",
+  //     });
+  //   } else if (results.viewedSolution) {
+  //     console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
+  //     this.coreFunctions.requestUpdate({
+  //       updateType: "updateValue",
+  //       updateInstructions: [{
+  //         componentName: scoredComponent.componentName,
+  //         variableUpdates: {
+  //           viewedSolution: { changes: true },
+  //         }
+  //       }]
+  //     })
+  //   }
 
-    // if this.answersToSubmitCounter is a positive number
-    // that means that we have call this.submitAllAnswers and we still have
-    // some answers that haven't been submitted
-    // In this case, we will decrement this.answersToSubmitCounter
-    // If this.answersToSubmitCounter newly becomes zero, 
-    // then we know that we have submitted the last one answer
-    if (this.answersToSubmitCounter > 0) {
-      this.answersToSubmitCounter -= 1;
-      if (this.answersToSubmitCounter === 0) {
-        this.externalFunctions.allAnswersSubmitted();
-      }
-    }
-  }
+  //   // if this.answersToSubmitCounter is a positive number
+  //   // that means that we have call this.submitAllAnswers and we still have
+  //   // some answers that haven't been submitted
+  //   // In this case, we will decrement this.answersToSubmitCounter
+  //   // If this.answersToSubmitCounter newly becomes zero, 
+  //   // then we know that we have submitted the last one answer
+  //   if (this.answersToSubmitCounter > 0) {
+  //     this.answersToSubmitCounter -= 1;
+  //     if (this.answersToSubmitCounter === 0) {
+  //       this.externalFunctions.allAnswersSubmitted();
+  //     }
+  //   }
+  // }
 
   // addComponents({ serializedComponents, parent }) {
   //   //Check if 

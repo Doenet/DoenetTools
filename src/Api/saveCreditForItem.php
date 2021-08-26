@@ -16,6 +16,7 @@ $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
+$stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 
 //TODO: check if this is too many tries 
 //TODO: check if attempt is older than given attempt
@@ -108,9 +109,9 @@ $submissionNumber++;
 //Specifically we want to store the credit of that actual submission
 $sql = "
 INSERT INTO user_assignment_attempt_item_submission
-(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,credit,submittedDate,valid)
+(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,stateVariables,credit,submittedDate,valid)
 VALUES
-('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit',NOW(),'$valid')
+('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$stateVariables','$credit',NOW(),'$valid')
 ";
 
 $result = $conn->query($sql);
