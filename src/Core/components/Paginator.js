@@ -42,10 +42,18 @@ export class Paginator extends Template {
 
           let n = 0;
           for (let child of children) {
-            if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: child.componentType,
-              baseComponentType: "_sectioningComponent"
-            })) {
+            if (
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.componentType,
+                baseComponentType: "_sectioningComponent"
+              }) ||
+              child.componentType === "copy" && child.attributes &&
+              child.attributes.componentType &&
+              componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: child.attributes.componentType.primitive,
+                baseComponentType: "_sectioningComponent"
+              })
+            ) {
               n++;
             } else if (componentInfoObjects.isInheritedComponentType({
               inheritedComponentType: child.componentType,
@@ -200,11 +208,18 @@ export class Paginator extends Template {
     let insertPageSets = function (serializedReplacements) {
       let newReplacements = [];
       for (let replacement of serializedReplacements) {
-        if (componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: replacement.componentType,
-          baseComponentType: "_sectioningComponent"
-        })) {
-
+        if (
+          componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: replacement.componentType,
+            baseComponentType: "_sectioningComponent"
+          }) ||
+          replacement.componentType === "copy" && replacement.attributes &&
+          replacement.attributes.componentType &&
+          componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: replacement.attributes.componentType.primitive,
+            baseComponentType: "_sectioningComponent"
+          })
+        ) {
 
           if (component.stateValues.preserveScores) {
             if (!replacement.state) {
@@ -356,8 +371,8 @@ export class Paginator extends Template {
 
     let callBack;
 
-    if(postponeUpdatingPlaceholderCreditAchieved) {
-      callBack =  () => this.setPlaceholderCredit({
+    if (postponeUpdatingPlaceholderCreditAchieved) {
+      callBack = () => this.setPlaceholderCredit({
         number: currentPageNumber,
       })
     }
@@ -604,10 +619,15 @@ export class PaginatorPageSet extends Template {
     //   placeholderAttributes.suppresssAutomaticVariants = { primitive: true };
     // }
 
+    let sectionComponentType = sectionReplacement.componentType;
+    if(sectionComponentType === "copy") {
+      sectionComponentType = sectionReplacement.attributes.componentType.primitive;
+    }
+
     newReplacements.push({
       componentType: "paginatorPage",
       children: [{
-        componentType: sectionReplacement.componentType,
+        componentType: sectionComponentType,
         attributes: placeholderAttributes,
         variants: placeholderVariants,
         state: {

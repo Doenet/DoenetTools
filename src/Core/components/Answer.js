@@ -1105,16 +1105,17 @@ export default class Answer extends InlineComponent {
 
         let foundChange = true;
 
-        // let foundChange = !deepCompare(
-        //   dependencyValues.currentCreditAchievedDependencies,
-        //   dependencyValues.creditAchievedDependenciesAtSubmit
-        // )
+        // Note: 
+        // - using JSON.stringify because it removes some entries (e.g., functions)
+        // - that may have been removed when saving/reloading from the database
+        // - using deepCompare, because JSON.stringify many not preserve order 
+        //   of objects, and so may incorrectly indicate a change
 
-        // use JSON.stringify rather than deepCompare
-        // so that NaNs will be equal to each other
+        // TODO: is there a way to accomplish this more efficiently, 
+        // i.e., without doing two passes
         if (dependencyValues.creditAchievedDependenciesAtSubmit) {
-          foundChange = JSON.stringify(dependencyValues.currentCreditAchievedDependencies)
-            !== JSON.stringify(dependencyValues.creditAchievedDependenciesAtSubmit)
+          foundChange = !deepCompare(JSON.parse(JSON.stringify(dependencyValues.currentCreditAchievedDependencies)),
+            JSON.parse(JSON.stringify(dependencyValues.creditAchievedDependenciesAtSubmit)))
         }
 
         if (foundChange) {
