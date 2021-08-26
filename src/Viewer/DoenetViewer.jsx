@@ -48,7 +48,7 @@ class DoenetViewerChild extends Component {
     this.createCore = this.createCore.bind(this);
     this.loadState = this.loadState.bind(this);
     this.localStateChanged = this.localStateChanged.bind(this);
-    this.submitResponse = this.submitResponse.bind(this);
+    // this.submitResponse = this.submitResponse.bind(this);
     this.recordSolutionView = this.recordSolutionView.bind(this);
     this.recordEvent = this.recordEvent.bind(this);
 
@@ -103,7 +103,7 @@ class DoenetViewerChild extends Component {
         doenetML: this.doenetML,
         externalFunctions: {
           localStateChanged: this.localStateChanged,
-          submitResponse: this.submitResponse,
+          // submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
           contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
@@ -120,7 +120,7 @@ class DoenetViewerChild extends Component {
         doenetML: this.doenetML,
         externalFunctions: {
           localStateChanged: this.localStateChanged,
-          submitResponse: this.submitResponse,
+          // submitResponse: this.submitResponse,
           recordSolutionView: this.recordSolutionView,
           recordEvent: this.recordEvent,
           contentIdsToDoenetMLs: this.contentIdsToDoenetMLs.bind(this)
@@ -142,7 +142,7 @@ class DoenetViewerChild extends Component {
 
     this.generatedVariant = core.document.stateValues.generatedVariantInfo;
     this.itemVariantInfo = core.document.stateValues.itemVariantInfo;
-    
+
     this.allPossibleVariants = [...core.document.sharedParameters.allPossibleVariants];
 
     if (this.props.generatedVariantCallback) {
@@ -222,30 +222,30 @@ class DoenetViewerChild extends Component {
     // console.log(">>>>this.generatedVariant",this.generatedVariant)
     // console.log(">>>>this.allowSavePageState",this.allowSavePageState)
     // console.log(">>>>this.allowSavePageState",this.props.allowSavePageState)
-    if (this.allowSavePageState && 
+    if (this.allowSavePageState &&
       Number.isInteger(this.attemptNumber) &&
       this.savedUserAssignmentAttemptNumber !== this.attemptNumber
-      ){
+    ) {
       // console.log(">>>>savedUserAssignmentAttemptNumber!!!")
       axios.post('/api/initAssignmentAttempt.php', {
-          doenetId:this.props.doenetId,
-          weights: this.core.scoredItemWeights,
-          attemptNumber:this.attemptNumber,
-          contentId:this.contentId,
-          requestedVariant:JSON.stringify(this.requestedVariant,serializedComponentsReplacer),
-          generatedVariant:JSON.stringify(this.generatedVariant,serializedComponentsReplacer),
-          itemVariantInfo:this.itemVariantInfo.map(x=>JSON.stringify(x,serializedComponentsReplacer)),
-      }).then((resp)=>{
+        doenetId: this.props.doenetId,
+        weights: this.core.scoredItemWeights,
+        attemptNumber: this.attemptNumber,
+        contentId: this.contentId,
+        requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
+        generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
+        itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
+      }).then((resp) => {
         // console.log(">>>>resp",resp.data)
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
-      .catch(errMsg => {
-        this.setState({ errMsg: errMsg.message })
-      })
-      
+        .catch(errMsg => {
+          this.setState({ errMsg: errMsg.message })
+        })
+
     }
-    
+
     //Let the calling tool know we are ready
     //TODO: Move this to renderer
     if (this.props.onCoreReady) {
@@ -255,9 +255,16 @@ class DoenetViewerChild extends Component {
 
   localStateChanged({
     newStateVariableValues,
-    contentId, sourceOfUpdate, transient = false
+    contentId, sourceOfUpdate, transient = false,
+    itemsWithCreditAchieved,
   }) {
 
+    // TODO: think through what the different flags do
+    // and what are the reasonable combinations
+    // flags: allowSavePageState, allowLocalPageState, allowSaveSubmissions
+    // For now: we will not save submissions unless either
+    // allowSavePageState is true
+    // (also won't save if transient is true but that will never happen :) )
 
     // TODO: what should we do with transient updates?
     if (transient || !this.allowSavePageState && !this.allowLocalPageState) {
@@ -313,6 +320,36 @@ class DoenetViewerChild extends Component {
     // .then(resp => {
     // });
 
+
+    if (!this.allowSaveSubmissions) {
+      return;
+    }
+
+    // if this update was not due to an answer submission,
+    // itemsWithCreditAchieved will be empty
+    for (let itemNumber in itemsWithCreditAchieved) {
+
+      let itemCreditAchieved = itemsWithCreditAchieved[itemNumber]
+
+      const payload2 = {
+        doenetId: this.props.doenetId,
+        contentId: this.contentId,
+        attemptNumber: this.attemptNumber,
+        credit: itemCreditAchieved,
+        itemNumber,
+        stateVariables: changeString,
+      }
+      axios.post('/api/saveCreditForItem.php', payload2)
+        .then(resp => {
+          // console.log('>>>>resp',resp.data);
+
+          if (resp.data.viewedSolution) {
+            this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) //TODO: need type warning (red but doesn't hang around)
+          }
+
+        });
+
+    }
 
 
   }
@@ -397,48 +434,48 @@ class DoenetViewerChild extends Component {
 
   }
 
-  //Need item state?
-  submitResponse({
-    itemNumber,
-    itemCreditAchieved,
-    callBack,
-  }) {
+  // //Need item state?
+  // submitResponse({
+  //   itemNumber,
+  //   itemCreditAchieved,
+  //   callBack,
+  // }) {
 
-    if (this.allowSaveSubmissions && this.props.doenetId) {
+  //   if (this.allowSaveSubmissions && this.props.doenetId) {
 
-      const payload = {
-        doenetId: this.props.doenetId,
-        contentId: this.contentId,
-        attemptNumber: this.attemptNumber,
-        credit: itemCreditAchieved,
-        itemNumber,
-      }
-      axios.post('/api/saveCreditForItem.php', payload)
-      .then(resp => {
-        // console.log('>>>>resp',resp.data);
+  //     const payload = {
+  //       doenetId: this.props.doenetId,
+  //       contentId: this.contentId,
+  //       attemptNumber: this.attemptNumber,
+  //       credit: itemCreditAchieved,
+  //       itemNumber,
+  //     }
+  //     axios.post('/api/saveCreditForItem.php', payload)
+  //       .then(resp => {
+  //         // console.log('>>>>resp',resp.data);
 
-        if (resp.data.viewedSolution){
-          this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) //TODO: need type warning (red but doesn't hang around)
-        }
+  //         if (resp.data.viewedSolution) {
+  //           this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) //TODO: need type warning (red but doesn't hang around)
+  //         }
 
-      });
-    }
+  //       });
+  //   }
 
-    callBack("submitResponse callback parameter");
-  }
+  //   callBack("submitResponse callback parameter");
+  // }
 
   // TODO: if assignmentId, then need to record fact that student
   // viewed solution in user_assignment_attempt_item
   recordSolutionView({ itemNumber, scoredComponent, callBack }) {
-  axios.post('/api/reportSolutionViewed.php', {
-    doenetId:this.props.doenetId,
-    itemNumber,
-    attemptNumber:this.attemptNumber,
-  })
-  .then(resp => {
-  //       console.log('reportSolutionViewed-->>>>',resp.data);
-    callBack({ allowView: true, message: "", scoredComponent })
-  });
+    axios.post('/api/reportSolutionViewed.php', {
+      doenetId: this.props.doenetId,
+      itemNumber,
+      attemptNumber: this.attemptNumber,
+    })
+      .then(resp => {
+        //       console.log('reportSolutionViewed-->>>>',resp.data);
+        callBack({ allowView: true, message: "", scoredComponent })
+      });
     // console.log(`reveal solution, ${itemNumber}`)
 
     // if (this.assignmentId) {
@@ -458,7 +495,7 @@ class DoenetViewerChild extends Component {
 
     // }
 
-  
+
 
 
   }
@@ -608,19 +645,19 @@ class DoenetViewerChild extends Component {
         //Try to load doenetML from local storage
         // this.doenetML = localStorage.getItem(this.contentId);
         // if (!this.doenetML) {
-          try {
-            //Load the doenetML from the server
-            axios.get(`/media/${this.contentId}.doenet`)
-              .then(resp => {
-                this.doenetML = resp.data;
-                // localStorage.setItem(this.contentId, this.doenetML)
-                this.forceUpdate();
-              })
-          } catch (err) {
-            //TODO: Handle 404
-            return "Error Loading";
-          }
-          return null;
+        try {
+          //Load the doenetML from the server
+          axios.get(`/media/${this.contentId}.doenet`)
+            .then(resp => {
+              this.doenetML = resp.data;
+              // localStorage.setItem(this.contentId, this.doenetML)
+              this.forceUpdate();
+            })
+        } catch (err) {
+          //TODO: Handle 404
+          return "Error Loading";
+        }
+        return null;
 
         // }
 
@@ -690,7 +727,7 @@ class ErrorBoundary extends React.Component {
 
 function DoenetViewer(props) {
   const toast = useToast();
-  let newProps = {...props,toast}
+  let newProps = { ...props, toast }
   return <ErrorBoundary><DoenetViewerChild {...newProps} /></ErrorBoundary>
 }
 
