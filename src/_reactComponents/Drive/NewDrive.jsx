@@ -2331,16 +2331,16 @@ export function useDnDCallbacks() {
         globalSelectedNodes?.[0].driveId !== targetDriveId;
       const copyMode = dragState.copyMode || draggingAcrossDrives;
 
-      // if (copyMode) {
-      //   copyItems({
-      //     items: globalSelectedNodes,
-      //     targetDriveId,
-      //     targetFolderId,
-      //     index,
-      //   });
-      // } else {
+      if (copyMode) {
+        copyItems({
+          items: globalSelectedNodes,
+          targetDriveId,
+          targetFolderId,
+          index,
+        });
+      } else {
         moveItems(replaceDragShadowResp);
-      // }
+      }
     });
 
     cleanUpDragShadow();
