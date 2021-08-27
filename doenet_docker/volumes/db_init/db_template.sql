@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-23 23:09:33 +0000
+# Generation Time: 2021-08-27 22:59:40 +0000
 # ************************************************************
 
 
@@ -71,6 +71,23 @@ CREATE TABLE `collection` (
   `entryDoenetId` char(21) NOT NULL DEFAULT '',
   `entryId` char(21) NOT NULL DEFAULT '',
   `variant` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table collection_groups
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `collection_groups`;
+
+CREATE TABLE `collection_groups` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `doenetId` char(21) NOT NULL DEFAULT '',
+  `minStudents` int(11) NOT NULL DEFAULT '1',
+  `maxStudents` int(11) NOT NULL DEFAULT '1',
+  `preferredStudents` int(11) NOT NULL DEFAULT '1',
+  `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
