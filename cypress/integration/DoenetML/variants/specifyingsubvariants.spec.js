@@ -960,8 +960,200 @@ describe('Specifying subvariants tests', function () {
                   expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
                     generatedVariantInfo
                   )
+
+                  expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                    generatedVariantInfo.subvariants[0].subvariants
+                  )
                 })
               }
+            }
+          }
+        }
+      }
+    }
+
+  });
+
+  it('selected problems, one outside select', () => {
+
+    let titlesToInd = {
+      "A word problem": 1,
+      "A number problem": 2,
+    }
+
+    let problemAoptions = ["angry", "bad", "churlish", "drab", "excoriated"];
+    let problemAselectOptions = ["bad", "angry", "drab", "excoriated", "churlish"];
+
+    let problemBoptions = [7, 13, 47, 7, 13];
+    let problemBselectOptions = [7, 47, 13];
+
+    cy.log("Test each combination of problems")
+    for (let ind2 = 1; ind2 <= 2; ind2++) {
+      for (let ind3 = 2; ind3 <= 2; ind3++) {
+        for (let ind4 = 1; ind4 <= 2; ind4++) {
+          for (let ind5 = 3; ind5 <= 4; ind5++) {
+            for (let ind6 = 5; ind6 <= 5; ind6++) {
+              cy.window().then((win) => {
+                win.postMessage({
+                  doenetML: `
+                <text>${ind2}</text>
+                <text>${ind3}</text>
+                <text>${ind4}</text>
+                <text>${ind5}</text>
+                <text>${ind6}</text>
+                <variantControl nvariants="100"/>
+            
+                <problem newNamespace name="problem1"><title>A word problem</title>
+                  <variantControl nvariants="5" variantNames="a b c d e" />
+                  <p>Word:
+                    <select>
+                      <option selectForVariantNames="b"><text>bad</text></option>
+                      <option selectForVariantNames="a"><text>angry</text></option>
+                      <option selectForVariantNames="d"><text>drab</text></option>
+                      <option selectForVariantNames="e"><text>excoriated</text></option>
+                      <option selectForVariantNames="c"><text>churlish</text></option>
+                    </select>
+                  </p>
+                </problem>
+                <select assignnames="(problem2)  (problem3)" numbertoselect="2" withReplacement>
+                  <option><problem newNamespace><title>A word problem</title>
+                    <variantControl nvariants="5" variantNames="a b c d e" />
+                    <p>Word:
+                      <select>
+                        <option selectForVariantNames="b"><text>bad</text></option>
+                        <option selectForVariantNames="a"><text>angry</text></option>
+                        <option selectForVariantNames="d"><text>drab</text></option>
+                        <option selectForVariantNames="e"><text>excoriated</text></option>
+                        <option selectForVariantNames="c"><text>churlish</text></option>
+                      </select>
+                    </p>
+                  </problem></option>
+                  <option><problem newNamespace><title>A number problem</title>
+                    <variantControl nvariants="3" />
+                    <p>Number: 
+                      <select>
+                         <option selectForVariantNames="a"><number>7</number></option>
+                         <option selectForVariantNames="c"><number>47</number></option>
+                         <option selectForVariantNames="b"><number>13</number></option>
+                    </select></p>
+                  </problem></option>
+                </select>
+                `,
+                  requestedVariant: {
+                    subvariants: [{
+                      index: ind4,
+                    }, {
+                      indices: [ind2, ind3],
+                      subvariants: [{
+                        index: ind5
+                      }, {
+                        index: ind6
+                      }]
+                    }]
+                  }
+                }, "*");
+              });
+              // to wait for page to load
+              cy.get('#\\/_text1').should('have.text', `${ind2}`)
+              cy.get('#\\/_text2').should('have.text', `${ind3}`)
+              cy.get('#\\/_text3').should('have.text', `${ind4}`)
+              cy.get('#\\/_text4').should('have.text', `${ind5}`)
+              cy.get('#\\/_text5').should('have.text', `${ind6}`)
+
+              cy.window().then((win) => {
+                let components = Object.assign({}, win.state.components);
+
+                let generatedVariantInfo = {
+                  index: 1,
+                  name: 'a',
+                  meta: {
+                    subvariantsSpecified: true,
+                    createdBy: "/_document1"
+                  },
+                  subvariants: [undefined, {
+                    indices: [],
+                    meta: { createdBy: "/_select1" },
+                    subvariants: []
+                  }]
+                }
+
+                let itemVariantInfo = [];
+
+                let problemInds = [1, ind2, ind3];
+
+                let problemVariantInds = [ind4, ind5, ind6];
+
+                for (let i = 1; i <= 3; i++) {
+                  let problem = components['/problem' + i];
+                  let variantInd = titlesToInd[problem.stateValues.title];
+                  expect(variantInd).eq(problemInds[i - 1]);
+                  if (i !== 1) {
+                    generatedVariantInfo.subvariants[1].indices.push(variantInd);
+                  }
+
+                  let p = problem.activeChildren[4];
+
+                  if (variantInd === 1) {
+                    let word = problemAoptions[problemVariantInds[i - 1] - 1];
+                    expect(p.activeChildren[1].stateValues.value).eq(word)
+                    let selectIndex = problemAselectOptions.indexOf(word) + 1;
+                    let problemIndex = problemVariantInds[i - 1];
+                    let problemVariantInfo = {
+                      index: problemIndex,
+                      name: numberToLetters(problemIndex, true),
+                      meta: {
+                        subvariantsSpecified: false,
+                        createdBy: `/problem${i}`
+                      },
+                      subvariants: [{
+                        indices: [selectIndex],
+                        meta: { createdBy: `/problem${i}/_select1` },
+                        subvariants: []
+                      }]
+                    }
+                    if (i === 1) {
+                      generatedVariantInfo.subvariants[0] = problemVariantInfo;
+                    } else {
+                      generatedVariantInfo.subvariants[1].subvariants.push(
+                        problemVariantInfo
+                      )
+                    }
+                    itemVariantInfo.push(problemVariantInfo);
+
+                  } else {
+                    let number = problemBoptions[problemVariantInds[i - 1] - 1];
+                    expect(p.activeChildren[1].stateValues.value).eq(number)
+                    let selectIndex = problemBselectOptions.indexOf(number) + 1;
+                    let problemIndex = ((problemVariantInds[i - 1] - 1) % 3) + 1;
+                    let problemVariantInfo = {
+                      index: problemIndex,
+                      name: numberToLetters(problemIndex, true),
+                      meta: {
+                        subvariantsSpecified: false,
+                        createdBy: `/problem${i}`
+                      },
+                      subvariants: [{
+                        indices: [selectIndex],
+                        meta: { createdBy: `/problem${i}/_select1` },
+                        subvariants: []
+                      }]
+                    }
+                    generatedVariantInfo.subvariants[1].subvariants.push(
+                      problemVariantInfo
+                    )
+                    itemVariantInfo.push(problemVariantInfo)
+
+                  }
+
+                }
+
+                expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                  generatedVariantInfo
+                )
+                expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                  itemVariantInfo
+                )
+              })
             }
           }
         }
@@ -1111,6 +1303,345 @@ describe('Specifying subvariants tests', function () {
 
                   expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
                     generatedVariantInfo
+                  )
+                  expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                    generatedVariantInfo.subvariants[0].subvariants
+                  )
+
+                })
+              }
+            }
+          }
+        }
+      }
+    }
+
+  });
+
+  it('selected problems, one outside select, specify options directly', () => {
+
+    let titlesToInd = {
+      "A word problem": 1,
+      "A number problem": 2,
+    }
+
+    let problemAoptions = ["angry", "bad", "churlish", "drab", "excoriated"];
+    let problemBoptions = [1, 2, 3, 4, 5];
+
+    cy.log("Test each combination of problems")
+    for (let ind2 = 1; ind2 <= 2; ind2++) {
+      for (let ind3 = 2; ind3 <= 2; ind3++) {
+        for (let ind4 = 1; ind4 <= 2; ind4++) {
+          for (let ind5 = 3; ind5 <= 4; ind5++) {
+            for (let ind6 = 5; ind6 <= 5; ind6++) {
+              cy.window().then((win) => {
+                win.postMessage({
+                  doenetML: `
+                  <text>${ind2}</text>
+                  <text>${ind3}</text>
+                  <text>${ind4}</text>
+                  <text>${ind5}</text>
+                  <text>${ind6}</text>
+    
+                  <variantControl nvariants="100"/>
+              
+                  <problem newNamespace name="problem1"><title>A word problem</title>
+                    <variantControl nvariants="5" />
+                    <p>Word:
+                      <select>
+                        <option><text>angry</text></option>
+                        <option><text>bad</text></option>
+                        <option><text>churlish</text></option>
+                        <option><text>drab</text></option>
+                        <option><text>excoriated</text></option>
+                      </select>
+                    </p>
+                  </problem>
+                  <select assignnames="(problem2)  (problem3)" numbertoselect="2" withReplacement>
+                    <option><problem newNamespace><title>A word problem</title>
+                      <variantControl nvariants="5" />
+                      <p>Word:
+                        <select>
+                          <option><text>angry</text></option>
+                          <option><text>bad</text></option>
+                          <option><text>churlish</text></option>
+                          <option><text>drab</text></option>
+                          <option><text>excoriated</text></option>
+                        </select>
+                      </p>
+                    </problem></option>
+                    <option><problem newNamespace><title>A number problem</title>
+                      <variantControl nvariants="3" />
+                      <p>Number: 
+                        <selectfromsequence length="10" />
+                      </p>
+                    </problem></option>
+                  </select>
+                  `,
+                  requestedVariant: {
+                    subvariants: [{
+                      subvariants: [{
+                        indices: [ind4]
+                      }]
+                    }, {
+                      indices: [ind2, ind3],
+                      subvariants: [{
+                        subvariants: [{
+                          indices: [ind5]
+                        }]
+                      }, {
+                        subvariants: [{
+                          indices: [ind6]
+                        }]
+                      }]
+                    }]
+                  }
+                }, "*");
+              });
+              // to wait for page to load
+              cy.get('#\\/_text1').should('have.text', `${ind2}`)
+              cy.get('#\\/_text2').should('have.text', `${ind3}`)
+              cy.get('#\\/_text3').should('have.text', `${ind4}`)
+              cy.get('#\\/_text4').should('have.text', `${ind5}`)
+              cy.get('#\\/_text5').should('have.text', `${ind6}`)
+
+              cy.window().then((win) => {
+                let components = Object.assign({}, win.state.components);
+
+                let generatedVariantInfo = {
+                  index: 1,
+                  name: 'a',
+                  meta: {
+                    subvariantsSpecified: true,
+                    createdBy: "/_document1"
+                  },
+                  subvariants: [null, {
+                    indices: [],
+                    meta: { createdBy: "/_select1" },
+                    subvariants: []
+                  }]
+                }
+                let itemVariantInfo = [];
+
+                let problemInds = [1, ind2, ind3];
+
+                let selectInds = [ind4, ind5, ind6];
+
+                for (let i = 1; i <= 3; i++) {
+                  let problem = components['/problem' + i];
+                  let variantInd = titlesToInd[problem.stateValues.title];
+                  expect(variantInd).eq(problemInds[i - 1]);
+
+                  if(i !== 1) {
+                    generatedVariantInfo.subvariants[1].indices.push(variantInd);
+                  }
+
+                  let p = problem.activeChildren[4];
+
+                  if (variantInd === 1) {
+                    expect(p.activeChildren[1].stateValues.value).eq(problemAoptions[selectInds[i - 1] - 1])
+                    let problemVariantInfo = {
+                      index: problem.stateValues.generatedVariantInfo.index,
+                      name: numberToLetters(problem.stateValues.generatedVariantInfo.index, true),
+                      meta: {
+                        subvariantsSpecified: true,
+                        createdBy: `/problem${i}`
+                      },
+                      subvariants: [{
+                        indices: [selectInds[i - 1]],
+                        meta: { createdBy: `/problem${i}/_select1` },
+                        subvariants: []
+                      }]
+                    }
+                    if(i == 1) {
+                      generatedVariantInfo.subvariants[0] = problemVariantInfo;
+                    } else {
+                      generatedVariantInfo.subvariants[1].subvariants.push(
+                        problemVariantInfo
+                      )
+                    }
+                    itemVariantInfo.push(problemVariantInfo);
+                  } else {
+                    expect(p.activeChildren[1].stateValues.value).eq(problemBoptions[selectInds[i - 1] - 1])
+                    let problemVariantInfo = {
+                      index: problem.stateValues.generatedVariantInfo.index,
+                      name: numberToLetters(problem.stateValues.generatedVariantInfo.index, true),
+                      meta: {
+                        subvariantsSpecified: true,
+                        createdBy: `/problem${i}`
+                      },
+                      subvariants: [{
+                        indices: [selectInds[i - 1]],
+                        meta: { createdBy: `/problem${i}/_selectfromsequence1` },
+                      }]
+                    }
+                    generatedVariantInfo.subvariants[1].subvariants.push(
+                      problemVariantInfo
+                    )
+                    itemVariantInfo.push(problemVariantInfo);
+                  }
+                }
+
+                expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                  generatedVariantInfo
+                )
+                expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                  itemVariantInfo
+                )
+
+              })
+            }
+          }
+        }
+      }
+    }
+
+  });
+
+  it('selected problems, one without variantcontrol, specify options directly', () => {
+
+    let titlesToInd = {
+      "A word problem": 1,
+      "A number problem": 2,
+    }
+
+    let problemAoptions = ["angry", "bad", "churlish", "drab", "excoriated"];
+    let problemBoptions = [1, 2, 3, 4, 5];
+
+    cy.log("Test each combination of problems")
+    for (let ind1 = 1; ind1 <= 1; ind1++) {
+      for (let ind2 = 2; ind2 <= 2; ind2++) {
+        for (let ind3 = 1; ind3 <= 2; ind3++) {
+          for (let ind4 = 1; ind4 <= 2; ind4++) {
+            for (let ind5 = 3; ind5 <= 4; ind5++) {
+              for (let ind6 = 5; ind6 <= 5; ind6++) {
+                cy.window().then((win) => {
+                  win.postMessage({
+                    doenetML: `
+                  <text>${ind1}</text>
+                  <text>${ind2}</text>
+                  <text>${ind3}</text>
+                  <text>${ind4}</text>
+                  <text>${ind5}</text>
+                  <text>${ind6}</text>
+    
+                  <variantControl nvariants="100"/>
+              
+                  <select assignnames="(problem1)  (problem2)  (problem3)" numbertoselect="3" withReplacement>
+                    <option><problem newNamespace><title>A word problem</title>
+                      <variantControl nvariants="5" />
+                      <p>Word:
+                        <select>
+                          <option><text>angry</text></option>
+                          <option><text>bad</text></option>
+                          <option><text>churlish</text></option>
+                          <option><text>drab</text></option>
+                          <option><text>excoriated</text></option>
+                        </select>
+                      </p>
+                    </problem></option>
+                    <option><problem newNamespace><title>A number problem</title>
+                      <text>Filler to move children to same spot</text>
+                      <p>Number: 
+                        <selectfromsequence length="10" />
+                      </p>
+                    </problem></option>
+                  </select>
+                  `,
+                    requestedVariant: {
+                      subvariants: [{
+                        indices: [ind1, ind2, ind3],
+                        subvariants: [{
+                          subvariants: [{
+                            indices: [ind4]
+                          }]
+                        }, {
+                          subvariants: [{
+                            indices: [ind5]
+                          }]
+                        }, {
+                          subvariants: [{
+                            indices: [ind6]
+                          }]
+                        }]
+                      }]
+                    }
+                  }, "*");
+                });
+                // to wait for page to load
+                cy.get('#\\/_text1').should('have.text', `${ind1}`)
+                cy.get('#\\/_text2').should('have.text', `${ind2}`)
+                cy.get('#\\/_text3').should('have.text', `${ind3}`)
+                cy.get('#\\/_text4').should('have.text', `${ind4}`)
+                cy.get('#\\/_text5').should('have.text', `${ind5}`)
+                cy.get('#\\/_text6').should('have.text', `${ind6}`)
+
+                cy.window().then((win) => {
+                  let components = Object.assign({}, win.state.components);
+
+                  let generatedVariantInfo = {
+                    index: 1,
+                    name: 'a',
+                    meta: {
+                      subvariantsSpecified: true,
+                      createdBy: "/_document1"
+                    },
+                    subvariants: [{
+                      indices: [],
+                      meta: { createdBy: "/_select1" },
+                      subvariants: []
+                    }]
+                  }
+
+                  let problemInds = [ind1, ind2, ind3];
+
+                  let selectInds = [ind4, ind5, ind6];
+
+                  for (let i = 1; i <= 3; i++) {
+                    let problem = components['/problem' + i];
+                    let variantInd = titlesToInd[problem.stateValues.title];
+                    expect(variantInd).eq(problemInds[i - 1]);
+                    generatedVariantInfo.subvariants[0].indices.push(variantInd);
+
+                    let p = problem.activeChildren[4];
+
+                    if (variantInd === 1) {
+                      expect(p.activeChildren[1].stateValues.value).eq(problemAoptions[selectInds[i - 1] - 1])
+                      generatedVariantInfo.subvariants[0].subvariants.push({
+                        index: problem.stateValues.generatedVariantInfo.index,
+                        name: numberToLetters(problem.stateValues.generatedVariantInfo.index, true),
+                        meta: {
+                          subvariantsSpecified: true,
+                          createdBy: `/problem${i}`
+                        },
+                        subvariants: [{
+                          indices: [selectInds[i - 1]],
+                          meta: { createdBy: `/problem${i}/_select1` },
+                          subvariants: []
+                        }]
+                      })
+                    } else {
+                      expect(p.activeChildren[1].stateValues.value).eq(problemBoptions[selectInds[i - 1] - 1])
+                      generatedVariantInfo.subvariants[0].subvariants.push({
+                        index: problem.stateValues.generatedVariantInfo.index,
+                        name: numberToLetters(problem.stateValues.generatedVariantInfo.index, true),
+                        meta: {
+                          subvariantsSpecified: true,
+                          createdBy: `/problem${i}`
+                        },
+                        subvariants: [{
+                          indices: [selectInds[i - 1]],
+                          meta: { createdBy: `/problem${i}/_selectfromsequence1` },
+                        }]
+                      })
+                    }
+                  }
+
+                  expect(components["/_document1"].stateValues.generatedVariantInfo).eqls(
+                    generatedVariantInfo
+                  )
+                  expect(components["/_document1"].stateValues.itemVariantInfo).eqls(
+                    generatedVariantInfo.subvariants[0].subvariants
                   )
 
                 })

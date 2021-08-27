@@ -21,9 +21,9 @@ $weights = array_map(function($item) use($conn) {
     return mysqli_real_escape_string($conn, $item);
   }, $_POST['weights']);
 
-// $itemVariants = array_map(function($item) use($conn) {
-//     return mysqli_real_escape_string($conn, $item);
-//   }, $_POST['itemVariantInfo']);
+$itemVariants = array_map(function($item) use($conn) {
+    return mysqli_real_escape_string($conn, $item);
+  }, $_POST['itemVariantInfo']);
 
 $success = TRUE;
 $message = "";
@@ -66,7 +66,7 @@ if ($result->num_rows < 1){
     $result = $conn->query($sql);
 }
 
-$sql = "SELECT doenetId
+$sql = "SELECT began
     FROM user_assignment_attempt
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
@@ -83,6 +83,20 @@ if ($result->num_rows < 1){
     ";
 
     $result = $conn->query($sql);
+}else{
+  $row = $result->fetch_assoc();
+  $began = $row['began'];
+  if ($began == NULL){
+    $sql = "
+    UPDATE user_assignment_attempt
+    SET began=NOW()
+    WHERE userId = '$userId'
+    AND doenetId = '$doenetId'
+    AND contentId = '$contentId'
+    AND attemptNumber = '$attemptNumber'
+    ";
+    $result = $conn->query($sql);
+  }
 }
 
 $sql = "SELECT userId
@@ -101,8 +115,11 @@ if ($result->num_rows < 1){
   for ($itemNumber = 1; $itemNumber < count($weights) + 1; $itemNumber++){
     //Store Item  weights
     $weight = $weights[($itemNumber -1)];
-    // $itemVariant = $itemVariants[($itemNumber -1)];
-    $itemVariant = $itemNumber; //TODO remove
+    $itemVariant = $itemVariants[($itemNumber -1)];
+    if ($itemVariant == 'null'){
+      $itemVariant = '';  //TODO: Make Null work
+    }
+ 
     $sql = "INSERT INTO user_assignment_attempt_item 
     (userId,doenetId,contentId,attemptNumber,itemNumber,weight,generatedVariant)
     values

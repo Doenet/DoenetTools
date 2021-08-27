@@ -152,6 +152,21 @@ var faSearch = {
   iconName: 'search',
   icon: [512, 512, [], "f002", "M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"]
 };
+var faSort = {
+  prefix: 'fas',
+  iconName: 'sort',
+  icon: [320, 512, [], "f0dc", "M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41zm255-105L177 64c-9.4-9.4-24.6-9.4-33.9 0L24 183c-15.1 15.1-4.4 41 17 41h238c21.4 0 32.1-25.9 17-41z"]
+};
+var faSortDown = {
+  prefix: 'fas',
+  iconName: 'sort-down',
+  icon: [320, 512, [], "f0dd", "M41 288h238c21.4 0 32.1 25.9 17 41L177 448c-9.4 9.4-24.6 9.4-33.9 0L24 329c-15.1-15.1-4.4-41 17-41z"]
+};
+var faSortUp = {
+  prefix: 'fas',
+  iconName: 'sort-up',
+  icon: [320, 512, [], "f0de", "M279 224H41c-21.4 0-32.1-25.9-17-41L143 64c9.4-9.4 24.6-9.4 33.9 0l119 119c15.2 15.1 4.5 41-16.9 41z"]
+};
 var faTh = {
   prefix: 'fas',
   iconName: 'th',
@@ -173,4 +188,4 @@ var faUserCircle = {
   icon: [496, 512, [], "f2bd", "M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"]
 };
 
-export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExternalLinkAlt, faFolder, faGripLines, faGripLinesVertical, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPassport, faPercentage, faPlus, faPuzzlePiece, faSearch, faTh, faTimes, faUser, faUserCircle };
+export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBars, faBookOpen, faCaretDown, faCaretRight, faChalkboard, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faExternalLinkAlt, faFolder, faGripLines, faGripLinesVertical, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPassport, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTh, faTimes, faUser, faUserCircle };

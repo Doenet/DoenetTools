@@ -12,9 +12,12 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     let attributes = super.createAttributesObject(args);
 
     delete attributes.numberOfSamples;
-
+    
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.numberToSelect = {
-      createComponentOfType: "number",
+      createPrimitiveOfType: "number",
       createStateVariable: "numberToSelect",
       defaultValue: 1,
       public: true,

@@ -12,6 +12,9 @@ export default class Map extends CompositeComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.behavior = {
       createComponentOfType: "text",
       createStateVariable: "behavior",

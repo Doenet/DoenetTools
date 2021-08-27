@@ -12,6 +12,9 @@ export default class Substitute extends CompositeComponent {
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
 
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.type = {
       createPrimitiveOfType: "string",
       createStateVariable: "type",

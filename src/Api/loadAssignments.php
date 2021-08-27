@@ -13,11 +13,12 @@ if (!isset($_GET["driveId"])) {
 } else {
     $driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
     $sql = "
-    SELECT a.doenetId, c.title
+    SELECT a.doenetId, dc.label
     FROM assignment AS a
-    LEFT JOIN content as c
-    ON a.doenetId = c.doenetId
+    LEFT JOIN drive_content as dc
+    ON a.doenetId = dc.doenetId
     WHERE a.driveId = '$driveId'
+    AND dc.isReleased = '1'
     ORDER BY a.dueDate
     ";
 
@@ -30,7 +31,7 @@ if (!isset($_GET["driveId"])) {
             array_push($response_arr,
                 array(
                     $row['doenetId'],
-                    $row['title']
+                    $row['label']
                 )
             );
         }

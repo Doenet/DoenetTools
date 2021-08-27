@@ -75,10 +75,7 @@ export function deepCompare(a, b, BaseComponent) {
 
     // if math-expressions, equal if exact same syntax tree
     if (x instanceof me.class && y instanceof me.class) {
-      if (Number.isNaN(x.tree) && Number.isNaN(y.tree)) {
-        return true;
-      }
-      return x.equalsViaSyntax(y);
+      return compare2Objects(x.tree, y.tree)
     }
 
     // Works in case when functions are created in constructor.

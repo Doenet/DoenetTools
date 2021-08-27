@@ -1,7 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Headers: access');
-header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
@@ -10,15 +10,42 @@ include 'db_connection.php';
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
-$driveId = mysqli_real_escape_string($conn, $_REQUEST['driveId']);
-$parentFolderId = mysqli_real_escape_string($conn, $_REQUEST['parentFolderId']);
-$itemId = mysqli_real_escape_string($conn, $_REQUEST['itemId']);
-$versionId = mysqli_real_escape_string($conn, $_REQUEST['versionId']);
-$label = mysqli_real_escape_string($conn, $_REQUEST['label']);
-$type = mysqli_real_escape_string($conn, $_REQUEST['type']);
-$doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
-$sortOrder = mysqli_real_escape_string($conn, $_REQUEST['sortOrder']);
-$isNewCopy = mysqli_real_escape_string($conn, $_REQUEST['isNewCopy']);
+$_POST = json_decode(file_get_contents("php://input"),true);
+
+$driveId = mysqli_real_escape_string($conn,$_POST["driveId"]);
+$parentFolderId = mysqli_real_escape_string($conn,$_POST["parentFolderId"]);
+$itemId = mysqli_real_escape_string($conn,$_POST["itemId"]);
+$versionId = mysqli_real_escape_string($conn,$_POST["versionId"]);
+$label = mysqli_real_escape_string($conn,$_POST["label"]);
+$type = mysqli_real_escape_string($conn,$_POST["type"]);
+$doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
+$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
+$sortOrder = mysqli_real_escape_string($conn,$_POST["sortOrder"]);
+$isNewCopy = mysqli_real_escape_string($conn,$_POST["isNewCopy"]);
+
+//DoenetML Assignment
+$dueDate = mysqli_real_escape_string($conn,$_POST["dueDate"]);
+$assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
+$timeLimit = mysqli_real_escape_string($conn,$_POST["timeLimit"]);
+$numberOfAttemptsAllowed = mysqli_real_escape_string($conn,$_POST["numberOfAttemptsAllowed"]);
+$attemptAggregation = mysqli_real_escape_string($conn,$_POST["attemptAggregation"]);
+$totalPointsOrPercent = mysqli_real_escape_string($conn,$_POST["totalPointsOrPercent"]);
+$gradeCategory = mysqli_real_escape_string($conn,$_POST["gradeCategory"]);
+$individualize = mysqli_real_escape_string($conn,$_POST["individualize"]);
+$multipleAttempts = mysqli_real_escape_string($conn,$_POST["multipleAttempts"]);
+$showSolution = mysqli_real_escape_string($conn,$_POST["showSolution"]);
+$showFeedback = mysqli_real_escape_string($conn,$_POST["showFeedback"]);
+$showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
+$showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
+$proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
+if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
+if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
+if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
+if ($showSolution){ $showSolution = '1'; } else { $showSolution = '0'; }
+if ($showFeedback){ $showFeedback = '1'; } else { $showFeedback = '0'; }
+if ($showHints){ $showHints = '1'; } else { $showHints = '0'; }
+if ($showCorrectness){ $showCorrectness = '1'; } else { $showCorrectness = '0'; }
+if ($proctorMakesAvailable){ $proctorMakesAvailable = '1'; } else { $proctorMakesAvailable = '0'; }
 
 $success = true;
 $message = '';
@@ -48,6 +75,10 @@ if ($driveId == '') {
     $success = false;
     $message = "You need to be signed in to create a $type";
 }
+
+// TODO: Test Assignment Variables
+// if ($type === 'DoenetML'){
+// }
 
 if ($success) {
     //Check for permissions
@@ -126,6 +157,51 @@ if ($success) {
                   ";
             }
             $result = $conn->query($sql);
+
+            //Assignment
+            $sql="
+            INSERT INTO assignment
+            (
+            doenetId,
+            contentId,
+            driveId,
+            assignedDate,
+            dueDate,
+            timeLimit,
+            numberOfAttemptsAllowed,
+            attemptAggregation,
+            totalPointsOrPercent,
+            gradeCategory,
+            individualize,
+            multipleAttempts,
+            showSolution,
+            showFeedback,
+            showHints,
+            showCorrectness,
+            proctorMakesAvailable)
+            VALUES
+            (
+            '$doenetId',
+            '$contentId',
+            '$driveId',
+            '$assignedDate',
+            '$dueDate',
+            $timeLimit,
+            '$numberOfAttemptsAllowed',
+            '$attemptAggregation',
+            '$totalPointsOrPercent',
+            '$gradeCategory',
+            '$individualize',
+            '$multipleAttempts',
+            '$showSolution',
+            '$showFeedback',
+            '$showHints',
+            '$showCorrectness',
+            '$proctorMakesAvailable')
+            ";
+          
+            $result = $conn->query($sql); 
+
             break;
         case 'Collection':
             if ($isNewCopy != '1') {

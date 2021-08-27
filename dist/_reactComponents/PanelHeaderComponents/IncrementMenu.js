@@ -79,7 +79,7 @@ export default function Increment(props) {
   var values;
   var sizes;
   var menuComponents = [];
-  const [currentValue, setCurrentValue] = useState("");
+  const [currentValue, setCurrentValue] = useState(props.value ? props.value : "");
   var align = "flex";
   var decreaseIcon = "-";
   var increaseIcon = "+";

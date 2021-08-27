@@ -47,7 +47,7 @@ export default class Core {
 
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
-    this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
+    // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = coreUpdatedCallback;
     this.coreReadyCallback = function () {
@@ -133,7 +133,6 @@ export default class Core {
       deletedStateVariables: {},
       deletedComponents: {},
       recreatedComponents: {},
-      itemScoreChanges: new Set(),
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
       stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
@@ -963,6 +962,15 @@ export default class Core {
         }
       }
 
+      if (!setUpVariant && componentClass.setUpVariantUnlessAttributePrimitive) {
+        let attribute = componentClass.setUpVariantUnlessAttributePrimitive;
+
+        if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
+          && serializedComponent.attributes[attribute].primitive)) {
+          setUpVariant = true;
+        }
+      }
+
       if (setUpVariant) {
 
         let descendantVariantComponents = serializeFunctions.gatherVariantComponents({
@@ -1331,8 +1339,8 @@ export default class Core {
     // allChildrenOrder contains same children as allChildren,
     // but retaining an order that we can use for counters.
     // If defining children are replaced my composite replacements or adapters,
-    // those children come immediately after the corresponding defining child
-    parent.allChildrenOrdered = parent.activeChildren.filter(x => x.componentName).map(x => x.componentName)
+    // those children will come immediately after the corresponding defining child
+    parent.allChildrenOrdered = parent.activeChildren.map(x => x.componentName)
 
     // if any of activeChildren are expanded compositeComponents
     // replace with new components given by the composite component
@@ -1598,7 +1606,8 @@ export default class Core {
       newSerializedChild = {
         componentType:
           this.allComponentClasses[originalChild.componentType]
-            .getAdapterComponentType(n, this.publicStateVariableInfo)
+            .getAdapterComponentType(n, this.publicStateVariableInfo),
+        placeholderInd: originalChild.placeholderInd + "adapt"
       }
     }
 
@@ -1635,6 +1644,10 @@ export default class Core {
     // Replace originalChild with its adapter in activeChildren
     parent.activeChildren.splice(childInd, 1, adapter);
 
+    // TODO: if originalChild is a placeholder, we lose track of it
+    // (other than through adaptedFrom of adapted)
+    // once we splice it out of activeChildren.  Is that a problem?
+
     // Update allChildren to show that originalChild is no longer active
     // and that adapter is now an active child
     if (originalChild.componentName) {
@@ -1651,6 +1664,10 @@ export default class Core {
     if (originalChild.componentName) {
       let originalInd = parent.allChildrenOrdered.indexOf(originalChild.componentName)
       parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
+    } else {
+      // adapter of placeholder
+      let originalInd = parent.allChildrenOrdered.indexOf(originalChild.placeholderInd)
+      parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.placeholderInd)
     }
 
 
@@ -1910,6 +1927,8 @@ export default class Core {
     delete parent.placeholderActiveChildrenIndices;
     delete parent.placeholderActiveChildrenIndicesByComposite;
 
+    let nPlaceholdersAdded = 0;
+
     for (let childInd = 0; childInd < parent.activeChildren.length; childInd++) {
       let child = parent.activeChildren[childInd];
 
@@ -1952,8 +1971,10 @@ export default class Core {
           for (let i = 0; i < nComponents; i++) {
             replacements.push({
               componentType,
-              fromComposite: child.componentName
+              fromComposite: child.componentName,
+              placeholderInd: nPlaceholdersAdded
             })
+            nPlaceholdersAdded++;
           }
 
           parent.hasPlaceholderActiveChildren = true;
@@ -2001,7 +2022,7 @@ export default class Core {
         // and place replacements immediately afterward
         let ind2 = parent.allChildrenOrdered.indexOf(child.componentName)
         parent.allChildrenOrdered.splice(ind2 + 1, 0,
-          ...replacements.filter(x => x.componentName).map(x => x.componentName))
+          ...replacements.map(x => x.componentName ? x.componentName : x.placeholderInd))
 
         if (replacements.length !== 1) {
           // if replaced composite with anything other than one replacement
@@ -5716,12 +5737,6 @@ export default class Core {
         }
       }
 
-      if (result.itemScoreChanged) {
-        for (let itemNumber of result.itemScoreChanged.itemNumbers) {
-          this.updateInfo.itemScoreChanges.add(itemNumber)
-        }
-      }
-
     }
 
     for (let vName in varsChanged) {
@@ -6130,12 +6145,6 @@ export default class Core {
             if (result.updateDependencies) {
               for (let vName of result.updateDependencies) {
                 component.state[vName].needDependenciesUpdated = true;
-              }
-            }
-
-            if (result.itemScoreChanged) {
-              for (let itemNumber of result.itemScoreChanged.itemNumbers) {
-                this.updateInfo.itemScoreChanges.add(itemNumber)
               }
             }
 
@@ -7564,6 +7573,7 @@ export default class Core {
     let newStateVariableValues = {};
     let sourceInformation = {};
     let workspace = {};
+    let recordItemSubmissions = [];
 
     for (let instruction of updateInstructions) {
 
@@ -7617,21 +7627,12 @@ export default class Core {
           newStateVariableValues,
           preliminary: true,
         });
+      } else if (instruction.updateType === "recordItemSubmission") {
+        recordItemSubmissions.push(instruction.itemNumber)
       }
 
     }
 
-    //TODO: Inside for loop?
-    if (this.externalFunctions.localStateChanged) {
-      setTimeout(() => this.externalFunctions.localStateChanged({
-        newStateVariableValues,
-        contentId: this.contentId,
-        sourceOfUpdate: {
-          sourceInformation
-        },
-        transient,
-      }), 0)
-    }
 
     let nFailures = Infinity;
     while (nFailures > 0) {
@@ -7657,7 +7658,11 @@ export default class Core {
     //   }
     // });
 
-    if (this.updateInfo.itemScoreChanges.size > 0) {
+
+    let itemsWithCreditAchieved = {};
+
+    if (recordItemSubmissions.length > 0) {
+      recordItemSubmissions = [...new Set(recordItemSubmissions)];
       if (event) {
         if (!event.context) {
           event.context = {};
@@ -7667,19 +7672,36 @@ export default class Core {
         }
         event.context.documentCreditAchieved = this.document.stateValues.creditAchieved;
       }
-      for (let itemNumber of this.updateInfo.itemScoreChanges) {
-        if (this.externalFunctions.submitResponse) {
-          this.externalFunctions.submitResponse({
-            itemNumber,
-            itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber],
-            callBack: this.submitResponseCallBack,
-          });
-        }
+      for (let itemNumber of recordItemSubmissions) {
+        itemsWithCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1];
+        // if (this.externalFunctions.submitResponse) {
+        //   this.externalFunctions.submitResponse({
+        //     itemNumber,
+        //     itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber - 1],
+        //     callBack: this.submitResponseCallBack,
+        //   });
+        // }
         if (event) {
-          event.context.itemCreditAchieved[Number(itemNumber) + 1] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
         }
       }
     }
+
+
+    //TODO: Inside for loop?
+    if (this.externalFunctions.localStateChanged) {
+      setTimeout(() => this.externalFunctions.localStateChanged({
+        newStateVariableValues,
+        contentId: this.contentId,
+        sourceOfUpdate: {
+          sourceInformation
+        },
+        transient,
+        itemsWithCreditAchieved,
+      }), 0)
+    }
+
+
 
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
@@ -8548,51 +8570,51 @@ export default class Core {
     return;
   }
 
-  submitResponseCallBack(results) {
+  // submitResponseCallBack(results) {
 
-    // console.log(`submit response callback`)
-    // console.log(results);
-    return;
+  //   // console.log(`submit response callback`)
+  //   // console.log(results);
+  //   return;
 
-    if (!results.success) {
-      let errorMessage = "Answer not saved due to a network error. \nEither you are offline or your authentication has timed out.";
-      this.renderer.updateSection({
-        title: this.state.title,
-        viewedSolution: this.state.viewedSolution,
-        isError: true,
-        errorMessage,
-      });
-      alert(errorMessage);
+  //   if (!results.success) {
+  //     let errorMessage = "Answer not saved due to a network error. \nEither you are offline or your authentication has timed out.";
+  //     this.renderer.updateSection({
+  //       title: this.state.title,
+  //       viewedSolution: this.state.viewedSolution,
+  //       isError: true,
+  //       errorMessage,
+  //     });
+  //     alert(errorMessage);
 
-      this.coreFunctions.requestUpdate({
-        updateType: "updateRendererOnly",
-      });
-    } else if (results.viewedSolution) {
-      console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
-      this.coreFunctions.requestUpdate({
-        updateType: "updateValue",
-        updateInstructions: [{
-          componentName: scoredComponent.componentName,
-          variableUpdates: {
-            viewedSolution: { changes: true },
-          }
-        }]
-      })
-    }
+  //     this.coreFunctions.requestUpdate({
+  //       updateType: "updateRendererOnly",
+  //     });
+  //   } else if (results.viewedSolution) {
+  //     console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
+  //     this.coreFunctions.requestUpdate({
+  //       updateType: "updateValue",
+  //       updateInstructions: [{
+  //         componentName: scoredComponent.componentName,
+  //         variableUpdates: {
+  //           viewedSolution: { changes: true },
+  //         }
+  //       }]
+  //     })
+  //   }
 
-    // if this.answersToSubmitCounter is a positive number
-    // that means that we have call this.submitAllAnswers and we still have
-    // some answers that haven't been submitted
-    // In this case, we will decrement this.answersToSubmitCounter
-    // If this.answersToSubmitCounter newly becomes zero, 
-    // then we know that we have submitted the last one answer
-    if (this.answersToSubmitCounter > 0) {
-      this.answersToSubmitCounter -= 1;
-      if (this.answersToSubmitCounter === 0) {
-        this.externalFunctions.allAnswersSubmitted();
-      }
-    }
-  }
+  //   // if this.answersToSubmitCounter is a positive number
+  //   // that means that we have call this.submitAllAnswers and we still have
+  //   // some answers that haven't been submitted
+  //   // In this case, we will decrement this.answersToSubmitCounter
+  //   // If this.answersToSubmitCounter newly becomes zero, 
+  //   // then we know that we have submitted the last one answer
+  //   if (this.answersToSubmitCounter > 0) {
+  //     this.answersToSubmitCounter -= 1;
+  //     if (this.answersToSubmitCounter === 0) {
+  //       this.externalFunctions.allAnswersSubmitted();
+  //     }
+  //   }
+  // }
 
   // addComponents({ serializedComponents, parent }) {
   //   //Check if 

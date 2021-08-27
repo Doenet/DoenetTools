@@ -203,7 +203,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it('select multiple maths, initially unresolved', () => {
+  it.skip('select multiple maths, initially unresolved', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -486,7 +486,7 @@ describe('Select Tag Tests', function () {
     })
   });
 
-  it("select doesn't change dynamically", () => {
+  it.skip("select doesn't change dynamically", () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

@@ -3,9 +3,10 @@ import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import BreadCrumb from "../../_reactComponents/Breadcrumb/BreadCrumb.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {folderDictionary} from "../../_reactComponents/Drive/NewDrive.js";
 export default function AssignmentBreadCrumb() {
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  let [path, setPath] = useState(null);
+  let [path, setPath] = useState(":");
   useEffect(() => {
     axios.get("/api/findDriveIdFolderId.php", {
       params: {doenetId}
@@ -13,7 +14,13 @@ export default function AssignmentBreadCrumb() {
       setPath(`${resp.data.driveId}:${resp.data.parentFolderId}`);
     });
   }, [doenetId]);
-  if (!path) {
+  let [driveId, folderId] = path.split(":");
+  let folderInfo = useRecoilValue(folderDictionary({driveId, folderId}));
+  const docInfo = folderInfo?.contentsDictionaryByDoenetId?.[doenetId];
+  if (!docInfo) {
+    return null;
+  }
+  if (path === ":") {
     return null;
   }
   return /* @__PURE__ */ React.createElement(Suspense, {
@@ -27,6 +34,7 @@ export default function AssignmentBreadCrumb() {
     tool: "Content",
     tool2: "Assignment",
     doenetId,
-    path
+    path,
+    label: docInfo.label
   })));
 }

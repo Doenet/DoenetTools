@@ -15,6 +15,7 @@ module.exports = {
     // 'src/Tools/signin': '/signin',
     // 'src/Tools/signout': '/signout',
     // 'src/Tools/new': '/new',
+    'src/Core': '/core',
     'src/Viewer': '/viewer',
     'src/Tools/_framework': '/_framework',
     'src/Media': { url: '/media', static: true, resolve: false },

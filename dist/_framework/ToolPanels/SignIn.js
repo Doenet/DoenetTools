@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
-import logo from "../../media/Doenet_Logo_Frontpage.png.proxy.js";
 import Cookies from "../../_snowpack/pkg/js-cookie.js";
 import axios from "../../_snowpack/pkg/axios.js";
 export default function SignIn(props) {
@@ -9,6 +8,7 @@ export default function SignIn(props) {
   let [signInStage, setSignInStage] = useState("beginning");
   let [isSentEmail, setIsSentEmail] = useState(false);
   let [deviceName, setDeviceName] = useState("");
+  console.log(signInStage);
   const jwt = Cookies.get();
   const emailRef = useRef(null);
   const codeRef = useRef(null);
@@ -31,7 +31,7 @@ export default function SignIn(props) {
     axios.get("/api/loadProfile.php", {params: {}}).then((resp) => {
       if (resp.data.success === "1") {
         localStorage.setItem("Profile", JSON.stringify(resp.data.profile));
-        location.href = "new#/course";
+        location.href = "/#/course";
       } else {
       }
     }).catch((error) => {
@@ -75,11 +75,9 @@ export default function SignIn(props) {
         }
       }
     }).catch((error) => {
-      this.setState({error});
+      console.error(error);
     });
-    return /* @__PURE__ */ React.createElement("div", {
-      style: props.style
-    }, /* @__PURE__ */ React.createElement("div", {
+    return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
       style: {
         position: "absolute",
         top: "50%",
@@ -104,7 +102,7 @@ export default function SignIn(props) {
       style: {textAlign: "center"}
     }, "Code Expired"), /* @__PURE__ */ React.createElement("button", {
       onClick: () => {
-        location.href = "/signin";
+        location.href = "/#/signin";
       }
     }, "Restart Signin"));
   }
@@ -189,7 +187,7 @@ export default function SignIn(props) {
     }, /* @__PURE__ */ React.createElement("img", {
       style: {width: "250px", height: "250px"},
       alt: "Doenet Logo",
-      src: logo
+      src: "/media/Doenet_Logo_Frontpage.png"
     }), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("p", null, /* @__PURE__ */ React.createElement("label", null, "Email Address:", " ", /* @__PURE__ */ React.createElement("input", {
       type: "text",
       label: "Email Address",

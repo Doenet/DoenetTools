@@ -445,6 +445,10 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.suppressAutomaticVariants = {
+      returnDependencies: () => ({}),
+      definition: () => ({ newValues: { suppressAutomaticVariants: true } })
+    }
 
     stateVariableDefinitions.generatedVariantInfo = {
       additionalStateVariablesDefined: ["isVariantComponent"],
@@ -473,18 +477,26 @@ export default class SectioningComponent extends BlockComponent {
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
-          definingChildrenFirst: true,
         },
         variants: {
           dependencyType: "variants",
         },
+        suppressAutomaticVariants: {
+          dependencyType: "stateVariable",
+          variableName: "suppressAutomaticVariants"
+        },
+        sectionPlaceholder: {
+          dependencyType: "stateVariable",
+          variableName: "sectionPlaceholder"
+        }
+
       }),
       definition({ dependencyValues, componentName }) {
 
         let generatedVariantInfo = {};
 
         if (dependencyValues.variantControlChild.length === 0) {
-          if (dependencyValues.variantIndex === undefined) {
+          if (dependencyValues.suppressAutomaticVariants) {
             return {
               newValues: {
                 generatedVariantInfo: null,
@@ -504,6 +516,7 @@ export default class SectioningComponent extends BlockComponent {
 
 
         let subvariantsSpecified = Boolean(
+          dependencyValues.variants &&
           dependencyValues.variants.desiredVariant &&
           dependencyValues.variants.desiredVariant.subvariants
         );
@@ -513,13 +526,22 @@ export default class SectioningComponent extends BlockComponent {
           subvariantsSpecified
         }
 
-        let subvariants = generatedVariantInfo.subvariants = [];
 
-        for (let descendant of dependencyValues.variantDescendants) {
-          if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.generatedVariantInfo)
-          } else if (descendant.stateValues.generatedVariantInfo) {
-            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+        if (dependencyValues.sectionPlaceholder) {
+          // section placeholders don't have the descedants to determine
+          // the variant info
+          // so just give the subvariants specified
+          if (subvariantsSpecified) {
+            generatedVariantInfo.subvariants = dependencyValues.variants.desiredVariant.subvariants
+          }
+        } else {
+          let subvariants = generatedVariantInfo.subvariants = [];
+          for (let descendant of dependencyValues.variantDescendants) {
+            if (descendant.stateValues.isVariantComponent) {
+              subvariants.push(descendant.stateValues.generatedVariantInfo)
+            } else if (descendant.stateValues.generatedVariantInfo) {
+              subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+            }
           }
         }
 
@@ -721,7 +743,10 @@ export default class SectioningComponent extends BlockComponent {
 
       let variantIndex;
       // check if desiredVariant was specified
-      let desiredVariant = serializedComponent.variants.desiredVariant;
+      let desiredVariant;
+      if (serializedComponent.variants) {
+        desiredVariant = serializedComponent.variants.desiredVariant;
+      }
       if (desiredVariant !== undefined) {
         if (desiredVariant.index !== undefined) {
           let desiredVariantIndex = Number(desiredVariant.index);
@@ -793,8 +818,10 @@ export default class SectioningComponent extends BlockComponent {
     // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants
-    let desiredVariant = serializedComponent.variants.desiredVariant;
-
+    let desiredVariant;
+    if (serializedComponent.variants) {
+      desiredVariant = serializedComponent.variants.desiredVariant;
+    }
     if (desiredVariant === undefined) {
       desiredVariant = {};
     }
