@@ -1307,7 +1307,8 @@ describe('Paginator Tag Tests', function () {
       <problem name="problem5" newNamespace>
         <title>Problem H</title>
         <variantControl nVariants="7" variantNames="apple banana cherry date elderberry fig grape" />
-        <select assignNames="(fruit)" hide>
+        <!-- Note: explicitly don't put fruit in parens to test for previous error -->
+        <select assignNames="fruit" hide>
           <option selectForVariantNames="apple"><text>apple</text></option>
           <option selectForVariantNames="banana"><text>banana</text></option>
           <option selectForVariantNames="cherry"><text>cherry</text></option>

@@ -2156,7 +2156,30 @@ export class DependencyHandler {
       }
     }
 
-    while (Object.keys(neededForItem).length > 0) {
+
+    // first try without forcing
+    // i.e., without passing force on to resolveItem
+    // that way, if force===true, we'll first iterate
+    // to possibly reveal other items needed resolve
+    // that are picked up from the failures
+
+    let previousNFailures = Infinity;
+    let nFailures = Infinity;
+    while (Object.keys(neededForItem).length > 0 || nFailures > 0) {
+      if (Number.isFinite(nFailures) && nFailures >= previousNFailures) {
+        break;
+      }
+      if (nFailures > 0) {
+        neededForItem = this.getNeededToResolve({
+          componentName,
+          type,
+          stateVariable,
+          dependency,
+        });
+      }
+      previousNFailures = nFailures;
+      nFailures = 0;
+
       for (let blockerType in neededForItem) {
         if (blockerType === "determineDependencies") {
           throw Error(`Shouldn't have determine dependencies blocker after determining dependencies: ${componentName}, ${type}, ${stateVariable}, ${dependency}`);
@@ -2172,20 +2195,68 @@ export class DependencyHandler {
             type: blockerType,
             stateVariable: blockerStateVariable,
             dependency: blockerDependency,
-            force, //recurseUpstream
+            //force, //recurseUpstream
             expandComposites,
           })
 
 
           if (!result.success) {
-            // console.log(`${" ".repeat(this.resolveLevels - 1)}couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
-            // this.resolveLevels--;
-            return result;
+            if (force) {
+              nFailures++;
+            } else {
+              // console.log(`${" ".repeat(this.resolveLevels - 1)}couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
+              // this.resolveLevels--;
+              return result;
+            }
+          }
+        }
+      }
+    }
+
+
+    if (nFailures > 0) {
+      // if had failures and made it to here,
+      // it means we are forcing.
+      // Try one more time while passing force to resolveItem 
+
+      neededForItem = this.getNeededToResolve({
+        componentName,
+        type,
+        stateVariable,
+        dependency,
+      });
+
+      while (Object.keys(neededForItem).length > 0) {
+        for (let blockerType in neededForItem) {
+          if (blockerType === "determineDependencies") {
+            throw Error(`Shouldn't have determine dependencies blocker after determining dependencies: ${componentName}, ${type}, ${stateVariable}, ${dependency}`);
           }
 
+          // shallow copy, as items may be deleted as resolve items
+          for (let code of [...neededForItem[blockerType]]) {
+
+            let [blockerComponentName, blockerStateVariable, blockerDependency] = code.split('|');
+
+            let result = this.resolveItem({
+              componentName: blockerComponentName,
+              type: blockerType,
+              stateVariable: blockerStateVariable,
+              dependency: blockerDependency,
+              force, //recurseUpstream
+              expandComposites,
+            })
+
+
+            if (!result.success) {
+              // console.log(`${" ".repeat(this.resolveLevels - 1)}couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
+              // this.resolveLevels--;
+              return result;
+            }
+
+          }
+
+
         }
-
-
       }
     }
 

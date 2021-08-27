@@ -1624,7 +1624,7 @@ describe('Problem Tag Tests', function () {
       cy.get('#\\/subProblem_incorrect').should('not.exist');
       cy.get('#\\/subProblem_partial').should('not.exist');
 
-      
+
       cy.get('#\\/theProblem_submit').should('not.exist');
       cy.get('#\\/theProblem_correct').should('be.visible');
       cy.get('#\\/theProblem_incorrect').should('not.exist');
@@ -1854,7 +1854,7 @@ describe('Problem Tag Tests', function () {
       cy.get('#\\/subProblem_incorrect').should('not.exist');
       cy.get('#\\/subProblem_partial').should('not.exist');
 
-      
+
       cy.get('#\\/theDocument_submit').should('not.exist');
       cy.get('#\\/theDocument_correct').should('be.visible');
       cy.get('#\\/theDocument_incorrect').should('not.exist');
@@ -1934,5 +1934,140 @@ describe('Problem Tag Tests', function () {
 
   });
 
+  it('maintain state while reloading problem', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <problem name="problem1" newNamespace>
+      <variantControl nVariants="2" variantNames="apple banana" />
+      <select assignNames="fruit" hide>
+        <option selectForVariantNames="apple" newNamespace>
+          <text name="name">apple</text>
+          <text name="color">red</text>
+        </option>
+        <option selectForVariantNames="banana" newNamespace>
+          <text name="name">banana</text>
+          <text name="color">yellow</text>
+          </option>
+      </select>
+      <p>Enter $(fruit/name): 
+        <answer type="text">
+          <textinput name="input1" />
+          <award>$(fruit/name)</award>
+        </answer>
+      </p>
+      <p>Enter $(fruit/color): 
+      <answer type="text">
+        <textinput name="input2" />
+        <award>$(fruit/color)</award>
+      </answer>
+    </p>
+    </problem>
+  
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariant: {
+          subvariants: [{
+            index: [1],
+          }]
+        }
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/ca')).should('have.text', '0')
+
+    cy.get(cesc('#/problem1/input1_input')).type('banana{enter}');
+    cy.get(cesc('#/problem1/input1_incorrect')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0')
+
+    cy.get(cesc('#/problem1/input2_submit')).should('be.visible');
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem1/input1_incorrect')).should('be.visible');
+    cy.get(cesc('#/problem1/input2_submit')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0')
+
+    cy.get(cesc('#/problem1/input1_input')).clear().type('apple{enter}');
+    cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get(cesc('#/problem1/input2_input')).clear().type('yellow{enter}');
+    cy.get(cesc('#/problem1/input2_incorrect')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
+    cy.get(cesc('#/problem1/input2_incorrect')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get(cesc('#/problem1/input2_input')).clear().type('red{enter}');
+    cy.get(cesc('#/problem1/input2_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
+    cy.get(cesc('#/problem1/input2_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+  })
 
 });
