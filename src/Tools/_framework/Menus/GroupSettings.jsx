@@ -2,8 +2,8 @@ import axios from 'axios';
 import React, { useEffect, useReducer } from 'react';
 import { useRecoilValue } from 'recoil';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import Switch from '../Switch';
 
 export default function GroupSettings() {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -11,6 +11,7 @@ export default function GroupSettings() {
     min: 0,
     max: 0,
     pref: 0,
+    preAssigned: false,
   });
   function groupReducer(state, action) {
     switch (action.type) {
@@ -80,54 +81,71 @@ export default function GroupSettings() {
 
   return (
     <div>
-      <Switch
-        onChange={(e) => {
-          dispach({ type: 'preAssigned', payload: e.target.value });
-        }}
-      >
-        Pre-Assigned Groups
-      </Switch>
-      <label key="min">
-        Min Studnets:
+      <label>
+        Pre-Assigned Groups:
         <input
-          type="number"
-          value={min}
+          type="checkbox"
+          checked={!!preAssigned}
+          value={preAssigned}
           onChange={(e) => {
-            dispach({ type: 'min', payload: { min: e.target.value } });
+            dispach({
+              type: 'preAssigned',
+              payload: { preAssigned: e.target.checked },
+            });
           }}
         />
       </label>
-      <br />
-      <label key="max">
-        Max Students:
-        <input
-          type="number"
-          value={max}
-          onChange={(e) => {
-            //TODO: this value acts oddly when clicking the inc/dec buttons
-            dispach({ type: 'max', payload: { max: e.target.value } });
-          }}
-        />
-      </label>
-      <br />
-      <label key="pref">
-        Preferred Students:
-        <input
-          type="number"
-          value={pref}
-          onChange={(e) => {
-            dispach({ type: 'pref', payload: { pref: e.target.value } });
-          }}
-        />
-      </label>
-      <br />
-      <Button
-        width="menu"
-        value="Save"
-        onClick={() => {
-          dispach({ type: 'save' });
-        }}
-      />
+      {preAssigned ? (
+        <div>
+          <Button alert value="Upload and Assign CSV" width="menu" />
+          <br />
+          <CollapseSection></CollapseSection>
+        </div>
+      ) : (
+        <div>
+          <label key="min">
+            Min Studnets:
+            <input
+              type="number"
+              value={min}
+              onChange={(e) => {
+                dispach({ type: 'min', payload: { min: e.target.value } });
+              }}
+            />
+          </label>
+          <br />
+          <label key="max">
+            Max Students:
+            <input
+              type="number"
+              value={max}
+              onChange={(e) => {
+                //TODO: this value acts oddly when clicking the inc/dec buttons
+                dispach({ type: 'max', payload: { max: e.target.value } });
+              }}
+            />
+          </label>
+          <br />
+          <label key="pref">
+            Preferred Students:
+            <input
+              type="number"
+              value={pref}
+              onChange={(e) => {
+                dispach({ type: 'pref', payload: { pref: e.target.value } });
+              }}
+            />
+          </label>
+          <br />
+          <Button
+            width="menu"
+            value="Save"
+            onClick={() => {
+              dispach({ type: 'save' });
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

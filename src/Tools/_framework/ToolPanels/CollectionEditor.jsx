@@ -93,7 +93,6 @@ export default function CollectionEditor() {
       folderId: itemId,
     }),
   ).getValue();
-  console.log(folderInfoObj.contentsDictionary);
 
   useEffect(() => {
     const entries = [];
