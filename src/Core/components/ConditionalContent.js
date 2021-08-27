@@ -38,6 +38,10 @@ export default class ConditionalContent extends CompositeComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+    
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.maximumNumberToShow = {
       createComponentOfType: "number",
       createStateVariable: "maximumNumberToShow",
