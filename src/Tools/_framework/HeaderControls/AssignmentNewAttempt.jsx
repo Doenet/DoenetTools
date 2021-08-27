@@ -16,8 +16,9 @@ export default function AssignmentNewAttempt() {
     const userAttempts = await snapshot.getPromise((variantsAndAttemptsByDoenetId(doenetId)))
     const userAttemptNumber = userAttempts.numberOfCompletedAttempts + 1;
     // console.log(">>>>userAttemptNumber",userAttemptNumber)
-    // console.log(">>>>attemptsAllowed",attemptsAllowed)
-    if (userAttemptNumber + 1  >= attemptsAllowed){
+    console.log(">>>>attemptsAllowed",attemptsAllowed)
+    //When attemptsAllowed is null there are unlimited attempts
+    if (attemptsAllowed !== null && userAttemptNumber + 1  >= attemptsAllowed){
       setButtonEnabled(false);
       // console.log(">>>>OUT OF ATTEMPTS")
      

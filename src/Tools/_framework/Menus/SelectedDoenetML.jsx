@@ -212,8 +212,7 @@ export function AssignmentSettings({role, doenetId}) {
   
 
   const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null})=>{
-    console.log(">>>>keyToUpdate",keyToUpdate)
-    console.log(">>>>value",value)
+ 
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId))
     let newAInfo = {...oldAInfo,[keyToUpdate]:value}
     set(loadAssignmentSelector(doenetId),newAInfo);

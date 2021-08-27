@@ -39,6 +39,10 @@ export default function AssignmentInfoCap(){
  }
 
  let imageURL = `/media/drive_pictures/${image}`
+ let attemptsAllowedDescription = attemptsAllowed;
+ if (!attemptsAllowed){
+  attemptsAllowedDescription = "Unlimited";
+ }
 
   return <div>
     <div style={{position: 'relative', paddingBottom: '100px'}}>
@@ -46,6 +50,6 @@ export default function AssignmentInfoCap(){
     </div>
     <div>{driveLabel}</div>
     <div>{docInfo.label}</div>
-    <div>{userAttemptNumber}/{attemptsAllowed} Attempts</div>
+    <div>{userAttemptNumber}/{attemptsAllowedDescription} Attempts</div>
   </div>
 }
