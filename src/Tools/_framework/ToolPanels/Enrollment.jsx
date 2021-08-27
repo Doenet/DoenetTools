@@ -1,8 +1,6 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import axios from 'axios';
-import parse from 'csv-parse';
-import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
