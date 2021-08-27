@@ -23,13 +23,20 @@ $stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 
 
 //**Find attemptAggregation
-$sql = "SELECT attemptAggregation
+$sql = "SELECT attemptAggregation,
+        timeLimit,
+        numberOfAttemptsAllowed,
+        dueDate
         FROM assignment
         WHERE doenetId='$doenetId'";
 
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 $attemptAggregation = $row['attemptAggregation'];
+$timeLimit = $row['timeLimit'];
+$numberOfAttemptsAllowed = $row['numberOfAttemptsAllowed'];
+$dueDate = $row['dueDate'];
+
 
 //**Insert user_assignment_attempt_item row if doesn't exist
 $sql = "SELECT credit, viewedSolution
@@ -235,6 +242,9 @@ $result = $conn->query($sql);
 $response_arr = array(
     "access"=> TRUE,
     "viewedSolution"=>$viewedSolution,
+    "timerExpired"=>$timerExpired,
+    "pastDueDate"=>$pastDueDate,
+    "exceededAttemptsAllowed"=>$exceededAttemptsAllowed,
     "valid"=>$valid
 );
 
