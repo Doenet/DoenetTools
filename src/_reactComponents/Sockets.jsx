@@ -934,7 +934,7 @@ function useAcceptBindings() {
         );
 
         // addtional folder type updates
-        if (type === 'Folder') {
+        if (type === 'Folder' || type === 'Collection') {
           set(
             folderDictionary({
               driveId: driveId,
@@ -1084,7 +1084,7 @@ function useAcceptBindings() {
         );
 
         // If a folder, update the label in the child folder
-        if (type === 'Folder') {
+        if (type === 'Folder' || type === 'Collection') {
           set(
             folderDictionary({
               driveId,

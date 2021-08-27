@@ -3,6 +3,7 @@ import {
   useRecoilState,
   useRecoilStateLoadable,
   useRecoilValue,
+  useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil';
 import {
@@ -33,19 +34,25 @@ import {
   sortOptions,
   useDnDCallbacks,
 } from './NewDrive';
+import { useState } from 'react';
 
 function Collection(props) {
   const itemId = props?.item.itemId;
 
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
-    folderInfoSelector({
-      driveId: props.driveId,
-      instanceId: props.driveInstanceId,
-      folderId: itemId,
-    }),
-  );
+  const { folderInfo, contentsDictionary, contentIdsArr } =
+    useRecoilValueLoadable(
+      folderInfoSelector({
+        driveId: props.driveId,
+        instanceId: props.driveInstanceId,
+        folderId: itemId,
+      }),
+    ).getValue();
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:itemId}))
+  const [label, setLabel] = useState(folderInfo?.label);
 
+  useEffect(() => {
+    setLabel(folderInfo.label);
+  }, [folderInfo.label]);
   const {
     onDragStart,
     onDrag,
@@ -166,16 +173,6 @@ function Collection(props) {
   if (props.isNav && itemId === props.pathItemId) {
     borderSide = '8px solid #1A5A99';
   }
-
-  if (folderInfoObj.state === 'loading') {
-    return null;
-  }
-  if (folderInfoObj.state === 'hasError') {
-    console.error(folderInfoObj.contents);
-    return null;
-  }
-  let { folderInfo, contentsDictionary, contentIdsArr } =
-    folderInfoObj.contents;
 
   let openCloseText = isOpen ? (
     <span data-cy="folderToggleCloseIcon">
@@ -311,8 +308,6 @@ function Collection(props) {
   //   >{ buttonLabel }</button>;
   // }
 
-  let label = folderInfo?.label;
-
   let folder = null;
   let items = null;
 
@@ -342,7 +337,7 @@ function Collection(props) {
           if (e.key === 'Enter') {
             props?.doubleClickCallback?.({
               driveId: props.driveId,
-              parentFolderId: itemId,
+              parentFolderId: props.item.parentFolderId,
               item: props.item,
               type: itemType.COLLECTION,
             });
@@ -358,7 +353,7 @@ function Collection(props) {
               driveInstanceId: props.driveInstanceId,
               type: itemType.COLLECTION,
               instructionType: 'one item',
-              parentFolderId: itemId,
+              parentFolderId: props.item.parentFolderId,
             });
           } else if (e.shiftKey && !e.metaKey) {
             props?.clickCallback?.({
@@ -367,7 +362,7 @@ function Collection(props) {
               itemId,
               type: itemType.COLLECTION,
               instructionType: 'range to item',
-              parentFolderId: itemId,
+              parentFolderId: props.item.parentFolderId,
             });
           } else if (!e.shiftKey && e.metaKey) {
             props?.clickCallback?.({
@@ -376,7 +371,7 @@ function Collection(props) {
               itemId,
               type: itemType.COLLECTION,
               instructionType: 'add item',
-              parentFolderId: itemId,
+              parentFolderId: props.item.parentFolderId,
             });
           }
         }}
@@ -432,7 +427,6 @@ function Collection(props) {
   let draggableClassName = '';
   if (!props.isNav && !props.isViewOnly) {
     const onDragStartCallback = () => {
-      console.log(globalSelectedNodes.length === 0, !isSelected);
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
           instructionType: 'clear all',

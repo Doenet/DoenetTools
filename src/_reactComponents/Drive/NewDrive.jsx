@@ -988,13 +988,14 @@ function Folder(props) {
     itemId = props.driveId;
   }
 
-  const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(
-    folderInfoSelector({
-      driveId: props.driveId,
-      instanceId: props.driveInstanceId,
-      folderId: props.folderId,
-    }),
-  );
+  const { folderInfo, contentsDictionary, contentIdsArr } =
+    useRecoilValueLoadable(
+      folderInfoSelector({
+        driveId: props.driveId,
+        instanceId: props.driveInstanceId,
+        folderId: props.folderId,
+      }),
+    ).getValue();
   // const [folderInfoObj, setFolderInfo] = useRecoilStateLoadable(folderDictionaryFilterSelector({driveId:props.driveId,folderId:props.folderId}))
 
   const {
@@ -1117,16 +1118,6 @@ function Folder(props) {
   if (props.isNav && itemId === props.pathItemId) {
     borderSide = '8px solid #1A5A99';
   }
-
-  if (folderInfoObj.state === 'loading') {
-    return null;
-  }
-  if (folderInfoObj.state === 'hasError') {
-    console.error(folderInfoObj.contents);
-    return null;
-  }
-  let { folderInfo, contentsDictionary, contentIdsArr } =
-    folderInfoObj.contents;
 
   let openCloseText = isOpen ? (
     <span data-cy="folderToggleCloseIcon">
@@ -1654,18 +1645,20 @@ function Folder(props) {
             break;
           case 'Collection':
             items.push(
-              <Collection
-                driveId={props.driveId}
-                driveInstanceId={props.driveInstanceId}
-                key={`item${itemId}${props.driveInstanceId}`}
-                item={item}
-                clickCallback={props.clickCallback}
-                doubleClickCallback={props.doubleClickCallback}
-                numColumns={props.numColumns}
-                columnTypes={props.columnTypes}
-                indentLevel={props.indentLevel + 1}
-                isViewOnly={props.isViewOnly}
-              />,
+              <Suspense>
+                <Collection
+                  driveId={props.driveId}
+                  driveInstanceId={props.driveInstanceId}
+                  key={`item${itemId}${props.driveInstanceId}`}
+                  item={item}
+                  clickCallback={props.clickCallback}
+                  doubleClickCallback={props.doubleClickCallback}
+                  numColumns={props.numColumns}
+                  columnTypes={props.columnTypes}
+                  indentLevel={props.indentLevel + 1}
+                  isViewOnly={props.isViewOnly}
+                />
+              </Suspense>,
             );
             break;
           default:
