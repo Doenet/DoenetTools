@@ -28,6 +28,7 @@ $showHints = mysqli_real_escape_string($conn,$_POST["showHints"]);
 $showCorrectness = mysqli_real_escape_string($conn,$_POST["showCorrectness"]);
 $proctorMakesAvailable = mysqli_real_escape_string($conn,$_POST["proctorMakesAvailable"]);
 if ($timeLimit == ''){$timeLimit = 'NULL';} else {$timeLimit = "'$timeLimit'"; }
+if ($numberOfAttemptsAllowed == ''){$numberOfAttemptsAllowed = 'NULL';} else {$numberOfAttemptsAllowed = "'$numberOfAttemptsAllowed'"; }
 if ($individualize){ $individualize = '1'; } else { $individualize = '0'; }
 if ($multipleAttempts){ $multipleAttempts = '1'; } else { $multipleAttempts = '0'; }
 if ($showSolution){ $showSolution = '1'; } else { $showSolution = '0'; }
@@ -56,7 +57,7 @@ $sql = "UPDATE assignment SET
 assignedDate = '$assignedDate',
 dueDate = '$dueDate',
 timeLimit = $timeLimit,
-numberOfAttemptsAllowed = '$numberOfAttemptsAllowed',
+numberOfAttemptsAllowed = $numberOfAttemptsAllowed,
 attemptAggregation = '$attemptAggregation',
 totalPointsOrPercent = '$totalPointsOrPercent',
 gradeCategory = '$gradeCategory',
