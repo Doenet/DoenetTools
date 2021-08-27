@@ -20,6 +20,7 @@ import {
   itemHistoryAtom,
 } from '../ToolHandlers/CourseToolHandler';
 import axios from 'axios';
+import { itemType } from '../../../_reactComponents/Sockets';
 
 export default function CollectionEditor() {
   const [driveId, , itemId] = useRecoilValue(
@@ -86,24 +87,45 @@ export default function CollectionEditor() {
       folderId: itemId,
     }),
   ).getValue();
+  console.log(folderInfoObj.contentsDictionary);
 
   useEffect(() => {
     const entries = [];
     for (let key in folderInfoObj.contentsDictionary) {
-      const { doenetId } = folderInfoObj.contentsDictionary[key];
-      initEntryByDoenetId(doenetId);
-      entries.push(
-        <Suspense key={key}>
-          <CollectionEntry
-            doenetId={doenetId}
-            collectionDoenetId={folderInfoObj.folderInfo.doenetId}
-          />
-        </Suspense>,
-      );
+      if (
+        folderInfoObj.contentsDictionary[key].itemType === itemType.DOENETML
+      ) {
+        const { doenetId } = folderInfoObj.contentsDictionary[key];
+        initEntryByDoenetId(doenetId);
+        entries.push(
+          <Suspense key={key}>
+            <CollectionEntry
+              doenetId={doenetId}
+              collectionDoenetId={folderInfoObj.folderInfo.doenetId}
+            />
+          </Suspense>,
+        );
+      }
     }
     setAvailableEntries(entries);
+    return () => {
+      setAvailableEntries([]);
+    };
   }, [folderInfoObj, initEntryByDoenetId]);
-
+  if (availableEntries.length === 0) {
+    return (
+      <div
+        style={{
+          padding: '8px',
+        }}
+      >
+        <p>
+          No DoenetML files were found in this Colletion. Please add files from
+          the Content screen to continue.
+        </p>
+      </div>
+    );
+  }
   return (
     <div
       style={{
@@ -149,7 +171,7 @@ const entryInfoByDoenetId = atomFamily({
                 folderId: resp.data.parentFolderId,
               }),
             );
-            return folderInfo.contentsDictionaryByDoenetId[doenetId];
+            return folderInfo.contentsDictionaryByDoenetId[doenetId] ?? {};
           }
         } catch (error) {
           console.error(error);

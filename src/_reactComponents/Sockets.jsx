@@ -262,17 +262,29 @@ export default function useSockets(nsp) {
 
       // Interrupt move action if dragging folder to itself or adding non ML to Collection
       for (let gItem of globalSelectedNodes) {
+        // Get parentInfo from edited cache or derive from oldSource
+        const sourceFolderInfo = await snapshot.getPromise(
+          folderDictionary({
+            driveId: gItem.driveId,
+            folderId: gItem.parentFolderId,
+          }),
+        );
         if (gItem.itemId === targetFolderId) {
           throw 'Cannot move folder into itself';
         } else if (
           destinationFolderObj.folderInfo.itemType === itemType.COLLECTION &&
-          gItem.itemType !== itemType.DOENETML
+          sourceFolderInfo.contentsDictionary[gItem.itemId].itemType !==
+            itemType.DOENETML
         ) {
           addToast(
-            `Can not only move DoenetML files into a Collection`,
+            `Can not ${
+              sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+            }s into a Collection`,
             toastType.ERROR,
           );
-          throw 'Can not only move DoenetML files into a Collection';
+          throw `Can not ${
+            sourceFolderInfo.contentsDictionary[gItem.itemId].itemType
+          }s into a Collection`;
         }
       }
 
