@@ -18,7 +18,7 @@ const MenuPanelsWrapper = styled.div`
   justify-content: flex-start;
   background: #e3e3e3;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
   width: ${({hide})=>hide ? '0px' : '240px'};
 `;
 
