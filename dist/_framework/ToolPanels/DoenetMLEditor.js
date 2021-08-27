@@ -40,16 +40,20 @@ export default function DoenetMLEditor(props) {
   let timeout = useRef(null);
   let autosavetimeout = useRef(null);
   const saveDraft = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
-    console.log(">>>>saveDraft ");
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newDraft = {...oldVersions.draft};
     const contentId = getSHAofContent(doenetML);
     newDraft.contentId = contentId;
     newDraft.timestamp = buildTimestamp();
-    let oldVersionsReplacement = {...oldVersions};
-    oldVersionsReplacement.draft = newDraft;
-    set(itemHistoryAtom(doenetId), oldVersionsReplacement);
+    set(itemHistoryAtom(doenetId), (was) => {
+      let asyncDraft = {...was.draft};
+      asyncDraft.contentId = contentId;
+      asyncDraft.timestamp = newDraft.timestamp;
+      let asyncReplacement = {...was};
+      asyncReplacement.draft = asyncDraft;
+      return asyncReplacement;
+    });
     set(fileByContentId(contentId), doenetML);
     let newDBVersion = {
       ...newDraft,
@@ -61,14 +65,13 @@ export default function DoenetMLEditor(props) {
       if (resp.data.success) {
         set(editorSaveTimestamp, new Date());
       } else {
-        console.log(">>>>ERROR", resp.data.message);
+        console.log("ERROR", resp.data.message);
       }
     } catch (error) {
-      console.log(">>>>ERROR", error);
+      console.log("ERROR", error);
     }
-  });
+  }, []);
   const autoSave = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
-    console.log(">>>>autoSave ");
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const contentId = getSHAofContent(doenetML);
     const timestamp = buildTimestamp();
@@ -87,39 +90,39 @@ export default function DoenetMLEditor(props) {
       doenetML,
       doenetId
     };
-    const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    let newVersions = {...oldVersions};
-    newVersions.autoSaves = [newVersion, ...oldVersions.autoSaves];
-    set(itemHistoryAtom(doenetId), newVersions);
+    set(itemHistoryAtom(doenetId), (was) => {
+      let newVersions = {...was};
+      newVersions.autoSaves = [newVersion, ...was.autoSaves];
+      return newVersions;
+    });
     set(fileByContentId(contentId), doenetML);
     try {
       const resp = await axios.post("/api/saveNewVersion.php", newDBVersion);
       if (resp.data.success) {
         set(editorSaveTimestamp, new Date());
       } else {
-        console.log(">>>>ERROR", resp.data.message);
+        console.log("ERROR", resp.data.message);
       }
     } catch (error) {
-      console.log(">>>>ERROR", error);
+      console.log("ERROR", error);
     }
   });
   useEffect(() => {
     return () => {
-      console.log(">>>>UNMOUNT TEXT EDITOR isCurrentDraft", isCurrentDraft, "initilizedDoenetId", initilizedDoenetId);
-      if (isCurrentDraft && initilizedDoenetId !== "") {
+      if (initilizedDoenetId !== "") {
         saveDraft(initilizedDoenetId);
         if (timeout.current !== null) {
           clearTimeout(timeout.current);
-          timeout.current = null;
         }
         if (autosavetimeout.current !== null) {
+          autoSave(initilizedDoenetId);
           clearTimeout(autosavetimeout.current);
         }
         autosavetimeout.current = null;
         timeout.current = null;
       }
     };
-  }, [isCurrentDraft, initilizedDoenetId]);
+  }, [initilizedDoenetId, saveDraft, autoSave]);
   if (paramDoenetId !== initilizedDoenetId) {
     return null;
   }
@@ -131,20 +134,18 @@ export default function DoenetMLEditor(props) {
     setInternalValue: updateInternalValue,
     readOnly: !isCurrentDraft,
     onBeforeChange: (value) => {
-      if (isCurrentDraft) {
-        setEditorDoenetML(value);
-        if (timeout.current === null) {
-          timeout.current = setTimeout(function() {
-            saveDraft(initilizedDoenetId);
-            timeout.current = null;
-          }, 3e3);
-        }
-        if (autosavetimeout.current === null) {
-          autosavetimeout.current = setTimeout(function() {
-            autoSave(initilizedDoenetId);
-            autosavetimeout.current = null;
-          }, 6e4);
-        }
+      setEditorDoenetML(value);
+      if (timeout.current === null) {
+        timeout.current = setTimeout(function() {
+          saveDraft(initilizedDoenetId);
+          timeout.current = null;
+        }, 3e3);
+      }
+      if (autosavetimeout.current === null) {
+        autosavetimeout.current = setTimeout(function() {
+          autoSave(initilizedDoenetId);
+          autosavetimeout.current = null;
+        }, 6e4);
       }
     }
   }));

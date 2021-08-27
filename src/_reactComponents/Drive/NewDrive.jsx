@@ -65,26 +65,27 @@ const loadAssignmentAtomFamily = atomFamily({
   default: selectorFamily({
     key: 'loadAssignmentAtomFamily/Default',
     get: (doenetId) => async () => {
-      const payload = { doenetId }
-      const { data } = await axios.get(
-        "/api/getAllAssignmentSettings.php", {
-          params: payload,
-        }
-      );
+      const payload = { doenetId };
+      const { data } = await axios.get('/api/getAllAssignmentSettings.php', {
+        params: payload,
+      });
       return data.assignment;
     },
   }),
 });
 
-
 export const loadAssignmentSelector = selectorFamily({
   key: 'loadAssignmentSelector',
-  get: (doenetId) => async ({get}) => {
-    return await get(loadAssignmentAtomFamily(doenetId))
+  get:
+    (doenetId) =>
+    async ({ get }) => {
+      return await get(loadAssignmentAtomFamily(doenetId));
     },
-  set: (doenetId) => ({set},newValue)=>{
-    set(loadAssignmentAtomFamily(doenetId),newValue);
-  }
+  set:
+    (doenetId) =>
+    ({ set }, newValue) => {
+      set(loadAssignmentAtomFamily(doenetId), newValue);
+    },
 });
 
 export const itemType = Object.freeze({
@@ -1490,8 +1491,11 @@ function Folder(props) {
           type: itemType.FOLDER,
         });
         props?.clickCallback?.({
+          driveId: props.driveId,
+          parentFolderId: props.item.parentFolderId,
+          itemId: props.item.itemId,
+          driveInstanceId: props.driveInstanceId,
           instructionType: 'one item',
-          parentFolderId: props.parentFolderId,
           type: itemType.FOLDER,
         });
       }
@@ -1560,8 +1564,8 @@ function Folder(props) {
     for (let itemId of contentIdsArr) {
       let item = dictionary[itemId];
       if (!item) continue;
-      if (props.filterCallback){
-        if (!props.filterCallback(item)){
+      if (props.filterCallback) {
+        if (!props.filterCallback(item)) {
           continue;
         }
       }

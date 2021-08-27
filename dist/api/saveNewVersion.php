@@ -65,18 +65,44 @@ if ($title == ""){
 
 //Test if we have permission to save to doenetId
 if ($success){
+
+  //get driveId from doenetId TODO: should be a sql join query with userId
+  $sql = "
+      SELECT driveId
+      FROM `drive_content`
+      WHERE doenetId = '$doenetId'
+  ";
+  $result = $conn->query($sql);
+  if ($result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      $driveId = $row['driveId'];
+  }
+
+  if(array_key_exists('driveId', get_defined_vars())) {
     $sql = "
-    SELECT canAddItemsAndFolders
-    FROM drive_user
-    WHERE userId = '$userId'
-    AND driveId = '$driveId'
+      SELECT canEditContent
+      FROM drive_user
+      WHERE userId = '$userId'
+      AND driveId = '$driveId'
     ";
     $result = $conn->query($sql); 
-    $row = $result->fetch_assoc();
-    if ($row['canAddItemsAndFolders'] == '0'){
-      $success = FALSE;
-      $message = "You need need permission to add versions";
+    if ($result->num_rows > 0) {
+      $row = $result->fetch_assoc();
+      $allowed = $row['canEditContent'];
+      if (!$allowed) {
+          http_response_code(403); //User if forbidden from operation
+          $success = FALSE;
+          $message = "You need need permission to add versions";
+      }
+    } else {
+        //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
+        http_response_code(401); //User has bad auth
+        $success = FALSE;
     }
+  } else {
+    http_response_code(404);
+    $success = FALSE;
+  }
 }
 
 if ($success){

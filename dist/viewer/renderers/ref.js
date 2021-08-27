@@ -14,14 +14,14 @@ export default class Ref extends DoenetRenderer {
         target: "_blank",
         id: this.componentName,
         name: this.componentName,
-        href: `https://www.doenet.org/content/#/?contentId=${this.doenetSvData.contentId}`
+        href: `https://www.doenet.org/#/content/?contentId=${this.doenetSvData.contentId}`
       }, linkContent);
     } else if (this.doenetSvData.doenetId) {
       return /* @__PURE__ */ React.createElement("a", {
         target: "_blank",
         id: this.componentName,
         name: this.componentName,
-        href: `https://www.doenet.org/content/#/?doenetId=${this.doenetSvData.doenetId}`
+        href: `https://www.doenet.org/#/content/?doenetId=${this.doenetSvData.doenetId}`
       }, linkContent);
     } else if (this.doenetSvData.uri) {
       return /* @__PURE__ */ React.createElement("a", {

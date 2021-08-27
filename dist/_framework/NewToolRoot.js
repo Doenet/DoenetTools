@@ -95,6 +95,10 @@ export default function ToolRoot() {
     NavigationPanel: lazy(() => import("./ToolPanels/NavigationPanel.js")),
     Dashboard: lazy(() => import("./ToolPanels/Dashboard.js")),
     Gradebook: lazy(() => import("./ToolPanels/Gradebook.js")),
+    GradebookAssignment: lazy(() => import("./ToolPanels/GradebookAssignment.js")),
+    GradebookStudent: lazy(() => import("./ToolPanels/GradebookStudent.js")),
+    GradebookStudentAssignment: lazy(() => import("./ToolPanels/GradebookStudentAssignment.js")),
+    GradebookAttempt: lazy(() => import("./ToolPanels/GradebookAttempt.js")),
     EditorViewer: lazy(() => import("./ToolPanels/EditorViewer.js")),
     AssignmentViewer: lazy(() => import("./ToolPanels/AssignmentViewer.js")),
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
@@ -111,6 +115,7 @@ export default function ToolRoot() {
     EditorBreadCrumb: lazy(() => import("./HeaderControls/EditorBreadCrumb.js")),
     GradebookBreadCrumb: lazy(() => import("./HeaderControls/GradebookBreadCrumb.js")),
     AssignmentBreadCrumb: lazy(() => import("./HeaderControls/AssignmentBreadCrumb.js")),
+    AssignmentNewAttempt: lazy(() => import("./HeaderControls/AssignmentNewAttempt.js")),
     RoleDropdown: lazy(() => import("./HeaderControls/RoleDropdown.js"))
   }).current;
   let MainPanelKey = `${toolRootMenusAndPanels.pageName}-${toolRootMenusAndPanels.currentMainPanel}`;
@@ -207,8 +212,8 @@ let navigationObj = {
       currentMenus: [],
       menusTitles: [],
       menusInitOpen: [],
-      headerControls: ["AssignmentBreadCrumb"],
-      headerControlsPositions: ["Left"]
+      headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
+      headerControlsPositions: ["Left", "Right"]
     },
     courseChooser: {
       pageName: "Course",
@@ -241,6 +246,46 @@ let navigationObj = {
       headerControls: ["GradebookBreadCrumb"],
       headerControlsPositions: ["Left"]
     },
+    gradebookAssignment: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookAssignment",
+      currentMenus: [],
+      menuPanelCap: "DriveInfoCap",
+      menusTitles: [],
+      menusInitOpen: [],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+    },
+    gradebookStudent: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookStudent",
+      currentMenus: [],
+      menuPanelCap: "DriveInfoCap",
+      menusTitles: [],
+      menusInitOpen: [],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+    },
+    gradebookStudentAssignment: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookStudentAssignment",
+      currentMenus: [],
+      menuPanelCap: "DriveInfoCap",
+      menusTitles: [],
+      menusInitOpen: [],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+    },
+    gradebookAttempt: {
+      pageName: "Gradebook",
+      currentMainPanel: "GradebookAttempt",
+      currentMenus: [],
+      menuPanelCap: "DriveInfoCap",
+      menusTitles: [],
+      menusInitOpen: [],
+      headerControls: ["GradebookBreadCrumb"],
+      headerControlsPositions: ["Left"]
+    },
     navigation: {
       pageName: "Course",
       currentMainPanel: "NavigationPanel",
@@ -264,9 +309,9 @@ let navigationObj = {
       pageName: "Course",
       menuPanelCap: "EditorInfoCap",
       currentMainPanel: "EditorViewer",
-      currentMenus: ["VersionHistory", "Variant"],
-      menusTitles: ["Version History", "Variant"],
-      menusInitOpen: [false, false],
+      currentMenus: ["VersionHistory", "Variant", "AssignmentSettingsMenu"],
+      menusTitles: ["Version History", "Variant", "Assignment Settings"],
+      menusInitOpen: [false, false, false],
       supportPanelOptions: ["DoenetMLEditor"],
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
@@ -417,7 +462,6 @@ function RootController(props) {
   let locationStr = `${location.pathname}${location.search}`;
   let nextPageToolView = {page: "", tool: "", view: ""};
   let nextMenusAndPanels = null;
-  console.log("\n>>>===RootController");
   let isURLChange = false;
   if (locationStr !== lastLocationStr.current) {
     isURLChange = true;
@@ -432,6 +476,9 @@ function RootController(props) {
     nextPageToolView.tool = searchParamObj["tool"];
     if (!nextPageToolView.tool) {
       nextPageToolView.tool = "";
+    }
+    if (nextPageToolView.page === lastPageToolView.current.page && nextPageToolView.tool === lastPageToolView.current.tool) {
+      nextPageToolView.view = lastPageToolView.current.view;
     }
   }
   let isRecoilChange = false;
@@ -473,8 +520,17 @@ function RootController(props) {
     isViewChange = true;
     nextMenusAndPanels = {...navigationObj[nextPageToolView.page][nextPageToolView.tool]};
   }
+  let searchObj = {};
+  if (isURLChange) {
+    searchObj = Object.fromEntries(new URLSearchParams(location.search));
+    setSearchParamAtom(searchObj);
+    nextPageToolView["params"] = {...searchObj};
+    delete nextPageToolView["params"].tool;
+    setRecoilPageToolView(nextPageToolView);
+  }
   let viewOverrides = nextMenusAndPanels?.views?.[nextPageToolView.view];
-  if (isViewChange && typeof viewOverrides === "object" && viewOverrides !== null) {
+  if (typeof viewOverrides === "object" && viewOverrides !== null) {
+    nextMenusAndPanels = {...navigationObj[nextPageToolView.page][nextPageToolView.tool]};
     for (let key of Object.keys(viewOverrides)) {
       nextMenusAndPanels[key] = viewOverrides[key];
     }
@@ -487,14 +543,6 @@ function RootController(props) {
     if (nextMenusAndPanels.onLeave) {
       leaveComponentName.current = nextMenusAndPanels.onLeave;
     }
-  }
-  let searchObj = {};
-  if (isURLChange) {
-    searchObj = Object.fromEntries(new URLSearchParams(location.search));
-    setSearchParamAtom(searchObj);
-    nextPageToolView["params"] = {...searchObj};
-    delete nextPageToolView["params"].tool;
-    setRecoilPageToolView(nextPageToolView);
   }
   if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current)) {
     backPageToolView.current = lastPageToolView.current;

@@ -3,15 +3,11 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
-//header('Content-Type: application/json');
+header('Content-Type: application/json');
 include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-
-$response_arr = array(
-    "access"=> TRUE
-);
 
 
 $_POST = json_decode(file_get_contents("php://input"),true);
@@ -20,6 +16,7 @@ $contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
 $attemptNumber = mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
 $credit = mysqli_real_escape_string($conn,$_POST["credit"]);
 $itemNumber = mysqli_real_escape_string($conn,$_POST["itemNumber"]);
+$stateVariables =  mysqli_real_escape_string($conn,$_POST["stateVariables"]);
 
 //TODO: check if this is too many tries 
 //TODO: check if attempt is older than given attempt
@@ -47,20 +44,20 @@ $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
 $previousCredit = $row['credit'];
-$valid = FALSE;
-if ($row['viewedSolution'] == '0'){
-    $valid = TRUE;
+
+
+$viewedSolution = $row['viewedSolution'] == '1';
+$valid = 1;
+if ($viewedSolution){
+    $valid = 0;
 }
-echo "itemNumber $itemNumber";
-var_dump($row);
-var_dump($valid);
 
 if ($attemptAggregation == 'm'){
 // Find previous credit if maximizing scores
 // Update credit in the database if it's larger
-$credit_to_store = MAX($previousCredit,$credit);
+$credit_for_item = MAX($previousCredit,$credit);
 }else if ($attemptAggregation == 'l'){
-    $credit_to_store = $credit;
+    $credit_for_item = $credit;
 }
 
 // if ($result->num_rows < 1){
@@ -68,7 +65,7 @@ $credit_to_store = MAX($previousCredit,$credit);
 //     $sql = "INSERT INTO user_assignment_attempt_item
 //     (doenetId,contentId,userId,attemptNumber,itemNumber,credit)
 //     VALUES
-//     ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_to_store')
+//     ('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$credit_for_item')
 //     ";
 // $result = $conn->query($sql);
 
@@ -77,7 +74,7 @@ $credit_to_store = MAX($previousCredit,$credit);
 if ($valid){
     // Store credit in user_assignment_attempt_item
     $sql = "UPDATE user_assignment_attempt_item
-    SET credit='$credit_to_store'
+    SET credit='$credit_for_item'
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
     AND contentId = '$contentId'
@@ -108,13 +105,15 @@ $submissionNumber = $row['submissionNumber'];
 
 if ($submissionNumber < 1){ $submissionNumber = 0; }
 $submissionNumber++;
-//Insert item submission
+//Insert item submission 
+//Specifically we want to store the credit of that actual submission
 $sql = "
 INSERT INTO user_assignment_attempt_item_submission
-(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,credit,submittedDate,valid)
+(doenetId,contentId,userId,attemptNumber,itemNumber,submissionNumber,stateVariables,credit,submittedDate,valid)
 VALUES
-('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$credit_to_store',NOW(),'$valid')
+('$doenetId','$contentId','$userId','$attemptNumber','$itemNumber','$submissionNumber','$stateVariables','$credit',NOW(),'$valid')
 ";
+
 $result = $conn->query($sql);
 
 
@@ -142,7 +141,7 @@ while($row = $result->fetch_assoc()){
     //Not guaranteed for credit to be stored due to async communication with db
     //So use value given here to be careful
     if ($loopItemNumber == $itemNumber){
-        $item_credit = $credit_to_store;
+        $item_credit = $credit_for_item;
     }else{
         $item_credit = $row['credit'];
     }
@@ -166,7 +165,7 @@ if ($result->num_rows < 1){
     $sql = "INSERT INTO user_assignment_attempt
     (doenetId,contentId,userId,attemptNumber,credit)
     VALUES
-    ('$doenetId','$contentId','$userId','$attemptNumber','$credit_to_store')
+    ('$doenetId','$contentId','$userId','$attemptNumber','$credit_for_item')
     ";
 
     $result = $conn->query($sql);
@@ -197,7 +196,7 @@ if ($result->num_rows < 1){
 // echo "USER_ASSIGNMENT_HAS_AN_ENTRY $USER_ASSIGNMENT_HAS_AN_ENTRY\n";
 // var_dump($USER_ASSIGNMENT_HAS_AN_ENTRY);
 //**update user_assignment with new score
-if ($attemptAggregation == 'm'){
+
 
 //Find maximum credit and maximum creditOverrides on each attempt
 $sql = "SELECT MAX(credit) AS maxCredit,
@@ -231,37 +230,18 @@ $result = $conn->query($sql);
 }
 
 
-}else if ($attemptAggregation == 'l'){
-    //Use last attempt
-if ($USER_ASSIGNMENT_HAS_AN_ENTRY){
-
-    $sql = "
-    UPDATE user_assignment
-    SET credit='$credit_for_attempt'
-    WHERE userId = '$userId'
-    AND doenetId = '$doenetId'
-    AND contentId = '$contentId'
-    ";
-$result = $conn->query($sql);
-}else{
-    $sql = "INSERT INTO user_assignment
-    (doenetId,contentId,userId,credit)
-    VALUES
-    ('$doenetId','$contentId','$userId','$credit_for_attempt')
-    ";
-
-    $result = $conn->query($sql);
-}
-}
-
 }//Close valid test
 
+$response_arr = array(
+    "access"=> TRUE,
+    "viewedSolution"=>$viewedSolution,
+    "valid"=>$valid
+);
 
+// set response code - 200 OK
+http_response_code(200);
 
-    // set response code - 200 OK
-    http_response_code(200);
-
-//  echo json_encode($response_arr);
+echo json_encode($response_arr);
 
 $conn->close();
 ?>

@@ -4,7 +4,7 @@ import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import useSockets, {itemType} from "../../_reactComponents/Sockets.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
-export default function AddDriveItems(props) {
+export default function AddDriveItems() {
   const [driveId, parentFolderId] = useRecoilValue(searchParamAtomFamily("path")).split(":");
   const {addItem} = useSockets("drive");
   return /* @__PURE__ */ React.createElement(ButtonGroup, {

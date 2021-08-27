@@ -24,7 +24,7 @@ export default function DriveInfoCap() {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", paddingBottom: "100px"}
   }, /* @__PURE__ */ React.createElement("img", {
-    style: {position: "absolute", clip: "rect(0, 240px, 100px, 0)"},
+    style: {position: "absolute", height: "100px", objectFit: "cover"},
     src: imageURL,
     alt: `${label} course`,
     width: "240px"

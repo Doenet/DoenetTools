@@ -1,10 +1,15 @@
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {folderDictionary, fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
+import {folderDictionary, fetchDrivesQuery, loadAssignmentSelector} from "../../_reactComponents/Drive/NewDrive.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import axios from "../../_snowpack/pkg/axios.js";
+import {variantsAndAttemptsByDoenetId} from "../ToolPanels/AssignmentViewer.js";
 export default function AssignmentInfoCap() {
   let doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const assignmentSettings = useRecoilValue(loadAssignmentSelector(doenetId));
+  const attemptsAllowed = assignmentSettings.numberOfAttemptsAllowed;
+  const userAttempts = useRecoilValue(variantsAndAttemptsByDoenetId(doenetId));
+  const userAttemptNumber = userAttempts.numberOfCompletedAttempts + 1;
   let [driveId, setDriveId] = useState("");
   let [folderId, setFolderId] = useState("");
   useEffect(() => {
@@ -38,5 +43,5 @@ export default function AssignmentInfoCap() {
     src: imageURL,
     alt: `${driveLabel} course`,
     width: "240px"
-  })), /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label));
+  })), /* @__PURE__ */ React.createElement("div", null, driveLabel), /* @__PURE__ */ React.createElement("div", null, docInfo.label), /* @__PURE__ */ React.createElement("div", null, userAttemptNumber, "/", attemptsAllowed, " Attempts"));
 }

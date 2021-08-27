@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
 import { deepCompare } from '../utils/deepFunctions';
 import { renameStateVariable } from '../utils/stateVariables';
+import { serializedComponentsReplacer, serializedComponentsReviver } from '../utils/serializedStateProcessing';
 // import sha1 from 'crypto-js/sha1';
 // import Base64 from 'crypto-js/enc-base64';
 
@@ -1055,10 +1056,21 @@ export default class Answer extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
+        // we JSON.stringify because we may need to compare
+        // to values that have been JSON.stringified due to
+        // being saved in the database.
+        // JSON.stringify removes some elements (e.g. functions)
+        // so we want to use it everywhere do get a consistent comparison
         return {
           newValues: {
-            creditAchievedDependencies: dependencyValues.currentCreditAchievedDependencies
-            // creditAchievedDependencies: Base64.stringify(sha1(JSON.stringify(dependencyValues.currentCreditAchievedDependencies)))
+            creditAchievedDependencies:
+              JSON.parse(
+                JSON.stringify(
+                  dependencyValues.currentCreditAchievedDependencies,
+                  serializedComponentsReplacer
+                ),
+                serializedComponentsReviver
+              )
           }
         }
       },
@@ -1105,16 +1117,20 @@ export default class Answer extends InlineComponent {
 
         let foundChange = true;
 
-        // let foundChange = !deepCompare(
-        //   dependencyValues.currentCreditAchievedDependencies,
-        //   dependencyValues.creditAchievedDependenciesAtSubmit
-        // )
+        // Note: 
+        // - using deepCompare, because JSON.stringify does not produce
+        //   a canonical order of object, and may incorrectly indicate a change
+        //   if the objects were created in a different order
+        //   (as can happen when reconstructing a document from the database)
 
-        // use JSON.stringify rather than deepCompare
-        // so that NaNs will be equal to each other
+        // TODO: we already JSON.stringified and parsed when creating the variables
+        // (so that it is consistent in case we've loaded from the database)
+        // Is there a way to accomplish this more efficiently, 
+        // i.e., without doing two passes
+
         if (dependencyValues.creditAchievedDependenciesAtSubmit) {
-          foundChange = JSON.stringify(dependencyValues.currentCreditAchievedDependencies)
-            !== JSON.stringify(dependencyValues.creditAchievedDependenciesAtSubmit)
+          foundChange = !deepCompare(dependencyValues.currentCreditAchievedDependencies,
+            dependencyValues.creditAchievedDependenciesAtSubmit)
         }
 
         if (foundChange) {

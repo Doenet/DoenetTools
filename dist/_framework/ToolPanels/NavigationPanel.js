@@ -1,4 +1,4 @@
-import React, {Suspense, useCallback, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useState, Suspense, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
 import {
   useRecoilCallback,
   useRecoilState,
@@ -10,16 +10,18 @@ import Drive, {
   selectedDriveAtom,
   selectedDriveItems,
   itemType,
-  clearDriveAndItemSelections
+  clearDriveAndItemSelections,
+  folderDictionary
 } from "../../_reactComponents/Drive/NewDrive.js";
 import {DropTargetsProvider} from "../../_reactComponents/DropTarget/index.js";
 import {BreadcrumbProvider} from "../../_reactComponents/Breadcrumb/BreadcrumbProvider.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
-export default function NavigationPanel(props) {
+export default function NavigationPanel() {
   const [{view}, setPageToolView] = useRecoilState(pageToolViewAtom);
   const setMainPanelClear = useSetRecoilState(mainPanelClickAtom);
   const path = useRecoilValue(searchParamAtomFamily("path"));
+  const [columnTypes, setColumnTypes] = useState([]);
   useEffect(() => {
     setMainPanelClear((was) => [
       ...was,
@@ -28,7 +30,17 @@ export default function NavigationPanel(props) {
     ]);
     return setMainPanelClear((was) => was.filter((obj) => obj.atom !== clearDriveAndItemSelections || obj.atom !== selectedMenuPanelAtom));
   }, [setMainPanelClear]);
-  const filter = useCallback((item) => item.released === "1", []);
+  useLayoutEffect(() => {
+    switch (view) {
+      case "instructor":
+        setColumnTypes(["Released", "Assigned", "Public"]);
+        break;
+      case "student":
+        setColumnTypes(["Due Date"]);
+        break;
+      default:
+    }
+  }, [view]);
   const clickCallback = useRecoilCallback(({set}) => (info) => {
     switch (info.instructionType) {
       case "one item":
@@ -54,9 +66,10 @@ export default function NavigationPanel(props) {
     });
     set(selectedDriveAtom, info.driveId);
   }, []);
-  const doubleClickCallback = useCallback((info) => {
+  const doubleClickCallback = useRecoilCallback(({set}) => (info) => {
     switch (info.type) {
       case itemType.FOLDER:
+        set(clearDriveAndItemSelections, null);
         setPageToolView((was) => ({
           ...was,
           params: {
@@ -101,17 +114,35 @@ export default function NavigationPanel(props) {
         throw new Error("NavigationPanel doubleClick info type not defined");
     }
   }, [setPageToolView, view]);
-  if (props.style?.display === "none") {
-    return /* @__PURE__ */ React.createElement("div", {
-      style: props.style
-    });
-  }
+  const filterCallback = useRecoilCallback(({snapshot}) => (item) => {
+    switch (view) {
+      case "student":
+        if (item.itemType === itemType.FOLDER) {
+          const folderContents = snapshot.getLoadable(folderDictionary({
+            driveId: item.driveId,
+            folderId: item.itemId
+          })).getValue()["contentsDictionary"];
+          for (const key in folderContents) {
+            if (folderContents[key].isReleased === "1") {
+              return true;
+            }
+          }
+          return false;
+        } else {
+          return item.isReleased === "1";
+        }
+      case "instructor":
+        return true;
+      default:
+        console.warn("No view selected");
+    }
+  }, [view]);
   return /* @__PURE__ */ React.createElement(BreadcrumbProvider, null, /* @__PURE__ */ React.createElement(DropTargetsProvider, null, /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
   }, /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Drive, {
     path,
-    filter,
-    columnTypes: ["Released", "Public"],
+    filterCallback,
+    columnTypes,
     urlClickBehavior: "select",
     clickCallback,
     doubleClickCallback,

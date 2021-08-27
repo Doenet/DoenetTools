@@ -16,8 +16,7 @@ import {
   faChevronDown,
   faCheck,
   faBookOpen,
-  faChalkboard,
-  faLayerGroup
+  faChalkboard
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {Link} from "../../_snowpack/pkg/react-router-dom.js";
@@ -46,11 +45,26 @@ import {useDragShadowCallbacks, useSortFolder} from "./DriveActions.js";
 import useSockets from "../Sockets.js";
 import {BreadcrumbContext} from "../Breadcrumb/BreadcrumbProvider.js";
 import Collection from "./Collection.js";
+const loadAssignmentAtomFamily = atomFamily({
+  key: "loadAssignmentAtomFamily",
+  default: selectorFamily({
+    key: "loadAssignmentAtomFamily/Default",
+    get: (doenetId) => async () => {
+      const payload = {doenetId};
+      const {data} = await axios.get("/api/getAllAssignmentSettings.php", {
+        params: payload
+      });
+      return data.assignment;
+    }
+  })
+});
 export const loadAssignmentSelector = selectorFamily({
   key: "loadAssignmentSelector",
-  get: (doenetId) => async ({get, set}) => {
-    const {data} = await axios.get(`/api/getAllAssignmentSettings.php?doenetId=${doenetId}`);
-    return data;
+  get: (doenetId) => async ({get}) => {
+    return await get(loadAssignmentAtomFamily(doenetId));
+  },
+  set: (doenetId) => ({set}, newValue) => {
+    set(loadAssignmentAtomFamily(doenetId), newValue);
   }
 });
 export const itemType = Object.freeze({
@@ -232,7 +246,6 @@ export const dragStateAtom = atom({
     copyMode: false
   }
 });
-const dragShadowId = "dragShadow";
 export default function Drive(props) {
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(":");
@@ -283,6 +296,7 @@ export default function Drive(props) {
     }, heading, /* @__PURE__ */ React.createElement(Folder, {
       driveId,
       folderId: rootFolderId,
+      filterCallback: props.filterCallback,
       indentLevel: 0,
       driveObj,
       rootCollapsible: props.rootCollapsible,
@@ -580,59 +594,6 @@ export const fetchDrivesSelector = selector({
       color: labelTypeDriveIdColorImage.color
     };
     let newDrive;
-    function duplicateFolder({
-      sourceFolderId,
-      sourceDriveId,
-      destDriveId,
-      destFolderId,
-      destParentFolderId
-    }) {
-      let contentObjs = {};
-      const sourceFolder = get(folderDictionaryFilterSelector({
-        driveId: sourceDriveId,
-        folderId: sourceFolderId
-      }));
-      if (destFolderId === void 0) {
-        destFolderId = destDriveId;
-        destParentFolderId = destDriveId;
-      }
-      let contentIds = {defaultOrder: []};
-      let contentsDictionary = {};
-      let folderInfo = {...sourceFolder.folderInfo};
-      folderInfo.folderId = destFolderId;
-      folderInfo.parentFolderId = destParentFolderId;
-      for (let sourceItemId of sourceFolder.contentIds.defaultOrder) {
-        const destItemId = nanoid();
-        contentIds.defaultOrder.push(destItemId);
-        let sourceItem = sourceFolder.contentsDictionary[sourceItemId];
-        contentsDictionary[destItemId] = {...sourceItem};
-        contentsDictionary[destItemId].parentFolderId = destFolderId;
-        contentsDictionary[destItemId].itemId = destItemId;
-        if (sourceItem.itemType === "Folder") {
-          let childContentObjs = duplicateFolder({
-            sourceFolderId: sourceItemId,
-            sourceDriveId,
-            destDriveId,
-            destFolderId: destItemId,
-            destParentFolderId: destFolderId
-          });
-          contentObjs = {...contentObjs, ...childContentObjs};
-        } else if (sourceItem.itemType === "DoenetML") {
-          let destDoenetId = nanoid();
-          contentsDictionary[destItemId].sourceDoenetId = sourceItem.doenetId;
-          contentsDictionary[destItemId].doenetId = destDoenetId;
-        } else if (sourceItem.itemType === "URL") {
-          let desturlId = nanoid();
-          contentsDictionary[destItemId].urlId = desturlId;
-        } else {
-          console.log(`!!! Unsupported type ${sourceItem.itemType}`);
-        }
-        contentObjs[destItemId] = contentsDictionary[destItemId];
-      }
-      const destFolderObj = {contentIds, contentsDictionary, folderInfo};
-      set(folderDictionary({driveId: destDriveId, folderId: destFolderId}), destFolderObj);
-      return contentObjs;
-    }
     if (labelTypeDriveIdColorImage.type === "new content drive") {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -858,20 +819,6 @@ function Folder(props) {
       });
     }
   }, openCloseText);
-  const sortHandler = ({sortKey}) => {
-    const result = sortFolder({
-      driveIdInstanceIdFolderId: {
-        driveInstanceId: props.driveInstanceId,
-        driveId: props.driveId,
-        folderId: props.folderId
-      },
-      sortKey
-    });
-    result.then((resp) => {
-    }).catch((e) => {
-      onSortFolderError({errorMessage: e.message});
-    });
-  };
   const markFolderDraggedOpened = () => {
     setDragState((old) => {
       let newOpenedFoldersInfo = [...old.openedFoldersInfo];
@@ -1021,10 +968,6 @@ function Folder(props) {
           itemId,
           type: "Folder"
         });
-      },
-      onBlur: (e) => {
-        if (!props.isNav) {
-        }
       }
     }, /* @__PURE__ */ React.createElement("div", {
       className: "noselect",
@@ -1170,6 +1113,11 @@ function Folder(props) {
       let item = dictionary[itemId2];
       if (!item)
         continue;
+      if (props.filterCallback) {
+        if (!props.filterCallback(item)) {
+          continue;
+        }
+      }
       if (props.hideUnpublished && item.isPublished === "0") {
         if (item.assignment_isPublished != "1")
           continue;
@@ -1475,9 +1423,9 @@ export const selectedDriveItems = selectorFamily({
 export function ColumnJSX(columnType, item) {
   let courseRole = "";
   const assignmentInfoSettings = useRecoilValueLoadable(loadAssignmentSelector(item.doenetId));
-  let aInfo = "";
+  let aInfo = {};
   if (assignmentInfoSettings?.state === "hasValue") {
-    aInfo = assignmentInfoSettings?.contents?.assignments[0];
+    aInfo = assignmentInfoSettings?.contents;
   }
   if (columnType === "Released" && item.isReleased === "1") {
     return /* @__PURE__ */ React.createElement("span", {

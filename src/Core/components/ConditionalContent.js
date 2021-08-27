@@ -247,6 +247,11 @@ export default class ConditionalContent extends CompositeComponent {
           newNameForSelectedChild = createUniqueName("else", `${component.componentName}|replacement|${selectedIndex}`)
           childComponentType = "else";
         }
+
+        let lastSlash = selectedChildName.lastIndexOf('/');
+        let originalNamespace = selectedChildName.substring(0, lastSlash);
+        newNameForSelectedChild = originalNamespace + '/' + newNameForSelectedChild;
+
         // use state, not stateValues, as read only proxy messes up internal
         // links between descendant variant components and the components themselves
 
