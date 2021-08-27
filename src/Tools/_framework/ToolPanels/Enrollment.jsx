@@ -36,54 +36,20 @@ export const enrolllearnerAtom = atom({
   key: 'enrolllearnerAtom',
   default: '',
 });
+
+
 export default function Enrollment(props){
   console.log(">>>===Enrollment")
-  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom); 
-  const setProcess = useSetRecoilState(processAtom);
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'))
 
-  useEffect(() => {
-    if (driveId !== '') {
-      const payload = { params: { driveId } };
-      axios
-        .get('/api/getEnrollment.php', payload)
-        .then((resp) => {
-          //TODO: Make sure we don't overwrite existing data
-          let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableDataAtom(enrollmentArray);
-          setProcess('Display Enrollment');
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    }
-  }, [driveId]);
-  return <div style={props.style}>
-    <EnrollmentNew selectedCourse={'gr8KsFTPzHoI8l0eY74tu'}/>
-  </div>
-}
-
-
-function EnrollmentNew(params) {
-  // const [process, setProcess] = useState('Loading'); //array containing column names
   const toast = useToast();
 
   const process = useRecoilValue(processAtom);
   const setProcess = useSetRecoilState(processAtom);
-  // console.log("process",process);
-  // const [headers, setHeaders] = useState([]); //array containing column names
   const headers = useRecoilValue(headersAtom);
-  const setHeaders = useSetRecoilState(headersAtom);
-  // const [entries, setEntries] = useState([[]]); //2d array with each row representing a data point
   const entries = useRecoilValue(entriesAtom);
-  const setEntries = useSetRecoilState(entriesAtom);
-  // const [enrolllearner, setEnrolllearner] = useState();
-  // const enrolllearner = useRecoilValue(enrolllearnerAtom);
-  // const setEnrolllearner = useSetRecoilState(enrolllearnerAtom);
-
   const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
   const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom); 
-  // const [driveId, setDriveId] = useState('');
+
   const driveId = useRecoilValue(searchParamAtomFamily('driveId'))
 
 
@@ -94,7 +60,7 @@ function EnrollmentNew(params) {
       axios
         .get('/api/getEnrollment.php', { params: { driveId } })
         .then((resp) => {
-          console.log(">>>>resp",resp.data)
+          // console.log(">>>>resp",resp.data)
           //TODO: Make sure we don't overwrite existing data
           let enrollmentArray = resp.data.enrollmentArray;
           setEnrollmentTableDataAtom(enrollmentArray);
@@ -359,9 +325,7 @@ function EnrollmentNew(params) {
     });
   };
 
-// const handleChange = (e) => {
-//   setEnrolllearner(e.currentTarget.value);
-// };
+
 // let manualEnroll = (
 //   <div>
 //     <label>Email:</label>
@@ -371,7 +335,7 @@ function EnrollmentNew(params) {
 //       name="email"
 //       value={enrolllearner}
 //       placeholder="example@example.com"
-//       onChange={handleChange}
+//       onChange={()=>setEnrolllearner(e.currentTarget.value);}
 //     />
 //     <Button value="Enroll" onClick={(e) => enrollManual(e)} />
 //   </div>
