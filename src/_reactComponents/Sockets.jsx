@@ -248,26 +248,36 @@ export default function useSockets(nsp) {
       const globalSelectedNodes = await snapshot.getPromise(
         globalSelectedNodesAtom,
       );
-      // Interrupt move action if nothing selected
-      if (globalSelectedNodes.length === 0) {
-        throw 'No items selected';
-      }
-
-      // Interrupt move action if dragging folder to itself
-      for (let gItem of globalSelectedNodes) {
-        if (gItem.itemId === targetFolderId) {
-          throw 'Cannot move folder into itself';
-        }
-      }
-
-      // if (canMove){
-      // Add to destination at index
       let destinationFolderObj = await snapshot.getPromise(
         folderDictionary({
           driveId: targetDriveId,
           folderId: targetFolderId,
         }),
       );
+
+      // Interrupt move action if nothing selected
+      if (globalSelectedNodes.length === 0) {
+        throw 'No items selected';
+      }
+
+      // Interrupt move action if dragging folder to itself or adding non ML to Collection
+      for (let gItem of globalSelectedNodes) {
+        if (gItem.itemId === targetFolderId) {
+          throw 'Cannot move folder into itself';
+        } else if (
+          destinationFolderObj.folderInfo.itemType === itemType.COLLECTION &&
+          gItem.itemType !== itemType.DOENETML
+        ) {
+          addToast(
+            `Can not only move DoenetML files into a Collection`,
+            toastType.ERROR,
+          );
+          throw 'Can not only move DoenetML files into a Collection';
+        }
+      }
+
+      // if (canMove){
+      // Add to destination at index
       let newDestinationFolderObj = JSON.parse(
         JSON.stringify(destinationFolderObj),
       );

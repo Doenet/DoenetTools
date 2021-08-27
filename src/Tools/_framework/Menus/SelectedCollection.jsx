@@ -74,6 +74,7 @@ export default function SelectedCollection() {
       <ButtonGroup vertical>
         <Button
           value="Edit Collection"
+          width="menu"
           onClick={() => {
             setPageToolView({
               page: 'course',
@@ -87,6 +88,8 @@ export default function SelectedCollection() {
           }}
         />
         <Button
+          alert
+          width="menu"
           data-cy="deleteDoenetMLButton"
           value="Delete Collection"
           onClick={() => {

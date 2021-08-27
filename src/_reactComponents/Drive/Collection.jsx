@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import {
   useRecoilState,
-  useRecoilStateLoadable,
   useRecoilValue,
   useRecoilValueLoadable,
   useSetRecoilState,
@@ -17,8 +16,6 @@ import { DropTargetsContext, WithDropTarget } from '../DropTarget';
 import useSockets, { itemType } from '../Sockets';
 import { useDragShadowCallbacks, useSortFolder } from './DriveActions';
 import {
-  clearDriveAndItemSelections,
-  ColumnJSX,
   DoenetML,
   DragShadow,
   dragStateAtom,
@@ -29,7 +26,6 @@ import {
   folderOpenSelector,
   folderSortOrderAtom,
   globalSelectedNodesAtom,
-  selectedDriveAtom,
   selectedDriveItemsAtom,
   sortOptions,
   useDnDCallbacks,
@@ -75,7 +71,6 @@ function Collection(props) {
     }),
   );
   const parentFolderSortOrderRef = useRef(parentFolderSortOrder); // for memoized DnD callbacks
-  const [selectedDrive, setSelectedDrive] = useRecoilState(selectedDriveAtom);
   const isSelected = useRecoilValue(
     selectedDriveItemsAtom({
       driveId: props.driveId,
@@ -93,7 +88,6 @@ function Collection(props) {
   };
 
   const globalSelectedNodes = useRecoilValue(globalSelectedNodesAtom);
-  const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
 
   //Used to determine range of items in Shift Click
   const isOpen = useRecoilValue(
@@ -129,11 +123,6 @@ function Collection(props) {
   let bgcolor = '#ffffff';
   let borderSide = '0px';
   let marginSize = '0';
-  let widthSize = '60vw';
-  if (props.isNav) {
-    marginSize = '0px';
-    widthSize = '224px';
-  }
   if (isSelected) {
     bgcolor = 'hsl(209,54%,82%)';
   }
@@ -169,10 +158,6 @@ function Collection(props) {
   //     setFolderCacheDirty(false);
   //   }
   // }, [folderCacheDirty])
-
-  if (props.isNav && itemId === props.pathItemId) {
-    borderSide = '8px solid #1A5A99';
-  }
 
   let openCloseText = isOpen ? (
     <span data-cy="folderToggleCloseIcon">
@@ -216,7 +201,7 @@ function Collection(props) {
       sortKey: sortKey,
     });
     result
-      .then((resp) => {})
+      .then(() => {})
       .catch((e) => {
         onSortFolderError({ errorMessage: e.message });
       });
@@ -272,8 +257,6 @@ function Collection(props) {
   };
 
   const onDragHover = () => {
-    if (props.isNav) return;
-
     // Open folder if initially closed
     if (!isOpenRef.current && !isSelectedRef.current) {
       toggleOpen();
@@ -308,11 +291,11 @@ function Collection(props) {
   //   >{ buttonLabel }</button>;
   // }
 
-  let folder = null;
+  let collection = null;
   let items = null;
 
   if (!props.driveObj) {
-    folder = (
+    collection = (
       <div
         role="button"
         data-doenet-driveinstanceid={props.driveInstanceId}
@@ -385,20 +368,18 @@ function Collection(props) {
             type: itemType.COLLECTION,
           });
         }}
-        onBlur={(e) => {
+        onBlur={() => {
           //Don't clear on navigation changes
-          if (!props.isNav) {
-            //Only clear if focus goes outside of this node group
-            // if (e.relatedTarget === null ||
-            //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
-            //   !e.relatedTarget.dataset.doenetDriveStayselected)
-            //   ){
-            //     setSelected({instructionType:"clear all"})
-            // }
-            // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
-            //   setSelected({instructionType:"clear all"});
-            // }
-          }
+          //Only clear if focus goes outside of this node group
+          // if (e.relatedTarget === null ||
+          //   (e.relatedTarget.dataset.doenetDriveinstanceid !== props.driveInstanceId &&
+          //   !e.relatedTarget.dataset.doenetDriveStayselected)
+          //   ){
+          //     setSelected({instructionType:"clear all"})
+          // }
+          // if (e?.relatedTarget?.dataset?.doenetDeselectDrive){
+          //   setSelected({instructionType:"clear all"});
+          // }
         }}
       >
         <div
@@ -425,7 +406,7 @@ function Collection(props) {
 
   // make folder draggable and droppable
   let draggableClassName = '';
-  if (!props.isNav && !props.isViewOnly) {
+  if (!props.isViewOnly) {
     const onDragStartCallback = () => {
       if (globalSelectedNodes.length === 0 || !isSelected) {
         props?.clickCallback?.({
@@ -442,7 +423,7 @@ function Collection(props) {
         });
       }
     };
-    folder = (
+    collection = (
       <Draggable
         key={`dnode${props.driveInstanceId}${itemId}`}
         id={itemId}
@@ -457,15 +438,15 @@ function Collection(props) {
         }
         onDrag={onDrag}
         onDragEnd={onDragEndCb}
-        ghostElement={renderDragGhost(itemId, folder)}
+        ghostElement={renderDragGhost(itemId, collection)}
       >
-        {folder}
+        {collection}
       </Draggable>
     );
   }
 
   const dropTargetId = props.driveObj ? props.driveId : itemId;
-  folder = (
+  collection = (
     <WithDropTarget
       key={`wdtnode${props.driveInstanceId}${itemId}`}
       id={dropTargetId}
@@ -480,11 +461,11 @@ function Collection(props) {
         onDrop: onDrop,
       }}
     >
-      {folder}
+      {collection}
     </WithDropTarget>
   );
 
-  // if (props.driveObj && !props.isNav) {
+  // if (props.driveObj) {
   //   const sortButtons = <div style={{marginLeft: "2.5vw"}}>
   //     {sortNodeButtonFactory({buttonLabel: "Sort Custom", sortKey: sortOptions.DEFAULT, sortHandler})}
   //     {sortNodeButtonFactory({buttonLabel: "Sort Label ASC", sortKey: sortOptions.LABEL_ASC, sortHandler})}
@@ -522,7 +503,6 @@ function Collection(props) {
               indentLevel={props.indentLevel + 1}
               driveInstanceId={props.driveInstanceId}
               route={props.route}
-              isNav={props.isNav}
               pathItemId={props.pathItemId}
               clickCallback={props.clickCallback}
               doubleClickCallback={props.doubleClickCallback}
@@ -553,7 +533,7 @@ function Collection(props) {
 
   return (
     <div data-cy="drive">
-      {folder}
+      {collection}
       {items}
     </div>
   );
