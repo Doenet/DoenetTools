@@ -685,8 +685,8 @@ class DoenetViewerChild extends Component {
       return null;
     }
 
-
-    return this.documentRenderer;
+    //Spacing around the whole doenetML document
+    return <div style={{maxWidth:"850px",paddingLeft:"20px",paddingRight:"20px",marginBottom:"200px"}}>{this.documentRenderer}</div>;
   }
 
 }
