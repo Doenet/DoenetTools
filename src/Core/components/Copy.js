@@ -29,6 +29,9 @@ export default class Copy extends CompositeComponent {
     delete attributes.styleNumber;
     delete attributes.isResponse;
 
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
