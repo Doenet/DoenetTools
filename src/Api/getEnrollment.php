@@ -12,8 +12,10 @@ $userId = $jwtArray['userId'];
 
 $allowed = false;
 
-if (array_key_exists('driveId', get_defined_vars())) {
+
+// if (array_key_exists('driveId', get_defined_vars())) {
 	$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+
 	//check user has permission to edit drive
 	$sql = "
 		SELECT canChangeAllDriveSettings
@@ -32,25 +34,27 @@ if (array_key_exists('driveId', get_defined_vars())) {
 		//Fail because there is no DB row for the user on this drive so we shouldn't allow an add
 		http_response_code(401); //User has bad auth
 	}
-} else {
-	//bad driveId
-	http_response_code(400);
-}
+// } else {
+// 	//bad driveId
+// 	http_response_code(400);
+// }
 
 
-if($allowed){$sql = "
-SELECT userId,
-firstName,
-lastName,
-email,
-empId,
-dateEnrolled,
-section
-FROM enrollment
-WHERE withdrew = '0'
-AND driveId = '$driveId'
-ORDER BY firstName
-";
+if($allowed){
+
+	$sql = "
+	SELECT userId,
+	firstName,
+	lastName,
+	email,
+	empId,
+	dateEnrolled,
+	section
+	FROM enrollment
+	WHERE withdrew = '0'
+	AND driveId = '$driveId'
+	ORDER BY firstName
+	";
 $result = $conn->query($sql);
 
 $enrollmentArray = array();
