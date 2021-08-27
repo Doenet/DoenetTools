@@ -356,7 +356,9 @@ class DoenetViewerChild extends Component {
           if (resp.data.exceededAttemptsAllowed) {
             this.props.toast('No credit awarded since no more attempts are allowed.', toastType.INFO) 
           }
-
+          if (resp.data.databaseError) {
+            this.props.toast('Credit not saved due to database error.', toastType.ERROR) 
+          }
         });
 
     }
