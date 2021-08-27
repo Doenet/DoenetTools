@@ -88,7 +88,7 @@ if ($success) {
         ";
         $result = $conn->query($sql);
 
-        http_response_code(200);
+        http_response_code(201);
         echo json_encode(['message' => $message, 'success' => $success]);
     }
 } else {

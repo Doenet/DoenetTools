@@ -190,7 +190,7 @@ console.log(">>>===MenuPanel")
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
     AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
-    
+    GroupSettings:lazy(() => import('../Menus/GroupSettings')),
   }).current;
 
   let selectionPanel = null;
