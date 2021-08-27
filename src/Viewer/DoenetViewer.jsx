@@ -347,7 +347,7 @@ class DoenetViewerChild extends Component {
           if (resp.data.viewedSolution) {
             this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) 
           }
-          if (resp.data.timerExpired) {
+          if (resp.data.timeExpired) {
             this.props.toast('No credit awarded since the time allowed has expired.', toastType.INFO) 
           }
           if (resp.data.pastDueDate) {

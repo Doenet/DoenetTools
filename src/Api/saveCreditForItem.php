@@ -6,6 +6,10 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 include "db_connection.php";
 
+
+date_default_timezone_set('UTC');
+// America/Chicago
+
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -38,7 +42,7 @@ $dueDate = $row['dueDate'];
 
 $valid = 1;
 
-$timeLimitExpired = FALSE;
+$timeExpired = FALSE;
 $databaseError = FALSE;
 $pastDueDate = FALSE;
 $exceededAttemptsAllowed = FALSE;
@@ -60,19 +64,20 @@ if($timeLimit > 0) {
   $sql = "SELECT timeLimitMultiplier 
     FROM enrollment e
     INNER JOIN drive_content dc
-        ON dc.driveId = e.driveID
-    WHERE dc.doenetID = '$doenetId'
+        ON dc.driveId = e.driveId
+    WHERE dc.doenetId = '$doenetId'
     AND e.userId = '$userId'
     ";
 
   $result = $conn->query($sql);
 
+  
   if ($result->num_rows < 1) {
-    $databaseError = TRUE;
+    $databaseError = 1;
     $valid = 0;
   } else {
     $row = $result->fetch_assoc();
-    $timeLimit = $timeLimit * $row["timeLimitMultiplier"];
+    $timeLimit = ceil($timeLimit * $row["timeLimitMultiplier"]) ;
   }
 
 
@@ -90,10 +95,10 @@ $sql = "SELECT began, creditOverride
 $result = $conn->query($sql);
 
 if ($result->num_rows < 1){
-  $databaseError = TRUE;
+  $databaseError = 2;
   $valid = 0;
 } else {
-
+  $row = $result->fetch_assoc();
   $creditOverride_for_attempt = $row['creditOverride'];
 
   if($timeLimit > 0) {
@@ -102,7 +107,7 @@ if ($result->num_rows < 1){
 
     // if began more than timeLimit ago, we're past time
     if(strtotime($row['began']) < strtotime("-".$effectiveTimeLimit." minutes")) {
-      $timeLimitExpired = TRUE;
+      $timeExpired = TRUE;
       $valid = 0;
     }
   }
@@ -122,7 +127,7 @@ $sql = "SELECT dueDateOverride, creditOverride
 
 $result = $conn->query($sql);
 if ($result->num_rows < 1){ 
-  $databaseError = TRUE;
+  $databaseError = 3;
   $valid = 0;
 } else {
 
@@ -157,7 +162,7 @@ $sql = "SELECT credit, creditOverride, viewedSolution
 $result = $conn->query($sql);
 
 if ($result->num_rows < 1){ 
-  $databaseError = TRUE;
+  $databaseError = 4;
   $valid = 0;
 } else {
   $row = $result->fetch_assoc();
@@ -301,12 +306,13 @@ if ($valid){
       if($creditOverride_for_assignment == NULL) {
 
         //Find maximum credit over all attempts
-        $sql = "SELECT MAX(credit) AS maxCredit,
+        $sql = "SELECT MAX(credit) AS maxCredit
                 FROM user_assignment_attempt
                 WHERE userId = '$userId'
                 AND doenetId = '$doenetId'
                 AND contentId = '$contentId'
         ";
+
         $result = $conn->query($sql);
         $row = $result->fetch_assoc();
 
@@ -333,7 +339,7 @@ if ($valid){
 $response_arr = array(
     "access"=> TRUE,
     "viewedSolution"=>$viewedSolution,
-    "timerExpired"=>$timerExpired,
+    "timeExpired"=>$timeExpired,
     "pastDueDate"=>$pastDueDate,
     "exceededAttemptsAllowed"=>$exceededAttemptsAllowed,
     "databaseError"=>$databaseError,
