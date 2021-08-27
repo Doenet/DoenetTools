@@ -212,6 +212,8 @@ export function AssignmentSettings({role, doenetId}) {
   
 
   const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null})=>{
+    console.log(">>>>keyToUpdate",keyToUpdate)
+    console.log(">>>>value",value)
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId))
     let newAInfo = {...oldAInfo,[keyToUpdate]:value}
     set(loadAssignmentSelector(doenetId),newAInfo);
@@ -386,7 +388,7 @@ export function AssignmentSettings({role, doenetId}) {
 {/* <div>aInfo = {aInfo?.limitAttempts ? 'true' : 'false'}</div>
 <div>limitAttempts = {limitAttempts ? 'true' : 'false'}</div> */}
 <div>
-  <label>Limit Attempts 
+  <label>Attempts Limit
   <Switch
     name="limitAttempts"
     onChange={(e)=>{
@@ -399,11 +401,11 @@ export function AssignmentSettings({role, doenetId}) {
        
       updateAssignment({doenetId,keyToUpdate:'numberOfAttemptsAllowed',value,description:'Attempts Allowed ',valueDescription})
       }}
-    checked={limitAttempts}
+    checked={aInfo.numberOfAttemptsAllowed > 0}
   ></Switch>
   </label>
 </div>
-{limitAttempts ? 
+{aInfo.numberOfAttemptsAllowed > 0 ? 
 <div>
   <label>Number of Attempts Allowed
   <input
