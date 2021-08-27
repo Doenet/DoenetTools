@@ -167,6 +167,31 @@ export default function useSockets(nsp) {
           assignment_isPublished: '0',
         };
       }
+
+      if (type === itemType.COLLECTION) {
+        payload = {
+          ...payload,
+          assignedDate: creationDate,
+          attemptAggregation: 'm',
+          dueDate: creationDate,
+          gradeCategory: 'l',
+          individualize: false,
+          isAssigned: '1',
+          isPublished: '0',
+          contentId:
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+          multipleAttempts: false,
+          numberOfAttemptsAllowed: '1',
+          proctorMakesAvailable: false,
+          showCorrectness: true,
+          showFeedback: true,
+          showHints: true,
+          showSolution: true,
+          timeLimit: null,
+          totalPointsOrPercent: '100',
+          assignment_isPublished: '0',
+        };
+      }
       try {
         const resp = await axios.post('/api/addItem.php', payload);
         if (resp.data.success) {
