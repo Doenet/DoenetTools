@@ -24,6 +24,9 @@ export default class Select extends CompositeComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.numberToSelect = {
       createPrimitiveOfType: "number",
       createStateVariable: "numberToSelect",

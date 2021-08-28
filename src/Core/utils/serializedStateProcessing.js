@@ -2180,6 +2180,13 @@ export function processAssignNames({
       component.componentType].assignNamesSkipOver
     ) {
       name = [name];
+    } else if (component.attributes && component.attributes.assignNamesSkip) {
+      let numberToSkip = component.attributes.assignNamesSkip.primitive;
+      if (numberToSkip > 0) {
+        for (let i = 0; i < numberToSkip; i++) {
+          name = [name];
+        }
+      }
     }
 
     if (Array.isArray(name)) {

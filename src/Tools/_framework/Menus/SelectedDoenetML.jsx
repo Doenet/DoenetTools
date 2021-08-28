@@ -199,6 +199,7 @@ export function AssignmentSettings({role, doenetId}) {
   let [dueDate,setDueDate] = useState('')
   let [limitAttempts,setLimitAttempts] = useState(true)
   let [numberOfAttemptsAllowed,setNumberOfAttemptsAllowed] = useState(1)
+  let [timeLimit,setTimeLimit] = useState(60)
   let [attemptAggregation,setAttemptAggregation] = useState('')
   let [totalPointsOrPercent,setTotalPointsOrPercent] = useState(100)
   let [gradeCategory,setGradeCategory] = useState('')
@@ -211,6 +212,7 @@ export function AssignmentSettings({role, doenetId}) {
   
 
   const updateAssignment = useRecoilCallback(({set,snapshot})=> async ({doenetId,keyToUpdate,value,description,valueDescription=null})=>{
+ 
     const oldAInfo = await snapshot.getPromise(loadAssignmentSelector(doenetId))
     let newAInfo = {...oldAInfo,[keyToUpdate]:value}
     set(loadAssignmentSelector(doenetId),newAInfo);
@@ -246,6 +248,8 @@ export function AssignmentSettings({role, doenetId}) {
       setShowHints(aInfo?.showHints)
       setShowCorrectness(aInfo?.showCorrectness)
       setProctorMakesAvailable(aInfo?.proctorMakesAvailable)
+      setTimeLimit(aInfo?.timeLimit)
+      
   },[aInfo])
 
   if (aLoadable.state === "loading"){ return null;}
@@ -319,7 +323,7 @@ export function AssignmentSettings({role, doenetId}) {
 </label>
 </div>
 {/* <div>
-<label>Time Limit:
+<label>Time Limit
 <input
   required
   type="number"
@@ -330,10 +334,60 @@ export function AssignmentSettings({role, doenetId}) {
 />
 </label>
 </div> */}
+<div>
+  <label>Time Limit 
+  <Switch
+    onChange={(e)=>{
+      let valueDescription = 'Not Limited';
+      let value = null;
+      if (e.currentTarget.checked){
+        valueDescription = '60 Minutes';
+        value = '60';
+      }
+       
+      updateAssignment({doenetId,keyToUpdate:'timeLimit',value,description:'Time Limit ',valueDescription})
+      }}
+    checked={aInfo.timeLimit > 0}
+  ></Switch>
+  </label>
+</div>
+{aInfo.timeLimit > 0 ? 
+<div>
+  <label>Time Limit in Minutes
+  <input
+    type="number"
+    value={timeLimit}
+    onBlur={()=>{
+      if (aInfo.timeLimit !== timeLimit){
+        let valueDescription = `${timeLimit} Minutes`;
+        updateAssignment({doenetId,keyToUpdate:'timeLimit',value:timeLimit,description:'Time Limit',valueDescription})
+      }
+    }}
+    onKeyDown={(e)=>{
+      if (e.key === 'Enter' && aInfo.timeLimit !== timeLimit){
+        let valueDescription = `${timeLimit} Minutes`;
+        updateAssignment({doenetId,keyToUpdate:'timeLimit',value:timeLimit,description:'Time Limit',valueDescription})
+      }
+    }}
+    onChange={(e)=>setTimeLimit(e.currentTarget.value)}
+  />
+    {/* <Increment
+  key={`numAtt${aInfo?.doenetId}`}
+    value={aInfo ? aInfo?.timeLimit : ''} 
+    range={[0, 20]} 
+    //Would be great if we could set the minimum range={[0,]} and max range={[,10]}
+  //  onChange={handleChange}
+    />  */}
+  </label>
+  
+</div>
+: null }
+
+
 {/* <div>aInfo = {aInfo?.limitAttempts ? 'true' : 'false'}</div>
 <div>limitAttempts = {limitAttempts ? 'true' : 'false'}</div> */}
 <div>
-  <label>Limit Attempts 
+  <label>Attempts Limit
   <Switch
     name="limitAttempts"
     onChange={(e)=>{
@@ -346,11 +400,11 @@ export function AssignmentSettings({role, doenetId}) {
        
       updateAssignment({doenetId,keyToUpdate:'numberOfAttemptsAllowed',value,description:'Attempts Allowed ',valueDescription})
       }}
-    checked={limitAttempts}
+    checked={aInfo.numberOfAttemptsAllowed > 0}
   ></Switch>
   </label>
 </div>
-{limitAttempts ? 
+{aInfo.numberOfAttemptsAllowed > 0 ? 
 <div>
   <label>Number of Attempts Allowed
   <input

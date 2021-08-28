@@ -341,12 +341,24 @@ class DoenetViewerChild extends Component {
       }
       axios.post('/api/saveCreditForItem.php', payload2)
         .then(resp => {
-          // console.log('>>>>resp',resp.data);
+          console.log('>>>>resp',resp.data);
 
+//TODO: need type warning (red but doesn't hang around)
           if (resp.data.viewedSolution) {
-            this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) //TODO: need type warning (red but doesn't hang around)
+            this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) 
           }
-
+          if (resp.data.timeExpired) {
+            this.props.toast('No credit awarded since the time allowed has expired.', toastType.INFO) 
+          }
+          if (resp.data.pastDueDate) {
+            this.props.toast('No credit awarded since the due date has passed.', toastType.INFO) 
+          }
+          if (resp.data.exceededAttemptsAllowed) {
+            this.props.toast('No credit awarded since no more attempts are allowed.', toastType.INFO) 
+          }
+          if (resp.data.databaseError) {
+            this.props.toast('Credit not saved due to database error.', toastType.ERROR) 
+          }
         });
 
     }
@@ -685,8 +697,8 @@ class DoenetViewerChild extends Component {
       return null;
     }
 
-
-    return this.documentRenderer;
+    //Spacing around the whole doenetML document
+    return <div style={{maxWidth:"850px",paddingLeft:"20px",paddingRight:"20px",marginBottom:"200px"}}>{this.documentRenderer}</div>;
   }
 
 }
