@@ -54,7 +54,7 @@ export default function TimerMenu(){
     if (timeLimit > 0){
       let mins = Math.floor((endTime - new Date()) / 60000);
         if (mins <= 0){
-          setTimeDisplay(`Times Up`);
+          setTimeDisplay(`Time's Up`);
         }else{
           if (mins === 1){
             setTimeDisplay(`1 Min`);
