@@ -91,7 +91,8 @@ export default function ToolRoot(){
     supportPanelIndex:0,
     hasNoMenuPanel: false,
     headerControls:[],
-    headerControlsPositions:[]
+    headerControlsPositions:[],
+    displayProfile:true,
   });
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true} >null</SupportPanel>;
@@ -185,18 +186,24 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
     menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
     menusTitles={toolRootMenusAndPanels.menusTitles} 
     currentMenus={toolRootMenusAndPanels.currentMenus} 
-    initOpen={toolRootMenusAndPanels.menusInitOpen}/>
+    initOpen={toolRootMenusAndPanels.menusInitOpen}
+    displayProfile={toolRootMenusAndPanels.displayProfile}
+    />
   }
 
-  let profileInMainPanel = !menusOpen;
+  //If no menu panel then don't show open menu button
+  let openMenuButton = !menusOpen;
   if (toolRootMenusAndPanels.hasNoMenuPanel){
-    profileInMainPanel = false;
+    openMenuButton = false;
   }
+
+
+
   return <>
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanel}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displayProfile={toolRootMenusAndPanels.displayProfile} >{mainPanel}</MainPanel>} 
       support={supportPanel}
       />
     
@@ -237,6 +244,29 @@ let navigationObj = {
       supportPanelIndex:0,
       hasNoMenuPanel: true,
     }
+  },
+  exam:{
+    default:{
+      defaultTool:'authentication'
+    },
+    authentication:{
+      pageName:"Authentication",
+      // currentMainPanel:"AuthenticationChallenge",
+      currentMainPanel:"SignIn",
+      displayProfile:false,
+    },
+    assessment:{
+      pageName:"Assessment",
+      menuPanelCap:"AssignmentInfoCap",
+      currentMainPanel:"AssignmentViewer",
+      currentMenus:["TimerMenu"], 
+      menusTitles:["Time Remaining"],
+      menusInitOpen:[true],
+      headerControls: ["AssignmentNewAttempt"],
+      headerControlsPositions: ["Left"],
+      displayProfile:false,
+    }
+    
   },
   course:{
     default:{
@@ -386,7 +416,7 @@ let navigationObj = {
       headerControlsPositions: ["Left"]
       // headerControls: ["BackButton"],
       // headerControlsPositions: ["Right"]
-    }
+    },
   },
   home:{
     default:{
@@ -660,6 +690,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     // console.log(">>> |view| ",nextPageToolView.view,"nextMenusAndPanels",nextMenusAndPanels)
 
 
+
     //Update Navigation Leave
     //Only when leaving page or tool
     //TODO: test for main panel change???
@@ -675,7 +706,10 @@ let encodeParams = p => Object.entries(p).map(kv =>
     }
 
 
-    
+    //Defaults for undefined 
+    if (nextMenusAndPanels.displayProfile === undefined){
+      nextMenusAndPanels.displayProfile = true;
+    }
 
    
 
