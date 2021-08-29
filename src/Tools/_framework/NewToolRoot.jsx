@@ -120,6 +120,8 @@ export default function ToolRoot(){
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
+    ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
+    
   }).current;
 
   const LazyControlObj = useRef({
@@ -247,12 +249,11 @@ let navigationObj = {
   },
   exam:{
     default:{
-      defaultTool:'authentication'
+      defaultTool:'chooseLearner'
     },
-    authentication:{
-      pageName:"Authentication",
-      // currentMainPanel:"AuthenticationChallenge",
-      currentMainPanel:"SignIn",
+    chooseLearner:{
+      pageName:"chooseLearner",
+      currentMainPanel:"ChooseLearnerPanel",
       displayProfile:false,
     },
     assessment:{
@@ -287,9 +288,7 @@ let navigationObj = {
       currentMainPanel:"DriveCards",
       currentMenus:["CreateCourse"],
       menusTitles:["Create Course"],
-      // currentMenus:["CreateCourse","CourseEnroll"],
-      // menusTitles:["Create Course","Enroll"],
-      menusInitOpen:[true,false],
+      menusInitOpen:[true],
       headerControls: ["ChooserBreadCrumb"],
       headerControlsPositions: ["Left"],
       onLeave:"CourseChooserLeave",
@@ -629,13 +628,14 @@ let encodeParams = p => Object.entries(p).map(kv =>
       isPageChange = true;
       if (nextPageToolView.tool === ""){
         //Load default
-        
         nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
         if (Object.keys(nextMenusAndPanels).includes("defaultTool")){
+
            const url = window.location.origin + window.location.pathname + "#" + location.pathname + '?' + encodeParams({tool:nextMenusAndPanels.defaultTool});
           //update url without pushing on to history
           window.history.replaceState('','',url)
           nextMenusAndPanels = navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
+   
         }
       }else{
         nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
@@ -700,20 +700,20 @@ let encodeParams = p => Object.entries(p).map(kv =>
         setOnLeaveStr((was)=>({str:leaveComponentName.current,updateNum:was.updateNum+1})) 
       }
       leaveComponentName.current = null;
-      if (nextMenusAndPanels.onLeave){
+      if (nextMenusAndPanels && nextMenusAndPanels.onLeave){
         leaveComponentName.current = nextMenusAndPanels.onLeave
       }
     }
 
+    // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
 
     //Defaults for undefined 
-    if (nextMenusAndPanels.displayProfile === undefined){
+    if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === undefined){
       nextMenusAndPanels.displayProfile = true;
     }
 
    
 
-    // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
     //Only update ToolRoot if nextMenusAndPanels was indicated as a change
     if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) ){
       backPageToolView.current = lastPageToolView.current;  //Set PageToolView for back button
