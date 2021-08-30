@@ -91,7 +91,8 @@ export default function ToolRoot(){
     supportPanelIndex:0,
     hasNoMenuPanel: false,
     headerControls:[],
-    headerControlsPositions:[]
+    headerControlsPositions:[],
+    displayProfile:true,
   });
   let mainPanel = null;
   let supportPanel = <SupportPanel hide={true} >null</SupportPanel>;
@@ -119,6 +120,8 @@ export default function ToolRoot(){
     DoenetMLEditor:lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment:lazy(() => import('./ToolPanels/Enrollment')),
     CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
+    ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
+    
   }).current;
 
   const LazyControlObj = useRef({
@@ -131,6 +134,7 @@ export default function ToolRoot(){
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() => import('./HeaderControls/GradebookBreadCrumb')),
     AssignmentBreadCrumb: lazy(() => import('./HeaderControls/AssignmentBreadCrumb')),
+    AssignmentNewAttempt: lazy(() => import('./HeaderControls/AssignmentNewAttempt')),
     RoleDropdown: lazy(() => import('./HeaderControls/RoleDropdown')),
   }).current;
 
@@ -184,18 +188,24 @@ if (toolRootMenusAndPanels?.supportPanelOptions && toolRootMenusAndPanels?.suppo
     menuPanelCap={toolRootMenusAndPanels.menuPanelCap}
     menusTitles={toolRootMenusAndPanels.menusTitles} 
     currentMenus={toolRootMenusAndPanels.currentMenus} 
-    initOpen={toolRootMenusAndPanels.menusInitOpen}/>
+    initOpen={toolRootMenusAndPanels.menusInitOpen}
+    displayProfile={toolRootMenusAndPanels.displayProfile}
+    />
   }
 
-  let profileInMainPanel = !menusOpen;
+  //If no menu panel then don't show open menu button
+  let openMenuButton = !menusOpen;
   if (toolRootMenusAndPanels.hasNoMenuPanel){
-    profileInMainPanel = false;
+    openMenuButton = false;
   }
+
+
+
   return <>
     <ToolContainer >
       {menus}
       <ContentPanel 
-      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} displayProfile={profileInMainPanel}>{mainPanel}</MainPanel>} 
+      main={<MainPanel headerControlsPositions={headerControlsPositions} headerControls={headerControls} setMenusOpen={setMenusOpen} openMenuButton={openMenuButton} displayProfile={toolRootMenusAndPanels.displayProfile} >{mainPanel}</MainPanel>} 
       support={supportPanel}
       />
     
@@ -237,6 +247,28 @@ let navigationObj = {
       hasNoMenuPanel: true,
     }
   },
+  exam:{
+    default:{
+      defaultTool:'chooseLearner'
+    },
+    chooseLearner:{
+      pageName:"chooseLearner",
+      currentMainPanel:"ChooseLearnerPanel",
+      displayProfile:false,
+    },
+    assessment:{
+      pageName:"Assessment",
+      menuPanelCap:"AssignmentInfoCap",
+      currentMainPanel:"AssignmentViewer",
+      currentMenus:["TimerMenu"], 
+      menusTitles:["Time Remaining"],
+      menusInitOpen:[true],
+      headerControls: ["AssignmentNewAttempt"],
+      headerControlsPositions: ["Left"],
+      displayProfile:false,
+    }
+    
+  },
   course:{
     default:{
       defaultTool:'courseChooser'
@@ -245,20 +277,18 @@ let navigationObj = {
       pageName:"Assignment",
       menuPanelCap:"AssignmentInfoCap",
       currentMainPanel:"AssignmentViewer",
-      currentMenus:[], 
-      menusTitles:[],
-      menusInitOpen:[],
-      headerControls: ["AssignmentBreadCrumb"],
-      headerControlsPositions: ["Left"],
+      currentMenus:["TimerMenu"], 
+      menusTitles:["Time Remaining"],
+      menusInitOpen:[true],
+      headerControls: ["AssignmentBreadCrumb","AssignmentNewAttempt"],
+      headerControlsPositions: ["Left","Right"],
     },
     courseChooser:{ //allCourses
       pageName:"Course",
       currentMainPanel:"DriveCards",
       currentMenus:["CreateCourse"],
       menusTitles:["Create Course"],
-      // currentMenus:["CreateCourse","CourseEnroll"],
-      // menusTitles:["Create Course","Enroll"],
-      menusInitOpen:[true,false],
+      menusInitOpen:[true],
       headerControls: ["ChooserBreadCrumb"],
       headerControlsPositions: ["Left"],
       onLeave:"CourseChooserLeave",
@@ -353,9 +383,9 @@ let navigationObj = {
       pageName:"Course",
       menuPanelCap:"EditorInfoCap",
       currentMainPanel:"EditorViewer",
-      currentMenus:["VersionHistory","Variant"], 
-      menusTitles:["Version History","Variant"],
-      menusInitOpen:[false,false],
+      currentMenus:["VersionHistory","Variant","AssignmentSettingsMenu"], 
+      menusTitles:["Version History","Variant","Assignment Settings"],
+      menusInitOpen:[false,false,false],
       supportPanelOptions:["DoenetMLEditor"],
       supportPanelTitles:["DoenetML Editor"],
       supportPanelIndex:0,
@@ -370,10 +400,13 @@ let navigationObj = {
     },
     enrollment:{ //allStudentsInCourse
       pageName:"Enrollment",
-      currentMenus:["LoadEnrollment","ManualEnrollment"],
       menuPanelCap:"DriveInfoCap",
-      menusTitles:["Load","Manual"],
-      menusInitOpen:[false,false],
+      // currentMenus:["LoadEnrollment","ManualEnrollment"],
+      // menusTitles:["Load","Manual"],
+      // menusInitOpen:[false,false],
+      currentMenus:["LoadEnrollment"],
+      menusTitles:["Import Learners"],
+      menusInitOpen:[false],
       currentMainPanel:"Enrollment",
       supportPanelOptions:[],
       supportPanelTitles:[],
@@ -382,7 +415,7 @@ let navigationObj = {
       headerControlsPositions: ["Left"]
       // headerControls: ["BackButton"],
       // headerControlsPositions: ["Right"]
-    }
+    },
   },
   home:{
     default:{
@@ -595,13 +628,14 @@ let encodeParams = p => Object.entries(p).map(kv =>
       isPageChange = true;
       if (nextPageToolView.tool === ""){
         //Load default
-        
         nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
         if (Object.keys(nextMenusAndPanels).includes("defaultTool")){
+
            const url = window.location.origin + window.location.pathname + "#" + location.pathname + '?' + encodeParams({tool:nextMenusAndPanels.defaultTool});
           //update url without pushing on to history
           window.history.replaceState('','',url)
           nextMenusAndPanels = navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
+   
         }
       }else{
         nextMenusAndPanels = navigationObj[nextPageToolView.page][nextPageToolView.tool];
@@ -656,6 +690,7 @@ let encodeParams = p => Object.entries(p).map(kv =>
     // console.log(">>> |view| ",nextPageToolView.view,"nextMenusAndPanels",nextMenusAndPanels)
 
 
+
     //Update Navigation Leave
     //Only when leaving page or tool
     //TODO: test for main panel change???
@@ -665,17 +700,20 @@ let encodeParams = p => Object.entries(p).map(kv =>
         setOnLeaveStr((was)=>({str:leaveComponentName.current,updateNum:was.updateNum+1})) 
       }
       leaveComponentName.current = null;
-      if (nextMenusAndPanels.onLeave){
+      if (nextMenusAndPanels && nextMenusAndPanels.onLeave){
         leaveComponentName.current = nextMenusAndPanels.onLeave
       }
     }
 
+    // console.log(">>>>nextMenusAndPanels",nextMenusAndPanels)
 
-    
+    //Defaults for undefined 
+    if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === undefined){
+      nextMenusAndPanels.displayProfile = true;
+    }
 
    
 
-    // console.log(">>>nextMenusAndPanels",nextMenusAndPanels)
     //Only update ToolRoot if nextMenusAndPanels was indicated as a change
     if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current) ){
       backPageToolView.current = lastPageToolView.current;  //Set PageToolView for back button

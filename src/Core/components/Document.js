@@ -52,13 +52,13 @@ export default class Document extends BaseComponent {
     return [{
       group: "variantControl",
       componentTypes: ["variantControl"]
-    },{
+    }, {
       group: "title",
       componentTypes: ["title"]
-    },{
+    }, {
       group: "description",
       componentTypes: ["description"]
-    },{
+    }, {
       group: "anything",
       componentTypes: ["_base"]
     }]
@@ -246,31 +246,93 @@ export default class Document extends BaseComponent {
 
         return { newValues: { itemCreditAchieved } }
 
-      },
-      markStaleByKey({ arrayKeys, changes }) {
+      }
 
-        if (changes.__array_size || changes.__array_keys) {
-          return {
-            itemScoreChanged: {
-              itemNumbers: arrayKeys
+    }
+
+    stateVariableDefinitions.itemNumberByAnswerName = {
+      stateVariablesDeterminingDependencies: ["scoredDescendants"],
+      returnDependencies({ stateValues }) {
+        let dependencies = {
+          scoredDescendants: {
+            dependencyType: "stateVariable",
+            variableName: "scoredDescendants"
+          }
+        };
+        for (let ind in stateValues.scoredDescendants) {
+          let descendant = stateValues.scoredDescendants[ind];
+          dependencies[`descendantsOf${ind}`] = {
+            dependencyType: "descendant",
+            ancestorName: descendant.componentName,
+            componentTypes: ["answer"],
+            recurseToMatchedChildren: false,
+          }
+        }
+
+        return dependencies;
+      },
+      definition({ dependencyValues, componentInfoObjects }) {
+        let itemNumberByAnswerName = {};
+
+        for (let [ind, component] of dependencyValues.scoredDescendants.entries()) {
+          let itemNumber = ind + 1;
+          for (let answerDescendant of dependencyValues[`descendantsOf${ind}`]) {
+            itemNumberByAnswerName[answerDescendant.componentName] = itemNumber;
+          }
+          if (componentInfoObjects.isInheritedComponentType({
+            inheritedComponentType: component.componentType,
+            baseComponentType: "answer"
+          })) {
+            itemNumberByAnswerName[component.componentName] = itemNumber;
+          }
+        }
+
+        return { newValues: { itemNumberByAnswerName } }
+
+      }
+
+    }
+
+
+    stateVariableDefinitions.itemVariantInfo = {
+      isArray: true,
+      returnArraySizeDependencies: () => ({
+        nScoredDescendants: {
+          dependencyType: "stateVariable",
+          variableName: "nScoredDescendants"
+        }
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nScoredDescendants];
+      },
+      stateVariablesDeterminingDependencies: ["scoredDescendants"],
+      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          let descendant = stateValues.scoredDescendants[arrayKey];
+          if (descendant) {
+            dependenciesByKey[arrayKey] = {
+              generatedVariantInfo: {
+                dependencyType: "stateVariable",
+                componentName: descendant.componentName,
+                variableName: "generatedVariantInfo",
+                variablesOptional: true,
+              }
             }
           }
         }
 
-        let findArrayKeyRegex = /^__(\d+)_/;
+        return { dependenciesByKey }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+        let itemVariantInfo = {};
 
-        let itemNumbers = [];
-
-        for (let changeName in changes) {
-          let match = findArrayKeyRegex.exec(changeName);
-          if (match) {
-            itemNumbers.push(match[1])
-          }
+        for (let arrayKey of arrayKeys) {
+          itemVariantInfo[arrayKey] = dependencyValuesByKey[arrayKey].generatedVariantInfo;
         }
 
-        return {
-          itemScoreChanged: { itemNumbers }
-        }
+        return { newValues: { itemVariantInfo } }
+
       }
 
     }
@@ -439,7 +501,6 @@ export default class Document extends BaseComponent {
           variablesOptional: true,
           includeNonActiveChildren: true,
           ignoreReplacementsOfMatchedComposites: true,
-          definingChildrenFirst: true,
         },
         variants: {
           dependencyType: "variants",
@@ -510,7 +571,7 @@ export default class Document extends BaseComponent {
     submitAllAnswers: this.submitAllAnswers.bind(this),
   }
 
-  submitAllAnswers() {
+  async submitAllAnswers() {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -521,11 +582,12 @@ export default class Document extends BaseComponent {
       result: {
         creditAchieved: this.stateValues.creditAchievedIfSubmit
       }
+    });
 
-    })
+
     for (let answer of this.stateValues.answerDescendants) {
       if (!answer.stateValues.justSubmitted) {
-        this.coreFunctions.requestAction({
+        await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer"
         })

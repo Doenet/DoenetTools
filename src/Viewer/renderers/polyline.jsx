@@ -240,11 +240,16 @@ export default class Line extends DoenetRenderer {
     if (i === -1) {
       let pointCoords = this.calculatePointPositions(e);
 
-      this.actions.movePolyline(pointCoords, transient);
+      this.actions.movePolyline({ pointCoords, transient, skippable: transient });
     } else {
-      let newCoords = {};
-      newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-      this.actions.movePolyline(newCoords, transient, { vertex: i });
+      let pointCoords = {};
+      pointCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
+      this.actions.movePolyline({
+        pointCoords,
+        transient,
+        skippable: transient,
+        sourceInformation: { vertex: i }
+      });
     }
   }
 

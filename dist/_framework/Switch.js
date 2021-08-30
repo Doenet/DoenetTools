@@ -19,12 +19,6 @@ export default function Switch(props) {
   if (props.checked === true || props.checked === "true" || props.checked === "1" || props.checked === 1) {
     propsChecked = true;
   }
-  let [checked, setChecked] = useState(propsChecked || false);
-  useEffect(() => {
-    if (props.checked === true || props.checked === "true" || props.checked === "1" || props.checked === 1) {
-      setChecked(true);
-    }
-  }, [props.checked]);
   return /* @__PURE__ */ React.createElement("div", {
     className: (props.className || "") + " switch",
     key: id + "container"
@@ -34,13 +28,12 @@ export default function Switch(props) {
   }, /* @__PURE__ */ React.createElement("input", {
     type: "checkbox",
     onChange: (e) => {
-      setChecked(e.target.checked);
       props.onChange(e);
     },
     id,
     name: props.name,
     key: id,
-    checked
+    checked: propsChecked
   }), /* @__PURE__ */ React.createElement("span", {
     className: "switch-visual"
   }), /* @__PURE__ */ React.createElement("span", {

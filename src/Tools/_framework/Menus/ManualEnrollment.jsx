@@ -2,7 +2,7 @@ import React from 'react';
 import { nanoid } from 'nanoid';
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
 import {
   processAtom,
   enrolllearnerAtom,
@@ -14,51 +14,59 @@ export default function ManualEnrollment(props) {
   //array containing column names
   const setProcess = useSetRecoilState(processAtom);
   //array containing column data
-  const enrolllearner = useRecoilValue(enrolllearnerAtom);
-  const setEnrolllearner = useSetRecoilState(enrolllearnerAtom);
+  const [enrolllearner,setEnrolllearner] = useRecoilState(enrolllearnerAtom);
   const setEnrollmentTableData = useSetRecoilState(enrollmentTableDataAtom);
 
   const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
 
-  const enrollManual = (e) => {
-    e.preventDefault();
+  const enrollManual = (enrolllearner,driveId) => {
     if (enrolllearner) {
       let payload = {
         email: enrolllearner,
         userId: nanoid(),
         driveId: driveId,
       };
-      axios.post('/api/manualEnrollment.php', payload).then((resp) => {
-        const payload = { params: { driveId } };
-        axios
-          .get('/api/getEnrollment.php', payload)
-          .then((resp) => {
-            let enrollmentArray = resp.data.enrollmentArray;
-            setEnrollmentTableData(enrollmentArray);
-            setProcess('Display Enrollment');
-            setEnrolllearner('');
-          })
-          .catch((error) => {
-            console.warn(error);
-          });
+    console.log(">>>>payload",payload)
+    axios.post('/api/manualEnrollment.php', payload)
+    .then((resp) => {
+      console.log(">>>>resp",resp.data)
+        // axios.get('/api/getEnrollment.php', { params: { driveId } })
+        //   .then((resp) => {
+        //     console.log(">>>>resp",resp.data)
+        //     let enrollmentArray = resp.data.enrollmentArray;
+        //     setEnrollmentTableData(enrollmentArray);
+        //     setProcess('Display Enrollment');
+        //     setEnrolllearner('');
+        //   })
+        //   .catch((error) => {
+        //     console.warn(error);
+        //   });
       });
     }
   };
-  const handleChange = (e) => {
-    setEnrolllearner(e.currentTarget.value);
-  };
+
+  //STEP 1: Enter email for account
+  //STEP 2: With correct format for email test if user account
+  //STEP 3a; If No account ask for First and Last Name
+
   let manualEnroll = (
     <div>
-      <label>Email:</label>
+      <label>Email
       <input
         required
         type="email"
         name="email"
         value={enrolllearner}
         placeholder="example@example.com"
-        onChange={handleChange}
+        onChange={(e)=>setEnrolllearner(e.currentTarget.value)}
+        onKeyDown={(e)=>{
+          if (e.key === 'Enter'){
+            enrollManual(enrolllearner,driveId)
+          }
+        }}
       />
-      <Button value="Enroll" onClick={(e) => enrollManual(e)} />
+      </label>
+      <Button value="Enroll" onClick={() => enrollManual(enrolllearner,driveId)} />
     </div>
   );
 

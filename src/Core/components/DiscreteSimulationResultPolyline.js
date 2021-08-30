@@ -230,7 +230,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
         for (let ind = 0; ind < arraySize[0]; ind++) {
           vertices[`${ind},0`] = me.fromAst(ind);
           let val = globalDependencyValues.allIterates[ind];
-          if(globalDependencyValues.seriesNumber !== null) {
+          if (globalDependencyValues.seriesNumber !== null) {
             val = val.get_component(globalDependencyValues.seriesNumber - 1);
           }
           vertices[`${ind},1`] = val;
@@ -480,16 +480,16 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
   }
 
 
-  movePolyline(pointcoordsObject, transient, sourceInformation) {
+  movePolyline({ pointCoords, transient, sourceInformation }) {
 
     let vertexComponents = {};
-    for (let ind in pointcoordsObject) {
-      vertexComponents[ind + ",0"] = me.fromAst(pointcoordsObject[ind][0]);
-      vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
+    for (let ind in pointCoords) {
+      vertexComponents[ind + ",0"] = me.fromAst(pointCoords[ind][0]);
+      vertexComponents[ind + ",1"] = me.fromAst(pointCoords[ind][1]);
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -497,11 +497,11 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
           value: vertexComponents,
           sourceInformation
         }],
-        transient,
+        transient: true,
       });
     } else {
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -516,7 +516,7 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
             componentType: this.componentType,
           },
           result: {
-            pointCoordinates: pointcoordsObject
+            pointCoordinates: pointCoords
           }
         },
       });
@@ -529,10 +529,10 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    this.actions.movePolyline(
-      this.stateValues.numericalVertices,
-      false
-    );
+    return this.actions.movePolyline({
+      pointCoords: this.stateValues.numericalVertices,
+      transient: false
+    });
   }
 
 

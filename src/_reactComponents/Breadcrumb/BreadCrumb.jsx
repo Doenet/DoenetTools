@@ -16,7 +16,7 @@ import {
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import styled from 'styled-components';
 
-import { assignmentData, studentData } from "../../Tools/_framework/ToolPanels/Gradebook"
+// import { assignmentData, studentData } from "../../Tools/_framework/ToolPanels/Gradebook"
 
 const Breadcrumb = styled.ul`
   list-style: none;
@@ -119,7 +119,7 @@ const breadcrumbItemAtomFamily = atomFamily({
   }),
 });
 
-export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId, attemptNumber, source}) {
+export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId, attemptNumber, source, assignments, students}) {
   const [driveId, parentFolderId] = path.split(':');
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const clearSelections = useSetRecoilState(clearDriveAndItemSelections);
@@ -394,7 +394,6 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
     
 
   let returnToAssignmentView = null
-  let assignments = useRecoilValueLoadable(assignmentData);
 
   if (tool === 'Gradebook' && doenetId !== null && doenetId !== '' && assignments.state === 'hasValue'){
     returnToAssignmentView = (
@@ -428,7 +427,6 @@ export default function BreadCrumb({ path, tool, tool2, doenetId, label, userId,
   }
 
   let returnToStudentView = null
-  let students = useRecoilValueLoadable(studentData);
 
   if (tool === 'Gradebook' && userId !== null && userId !== '' && students.state === 'hasValue'){
     console.log(">>>> bc userid: ", userId)

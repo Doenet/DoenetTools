@@ -479,14 +479,14 @@ export default function Slider(props) {
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
 
-        actions.changeValue({ value: valindexpair[0], transient: true });
+        actions.changeValue({ value: valindexpair[0], transient: true, skippable: true });
         // actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true });
       } else {
         let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
 
-        actions.changeValue({ value: SVs.items[i], transient: true });
+        actions.changeValue({ value: SVs.items[i], transient: true, skippable: true });
       }
     }
   }

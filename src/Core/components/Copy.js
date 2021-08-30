@@ -29,6 +29,9 @@ export default class Copy extends CompositeComponent {
     delete attributes.styleNumber;
     delete attributes.isResponse;
 
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
@@ -1073,6 +1076,10 @@ export default class Copy extends CompositeComponent {
 
     if (!replacementChanges) {
       replacementTypes = replacements.map(x => x.componentType);
+
+      if (replacementTypes.length === 1 && replacementTypes[0] === "externalContent") {
+        replacementTypes = replacements[0].children.map(x => x.componentType)
+      }
 
     } else {
 

@@ -4,6 +4,7 @@ import { enumerateSelectionCombinations } from '../utils/enumeration';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { textToAst } from '../utils/math';
 import { calculateSequenceParameters, numberToLetters, lettersToNumber } from '../utils/sequence';
+import { convertAttributesForComponentType } from '../utils/copy';
 
 export default class SelectFromSequence extends Sequence {
   static componentType = "selectFromSequence";
@@ -18,8 +19,11 @@ export default class SelectFromSequence extends Sequence {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.numberToSelect = {
-      createComponentOfType: "number",
+      createPrimitiveOfType: "number",
       createStateVariable: "numberToSelect",
       defaultValue: 1,
       public: true,
@@ -182,18 +186,37 @@ export default class SelectFromSequence extends Sequence {
 
   static createSerializedReplacements({ component, componentInfoObjects }) {
 
+    let componentType = component.stateValues.type;
+    if (component.stateValues.type === "letters") {
+      componentType = "text"
+    }
+
+    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+
+    // allow one to override the fixed (default true) attribute
+    // by specifying it on the sequence
+    let attributesFromComposite = {};
+
+    if ("fixed" in component.attributes) {
+      attributesFromComposite = convertAttributesForComponentType({
+        attributes: { fixed: component.attributes.fixed },
+        componentType,
+        componentInfoObjects,
+        compositeCreatesNewNamespace: newNamespace
+      })
+    }
+
     let replacements = [];
 
     for (let value of component.stateValues.selectedValues) {
 
       replacements.push({
-        componentType: component.stateValues.type === "letters" ? "text" : component.stateValues.type,
-        state: { value }
+        componentType,
+        attributes: attributesFromComposite,
+        state: { value, fixed: true }
       });
 
     }
-
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,

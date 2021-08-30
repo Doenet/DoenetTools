@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-16 18:43:44 +0000
+# Generation Time: 2021-08-29 20:32:50 +0000
 # ************************************************************
 
 
@@ -32,7 +32,7 @@ CREATE TABLE `assignment` (
   `driveId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
   `assignedDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means open until the dueDate. If dueDate is also NULL then open all the time.',
   `dueDate` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means never closes',
-  `timeLimit` time DEFAULT NULL COMMENT 'NULL means it''s not timed',
+  `timeLimit` int(11) DEFAULT NULL COMMENT 'NULL means it''s not timed',
   `numberOfAttemptsAllowed` int(11) DEFAULT NULL COMMENT 'NULL means infinite, Assignment Level Number Of Attempts',
   `sortOrder` int(11) DEFAULT NULL,
   `attemptAggregation` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -54,7 +54,7 @@ LOCK TABLES `assignment` WRITE;
 
 INSERT INTO `assignment` (`id`, `doenetId`, `contentId`, `driveId`, `assignedDate`, `dueDate`, `timeLimit`, `numberOfAttemptsAllowed`, `sortOrder`, `attemptAggregation`, `totalPointsOrPercent`, `gradeCategory`, `individualize`, `multipleAttempts`, `showSolution`, `showFeedback`, `showHints`, `showCorrectness`, `proctorMakesAvailable`, `examCoverHTML`)
 VALUES
-	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07','10:10:00',2,NULL,'m',0,'l',0,0,1,1,1,1,0,NULL);
+	(488,'doenetId',NULL,'driveId','2021-06-04 08:20:07','2021-06-09 08:20:07',101000,2,NULL,'m',0,'l',0,0,1,1,1,1,0,NULL);
 
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -70,7 +70,7 @@ CREATE TABLE `collection` (
   `collectionDoenetId` char(21) DEFAULT '',
   `entryDoenetId` char(21) NOT NULL DEFAULT '',
   `entryId` char(21) NOT NULL DEFAULT '',
-  `variant` varchar(255) NOT NULL DEFAULT '',
+  `variant` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -153,6 +153,7 @@ CREATE TABLE `drive` (
   `isDeleted` tinyint(1) DEFAULT '0',
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `color` char(6) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `examPasscode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -234,6 +235,7 @@ CREATE TABLE `enrollment` (
   `courseCredit` float DEFAULT NULL,
   `courseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timeLimitMultiplier` float NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_courseId` (`username`,`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -241,30 +243,30 @@ CREATE TABLE `enrollment` (
 LOCK TABLES `enrollment` WRITE;
 /*!40000 ALTER TABLE `enrollment` DISABLE KEYS */;
 
-INSERT INTO `enrollment` (`id`, `driveId`, `userId`, `firstName`, `lastName`, `username`, `email`, `empId`, `dateEnrolled`, `section`, `withdrew`, `dateWithdrew`, `forTesting`, `courseCredit`, `courseGrade`, `overrideCourseGrade`)
+INSERT INTO `enrollment` (`id`, `driveId`, `userId`, `firstName`, `lastName`, `username`, `email`, `empId`, `dateEnrolled`, `section`, `withdrew`, `dateWithdrew`, `forTesting`, `courseCredit`, `courseGrade`, `overrideCourseGrade`, `timeLimitMultiplier`)
 VALUES
-	(1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,1234567,'2019-09-03 20:29:41','15',b'0',NULL,b'0',NULL,'A',NULL),
-	(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,5254243,'2019-09-03 20:29:41','2',b'0',NULL,b'0',NULL,NULL,NULL),
-	(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,'B',NULL),
-	(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,7,NULL,NULL,b'0',NULL,b'0',NULL,'B-',NULL),
-	(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,119,NULL,NULL,b'0',NULL,b'0',NULL,'B+',NULL),
-	(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,852,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,89,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,4786,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,75024,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,9240,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,4522,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,259,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,2,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,4,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,3931,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,7947,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,96895,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,381,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL),
-	(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,34,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL);
+	(1,'aI8sK4vmEhC5sdeSP3vNW','devuserid','generic','user','devuser',NULL,1234567,'2019-09-03 20:29:41','15',b'0',NULL,b'0',NULL,'A',NULL,1),
+	(2,'fsa4214fasgag1512525f',NULL,'SHOULD NOT','BE LOADED','invalid',NULL,5254243,'2019-09-03 20:29:41','2',b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(4,'aI8sK4vmEhC5sdeSP3vNW','temp1','Anatole','Wickrath','awickrath0',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,'B',NULL,1),
+	(5,'aI8sK4vmEhC5sdeSP3vNW','temp2','Antony','Aylett','aaylett1',NULL,7,NULL,NULL,b'0',NULL,b'0',NULL,'B-',NULL,1),
+	(6,'aI8sK4vmEhC5sdeSP3vNW','temp3','Lindi','Rash','lrash2',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(7,'aI8sK4vmEhC5sdeSP3vNW','temp4','Nicholas','Peteri','npeteri3',NULL,119,NULL,NULL,b'0',NULL,b'0',NULL,'B+',NULL,1),
+	(8,'aI8sK4vmEhC5sdeSP3vNW','temp5','Savina','Michin','smichin4',NULL,852,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(9,'aI8sK4vmEhC5sdeSP3vNW','temp6','Gerry','Sallan','gsallan5',NULL,89,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(10,'aI8sK4vmEhC5sdeSP3vNW','temp7','Wakefield','Bengle','wbengle6',NULL,4786,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(11,'aI8sK4vmEhC5sdeSP3vNW','temp8','Patrice','Bavin','pbavin8',NULL,75024,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(12,'aI8sK4vmEhC5sdeSP3vNW','temp9','Merrile','McGee','mmcgee9',NULL,9240,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(13,'aI8sK4vmEhC5sdeSP3vNW','temp10','Ardath','Celler','acellera',NULL,4522,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(14,'aI8sK4vmEhC5sdeSP3vNW','temp11','Ashleigh','Lothean','alotheanb',NULL,259,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(15,'aI8sK4vmEhC5sdeSP3vNW','temp12','Salomon','Scorah','sscorahd',NULL,2,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(16,'aI8sK4vmEhC5sdeSP3vNW','temp13','Xaviera','Kupec','xkupece',NULL,4,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(17,'aI8sK4vmEhC5sdeSP3vNW','temp14','Pennie','Badder','pbadderg',NULL,3931,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(18,'aI8sK4vmEhC5sdeSP3vNW','temp15','Travis','Sarrell','tsarrellh',NULL,7947,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(19,'aI8sK4vmEhC5sdeSP3vNW','temp16','Eldin','Crosser','ecrosserj',NULL,96895,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(20,'aI8sK4vmEhC5sdeSP3vNW','temp17','Ginger','Nijs','gnijsl',NULL,60,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(21,'aI8sK4vmEhC5sdeSP3vNW','temp18','Petronille','Pidcock','ppidcockm',NULL,381,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(22,'aI8sK4vmEhC5sdeSP3vNW','temp19','Arlee','Duggleby','adugglebyn',NULL,5,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1),
+	(23,'aI8sK4vmEhC5sdeSP3vNW','temp20','Ambur','Viant','avianto',NULL,34,NULL,NULL,b'0',NULL,b'0',NULL,NULL,NULL,1);
 
 /*!40000 ALTER TABLE `enrollment` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -290,6 +292,7 @@ CREATE TABLE `event` (
   `timestored` timestamp NULL DEFAULT NULL,
   `version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `valid` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -361,7 +364,6 @@ CREATE TABLE `user_assignment` (
   `contentId` char(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `dueDateOverride` datetime DEFAULT NULL COMMENT 'UTC DATETIME NULL means no override',
-  `timeLimitOverride` time DEFAULT NULL COMMENT 'NULL means no override',
   `numberOfAttemptsAllowedOverride` int(11) DEFAULT NULL,
   `groupId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
   `groupName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'NULL means no group',
@@ -388,8 +390,8 @@ CREATE TABLE `user_assignment_attempt` (
   `attemptNumber` int(11) NOT NULL DEFAULT '1',
   `credit` float DEFAULT NULL,
   `creditOverride` float DEFAULT NULL,
-  `assignedVariant` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
-  `generatedVariant` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Based on code',
+  `assignedVariant` text COLLATE utf8_unicode_ci COMMENT 'Like seed. Informs the selects what values to use for the content. NULL means didn''t view yet.',
+  `generatedVariant` text COLLATE utf8_unicode_ci COMMENT 'Based on code',
   `began` datetime DEFAULT NULL,
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -413,7 +415,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `credit` float DEFAULT NULL COMMENT 'maximum credit',
   `creditOverride` float DEFAULT NULL,
   `weight` float NOT NULL DEFAULT '1' COMMENT 'Weight comes from Doenet code.',
-  `generatedVariant` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
+  `generatedVariant` text COLLATE utf8_unicode_ci,
   `viewedSolution` tinyint(1) DEFAULT '0',
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
@@ -435,7 +437,7 @@ CREATE TABLE `user_assignment_attempt_item_submission` (
   `attemptNumber` int(11) DEFAULT NULL,
   `itemNumber` int(11) DEFAULT NULL,
   `submissionNumber` int(11) DEFAULT NULL,
-  `itemState` longtext COLLATE utf8_unicode_ci COMMENT 'JSON used to persist state of user''s experience',
+  `stateVariables` mediumtext COLLATE utf8_unicode_ci COMMENT 'JSON used to persist state of user''s experience',
   `credit` float DEFAULT NULL,
   `submittedDate` datetime NOT NULL,
   `valid` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Past the due date. When the assesment wasn''t open.',

@@ -1178,6 +1178,696 @@ describe('Paginator Tag Tests', function () {
 
   })
 
+  it('With selects, specify variants', () => {
+
+    let doenetML = `
+    <text>a</text>
+  
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn">
+      <select assignNames="(problem1)">
+        <option>
+          <problem newNamespace>
+            <title>Problem A</title>
+            <p>Enter <m>$n</m>.
+              <answer name="ans1">
+                <mathinput name="input1"/>
+                <award>$n</award>
+              </answer>
+            </p>
+            <p>What is <m>1+$n</m>? 
+              <answer name="ans2">
+                <mathinput name="input2"/>
+                <award>1+$n</award>
+              </answer>
+            </p>
+            <selectFromSequence from="1" to="10" assignNames="n" hide />
+          </problem>
+        </option>
+        <option>
+          <problem newNamespace>
+            <variantControl nVariants="50" />
+            <title>Problem B</title>
+            <p>Enter <m>$n</m>.
+              <answer name="ans1">
+                <mathinput name="input1"/>
+                <award>$n</award>
+              </answer>
+            </p>
+            <p>What is <m>1-$n</m>? 
+              <answer name="ans2">
+                <mathinput name="input2"/>
+                <award>1-$n</award>
+              </answer>
+            </p>
+            <selectFromSequence from="1" to="10" assignNames="n" hide />
+          </problem>
+        </option>
+      </select>
+      <select assignNames = "(((problem2) (problem3)))">
+        <option>
+          <select numberToSelect="2">
+            <option>
+              <problem newNamespace>
+                <title>Problem C</title>
+                <p>What is <m>2+$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>2+$n</award>
+                  </answer>
+                </p>
+                <selectFromSequence from="1" to="10" assignNames="n" hide />
+              </problem>
+            </option>
+            <option>
+              <problem newNamespace>
+                <title>Problem D</title>
+                <variantControl nVariants="50" />
+                <p>What is <m>2-$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>2-$n</award>
+                  </answer>
+                </p>
+                <selectFromSequence from="1" to="10" assignNames="n" hide />
+              </problem>
+            </option>
+          </select>
+        </option>
+        <option>
+          <select numberToSelect="2">
+            <option>
+              <problem newNamespace>
+                <title>Problem E</title>
+                <variantcontrol nVariants="3" variantNames="one two three" />
+                <select assignNames="(n)" hide>
+                  <option selectForVariantNames="one"><number>1</number></option>
+                  <option selectForVariantNames="two"><number>2</number></option>
+                  <option selectForVariantNames="three"><number>3</number></option>
+                </select>
+                <p>What is <m>3+$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>3+$n</award>
+                  </answer>
+                </p>
+              </problem>
+            </option>
+            <option>
+              <problem newNamespace>
+                <title>Problem F</title>
+                <variantcontrol nVariants="3" variantNames="four five six" />
+                <select assignNames="(n)" hide>
+                  <option selectForVariantNames="four"><number>4</number></option>
+                  <option selectForVariantNames="five"><number>5</number></option>
+                  <option selectForVariantNames="six"><number>6</number></option>
+                </select>
+                <p>What is <m>3-$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>3-$n</award>
+                  </answer>
+                </p>
+              </problem>
+            </option>
+          </select>
+        </option>
+      </select>
+      <problem name="problem4" newNamespace>
+        <title>Problem G</title>
+        <selectFromSequence from="101" to="999" name="n" hide/>
+        <p>What is <m>2 \\cdot $n</m>? 
+          <answer name="ans">
+            <mathinput name="input"/>
+            <award>2$n</award>
+          </answer>
+        </p>
+      </problem>
+      <problem name="problem5" newNamespace>
+        <title>Problem H</title>
+        <variantControl nVariants="7" variantNames="apple banana cherry date elderberry fig grape" />
+        <!-- Note: explicitly don't put fruit in parens to test for previous error -->
+        <select assignNames="fruit" hide>
+          <option selectForVariantNames="apple"><text>apple</text></option>
+          <option selectForVariantNames="banana"><text>banana</text></option>
+          <option selectForVariantNames="cherry"><text>cherry</text></option>
+          <option selectForVariantNames="date"><text>date</text></option>
+          <option selectForVariantNames="elderberry"><text>elderberry</text></option>
+          <option selectForVariantNames="fig"><text>fig</text></option>
+          <option selectForVariantNames="grape"><text>grape</text></option>
+        </select>
+        <p>Enter $fruit:
+          <answer name="ans" type="text">
+            <textinput name="input"/>
+            <award>$fruit</award>
+          </answer>
+        </p>
+      </problem>
+    </paginator>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariant: {
+          subvariants: [{
+            indices: [1],
+            subvariants: [{
+              subvariants: [{
+                indices: [7]
+              }]
+            }]
+          }, {
+            indices: [2],
+            subvariants: [{
+              indices: [2, 1],
+              subvariants: [{
+                index: 1
+              }, {
+                index: 2
+              }]
+            }]
+          }, {
+            subvariants: [{
+              indices: [152]
+            }]
+          }, {
+            index: 6
+          }]
+        }
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Problem A')
+    cy.get(cesc('#/ca')).should('have.text', '0')
+
+    cy.get(cesc('#/problem1/input1') + " textarea").type('7{enter}', { force: true });
+    cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.1')
+
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
+    cy.get(cesc('#/ca')).should('have.text', '0.1')
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
+    cy.get(cesc('#/ca')).should('have.text', '0.1')
+
+
+    cy.get(cesc('#/problem2/input') + " textarea").type('-1{enter}', { force: true });
+    cy.get(cesc('#/problem2/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
+    cy.get(cesc('#/problem2/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Problem A')
+    cy.get(cesc('#/problem1/input1_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/problem1/input1') + " textarea").type('{end}{backspace}8{enter}', { force: true });
+    cy.get(cesc('#/problem1/input1_incorrect')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.2')
+
+    cy.get(cesc('#/problem1/input2') + " textarea").type('8{enter}', { force: true });
+    cy.get(cesc('#/problem1/input2_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Problem A')
+    cy.get(cesc('#/problem1/input1_incorrect')).should('be.visible');
+    cy.get(cesc('#/problem1/input2_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
+    cy.get(cesc('#/problem2/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem3/_title1')).should('have.text', 'Problem E')
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/problem3/input') + " textarea").type('x^{enter}', { force: true });
+    cy.get(cesc('#/problem3/input_incorrect')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem3/_title1')).should('have.text', 'Problem E')
+    cy.get(cesc('#/problem3/input_incorrect')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
+    cy.get(cesc('#/problem2/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Problem A')
+    cy.get(cesc('#/problem1/input1_incorrect')).should('be.visible');
+    cy.get(cesc('#/problem1/input2_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
+    cy.get(cesc('#/problem2/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem2/_title1')).should('have.text', 'Problem F')
+    cy.get(cesc('#/problem2/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem3/_title1')).should('have.text', 'Problem E')
+    cy.get(cesc('#/problem3/input_incorrect')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem4/_title1')).should('have.text', 'Problem G')
+    cy.get(cesc('#/ca')).should('have.text', '0.3')
+
+    cy.get(cesc('#/problem4/input') + " textarea").type('504{enter}', { force: true });
+    cy.get(cesc('#/problem4/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem5/_title1')).should('have.text', 'Problem H')
+    cy.get(cesc('#/ca')).should('have.text', '0.5')
+
+    cy.get(cesc('#/problem5/input_input')).type('fig{enter}', { force: true });
+    cy.get(cesc('#/problem5/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.7')
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/problem4/_title1')).should('have.text', 'Problem G')
+    cy.get(cesc('#/problem4/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.7')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem4/_title1')).should('have.text', 'Problem G')
+    cy.get(cesc('#/problem4/input_correct')).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.7')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem5/_title1')).should('have.text', 'Problem H')
+    cy.get(cesc('#/ca')).should('have.text', '0.7')
+
+
+  })
+
+  it('With external and internal copies', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <setup>
+      <problem name="problema" newNamespace>
+        <title>A hard problem</title>
+        <p>What is 1+1? <answer><mathinput /><award>2</award></answer></p>
+      </problem>
+    </setup>
+
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn">
+      <copy assignNames="problem1" uri="doenet:contentId=a666134b719e70e8acb48d91d582d1efd90d7f11fb499ab77f9f1fa5dafdb96d" componentType="problem" />
+      <copy assignNames="problem2" uri="doenet:contentId=64e31126079d65ea41e90129fa96a7fd54f1faa73fb7b2ef99d8bbed1d13f69a" componentType="problem" />
+      <copy assignNames="problem3" tname="problema" componentType="problem" link="false" />
+  
+    </paginator>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML,
+        requestedVariant: {
+          subvariants: [{}, {
+            name: "mouse"
+          }]
+        }
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc('#/ca')).should('have.text', '0')
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let choices = [...components['/problem1/_choiceinput1'].stateValues.choiceTexts];
+      let mouseInd = choices.indexOf("squeak") + 1;
+      cy.get(cesc(`#/problem1/_choiceinput1_choice${mouseInd}_input`)).click();
+    })
+
+    cy.get(cesc(`#/problem1/_choiceinput1_submit`)).click();
+    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML: `
+      <text>b</text>
+      `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+    cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.window().then((win) => {
+      let components = Object.assign({}, win.state.components);
+      let mathinput2Name = components["/problem2/derivativeProblem/_answer1"].stateValues.inputChildren[0].componentName;
+
+      let mathinput2Anchor = cesc(`#${mathinput2Name}`) + " textarea";
+      let mathinput2Correct = cesc(`#${mathinput2Name}_correct`);
+
+      cy.get(mathinput2Anchor).type('2x{enter}', { force: true })
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.get(cesc('#/pcontrols_previous')).click();
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+      cy.get(cesc('#/pcontrols_next')).click()
+      cy.get(cesc('#/problem3/_title1')).should('have.text', 'A hard problem')
+      cy.get(cesc('#/ca')).should('have.text', '0.667')
+
+
+      cy.get(cesc('#/problem3/_mathinput1') + " textarea").type('2{enter}', { force: true })
+      cy.get(cesc('#/problem3/_mathinput1_correct')).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML: `
+      <text>b</text>
+      `}, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'b') //wait for page to load
+
+      cy.window().then((win) => {
+        win.postMessage({
+          doenetML
+        }, "*");
+      });
+      cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+      cy.get(cesc('#/problem3/_title1')).should('have.text', 'A hard problem')
+      cy.get(cesc('#/problem3/_mathinput1_correct')).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get(cesc('#/problem2/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
+      cy.get(mathinput2Correct).should("be.visible");
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+      cy.get(cesc('#/pcontrols_previous')).click()
+      cy.get(cesc('#/problem1/_title1')).should('have.text', 'Animal sounds')
+      cy.get(cesc(`#/problem1/_choiceinput1_correct`)).should('be.visible');
+      cy.get(cesc('#/ca')).should('have.text', '1')
+
+
+    })
+
+
+  })
+
+  it('Submit all answers on page change', () => {
+
+    let doenetML = `
+    <text>a</text>
+    <paginatorControls paginatorTname="pgn" name="pcontrols" />
+  
+    <paginator name="pgn" submitAllOnPageChange>
+      <problem>
+        <title>Problem 1</title>
+        <p>1: <answer><mathinput name="mi1"/><award>1</award></answer></p>
+        <p>2: <answer><mathinput name="mi2"/><award>2</award></answer></p>
+      </problem>
+      <problem>
+        <title>Problem 2</title>
+        <p>3: <answer><mathinput name="mi3"/><award>3</award></answer></p>
+        <p>4: <answer><mathinput name="mi4"/><award>4</award></answer></p>
+        <p>5: <answer><mathinput name="mi5"/><award>5</award></answer></p>
+      </problem>
+      <problem>
+        <title>Problem 3</title>
+        <p>6: <answer><mathinput name="mi6"/><award>6</award></answer></p>
+      </problem>
+    </paginator>
+    <p>Credit achieved: <copy prop="creditAchieved" tname="_document1" assignNames="ca" /></p>
+    `
+
+    cy.window().then((win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    // at least right now, this turns on Allow Local Page State
+    cy.get('h3 > button').click();
+    cy.get(':nth-child(11) > label > input').click()
+    cy.get('h3 > button').click();
+
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc('#/_title1')).should('have.text', 'Problem 1')
+    cy.get(cesc('#/ca')).should('have.text', '0')
+
+    cy.get('#\\/mi1 textarea').type("1", { force: true });
+    cy.get('#\\/mi1_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0')
+
+    cy.get('#\\/mi2 textarea').type("2{enter}", { force: true });
+    cy.get('#\\/mi2_correct').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.167')
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_title2')).should('have.text', 'Problem 2')
+    cy.get(cesc('#/ca')).should('have.text', '0.333');
+
+
+    cy.get('#\\/mi3_submit').should('be.visible');
+    cy.get('#\\/mi4_submit').should('be.visible');
+    cy.get('#\\/mi5_submit').should('be.visible');
+
+    cy.get('#\\/mi3 textarea').type("3", { force: true });
+    cy.get('#\\/mi3_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get('#\\/mi4 textarea').type("x", { force: true });
+    cy.get('#\\/mi4_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.333')
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/_title1')).should('have.text', 'Problem 1')
+    cy.get(cesc('#/ca')).should('have.text', '0.444');
+
+    cy.get('#\\/mi1_correct').should('be.visible');
+    cy.get('#\\/mi2_correct').should('be.visible');
+
+    cy.get('#\\/mi1 textarea').type("{end}{backspace}y", { force: true });
+    cy.get('#\\/mi1_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.444');
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_title2')).should('have.text', 'Problem 2')
+    cy.get(cesc('#/ca')).should('have.text', '0.278');
+
+    cy.get('#\\/mi3_correct').should('be.visible');
+    cy.get('#\\/mi4_incorrect').should('be.visible');
+    cy.get('#\\/mi5_incorrect').should('be.visible');
+
+    cy.get('#\\/mi5 textarea').type("5", { force: true });
+    cy.get('#\\/mi5_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.278');
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_title3')).should('have.text', 'Problem 3')
+    cy.get(cesc('#/ca')).should('have.text', '0.389');
+
+    cy.get('#\\/mi6_submit').should('be.visible');
+
+    cy.get('#\\/mi6 textarea').type("6", { force: true });
+    cy.get('#\\/mi6_submit').should('be.visible');
+    cy.get(cesc('#/ca')).should('have.text', '0.389');
+
+    cy.get(cesc('#/pcontrols_previous')).click()
+    cy.get(cesc('#/_title2')).should('have.text', 'Problem 2')
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
+
+    cy.get('#\\/mi3_correct').should('be.visible');
+    cy.get('#\\/mi4_incorrect').should('be.visible');
+    cy.get('#\\/mi5_correct').should('be.visible');
+
+    cy.get(cesc('#/pcontrols_next')).click()
+    cy.get(cesc('#/_title3')).should('have.text', 'Problem 3')
+    cy.get(cesc('#/ca')).should('have.text', '0.722');
+
+    cy.get('#\\/mi6_correct').should('be.visible');
+
+
+  })
 
 
 });

@@ -12,6 +12,10 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   static createAttributesObject(args) {
     let attributes = super.createAttributesObject(args);
+    
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
     attributes.numberOfSamples = {
       createComponentOfType: "number",
       createStateVariable: "numberOfSamples",
@@ -527,14 +531,14 @@ export default class SampleRandomNumbers extends CompositeComponent {
     });
 
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "sampledValues",
         value: sampledValues,
       }]
-    })
+    });
 
   }
 

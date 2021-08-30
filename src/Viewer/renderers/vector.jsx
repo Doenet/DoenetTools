@@ -269,7 +269,7 @@ export default class Vector extends DoenetRenderer {
       }
     }
 
-    let instructions = { transient };
+    let instructions = { transient, skippable: transient };
 
     let performMove = false;
 

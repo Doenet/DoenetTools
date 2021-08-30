@@ -21,7 +21,7 @@ if ($dueDate == ''){ $dueDate = '0001-01-01 01:01:01';}
 $assignedDate = mysqli_real_escape_string($conn,$_POST["assignedDate"]);
 if ($assignedDate == ''){ $assignedDate = '0001-01-01 01:01:01';}
 $timeLimit = mysqli_real_escape_string($conn,$_POST["timeLimit"]);
-if ($timeLimit == ''){ $timeLimit = '01:01:01';}
+if ($timeLimit == ''){ $timeLimit = NULL;}
 $numberOfAttemptsAllowed = mysqli_real_escape_string($conn,$_POST["numberOfAttemptsAllowed"]);
 if ($numberOfAttemptsAllowed == ''){ $numberOfAttemptsAllowed = '0';}
 $attemptAggregation = mysqli_real_escape_string($conn,$_POST["attemptAggregation"]);

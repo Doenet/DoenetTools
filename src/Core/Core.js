@@ -36,8 +36,11 @@ export default class Core {
       this.externalFunctions = {};
     }
 
+    this.executeProcesses = this.executeProcesses.bind(this);
     this.requestUpdate = this.requestUpdate.bind(this);
+    this.performUpdate = this.performUpdate.bind(this);
     this.requestAction = this.requestAction.bind(this);
+    this.performAction = this.performAction.bind(this);
     this.triggerChainedActions = this.triggerChainedActions.bind(this);
     this.requestRecordEvent = this.requestRecordEvent.bind(this);
     this.requestAnimationFrame = this.requestAnimationFrame.bind(this);
@@ -47,7 +50,7 @@ export default class Core {
 
     this.finishCoreConstruction = this.finishCoreConstruction.bind(this);
     this.getStateVariableValue = this.getStateVariableValue.bind(this);
-    this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
+    // this.submitResponseCallBack = this.submitResponseCallBack.bind(this);
 
     this.coreUpdatedCallback = coreUpdatedCallback;
     this.coreReadyCallback = function () {
@@ -114,7 +117,9 @@ export default class Core {
 
     this.coreFunctions = {
       requestUpdate: this.requestUpdate,
+      performUpdate: this.performUpdate,
       requestAction: this.requestAction,
+      performAction: this.performAction,
       triggerChainedActions: this.triggerChainedActions,
       requestRecordEvent: this.requestRecordEvent,
       requestAnimationFrame: this.requestAnimationFrame,
@@ -127,13 +132,13 @@ export default class Core {
       componentsTouched: [],
       compositesToExpand: new Set([]),
       compositesToUpdateReplacements: [],
+      componentsToUpdateActionChaining: {},
 
       unresolvedDependencies: {},
       unresolvedByDependent: {},
       deletedStateVariables: {},
       deletedComponents: {},
       recreatedComponents: {},
-      itemScoreChanges: new Set(),
       // parentsToUpdateDescendants: new Set(),
       compositesBeingExpanded: [],
       stateVariableUpdatesForMissingComponents: deepClone(stateVariableChanges),
@@ -199,6 +204,7 @@ export default class Core {
 
     this.stateVariableChangeTriggers = {};
     this.actionsChangedToActions = {};
+    this.originsOfActionsChangedToActions = {};
 
 
     this._renderComponents = [];
@@ -588,6 +594,25 @@ export default class Core {
     this.componentsWithChangedChildrenToRender.delete(componentName);
 
 
+    let requestActions = {};
+    for (let actionName in component.actions) {
+      requestActions[actionName] = args => this.requestAction({
+        componentName: component.componentName,
+        actionName,
+        args,
+      })
+    }
+
+    for (let actionName in component.externalActions) {
+      let action = component.externalActions[actionName];
+      if (action) {
+        requestActions[actionName] = args => this.requestAction({
+          componentName: action.componentName,
+          actionName: action.actionName,
+          args,
+        })
+      }
+    }
 
     this.renderedComponentInstructions[componentName] = {
       componentName: componentName,
@@ -595,7 +620,7 @@ export default class Core {
       rendererType: component.rendererType,
       stateValues: stateValuesForRenderer,
       children: childInstructions,
-      actions: component.actions,
+      actions: requestActions,
     };
 
 
@@ -642,9 +667,13 @@ export default class Core {
           triggerInstructions.previousValue = value;
           let action = component.actions[triggerInstructions.action];
           if (action) {
-            action({
-              stateValues: { [stateVariable]: value },
-              previousValues: { [stateVariable]: previousValue }
+            this.performAction({
+              componentName,
+              actionName: triggerInstructions.action,
+              args: {
+                stateValues: { [stateVariable]: value },
+                previousValues: { [stateVariable]: previousValue }
+              }
             })
           }
         }
@@ -959,6 +988,15 @@ export default class Core {
         }
 
         if (variantControlInd !== undefined || componentClass.alwaysSetUpVariant) {
+          setUpVariant = true;
+        }
+      }
+
+      if (!setUpVariant && componentClass.setUpVariantUnlessAttributePrimitive) {
+        let attribute = componentClass.setUpVariantUnlessAttributePrimitive;
+
+        if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
+          && serializedComponent.attributes[attribute].primitive)) {
           setUpVariant = true;
         }
       }
@@ -1331,8 +1369,8 @@ export default class Core {
     // allChildrenOrder contains same children as allChildren,
     // but retaining an order that we can use for counters.
     // If defining children are replaced my composite replacements or adapters,
-    // those children come immediately after the corresponding defining child
-    parent.allChildrenOrdered = parent.activeChildren.filter(x => x.componentName).map(x => x.componentName)
+    // those children will come immediately after the corresponding defining child
+    parent.allChildrenOrdered = parent.activeChildren.map(x => x.componentName)
 
     // if any of activeChildren are expanded compositeComponents
     // replace with new components given by the composite component
@@ -1598,7 +1636,8 @@ export default class Core {
       newSerializedChild = {
         componentType:
           this.allComponentClasses[originalChild.componentType]
-            .getAdapterComponentType(n, this.publicStateVariableInfo)
+            .getAdapterComponentType(n, this.publicStateVariableInfo),
+        placeholderInd: originalChild.placeholderInd + "adapt"
       }
     }
 
@@ -1635,6 +1674,10 @@ export default class Core {
     // Replace originalChild with its adapter in activeChildren
     parent.activeChildren.splice(childInd, 1, adapter);
 
+    // TODO: if originalChild is a placeholder, we lose track of it
+    // (other than through adaptedFrom of adapted)
+    // once we splice it out of activeChildren.  Is that a problem?
+
     // Update allChildren to show that originalChild is no longer active
     // and that adapter is now an active child
     if (originalChild.componentName) {
@@ -1651,6 +1694,10 @@ export default class Core {
     if (originalChild.componentName) {
       let originalInd = parent.allChildrenOrdered.indexOf(originalChild.componentName)
       parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.componentName)
+    } else {
+      // adapter of placeholder
+      let originalInd = parent.allChildrenOrdered.indexOf(originalChild.placeholderInd)
+      parent.allChildrenOrdered.splice(originalInd + 1, 0, adapter.placeholderInd)
     }
 
 
@@ -1910,6 +1957,8 @@ export default class Core {
     delete parent.placeholderActiveChildrenIndices;
     delete parent.placeholderActiveChildrenIndicesByComposite;
 
+    let nPlaceholdersAdded = 0;
+
     for (let childInd = 0; childInd < parent.activeChildren.length; childInd++) {
       let child = parent.activeChildren[childInd];
 
@@ -1952,8 +2001,10 @@ export default class Core {
           for (let i = 0; i < nComponents; i++) {
             replacements.push({
               componentType,
-              fromComposite: child.componentName
+              fromComposite: child.componentName,
+              placeholderInd: nPlaceholdersAdded
             })
+            nPlaceholdersAdded++;
           }
 
           parent.hasPlaceholderActiveChildren = true;
@@ -2001,7 +2052,7 @@ export default class Core {
         // and place replacements immediately afterward
         let ind2 = parent.allChildrenOrdered.indexOf(child.componentName)
         parent.allChildrenOrdered.splice(ind2 + 1, 0,
-          ...replacements.filter(x => x.componentName).map(x => x.componentName))
+          ...replacements.map(x => x.componentName ? x.componentName : x.placeholderInd))
 
         if (replacements.length !== 1) {
           // if replaced composite with anything other than one replacement
@@ -3385,30 +3436,100 @@ export default class Core {
 
   }
 
-  checkForActionChaining({ component }) {
+  checkForActionChaining({ component, stateVariables }) {
 
-    for (let stateVariable in component.state) {
-      let stateVarObj = component.state[stateVariable];
+    if(!component) {
+      return;
+    }
+
+    if (!stateVariables) {
+      stateVariables = Object.keys(component.state);
+    }
+
+    for (let varName of stateVariables) {
+      let stateVarObj = component.state[varName];
 
       if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
         let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
         let targetNames = stateVarObj.value;
 
-        if (Array.isArray(targetNames)) {
-          for (let tName of targetNames) {
-            let componentActionsChained = this.actionsChangedToActions[tName];
-            if (!componentActionsChained) {
-              componentActionsChained = this.actionsChangedToActions[tName] = [];
-            }
+        let originObj = this.originsOfActionsChangedToActions[component.componentName];
 
-            componentActionsChained.push({
-              componentName: component.componentName,
-              actionName: chainInfo.triggeredAction
-            });
+        let previousNames;
+        if (originObj) {
+          previousNames = originObj[varName];
+        }
+
+        if (!previousNames) {
+          previousNames = [];
+        }
+
+        let newNames = [];
+
+        if (Array.isArray(targetNames)) {
+          newNames = [...new Set(targetNames)];
+          for (let tName of newNames) {
+
+            let indPrev = previousNames.indexOf(tName);
+
+            if (indPrev === -1) {
+              // found a component that wasn't previously chained
+              let componentActionsChained = this.actionsChangedToActions[tName];
+              if (!componentActionsChained) {
+                componentActionsChained = this.actionsChangedToActions[tName] = [];
+              }
+
+              componentActionsChained.push({
+                componentName: component.componentName,
+                actionName: chainInfo.triggeredAction,
+                stateVariableDefiningChain: varName,
+              });
+            } else {
+              // tName was already chained
+              // remove from previous names to indicate it should still be chained
+              previousNames.splice(indPrev, 1);
+            }
           }
 
+
         }
+
+        // if any names are left in previousNames,
+        // then they should no longer be chained
+        for (let nameToNoLongerChain of previousNames) {
+          let componentActionsChained = this.actionsChangedToActions[nameToNoLongerChain];
+          if (componentActionsChained) {
+            let newComponentActionsChained = [];
+
+            for (let chainedInfo of componentActionsChained) {
+              if (chainedInfo.componentName !== component.componentName ||
+                chainedInfo.stateVariableDefiningChain !== varName
+              ) {
+                newComponentActionsChained.push(chainedInfo)
+              }
+            }
+
+            this.actionsChangedToActions[nameToNoLongerChain] = newComponentActionsChained;
+
+          }
+        }
+
+        if (newNames.length > 0) {
+          if (!originObj) {
+            originObj = this.originsOfActionsChangedToActions[component.componentName] = {};
+          }
+          originObj[varName] = newNames;
+        } else if (originObj) {
+          delete originObj[varName];
+
+          if (Object.keys(originObj).length === 0) {
+            delete this.originsOfActionsChangedToActions[component.componentName];
+          }
+        }
+
+
       }
+
     }
   }
 
@@ -5710,15 +5831,21 @@ export default class Core {
         this.updateInfo.compositesToUpdateReplacements.push(component.componentName);
       }
 
-      if (result.updateDependencies) {
-        for (let vName of result.updateDependencies) {
-          component.state[vName].needDependenciesUpdated = true;
+      if (result.updateActionChaining) {
+        let chainObj = this.updateInfo.componentsToUpdateActionChaining[component.componentName];
+        if (!chainObj) {
+          chainObj = this.updateInfo.componentsToUpdateActionChaining[component.componentName] = [];
+        }
+        for (let vName in allStateVariablesAffectedObj) {
+          if (!chainObj.includes(vName)) {
+            chainObj.push(vName);
+          }
         }
       }
 
-      if (result.itemScoreChanged) {
-        for (let itemNumber of result.itemScoreChanged.itemNumbers) {
-          this.updateInfo.itemScoreChanges.add(itemNumber)
+      if (result.updateDependencies) {
+        for (let vName of result.updateDependencies) {
+          component.state[vName].needDependenciesUpdated = true;
         }
       }
 
@@ -6127,15 +6254,21 @@ export default class Core {
               this.updateInfo.compositesToUpdateReplacements.push(upDep.upstreamComponentName);
             }
 
-            if (result.updateDependencies) {
-              for (let vName of result.updateDependencies) {
-                component.state[vName].needDependenciesUpdated = true;
+            if (result.updateActionChaining) {
+              let chainObj = this.updateInfo.componentsToUpdateActionChaining[upDep.componentName];
+              if (!chainObj) {
+                chainObj = this.updateInfo.componentsToUpdateActionChaining[upDep.componentName] = [];
+              }
+              for (let vName in allStateVariablesAffectedObj) {
+                if (!chainObj.includes(vName)) {
+                  chainObj.push(vName);
+                }
               }
             }
 
-            if (result.itemScoreChanged) {
-              for (let itemNumber of result.itemScoreChanged.itemNumbers) {
-                this.updateInfo.itemScoreChanges.add(itemNumber)
+            if (result.updateDependencies) {
+              for (let vName of result.updateDependencies) {
+                component.state[vName].needDependenciesUpdated = true;
               }
             }
 
@@ -7427,17 +7560,28 @@ export default class Core {
     return null;
   }
 
-  executeProcesses() {
+  async executeProcesses() {
+
     while (this.processQueue.length > 0) {
       let nextUpdateInfo = this.processQueue.splice(0, 1)[0];
+      let result;
       if (nextUpdateInfo.type === "update") {
-        this.performUpdate(nextUpdateInfo);
-      } else if (nextUpdateInfo.type === "getStateVariableValues") {
-        this.performGetStateVariableValues(nextUpdateInfo);
+        if (!nextUpdateInfo.skippable || this.processQueue.length < 2) {
+          result = await this.performUpdate(nextUpdateInfo);
+        }
+        // } else if (nextUpdateInfo.type === "getStateVariableValues") {
+        //   result = await this.performGetStateVariableValues(nextUpdateInfo);
+      } else if (nextUpdateInfo.type === "action") {
+        if (!nextUpdateInfo.skippable || this.processQueue.length < 2) {
+          result = await this.performAction(nextUpdateInfo);
+        }
+      } else if (nextUpdateInfo.type === "recordEvent") {
+        result = await this.performRecordEvent(nextUpdateInfo);
       } else {
         throw Error(`Unrecognized process type: ${nextUpdateInfo.type}`)
       }
 
+      nextUpdateInfo.resolve(result);
     }
 
     this.processing = false;
@@ -7445,76 +7589,124 @@ export default class Core {
   }
 
 
-  requestStateVariableValues({ requestedValues, callBack }) {
+  // requestStateVariableValues({ requestedValues }) {
 
-    this.processQueue.push({
-      type: "getStateVariableValues", requestedValues, callBack
-    })
+  //   return new Promise((resolve, reject) => {
+  //     this.processQueue.push({
+  //       type: "getStateVariableValues", requestedValues, resolve, reject
+  //     })
 
-    if (!this.processing) {
-      this.processing = true;
-      setTimeout(() => this.executeProcesses(), 0);
-    }
+  //     if (!this.processing) {
+  //       this.processing = true;
+  //       setTimeout(this.executeProcesses, 0);
+  //     }
+  //   })
 
-  }
+  // }
 
-  performGetStateVariableValues({ requestedValues, callBack }) {
+  // performGetStateVariableValues({ requestedValues }) {
 
-    let retrievedValues = {};
+  //   let retrievedValues = {};
 
-    let success = true;
+  //   let success = true;
 
-    for (let componentName in requestedValues) {
+  //   for (let componentName in requestedValues) {
 
-      let component = this._components[componentName];
-      if (!component) {
-        console.error(`Component ${componentName} does not exist.  Cannot get value of its state variables.`);
-        success = false;
+  //     let component = this._components[componentName];
+  //     if (!component) {
+  //       console.error(`Component ${componentName} does not exist.  Cannot get value of its state variables.`);
+  //       success = false;
+  //     } else {
+
+  //       let valuesForComponent = retrievedValues[componentName] = {};
+
+  //       for (let stateVariable of requestedValues[componentName]) {
+  //         let stateVarObj = component.state[stateVariable];
+  //         if (!stateVarObj) {
+  //           console.error(`State variable ${stateVariable} of component ${componentName} does not exist.  Cannot get its value.`);
+  //           success = false;
+  //         } else {
+  //           valuesForComponent[stateVariable] = stateVarObj.value;
+  //         }
+
+  //       }
+  //     }
+  //   }
+
+  //   return Promise.resolve({ success, retrievedValues });
+  // }
+
+
+  requestAction({ componentName, actionName, args, event }) {
+
+    return new Promise((resolve, reject) => {
+
+      let skippable = args && args.skippable;
+
+      if (this.processing) {
+        this.processQueue.push({
+          type: "action", componentName, actionName, args, skippable, event, resolve, reject
+        })
       } else {
+        this.processing = true;
 
-        let valuesForComponent = retrievedValues[componentName] = {};
+        // Note: execute this process synchronously
+        // so that UI doesn't update until after finished.
 
-        for (let stateVariable of requestedValues[componentName]) {
-          let stateVarObj = component.state[stateVariable];
-          if (!stateVarObj) {
-            console.error(`State variable ${stateVariable} of component ${componentName} does not exist.  Cannot get its value.`);
-            success = false;
-          } else {
-            valuesForComponent[stateVariable] = stateVarObj.value;
-          }
+        this.performAction({ componentName, actionName, args, event }).then(resolve);
 
-        }
+        // execute asynchronously any remaining processes
+        // (that got added while performAction was running)
+
+        setTimeout(this.executeProcesses, 0);
+
       }
-    }
+    });
 
-    if (callBack) {
-      setTimeout(() => callBack({ success, retrievedValues }))
-    }
   }
 
+  performAction({ componentName, actionName, args, event }) {
 
-  requestAction({ componentName, actionName, args }) {
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
       if (action) {
-        return action(args);
+        return new Promise((resolve, reject) => {
+          if (event) {
+            this.requestRecordEvent(event);
+          }
+          Promise.resolve(action(args)).then(resolve);
+
+        })
       }
     }
+
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
+    return Promise.resolve();
+
   }
 
-  triggerChainedActions({ componentName }) {
+  async triggerChainedActions({ componentName }) {
+
+    for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
+      this.checkForActionChaining({
+        component: this.components[cName],
+        stateVariables: this.updateInfo.componentsToUpdateActionChaining[cName]
+      })
+    }
+
+    this.updateInfo.componentsToUpdateActionChaining = {};
+
 
     if (this.actionsChangedToActions[componentName]) {
       for (let chainedActionInstructions of this.actionsChangedToActions[componentName]) {
-        this.requestAction(chainedActionInstructions);
+        await this.performAction(chainedActionInstructions);
       }
     }
   }
 
 
-  requestUpdate({ updateInstructions, transient = false, event, callBack }) {
+  requestUpdate({ updateInstructions, transient = false, event, skippable = false }) {
 
     if (this.flags.readOnly) {
 
@@ -7539,31 +7731,43 @@ export default class Core {
 
       this.finishUpdate();
 
-      if (callBack) {
-        setTimeout(() => callBack({ success: false }), 0)
+      return Promise.resolve();
+
+    }
+
+    return new Promise((resolve, reject) => {
+
+      if (this.processing) {
+        this.processQueue.push({
+          type: "update", updateInstructions, transient, event, skippable, resolve, reject
+        })
+      } else {
+        this.processing = true;
+
+        // Note: execute this process synchronously
+        // so that UI doesn't update until after finished.
+        // It is a tradeoff, as the UI has to wait,
+        // but it allows constraints to be applied before renderering.
+
+        this.performUpdate({ updateInstructions, transient, event }).then(resolve);
+
+        // execute asynchronously any remaining processes
+        // (that got added while performUpdate was running)
+
+        setTimeout(this.executeProcesses, 0);
+
       }
-
-      return;
-    }
-
-    this.processQueue.push({
-      type: "update", updateInstructions, transient, event, callBack
-    })
-
-    if (!this.processing) {
-      this.processing = true;
-      this.executeProcesses();
-      // setTimeout(() => this.executeProcesses(), 0);
-    }
+    });
 
 
   }
 
-  performUpdate({ updateInstructions, transient = false, event, callBack }) {
+  performUpdate({ updateInstructions, transient = false, event }) {
 
     let newStateVariableValues = {};
     let sourceInformation = {};
     let workspace = {};
+    let recordItemSubmissions = [];
 
     for (let instruction of updateInstructions) {
 
@@ -7617,21 +7821,12 @@ export default class Core {
           newStateVariableValues,
           preliminary: true,
         });
+      } else if (instruction.updateType === "recordItemSubmission") {
+        recordItemSubmissions.push(instruction.itemNumber)
       }
 
     }
 
-    //TODO: Inside for loop?
-    if (this.externalFunctions.localStateChanged) {
-      setTimeout(() => this.externalFunctions.localStateChanged({
-        newStateVariableValues,
-        contentId: this.contentId,
-        sourceOfUpdate: {
-          sourceInformation
-        },
-        transient,
-      }), 0)
-    }
 
     let nFailures = Infinity;
     while (nFailures > 0) {
@@ -7657,7 +7852,11 @@ export default class Core {
     //   }
     // });
 
-    if (this.updateInfo.itemScoreChanges.size > 0) {
+
+    let itemsWithCreditAchieved = {};
+
+    if (recordItemSubmissions.length > 0) {
+      recordItemSubmissions = [...new Set(recordItemSubmissions)];
       if (event) {
         if (!event.context) {
           event.context = {};
@@ -7667,19 +7866,35 @@ export default class Core {
         }
         event.context.documentCreditAchieved = this.document.stateValues.creditAchieved;
       }
-      for (let itemNumber of this.updateInfo.itemScoreChanges) {
-        if (this.externalFunctions.submitResponse) {
-          this.externalFunctions.submitResponse({
-            itemNumber,
-            itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber],
-            callBack: this.submitResponseCallBack,
-          });
-        }
+      for (let itemNumber of recordItemSubmissions) {
+        itemsWithCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber - 1];
+        // if (this.externalFunctions.submitResponse) {
+        //   this.externalFunctions.submitResponse({
+        //     itemNumber,
+        //     itemCreditAchieved: this.document.stateValues.itemCreditAchieved[itemNumber - 1],
+        //     callBack: this.submitResponseCallBack,
+        //   });
+        // }
         if (event) {
-          event.context.itemCreditAchieved[Number(itemNumber) + 1] = this.document.stateValues.itemCreditAchieved[itemNumber]
+          event.context.itemCreditAchieved[itemNumber] = this.document.stateValues.itemCreditAchieved[itemNumber]
         }
       }
     }
+
+
+    //TODO: Inside for loop?
+    if (this.externalFunctions.localStateChanged) {
+      setTimeout(() => this.externalFunctions.localStateChanged({
+        newStateVariableValues,
+        contentId: this.contentId,
+        sourceOfUpdate: {
+          sourceInformation
+        },
+        transient,
+        itemsWithCreditAchieved,
+      }), 0)
+    }
+
 
     // evalute itemCreditAchieved so that will be fresh
     // and can detect changes when it is marked stale
@@ -7689,14 +7904,30 @@ export default class Core {
       this.requestRecordEvent(event);
     }
 
-    if (callBack) {
-      setTimeout(() => callBack({ success: true }), 0)
-    }
-
-
+    return Promise.resolve();
   }
 
   requestRecordEvent(event) {
+    return new Promise((resolve, reject) => {
+
+      if (this.externalFunctions.recordEvent) {
+        this.processQueue.push({
+          type: "recordEvent", event, resolve, reject
+        })
+
+        if (!this.processing) {
+          this.processing = true;
+          setTimeout(this.executeProcesses, 0);
+
+        }
+      } else {
+        resolve();
+      }
+    })
+  }
+
+  performRecordEvent({ event }) {
+
     if (this.externalFunctions.recordEvent) {
 
       // event.object.documentTitle = this.document.stateValues.title;
@@ -7709,8 +7940,11 @@ export default class Core {
         event.context = {};
       }
 
-      this.externalFunctions.recordEvent(event);
+      setTimeout(() => this.externalFunctions.recordEvent(event), 0);
+
     }
+
+    return Promise.resolve();
   }
 
   executeUpdateStateVariables({
@@ -8065,7 +8299,8 @@ export default class Core {
 
   }
 
-  requestComponentChanges({ instruction, initialChange = true, workspace,
+  requestComponentChanges({
+    instruction, initialChange = true, workspace,
     newStateVariableValues
   }) {
 
@@ -8548,51 +8783,51 @@ export default class Core {
     return;
   }
 
-  submitResponseCallBack(results) {
+  // submitResponseCallBack(results) {
 
-    // console.log(`submit response callback`)
-    // console.log(results);
-    return;
+  //   // console.log(`submit response callback`)
+  //   // console.log(results);
+  //   return;
 
-    if (!results.success) {
-      let errorMessage = "Answer not saved due to a network error. \nEither you are offline or your authentication has timed out.";
-      this.renderer.updateSection({
-        title: this.state.title,
-        viewedSolution: this.state.viewedSolution,
-        isError: true,
-        errorMessage,
-      });
-      alert(errorMessage);
+  //   if (!results.success) {
+  //     let errorMessage = "Answer not saved due to a network error. \nEither you are offline or your authentication has timed out.";
+  //     this.renderer.updateSection({
+  //       title: this.state.title,
+  //       viewedSolution: this.state.viewedSolution,
+  //       isError: true,
+  //       errorMessage,
+  //     });
+  //     alert(errorMessage);
 
-      this.coreFunctions.requestUpdate({
-        updateType: "updateRendererOnly",
-      });
-    } else if (results.viewedSolution) {
-      console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
-      this.coreFunctions.requestUpdate({
-        updateType: "updateValue",
-        updateInstructions: [{
-          componentName: scoredComponent.componentName,
-          variableUpdates: {
-            viewedSolution: { changes: true },
-          }
-        }]
-      })
-    }
+  //     this.coreFunctions.requestUpdate({
+  //       updateType: "updateRendererOnly",
+  //     });
+  //   } else if (results.viewedSolution) {
+  //     console.log(`******** Viewed solution for ${scoredComponent.componentName}`);
+  //     this.coreFunctions.requestUpdate({
+  //       updateType: "updateValue",
+  //       updateInstructions: [{
+  //         componentName: scoredComponent.componentName,
+  //         variableUpdates: {
+  //           viewedSolution: { changes: true },
+  //         }
+  //       }]
+  //     })
+  //   }
 
-    // if this.answersToSubmitCounter is a positive number
-    // that means that we have call this.submitAllAnswers and we still have
-    // some answers that haven't been submitted
-    // In this case, we will decrement this.answersToSubmitCounter
-    // If this.answersToSubmitCounter newly becomes zero, 
-    // then we know that we have submitted the last one answer
-    if (this.answersToSubmitCounter > 0) {
-      this.answersToSubmitCounter -= 1;
-      if (this.answersToSubmitCounter === 0) {
-        this.externalFunctions.allAnswersSubmitted();
-      }
-    }
-  }
+  //   // if this.answersToSubmitCounter is a positive number
+  //   // that means that we have call this.submitAllAnswers and we still have
+  //   // some answers that haven't been submitted
+  //   // In this case, we will decrement this.answersToSubmitCounter
+  //   // If this.answersToSubmitCounter newly becomes zero, 
+  //   // then we know that we have submitted the last one answer
+  //   if (this.answersToSubmitCounter > 0) {
+  //     this.answersToSubmitCounter -= 1;
+  //     if (this.answersToSubmitCounter === 0) {
+  //       this.externalFunctions.allAnswersSubmitted();
+  //     }
+  //   }
+  // }
 
   // addComponents({ serializedComponents, parent }) {
   //   //Check if 
@@ -8743,6 +8978,8 @@ export default class Core {
       window.cancelAnimationFrame(animationFrameID);
     }
     delete this.animationIDs[animationID];
+
+    return Promise.resolve();
 
   }
 

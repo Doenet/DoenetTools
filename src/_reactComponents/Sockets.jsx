@@ -129,7 +129,7 @@ export default function useSockets(nsp) {
         defaultFolderChildrenIds: newDefaultOrder,
       });
 
-      const payload = {
+      let payload = {
         driveId: driveIdFolderId.driveId,
         parentFolderId: driveIdFolderId.folderId,
         doenetId,
@@ -143,12 +143,39 @@ export default function useSockets(nsp) {
         url,
       };
 
-      const resp = await axios.get('/api/addItem.php', { params: payload });
-
-      if (resp.data.success) {
-        acceptAddItem(payload);
-      } else {
-        addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+      if (type === 'DoenetML') {
+        payload = {
+          ...payload,
+          assignedDate: creationDate,
+          attemptAggregation: 'm',
+          dueDate: creationDate,
+          gradeCategory: 'l',
+          individualize: false,
+          isAssigned: '1',
+          isPublished: '0',
+          contentId:
+            'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+          multipleAttempts: true,
+          numberOfAttemptsAllowed: '2', //TODO: Update to null
+          proctorMakesAvailable: false,
+          showCorrectness: true,
+          showFeedback: true,
+          showHints: true,
+          showSolution: true,
+          timeLimit: '60', //TODO: Update to null
+          totalPointsOrPercent: '100',
+          assignment_isPublished: '0',
+        };
+      }
+      try {
+        const resp = await axios.post('/api/addItem.php', payload);
+        if (resp.data.success) {
+          acceptAddItem(payload);
+        } else {
+          addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+        }
+      } catch (error) {
+        console.error(error);
       }
 
       // realtime upgrade
@@ -175,15 +202,21 @@ export default function useSockets(nsp) {
           label,
           driveInstanceId,
         };
+        try {
+          const resp = await axios.get('/api/deleteItem.php', {
+            params: payload,
+          });
 
-        const resp = await axios.get('/api/deleteItem.php', {
-          params: payload,
-        });
-
-        if (resp.data.success) {
-          acceptDeleteItem(payload);
-        } else {
-          addToast(`Delete item error: ${resp.data.message}`, toastType.ERROR);
+          if (resp.data.success) {
+            acceptDeleteItem(payload);
+          } else {
+            addToast(
+              `Delete item error: ${resp.data.message}`,
+              toastType.ERROR,
+            );
+          }
+        } catch (error) {
+          console.log(error);
         }
 
         // realtime upgrade
@@ -215,7 +248,6 @@ export default function useSockets(nsp) {
       const globalSelectedNodes = await snapshot.getPromise(
         globalSelectedNodesAtom,
       );
-
       // Interrupt move action if nothing selected
       if (globalSelectedNodes.length === 0) {
         throw 'No items selected';
@@ -260,6 +292,7 @@ export default function useSockets(nsp) {
             folderId: gItem.parentFolderId,
           }),
         );
+
         let newSourceFInfo = editedCache[gItem.driveId]?.[gItem.parentFolderId];
         if (!newSourceFInfo)
           newSourceFInfo = JSON.parse(JSON.stringify(oldSourceFInfo));
@@ -283,18 +316,39 @@ export default function useSockets(nsp) {
           // Ensure item removed from cached parent and added to edited cache
           if (!editedCache[gItem.driveId]) editedCache[gItem.driveId] = {};
           editedCache[gItem.driveId][gItem.parentFolderId] = newSourceFInfo;
+
+          // Insert item into contentIds of destination
+          newDestinationFolderObj['contentIds']['defaultOrder'].splice(
+            insertIndex,
+            0,
+            gItem.itemId,
+          );
         } else {
-          // Ensure item not duplicated in destination contentIds
-          newDestinationFolderObj['contentIds']['defaultOrder'] =
-            newDestinationFolderObj['contentIds']['defaultOrder'].filter(
+          //insert index is only vaild for an array before removal, add in temp obj
+          newDestinationFolderObj.contentIds.defaultOrder.splice(
+            insertIndex,
+            0,
+            dragShadowId,
+          );
+          // remove old instances and splice in new one at corrected index
+          newDestinationFolderObj.contentIds.defaultOrder =
+            newDestinationFolderObj.contentIds.defaultOrder.filter(
               (itemId) => itemId !== gItem.itemId,
             );
+          newDestinationFolderObj.contentIds.defaultOrder.splice(
+            newDestinationFolderObj.contentIds.defaultOrder.indexOf(
+              dragShadowId,
+            ),
+            1,
+            gItem.itemId,
+          );
         }
 
         // Generate and update sortOrder
-        const cleanDefaultOrder = newDestinationFolderObj['contentIds'][
-          'defaultOrder'
-        ].filter((itemId) => itemId !== dragShadowId);
+        const cleanDefaultOrder =
+          newDestinationFolderObj.contentIds.defaultOrder.filter(
+            (itemId) => itemId !== dragShadowId,
+          );
         newSortOrder = getLexicographicOrder({
           index: insertIndex,
           nodeObjs: newDestinationFolderObj.contentsDictionary,
@@ -305,13 +359,6 @@ export default function useSockets(nsp) {
         newDestinationFolderObj['contentsDictionary'][
           gItem.itemId
         ].parentFolderId = targetFolderId;
-
-        // Insert item into contentIds of destination
-        newDestinationFolderObj['contentIds']['defaultOrder'].splice(
-          insertIndex,
-          0,
-          gItem.itemId,
-        );
 
         // If moved item is a folder, update folder info
         if (
@@ -413,12 +460,16 @@ export default function useSockets(nsp) {
         //   destinationFolderObj.folderInfo.parentFolderId,
       };
 
-      const resp = await axios.post('/api/moveItems.php', payload);
+      try {
+        const resp = await axios.post('/api/moveItems.php', payload);
 
-      if (resp.data.success) {
-        acceptMoveItems(payload, newDestinationFolderObj, editedCache);
-      } else {
-        addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
+        if (resp.data.success) {
+          acceptMoveItems(payload, newDestinationFolderObj, editedCache);
+        } else {
+          addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
+        }
+      } catch (error) {
+        console.log(error);
       }
 
       // realtime upgrade
@@ -450,14 +501,21 @@ export default function useSockets(nsp) {
           type: itemType,
         };
 
-        const resp = await axios.get('/api/updateItem.php', {
-          params: payload,
-        });
+        try {
+          const resp = await axios.get('/api/updateItem.php', {
+            params: payload,
+          });
 
-        if (resp.data.success) {
-          acceptRenameItem(payload);
-        } else {
-          addToast(`Rename item error: ${resp.data.message}`, toastType.ERROR);
+          if (resp.data.success) {
+            acceptRenameItem(payload);
+          } else {
+            addToast(
+              `Rename item error: ${resp.data.message}`,
+              toastType.ERROR,
+            );
+          }
+        } catch (error) {
+          console.log(error);
         }
 
         // realtime upgrade
@@ -997,7 +1055,9 @@ function useAcceptBindings() {
           }),
           true,
         );
+        // addToast(`Item to '${'te'}'`, toastType.SUCCESS);
       },
+    [],
   );
 
   const acceptRenameItem = useRecoilCallback(
@@ -1028,7 +1088,7 @@ function useAcceptBindings() {
           set(
             folderDictionary({
               driveId,
-              folderId:itemId,
+              folderId: itemId,
             }),
             (old) => {
               let newFolderInfo = { ...old };

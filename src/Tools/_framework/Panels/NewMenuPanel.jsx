@@ -18,7 +18,7 @@ const MenuPanelsWrapper = styled.div`
   justify-content: flex-start;
   background: #e3e3e3;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
   width: ${({hide})=>hide ? '0px' : '240px'};
 `;
 
@@ -157,7 +157,7 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
+export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen, displayProfile }) {
 console.log(">>>===MenuPanel")
 // console.log(">>>menuPanelCap",menuPanelCap)
 // console.log(">>>currentMenus",currentMenus)
@@ -189,6 +189,10 @@ console.log(">>>===MenuPanel")
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
+    AssignmentSettingsMenu:lazy(() => import('../Menus/AssignmentSettingsMenu')),
+    TimerMenu:lazy(() => import('../Menus/TimerMenu')),
+    
+    
   }).current;
 
   let selectionPanel = null;
@@ -237,7 +241,6 @@ console.log(">>>===MenuPanel")
 
   }
 
-
   return (
     <MenuPanelsWrapper hide={hide}>
      <MenuPanelsCap fix={menuPanelsOpen}>
@@ -247,9 +250,11 @@ console.log(">>>===MenuPanel")
         </span>
         <span style={{marginBottom: '1px'}}>Doenet</span>
         <span >
-          <Profile 
-          margin={menuPanelsOpen}
-          />
+          {displayProfile ? 
+            <Profile 
+            margin={menuPanelsOpen}
+            />
+          : null }
         </span>
         <span >
           <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>

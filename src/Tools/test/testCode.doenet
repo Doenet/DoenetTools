@@ -1,1 +1,59 @@
-<p>Use this to test DoenetML</p>
+<!-- <document documentWideCheckWork>
+<answer forceFullCheckworkButton>x</answer>dd
+
+<answer name="ans">y</answer>
+
+
+<p><number name="n">1</number></p>
+
+<updateValue triggerWithTnames="ans" tName="n" newValue="$n+1" />
+
+<answer>
+<booleaninput name="bi" />
+</answer>
+
+<graph>
+  <point>(1,2)
+    <constraints>
+      <constrainToGrid />
+    </constraints>
+  </point>
+
+  <linesegment endpoints="(3,2) (2,1)" />
+</graph>
+
+
+<paginator name="pgn">
+  <section>
+    hello
+  </section>
+  <section>
+    bye
+  </section>
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />
+
+<graph>
+  <polygon vertices="(1,2) (3,4) (4,6)" />
+</graph>
+
+</document> -->
+
+
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+
+    <p>Boolean to swap: <boolean name="b" /></p>
+    <p>Say hello: <text name="hello"></text></p>
+    <p>Count: <number name="n">1</number></p>
+    <p>Count down: <number name="m">5</number></p>
+
+    <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+      <updateValue tName="b" newValue="not$b" type="boolean" />
+      <updateValue tName="hello" newValue="$hello hello" type="text" />
+      <updateValue name="hmm" tName="n" newValue="$n+1" type="number" triggerWithTnames="uv" />
+    </triggerSet>
+
+    <updateValue name="uv" tName="m" newValue="$m-1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />

@@ -68,7 +68,7 @@ export default function useSockets(nsp) {
       nodeObjs: newObj.contentsDictionary,
       defaultFolderChildrenIds: newDefaultOrder
     });
-    const payload = {
+    let payload = {
       driveId: driveIdFolderId.driveId,
       parentFolderId: driveIdFolderId.folderId,
       doenetId,
@@ -81,7 +81,30 @@ export default function useSockets(nsp) {
       creationDate,
       url
     };
-    const resp = await axios.get("/api/addItem.php", {params: payload});
+    if (type === "DoenetML") {
+      payload = {
+        ...payload,
+        assignedDate: creationDate,
+        attemptAggregation: "m",
+        dueDate: creationDate,
+        gradeCategory: "l",
+        individualize: false,
+        isAssigned: "1",
+        isPublished: "0",
+        contentId: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        multipleAttempts: true,
+        numberOfAttemptsAllowed: "2",
+        proctorMakesAvailable: false,
+        showCorrectness: true,
+        showFeedback: true,
+        showHints: true,
+        showSolution: true,
+        timeLimit: "60",
+        totalPointsOrPercent: "100",
+        assignment_isPublished: "0"
+      };
+    }
+    const resp = await axios.post("/api/addItem.php", payload);
     if (resp.data.success) {
       acceptAddItem(payload);
     } else {
@@ -570,7 +593,7 @@ function useAcceptBindings() {
     if (type === "Folder") {
       set(folderDictionary({
         driveId,
-        itemId
+        folderId: itemId
       }), (old) => {
         let newFolderInfo = {...old};
         newFolderInfo.folderInfo = {...old.folderInfo};

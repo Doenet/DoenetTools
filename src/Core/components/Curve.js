@@ -746,6 +746,27 @@ export default class Curve extends GraphicalComponent {
 
     }
 
+    stateVariableDefinitions.bezierControlsAlwaysVisible = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        controlChild: {
+          dependencyType: "child",
+          childGroups: ["bezierControls"],
+          variableNames: ["alwaysVisible"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        return {
+          newValues: {
+            bezierControlsAlwaysVisible: dependencyValues.controlChild.length > 0
+              && dependencyValues.controlChild[0].stateValues.alwaysVisible
+          }
+        }
+      }
+
+    }
+
+
     stateVariableDefinitions.vectorControlDirections = {
       public: true,
       componentType: "text",
@@ -834,6 +855,103 @@ export default class Curve extends GraphicalComponent {
           instructions.push({
             setStateVariable: "vectorControlDirections",
             value: newDirectionValues
+          })
+        }
+
+        return {
+          success: true,
+          instructions
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.hiddenControls = {
+      public: true,
+      componentType: "boolean",
+      isArray: true,
+      entryPrefixes: ["hiddenControl"],
+      forRenderer: true,
+      returnArraySizeDependencies: () => ({
+        nThroughPoints: {
+          dependencyType: "stateVariable",
+          variableName: "nThroughPoints",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nThroughPoints];
+      },
+      returnArrayDependenciesByKey({ arrayKeys }) {
+        let dependenciesByKey = {};
+        for (let arrayKey of arrayKeys) {
+          dependenciesByKey[arrayKey] = {
+            controlChild: {
+              dependencyType: "child",
+              childGroups: ["bezierControls"],
+              variableNames: ["hiddenControl" + (Number(arrayKey) + 1)],
+            }
+          }
+        }
+
+        let globalDependencies = {
+          haveBezierControls: {
+            dependencyType: "stateVariable",
+            variableName: "haveBezierControls"
+          }
+        }
+
+        return { dependenciesByKey, globalDependencies }
+      },
+      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+
+        let hiddenControls = {};
+
+        for (let arrayKey of arrayKeys) {
+
+          let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+
+          if (controlChild && controlChild.length > 0) {
+            hiddenControls[arrayKey] = controlChild[0].stateValues["hiddenControl" + (Number(arrayKey) + 1)];
+          } else {
+            hiddenControls[arrayKey] = false;
+          }
+        }
+
+        return {
+          newValues: { hiddenControls },
+        }
+      },
+      inverseArrayDefinitionByKey({ desiredStateVariableValues,
+        dependencyNamesByKey, dependencyValuesByKey, globalDependencyValues
+      }) {
+
+        if (!globalDependencyValues.haveBezierControls) {
+          return { success: false }
+        }
+
+        let instructions = [];
+        let newHiddenControls = {};
+        for (let arrayKey in desiredStateVariableValues.hiddenControls) {
+          let controlChild = dependencyValuesByKey[arrayKey].controlChild;
+
+          if (controlChild && controlChild.length > 0) {
+            instructions.push({
+              setDependency: dependencyNamesByKey[arrayKey].controlChild,
+              desiredValue: desiredStateVariableValues.hiddenControls[arrayKey],
+              childIndex: 0,
+              variableIndex: 0
+            })
+
+          } else {
+            newHiddenControls[arrayKey] = desiredStateVariableValues.hiddenControls[arrayKey]
+          }
+
+        }
+
+        if (Object.keys(newHiddenControls).length > 0) {
+          instructions.push({
+            setStateVariable: "hiddenControls",
+            value: newHiddenControls
           })
         }
 
@@ -1863,7 +1981,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1874,7 +1992,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1904,7 +2022,7 @@ export default class Curve extends GraphicalComponent {
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1915,7 +2033,7 @@ export default class Curve extends GraphicalComponent {
         transient
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1938,7 +2056,7 @@ export default class Curve extends GraphicalComponent {
   }
 
   changeVectorControlDirection({ direction, throughPointInd }) {
-    this.coreFunctions.requestUpdate({
+    this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -2043,9 +2161,10 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
 
     // if the point (x1,x2) isn't finite, we can't do anything more
-    if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+    // if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
+    if (true) {
       if (Number.isFinite(x1AsFunction) && Number.isFinite(x2AsFunction)) {
-        result = {
+        let result = {
           x1: x1AsFunction,
           x2: x2AsFunction
         }
@@ -2053,7 +2172,7 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
           result.x3 = 0;
         }
         return result;
-      } else {
+      } else if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
         return {};
       }
 

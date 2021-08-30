@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   useRecoilValue,
   useSetRecoilState,
@@ -19,6 +19,7 @@ import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCard
 import { driveColors, driveImages } from '../../../_reactComponents/Drive/util';
 import { useToast } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
+
 
 export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
@@ -99,6 +100,20 @@ export default function SelectedCourse() {
   }
 }
 
+const CoursePassword = ({driveId})=>{
+  let [password,setPassword] = useState(null);
+
+  useEffect(()=>{
+    const getPassword = async (driveId)=>{
+
+    console.log(">>>>driveId",driveId)
+  }
+  getPassword(driveId);
+  },[driveId])
+
+  return <div>Set course password (soon)</div>
+}
+
 const DriveInfoPanel = function (props) {
   const [driveLabel, setDriveLabel] = useState(props.label);
   const [panelDriveLabel, setPanelDriveLabel] = useState(props.label);
@@ -107,7 +122,7 @@ const DriveInfoPanel = function (props) {
   const [driveUsers, setDriveUsers] = useRecoilStateLoadable(
     fetchDriveUsers(driveId),
   );
-  const [selectedUserId, setSelectedUserId] = useState('');
+  // const [selectedUserId, setSelectedUserId] = useState('');
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
 
   if (driveUsers.state === 'loading') {
@@ -182,7 +197,7 @@ const DriveInfoPanel = function (props) {
       }
     }
   };
-  let star = <FontAwesomeIcon icon={faUserCircle} />;
+  // let star = <FontAwesomeIcon icon={faUserCircle} />;
 
   const UserOption = (props) => (
     <>
@@ -303,7 +318,7 @@ const DriveInfoPanel = function (props) {
       {props.role == 'Administrator' ? <>{addAdmins}  {adminsList}</> : 
       <>
       <label>
-        Name :{' '}
+        Label {' '}
         <input
           type="text"
           value={driveLabel}
@@ -334,8 +349,10 @@ const DriveInfoPanel = function (props) {
       </label>
       <br />
       <br />
+      <CoursePassword driveId={props.driveId} />
+      <br />
       <label>
-        Image :
+        Image (soon)
         <DoenetDriveCardMenu
           key={`colorMenu${props.driveId}`}
           colors={driveColors}

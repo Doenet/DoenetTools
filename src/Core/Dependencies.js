@@ -1135,9 +1135,12 @@ export class DependencyHandler {
     let allCounterNames = Object.keys(component.counters);
     for (let childName of component.allChildrenOrdered) {
       let child = this._components[childName];
-      for (let counterName in child.counters) {
-        if (!allCounterNames.includes(counterName)) {
-          allCounterNames.push(counterName)
+      if (child) {
+        // skip placeholders
+        for (let counterName in child.counters) {
+          if (!allCounterNames.includes(counterName)) {
+            allCounterNames.push(counterName)
+          }
         }
       }
     }
@@ -1162,9 +1165,12 @@ export class DependencyHandler {
 
       for (let childName of component.allChildrenOrdered) {
         let child = this._components[childName];
-        let childCounters = child.counters[counterName];
-        if (childCounters) {
-          componentList.push(...childCounters.componentList)
+        if (child) {
+          //skip placeholders
+          let childCounters = child.counters[counterName];
+          if (childCounters) {
+            componentList.push(...childCounters.componentList)
+          }
         }
       }
 
@@ -2150,7 +2156,30 @@ export class DependencyHandler {
       }
     }
 
-    while (Object.keys(neededForItem).length > 0) {
+
+    // first try without forcing
+    // i.e., without passing force on to resolveItem
+    // that way, if force===true, we'll first iterate
+    // to possibly reveal other items needed resolve
+    // that are picked up from the failures
+
+    let previousNFailures = Infinity;
+    let nFailures = Infinity;
+    while (Object.keys(neededForItem).length > 0 || nFailures > 0) {
+      if (Number.isFinite(nFailures) && nFailures >= previousNFailures) {
+        break;
+      }
+      if (nFailures > 0) {
+        neededForItem = this.getNeededToResolve({
+          componentName,
+          type,
+          stateVariable,
+          dependency,
+        });
+      }
+      previousNFailures = nFailures;
+      nFailures = 0;
+
       for (let blockerType in neededForItem) {
         if (blockerType === "determineDependencies") {
           throw Error(`Shouldn't have determine dependencies blocker after determining dependencies: ${componentName}, ${type}, ${stateVariable}, ${dependency}`);
@@ -2166,20 +2195,68 @@ export class DependencyHandler {
             type: blockerType,
             stateVariable: blockerStateVariable,
             dependency: blockerDependency,
-            force, //recurseUpstream
+            //force, //recurseUpstream
             expandComposites,
           })
 
 
           if (!result.success) {
-            // console.log(`${" ".repeat(this.resolveLevels - 1)}couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
-            // this.resolveLevels--;
-            return result;
+            if (force) {
+              nFailures++;
+            } else {
+              // console.log(`${" ".repeat(this.resolveLevels - 1)}couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
+              // this.resolveLevels--;
+              return result;
+            }
+          }
+        }
+      }
+    }
+
+
+    if (nFailures > 0) {
+      // if had failures and made it to here,
+      // it means we are forcing.
+      // Try one more time while passing force to resolveItem 
+
+      neededForItem = this.getNeededToResolve({
+        componentName,
+        type,
+        stateVariable,
+        dependency,
+      });
+
+      while (Object.keys(neededForItem).length > 0) {
+        for (let blockerType in neededForItem) {
+          if (blockerType === "determineDependencies") {
+            throw Error(`Shouldn't have determine dependencies blocker after determining dependencies: ${componentName}, ${type}, ${stateVariable}, ${dependency}`);
           }
 
+          // shallow copy, as items may be deleted as resolve items
+          for (let code of [...neededForItem[blockerType]]) {
+
+            let [blockerComponentName, blockerStateVariable, blockerDependency] = code.split('|');
+
+            let result = this.resolveItem({
+              componentName: blockerComponentName,
+              type: blockerType,
+              stateVariable: blockerStateVariable,
+              dependency: blockerDependency,
+              force, //recurseUpstream
+              expandComposites,
+            })
+
+
+            if (!result.success) {
+              // console.log(`${" ".repeat(this.resolveLevels - 1)}couldn't resolve ${componentName}, ${type}, ${stateVariable}, ${dependency}`)
+              // this.resolveLevels--;
+              return result;
+            }
+
+          }
+
+
         }
-
-
       }
     }
 
@@ -4318,7 +4395,6 @@ class DescendantDependency extends Dependency {
     this.includeAttributeChildren = this.definition.includeAttributeChildren;
     this.skipOverAdapters = this.definition.skipOverAdapters;
     this.ignoreReplacementsOfMatchedComposites = this.definition.ignoreReplacementsOfMatchedComposites;
-    this.definingChildrenFirst = this.definition.definingChildrenFirst;
 
   }
 
@@ -4454,7 +4530,6 @@ class DescendantDependency extends Dependency {
       includeNonActiveChildren: this.includeNonActiveChildren,
       skipOverAdapters: this.skipOverAdapters,
       ignoreReplacementsOfMatchedComposites: this.ignoreReplacementsOfMatchedComposites,
-      definingChildrenFirst: this.definingChildrenFirst,
       componentInfoObjects: this.dependencyHandler.componentInfoObjects,
     });
 
@@ -5510,6 +5585,10 @@ class SourceCompositeDependency extends Dependency {
       this.originalDownstreamVariableNames = [this.definition.variableName];
     }
 
+    if (this.definition.compositeComponentType) {
+      this.compositeComponentType = this.definition.compositeComponentType;
+    }
+
     this.returnSingleVariableValue = true;
 
     // for source composite state variable
@@ -5570,6 +5649,23 @@ class SourceCompositeDependency extends Dependency {
     }
 
     let sourceComposite = replacement.replacementOf;
+
+    if (this.compositeComponentType) {
+      while (!this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: sourceComposite.componentType,
+        baseComponentType: this.compositeComponentType,
+      })) {
+        if (sourceComposite.replacementOf) {
+          sourceComposite = sourceComposite.replacementOf
+        } else {
+          return {
+            success: true,
+            downstreamComponentNames: [],
+            downstreamComponentTypes: []
+          }
+        }
+      }
+    }
 
     return {
       success: true,
