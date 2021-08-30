@@ -202,6 +202,26 @@ export class Paginator extends Template {
       }
     }
 
+    stateVariableDefinitions.documentName = {
+      returnDependencies: () => ({
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.documentAncestor) {
+          return {
+            newValues: {
+              documentName: dependencyValues.documentAncestor.componentName
+            }
+          }
+        } else {
+          return { newValues: { documentName: null } }
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -327,6 +347,14 @@ export class Paginator extends Template {
 
   async setPage({ number }) {
 
+    if (this.stateValues.submitAllOnPageChange) {
+      await this.coreFunctions.performAction({
+        componentName: this.stateValues.documentName,
+        actionName: "submitAllAnswers"
+      })
+    }
+
+    
     let currentPageNumber = this.stateValues.currentPage;
 
 
