@@ -35,6 +35,7 @@ $expirationTime = 2147483647;
 
 $payload = [
     'userId' => $userId,
+    // 'euserId' => $userId,
     'doenetId' => $doenetId,
 ];
 $jwt = JWT::encode($payload, $key);
