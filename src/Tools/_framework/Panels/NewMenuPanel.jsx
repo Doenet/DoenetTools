@@ -157,7 +157,7 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 
-export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen }) {
+export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, menuPanelsOpen, displayProfile }) {
 console.log(">>>===MenuPanel")
 // console.log(">>>menuPanelCap",menuPanelCap)
 // console.log(">>>currentMenus",currentMenus)
@@ -241,7 +241,6 @@ console.log(">>>===MenuPanel")
 
   }
 
-
   return (
     <MenuPanelsWrapper hide={hide}>
      <MenuPanelsCap fix={menuPanelsOpen}>
@@ -251,9 +250,11 @@ console.log(">>>===MenuPanel")
         </span>
         <span style={{marginBottom: '1px'}}>Doenet</span>
         <span >
-          <Profile 
-          margin={menuPanelsOpen}
-          />
+          {displayProfile ? 
+            <Profile 
+            margin={menuPanelsOpen}
+            />
+          : null }
         </span>
         <span >
           <CloseButton onClick={()=>setMenusOpen(false)}><FontAwesomeIcon icon={faChevronLeft}/></CloseButton>
