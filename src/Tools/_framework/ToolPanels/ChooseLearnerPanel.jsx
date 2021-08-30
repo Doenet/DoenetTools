@@ -136,8 +136,8 @@ export default function ChooseLearnerPanel(props) {
     >
       <div>
       <div><b>Is this you?</b></div>
-      <div>Name {choosenLearner.firstName} {choosenLearner.lastName}</div>
-      <div>ID {choosenLearner.studentId}</div>
+      <div>Name: {choosenLearner.firstName} {choosenLearner.lastName}</div>
+      <div>ID: {choosenLearner.studentId}</div>
      
     </div>
      <ButtonGroup>
@@ -146,7 +146,7 @@ export default function ChooseLearnerPanel(props) {
        setCode('')
        setChoosenLearner(null);
      }}/>
-     <Button value="Yes It's me" onClick={()=>{
+     <Button value="Yes It's me. Start Exam." onClick={()=>{
         location.href = `/api/examjwt.php?userId=${encodeURIComponent(
           choosenLearner.userId,
         )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(code)}`;
