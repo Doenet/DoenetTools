@@ -369,6 +369,7 @@ describe('CallAction Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 1, y: 7 });
+      cy.wait(10);  // to make sure all actions have chance to complete
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2.length).eq(5);
@@ -412,6 +413,7 @@ describe('CallAction Tag Tests', function () {
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       components['/P'].movePoint({ x: 4, y: 2 });
+      cy.wait(10);  // to make sure all actions have chance to complete
       cy.get('#\\/nums').invoke('text').then(text => {
         let numbers2 = text.split(',').map(Number);
         expect(numbers2.length).eq(5);

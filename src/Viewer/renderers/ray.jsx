@@ -162,7 +162,8 @@ export default class Ray extends DoenetRenderer {
     this.actions.moveRay({
       point1coords: pointCoords[0],
       point2coords: pointCoords[1],
-      transient: true
+      transient: true,
+      skippable: true,
     });
   }
 

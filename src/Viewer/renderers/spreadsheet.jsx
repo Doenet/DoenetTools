@@ -24,7 +24,7 @@ export default class SpreadsheetRenderer extends DoenetRenderer {
         width={sizeToCSS(this.doenetSvData.width)}
         height={sizeToCSS(this.doenetSvData.height)}
         // beforeChange={this.actions.onChange} 
-        afterChange={this.actions.onChange.bind(this)}
+        afterChange={(changes, source) => this.actions.onChange({ changes, source })}
         formulas={{
           engine: HyperFormula
         }}

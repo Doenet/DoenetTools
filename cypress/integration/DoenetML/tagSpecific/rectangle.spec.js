@@ -254,7 +254,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
 
     cy.log("move rectangle points individually");
     cy.window().then((win) => {
-      rectangle.movePolygon({ 0: [2, -1] })
+      rectangle.movePolygon({ pointCoords: { 0: [2, -1] } })
       checkRectangleValues(
         inputs,
         {
@@ -265,7 +265,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangle.movePolygon({ 1: [0, 2] })
+      rectangle.movePolygon({ pointCoords: { 1: [0, 2] } })
       checkRectangleValues(
         inputs,
         {
@@ -276,7 +276,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangle.movePolygon({ 2: [-4, -5] })
+      rectangle.movePolygon({ pointCoords: { 2: [-4, -5] } })
       checkRectangleValues(
         inputs,
         {
@@ -287,7 +287,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangle.movePolygon({ 3: [3, 4] })
+      rectangle.movePolygon({ pointCoords: { 3: [3, 4] } })
       checkRectangleValues(
         inputs,
         {
@@ -302,10 +302,12 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     cy.log("move rectangle points together");
     cy.window().then((win) => {
       rectangle.movePolygon({
-        0: [4, 3],
-        1: [-3, 3],
-        2: [-3, 5],
-        3: [4, 5]
+        pointCoords: {
+          0: [4, 3],
+          1: [-3, 3],
+          2: [-3, 5],
+          3: [4, 5]
+        }
       })
       checkRectangleValues(
         inputs,
@@ -380,7 +382,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
             v2y: -5,
           }
         );
-      } else if (cornerDependencyState === 1){
+      } else if (cornerDependencyState === 1) {
         // corner, width and height
 
         v0.movePoint({ x: 0, y: 0 });
@@ -478,10 +480,12 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     cy.log("rectangleCopy together");
     cy.window().then((win) => {
       rectangleCopy.movePolygon({
-        0: [0, 0],
-        1: [1, 0],
-        2: [1, 1],
-        3: [0, 1]
+        pointCoords: {
+          0: [0, 0],
+          1: [1, 0],
+          2: [1, 1],
+          3: [0, 1]
+        }
       })
       checkRectangleValues(
         inputs,
@@ -496,7 +500,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
 
     cy.log("rectangleCopy individually");
     cy.window().then((win) => {
-      rectangleCopy.movePolygon({ 0: [2, -1] })
+      rectangleCopy.movePolygon({ pointCoords: { 0: [2, -1] } })
       checkRectangleValues(
         inputs,
         {
@@ -507,7 +511,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy.movePolygon({ 1: [0, 2] })
+      rectangleCopy.movePolygon({ pointCoords: { 1: [0, 2] } })
       checkRectangleValues(
         inputs,
         {
@@ -518,7 +522,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy.movePolygon({ 2: [-4, -5] })
+      rectangleCopy.movePolygon({ pointCoords: { 2: [-4, -5] } })
       checkRectangleValues(
         inputs,
         {
@@ -529,7 +533,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy.movePolygon({ 3: [3, 4] })
+      rectangleCopy.movePolygon({ pointCoords: { 3: [3, 4] } })
       checkRectangleValues(
         inputs,
         {
@@ -544,10 +548,12 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
     cy.log("rectangleCopy2 together");
     cy.window().then((win) => {
       rectangleCopy2.movePolygon({
-        0: [0, 0],
-        1: [1, 0],
-        2: [1, 1],
-        3: [0, 1]
+        pointCoords: {
+          0: [0, 0],
+          1: [1, 0],
+          2: [1, 1],
+          3: [0, 1]
+        }
       })
       checkRectangleValues(
         inputs,
@@ -562,7 +568,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
 
     cy.log("rectangleCopy2 individually");
     cy.window().then((win) => {
-      rectangleCopy2.movePolygon({ 0: [2, -1] })
+      rectangleCopy2.movePolygon({ pointCoords: { 0: [2, -1] } })
       checkRectangleValues(
         inputs,
         {
@@ -573,7 +579,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy2.movePolygon({ 1: [0, 2] })
+      rectangleCopy2.movePolygon({ pointCoords: { 1: [0, 2] } })
       checkRectangleValues(
         inputs,
         {
@@ -584,7 +590,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy2.movePolygon({ 2: [-4, -5] })
+      rectangleCopy2.movePolygon({ pointCoords: { 2: [-4, -5] } })
       checkRectangleValues(
         inputs,
         {
@@ -595,7 +601,7 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
         }
       );
 
-      rectangleCopy2.movePolygon({ 3: [3, 4] })
+      rectangleCopy2.movePolygon({ pointCoords: { 3: [3, 4] } })
       checkRectangleValues(
         inputs,
         {
@@ -608,10 +614,12 @@ function runTests({ v0x, v0y, v2x, v2y, cornerDependencyState }) {
 
       // reset polygon
       rectangle.movePolygon({
-        0: [0, 0],
-        1: [1, 0],
-        2: [1, 1],
-        3: [0, 1]
+        pointCoords: {
+          0: [0, 0],
+          1: [1, 0],
+          2: [1, 1],
+          3: [0, 1]
+        }
       })
     })
 

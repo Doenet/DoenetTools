@@ -234,6 +234,7 @@ export default class FunctionCurve extends DoenetRenderer {
       throughPoint: tpcoords,
       throughPointInd: i,
       transient,
+      skippable: transient,
     });
 
   }
@@ -251,7 +252,8 @@ export default class FunctionCurve extends DoenetRenderer {
       controlVector: [this.controlPointsJXG[point][i].X() - this.throughPointsJXG[point].X(),
       this.controlPointsJXG[point][i].Y() - this.throughPointsJXG[point].Y()],
       controlVectorInds: [point, i],
-      transient
+      transient,
+      skippable: transient,
     });
 
   }

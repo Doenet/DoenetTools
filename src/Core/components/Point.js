@@ -1004,7 +1004,7 @@ export default class Point extends GraphicalComponent {
       components[2] = me.fromAst(z);
     }
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1012,9 +1012,9 @@ export default class Point extends GraphicalComponent {
           value: components,
         }],
         transient
-      })
+      });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
@@ -1031,7 +1031,7 @@ export default class Point extends GraphicalComponent {
             x, y, z
           }
         }
-      })
+      });
     }
 
   }
@@ -1041,7 +1041,7 @@ export default class Point extends GraphicalComponent {
     // to send the final values with transient=false
     // so that the final position will be recorded
 
-    this.actions.movePoint({
+    return this.actions.movePoint({
       x: this.stateValues.numericalXs[0],
       y: this.stateValues.numericalXs[1],
       z: this.stateValues.numericalXs[2],

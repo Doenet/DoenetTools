@@ -653,7 +653,7 @@ export default class SectioningComponent extends BlockComponent {
     closeSection: this.closeSection.bind(this),
   }
 
-  submitAllAnswers() {
+  async submitAllAnswers() {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -668,7 +668,7 @@ export default class SectioningComponent extends BlockComponent {
     })
     for (let answer of this.stateValues.answerDescendants) {
       if (!answer.stateValues.justSubmitted) {
-        this.coreFunctions.requestAction({
+        await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer"
         })
@@ -678,7 +678,7 @@ export default class SectioningComponent extends BlockComponent {
 
   revealSection() {
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -697,7 +697,7 @@ export default class SectioningComponent extends BlockComponent {
 
   closeSection() {
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

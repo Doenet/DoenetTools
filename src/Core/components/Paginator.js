@@ -19,6 +19,11 @@ export class Paginator extends Template {
       createStateVariable: "initialPage",
       defaultValue: 1,
     }
+    attributes.submitAllOnPageChange = {
+      createComponentOfType: "boolean",
+      createStateVariable: "submitAllOnPageChange",
+      defaultValue: false,
+    }
     return attributes;
 
   }
@@ -197,6 +202,26 @@ export class Paginator extends Template {
       }
     }
 
+    stateVariableDefinitions.documentName = {
+      returnDependencies: () => ({
+        documentAncestor: {
+          dependencyType: "ancestor",
+          componentType: "document"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.documentAncestor) {
+          return {
+            newValues: {
+              documentName: dependencyValues.documentAncestor.componentName
+            }
+          }
+        } else {
+          return { newValues: { documentName: null } }
+        }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -320,8 +345,16 @@ export class Paginator extends Template {
 
   }
 
-  setPage({ number }) {
+  async setPage({ number }) {
 
+    if (this.stateValues.submitAllOnPageChange) {
+      await this.coreFunctions.performAction({
+        componentName: this.stateValues.documentName,
+        actionName: "submitAllAnswers"
+      })
+    }
+
+    
     let currentPageNumber = this.stateValues.currentPage;
 
 
@@ -369,17 +402,10 @@ export class Paginator extends Template {
 
     }
 
-    let callBack;
 
-    if (postponeUpdatingPlaceholderCreditAchieved) {
-      callBack = () => this.setPlaceholderCredit({
-        number: currentPageNumber,
-      })
-    }
 
-    this.coreFunctions.requestUpdate({
+    await this.coreFunctions.performUpdate({
       updateInstructions,
-      callBack,
       event: {
         verb: "selected",
         object: {
@@ -392,6 +418,11 @@ export class Paginator extends Template {
         }
       },
     });
+
+
+    if (postponeUpdatingPlaceholderCreditAchieved) {
+      await this.setPlaceholderCredit({ number: currentPageNumber });
+    }
 
   }
 
@@ -432,7 +463,7 @@ export class Paginator extends Template {
 
     }
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions,
     });
 
@@ -620,7 +651,7 @@ export class PaginatorPageSet extends Template {
     // }
 
     let sectionComponentType = sectionReplacement.componentType;
-    if(sectionComponentType === "copy") {
+    if (sectionComponentType === "copy") {
       sectionComponentType = sectionReplacement.attributes.componentType.primitive;
     }
 
@@ -930,6 +961,27 @@ export class PaginatorPage extends Template {
 
 
 export class PaginatorControls extends BlockComponent {
+  constructor(args) {
+    super(args);
+
+    this.externalActions = {};
+
+    //Complex because the stateValues isn't defined until later
+    Object.defineProperty(this.externalActions, 'setPage', {
+      enumerable: true,
+      get: function () {
+        if (this.stateValues.paginatorFullTname) {
+          return {
+            componentName: this.stateValues.paginatorFullTname,
+            actionName: "setPage",
+          }
+        } else {
+          return;
+        }
+      }.bind(this)
+    });
+
+  }
   static componentType = "paginatorControls";
   static renderChildren = true;
 
@@ -1061,24 +1113,6 @@ export class PaginatorControls extends BlockComponent {
 
   }
 
-
-  setPage({ number }) {
-
-    if (this.stateValues.paginatorFullTname) {
-      this.coreFunctions.requestAction({
-        componentName: this.stateValues.paginatorFullTname,
-        actionName: "setPage",
-        args: { number }
-      })
-    }
-
-  }
-
-  actions = {
-    setPage: this.setPage.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-  };
 
 
 }
