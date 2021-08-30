@@ -1,4 +1,4 @@
-import React, {useState} from "../../_snowpack/pkg/react.js";
+import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {
   useRecoilValue,
   useSetRecoilState,
@@ -81,13 +81,22 @@ export default function SelectedCourse() {
     return "";
   }
 }
+const CoursePassword = ({driveId}) => {
+  let [password, setPassword] = useState(null);
+  useEffect(() => {
+    const getPassword = async (driveId2) => {
+      console.log(">>>>driveId", driveId2);
+    };
+    getPassword(driveId);
+  }, [driveId]);
+  return /* @__PURE__ */ React.createElement("div", null, "Set course password (soon)");
+};
 const DriveInfoPanel = function(props) {
   const [driveLabel, setDriveLabel] = useState(props.label);
   const [panelDriveLabel, setPanelDriveLabel] = useState(props.label);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const driveId = props.driveId;
   const [driveUsers, setDriveUsers] = useRecoilStateLoadable(fetchDriveUsers(driveId));
-  const [selectedUserId, setSelectedUserId] = useState("");
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
   if (driveUsers.state === "loading") {
     return null;
@@ -157,9 +166,6 @@ const DriveInfoPanel = function(props) {
       }
     }
   };
-  let star = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-    icon: faUserCircle
-  });
   const UserOption = (props2) => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("option", {
     value: props2.userId
   }, props2.screenName, " ", props2.email));
@@ -249,7 +255,7 @@ const DriveInfoPanel = function(props) {
   }));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
     "data-cy": "infoPanelItemLabel"
-  }, dIcon, " ", panelDriveLabel), props.role == "Administrator" ? /* @__PURE__ */ React.createElement(React.Fragment, null, addAdmins, "  ", adminsList) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("label", null, "Name :", " ", /* @__PURE__ */ React.createElement("input", {
+  }, dIcon, " ", panelDriveLabel), props.role == "Administrator" ? /* @__PURE__ */ React.createElement(React.Fragment, null, addAdmins, "  ", adminsList) : /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("label", null, "Label ", " ", /* @__PURE__ */ React.createElement("input", {
     type: "text",
     value: driveLabel,
     onChange: (e) => setDriveLabel(e.target.value),
@@ -275,7 +281,9 @@ const DriveInfoPanel = function(props) {
         type: "update drive label"
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("label", null, "Image :", /* @__PURE__ */ React.createElement(DoenetDriveCardMenu, {
+  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(CoursePassword, {
+    driveId: props.driveId
+  }), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement("label", null, "Image (soon)", /* @__PURE__ */ React.createElement(DoenetDriveCardMenu, {
     key: `colorMenu${props.driveId}`,
     colors: driveColors,
     initialValue: props.color,

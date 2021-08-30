@@ -1,6 +1,7 @@
 import InlineComponent from './abstract/InlineComponent.js';
 import { deepCompare } from '../utils/deepFunctions.js';
 import { renameStateVariable } from '../utils/stateVariables.js';
+import { serializedComponentsReplacer, serializedComponentsReviver } from '../utils/serializedStateProcessing.js';
 // import sha1 from 'crypto-js/sha1';
 // import Base64 from 'crypto-js/enc-base64';
 
@@ -1055,10 +1056,21 @@ export default class Answer extends InlineComponent {
         },
       }),
       definition({ dependencyValues }) {
+        // we JSON.stringify because we may need to compare
+        // to values that have been JSON.stringified due to
+        // being saved in the database.
+        // JSON.stringify removes some elements (e.g. functions)
+        // so we want to use it everywhere do get a consistent comparison
         return {
           newValues: {
-            creditAchievedDependencies: dependencyValues.currentCreditAchievedDependencies
-            // creditAchievedDependencies: Base64.stringify(sha1(JSON.stringify(dependencyValues.currentCreditAchievedDependencies)))
+            creditAchievedDependencies:
+              JSON.parse(
+                JSON.stringify(
+                  dependencyValues.currentCreditAchievedDependencies,
+                  serializedComponentsReplacer
+                ),
+                serializedComponentsReviver
+              )
           }
         }
       },
@@ -1105,16 +1117,20 @@ export default class Answer extends InlineComponent {
 
         let foundChange = true;
 
-        // let foundChange = !deepCompare(
-        //   dependencyValues.currentCreditAchievedDependencies,
-        //   dependencyValues.creditAchievedDependenciesAtSubmit
-        // )
+        // Note: 
+        // - using deepCompare, because JSON.stringify does not produce
+        //   a canonical order of object, and may incorrectly indicate a change
+        //   if the objects were created in a different order
+        //   (as can happen when reconstructing a document from the database)
 
-        // use JSON.stringify rather than deepCompare
-        // so that NaNs will be equal to each other
+        // TODO: we already JSON.stringified and parsed when creating the variables
+        // (so that it is consistent in case we've loaded from the database)
+        // Is there a way to accomplish this more efficiently, 
+        // i.e., without doing two passes
+
         if (dependencyValues.creditAchievedDependenciesAtSubmit) {
-          foundChange = JSON.stringify(dependencyValues.currentCreditAchievedDependencies)
-            !== JSON.stringify(dependencyValues.creditAchievedDependenciesAtSubmit)
+          foundChange = !deepCompare(dependencyValues.currentCreditAchievedDependencies,
+            dependencyValues.creditAchievedDependenciesAtSubmit)
         }
 
         if (foundChange) {
@@ -1478,7 +1494,7 @@ export default class Answer extends InlineComponent {
     // console.log(`submit instructions`)
     // console.log(instructions);
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: instructions,
       event: {
         verb: "submitted",
@@ -1493,25 +1509,10 @@ export default class Answer extends InlineComponent {
         }
 
       },
-      callBack: () => this.coreFunctions.triggerChainedActions({
-        componentName: this.componentName,
-      })
-    })
+    }).then(() => this.coreFunctions.triggerChainedActions({
+      componentName: this.componentName,
+    }));
 
-    // let documentComponentName = this.ancestors[this.ancestors.length - 1].componentName;
-
-    // // NOTE: if change this so don't have a request update with just document
-    // // need to change code that triggers an immediate at the end of requestUpdate in core
-    // this.coreFunctions.requestUpdate({
-    //   updateType: "updateValue",
-    //   updateInstructions: [{
-    //     componentName: documentComponentName,
-    //     variableUpdates: {
-    //       submissionNumber: { changes: documentComponent.state.previousSubmissionNumber + 1 },
-    //       submittedAnswerComponentName: { changes: this.componentName }
-    //     }
-    //   }]
-    // })
 
   }
 

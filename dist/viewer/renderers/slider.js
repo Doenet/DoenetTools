@@ -402,12 +402,12 @@ export default function Slider(props) {
         let valindexpair = nearestValue(refval, SVs.items, SVs);
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
-        actions.changeValue({value: valindexpair[0], transient: true});
+        actions.changeValue({value: valindexpair[0], transient: true, skippable: true});
       } else {
         let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
-        actions.changeValue({value: SVs.items[i], transient: true});
+        actions.changeValue({value: SVs.items[i], transient: true, skippable: true});
       }
     }
   }

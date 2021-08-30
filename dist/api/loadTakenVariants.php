@@ -20,25 +20,34 @@ if ($doenetId == ""){
 $success = FALSE;
 $message = 'Internal Error: missing doenetId';
 }
+$variants = array();
+$starts = array();
+$attemptNumbers = array();
 
 if ($success){
 
-  $sql = "SELECT generatedVariant
+  $sql = "SELECT attemptNumber,
+        generatedVariant,
+        began
         FROM user_assignment_attempt
         WHERE userId='$userId'
         AND doenetId='$doenetId'
         ORDER BY attemptNumber ASC";
 
   $result = $conn->query($sql);
-  $variants = array();
   while ($row = $result->fetch_assoc()){
           array_push($variants,$row["generatedVariant"]);
+          array_push($starts,$row["began"]);
+          array_push($attemptNumbers,$row["attemptNumber"]);
+
   }
 }
 
 $response_arr = array(
         "success"=>$success,
+        "attemptNumbers"=>$attemptNumbers,
         "variants" => $variants,
+        "starts" => $starts,
         "message"=>$message
 );
 

@@ -9,6 +9,16 @@ export default class Sort extends CompositeComponent {
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
   static assignNamesToReplacements = true;
 
+  static createAttributesObject(args) {
+    let attributes = super.createAttributesObject(args);
+
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
+
+    return attributes;
+  }
+
   static returnChildGroups() {
 
     return [{

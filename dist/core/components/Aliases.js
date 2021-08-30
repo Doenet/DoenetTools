@@ -1,6 +1,5 @@
 import TextComponent from './Text.js';
 import TextOrInline from './abstract/TextOrInline.js';
-import Group from './Group.js';
 import Template from './Template.js';
 import MathComponent from './Math.js';
 
@@ -26,7 +25,7 @@ export class Description extends TextOrInline {
   static rendererType = undefined;
 }
 
-export class Else extends Group {
+export class Else extends Template {
   static componentType = "else";
 }
 
