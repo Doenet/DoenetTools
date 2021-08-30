@@ -12,16 +12,19 @@ export default class Choiceinput extends Input {
       )
     }
 
+    this.externalActions = {};
+
     //Complex because the stateValues isn't defined until later
-    Object.defineProperty(this.actions, 'submitAnswer', {
+    Object.defineProperty(this.externalActions, 'submitAnswer', {
+      enumerable: true,
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.coreFunctions.requestAction({
+          return {
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
-          })
+          }
         } else {
-          return () => null
+          return;
         }
       }.bind(this)
     });
@@ -998,13 +1001,13 @@ export default class Choiceinput extends Input {
         }
       }
 
-      this.coreFunctions.requestUpdate({
+
+      return this.coreFunctions.performUpdate({
         updateInstructions,
         event,
-        callBack: () => this.coreFunctions.triggerChainedActions({
-          componentName: this.componentName,
-        })
-      })
+      }).then(() => this.coreFunctions.triggerChainedActions({
+        componentName: this.componentName,
+      }));
 
     }
   }

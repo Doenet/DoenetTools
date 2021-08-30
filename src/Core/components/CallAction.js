@@ -184,13 +184,16 @@ export default class CallAction extends InlineComponent {
       },
       definition({ dependencyValues }) {
         let triggerWithFullTnames = [];
-        let n = Object.keys(dependencyValues).length;
+        let n = Object.keys(dependencyValues).length - 1;
 
         for (let i = 0; i < n; i++) {
           triggerWithFullTnames.push(dependencyValues[`triggerWithFullTname${i}`])
         }
 
         return { newValues: { triggerWithFullTnames } }
+      },
+      markStale() {
+        return { updateActionChaining: true }
       }
     }
 
@@ -246,15 +249,22 @@ export default class CallAction extends InlineComponent {
         args.numbers = this.attributes.numbers.component.stateValues.numbers;
       }
 
-      this.coreFunctions.requestAction({
+
+      return this.coreFunctions.performAction({
         componentName: this.stateValues.targetName,
         actionName: this.stateValues.actionName,
         args,
-      })
-
-      this.coreFunctions.triggerChainedActions({
+        event: {
+          verb: "selected",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+        },
+      }).then(() => this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      })
+      }));
+
 
     }
 
@@ -266,7 +276,7 @@ export default class CallAction extends InlineComponent {
     if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !this.stateValues.insideTriggerSet
     ) {
-      this.callAction();
+      return this.callAction();
     }
   }
 

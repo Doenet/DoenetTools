@@ -2918,6 +2918,9 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('4')
     })
 
+    // wait to make sure asynchronous update to rawRendererValue can execute
+    cy.wait(10);
+
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);
       expect(components['/mi'].stateValues.rawRendererValue).eq('4')
@@ -2950,6 +2953,9 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mi .mq-editable-field').invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
     })
+
+    // wait to make sure asynchronous update to rawRendererValue can execute
+    cy.wait(10);
 
     cy.window().then((win) => {
       let components = Object.assign({}, win.state.components);

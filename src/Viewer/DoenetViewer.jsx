@@ -341,23 +341,23 @@ class DoenetViewerChild extends Component {
       }
       axios.post('/api/saveCreditForItem.php', payload2)
         .then(resp => {
-          console.log('>>>>resp',resp.data);
+          console.log('>>>>resp', resp.data);
 
-//TODO: need type warning (red but doesn't hang around)
+          //TODO: need type warning (red but doesn't hang around)
           if (resp.data.viewedSolution) {
-            this.props.toast('No credit awarded since solution was viewed.', toastType.INFO) 
+            this.props.toast('No credit awarded since solution was viewed.', toastType.INFO)
           }
-          if (resp.data.timeExpired) {
-            this.props.toast('No credit awarded since the time allowed has expired.', toastType.INFO) 
+          if (resp.data.timerExpired) {
+            this.props.toast('No credit awarded since the time allowed has expired.', toastType.INFO)
           }
           if (resp.data.pastDueDate) {
-            this.props.toast('No credit awarded since the due date has passed.', toastType.INFO) 
+            this.props.toast('No credit awarded since the due date has passed.', toastType.INFO)
           }
           if (resp.data.exceededAttemptsAllowed) {
-            this.props.toast('No credit awarded since no more attempts are allowed.', toastType.INFO) 
+            this.props.toast('No credit awarded since no more attempts are allowed.', toastType.INFO)
           }
           if (resp.data.databaseError) {
-            this.props.toast('Credit not saved due to database error.', toastType.ERROR) 
+            this.props.toast('Credit not saved due to database error.', toastType.ERROR)
           }
         });
 
@@ -478,16 +478,17 @@ class DoenetViewerChild extends Component {
 
   // TODO: if assignmentId, then need to record fact that student
   // viewed solution in user_assignment_attempt_item
-  recordSolutionView({ itemNumber, scoredComponent, callBack }) {
-    axios.post('/api/reportSolutionViewed.php', {
+  async recordSolutionView({ itemNumber, scoredComponent }) {
+    const resp = await axios.post('/api/reportSolutionViewed.php', {
       doenetId: this.props.doenetId,
       itemNumber,
       attemptNumber: this.attemptNumber,
-    })
-      .then(resp => {
-        //       console.log('reportSolutionViewed-->>>>',resp.data);
-        callBack({ allowView: true, message: "", scoredComponent })
-      });
+    });
+
+    //       console.log('reportSolutionViewed-->>>>',resp.data);
+
+    return { allowView: true, message: "", scoredComponent };
+
     // console.log(`reveal solution, ${itemNumber}`)
 
     // if (this.assignmentId) {
@@ -698,7 +699,7 @@ class DoenetViewerChild extends Component {
     }
 
     //Spacing around the whole doenetML document
-    return <div style={{maxWidth:"850px",paddingLeft:"20px",paddingRight:"20px",marginBottom:"200px"}}>{this.documentRenderer}</div>;
+    return <div style={{ maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", marginBottom: "200px" }}>{this.documentRenderer}</div>;
   }
 
 }

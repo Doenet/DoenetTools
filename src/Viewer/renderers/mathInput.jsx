@@ -143,11 +143,14 @@ export default class MathInput extends DoenetRenderer {
       this.actions.updateImmediateValue({
         mathExpression: newMathExpression,
         rawRendererValue: this.latexValue,
+        transient: true,
+        skippable: true,
       });
     } else if (rawValueChanged) {
       this.actions.updateRawValue({
         rawRendererValue: this.latexValue,
-        transient: transientForRaw
+        transient: transientForRaw,
+        skippable: transientForRaw
       });
     }
 
@@ -191,21 +194,21 @@ export default class MathInput extends DoenetRenderer {
   //   })
   // }
 
-  handlePressEnter(e) {
+  async handlePressEnter(e) {
     this.valueToRevertTo = this.doenetSvData.immediateValue;
     this.valueForDisplayToRevertTo = this.mathExpression;
 
     // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-      this.actions.updateValue();
+      await this.actions.updateValue();
     } else {
-      this.actions.updateRawValue({
+      await this.actions.updateRawValue({
         rawRendererValue: this.latexValue,
         transient: false
       })
     }
     if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-      this.actions.submitAnswer();
+      await this.actions.submitAnswer();
     }
     this.forceUpdate();
   }
@@ -227,15 +230,15 @@ export default class MathInput extends DoenetRenderer {
     this.forceUpdate();
   }
 
-  handleBlur(e) {
+  async handleBlur(e) {
     this.focused = false;
     this.valueToRevertTo = this.doenetSvData.immediateValue;
     this.valueForDisplayToRevertTo = this.mathExpression;
     // this.latexValueToRevertTo = this.latexValue;
     if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-      this.actions.updateValue();
+      await this.actions.updateValue();
     } else {
-      this.actions.updateRawValue({
+      await this.actions.updateRawValue({
         rawRendererValue: this.latexValue,
         transient: false
       })
@@ -244,7 +247,7 @@ export default class MathInput extends DoenetRenderer {
 
   }
 
-  onChangeHandler(e) {
+  async onChangeHandler(e) {
     this.updateImmediateValueFromLatex(e)
     this.forceUpdate();
   }

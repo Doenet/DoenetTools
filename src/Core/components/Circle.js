@@ -2141,12 +2141,12 @@ export default class Circle extends Curve {
     }
 
     if (transient) {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: instructions,
         transient
       });
     } else {
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: instructions,
         event: {
           verb: "interacted",
@@ -2167,7 +2167,7 @@ export default class Circle extends Curve {
     // trigger a moveCircle 
     // to send the final values with transient=false
     // so that the final position will be recorded
-    this.actions.moveCircle({
+    return this.actions.moveCircle({
       center: this.stateValues.numericalCenter,
       transient: false
     });

@@ -9218,7 +9218,7 @@ describe('Vector Tag Tests', function () {
     })
   })
 
-  it('diplacement overrides xs', () => {
+  it('displacement overrides xs', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `
@@ -9740,7 +9740,7 @@ describe('Vector Tag Tests', function () {
     })
   })
 
-  it('diplacement overrides x and y', () => {
+  it('displacement overrides x and y', () => {
     cy.window().then((win) => {
       win.postMessage({
         doenetML: `

@@ -1494,7 +1494,7 @@ export default class Answer extends InlineComponent {
     // console.log(`submit instructions`)
     // console.log(instructions);
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: instructions,
       event: {
         verb: "submitted",
@@ -1509,25 +1509,10 @@ export default class Answer extends InlineComponent {
         }
 
       },
-      callBack: () => this.coreFunctions.triggerChainedActions({
-        componentName: this.componentName,
-      })
-    })
+    }).then(() => this.coreFunctions.triggerChainedActions({
+      componentName: this.componentName,
+    }));
 
-    // let documentComponentName = this.ancestors[this.ancestors.length - 1].componentName;
-
-    // // NOTE: if change this so don't have a request update with just document
-    // // need to change code that triggers an immediate at the end of requestUpdate in core
-    // this.coreFunctions.requestUpdate({
-    //   updateType: "updateValue",
-    //   updateInstructions: [{
-    //     componentName: documentComponentName,
-    //     variableUpdates: {
-    //       submissionNumber: { changes: documentComponent.state.previousSubmissionNumber + 1 },
-    //       submittedAnswerComponentName: { changes: this.componentName }
-    //     }
-    //   }]
-    // })
 
   }
 

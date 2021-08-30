@@ -338,13 +338,16 @@ export default class UpdateValue extends InlineComponent {
       },
       definition({ dependencyValues }) {
         let triggerWithFullTnames = [];
-        let n = Object.keys(dependencyValues).length;
+        let n = Object.keys(dependencyValues).length - 1;
 
         for (let i = 0; i < n; i++) {
           triggerWithFullTnames.push(dependencyValues[`triggerWithFullTname${i}`])
         }
 
         return { newValues: { triggerWithFullTnames } }
+      },
+      markStale() {
+        return { updateActionChaining: true }
       }
     }
 
@@ -387,49 +390,51 @@ export default class UpdateValue extends InlineComponent {
 
   updateValue() {
 
-    if (this.stateValues.targets !== null && this.stateValues.newValue !== null) {
-      let updateInstructions = [];
+    if (this.stateValues.targets === null || this.stateValues.newValue === null) {
+      return;
+    }
 
-      for (let target of this.stateValues.targets) {
-        let stateVariable = "value";
-        if (target.stateValues) {
-          stateVariable = Object.keys(target.stateValues)[0];
-          if (stateVariable === undefined) {
-            console.warn(`Cannot update prop="${this.stateValues.propName}" of ${this.stateValues.tName} as could not find prop ${this.stateValues.propName} on a component of type ${target.componentType}`)
-            continue;
-          }
+    let updateInstructions = [];
+
+    for (let target of this.stateValues.targets) {
+      let stateVariable = "value";
+      if (target.stateValues) {
+        stateVariable = Object.keys(target.stateValues)[0];
+        if (stateVariable === undefined) {
+          console.warn(`Cannot update prop="${this.stateValues.propName}" of ${this.stateValues.tName} as could not find prop ${this.stateValues.propName} on a component of type ${target.componentType}`)
+          continue;
         }
-
-        updateInstructions.push({
-          updateType: "updateValue",
-          componentName: target.componentName,
-          stateVariable,
-          value: this.stateValues.newValue,
-        })
-
       }
 
-      if (updateInstructions.length > 0) {
-        this.coreFunctions.requestUpdate({
-          updateInstructions,
-          event: {
-            verb: "selected",
-            object: {
-              componentName: this.componentName,
-              componentType: this.componentType,
-            },
-            result: {
-              response: this.stateValues.newValue,
-              responseText: this.stateValues.newValue.toString(),
-            }
-          },
-          callBack: () => this.coreFunctions.triggerChainedActions({
-            componentName: this.componentName,
-          })
-        });
-      }
+      updateInstructions.push({
+        updateType: "updateValue",
+        componentName: target.componentName,
+        stateVariable,
+        value: this.stateValues.newValue,
+      })
 
     }
+
+
+    return this.coreFunctions.performUpdate({
+      updateInstructions,
+      event: {
+        verb: "selected",
+        object: {
+          componentName: this.componentName,
+          componentType: this.componentType,
+        },
+        result: {
+          response: this.stateValues.newValue,
+          responseText: this.stateValues.newValue.toString(),
+        }
+      },
+    }).then(() => this.coreFunctions.triggerChainedActions({
+      componentName: this.componentName,
+    }));
+
+
+
 
   }
 
@@ -439,7 +444,7 @@ export default class UpdateValue extends InlineComponent {
     if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !this.stateValues.insideTriggerSet
     ) {
-      this.updateValue();
+      return this.updateValue();
     }
   }
 

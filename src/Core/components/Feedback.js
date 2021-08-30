@@ -178,7 +178,7 @@ export default class Feedback extends BlockComponent {
       value: this.stateValues.hideWhenUpdated,
     }]
 
-    this.coreFunctions.requestUpdate({ updateInstructions });
+    return this.coreFunctions.performUpdate({ updateInstructions });
   }
 
   actions = {

@@ -114,7 +114,7 @@ export default class Hint extends BlockComponent {
 
   revealHint() {
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -128,12 +128,12 @@ export default class Hint extends BlockComponent {
           componentType: this.componentType,
         },
       }
-    })
+    });
   }
 
   closeHint() {
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -147,7 +147,7 @@ export default class Hint extends BlockComponent {
           componentType: this.componentType,
         },
       }
-    })
+    });
   }
 
   actions = {
