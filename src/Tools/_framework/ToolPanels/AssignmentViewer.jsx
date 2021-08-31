@@ -53,7 +53,7 @@ export const currentAttemptNumber = atom({
   }
 
 export default function AssignmentViewer(){
-  console.log(">>>===AssignmentViewer")
+  // console.log(">>>===AssignmentViewer")
   let [stage,setStage] = useState('Initializing');
   let [message,setMessage] = useState('');
   const recoilAttemptNumber = useRecoilValue(currentAttemptNumber);
@@ -172,7 +172,6 @@ export default function AssignmentViewer(){
 
   const updateAttemptNumberAndRequestedVariant = useRecoilCallback(({snapshot,set})=> async (newAttemptNumber)=>{
     let doenetId = await snapshot.getPromise(searchParamAtomFamily('doenetId'));
-    console.log(">>>>UPDATE FOR NEXT ATTEMPT");
 
     const { data } = await axios.get('/api/loadTakenVariants.php', {
       params: { doenetId },
@@ -200,6 +199,7 @@ export default function AssignmentViewer(){
   },[]);
 
   console.log(`>>>>stage -${stage}-`)
+  
   if (stage === 'Initializing'){
     initializeValues();
     return null;
@@ -209,7 +209,28 @@ export default function AssignmentViewer(){
     updateAttemptNumberAndRequestedVariant(recoilAttemptNumber);
     return null;
   }
-
+  if (doenetId === ''){
+    //Data Not loaded Yet
+    //TODO:Why does this happen?
+    console.log(">>>>Data Not loaded Yet")
+    // console.log(`>>>>stage -${stage}-`)
+    // console.log(">>>>startedInitOfDoenetId.current ",startedInitOfDoenetId.current)
+    // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}- `)
+    // console.log(">>>>DoenetViewer obj ",{
+    //   requestedVariant,
+    //   attemptNumber,
+    //   showCorrectness,
+    //   showFeedback,
+    //   showHints,
+    //   doenetML,
+    //   doenetId,
+    //   solutionDisplayMode,
+    // })
+    startedInitOfDoenetId.current = null;
+    setStage('Initializing')
+    return <p>bug</p>;
+  }
+ 
   return <DoenetViewer
     key={`doenetviewer${doenetId}`}
     doenetML={doenetML}

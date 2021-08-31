@@ -73,7 +73,6 @@ if($timeLimit > 0) {
 
   
   if ($result->num_rows < 1) {
-    $timeLimit = 1;
     //TODO: handle Owners and Admins not being enrolled.
     // $databaseError = 1;
     // $valid = 0;
