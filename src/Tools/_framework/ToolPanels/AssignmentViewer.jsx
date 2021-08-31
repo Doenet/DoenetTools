@@ -8,7 +8,7 @@ import {
   // useRecoilState,
   // useSetRecoilState,
 } from 'recoil';
-import { searchParamAtomFamily } from '../NewToolRoot';
+import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
 import { 
   itemHistoryAtom, 
   fileByContentId, 
@@ -93,11 +93,20 @@ export default function AssignmentViewer(){
       showCorrectness,
       showFeedback,
       showHints,
-      showSolution
+      showSolution,
+      proctorMakesAvailable
     } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
     let solutionDisplayMode = "button";
     if (!showSolution){
       solutionDisplayMode = "none";
+    }
+    if (proctorMakesAvailable){
+    const { page } = await snapshot.getPromise((pageToolViewAtom));
+      if (page !== 'exam'){
+        setStage('Problem');
+        setMessage('Assignment only available in a proctored setting.')
+        return;
+      }
     }
     //TODO: test if assignment should be shown here
 
