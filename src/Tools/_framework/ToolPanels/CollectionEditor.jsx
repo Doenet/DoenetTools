@@ -69,16 +69,15 @@ export default function CollectionEditor() {
   useEffect(() => {
     const entries = [];
     for (let key in assignedEntriesData) {
-      const { collectionDoenetId, entryDoenetId, entryId, variant } =
+      const { doenetId, entryId, entryDoenetId, entryVariant } =
         assignedEntriesData[key];
-      console.log(variant);
       entries.push(
         <Suspense key={entryId}>
           <CollectionEntry
-            collectionDoenetId={collectionDoenetId}
+            collectionDoenetId={doenetId}
             doenetId={entryDoenetId}
             entryId={entryId}
-            variant={variant}
+            variant={entryVariant}
             assigned
           />
         </Suspense>,
@@ -100,16 +99,18 @@ export default function CollectionEditor() {
       if (
         folderInfoObj.contentsDictionary[key].itemType === itemType.DOENETML
       ) {
-        const { doenetId } = folderInfoObj.contentsDictionary[key];
-        initEntryByDoenetId(doenetId);
-        entries.push(
-          <Suspense key={key}>
-            <CollectionEntry
-              doenetId={doenetId}
-              collectionDoenetId={folderInfoObj.folderInfo.doenetId}
-            />
-          </Suspense>,
-        );
+        const { doenetId, isReleased } = folderInfoObj.contentsDictionary[key];
+        if (isReleased) {
+          initEntryByDoenetId(doenetId);
+          entries.push(
+            <Suspense key={key}>
+              <CollectionEntry
+                collectionDoenetId={folderInfoObj.folderInfo.doenetId}
+                doenetId={doenetId}
+              />
+            </Suspense>,
+          );
+        }
       }
     }
     setAvailableEntries(entries);
@@ -125,8 +126,8 @@ export default function CollectionEditor() {
         }}
       >
         <p>
-          No DoenetML files were found in this Colletion. Please add files from
-          the Content screen to continue.
+          No Relesed DoenetML files were found in this Colletion. Please add
+          files from the Content screen to continue.
         </p>
       </div>
     );
@@ -164,15 +165,13 @@ const entryInfoByDoenetId = atomFamily({
           const resp = await axios.get('/api/findDriveIdFolderId.php', {
             params: { doenetId },
           });
-          if (resp.status === 200) {
-            const folderInfo = await get(
-              folderDictionaryFilterSelector({
-                driveId: resp.data.driveId,
-                folderId: resp.data.parentFolderId,
-              }),
-            );
-            return folderInfo.contentsDictionaryByDoenetId[doenetId] ?? {};
-          }
+          const folderInfo = await get(
+            folderDictionaryFilterSelector({
+              driveId: resp.data.driveId,
+              folderId: resp.data.parentFolderId,
+            }),
+          );
+          return folderInfo.contentsDictionaryByDoenetId[doenetId] ?? {};
         } catch (error) {
           console.error(error);
           return {};
@@ -190,7 +189,7 @@ const assignedEntiresInfo = atomFamily({
         const resp = await axios.get('/api/loadCollection.php', {
           params: { doenetId },
         });
-        return resp.data.entries;
+        return resp.data.entries ?? [];
       } catch (error) {
         console.error(error);
         return [];
@@ -243,50 +242,51 @@ function CollectionEntry({
           const entryId = nanoid();
           axios
             .post('/api/addCollectionEntry.php', {
-              collectionDoenetId,
-              entryDoenetId: doenetId,
-              label: entryInfo.label,
+              doenetId: collectionDoenetId,
               entryId,
+              entryDoenetId: doenetId,
               //TODO: ref the selected option;
-              variant: variants[0],
+              entryVariant: variants[0],
             })
-            .then((resp) => {
-              if (resp.status === 200) {
-                setAssignedEntries((was) => [
-                  ...was,
-                  {
-                    collectionDoenetId,
-                    entryDoenetId: doenetId,
-                    entryId,
-                    variant: variants[0],
-                  },
-                ]);
-              }
+            .then(() => {
+              setAssignedEntries((was) => [
+                ...was,
+                {
+                  doenetId: collectionDoenetId,
+                  entryId,
+                  entryDoenetId: doenetId,
+                  entryVariant: variants[0],
+                },
+              ]);
+            })
+            .catch((error) => {
+              console.error(error);
             });
         }}
         removeEntryFromAssignment={() => {
           axios
             .post('/api/removeCollectionEntry.php', { entryId })
-            .then((resp) => {
+            .then(() => {
               //TODO: failure toast??
-              if (resp.status === 200) {
-                setAssignedEntries((was) =>
-                  was.filter((entry) => entry.entryId !== entryId),
-                );
-              }
+              setAssignedEntries((was) =>
+                was.filter((entry) => entry.entryId !== entryId),
+              );
+            })
+            .catch((error) => {
+              console.error(error);
             });
         }}
         onVariantSelect={(newSelectedVariant) => {
           axios
             .post('/api/updateCollectionEntryVariant.php', {
               entryId,
-              variant: newSelectedVariant,
+              entryVariant: newSelectedVariant,
             })
             .then(() => {
               setAssignedEntries((was) =>
                 was.map((entry) => {
                   if (entry.entryId === entryId) {
-                    return { ...entry, variant: newSelectedVariant };
+                    return { ...entry, entryVariant: newSelectedVariant };
                   } else {
                     return entry;
                   }
@@ -329,6 +329,11 @@ function CollectionEntryDisplayLine({
               onChange={(e) => {
                 e.stopPropagation();
                 onVariantSelect?.(e.target.value);
+              }}
+              onBlur={(e) => {
+                if (e.target.value !== selectedVariant) {
+                  onVariantSelect?.(e.target.value);
+                }
               }}
             >
               {selectOptions}

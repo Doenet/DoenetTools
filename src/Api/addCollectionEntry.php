@@ -19,22 +19,22 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 if (!array_key_exists('entryId', $_POST)) {
     $success = false;
     $message = 'Missing entryId';
-} elseif (!array_key_exists('variant', $_POST)) {
-    $success = false;
-    $message = 'Missing variant';
 } elseif (!array_key_exists('entryDoenetId', $_POST)) {
     $success = false;
     $message = 'Missing entryDoenetId';
-} elseif (!array_key_exists('collectionDoenetId', $_POST)) {
+} elseif (!array_key_exists('entryVariant', $_POST)) {
     $success = false;
-    $message = 'Missing collectionDoenetId';
+    $message = 'Missing entryVariant';
+} elseif (!array_key_exists('doenetId', $_POST)) {
+    $success = false;
+    $message = 'Missing doenetId';
 }
 
 if ($success) {
-    $doenetId = mysqli_real_escape_string($conn, $_POST['collectionDoenetId']);
-    $entryDoenetId = mysqli_real_escape_string($conn, $_POST['entryDoenetId']);
+    $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
     $entryId = mysqli_real_escape_string($conn, $_POST['entryId']);
-    $variant = mysqli_real_escape_string($conn, $_POST['variant']);
+    $entryDoenetId = mysqli_real_escape_string($conn, $_POST['entryDoenetId']);
+    $entryVariant = mysqli_real_escape_string($conn, $_POST['entryVariant']);
 
     //get driveId from doenetId
     //TODO: should be a sql join query with userId
@@ -81,10 +81,23 @@ if ($success) {
     }
 
     if ($success) {
+        //retrive contentId from assignment table
+        $sql = "
+            SELECT contentId
+            FROM assignment
+            WHERE doenetId = '$doenetId'
+        ";
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $entryContentId = $row['contentId'];
+        } else {
+            //todo this should error?
+        }
         $sql = "
             INSERT INTO collection
-            (collectionDoenetId, entryDoenetId, entryId, variant)
-            VALUES ('$doenetId', '$entryDoenetId','$entryId','$variant')
+            (doenetId, entryId, entryDoenetId, entryContentId, entryVariant)
+            VALUES ('$doenetId', '$entryId', '$entryDoenetId', '$entryContentId', '$entryVariant')
         ";
         $result = $conn->query($sql);
 

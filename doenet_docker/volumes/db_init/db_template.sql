@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2021-08-29 20:32:50 +0000
+# Generation Time: 2021-08-31 14:26:49 +0000
 # ************************************************************
 
 
@@ -67,12 +67,15 @@ DROP TABLE IF EXISTS `collection`;
 
 CREATE TABLE `collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `collectionDoenetId` char(21) DEFAULT '',
+  `doenetId` char(21) DEFAULT '',
+  `entryId` char(21) NOT NULL,
   `entryDoenetId` char(21) NOT NULL DEFAULT '',
-  `entryId` char(21) NOT NULL DEFAULT '',
-  `variant` text NOT NULL,
+  `entryContentId` char(64) NOT NULL DEFAULT '',
+  `entryVariant` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 
 # Dump of table collection_groups
 # ------------------------------------------------------------
@@ -88,6 +91,8 @@ CREATE TABLE `collection_groups` (
   `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 
 # Dump of table content
 # ------------------------------------------------------------
