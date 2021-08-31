@@ -21,6 +21,12 @@ export default class Ref extends InlineComponent {
       public: true,
       forRenderer: true
     };
+    attributes.createButton = {
+      createComponentOfType: "boolean",
+      createStateVariable: "createButton",
+      defaultValue: false,
+      forRenderer: true,
+    };
     return attributes;
   }
 
