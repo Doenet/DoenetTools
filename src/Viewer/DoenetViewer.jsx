@@ -227,6 +227,7 @@ class DoenetViewerChild extends Component {
       this.savedUserAssignmentAttemptNumber !== this.attemptNumber
     ) {
       // console.log(">>>>savedUserAssignmentAttemptNumber!!!")
+      
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
         weights: this.core.scoredItemWeights,
@@ -235,8 +236,8 @@ class DoenetViewerChild extends Component {
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
         generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
         itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
-      }).then((resp) => {
-        // console.log(">>>>resp",resp.data)
+      }).then(({data}) => {
+        // console.log(">>>>initAssignmentAttempt data",data)
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
@@ -341,7 +342,7 @@ class DoenetViewerChild extends Component {
       }
       axios.post('/api/saveCreditForItem.php', payload2)
         .then(resp => {
-          // console.log('>>>>resp', resp.data);
+          console.log('>>>>resp', resp.data);
 
           //TODO: need type warning (red but doesn't hang around)
           if (resp.data.viewedSolution) {
