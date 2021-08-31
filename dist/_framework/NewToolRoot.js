@@ -76,7 +76,8 @@ export default function ToolRoot() {
     supportPanelIndex: 0,
     hasNoMenuPanel: false,
     headerControls: [],
-    headerControlsPositions: []
+    headerControlsPositions: [],
+    displayProfile: true
   });
   let mainPanel = null;
   let supportPanel = /* @__PURE__ */ React.createElement(SupportPanel, {
@@ -103,7 +104,8 @@ export default function ToolRoot() {
     AssignmentViewer: lazy(() => import("./ToolPanels/AssignmentViewer.js")),
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
     Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
-    CollectionEditor: lazy(() => import("./ToolPanels/CollectionEditor.js"))
+    CollectionEditor: lazy(() => import("./ToolPanels/CollectionEditor.js")),
+    ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js"))
   }).current;
   const LazyControlObj = useRef({
     BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
@@ -165,19 +167,21 @@ export default function ToolRoot() {
       menuPanelCap: toolRootMenusAndPanels.menuPanelCap,
       menusTitles: toolRootMenusAndPanels.menusTitles,
       currentMenus: toolRootMenusAndPanels.currentMenus,
-      initOpen: toolRootMenusAndPanels.menusInitOpen
+      initOpen: toolRootMenusAndPanels.menusInitOpen,
+      displayProfile: toolRootMenusAndPanels.displayProfile
     });
   }
-  let profileInMainPanel = !menusOpen;
+  let openMenuButton = !menusOpen;
   if (toolRootMenusAndPanels.hasNoMenuPanel) {
-    profileInMainPanel = false;
+    openMenuButton = false;
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
     main: /* @__PURE__ */ React.createElement(MainPanel, {
       headerControlsPositions,
       headerControls,
       setMenusOpen,
-      displayProfile: profileInMainPanel
+      openMenuButton,
+      displayProfile: toolRootMenusAndPanels.displayProfile
     }, mainPanel),
     support: supportPanel
   })), /* @__PURE__ */ React.createElement(Toast, null), /* @__PURE__ */ React.createElement(MemoizedRootController, {
@@ -201,6 +205,27 @@ let navigationObj = {
       hasNoMenuPanel: true
     }
   },
+  exam: {
+    default: {
+      defaultTool: "chooseLearner"
+    },
+    chooseLearner: {
+      pageName: "chooseLearner",
+      currentMainPanel: "ChooseLearnerPanel",
+      displayProfile: false
+    },
+    assessment: {
+      pageName: "Assessment",
+      menuPanelCap: "AssignmentInfoCap",
+      currentMainPanel: "AssignmentViewer",
+      currentMenus: ["TimerMenu"],
+      menusTitles: ["Time Remaining"],
+      menusInitOpen: [true],
+      headerControls: ["AssignmentNewAttempt"],
+      headerControlsPositions: ["Left"],
+      displayProfile: false
+    }
+  },
   course: {
     default: {
       defaultTool: "courseChooser"
@@ -209,9 +234,9 @@ let navigationObj = {
       pageName: "Assignment",
       menuPanelCap: "AssignmentInfoCap",
       currentMainPanel: "AssignmentViewer",
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
+      currentMenus: ["TimerMenu"],
+      menusTitles: ["Time Remaining"],
+      menusInitOpen: [true],
       headerControls: ["AssignmentBreadCrumb", "AssignmentNewAttempt"],
       headerControlsPositions: ["Left", "Right"]
     },
@@ -220,7 +245,7 @@ let navigationObj = {
       currentMainPanel: "DriveCards",
       currentMenus: ["CreateCourse"],
       menusTitles: ["Create Course"],
-      menusInitOpen: [true, false],
+      menusInitOpen: [true],
       headerControls: ["ChooserBreadCrumb"],
       headerControlsPositions: ["Left"],
       onLeave: "CourseChooserLeave"
@@ -325,10 +350,10 @@ let navigationObj = {
     },
     enrollment: {
       pageName: "Enrollment",
-      currentMenus: ["LoadEnrollment", "ManualEnrollment"],
       menuPanelCap: "DriveInfoCap",
-      menusTitles: ["Load", "Manual"],
-      menusInitOpen: [false, false],
+      currentMenus: ["LoadEnrollment"],
+      menusTitles: ["Import Learners"],
+      menusInitOpen: [false],
       currentMainPanel: "Enrollment",
       supportPanelOptions: [],
       supportPanelTitles: [],
@@ -540,9 +565,12 @@ function RootController(props) {
       setOnLeaveStr((was) => ({str: leaveComponentName.current, updateNum: was.updateNum + 1}));
     }
     leaveComponentName.current = null;
-    if (nextMenusAndPanels.onLeave) {
+    if (nextMenusAndPanels && nextMenusAndPanels.onLeave) {
       leaveComponentName.current = nextMenusAndPanels.onLeave;
     }
+  }
+  if (nextMenusAndPanels && nextMenusAndPanels.displayProfile === void 0) {
+    nextMenusAndPanels.displayProfile = true;
   }
   if (nextMenusAndPanels && JSON.stringify(nextPageToolView) !== JSON.stringify(lastPageToolView.current)) {
     backPageToolView.current = lastPageToolView.current;

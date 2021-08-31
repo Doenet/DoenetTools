@@ -178,7 +178,8 @@ export default class Point extends DoenetRenderer {
       this.actions.movePoint({
         x: pointCoords[0],
         y: pointCoords[1],
-        transient: true
+        transient: true,
+        skippable: true
       });
     }
   }

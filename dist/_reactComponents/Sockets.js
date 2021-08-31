@@ -104,11 +104,15 @@ export default function useSockets(nsp) {
         assignment_isPublished: "0"
       };
     }
-    const resp = await axios.post("/api/addItem.php", payload);
-    if (resp.data.success) {
-      acceptAddItem(payload);
-    } else {
-      addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+    try {
+      const resp = await axios.post("/api/addItem.php", payload);
+      if (resp.data.success) {
+        acceptAddItem(payload);
+      } else {
+        addToast(`Add item error: ${resp.data.message}`, toastType.ERROR);
+      }
+    } catch (error) {
+      console.error(error);
     }
   });
   const deleteItem = useRecoilCallback(() => async ({driveIdFolderId, driveInstanceId = null, itemId, label}) => {
@@ -119,13 +123,17 @@ export default function useSockets(nsp) {
       label,
       driveInstanceId
     };
-    const resp = await axios.get("/api/deleteItem.php", {
-      params: payload
-    });
-    if (resp.data.success) {
-      acceptDeleteItem(payload);
-    } else {
-      addToast(`Delete item error: ${resp.data.message}`, toastType.ERROR);
+    try {
+      const resp = await axios.get("/api/deleteItem.php", {
+        params: payload
+      });
+      if (resp.data.success) {
+        acceptDeleteItem(payload);
+      } else {
+        addToast(`Delete item error: ${resp.data.message}`, toastType.ERROR);
+      }
+    } catch (error) {
+      console.log(error);
     }
   });
   const moveItems = useRecoilCallback(({snapshot, set}) => async ({targetDriveId, targetFolderId, index}) => {
@@ -171,10 +179,13 @@ export default function useSockets(nsp) {
         if (!editedCache[gItem.driveId])
           editedCache[gItem.driveId] = {};
         editedCache[gItem.driveId][gItem.parentFolderId] = newSourceFInfo;
+        newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId);
       } else {
-        newDestinationFolderObj["contentIds"]["defaultOrder"] = newDestinationFolderObj["contentIds"]["defaultOrder"].filter((itemId) => itemId !== gItem.itemId);
+        newDestinationFolderObj.contentIds.defaultOrder.splice(insertIndex, 0, dragShadowId);
+        newDestinationFolderObj.contentIds.defaultOrder = newDestinationFolderObj.contentIds.defaultOrder.filter((itemId) => itemId !== gItem.itemId);
+        newDestinationFolderObj.contentIds.defaultOrder.splice(newDestinationFolderObj.contentIds.defaultOrder.indexOf(dragShadowId), 1, gItem.itemId);
       }
-      const cleanDefaultOrder = newDestinationFolderObj["contentIds"]["defaultOrder"].filter((itemId) => itemId !== dragShadowId);
+      const cleanDefaultOrder = newDestinationFolderObj.contentIds.defaultOrder.filter((itemId) => itemId !== dragShadowId);
       newSortOrder = getLexicographicOrder({
         index: insertIndex,
         nodeObjs: newDestinationFolderObj.contentsDictionary,
@@ -182,7 +193,6 @@ export default function useSockets(nsp) {
       });
       newDestinationFolderObj["contentsDictionary"][gItem.itemId].sortOrder = newSortOrder;
       newDestinationFolderObj["contentsDictionary"][gItem.itemId].parentFolderId = targetFolderId;
-      newDestinationFolderObj["contentIds"]["defaultOrder"].splice(insertIndex, 0, gItem.itemId);
       if (oldSourceFInfo["contentsDictionary"][gItem.itemId].itemType === "Folder") {
         const gItemFolderInfoObj = await snapshot.getPromise(folderDictionary({
           driveId: gItem.driveId,
@@ -245,11 +255,15 @@ export default function useSockets(nsp) {
       selectedItemIds,
       selectedItemChildrenIds: driveIdChanged
     };
-    const resp = await axios.post("/api/moveItems.php", payload);
-    if (resp.data.success) {
-      acceptMoveItems(payload, newDestinationFolderObj, editedCache);
-    } else {
-      addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
+    try {
+      const resp = await axios.post("/api/moveItems.php", payload);
+      if (resp.data.success) {
+        acceptMoveItems(payload, newDestinationFolderObj, editedCache);
+      } else {
+        addToast(`Move item(s) error: ${resp.data.message}`, toastType.ERROR);
+      }
+    } catch (error) {
+      console.log(error);
     }
   });
   const renameItem = useRecoilCallback(() => async ({driveIdFolderId, itemId, itemType: itemType2, newLabel}) => {
@@ -261,13 +275,17 @@ export default function useSockets(nsp) {
       label: newLabel,
       type: itemType2
     };
-    const resp = await axios.get("/api/updateItem.php", {
-      params: payload
-    });
-    if (resp.data.success) {
-      acceptRenameItem(payload);
-    } else {
-      addToast(`Rename item error: ${resp.data.message}`, toastType.ERROR);
+    try {
+      const resp = await axios.get("/api/updateItem.php", {
+        params: payload
+      });
+      if (resp.data.success) {
+        acceptRenameItem(payload);
+      } else {
+        addToast(`Rename item error: ${resp.data.message}`, toastType.ERROR);
+      }
+    } catch (error) {
+      console.log(error);
     }
   });
   const copyItems = useRecoilCallback(({snapshot, set}) => async ({items = [], targetDriveId, targetFolderId, index}) => {
@@ -577,7 +595,7 @@ function useAcceptBindings() {
       driveId: payload.destinationDriveId,
       folderId: payload.destinationItemId
     }), true);
-  });
+  }, []);
   const acceptRenameItem = useRecoilCallback(({snapshot, set}) => async ({driveId, folderId, itemId, label, type}) => {
     const fInfo = await snapshot.getPromise(folderDictionary({driveId, folderId}));
     let newFInfo = {...fInfo};

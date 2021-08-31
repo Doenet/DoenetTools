@@ -221,9 +221,14 @@ export default class CobwebPolyline extends DoenetRenderer {
     } else if (this.draggedPoint !== i) {
       return;
     }
-    let newCoords = {};
-    newCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-    this.actions.movePolyline(newCoords, transient, {vertex: i});
+    let pointCoords = {};
+    pointCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
+    this.actions.movePolyline({
+      pointCoords,
+      transient,
+      skippable: transient,
+      sourceInformation: {vertex: i}
+    });
   }
   render() {
     if (this.props.board) {

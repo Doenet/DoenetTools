@@ -227,6 +227,7 @@ class DoenetViewerChild extends Component {
       this.savedUserAssignmentAttemptNumber !== this.attemptNumber
     ) {
       // console.log(">>>>savedUserAssignmentAttemptNumber!!!")
+      
       axios.post('/api/initAssignmentAttempt.php', {
         doenetId: this.props.doenetId,
         weights: this.core.scoredItemWeights,
@@ -235,8 +236,8 @@ class DoenetViewerChild extends Component {
         requestedVariant: JSON.stringify(this.requestedVariant, serializedComponentsReplacer),
         generatedVariant: JSON.stringify(this.generatedVariant, serializedComponentsReplacer),
         itemVariantInfo: this.itemVariantInfo.map(x => JSON.stringify(x, serializedComponentsReplacer)),
-      }).then((resp) => {
-        // console.log(">>>>resp",resp.data)
+      }).then(({data}) => {
+        // console.log(">>>>initAssignmentAttempt data",data)
 
         this.savedUserAssignmentAttemptNumber = this.attemptNumber; //In callback
       })
@@ -347,7 +348,7 @@ class DoenetViewerChild extends Component {
           if (resp.data.viewedSolution) {
             this.props.toast('No credit awarded since solution was viewed.', toastType.INFO)
           }
-          if (resp.data.timerExpired) {
+          if (resp.data.timeExpired) {
             this.props.toast('No credit awarded since the time allowed has expired.', toastType.INFO)
           }
           if (resp.data.pastDueDate) {

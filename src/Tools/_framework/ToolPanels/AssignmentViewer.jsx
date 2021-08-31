@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DoenetViewer, { serializedComponentsReviver } from '../../../Viewer/DoenetViewer';
 import { 
   useRecoilValue, 
@@ -22,10 +22,10 @@ import axios from 'axios';
 
 
 
-const assignmentDoenetMLContentIdAtom = atom({
-  key:"assignmentDoenetMLContentIdAtom",
-  default:{isAssigned:null,doenetML:null,contentId:null}
-})
+// const assignmentDoenetMLContentIdAtom = atom({
+//   key:"assignmentDoenetMLContentIdAtom",
+//   default:{isAssigned:null,doenetML:null,contentId:null}
+// })
 
 
 //key is doenetId
@@ -39,61 +39,13 @@ export const variantsAndAttemptsByDoenetId = atomFamily({
   },
 })
 
-export default function AssignmentViewer(props){
-  console.log(">>>===AssignmentViewer")
-  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
-  const {isAssigned, doenetML, contentId} = useRecoilValue(assignmentDoenetMLContentIdAtom);
-
-  const variantAttemptInfo = useRecoilValue(variantsAndAttemptsByDoenetId(paramDoenetId))
-  let variantOfCurrentAttempt = variantAttemptInfo.usersVariantAttempts?.[variantAttemptInfo.numberOfCompletedAttempts];
-  let attemptNumber = variantAttemptInfo.numberOfCompletedAttempts + 1;
-  let stage = useRef('Start');
-  let doenetIdOfdoenetML = useRef('');
-  const assignmentSettings = useRecoilValue(loadAssignmentSelector(paramDoenetId));
-    // console.log(">>>>assignmentSettings",assignmentSettings)
-  // console.log(">>>>AssignmentViewer variantAttemptInfo",variantAttemptInfo)
-  // console.log(">>>>variantOfCurrentAttempt",variantOfCurrentAttempt)
-  // console.log(">>>>attemptNumber",attemptNumber)
-
-  const initDoenetML = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
-
-    //Find Assigned ContentId 
-    //Use isReleased as isAssigned for now 
-    //TODO: refactor isReleased to isAssigned
-    let contentId = null;
-    let isAssigned = false;
-    for (let version of versionHistory.named){
-      if (version.isReleased === "1"){
-        isAssigned = true;
-        contentId = version.contentId;
-        break;
-      }
-    }
-    
-    let response = await snapshot.getPromise(fileByContentId(contentId));
-    if (typeof response === "object"){
-      response = response.data;
-    }
-    const doenetML = response;
-    set(assignmentDoenetMLContentIdAtom,{isAssigned,doenetML,contentId})
-    doenetIdOfdoenetML.current = doenetId;
-  },[])
-
-  // const updateAssignmentSettings = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-  //   console.log(">>>>updateAssignmentSettings",doenetId)
-  //   const assignmentSettings = await snapshot.getPromise((loadAssignmentSelector(doenetId)));
-  //   console.log(">>>>assignmentSettings",assignmentSettings)
-  //   //Find numberOfCompletedAttempts
-  //   //Find usersVariantAttempts
-  // },[]);
-
   function randomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-  //Randomly pick next variant
+
+//Randomly pick next variant
   //If all were picked then start random picks over
   function pushRandomVariantOfRemaining({previous,from}){
     let usersVariantAttempts = [...previous]
@@ -112,110 +64,141 @@ export default function AssignmentViewer(props){
     return usersVariantAttempts;
   }
 
-  const setVariantsFromDoenetML = useRecoilCallback(({snapshot,set})=> async ({allPossibleVariants})=>{
+export default function AssignmentViewer(){
+  console.log(">>>===AssignmentViewer")
+  let [stage,setStage] = useState('Initializing');
+  let [message,setMessage] = useState('');
+  const [{
+    requestedVariant,
+    attemptNumber,
+    showCorrectness,
+    showFeedback,
+    showHints,
+    doenetML,
+    doenetId,
+    solutionDisplayMode,
+  },setLoad] = useState({});
+  let startedInitOfDoenetId = useRef(null);
+
+  console.log(">>>>attemptNumber",attemptNumber)
+  const initializeValues = useRecoilCallback(({snapshot})=> async ()=>{
+    let doenetId = await snapshot.getPromise(searchParamAtomFamily('doenetId'));
+    //Prevent duplicate inits
+    if (startedInitOfDoenetId.current === doenetId){
+      return;
+    }
+    startedInitOfDoenetId.current = doenetId;
+
+    const {
+      showCorrectness,
+      showFeedback,
+      showHints,
+      showSolution
+    } = await snapshot.getPromise(loadAssignmentSelector(doenetId));
+    let solutionDisplayMode = "button";
+    if (!showSolution){
+      solutionDisplayMode = "none";
+    }
+    //TODO: test if assignment should be shown here
+
+    const versionHistory = await snapshot.getPromise((itemHistoryAtom(doenetId)));
+
+    //Find Assigned ContentId 
+    //Use isReleased as isAssigned for now 
+    //TODO: refactor isReleased to isAssigned
+
+    //Set contentId and isAssigned
+    let contentId = null;
+    let isAssigned = false;
+    for (let version of versionHistory.named){
+      if (version.isReleased === "1"){
+        isAssigned = true;
+        contentId = version.contentId;
+        break;
+      }
+    }
+
+    if (!isAssigned){ 
+      setStage('Problem');
+      setMessage('Assignment is not assigned.')
+    }
     
-    const was = await snapshot.getPromise((variantsAndAttemptsByDoenetId(paramDoenetId)));
-    let newObj = {...was}
-    newObj.assignedContentId = contentId;
-    newObj.variantsFromDoenetMLDictionary = {...was.variantsFromDoenetMLDictionary}
-    newObj.variantsFromDoenetMLDictionary[contentId] = [...allPossibleVariants];
-    //If no attempts stored load variants of user's past attempts
+    //Set doenetML
+    let response = await snapshot.getPromise(fileByContentId(contentId));
+    if (typeof response === "object"){
+      response = response.data;
+    }
+    const doenetML = response;
 
-    if (newObj.usersVariantAttempts.length === 0){
-
+    //Find allPossibleVariants
+    returnAllPossibleVariants({doenetML,callback:setVariantsFromDoenetML})
+    async function setVariantsFromDoenetML({allPossibleVariants}){
+      //Find attemptNumber 
       const { data } = await axios.get('/api/loadTakenVariants.php', {
-        params: { doenetId:paramDoenetId },
+        params: { doenetId },
       })
+      let usersVariantAttempts = [];
+
+      let missingDataFlag = false;
       for (let variant of data.variants){
         let obj = JSON.parse(variant, serializedComponentsReviver)
-        newObj.usersVariantAttempts.push(obj.name)
+        if (obj){
+          usersVariantAttempts.push(obj.name)
+        }else{
+          missingDataFlag = true;
+        }
       }
-      newObj.numberOfCompletedAttempts = newObj.usersVariantAttempts.length - 1;
-      if (newObj.numberOfCompletedAttempts === -1){
-        newObj.numberOfCompletedAttempts = 0;
+      let numberOfCompletedAttempts = data.attemptNumbers.length - 1;
+      if (numberOfCompletedAttempts === -1){
+        numberOfCompletedAttempts = 0;
       }
-    }
-    let previous = newObj.usersVariantAttempts;
-    if (newObj.numberOfCompletedAttempts > previous.length - 1){
-      newObj.usersVariantAttempts = pushRandomVariantOfRemaining({previous,from:newObj.variantsFromDoenetMLDictionary[contentId]});
-    }
-    set(variantsAndAttemptsByDoenetId(paramDoenetId),newObj)
-    
-  },[paramDoenetId,contentId]);
+      let attemptNumber = numberOfCompletedAttempts + 1;
+      //Find requestedVariant
+      usersVariantAttempts = pushRandomVariantOfRemaining({previous:[...usersVariantAttempts],from:allPossibleVariants});
+      let requestedVariant = {name:usersVariantAttempts[numberOfCompletedAttempts]};
+      // console.log(">>>>missingDataFlag",missingDataFlag)
+      // if (missingDataFlag){
+      //   const { data } = await axios.post('/api/saveMissingData.php', {
+      //       doenetId,
+      //       attemptNumber,
+      //       contentId
+      //   })
+      //   console.log(">>>>missingDataFlag data",data)
+      // }
 
-  //Define usersVariantAttempts, assignedContentId and variantsFromDoenetMLDictionary for contentId
-  const updateVariantInfo = useRecoilCallback(({snapshot})=> async (doenetId,contentId,doenetML)=>{
-    const variantAttemptInfo = await snapshot.getPromise((variantsAndAttemptsByDoenetId(doenetId)));
-    if (!variantAttemptInfo.variantsFromDoenetMLDictionary[contentId]){
-      returnAllPossibleVariants({doenetML,callback:setVariantsFromDoenetML})
-    }else{
-      const allPossibleVariants = variantAttemptInfo.variantsFromDoenetMLDictionary[variantAttemptInfo.assignedContentId]
-      setVariantsFromDoenetML({allPossibleVariants})
+      setLoad({
+        requestedVariant,
+        attemptNumber,
+        showCorrectness,
+        showFeedback,
+        showHints,
+        doenetML,
+        doenetId,
+        solutionDisplayMode,
+      });
+      setStage('Ready')
     }
-  },[setVariantsFromDoenetML]);
 
-  // console.log(`>>>>stage -${stage.current}-`)
-  // console.log(`>>>>paramDoenetId |${paramDoenetId}|`)
+  },[stage]);
 
-  if (stage.current === 'Start'){
-    stage.current = 'Wait for paramDoenetId'
+  console.log(`>>>>stage -${stage}-`)
+  if (stage === 'Initializing'){
+    initializeValues();
     return null;
-  }else if (stage.current === 'Wait for paramDoenetId'){
-    if (paramDoenetId !== ''){
-      stage.current = 'Wait for DoenetML'
-    initDoenetML(paramDoenetId)
-    }
-    return null;
-  }else if (stage.current === 'Wait for DoenetML'){
-      if (isAssigned){
-        stage.current = 'Wait for Variant'
-    updateVariantInfo(paramDoenetId,contentId,doenetML)
-      }
-    return null;
-  }else if (stage.current === 'Wait for Variant'){
-
-    if (variantOfCurrentAttempt){
-      stage.current = 'Wait for New Attempt'
-  }else{
-        return null;
-    }
-  }else if (stage.current === 'Wait for New Attempt'){
-    if (!variantOfCurrentAttempt){
-      stage.current = 'Wait for Variant'
-      updateVariantInfo(paramDoenetId,contentId,doenetML)
-      return null;
-    }
+  }else if(stage === 'Problem'){
+    return <h1>{message}</h1>
   }
 
-  if (!isAssigned){
-    return <h1>Content is Not Assigned.</h1>
-  }
-
-
-  //Wait for paramDoenetId update
-  if (doenetIdOfdoenetML.current !== paramDoenetId){
-    // console.log(`>>>>pd |${paramDoenetId}|`)
-    // console.log(`>>>>dd |${doenetIdOfdoenetML.current}|`)
-    return null;
-  }
-
-  let solutionDisplayMode = "button";
-  if (!assignmentSettings.showSolution){
-    solutionDisplayMode = "none";
-  }
-
-  const requestedVariant = {name: variantOfCurrentAttempt}
-  return <div style={props.style}>
-    <DoenetViewer
-    key={"doenetviewer"}
+  return <DoenetViewer
+    key={`doenetviewer${doenetId}`}
     doenetML={doenetML}
-    doenetId={paramDoenetId}
+    doenetId={doenetId}
     flags={{
-      showCorrectness: assignmentSettings.showCorrectness,
+      showCorrectness:showCorrectness,
       readOnly: false,
       solutionDisplayMode: solutionDisplayMode,
-      showFeedback: assignmentSettings.showFeedback,
-      showHints: assignmentSettings.showHints,
+      showFeedback:showFeedback,
+      showHints:showHints,
       isAssignment: true,
     }}
     attemptNumber={attemptNumber}
@@ -227,6 +210,5 @@ export default function AssignmentViewer(props){
     requestedVariant={requestedVariant}
     // generatedVariantCallback={variantCallback}
     /> 
-
-  </div>
 }
+  

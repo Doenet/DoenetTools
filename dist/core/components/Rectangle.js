@@ -1121,14 +1121,14 @@ export default class Rectangle extends Polygon {
     return stateVariableDefinitions;
   }
 
-  movePolygon(pointcoordsObject) {
+  movePolygon({ pointCoords, transient, sourceInformation }) {
     let updateInstructions = [];
 
     let vertexComponents = {};
 
-    for (let ind in pointcoordsObject) {
-      vertexComponents[ind + ",0"] = me.fromAst(pointcoordsObject[ind][0]);
-      vertexComponents[ind + ",1"] = me.fromAst(pointcoordsObject[ind][1]);
+    for (let ind in pointCoords) {
+      vertexComponents[ind + ",0"] = me.fromAst(pointCoords[ind][0]);
+      vertexComponents[ind + ",1"] = me.fromAst(pointCoords[ind][1]);
     }
     updateInstructions.push({
       updateType: "updateValue",
@@ -1137,13 +1137,13 @@ export default class Rectangle extends Polygon {
       value: vertexComponents
     });
 
-    if (Object.keys(pointcoordsObject).length === 1) {
+    if (Object.keys(pointCoords).length === 1) {
       // When dragging a rectangle corner, add additional instructions
       // if they are needed to ensure the opposite corner doesn't move
 
-      let ind = Number(Object.keys(pointcoordsObject)[0]);
-      let vertexX = me.fromAst(pointcoordsObject[ind][0]);
-      let vertexY = me.fromAst(pointcoordsObject[ind][1]);
+      let ind = Number(Object.keys(pointCoords)[0]);
+      let vertexX = me.fromAst(pointCoords[ind][0]);
+      let vertexY = me.fromAst(pointCoords[ind][1]);
 
       let oppositeInd = (ind + 2) % 4;
       let oppositeX = this.stateValues.vertices[oppositeInd][0];
@@ -1214,8 +1214,28 @@ export default class Rectangle extends Polygon {
 
     // console.log("movePolygon updateInstructions", updateInstructions);
 
-    this.coreFunctions.requestUpdate({
-      updateInstructions
-    });
+
+    if (transient) {
+      return this.coreFunctions.performUpdate({
+        updateInstructions,
+        transient
+      });
+    } else {
+      return this.coreFunctions.performUpdate({
+        updateInstructions,
+        event: {
+          verb: "interacted",
+          object: {
+            componentName: this.componentName,
+            componentType: this.componentType,
+          },
+          result: {
+            pointCoordinates: pointCoords
+          }
+        },
+      });
+
+      
+    }
   }
 }

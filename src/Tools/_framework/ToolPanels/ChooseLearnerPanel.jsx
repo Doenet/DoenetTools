@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useRecoilCallback } from 'recoil';
 import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput";
 import axios from 'axios';
 import { useToast, toastType } from '../../../Tools/_framework/Toast';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-
+// import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
+import { variantsAndAttemptsByDoenetId } from '../ToolPanels/AssignmentViewer';
 
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -15,6 +16,20 @@ export default function ChooseLearnerPanel(props) {
   let [learners,setLearners] = useState([]);
   let [choosenLearner,setChoosenLearner] = useState(null);
   const addToast = useToast();
+
+  const newAttempt = useRecoilCallback(({set,snapshot})=> async (doenetId,code,userId)=>{
+
+      const { data } = await axios.get('/api/incrementAttemptNumber.php', {
+        params: { doenetId, code, userId },
+      })
+      // console.log(">>>>data",data)
+      // console.log(">>>>",doenetId,code,userId)
+   
+      location.href = `/api/examjwt.php?userId=${encodeURIComponent(
+          choosenLearner.userId,
+        )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(code)}`;
+    
+  })
 
   console.log(`>>>>stage '${stage}'`)
 
@@ -136,8 +151,8 @@ export default function ChooseLearnerPanel(props) {
     >
       <div>
       <div><b>Is this you?</b></div>
-      <div>Name {choosenLearner.firstName} {choosenLearner.lastName}</div>
-      <div>ID {choosenLearner.studentId}</div>
+      <div>Name: {choosenLearner.firstName} {choosenLearner.lastName}</div>
+      <div>ID: {choosenLearner.studentId}</div>
      
     </div>
      <ButtonGroup>
@@ -146,10 +161,10 @@ export default function ChooseLearnerPanel(props) {
        setCode('')
        setChoosenLearner(null);
      }}/>
-     <Button value="Yes It's me" onClick={()=>{
-        location.href = `/api/examjwt.php?userId=${encodeURIComponent(
-          choosenLearner.userId,
-        )}&doenetId=${encodeURIComponent(doenetId)}&code=${encodeURIComponent(code)}`;
+     <Button value="Yes It's me. Start Exam." onClick={()=>{
+
+       newAttempt(doenetId,code,choosenLearner.userId);
+        
      }}/>
    </ButtonGroup>
    </div>

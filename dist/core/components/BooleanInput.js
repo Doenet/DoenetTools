@@ -3,24 +3,26 @@ import Input from './abstract/Input.js';
 export default class BooleanInput extends Input {
   constructor(args) {
     super(args);
-    this.updateBoolean = this.updateBoolean.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    );
 
     this.actions = {
-      updateBoolean: this.updateBoolean
+      updateBoolean: this.updateBoolean.bind(
+        new Proxy(this, this.readOnlyProxyHandler)
+      )
     };
 
+    this.externalActions = {};
+
     //Complex because the stateValues isn't defined until later
-    Object.defineProperty(this.actions, 'submitAnswer', {
+    Object.defineProperty(this.externalActions, 'submitAnswer', {
+      enumerable: true,
       get: function () {
         if (this.stateValues.answerAncestor !== null) {
-          return () => this.coreFunctions.requestAction({
+          return {
             componentName: this.stateValues.answerAncestor.componentName,
             actionName: "submitAnswer"
-          })
+          }
         } else {
-          return () => null
+          return;
         }
       }.bind(this)
     });
@@ -161,13 +163,15 @@ export default class BooleanInput extends Input {
         }
       }
 
-      this.coreFunctions.requestUpdate({
+
+      return this.coreFunctions.performUpdate({
         updateInstructions,
         event,
-        callBack: () => this.coreFunctions.triggerChainedActions({
-          componentName: this.componentName,
-        })
-      })
+      }).then(() => this.coreFunctions.triggerChainedActions({
+        componentName: this.componentName,
+      }));
+
+
     }
   }
 

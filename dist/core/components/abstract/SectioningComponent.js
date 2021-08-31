@@ -484,6 +484,10 @@ export default class SectioningComponent extends BlockComponent {
         suppressAutomaticVariants: {
           dependencyType: "stateVariable",
           variableName: "suppressAutomaticVariants"
+        },
+        sectionPlaceholder: {
+          dependencyType: "stateVariable",
+          variableName: "sectionPlaceholder"
         }
 
       }),
@@ -522,13 +526,22 @@ export default class SectioningComponent extends BlockComponent {
           subvariantsSpecified
         }
 
-        let subvariants = generatedVariantInfo.subvariants = [];
 
-        for (let descendant of dependencyValues.variantDescendants) {
-          if (descendant.stateValues.isVariantComponent) {
-            subvariants.push(descendant.stateValues.generatedVariantInfo)
-          } else if (descendant.stateValues.generatedVariantInfo) {
-            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+        if (dependencyValues.sectionPlaceholder) {
+          // section placeholders don't have the descedants to determine
+          // the variant info
+          // so just give the subvariants specified
+          if (subvariantsSpecified) {
+            generatedVariantInfo.subvariants = dependencyValues.variants.desiredVariant.subvariants
+          }
+        } else {
+          let subvariants = generatedVariantInfo.subvariants = [];
+          for (let descendant of dependencyValues.variantDescendants) {
+            if (descendant.stateValues.isVariantComponent) {
+              subvariants.push(descendant.stateValues.generatedVariantInfo)
+            } else if (descendant.stateValues.generatedVariantInfo) {
+              subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+            }
           }
         }
 
@@ -640,7 +653,7 @@ export default class SectioningComponent extends BlockComponent {
     closeSection: this.closeSection.bind(this),
   }
 
-  submitAllAnswers() {
+  async submitAllAnswers() {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -655,7 +668,7 @@ export default class SectioningComponent extends BlockComponent {
     })
     for (let answer of this.stateValues.answerDescendants) {
       if (!answer.stateValues.justSubmitted) {
-        this.coreFunctions.requestAction({
+        await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer"
         })
@@ -665,7 +678,7 @@ export default class SectioningComponent extends BlockComponent {
 
   revealSection() {
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -684,7 +697,7 @@ export default class SectioningComponent extends BlockComponent {
 
   closeSection() {
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

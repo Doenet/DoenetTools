@@ -66,7 +66,7 @@ if ($result->num_rows < 1){
     $result = $conn->query($sql);
 }
 
-$sql = "SELECT doenetId
+$sql = "SELECT began
     FROM user_assignment_attempt
     WHERE userId = '$userId'
     AND doenetId = '$doenetId'
@@ -83,6 +83,20 @@ if ($result->num_rows < 1){
     ";
 
     $result = $conn->query($sql);
+}else{
+  $row = $result->fetch_assoc();
+  $began = $row['began'];
+  if ($began == NULL){
+    $sql = "
+    UPDATE user_assignment_attempt
+    SET began=NOW()
+    WHERE userId = '$userId'
+    AND doenetId = '$doenetId'
+    AND contentId = '$contentId'
+    AND attemptNumber = '$attemptNumber'
+    ";
+    $result = $conn->query($sql);
+  }
 }
 
 $sql = "SELECT userId

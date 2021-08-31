@@ -670,7 +670,7 @@ export default class Graph extends BlockComponent {
       })
     }
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions,
       event: {
         verb: "interacted",
@@ -682,7 +682,7 @@ export default class Graph extends BlockComponent {
           xmin, xmax, ymin, ymax
         }
       }
-    })
+    });
 
   }
 
@@ -698,7 +698,7 @@ export default class Graph extends BlockComponent {
         indOffset: this.stateValues.nChildrenAdded
       });
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "addComponents",
           serializedComponents: processResult.serializedComponents,
@@ -710,7 +710,7 @@ export default class Graph extends BlockComponent {
           stateVariable: "nChildrenAdded",
           value: this.stateValues.nChildrenAdded + processResult.serializedComponents.length,
         }],
-      })
+      });
     }
   }
 
@@ -724,7 +724,7 @@ export default class Graph extends BlockComponent {
         .slice(nChildren - numberToDelete, nChildren)
         .map(x => x.componentName);
 
-      this.coreFunctions.requestUpdate({
+      return this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "deleteComponents",
           componentNames: componentNamesToDelete
@@ -734,7 +734,7 @@ export default class Graph extends BlockComponent {
           stateVariable: "nChildrenAdded",
           value: this.stateValues.nChildrenAdded - numberToDelete,
         }],
-      })
+      });
 
     }
 

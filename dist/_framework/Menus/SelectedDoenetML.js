@@ -172,6 +172,7 @@ export function AssignmentSettings({role, doenetId}) {
   let [dueDate, setDueDate] = useState("");
   let [limitAttempts, setLimitAttempts] = useState(true);
   let [numberOfAttemptsAllowed, setNumberOfAttemptsAllowed] = useState(1);
+  let [timeLimit, setTimeLimit] = useState(60);
   let [attemptAggregation, setAttemptAggregation] = useState("");
   let [totalPointsOrPercent, setTotalPointsOrPercent] = useState(100);
   let [gradeCategory, setGradeCategory] = useState("");
@@ -208,6 +209,7 @@ export function AssignmentSettings({role, doenetId}) {
     setShowHints(aInfo?.showHints);
     setShowCorrectness(aInfo?.showCorrectness);
     setProctorMakesAvailable(aInfo?.proctorMakesAvailable);
+    setTimeLimit(aInfo?.timeLimit);
   }, [aInfo]);
   if (aLoadable.state === "loading") {
     return null;
@@ -251,7 +253,34 @@ export function AssignmentSettings({role, doenetId}) {
         updateAssignment({doenetId, keyToUpdate: "dueDate", value: dueDate, description: "Due Date"});
       }
     }
-  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Limit Attempts", /* @__PURE__ */ React.createElement(Switch, {
+  }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit", /* @__PURE__ */ React.createElement(Switch, {
+    onChange: (e) => {
+      let valueDescription = "Not Limited";
+      let value = null;
+      if (e.currentTarget.checked) {
+        valueDescription = "60 Minutes";
+        value = "60";
+      }
+      updateAssignment({doenetId, keyToUpdate: "timeLimit", value, description: "Time Limit ", valueDescription});
+    },
+    checked: aInfo.timeLimit > 0
+  }))), aInfo.timeLimit > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Time Limit in Minutes", /* @__PURE__ */ React.createElement("input", {
+    type: "number",
+    value: timeLimit,
+    onBlur: () => {
+      if (aInfo.timeLimit !== timeLimit) {
+        let valueDescription = `${timeLimit} Minutes`;
+        updateAssignment({doenetId, keyToUpdate: "timeLimit", value: timeLimit, description: "Time Limit", valueDescription});
+      }
+    },
+    onKeyDown: (e) => {
+      if (e.key === "Enter" && aInfo.timeLimit !== timeLimit) {
+        let valueDescription = `${timeLimit} Minutes`;
+        updateAssignment({doenetId, keyToUpdate: "timeLimit", value: timeLimit, description: "Time Limit", valueDescription});
+      }
+    },
+    onChange: (e) => setTimeLimit(e.currentTarget.value)
+  }))) : null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Attempts Limit", /* @__PURE__ */ React.createElement(Switch, {
     name: "limitAttempts",
     onChange: (e) => {
       let valueDescription = "Not Limited";
@@ -262,8 +291,8 @@ export function AssignmentSettings({role, doenetId}) {
       }
       updateAssignment({doenetId, keyToUpdate: "numberOfAttemptsAllowed", value, description: "Attempts Allowed ", valueDescription});
     },
-    checked: limitAttempts
-  }))), limitAttempts ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement("input", {
+    checked: aInfo.numberOfAttemptsAllowed > 0
+  }))), aInfo.numberOfAttemptsAllowed > 0 ? /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Number of Attempts Allowed", /* @__PURE__ */ React.createElement("input", {
     type: "number",
     name: "numberOfAttemptsAllowed",
     value: numberOfAttemptsAllowed,

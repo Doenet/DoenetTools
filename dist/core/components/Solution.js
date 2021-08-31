@@ -5,7 +5,7 @@ export default class Solution extends BlockComponent {
     super(args);
 
     this.revealSolution = this.revealSolution.bind(this);
-    this.revealSolutionCallBack = this.revealSolutionCallBack.bind(this);
+    this.finishRevealSolution = this.finishRevealSolution.bind(this);
 
   }
   static componentType = "solution";
@@ -209,7 +209,7 @@ export default class Solution extends BlockComponent {
   }
 
 
-  revealSolutionCallBack({ allowView, message, scoredComponent }) {
+  finishRevealSolution({ allowView, message, scoredComponent }) {
 
     let updateInstructions = [{
       updateType: "updateValue",
@@ -242,7 +242,7 @@ export default class Solution extends BlockComponent {
       }
     }
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.requestUpdate({
       updateInstructions,
       event
     })
@@ -253,17 +253,16 @@ export default class Solution extends BlockComponent {
   revealSolution() {
     let { scoredItemNumber, scoredComponent } = this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
 
-    this.coreFunctions.recordSolutionView({
+    return this.coreFunctions.recordSolutionView({
       itemNumber: scoredItemNumber,
       scoredComponent: scoredComponent,
-      callBack: this.revealSolutionCallBack
-    });
+    }).then(this.finishRevealSolution);
 
   }
 
   closeSolution() {
 
-    this.coreFunctions.requestUpdate({
+    return this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,

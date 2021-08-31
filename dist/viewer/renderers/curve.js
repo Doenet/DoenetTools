@@ -197,7 +197,8 @@ export default class FunctionCurve extends DoenetRenderer {
     this.actions.moveThroughPoint({
       throughPoint: tpcoords,
       throughPointInd: i,
-      transient
+      transient,
+      skippable: transient
     });
   }
   dragControlPoint(point, i, transient) {
@@ -212,7 +213,8 @@ export default class FunctionCurve extends DoenetRenderer {
         this.controlPointsJXG[point][i].Y() - this.throughPointsJXG[point].Y()
       ],
       controlVectorInds: [point, i],
-      transient
+      transient,
+      skippable: transient
     });
   }
   makeThroughPointsAlwaysVisible() {
